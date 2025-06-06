@@ -1,0 +1,148 @@
+<div>
+   <div class="row remiPro titulos">
+    <div class="col-md-8"></div>
+    <div class="col-md-4"> 
+            <dx-select-box [items]="menu1" 
+            [(value)]="opMenu" 
+            [readOnly]="false" 
+            [disabled]="false"
+            (onValueChanged)="opcionMenu($event)"
+            ></dx-select-box>
+        </div>
+   </div>
+   
+</div>
+
+<div *ngIf="mostrarLoading">
+    <app-loading-messagge [messagge]="mensajeLoading"></app-loading-messagge>
+</div>
+
+
+<div id="busquedaProducto" *ngIf="mostrarAdministracion">
+    <div class="grilla">
+        <dx-data-grid #datag2
+            id="gridContainer"
+            [dataSource]="listadoStockLocales"
+            [showBorders]="true"
+            [(selectedRowKeys)]="selectedRows"
+            (onExporting)="onExporting2($event)"
+            (onExported)="onExported2($event)">
+            <dxo-editing mode="row" [allowUpdating]="true"></dxo-editing>
+            <dxo-selection [selectAllMode]="'allPages'"  mode="multiple"></dxo-selection>
+            <dxo-filter-row [visible]="true" ></dxo-filter-row>
+            <dxo-export [enabled]="true" fileName="Consolidado_productos" [allowExportSelectedData]="true"></dxo-export>
+            <dxo-search-panel [visible]="true" [width]="240" placeholder="Buscar..."></dxo-search-panel>
+            <dxi-column dataField="PRODUCTO" caption="Producto" dataType="string" [allowEditing]="false" sortOrder="asc" width="55%"></dxi-column>
+            <dxi-column dataField="CLASIFICA" caption="Clasificacion" [allowEditing]="false" dataType="string" width="15%"></dxi-column>
+            <dxi-column dataField="isSelected" caption="Seleccionado" [allowEditing]="false" dataType="boolean" width="10%"></dxi-column>
+            <dxi-column dataField="precio" caption="Precio" [allowEditing]="false" dataType="number" width="15%"></dxi-column>
+            <dxi-column dataField="porcentaje" caption="Porcentaje" dataType="number" width="15%"></dxi-column>
+    </dx-data-grid>
+    </div>   
+    <div class="row" style="margin-top: 1rem;">
+        <div class="col-md-4"></div>
+        <div class="col-md-4" style="padding-right: 6em;padding-left: 6em;"><button class="btn btn-block btn-success" style="background-color: #ff5722;border-color: #ff5722;" (click)="guardarProductosStockLocal()">Guardar</button></div>
+        <div class="col-md-4"></div>
+    </div>
+     
+</div>
+
+
+<div id="busquedaProducto" *ngIf="mostrarBusquedaPorFiltros">
+    <div class="row">
+        <div class="col-md-10"></div>
+        <div class="col-md-2"><button class="btn btnIcons6" style="background-color: #ff5722;" (click)="exportarPDF()">
+            <i class="fa fa-download fa-1x"></i> Exportar PDF</button></div>
+    </div>
+    
+    <div class="row">
+        <div class="col-md-12 card carIn">
+            <div class="row">
+                <div class="col-md-2"></div>
+                <div class="col-md-8">
+                    <div class="row"  style="margin-top: 0.7rem">
+                        <div class="col-md-12" style="text-align: center;">
+                            <h5 style="font-weight: bold;">Filtros de Búsqueda</h5>
+                        </div>
+                        <div class="col-md-4" style="padding-top: 0.7em;">GRUPO PRODUCTO</div>
+                        <div class="col-md-6">
+                            <dx-select-box [items]="listadoCategorias" 
+                                [(value)]="nombreClasificacion" 
+                                [readOnly]="false" 
+                                [disabled]="false"
+                                ></dx-select-box>
+                        </div>
+                        
+                    </div>
+
+                    <div class="row" style="margin-top: 0.5rem;margin-bottom: 1rem;">
+                        <div class="col-md-4"></div>
+                        <div class="col-md-4"><button class="btn btn-block btn-success" style="background-color: #ff5722;border-color: #ff5722;" (click)="traerProductosPorFiltros()">Buscar</button></div>
+                        <div class="col-md-4"></div>
+                    </div>
+                </div>
+                <div class="col-md-2"></div>
+            </div>     
+        </div>
+    </div>
+
+    <div class="grilla">
+        <dx-data-grid #datag2
+        class="dtgrid"
+        id="gridContainer"
+        [dataSource]="invetarioMinimoProductos"
+        [showBorders]="true"
+        [columnWidth]="125"
+        [hoverStateEnabled]="true"
+        [selectedRowKeys]="[]"
+        (onExporting)="onExporting2($event)"
+        (onExported)="onExported2($event)">
+        <dxo-selection mode="single"></dxo-selection>
+        <dxo-filter-row [visible]="true" ></dxo-filter-row>
+        <dxo-search-panel  [visible]="true"  [width]="240"  placeholder="Buscar..."></dxo-search-panel>
+        <i class="fa fa-exclamation-triangle" aria-hidden="true"></i> 
+        <dxo-export [enabled]="true" fileName="Inventario Productos" [allowExportSelectedData]="true"></dxo-export>
+        <dxi-column dataField="producto.PRODUCTO" caption="Producto" dataType="string" sortOrder="asc" [width]="valorAncho" ></dxi-column>
+        <dxi-column dataField="cantidadM2" caption="M2/UNIDAD" dataType="number" [width]="valorAncho2"></dxi-column>
+        <dxi-column dataField="cantidadCajas" caption="CAJAS" dataType="number" [width]="70"></dxi-column>
+        <dxi-column dataField="cantidadPiezas" caption="PIEZAS" [width]="70" dataType="number"></dxi-column>   
+        <dxi-column dataField="valorProducto" caption="PRECIO" [width]="80"></dxi-column>
+        <dxo-scrolling columnRenderingMode="virtual"></dxo-scrolling>
+    </dx-data-grid>
+    </div>    
+</div>
+
+
+<div id="user" class="remiPro" *ngIf="mostrarStockMinimoGeneral">
+    <div class="row">
+        <div class="col-md-10"></div>
+        <div class="col-md-2"><button class="btn btnIcons6" style="background-color: #ff5722;" (click)="exportarPDF()">
+            <i class="fa fa-download fa-1x"></i> Exportar PDF</button></div>
+    </div>
+    <dx-data-grid #datag2
+        id="gridContainer"
+        [dataSource]="invetarioMinimoProductos"
+        [showBorders]="true"
+        [columnWidth]="125"
+        [hoverStateEnabled]="true"
+        [selectedRowKeys]="[]"
+        (onExporting)="onExporting2($event)"
+        (onExported)="onExported2($event)">
+        <dxo-selection mode="single"></dxo-selection>
+        <dxo-filter-row [visible]="true" ></dxo-filter-row>
+        <dxo-search-panel  [visible]="true"  [width]="240"  placeholder="Buscar..."></dxo-search-panel>
+        <i class="fa fa-exclamation-triangle" aria-hidden="true"></i> 
+        <dxo-export [enabled]="true" fileName="Inventario Productos" [allowExportSelectedData]="true"></dxo-export>
+        <dxi-column dataField="producto.PRODUCTO" caption="Producto" dataType="string" sortOrder="asc" [width]="valorAncho" ></dxi-column>
+        <dxi-column dataField="cantidadM2" caption="M2/UNIDAD" dataType="number" [width]="valorAncho2"></dxi-column>
+        <dxi-column dataField="cantidadCajas" caption="CAJAS" dataType="number" [width]="70"></dxi-column>
+        <dxi-column dataField="cantidadPiezas" caption="PIEZAS" [width]="70" dataType="number"></dxi-column>   
+        <dxi-column dataField="valorProducto" caption="PRECIO" [width]="80"></dxi-column>
+        <dxo-paging [pageSize]="12"></dxo-paging>
+        <dxo-pager
+            [showPageSizeSelector]="true"
+            [allowedPageSizes]="[8, 12, 20]"
+        ></dxo-pager>
+        <dxo-scrolling columnRenderingMode="virtual"></dxo-scrolling>
+    </dx-data-grid>
+</div>

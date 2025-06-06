@@ -1,0 +1,245 @@
+.remiPro {
+  padding: 2em;
+  margin-top: 2em;
+
+  margin-bottom: 1.5em;
+}
+
+
+.marginTabla {
+  padding: 1.5em;
+  margin-top: 1em;
+  
+}
+
+
+.marginTabla h4 {
+ font-weight: bold;
+ font-size: 18pt;
+}
+
+.remiPro p {
+  margin-top: 1em;
+}
+
+.titulo {
+  margin-bottom: 1em;
+  font-weight: bold;
+  text-align: center;
+}
+
+.alinearBoton {
+  text-align: left;
+  margin-bottom: 2em;
+}
+
+.detalle {
+  padding: 3em;
+  padding-top: 0em;
+}
+
+.bt {
+  background-color: red;
+  color: white;
+}
+
+::ng-deep .bt .dx-icon {
+  font-size: 12px;
+  color: white;
+}
+
+.bt2 {
+  background-color: green;
+  color: white;
+}
+.btn2 {
+  background-color: #0061a9;
+  color: white;
+  width: 100%;
+  margin-top: 3em;
+}
+
+.btn3 {
+  background-color: #0061a9;
+  color: white;
+  border-color: transparent;
+}
+
+#historial {
+  margin: 2em;
+}
+
+.calT {
+  margin-bottom: -2em;
+}
+
+.titulosT h5 {
+  text-align: center;
+  font-weight: bold;
+}
+
+::ng-deep .dx-texteditor-input {
+  text-align: center;
+}
+
+::ng-deep .total .dx-texteditor-input {
+  text-align: center;
+  font-size: 2em;
+  font-weight: bold;
+}
+
+::ng-deep .id .dx-texteditor-input {
+  text-align: center;
+  font-size: 2em;
+  font-weight: bold;
+}
+
+.mover {
+  text-align: right;
+}
+
+.btn-xs {
+  background-color: red;
+  border: red;
+  text-align: right;
+}
+
+::ng-deep .dx-datagrid-content {
+  text-align: center;
+}
+
+/* ::ng-deep .dx-datagrid-headers  
+{  
+    background-color: yellow;  
+}   */
+
+
+
+table {
+  font-family: arial, sans-serif;
+  border-collapse: collapse;
+  width: 100%;
+}
+
+td,
+th {
+  border: 1px solid #dddddd;
+  text-align: left;
+  padding: 8px;
+}
+
+
+
+.btnIcons {
+  background-color: #0061a9;
+  border-radius: 4px;
+  color: white;
+  width: 100%;
+  margin: 0.5em;
+}
+
+.btnIcons {
+  padding: 1em;
+}
+
+.botones button:hover {
+  box-shadow: 0 12px 16px 0 rgba(0, 0, 0, 0.24),
+    0 17px 50px 0 rgba(0, 0, 0, 0.19);
+}
+
+.carIn {
+  margin-top: 1.5em;
+}
+
+.espacio {
+  margin-top: 1.5em;
+}
+
+.newr {
+  margin-top: 2em;
+  margin-bottom: 2em;
+}
+
+.fomR {
+  margin: 2em;
+}
+
+.btn2 {
+  background-color: #0061a9;
+  color: white;
+  width: 100%;
+  margin-top: 3em;
+}
+
+.btnIcons2 {
+  background-color: white;
+  color: #0061a9;
+  width: 100%;
+  margin: 0.5em;
+}
+
+.btnIcons3 {
+  background-color: white;
+  color: black;
+  border-radius: 4px;
+  width: 100%;
+  margin: 0.5em;
+}
+
+.btnIcons4 {
+  background-color: white;
+  color: red;
+  width: 100%;
+  margin: 0.5em;
+}
+
+.btnIcons5 {
+  background-color: white;
+  width: 100%;
+  margin: 0.5em;
+  border-color: transparent;
+}
+
+.btnIcons6 {
+  background-color: #28a745;
+  color: white;
+  margin: 0.5em;
+  border-color: transparent;
+}
+
+.texto {
+  font-size: 1.2em;
+  font-weight: bold;
+}
+
+::ng-deep .dx-datagrid-headers .dx-datagrid-text-content {
+  text-align: center;
+}
+
+::ng-deep #gridContainer tr.notes-row td {
+    height: 70px;
+    color: #999;
+}
+
+.grilla {
+  margin-top: 2rem;
+}
+
+
+.general{
+  overflow-y: scroll;
+}
+
+::ng-deep .dx-data-row .cell-highlighted {
+    background-color: red;
+}
+ 
+::ng-deep .dx-header-row .cell-highlighted {
+    color: red;
+    font-style: italic;
+}
+
+
+.cell-2 {
+    background-color:blue;
+}

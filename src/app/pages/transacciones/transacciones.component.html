@@ -1,0 +1,196 @@
+<div class="transacciones">
+    <div *ngIf="mostrarLoading">
+        <app-loading-messagge [messagge]="mensajeLoading"></app-loading-messagge>
+    </div>
+   
+    <div class="row remiPro titulos">
+        <div class="col-md-8"></div>
+        <div class="col-md-4"> 
+            <dx-select-box [items]="menu1" 
+            [value]="menu1[0]" 
+            [readOnly]="false" 
+            class="form-control select"
+            [disabled]="false"
+            (onValueChanged)="opcionMenu($event)"
+            ></dx-select-box>
+        </div>
+    </div>
+        
+  <br>
+
+  <div class="card">
+        <h5 class="card-header text-center font-weight-bold text-uppercase ">Transacciones</h5>
+        <div class="card-body">
+                <div class="row">
+
+                        <div class="col-md-2"  *ngIf="!isBusqGeneral"></div>
+                        <div class="col-md-2"  *ngIf="!isBusqGeneral" style="padding-top: 0.7em;">PRODUCTO</div>
+                        <div class="col-md-6"  *ngIf="!isBusqGeneral">
+                            <dx-select-box
+                                [dataSource]="productos22"
+                                displayExpr="PRODUCTO"
+                                [searchEnabled]="true"
+                                valueExpr="PRODUCTO"
+                                [(value)]="nombreProducto"
+                                hint={{nombreProducto}}
+                                itemTemplate="item">
+                                <div *dxTemplate="let data of 'item'">
+                                    <div style="display:inline-block;font-size: 0.8rem;">{{data.PRODUCTO}}</div>
+                                </div>
+                            </dx-select-box>
+                        </div>
+                        <div class="col-md-2"  *ngIf="!isBusqGeneral"></div>
+                   
+                    
+                    <br><br>
+                    <div class="col-md-2"></div>
+                    <div class="col-md-4">
+                        <div class="col-md-12" style="text-align: center;font-weight: bold;" *ngIf="isBusqGeneral"><h6>Consulta Específica</h6></div>
+                        <div class="row card">
+                            <div class="col-md-12"> 
+                                <div class="row">
+                                    <div class="col-md-3"  style="margin-top: 0.5em;">Desde</div>
+                                    <div class="col-md-9">
+                                    <dx-date-box
+                                        [(value)]="nowdesde"
+                                        type="date">
+                                    </dx-date-box>
+                                    </div>
+
+                                    <div class="col-md-3" style="margin-top: 0.5em;">Hasta</div>
+                                    <div class="col-md-9">
+                                    <dx-date-box
+                                        [(value)]="nowhasta"
+                                        type="date">
+                                    </dx-date-box>
+                                    </div>
+
+                                    <div class="col-md-4"></div>
+                                    <div class="col-md-4 btnSearch">
+                                        <button class="btn btn-block btn-success" style="background-color: #ff5722;border-color: #ff5722;" (click)="traerTransaccionesPorRango()">Buscar</button>
+                                    </div>
+                                    <div class="col-md-4"></div>
+                                </div>        
+                            </div>
+                        </div>                
+                    </div>
+                    
+                    <div class="col-md-4 " style="margin-left: 1em;">
+                        <div class="col-md-12" style="text-align: center;font-weight: bold;" *ngIf="isBusqGeneral"><h6>Consulta General</h6></div>
+                        <div class="row card">
+                            <br><br>
+                            <div class="col-md-12"> 
+                                <div class="row">  
+                            
+                                    <div class="col-md-3"></div>
+                                    <div class="col-md-6 btnSearch">
+                                        <button class="btn btn-block btn-success" style="background-color: #ff5722;border-color: #ff5722;" (click)="traerTransacciones()">Buscar Todos</button>
+                                    </div>
+                                    <div class="col-md-3"></div>
+                                </div>        
+                            </div>
+                            <br>
+                        </div>         
+
+                    </div>
+                <div class="col-md-2"></div>
+            </div>   
+        </div>
+    </div>
+
+   <br>
+    <dx-data-grid #data2
+        id="gridContainer"
+        [dataSource]="transacciones"
+        [showBorders]="true"
+        [columnWidth]="125"
+        (onExporting)="onExporting($event)"
+        (onExported)="onExported($event)"
+        (onRowPrepared)="onRowPrepared($event)">   
+        <dxo-paging [pageSize]="10"></dxo-paging>
+        <dxo-pager 
+            [showPageSizeSelector]="true"
+            [allowedPageSizes]="[5, 10, 20]"
+            [showInfo]="true">
+        </dxo-pager>
+        <dxo-filter-row [visible]="true" ></dxo-filter-row>
+        <dxo-search-panel [visible]="true" [width]="240" placeholder="Buscar..."></dxo-search-panel>
+        <dxo-export [enabled]="true" fileName="Transacciones" [allowExportSelectedData]="true"></dxo-export>
+        <dxi-column dataField="createdAt" caption="Fecha de creación" dataType="date" sortOrder="desc" [visible]="true"></dxi-column>
+        <dxi-column dataField="fecha_transaccion" caption="Fecha del documento" dataType="date"></dxi-column>
+        <dxi-column dataField="fecha_mov" caption="Fecha de transaccion" [visible]="false"></dxi-column>
+        <dxi-column dataField="sucursal"></dxi-column>
+        <dxi-column dataField="tipo_transaccion"></dxi-column>
+        <dxi-column dataField="bodega"  [visible]="false"></dxi-column>
+        <dxi-column dataField="documento" dataType="string" [width]="90"></dxi-column>
+        <dxi-column dataField="rucSucursal" dataType="string" [visible]="false"></dxi-column>
+        <dxi-column dataField="orden_compra" caption="Orden N" dataType="number" [width]="80"></dxi-column>
+        <dxi-column dataField="factPro" [visible]="true" caption="Remision" dataType="number" [width]="80"></dxi-column>
+        <dxi-column dataField="producto" [width]="380"></dxi-column>
+        <dxi-column dataField="cajas"  dataType="number" [width]="80"></dxi-column>
+        <dxi-column dataField="piezas"  dataType="number" [width]="80"></dxi-column>
+        <dxi-column dataField="costo_unitario" [visible]="false" ></dxi-column>
+        <dxi-column dataField="cantM2" caption="M2"  [width]="80" dataType="number"></dxi-column>
+        <dxi-column dataField="valor" dataType="number" caption="V.Unitario"  [width]="80" ></dxi-column>
+        <dxi-column dataField="totalsuma" caption="Total Suma"  dataType="number" [width]="100"></dxi-column>
+        <dxi-column dataField="usu_autorizado"  [visible]="false"></dxi-column>
+        <dxi-column dataField="cliente"  caption="Cliente" [width]="200" [visible]="true"></dxi-column>
+        <dxi-column dataField="proveedor" caption="Proveedor" [width]="200" [visible]="true"></dxi-column>
+        <dxi-column dataField="movimiento"  [visible]="false"></dxi-column>
+        <dxi-column dataField="maestro"  [visible]="false"></dxi-column>
+        <dxi-column dataField="usuario"  [visible]="false"></dxi-column>
+        <dxi-column dataField="nombreUsuario"  [visible]="false"></dxi-column>
+        <dxi-column dataField="nombreVendedor"  [visible]="false"></dxi-column>
+        <dxi-column dataField="observaciones"  [visible]="false"></dxi-column>
+        <dxi-column dataField="mcaEntregado" caption="Entregado" [width]="90" [visible]="true"></dxi-column>
+        <dxi-column type="buttons" dataField="bt1" caption="Notas" [width]="90">
+            <dxi-button hint="Notas" icon="fa fa-check-square-o" [onClick]="mostrarNotas" [visible]="isCloneIconDisabled"></dxi-button>
+        </dxi-column>
+
+        <dxo-scrolling columnRenderingMode="virtual"></dxo-scrolling>
+        
+    </dx-data-grid>
+    
+
+
+    
+    
+
+
+
+    <div>
+        <dx-popup [width]="600" [height]="400" [showTitle]="true" title="Ayuda" [dragEnabled]="false"
+            [closeOnOutsideClick]="true" [(visible)]="popupvisible">
+            <table>
+                <tr>
+                <th>Tipo</th>
+                <th>Columna Tipo</th>
+                <th>Columna Remisión</th>
+                </tr>
+                <tr>
+                <td>compra</td>
+                <td>Artículos ingresados de remisiones</td>
+                <td>Pertenece número de remisión</td>
+                </tr>
+                <tr>
+                <td>compra_obs</td>
+                <td>Artículos de obsequios</td>
+                <td>Pertenece número de remisión</td>
+                </tr>
+                <tr>
+                <td>venta_not</td>
+                <td>Ventas generados tipo Nota de Venta</td>
+                <td>Pertenece número Nota de Venta</td>
+                </tr>
+                <tr>
+                <td>venta_fact</td>
+                <td>Ventas generadas tipo Facturas</td>
+                <td>Pertenece número Factura</td>
+                </tr>
+            </table>
+        </dx-popup>
+    </div>
+
+    
+</div>
+

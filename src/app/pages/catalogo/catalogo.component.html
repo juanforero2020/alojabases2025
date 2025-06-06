@@ -1,0 +1,1050 @@
+<div *ngIf="mostrarLoading">
+    <app-loading-messagge [messagge]="mensajeLoading"></app-loading-messagge>
+</div>
+
+
+<br>
+<div id="admin1" style="display: block;">
+    <div class="row remiPro titulos">
+        <div class="col-md-8"></div>
+        <div class="col-md-4"> 
+            <dx-select-box [items]="menu1" 
+                [value]="menu1[0]" 
+                [readOnly]="false" 
+                [disabled]="false"
+                class="form-control select"
+                (onValueChanged)="opcionMenu($event)">
+            </dx-select-box>
+        </div>
+    </div>
+</div>
+
+<br>
+<div id="catalogo" style="display: block;">
+    <dx-data-grid id="gridContainer"
+    [dataSource]="productosCatalogoUso"
+    [columnAutoWidth]="true"
+    [showBorders]="true"
+    rowTemplate="rowTemplateName"
+    (onExporting)="onExporting($event)"
+    (onExported)="onExported($event)">
+    <dxo-filter-row [visible]="true" ></dxo-filter-row>
+    <dxo-search-panel [visible]="true" [width]="240" placeholder="Buscar..."></dxo-search-panel>
+    <dxo-export [enabled]="true" fileName="catalogo" [allowExportSelectedData]="true"></dxo-export>
+    <dxi-column caption="Imagen" width="15%" [allowFiltering]="false" [allowSorting]="false"></dxi-column>
+    <dxi-column dataField="PRODUCTO" width="40%" caption="Producto" ></dxi-column>
+    <dxi-column dataField="CLASIFICA" width="15%" caption="Clasificación"></dxi-column>
+    <dxi-column dataField="REFERENCIA" width="15%" caption="Referencia" [visible]="false"></dxi-column>
+    <dxi-column dataField="P_CAJA" width="15%" caption="Piezas * Caja"></dxi-column>
+    <dxi-column dataField="M2" width="15%" caption="Metros * Caja"></dxi-column>
+    <dxi-column dataField="DIM" width="10%" caption="Dimensión"></dxi-column>
+    <dxi-column dataField="precio" width="10%" caption="Precio"></dxi-column>
+    <dxi-column dataField="ESTADO" width="10%" caption="Estado"></dxi-column>
+    <dxi-column dataField="porcentaje_ganancia" width="10%" caption="% Ganancia" [visible]="false"></dxi-column>
+
+    <dxi-column dataField="UNIDAD" caption="Unidad" [visible]="false"></dxi-column>
+    <dxi-column dataField="CAL"  caption="Cal" [visible]="false"></dxi-column>
+    <dxi-column dataField="CASA" caption="Casa" [visible]="false"></dxi-column>
+    <dxi-column dataField="TIPO" caption="Tipo" [visible]="false"></dxi-column>
+    <dxi-column dataField="ORIGEN" caption="Origen" [visible]="false"></dxi-column>
+    <dxi-column dataField="APLICACION" caption="Aplicacion" [visible]="false"></dxi-column>
+    <dxi-column dataField="VIGENCIA" caption="Vigencia" [visible]="false"></dxi-column>
+    <dxi-column dataField="FEC_PRODUCCION" caption="FEC_PRODUCCION" [visible]="false"></dxi-column>
+    <dxi-column dataField="CANT_MINIMA" caption="Cant.Minima" [visible]="false"></dxi-column>
+    <dxi-column dataField="notas" caption="Notas" [visible]="false"></dxi-column>
+   
+
+    <tbody class="employee dx-row"  *dxTemplate="let employee of 'rowTemplateName'" >
+        <tr class="main-row">
+        <td rowspan="2" class="imgProducto" style="text-align: center;"><button (click)="mostrarPopup(employee.data.PRODUCTO)" class="btIm"><img class="imgProducto" [src]="employee.data.IMAGEN_PRINCIPAL"></button>
+        </td>
+            <td style="vertical-align: middle;text-align: left;">{{employee.data.PRODUCTO}}</td>
+            <td style="vertical-align: middle;text-align: left;">{{employee.data.CLASIFICA}}</td>
+            <td style="vertical-align: middle;text-align: center;">{{employee.data.P_CAJA}}</td>
+            <td style="vertical-align: middle;text-align: center;">{{employee.data.M2}}</td>
+            <td style="vertical-align: middle;text-align: center;">{{employee.data.DIM}}</td>
+            <td style="vertical-align: middle;text-align: center;">{{employee.data.precio}}</td>
+            <td style="vertical-align: middle;text-align: center;">{{employee.data.ESTADO}}</td>
+    </tbody>
+    <dxo-paging [pageSize]="12"></dxo-paging>
+    <dxo-pager
+        [showPageSizeSelector]="true"
+        [allowedPageSizes]="[8, 15, 20]"
+    ></dxo-pager>
+</dx-data-grid>
+
+
+<dx-popup
+        [width]="660"
+        [height]="540"
+        [showTitle]="true"
+        [title]="titulo"
+        [closeOnOutsideClick]="true"
+        [(visible)]="popupvisible">
+        <div *dxTemplate="let data of 'content'">
+            <dx-scroll-view width="100%" height="100%">
+            <div class='popup-property-details'>
+                <div class="col-md-12">
+                    <div class="row">
+                        <div class="col-md-2"></div>
+                        <div class="col-md-8 " id="gal" ><dx-gallery #gallery
+                            id="gallery"
+                            [dataSource]="imagenes"
+                            [height]="300"
+                            [loop]="true"
+                            [showNavButtons]="true"
+                            [showIndicator]="true"
+                        ></dx-gallery></div>
+                        <div class="col-md-2"></div>
+                    </div>
+                    <div class="col-md-12" style="text-align: center;">
+                        <button class="btn btn-primary " style="background-color: #ff4500;"  (click)="verGaleria(imagenes)" >Ver Galería
+                        </button>
+                    </div>
+                </div>
+                <br><br>
+                <div class="col-md-12">
+                    <div class="row">
+                        <div class="col-md-1"></div>
+                        <div class="col-md-10">
+                            <table style="width:100%">
+                                <tr>
+                                  <th>PRODUCTO</th>
+                                  <td>{{catalogoLeido.PRODUCTO}}</td>
+                                </tr>
+                                <tr>
+                                    <th>CLASIFICACIÓN</th>
+                                    <td>{{catalogoLeido.CLASIFICA}}</td>
+                                </tr>
+                                <tr>
+                                    <th>REFERENCIA</th>
+                                    <td>{{catalogoLeido.REFERENCIA}}</td>
+                                </tr>
+                                <tr>
+                                    <th>UNIDAD</th>
+                                    <td>{{catalogoLeido.UNIDAD}}</td>
+                                </tr>
+                                <tr>
+                                    <th>DIMENSIONES</th>
+                                    <td>{{catalogoLeido.DIM}}</td>
+                                </tr>
+                                <tr>
+                                    <th>NOMBRE COMERCIAL</th>
+                                    <td>{{catalogoLeido.NOMBRE_COMERCIAL}}</td>
+                                </tr>
+                                <tr>
+                                    <th>P_CAJA</th>
+                                    <td>{{catalogoLeido.P_CAJA}}</td>
+                                </tr>
+                                <tr>
+                                    <th>M2</th>
+                                    <td>{{catalogoLeido.M2}}</td>
+                                </tr>
+                                <tr>
+                                    <th>CAL</th>
+                                    <td>{{catalogoLeido.CAL}}</td>
+                                </tr>
+                                <tr>
+                                    <th>CASA</th>
+                                    <td>{{catalogoLeido.CASA}}</td>
+                                </tr>
+                                <tr>
+                                    <th>TIPO</th>
+                                    <td>{{catalogoLeido.TIPO}}</td>
+                                </tr>
+                                <tr>
+                                    <th>ORIGEN</th>
+                                    <td>{{catalogoLeido.ORIGEN}}</td>
+                                </tr>
+                                <tr>
+                                    <th>ESTADO</th>
+                                    <td>{{catalogoLeido.ESTADO}}</td>
+                                </tr>
+                              </table>
+                        </div>
+                        <div class="col-md-1"></div>
+                    </div>
+                </div>
+            </div>
+        </dx-scroll-view>
+        </div>
+</dx-popup>
+
+
+<dx-popup
+    [width]="'70%'"
+    [height]="'80%'"
+    [showTitle]="true"
+    [title]="titulo"
+    [closeOnOutsideClick]="true"
+    [(visible)]="popupVi">
+    <div *dxTemplate="let data of 'content'">
+        <dx-scroll-view  [scrollByContent]="true" width="100%" height="100%">
+            <div class="col-md-12"> 
+                <div class="row">
+                    <div class="col-md-4">
+                        <div *ngFor="let imagen of imagenesData; let id = index">
+                            <div class="col-md-12 espacio"><button (click)="enviar(id)"><img  class="imgProducto3 " src={{imagen}} alt=""></button></div>
+                        </div>
+                    </div>
+            
+                    <div class="col-md-8">
+                        <div class="row">
+                            <div class="col-md-12">
+                                <pinch-zoom>
+                                    <img  class="imgProducto2 " src={{imagenPrincipal}} alt="">
+                                </pinch-zoom>                    
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </dx-scroll-view>
+    </div>
+</dx-popup>
+</div>
+
+<div class="row" *ngIf="mostrarBloqueo"></div>
+
+<div *ngIf="!mostrarBloqueo">
+    <div id="administracion" style="display: none;" >
+    <div class="card mb-3">
+            <div class="card-header">
+                Administración de Catálogo de Productos
+            </div>
+            <div class="card-body">
+
+                <div class="row">
+                    <div class="col-md-2">
+                        <div class="row botones">
+                            
+                            <div class="col-md-12"><button class="btn" type="button" (click)="mostrar(1)">Nuevo Producto</button></div>
+                            <div class="col-md-12"><button class="btn" type="button" (click)="mostrar(2)">Editar/Eliminar</button></div>
+                            <div class="col-md-12"><button class="btn" type="button" (click)="mostrar(3)">Productos Eliminados</button></div>
+                            <!-- <div class="col-md-12"><button class="btn" type="button" (click)="registrarProductos()">registrar</button></div>  -->
+                        </div>
+                    </div>
+                    <div class="col-md-10 card carIn">
+                        <div id="new" style="display: block;">
+                            <div class="row" class="fomR">
+                                <div style="text-align: center;"> <h2>NUEVO PRODUCTO</h2></div>
+                                
+                                <div class="col-md-12">
+                                    <div class="row">
+                                        <div class="col-md-1"></div>
+                                        <div class="col-md-10">
+                                            <div class="row espacio" >
+                                                <div class="col-md-4" style="text-align: left;">PRODUCTO</div>
+                                                <div class="col-md-8">  <input type="text" [(ngModel)]="catalogo2.PRODUCTO" name="PRODUCTO" class="form-control" value="{{catalogo2.CLASIFICA}} - {{catalogo2.NOMBRE_PRODUCTO}} - {{catalogo2.DIM}}" disabled="true" autocomplete="producto" required></div>
+                                            </div>
+                                            <div class="row espacio" >
+                                                <div class="col-md-4" style="text-align: left;">NOMBRE PRODUCTO<span class="obligat"> *</span></div>
+                                                <div class="col-md-8">  <input type="text" [(ngModel)]="catalogo2.NOMBRE_PRODUCTO" name="PRODUCTO" class="form-control" placeholder="Ingrese el producto" autocomplete="producto" required></div>
+                                            </div>
+                                            <div class="row espacio">
+                                                <div class="col-md-4" style="text-align: left;">CLASIFICACIÓN<span class="obligat"> *</span></div>
+                                                <div class="col-md-8" style="text-align: center;"><dx-autocomplete
+                                                    [items]="arrayClasif" 
+                                                    [(value)]="catalogo2.CLASIFICA" >
+                                                </dx-autocomplete></div>
+                                            </div>
+                                            
+                                            <div class="row espacio">
+                                                <div class="col-md-4" style="text-align: left;">REFERENCIA<span class="obligat"> *</span></div>
+                                                <div class="col-md-8">  <input type="text" [(ngModel)]="catalogo2.REFERENCIA" name="REFERENCIA" class="form-control" placeholder="Ingrese la referencia"  required></div>
+                                            </div>
+                                            <div class="row espacio">
+                                                <div class="col-md-4" style="text-align: left;">PRECIO <span class="obligat"> *</span></div>
+                                                <div class="col-md-8">  <input type="number" [(ngModel)]="catalogo2.precio" name="precio" class="form-control" placeholder="Ingrese el precio"  required></div>
+                                            </div>
+                                            <div class="row espacio">
+                                                <div class="col-md-4" style="text-align: left;">(%) GANANCIA<span class="obligat"> *</span></div>
+                                                <div class="col-md-8">  <input type="number" [(ngModel)]="catalogo2.porcentaje_ganancia" name="porcentaje_ganancia" class="form-control" placeholder="Ingrese el porcentaje de ganancia"  required></div>
+                                            </div>
+                                            <div class="row espacio">
+                                                <div class="col-md-4" style="text-align: left;">UNIDAD<span class="obligat"> *</span></div>
+                                                <div class="col-md-8" style="text-align: center;"><dx-autocomplete
+                                                    [items]="arrayUnid" 
+                                                    [(value)]="catalogo2.UNIDAD" 
+                                                    (onChange)="buscarUnidad($event)">
+                                                </dx-autocomplete></div>
+                                                
+                                            </div>
+                                            <div class="row espacio">
+                                                <div class="col-md-4" style="text-align: left;">DIM<span class="obligat"> *</span></div>
+                                                <div class="col-md-8">  <input type="text" [(ngModel)]="catalogo2.DIM" name="DIM" class="form-control" placeholder="Ingrese las dimensiones"  required></div>
+                                            </div>
+                                            <div class="row espacio">
+                                                <div class="col-md-4" style="text-align: left;">NOMBRE_COMERCIAL<span class="obligat"> *</span></div>
+                                                <div class="col-md-8">  
+                                                    <dx-autocomplete
+                                                    [items]="arrayNombreComercial" 
+                                                    [(value)]="catalogo2.NOMBRE_COMERCIAL" >
+                                                </dx-autocomplete>
+                                                    <!-- <input type="text" [(ngModel)]="catalogo2.NOMBRE_COMERCIAL" autocomplete='nombre' name="nombre" class="form-control" placeholder="Ingrese el nombre comercial"  required> --></div>
+                                            </div>
+                                            <div class="row espacio">
+                                                <div class="col-md-4" style="text-align: left;">P_CAJA<span class="obligat"> *</span></div>
+                                                <div class="col-md-8">  <input type="text" [(ngModel)]="catalogo2.P_CAJA" name="P_CAJA" class="form-control" [disabled]="varPC" placeholder="Ingrese los productos por caja"  required></div>
+                                            </div>
+                                            <div class="row espacio">
+                                                <div class="col-md-4" style="text-align: left;">M2<span class="obligat"> *</span></div>
+                                                <div class="col-md-8">  <input type="text" [(ngModel)]="catalogo2.M2" name="M2" class="form-control"  [disabled]="varM2" placeholder="Ingrese los m2"  required></div>
+                                            </div>
+                                            <div class="row espacio">
+                                                <div class="col-md-4" style="text-align: left;">CAL</div>
+                                                <div class="col-md-8">  <input type="text" [(ngModel)]="catalogo2.CAL" name="CAL" class="form-control" placeholder="Opcional"  required></div>
+                                            </div>
+                                            <div class="row espacio">
+                                                <div class="col-md-4" style="text-align: left;">CASA</div>
+                                                <div class="col-md-8">  <input type="text" [(ngModel)]="catalogo2.CASA" name="CASA" class="form-control" placeholder="Opcional"  required></div>
+                                            </div>
+                                            <div class="row espacio">
+                                                <div class="col-md-4" style="text-align: left;">TIPO</div>
+                                                <div class="col-md-8">
+                                                    <dx-select-box [items]="menuTipo" 
+                                                    [(value)]="catalogo2.TIPO" 
+                                                    [readOnly]="false" 
+                                                    [disabled]="false"
+                                                    (onValueChanged)="asignarTipo($event)"
+                                                    ></dx-select-box>
+                                                </div>
+                                            </div>
+                                            <div class="row espacio">
+                                                <div class="col-md-4" style="text-align: left;">ORIGEN</div>
+                                                <div class="col-md-8">
+                                                    <dx-select-box [items]="menuOrigen" 
+                                                    [(value)]="catalogo2.ORIGEN" 
+                                                    [readOnly]="false" 
+                                                    [disabled]="false"
+                                                    (onValueChanged)="asignarOrigen($event)"
+                                                    ></dx-select-box></div>
+                                            </div>
+                                            <div class="row espacio">
+                                                <div class="col-md-4" style="text-align: left;">APLICACIÓN</div>
+                                                <div class="col-md-8">
+                                                    <dx-select-box [items]="aplicaciones" 
+                                                    [(value)]="catalogo2.APLICACION" 
+                                                    [readOnly]="false" 
+                                                    [disabled]="false"
+                                                    valueExpr="aplicacion" displayExpr="aplicacion"
+                                                    ></dx-select-box>  
+                                                    <!-- <dx-autocomplete
+                                                    [items]="aplicaciones" 
+                                                    valueExpr="aplicacion"
+                                                    [(value)]="catalogo2.APLICACION" 
+                                                    (onChange)="buscarUnidad($event)">
+                                                </dx-autocomplete> -->
+                                                </div>
+                                            </div>
+                                            <div class="row espacio">
+                                                <div class="col-md-4" style="text-align: left;">VIGENCIA</div>
+                                                <div class="col-md-8">  <input type="text" [(ngModel)]="catalogo2.VIGENCIA" name="VIGENCIA" class="form-control" placeholder="Opcional"  required></div>
+                                            </div>
+                                            <div class="row espacio">
+                                                <div class="col-md-4" style="text-align: left;">FECHA PRODUCCCIÓN </div>
+                                                <div class="col-md-8">  <input type="date" [(ngModel)]="catalogo2.FEC_PRODUCCION" name="CASA" class="form-control" placeholder="Opcional"  required></div>
+                                            </div>
+                                            <div class="row espacio">
+                                                <div class="col-md-4" style="text-align: left;">CANTIDAD MÍNIMA</div>
+                                                <div class="col-md-8">  <input type="number" [(ngModel)]="catalogo2.CANT_MINIMA" name="CANT_MINIMA" class="form-control" placeholder="Opcional"  required></div>
+                                            </div>
+                                            <div class="row espacio">
+                                                <div class="col-md-4" style="text-align: left;">ESTADO</div>
+                                                <div class="col-md-8">  
+                                                    <dx-select-box [items]="menuEstado" 
+                                                    [(value)]="catalogo2.ESTADO"
+                                                    [readOnly]="false" 
+                                                    [disabled]="false"
+                                                    (onValueChanged)="asignarEstado($event)"
+                                                    ></dx-select-box>
+                                                </div>
+                                            </div>
+                                                <div class="row espacio">
+                                                <div class="col-md-4" style="text-align: left;">NOTAS</div>
+                                                <div class="col-md-8">  <input type="text" [(ngModel)]="catalogo2.notas" name="Notas" class="form-control" placeholder="Notas"  required></div>
+                                            </div> 
+                                            <div class="row espacio">
+                                                <div class="col-md-12">Escoja las imágenes a subir (Tamaño recomendado : <strong>720px x 960px</strong>)</div>
+                                                <div class="col-md-12" style="text-align: left;">
+                                                    <label class="custom-file-label">
+                                                    <input type="file" multiple (change)="selectFiles($event)"  class="custom-file-input" id="inputGroupFile01"
+                                                    aria-describedby="inputGroupFileAddon01" />
+                                                    </label>
+                                                </div>
+                                                
+                                            </div>
+                                            <div id="nombreIM" style="display: none;">
+                                                <div class="row espacio">
+                                                    <div class="col-md-12">
+                                                        <br>
+                                                        Imágenes a subir 
+                                                        <div class="col-md-6" *ngFor="let d of selectedFiles">
+                                                            <div class="form-group">
+                                                                <label>{{ d.name }}</label>
+                                                                <!-- <span>{{ }}</span> -->
+                                                            </div>
+                                                        </div>
+                                                    </div>
+                                                </div>
+                                            </div>
+                                            <div class="row espacio">
+                                                <div class="col-md-12" style="text-align: left;">
+                                                <div class="alert alert-light" role="alert">{{ message }}</div>
+                                                <div *ngFor="let progressInfo of progressInfos">
+                                                    <span>{{ progressInfo.fileName }}</span>
+                                                    <div class="progress">
+                                                    <div class="progress-bar progress-bar-info progress-bar-striped" role="progressbar"
+                                                        attr.aria-valuenow="{{ progressInfo.value }}" aria-valuemin="0" aria-valuemax="100"
+                                                        [ngStyle]="{ width: progressInfo.value + '%' }">
+                                                        {{ progressInfo.value }}%
+                                                    </div>
+                                                    </div>
+                                                </div>
+                                                </div>
+                                                
+                                            </div>
+                                        </div>
+                                        <div class="col-md-1"></div>
+                                    </div> 
+                                    
+                                </div>
+                                <div class="col-md-12">
+                                    <div class="row">
+                                        <div class="col-md-4"></div>
+                                        <div class="col-md-4"><button class="btn btn2" type="button" (click)="uploadFiles()">Guardar</button></div>
+                                        
+                                        <div class="col-md-4"></div>
+                                    </div>
+                                </div>
+                                
+                            </div>
+                            
+                        </div>
+
+
+                        <div id="edit" style="display: none;">
+                            <div class="row" class="fomR">
+                                <div class="col-md-12">
+                                    <div class="row">
+                                        <div class="col-md-3"></div>
+                                        <div class="col-md-6" style="text-align: center;">
+                                            <div style="font-weight: bold;">PRODUCTO</div> 
+                                            <dx-autocomplete
+                                                [dataSource]="productosCatalogoActivos"
+                                                placeholder=""
+                                                valueExpr="PRODUCTO"
+                                                [(value)]= "producto"
+                                                (onChange)="buscarProducto($event)"
+                                                >
+                                            </dx-autocomplete></div>
+                                        <div class="col-md-3"></div>
+                                    </div>
+                                </div>
+                                <div class="col-md-12"> 
+                                    <div class="row">
+                                        <div class="col-md-1"></div>
+                                        <div class="col-md-10">
+                                            <div class="row espacio" >
+                                                <div class="col-md-4" style="text-align: left;">PRODUCTO<span class="obligat"> *</span></div>
+                                                <div class="col-md-8">  <input type="text" [(ngModel)]="catalogo2.PRODUCTO"  name="PRODUCTO" class="form-control" value="{{catalogo2.CLASIFICA}} - {{catalogo2.NOMBRE_PRODUCTO}} - {{catalogo2.DIM}}" disabled="true" autocomplete="producto" required></div>
+                                            </div>
+                                            <div class="row espacio" >
+                                                <div class="col-md-4" style="text-align: left;">NOMBRE PRODUCTO<span class="obligat"> *</span></div>
+                                                <div class="col-md-8">  <input type="text" [(ngModel)]="catalogo2.NOMBRE_PRODUCTO" name="PRODUCTO" class="form-control" disabled="true"  placeholder="Ingrese el producto" autocomplete="producto" required></div>
+                                            </div>
+                                            <div class="row espacio">
+                                                <div class="col-md-4" style="text-align: left;">CLASIFICACIÓN<span class="obligat"> *</span></div>
+                                                <div class="col-md-8" style="text-align: center;"  ><dx-autocomplete
+                                                    disabled="true"
+                                                    [items]="arrayClasif" 
+                                                    [(value)]="catalogo2.CLASIFICA" >
+                                                </dx-autocomplete></div>
+                                            </div>
+                                            
+                                            <div class="row espacio">
+                                                <div class="col-md-4" style="text-align: left;">REFERENCIA<span class="obligat"> *</span></div>
+                                                <div class="col-md-8">  <input type="text" [(ngModel)]="catalogo2.REFERENCIA" name="REFERENCIA" class="form-control" placeholder="Ingrese la referencia"  required></div>
+                                            </div>
+                                            <div class="row espacio">
+                                                <div class="col-md-4" style="text-align: left;">PRECIO<span class="obligat"> *</span></div>
+                                                <div class="col-md-8">  <input type="number" [(ngModel)]="catalogo2.precio" name="precio" class="form-control" placeholder="Ingrese el precio"  required></div>
+                                            </div>
+                                            <div class="row espacio">
+                                                <div class="col-md-4" style="text-align: left;">(%) GANANCIA<span class="obligat"> *</span></div>
+                                                <div class="col-md-8">  <input type="number" [(ngModel)]="catalogo2.porcentaje_ganancia" name="porcentaje_ganancia" class="form-control" placeholder="Ingrese el porcentaje de ganancia"  required></div>
+                                            </div>
+                                            <div class="row espacio">
+                                                <div class="col-md-4" style="text-align: left;">UNIDAD</div>
+                                                <div class="col-md-8" style="text-align: center;"><dx-autocomplete
+                                                    [items]="arrayUnid" 
+                                                    [(value)]="catalogo2.UNIDAD" 
+                                                    (onChange)="buscarUnidad($event)">
+                                                </dx-autocomplete></div>
+                                                
+                                            </div>
+                                            <div class="row espacio">
+                                                <div class="col-md-4" style="text-align: left;">DIM<span class="obligat"> *</span></div>
+                                                <div class="col-md-8">  <input type="text" [(ngModel)]="catalogo2.DIM" name="DIM" disabled="true" class="form-control" placeholder="Ingrese las dimensiones"  required></div>
+                                            </div>
+                                            <div class="row espacio">
+                                                <div class="col-md-4" style="text-align: left;">NOMBRE_COMERCIAL<span class="obligat"> *</span></div>
+                                                <div class="col-md-8">  <dx-autocomplete
+                                                    [items]="arrayNombreComercial" 
+                                                    [(value)]="catalogo2.NOMBRE_COMERCIAL" >
+                                                </dx-autocomplete></div>
+                                            </div>
+                                            <div class="row espacio">
+                                                <div class="col-md-4" style="text-align: left;">P_CAJAS<span class="obligat"> *</span></div>
+                                                <div class="col-md-8">  <input type="text" [(ngModel)]="catalogo2.P_CAJA" name="P_CAJA" disabled="true" class="form-control" [disabled]="varPC" placeholder="Ingrese los productos por caja"  required></div>
+                                            </div>
+                                            <div class="row espacio">
+                                                <div class="col-md-4" style="text-align: left;">M2<span class="obligat"> *</span></div>
+                                                <div class="col-md-8">  <input type="text" [(ngModel)]="catalogo2.M2" name="M2" disabled="true" class="form-control" [disabled]="varM2" placeholder="Ingrese los m2"  required></div>
+                                            </div>
+                                            <div class="row espacio">
+                                                <div class="col-md-4" style="text-align: left;">CAL</div>
+                                                <div class="col-md-8">  <input type="text" [(ngModel)]="catalogo2.CAL" name="CAL" class="form-control" placeholder="Ingrese la cal"  required></div>
+                                            </div>
+                                            <div class="row espacio">
+                                                <div class="col-md-4" style="text-align: left;">CASA</div>
+                                                <div class="col-md-8">  <input type="text" [(ngModel)]="catalogo2.CASA" name="CASA" class="form-control" placeholder="Ingrese la casa"  required></div>
+                                            </div>
+                                            <div class="row espacio">
+                                                <div class="col-md-4" style="text-align: left;">TIPO</div>
+                                                <div class="col-md-8">
+                                                    <dx-select-box [items]="menuTipo" 
+                                                    [(value)]="catalogo2.TIPO"
+                                                    [readOnly]="false" 
+                                                    [disabled]="false"
+                                                    (onValueChanged)="asignarTipo($event)"
+                                                    ></dx-select-box>
+                                                </div>
+                                            </div>
+                                            <div class="row espacio">
+                                                <div class="col-md-4" style="text-align: left;">ORIGEN</div>
+                                                <div class="col-md-8">
+                                                    <dx-select-box [items]="menuOrigen" 
+                                                    [(value)]="catalogo2.ORIGEN"
+                                                    [readOnly]="false" 
+                                                    [disabled]="false"
+                                                    (onValueChanged)="asignarOrigen($event)"
+                                                    ></dx-select-box></div>
+                                            </div>
+                                            <div class="row espacio">
+                                                <div class="col-md-4" style="text-align: left;">APLICACIÓN<span class="obligat"> *</span></div>
+                                                <div class="col-md-8">  
+                                                    <dx-select-box [items]="aplicaciones" 
+                                                    [(value)]="catalogo2.APLICACION" 
+                                                    [readOnly]="false" 
+                                                    [disabled]="false"
+                                                    valueExpr="aplicacion" displayExpr="aplicacion"
+                                                    ></dx-select-box> 
+                                                </div>
+                                            </div>
+                                            <div class="row espacio">
+                                                <div class="col-md-4" style="text-align: left;">VIGENCIA</div>
+                                                <div class="col-md-8">  <input type="text" [(ngModel)]="catalogo2.VIGENCIA" name="VIGENCIA" class="form-control" placeholder="Ingrese la vigencia"  required></div>
+                                            </div>
+                                            <div class="row espacio">
+                                                <div class="col-md-4" style="text-align: left;">FECHA PRODUCCCIÓN</div>
+                                                <div class="col-md-8">  <input type="date" [(ngModel)]="catalogo2.FEC_PRODUCCION" name="CASA" class="form-control" placeholder="Ingrese la casa"  required></div>
+                                            </div>
+                                            <div class="row espacio">
+                                                <div class="col-md-4" style="text-align: left;">CANTIDAD MÍNIMA</div>
+                                                <div class="col-md-8">  <input type="number" [(ngModel)]="catalogo2.CANT_MINIMA" name="CANT_MINIMA" class="form-control" placeholder="Ingrese la cantidad mínima"  required></div>
+                                            </div>
+                                            <div class="row espacio">
+                                                <div class="col-md-4" style="text-align: left;">ESTADO</div>
+                                                <div class="col-md-8">  
+                                                    <dx-select-box [items]="menuEstado" 
+                                                    [(value)]="catalogo2.ESTADO"
+                                                    [readOnly]="false" 
+                                                    [disabled]="false"
+                                                    (onValueChanged)="asignarEstado($event)"
+                                                    ></dx-select-box>
+                                                </div>
+                                            </div>
+                                            <div class="row espacio">
+                                                <div class="col-md-4" style="text-align: left;">NOTAS</div>
+                                                <div class="col-md-8">  <input type="text" [(ngModel)]="catalogo2.notas" name="Notas" class="form-control" placeholder="Opcional"  required></div>
+                                            </div> 
+                                            <div class="row espacio">
+                                                <div class="col-md-12" style="text-align: center;font-weight: bold; font-size: 1.2em;">Fotos del producto</div>
+                                                <div class="row">
+                                                    <div class="col-md-3" *ngFor="let d of catalogo2.IMAGEN; let id = index">
+                                                        
+                                                            <img src="{{ d }}"  width="100%" height="auto">
+                                                            <button class="btn btn6" type="button" (click)="deleteImagen(id)">Eliminar</button>
+                                                            
+                                                        
+                                                        
+                                                        
+                                                    </div>   
+                                                </div>
+                                            </div>
+                                            <div class="row espacio">
+                                                <div class="col-md-12">Escoja las imágenes a subir (Tamaño recomendado : <strong>720px x 960px</strong>)</div>
+                                                <div class="col-md-12" style="text-align: left;">
+                                                    <label class="custom-file-label">
+                                                    <input type="file" multiple (change)="selectFiles2($event)"  class="custom-file-input" id="inputGroupFile01"
+                                                    aria-describedby="inputGroupFileAddon01" />
+                                                    </label>
+                                                </div>
+                                                
+                                            </div>
+                                            <div id="nombreIM2" style="display: none;">
+                                                <div class="row espacio">
+                                                    <div class="col-md-12">
+                                                        <br>
+                                                        Imágenes a subir 
+                                                        <div class="col-md-6" *ngFor="let d of selectedFiles">
+                                                            <div class="form-group">
+                                                                <label>{{ d.name }}</label>
+                                                                <!-- <span>{{ }}</span> -->
+                                                            </div>
+                                                        </div>
+                                                    </div>
+                                                </div>
+                                            </div>
+                                            <div class="row espacio">
+                                                <div class="col-md-12" style="text-align: left;">
+                                                <div class="alert alert-light" role="alert">{{ message }}</div>
+                                                <div *ngFor="let progressInfo of progressInfos">
+                                                    <span>{{ progressInfo.fileName }}</span>
+                                                    <div class="progress">
+                                                    <div class="progress-bar progress-bar-info progress-bar-striped" role="progressbar"
+                                                        attr.aria-valuenow="{{ progressInfo.value }}" aria-valuemin="0" aria-valuemax="100"
+                                                        [ngStyle]="{ width: progressInfo.value + '%' }">
+                                                        {{ progressInfo.value }}%
+                                                    </div>
+                                                    </div>
+                                                </div>
+                                                </div>
+                                                
+                                            </div>
+
+                                        </div>
+                                        <div class="col-md-1"></div>
+                                    </div>
+                                    
+                                </div>
+                                <div class="col-md-12">
+                                    <div class="row">
+                                        <div class="col-md-3"></div>
+                                        <div class="col-md-3"><button class="btn btn2" type="button" (click)="updateProducto()">Actualizar</button></div>
+                                        <div class="col-md-3"><button class="btn btn2" type="button" (click)="deleteProducto()">Eliminar</button></div>
+                                        <div class="col-md-3"></div>
+                                    </div>
+                                </div>
+                                
+                            </div>
+                            
+                        </div>
+
+                        <div id="delete" style="display: none;">
+                            <div style="text-align: center;">
+                                <h4>Productos Eliminados</h4>
+                            </div>
+                            
+                            <dx-data-grid id="gridContainer"
+                                [dataSource]="productosCatalogoElim"
+                                [columnAutoWidth]="true"
+                                [showBorders]="true"
+                                rowTemplate="rowTemplateName"
+                                (onExporting)="onExporting($event)"
+                                (onExported)="onExported($event)">
+                                <dxo-filter-row [visible]="true" ></dxo-filter-row>
+                                <dxo-search-panel [visible]="true" [width]="240" placeholder="Buscar..."></dxo-search-panel>
+                                <dxo-export [enabled]="true" fileName="catalogo" [allowExportSelectedData]="true"></dxo-export>
+                                <dxi-column caption="Imagen" width="15%" [allowFiltering]="false" [allowSorting]="false"></dxi-column>
+                                <dxi-column dataField="PRODUCTO" width="40%" caption="Producto" style="text-align: center;"></dxi-column>
+                                <dxi-column dataField="CLASIFICA" width="15%" caption="Clasificación"></dxi-column>
+                                <dxi-column dataField="P_CAJA" width="15%" caption="Piezas * Caja" [visible]="false"></dxi-column>
+                                <dxi-column dataField="M2" width="15%" caption="Metros * Caja" [visible]="false"></dxi-column>
+                                <dxi-column dataField="DIM" width="10%" caption="Dimensión"></dxi-column>
+
+                                <dxi-column dataField="UNIDAD" caption="Unidad" [visible]="false"></dxi-column>
+                                <dxi-column dataField="CAL"  caption="Cal" [visible]="false"></dxi-column>
+                                <dxi-column dataField="CASA" caption="Casa" [visible]="false"></dxi-column>
+                                <dxi-column dataField="TIPO" caption="Tipo" [visible]="false"></dxi-column>
+                                <dxi-column dataField="ORIGEN" caption="Origen" [visible]="false"></dxi-column>
+                                <dxi-column dataField="ESTADO" caption="Estado" [visible]="false"></dxi-column>
+                                <dxi-column dataField="bt" caption="Restaurar" [visible]="true"></dxi-column>
+                                <dxi-column dataField="bt" caption="Eliminar" [visible]="true"></dxi-column>
+                            
+                                <!-- <dxi-column type="buttons" dataField="bt1"  caption="Ver" width="10%">
+                                </dxi-column> -->
+                            
+
+                                <tbody class="employee dx-row"  *dxTemplate="let employee of 'rowTemplateName'" >
+                                    <tr class="main-row">
+                                    <td rowspan="2" class="imgProducto" style="text-align: center;"><button (click)="mostrarPopup2(employee.data.PRODUCTO)" class="btIm"><img class="imgProducto" [src]="employee.data.IMAGEN_PRINCIPAL"></button>
+                                    </td>
+                                        <td style="vertical-align: middle;" >{{employee.data.PRODUCTO}}</td>
+                                        <!-- <td style="font-size: 1.5em;text-align: center;font-weight: bold;">{{employee.data.CLASIFICA}}</td> -->
+                                        <td style="vertical-align: middle;">{{employee.data.CLASIFICA}}</td>
+                                        <td style="vertical-align: middle;text-align: center;">{{employee.data.DIM}}</td>
+                                        <td style="vertical-align: middle;text-align: center;"><button class="btn btn10" (click)="restaurar(employee.data.PRODUCTO)"><i class="fa fa-repeat"></i></button></td>
+                                        <td style="vertical-align: middle;text-align: center;"><button class="btn btn4" (click)="eliminarProducto(employee.data.PRODUCTO)"><i class="fa fa-trash"></i></button></td>
+                                </tbody>
+                                <dxo-paging [pageSize]="12"></dxo-paging>
+                                <dxo-pager
+                                    [showPageSizeSelector]="true"
+                                    [allowedPageSizes]="[8, 15, 20]"
+                                ></dxo-pager>
+                            </dx-data-grid>
+
+                            <dx-popup
+            [width]="660"
+            [height]="540"
+            [showTitle]="true"
+            [title]="titulo"
+            [closeOnOutsideClick]="true"
+            [(visible)]="popupvisible2">
+            <div *dxTemplate="let data of 'content'">
+                <dx-scroll-view width="100%" height="100%">
+                <div class='popup-property-details'>
+                    <div class="col-md-12">
+                        <div class="row">
+                            <div class="col-md-2"></div>
+                            <div class="col-md-8 " id="gal" ><dx-gallery #gallery
+                                id="gallery"
+                                [dataSource]="imagenes"
+                                [height]="300"
+                                [loop]="true"
+                                [showNavButtons]="true"
+                                [showIndicator]="true"
+                            ></dx-gallery></div>
+                            <div class="col-md-2"></div>
+                        </div>
+                        <!--  <div class="col-md-12" style="text-align: center;">
+                            <button class="btn btn-primary " style="background-color: #ff4500;"  (click)="verGaleria(imagenes)" >Ver Galería
+                            </button>
+                        </div> -->
+                    </div>
+                    <br><br>
+                    <div class="col-md-12">
+                        <div class="row">
+                            <div class="col-md-1"></div>
+                            <div class="col-md-10">
+                                <table style="width:100%">
+                                    <tr>
+                                        <th>PRODUCTO</th>
+                                        <td>{{catalogoLeido.PRODUCTO}}</td>
+                                    </tr>
+                                    <tr>
+                                        <th>CLASIFICACIÓN</th>
+                                        <td>{{catalogoLeido.CLASIFICA}}</td>
+                                    </tr>
+                                    <tr>
+                                        <th>REFERENCIA</th>
+                                        <td>{{catalogoLeido.REFERENCIA}}</td>
+                                    </tr>
+                                    <tr>
+                                        <th>UNIDAD</th>
+                                        <td>{{catalogoLeido.UNIDAD}}</td>
+                                    </tr>
+                                    <tr>
+                                        <th>DIMENSIONES</th>
+                                        <td>{{catalogoLeido.DIM}}</td>
+                                    </tr>
+                                    <tr>
+                                        <th>NOMBRE COMERCIAL</th>
+                                        <td>{{catalogoLeido.NOMBRE_COMERCIAL}}</td>
+                                    </tr>
+                                    <tr>
+                                        <th>P_CAJA</th>
+                                        <td>{{catalogoLeido.P_CAJA}}</td>
+                                    </tr>
+                                    <tr>
+                                        <th>M2</th>
+                                        <td>{{catalogoLeido.M2}}</td>
+                                    </tr>
+                                    <tr>
+                                        <th>CAL</th>
+                                        <td>{{catalogoLeido.CAL}}</td>
+                                    </tr>
+                                    <tr>
+                                        <th>CASA</th>
+                                        <td>{{catalogoLeido.CASA}}</td>
+                                    </tr>
+                                    <tr>
+                                        <th>TIPO</th>
+                                        <td>{{catalogoLeido.TIPO}}</td>
+                                    </tr>
+                                    <tr>
+                                        <th>ORIGEN</th>
+                                        <td>{{catalogoLeido.ORIGEN}}</td>
+                                    </tr>
+                                    <tr>
+                                        <th>ESTADO</th>
+                                        <td>{{catalogoLeido.ESTADO}}</td>
+                                    </tr>
+                                    </table>
+                            </div>
+                            <div class="col-md-1"></div>
+                        </div>
+                    </div>
+                </div>
+            </dx-scroll-view>
+            </div>
+        </dx-popup>
+                        </div>
+                    </div>
+                    
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+
+
+
+<div id="combos" style="display: none;">
+
+    <div class="row">
+        <div class="col-md-7"></div>
+        <div class="col-md-5">
+            <div class="dx-field radio">
+                <div class="dx-field-value">
+                    <dx-radio-group
+                    [items]="tiposComprobantes"
+                    [(value)]="tipoComprobante"
+                    layout="horizontal"
+                    (onValueChanged)="opcionRadioTipos($event)">
+                    </dx-radio-group>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <div class="card mb-3" *ngIf="seccionNuevoCombo">
+        <h5 class="card-header text-center font-weight-bold text-uppercase ">Combo de Productos</h5>
+        <div class="card-body">
+            <div class="row">
+                <div class="col-md-12">
+                    <div class="row">
+                        <div class="col-md-12" >
+                            <div class="row">
+                                <div class="col-md-12" style="text-align: center;font-weight: bold;"><h5>NUEVO COMBO</h5></div>
+                            </div>
+                            
+                            <div class="row">
+                                <div class="col-md-1"></div>
+                                <div class="col-md-10">
+                                    <div class="row espacio" >
+                                        <div class="col-md-3" style="text-align: left;">PRODUCTO</div>
+                                        <div class="col-md-7">  <input type="text" [(ngModel)]="catalogo4.PRODUCTO"  name="PRODUCTO" class="form-control" value="{{catalogo4.CLASIFICA}} - {{catalogo4.NOMBRE_PRODUCTO}}" disabled="true" autocomplete="producto" required></div>
+                                        <div class="col-md-2" class="precioC">$ {{precioVentaCombo}}</div>
+                                    </div>
+                                    <div class="row espacio" >
+                                        <div class="col-md-3" style="text-align: left;">NOMBRE COMBO</div>
+                                        <div class="col-md-9">  <input type="text" [(ngModel)]="catalogo4.NOMBRE_PRODUCTO" name="PRODUCTO" class="form-control"   placeholder="Ingrese el nombre del combo" autocomplete="producto" required></div>
+                                    </div>
+                                    <div style="text-align: right;">
+                                        <dx-button [text]="'Agregar'" [type]="'success'" style="background-color: #ff5722;" (onClick)="anadirProducto($event)"></dx-button>              
+                                    </div>
+                                    <table class="table table-bordered table-responsive-md table-striped text-center" id="tabla1" >
+                                        <tr>
+                                        <th class="text-center" style="width: 9%;">Cantidad</th>
+                                        <th class="text-center" style="width: 40%;">Producto</th>
+                                        <th class="text-center" style="width: 9%;">Costo</th>
+                                        <th class="text-center" style="width: 9%;">P.Min.</th>
+                                        <th class="text-center" style="width: 9%;">P.Combo</th>
+                                        <th class="text-center" style="width: 9%;">Calculo(%)</th>
+                                        <th class="text-center" style="width: 9%;">P.Venta</th>
+                                        <th class="text-center" style="width: 6%;">Elim</th>
+                                        </tr>
+                                        
+                                        <tr *ngFor="let producto of productosCombo; let id = index">
+                                        <td>
+                                            <dx-number-box [(value)]="producto.cantidad" [disabled]="false" (onValueChanged)="calcularIncremento($event, id)" [readOnly]="false"></dx-number-box>
+                                        </td>
+                                        <td>
+                                            <dx-select-box
+                                                [dataSource]="productos22"
+                                                displayExpr="PRODUCTO"
+                                                [searchEnabled]="true"
+                                                valueExpr="PRODUCTO"
+                                                [(value)]="producto.nombreProducto"
+                                                (onValueChanged)="obtenerDatosDeProductoParaUnDetalle($event, id)"
+                                                itemTemplate="item">
+                                                <div *dxTemplate="let data of 'item'">
+                                                    <div style="display:inline-block;font-size: 0.8rem;">{{data.PRODUCTO}}</div>
+                                                </div>
+                                            </dx-select-box>
+                                        </td>
+                                        <td>
+                                            <dx-number-box [(value)]="producto.costo" [disabled]="false" [readOnly]="true"></dx-number-box>
+                                        </td>
+                                        <td>
+                                            <dx-number-box [(value)]="producto.precioMin" [disabled]="false" [readOnly]="true"></dx-number-box>
+                                        </td>
+                                        <td>
+                                            <dx-number-box [(value)]="producto.precioCombo" [disabled]="false" (onValueChanged)="calcularIncremento($event, id)" [readOnly]="false"></dx-number-box>
+                                        </td>
+                                        <td>
+                                            <dx-number-box [(value)]="producto.calculo" [disabled]="false" [readOnly]="true"></dx-number-box>
+                                        </td>
+                                        <td>
+                                            <dx-number-box [(value)]="producto.precioVenta" [disabled]="false" [readOnly]="true"></dx-number-box>
+                                        </td>
+                                        <td>
+                                            <!--  <dx-button icon="clear" color="white" class="bt" (onClick)="deleteProductoCombo(id)"></dx-button>  -->
+                                            <button class="btn btn-primary btn-xs" class="bt" (click)="deleteProductoCombo(id)" >
+                                                <i class="fa fa-trash"></i>
+                                            </button>
+                                        </td>
+
+                                        </tr> 
+                                    </table>
+                                </div>
+                                <div class="col-md-1"></div>
+                            </div>
+                      
+                            <div style="text-align: center;">
+                                <dx-button [text]="'Guardar'" [type]="'success'" [disabled]="bloquearBoton" style="background-color: #ff5722;" (onClick)="guardarComboProductos()"></dx-button>              
+                            </div>
+                        </div>                            
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <div *ngIf="seccionListaCombos">
+        <dx-data-grid #datag2
+            id="gridContainer"
+            [dataSource]="combosDeProductos"
+            [showBorders]="true"
+            (onExporting)="onExporting($event)"
+            (onExported)="onExported($event)">
+            <dxo-filter-row [visible]="true" ></dxo-filter-row>
+            <dxo-export [enabled]="true" fileName="Combos_Productos" [allowExportSelectedData]="true"></dxo-export>
+            <dxo-search-panel [visible]="true" [width]="240" placeholder="Buscar..."></dxo-search-panel>
+            <dxi-column dataField="createdAt" dataType="date" format="dd/MM/yyyy" sortOrder="desc"  [visible]="false"></dxi-column>
+            <dxi-column dataField="PRODUCTO" caption="Nombre"  dataType="string" width="50%"></dxi-column>
+            <dxi-column dataField="cantidadProductos" caption="Cant.Productos" width="15%" dataType="number"></dxi-column>
+            <dxi-column dataField="precio" caption="Precio" width="15%" dataType="number"></dxi-column>
+
+           <dxi-column type="buttons" dataField="bt1" caption="Ver Productos" width="10%">
+                <dxi-button icon="fa fa-eye" [onClick]="verProductos"></dxi-button>   
+            </dxi-column>
+            <dxi-column type="buttons" dataField="bt2" caption="Editar" width="10%" [visible]="true">
+                <dxi-button icon="fa fa-pencil-square-o" [onClick]="editarCombo"></dxi-button>   
+            </dxi-column>
+            <dxi-column type="buttons" dataField="bt2" caption="Eliminar" width="10%" [visible]="true">
+                <dxi-button icon="fa fa-trash" [onClick]="eliminarCombo"></dxi-button>   
+            </dxi-column>
+
+            <dxo-paging [pageSize]="12"></dxo-paging>
+            <dxo-pager
+                [showPageSizeSelector]="true"
+                [allowedPageSizes]="[8, 12, 20]"
+            ></dxo-pager>
+        </dx-data-grid>
+    </div>
+</div>
+
+
+<dx-popup [width]="700" [height]="500" [showTitle]="true" title="{{nombreCombo}}" [dragEnabled]="false"
+    [closeOnOutsideClick]="true" [(visible)]="popupVisibleProductos">
+    <div *dxTemplate="let data of 'content'">
+        <dx-scroll-view width="100%" height="100%">
+            <div style="text-align: center;">
+                <h5>Productos</h5>
+            </div>
+            
+            <dx-data-grid #datag2
+                id="gridContainer"
+                [dataSource]="productosComboLeidos"
+                [showBorders]="true">
+                <dxi-column dataField="cantidad" dataType="number" width="20%"></dxi-column>
+                <dxi-column dataField="nombreProducto" caption="Producto"  dataType="string" width="60%"></dxi-column>
+                <dxi-column dataField="precioVenta" caption="Precio" width="20%" dataType="number"></dxi-column>
+
+                <dxo-paging [pageSize]="12"></dxo-paging>
+                <dxo-pager
+                    [showPageSizeSelector]="true"
+                    [allowedPageSizes]="[8, 12, 20]"
+                ></dxo-pager>
+            </dx-data-grid>
+       
+    </dx-scroll-view>
+    </div>
+</dx-popup>
+
+
+
+
+
+<dx-popup [width]="950" [height]="500" [showTitle]="true" title="{{nombreCombo}}" [dragEnabled]="false"
+    [closeOnOutsideClick]="true" [(visible)]="popupVisibleEdicion">
+    <div *dxTemplate="let data of 'content'">
+        <dx-scroll-view width="100%" height="100%">
+            <div class="row">
+                <div class="col-md-1"></div>
+                <div class="col-md-10">
+                    <div class="row espacio" >
+                        <div class="col-md-3" style="text-align: left;">PRODUCTO</div>
+                        <div class="col-md-7">  <input type="text" [(ngModel)]="comboProductoLeido.PRODUCTO"  name="PRODUCTO" class="form-control" value="{{catalogo4.CLASIFICA}} - {{catalogo4.NOMBRE_PRODUCTO}}" disabled="true" autocomplete="producto" required></div>
+                        <div class="col-md-2" class="precioC">$ {{precioVentaCombo}}</div>
+                    </div>
+                  
+                    <br>
+                   
+                    <table class="table table-bordered table-responsive-md table-striped text-center" id="tabla1" >
+                        <tr>
+                        <th class="text-center" style="width: 9%;">Cantidad</th>
+                        <th class="text-center" style="width: 40%;">Producto</th>
+                        <th class="text-center" style="width: 9%;">Costo</th>
+                        <th class="text-center" style="width: 9%;">P.Min.</th>
+                        <th class="text-center" style="width: 9%;">P.Combo</th>
+                        <th class="text-center" style="width: 9%;">Calculo(%)</th>
+                        <th class="text-center" style="width: 9%;">P.Venta</th>
+                        <th class="text-center" style="width: 6%;">Elim</th>
+                        </tr>
+                        
+                        <tr *ngFor="let producto of productosComboLeidos; let id = index">
+                        <td>
+                            <dx-number-box [(value)]="producto.cantidad" [disabled]="false" (onValueChanged)="calcularIncremento2($event, id)" [readOnly]="false"></dx-number-box>
+                        </td>
+                        <td>
+                            {{producto.nombreProducto}}
+                        </td>
+                        <td>
+                            <dx-number-box [(value)]="producto.costo" [disabled]="false" [readOnly]="true"></dx-number-box>
+                        </td>
+                        <td>
+                            <dx-number-box [(value)]="producto.precioMin" [disabled]="false" [readOnly]="true"></dx-number-box>
+                        </td>
+                        <td>
+                            <dx-number-box [(value)]="producto.precioCombo" [disabled]="false" (onValueChanged)="calcularIncremento2($event, id)" [readOnly]="false"></dx-number-box>
+                        </td>
+                        <td>
+                            <dx-number-box [(value)]="producto.calculo" [disabled]="false" [readOnly]="true"></dx-number-box>
+                        </td>
+                        <td>
+                            <dx-number-box [(value)]="producto.precioVenta" [disabled]="false" [readOnly]="true"></dx-number-box>
+                        </td>
+                        <td>
+                            <button class="btn btn-primary btn-xs" class="bt" (click)="deleteProductoCombo2(id)" >
+                                <i class="fa fa-trash"></i>
+                            </button>
+                        </td>
+
+                        </tr> 
+                    </table>
+                </div>
+                <div class="col-md-1"></div>
+            </div>
+        
+            <div style="text-align: center;">
+                <dx-button [text]="'Actualizar'" [type]="'success'" [disabled]="bloquearBoton" style="background-color: #ff5722;" (onClick)="updateCombo()"></dx-button>              
+            </div>
+       
+    </dx-scroll-view>
+    </div>
+</dx-popup>

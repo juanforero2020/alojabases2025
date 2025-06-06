@@ -1,0 +1,62 @@
+.productos{
+    position: absolute;
+    margin-top: 155px;
+    height: 180px;
+}
+
+dx-form{
+    position: absolute;
+}
+
+.altura{
+    max-height: 30px;
+    margin-bottom: 5px;
+}
+
+
+
+.dx-theme-material-typography h5 {
+    //font-weight: 400;
+    font-size: 10px;
+  }
+
+  .fondobt{
+    background-color: transparent;
+    border-color: transparent;
+    color: red;
+}
+
+.row{
+    margin-bottom: 5px;
+}
+
+.form{
+    width: 100% !important;
+}
+
+.titlesCurrency{
+    margin-top: 10px;
+    margin-bottom: -12px;
+}
+
+.dx-button.dx-button-success{
+    background-color: darkseagreen;
+}
+
+.dx-button{
+    margin-right: 15px;
+}
+
+.contenedorProductos{
+    margin-right: 50px;
+    text-align: center;
+}
+
+.contenedorPrincipal{
+    padding: 2em;
+}
+
+::ng-deep .dx-theme-material-typography h2 {
+    font-weight: bold;
+    font-size: 40px;
+}

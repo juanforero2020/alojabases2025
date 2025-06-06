@@ -1,0 +1,20 @@
+@import "../../../../themes/generated/variables.base.scss";
+
+.login-header {
+  text-align: center;
+  margin-bottom: 40px;
+
+  .title {
+    color: $base-accent;
+    font-weight: bold;
+    font-size: 30px;
+    margin: 0;
+  }
+}
+
+.login-footer{
+  text-align: center;
+  font-size: 0.6rem;
+  font-weight: bold;
+  color: red;
+}

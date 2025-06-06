@@ -1,0 +1,571 @@
+
+
+
+<br><br>
+
+<div class="row remiPro" *ngIf="!isUser">
+    <div class="col-md-8"></div>
+    <div class="col-md-4"> 
+        <dx-select-box [items]="menu" 
+        [value]="menu[0]" 
+        [readOnly]="false" 
+        [disabled]="false"
+        class="form-control select"
+        (onValueChanged)="opcionMenu($event)"
+        ></dx-select-box>
+    </div>
+</div>
+
+<div *ngIf="mostrarLoadingBase">
+  <app-loading-messagge [messagge]="mensajeLoading"></app-loading-messagge>
+</div>
+
+
+<br><br>
+<div class="row" *ngIf="newRecibo">
+    <div class="col-md-1"></div>
+    <div class="col-md-10">
+        <div class="row">
+            <div class="col-md-3"></div>
+            <div class="col-md-12">
+                <div class="dx-field radio">
+                    <div class="dx-field-value">
+                        <dx-radio-group
+                        [items]="tiposRecibo"
+                        [(value)]="tipoRecibo"
+                        layout="horizontal"
+                        (onValueChanged)="opcionRadioTipos($event)">
+                        </dx-radio-group>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <div class="row">
+            <div class="col-md-6"></div>
+            <div class="col-md-4"></div>
+            <div class="col-md-2 btnSearch" style="text-align: right;">
+                <button class="btn btn-block btn-success" style="background-color: #ff5722;border-color: #ff5722;" (click)="mostrarPopupNotas()">Notas</button>
+            </div>
+        </div>
+
+        <br>
+
+        
+        <div *ngIf="seccionPrestamo">
+            <app-recibo-caja-prestamos></app-recibo-caja-prestamos>
+        </div>
+        <div class="card" *ngIf="!seccionPrestamo">
+            <h5 class="card-header text-center font-weight-bold text-uppercase ">RECIBO DE CAJA</h5>
+            <div class="card-body">
+                <div class="row">
+                    <div class="col-md-9">
+                        <div class="row">
+                            <div class="col-md-6">
+                                <div class="row espacioDivs">
+                                    <div class="col-md-4">Fecha:</div>
+                                    <div class="col-md-8 dateB"><dx-date-box [(value)]="reciboCaja.fecha" type="date"></dx-date-box></div>
+
+                                    <div class="col-md-4" *ngIf="!isFacturacion">Tipo Búsqueda:</div>
+                                    <div class="col-md-8" *ngIf="!isFacturacion">
+                                        <dx-select-box [items]="tiposBusqueda" 
+                                                [(value)]="valorTipoBusqueda"
+                                                [searchEnabled]="true"
+                                                [readOnly]="false" 
+                                                (onValueChanged)="asignarValorBusqueda($event)"
+                                                [disabled]="false">
+                                        </dx-select-box>
+                                    </div>
+
+                                    <div class="col-md-4" *ngIf="!isFacturacion && mostrarCliente"> Cliente :</div>
+                                    <div class="col-md-8" *ngIf="!isFacturacion && mostrarCliente">
+                                        <dx-autocomplete #data2
+                                            [dataSource]="clientes"
+                                            [(value)]="nombre_cliente"
+                                            valueExpr="cliente_nombre"
+                                            (onChange)="setClienteData($event)">
+                                        </dx-autocomplete>
+                                    </div>
+
+                                    <div class="col-md-4" *ngIf="!isFacturacion && !mostrarCliente">Documento:</div>
+                                    <div class="col-md-8" *ngIf="!isFacturacion && !mostrarCliente"><dx-text-box [(value)]="valorDocumento" (onChange)="setClienteData($event)" [readOnly]="isReadOnly" [disabled]="isNormal"></dx-text-box></div>
+
+
+                                    <div class="col-md-4" *ngIf="!isFacturacion">Registros:</div>
+                                    <div class="col-md-8" *ngIf="!isFacturacion">
+                                        <dx-select-box [items]="datosDocumento" 
+                                                displayExpr="textoCombo"
+                                                [searchEnabled]="true"
+                                                [readOnly]="false" 
+                                                hint={{textoDatosFactura}}
+                                                (onValueChanged)="asignarDatos($event)"
+                                                [disabled]="isNormal">
+                                        </dx-select-box>
+                                    </div>
+
+                                    <div class="col-md-4" *ngIf="isFacturacion">Doc. Venta:</div>
+                                    <div class="col-md-8" *ngIf="isFacturacion"><dx-text-box [(value)]="documentoVenta" [readOnly]="isReadOnly" [disabled]="isNormal"></dx-text-box></div>
+
+                                    <div class="col-md-4" *ngIf="isFacturacion">Tipo Doc:</div>
+                                    <div class="col-md-8" *ngIf="isFacturacion">
+                                        <dx-select-box [items]="tipoDocumentos" 
+                                                [(value)]="reciboCaja.tipoDoc"
+                                                [searchEnabled]="true"
+                                                [readOnly]="false" 
+                                                (onValueChanged)="traerDocumentosPorTipo($event,2)"
+                                                [disabled]="isNormal">
+                                        </dx-select-box>
+                                    </div>
+
+                                    <div class="col-md-4" *ngIf="isFacturacion">Relación Doc.:</div>
+                                    <div class="col-md-8" *ngIf="isFacturacion">
+                                        <dx-select-box [items]="datosDocumento" 
+                                                displayExpr="textoCombo"
+                                                [searchEnabled]="true"
+                                                [readOnly]="false" 
+                                                hint={{textoDatosFactura}}
+                                                (onValueChanged)="asignarDatos($event)"
+                                                [disabled]="isNormal">
+                                        </dx-select-box>
+                                    </div>
+
+                                    
+
+                                    <div class="col-md-4">Sucursal:</div>
+                                    <div class="col-md-8">
+                                        <dx-select-box [items]="arraySucursales" 
+                                            [(value)]="reciboCaja.sucursal" 
+                                            [readOnly]="isReadOnly"
+                                            [disabled]="false">
+                                        </dx-select-box>
+                                    </div>
+                                </div>
+                            </div>
+
+                            <div class="col-md-6">
+                                <div class="row espacioDivs">
+                                    <div class="col-md-4">Cliente:</div>
+                                    <div class="col-md-8"><dx-text-box [(value)]="reciboCaja.cliente" [readOnly]="isReadOnly"></dx-text-box></div>
+
+                                    <div class="col-md-4">RUC:</div>
+                                    <div class="col-md-8"><dx-text-box [(value)]="reciboCaja.ruc" [readOnly]="isReadOnly"></dx-text-box></div>
+
+                                    <div class="col-md-4">Tipo Pago:</div>
+                                    <div class="col-md-8"><dx-text-box [(value)]="reciboCaja.tipoPago" [readOnly]="false"></dx-text-box></div>
+
+                                    <div class="col-md-4">Num. Doc:</div>
+                                    <div class="col-md-8"><dx-text-box [(value)]="reciboCaja.numDocumento" [readOnly]="false"></dx-text-box></div>
+
+                                    <div class="col-md-4">Banco:</div>
+                                    <div class="col-md-8"><dx-text-box [(value)]="reciboCaja.banco" [readOnly]="false"></dx-text-box></div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="col-md-3">
+                        <div style="text-align: center;">CONSECUTIVO</div>
+                        <div style="text-align: center;font-size: 4rem;margin-top: -1rem;">{{reciboCaja.idDocumento}}</div>
+                    </div>
+                </div>
+
+                
+                <div style="text-align: right;">
+                    <dx-button [text]="'Agregar'" [type]="'success'" style="background-color: #ff5722;" (onClick)="addElement()"></dx-button>              
+                </div>
+                
+                <div class="card cardPadding">
+                    <div class="espacioDivs2 espacioSelect">
+                        <div *ngFor="let p of listadoOperaciones;let i = index" style="text-align: center;margin-top: 1em;">
+                            <div class="row">
+                                <div class="col-md-4"> 
+                                    <div class="row">
+                                        <div class="col-md-4">Cuenta</div>
+                                        <div class="col-md-8">
+                                            <dx-select-box [items]="listaCuentas" 
+                                                displayExpr="nombre"
+                                                [(value)]="p.idCuenta"
+                                                [searchEnabled]="true"
+                                                valueExpr="_id"
+                                                [readOnly]="false" 
+                                                (onValueChanged)="traersubCuentas($event,i)"
+                                                [disabled]="false">
+                                            </dx-select-box>
+                                        </div>
+                                    </div>
+                                </div>
+
+                                <div class="col-md-4" *ngIf="i==0"> 
+                                    <div class="row">
+                                        <div class="col-md-4">SubCuenta</div>
+                                        <div class="col-md-8">
+                                            <dx-select-box [items]="listaSubCuentas" 
+                                                displayExpr="nombre"
+                                                 [(value)]="p.idSubCuenta"
+                                                [searchEnabled]="true"
+                                                valueExpr="_id"
+                                                [readOnly]="false" 
+                                                [disabled]="false">
+                                            </dx-select-box>
+                                        </div>
+                                    </div>
+                                </div>
+
+                                <div class="col-md-4" *ngIf="i==1"> 
+                                    <div class="row">
+                                        <div class="col-md-4">SubCuenta</div>
+                                        <div class="col-md-8">
+                                            <dx-select-box [items]="listaSubCuentas2" 
+                                                displayExpr="nombre"
+                                                 [(value)]="p.idSubCuenta"
+                                                [searchEnabled]="true"
+                                                valueExpr="_id"
+                                                [readOnly]="false" 
+                                                [disabled]="false">
+                                            </dx-select-box>
+                                        </div>
+                                    </div>
+                                </div>
+
+                                <div class="col-md-4" *ngIf="i==2"> 
+                                    <div class="row">
+                                        <div class="col-md-4">SubCuenta</div>
+                                        <div class="col-md-8">
+                                            <dx-select-box [items]="listaSubCuentas3" 
+                                                displayExpr="nombre"
+                                                 [(value)]="p.idSubCuenta"
+                                                [searchEnabled]="true"
+                                                valueExpr="_id"
+                                                [readOnly]="false" 
+                                                [disabled]="false">
+                                            </dx-select-box>
+                                        </div>
+                                    </div>
+                                </div>
+
+                                <div class="col-md-4"> 
+                                    <div class="row">
+                                        <div class="col-md-4">Valor</div>
+                                        <div class="col-md-4">
+                                        <dx-number-box [(value)]="p.valor" (onChange)="calcularTotal($event)" ></dx-number-box>
+                                        </div>
+                                        <div class="col-md-4"><dx-button icon="clear" (onClick)="eliminarRegistro(i)" ></dx-button></div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                
+
+                <br><br>
+
+                <div class="row">
+                    <div class="col-md-6">
+                        <br><br>
+                        Observaciones:
+                        <br>
+                        <dx-text-area [height]="150" class="form-control padding-ob" [maxLength]="500" [(value)]="reciboCaja.observaciones">
+                        </dx-text-area>
+                    </div>
+                    <div class="col-md-6">
+                        <div class="row espacioDivs align">
+                            <div class="col-md-6">Valor Factura</div>
+                            <div class="col-md-3"> <dx-number-box [(value)]="reciboCaja.valorFactura" [readOnly]="bloquearValor"  (onValueChanged)="calcularValores()"></dx-number-box></div>
+                            <div class="col-md-3"></div>
+
+                            <div class="col-md-6">Recargos</div>
+                            <div class="col-md-3"></div>
+                            <div class="col-md-3"> <dx-number-box [(value)]="reciboCaja.valorRecargo" (onValueChanged)="calcularValores()"></dx-number-box></div>
+
+                            <div class="col-md-6">Pago Efectivo</div>
+                            <div class="col-md-3"></div>
+                            <div class="col-md-3"> <dx-number-box [(value)]="reciboCaja.valorPagoEfectivo" [readOnly]="true"></dx-number-box></div>
+                           
+                            <hr width="100%">
+                            <div class="col-md-6" style="margin-top: -0.2em;margin-bottom: -0.4em;">Totales</div>
+                            <div class="col-md-3" style="margin-top: -0.2em;margin-bottom: -0.4em;"> <dx-number-box [(value)]="valorTotal1" [readOnly]="true"></dx-number-box></div>
+                            <div class="col-md-3" style="margin-top: -0.2em;margin-bottom: -0.4em;"> <dx-number-box [(value)]="valorTotal2" [readOnly]="true"></dx-number-box></div>
+                             <hr width="100%">
+
+                            <div class="col-md-6">Saldos</div>
+                            <div class="col-md-3"></div>
+                            <div class="col-md-3"><dx-number-box [(value)]="reciboCaja.valorSaldos"></dx-number-box></div>
+
+                        </div>
+                    </div>
+                </div>
+
+                <div style="text-align: center;">
+                    <br><br>
+                    <dx-button *ngIf="!isTipoCierre" [text]="'Guardar'" [type]="'success'" [disabled]="bloquearBoton" style="background-color: #ff5722;" (onClick)="validarEstadoCaja()"></dx-button>
+                    <dx-button *ngIf="isTipoCierre" [text]="'Registrar'" [type]="'success'" [disabled]="bloquearBoton" style="background-color: #ff5722;" (onClick)="validarEstadoCajaCierre()"></dx-button>
+                </div>
+
+            </div>
+        </div>
+    </div>
+    <div class="col-md-1"></div>
+</div>
+
+<div class="row" *ngIf="mostrarBloqueo"></div>
+<div *ngIf="registroRecibos && !mostrarBloqueo">
+    
+
+    <div class="card">
+    <h5 class="card-header text-center font-weight-bold text-uppercase ">Recibos de Caja Generados</h5>
+    <div class="card-body">
+            <div class="row">
+                <div class="col-md-2"></div>
+                <div class="col-md-4">
+                    <div class="col-md-12" style="text-align: center;font-weight: bold;"><h6>Consulta Específica</h6></div>
+                    <div class="row card">
+                        <div class="col-md-12"> 
+                            <div class="row">
+                                <div class="col-md-3"  style="margin-top: 0.5em;">Desde</div>
+                                <div class="col-md-9">
+                                <dx-date-box
+                                    [(value)]="nowdesde"
+                                    type="date">
+                                </dx-date-box>
+                                </div>
+
+                                <div class="col-md-3" style="margin-top: 0.5em;">Hasta</div>
+                                <div class="col-md-9">
+                                <dx-date-box
+                                    [(value)]="nowhasta"
+                                    type="date">
+                                </dx-date-box>
+                                </div>
+
+                                <div class="col-md-4"></div>
+                                <div class="col-md-4 btnSearch">
+                                    <button class="btn btn-block btn-success" style="background-color: #ff5722;border-color: #ff5722;" (click)="traerRecibosCajaPorRango()">Buscar</button>
+                                </div>
+                                <div class="col-md-4"></div>
+                            </div>        
+                        </div>
+                    </div>                
+                </div>
+                
+                <div class="col-md-4 " style="margin-left: 1em;">
+                <div class="col-md-12" style="text-align: center;font-weight: bold;"><h6>Consulta General</h6></div>
+                <div class="row card">
+                    <br><br>
+                    <div class="col-md-12"> 
+                        <div class="row">  
+                    
+                            <div class="col-md-3"></div>
+                            <div class="col-md-6 btnSearch">
+                                <button class="btn btn-block btn-success" style="background-color: #ff5722;border-color: #ff5722;" (click)="traerRecibosCaja()">Buscar Todos</button>
+                            </div>
+                            <div class="col-md-3"></div>
+                        </div>        
+                    </div>
+                    <br>
+                </div>         
+
+            </div>
+            <div class="col-md-2"></div>
+        </div>   
+    </div>
+    </div>
+
+    <div class="row">
+        <div class="col-md-6"></div>
+        <div class="col-md-6">
+            <div class="dx-field radio">
+                <div class="dx-field-value">
+                    <dx-radio-group
+                    [items]="estados"
+                    [value]="estados[0]"
+                    layout="horizontal"
+                    (onValueChanged)="opcionRadio($event)">
+                    </dx-radio-group>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <br>
+    <dx-data-grid #datag2
+        id="gridContainer"
+        [dataSource]="listadoRecibosCaja"
+        [showBorders]="true"
+        (onExporting)="onExporting($event)"
+        (onExported)="onExported($event)">
+        <dxo-filter-row [visible]="true" ></dxo-filter-row>
+        <dxo-export [enabled]="true" fileName="Recibos_de_caja" [allowExportSelectedData]="true"></dxo-export>
+        <dxo-search-panel [visible]="true" [width]="240" placeholder="Buscar..."></dxo-search-panel>
+        <dxi-column dataField="idDocumento" caption="RC" dataType="number" sortOrder="desc"></dxi-column>
+        <dxi-column dataField="fecha" dataType="date" format="dd/MM/yyyy"  caption="Fecha" ></dxi-column>
+<!--         <dxi-column dataField="docVenta" caption="Documento" dataType="string"></dxi-column> -->
+        <dxi-column dataField="numDocumento" caption="N Documento" dataType="string"></dxi-column>
+        <dxi-column dataField="cliente" caption="Cliente" dataType="string"></dxi-column>
+        <dxi-column dataField="ruc" caption="RUC / CI" dataType="string"></dxi-column>
+        <dxi-column dataField="sucursal" caption="Sucursal" dataType="string"></dxi-column>
+        <dxi-column dataField="valorFactura" caption="Valor Factura" dataType="number"></dxi-column>
+
+        <dxi-column dataField="observaciones" caption="Notas" dataType="string" [visible]="false"></dxi-column>
+        <dxi-column dataField="tipoPago" caption="Tipo Pago" dataType="string" [visible]="false"></dxi-column>
+        
+        <dxi-column dataField="banco" caption="Banco" dataType="string" [visible]="false"></dxi-column>
+        <dxi-column dataField="tipoPago" caption="Tipo Pago" dataType="string" [visible]="false"></dxi-column>
+        <dxi-column dataField="valorRecargo" caption="Valor Recargo" dataType="number" [visible]="false"></dxi-column>
+        <dxi-column dataField="valorPagoEfectivo" caption="Valor Pago Efectivo" dataType="number" [visible]="false"></dxi-column>
+        <dxi-column dataField="valorSaldos" caption="Valor Saldos" dataType="number" [visible]="false"></dxi-column>
+
+        <dxi-column type="buttons" dataField="bt1" caption="Descargar" width="10%">
+            <dxi-button icon="fa fa-download" [onClick]="downloadFile"></dxi-button>   
+        </dxi-column>
+        <dxi-column type="buttons" dataField="bt2" caption="Anular" width="6%" [visible]="true" *ngIf="mostrarDelete">
+            <dxi-button icon="clear" [onClick]="deleteRecibo"></dxi-button>   
+        </dxi-column>
+        <dxi-column type="buttons" dataField="bt2" caption="Aprobar" width="6%" [visible]="true" *ngIf="mostrarAprobacion">
+            <dxi-button icon="clear" [onClick]="aprobarEliminacion"></dxi-button>   
+        </dxi-column>
+        <dxi-column type="buttons" dataField="bt2" caption="Rechazar" width="6%" [visible]="true" *ngIf="mostrarAprobacion">
+            <dxi-button icon="fa fa-reply" [onClick]="rechazarEliminacion"></dxi-button>   
+        </dxi-column>
+    
+
+        
+        <dxo-paging [pageSize]="12"></dxo-paging>
+        <dxo-pager
+            [showPageSizeSelector]="true"
+            [allowedPageSizes]="[8, 12, 20]"
+        ></dxo-pager>
+    </dx-data-grid>
+    
+
+    
+</div>
+
+
+<div class="row" *ngIf="mostrarBloqueo"></div>
+<div *ngIf="autorizaciones && !mostrarBloqueo">
+    <div class="card">
+        <h5 class="card-header text-center font-weight-bold text-uppercase ">Autorizaciones Recibos</h5>
+    </div>
+    <br>
+    <dx-data-grid #datag2
+        id="gridContainer"
+        [dataSource]="listadoRecibosCajaNoAutorizados"
+        [showBorders]="true"
+        (onExporting)="onExporting($event)"
+        (onExported)="onExported($event)">
+        <dxo-filter-row [visible]="true" ></dxo-filter-row>
+        <dxo-export [enabled]="true" fileName="Recibos_de_caja_no_autorizados" [allowExportSelectedData]="true"></dxo-export>
+        <dxo-search-panel [visible]="true" [width]="240" placeholder="Buscar..."></dxo-search-panel>
+        <dxi-column dataField="idDocumento" caption="RC" dataType="number" sortOrder="desc"></dxi-column>
+        <dxi-column dataField="fecha" dataType="date" format="dd/MM/yyyy"  caption="Fecha" ></dxi-column>
+        <dxi-column dataField="numDocumento" caption="N Documento" dataType="string"></dxi-column>
+        <dxi-column dataField="cliente" caption="Cliente" dataType="string"></dxi-column>
+        <dxi-column dataField="ruc" caption="RUC / CI" dataType="string"></dxi-column>
+        <dxi-column dataField="sucursal" caption="Sucursal" dataType="string"></dxi-column>
+        <dxi-column dataField="valorFactura" caption="Valor Factura" dataType="number"></dxi-column>
+
+        <dxi-column dataField="observaciones" caption="Notas" dataType="string" [visible]="false"></dxi-column>
+        <dxi-column dataField="tipoPago" caption="Tipo Pago" dataType="string" [visible]="false"></dxi-column>
+        
+        <dxi-column dataField="banco" caption="Banco" dataType="string" [visible]="false"></dxi-column>
+        <dxi-column dataField="tipoPago" caption="Tipo Pago" dataType="string" [visible]="false"></dxi-column>
+        <dxi-column dataField="valorRecargo" caption="Valor Recargo" dataType="number" [visible]="false"></dxi-column>
+        <dxi-column dataField="valorPagoEfectivo" caption="Valor Pago Efectivo" dataType="number" [visible]="false"></dxi-column>
+        <dxi-column dataField="valorSaldos" caption="Valor Saldos" dataType="number" [visible]="false"></dxi-column>
+
+        <dxi-column type="buttons" dataField="bt1" caption="Descargar" width="10%">
+            <dxi-button icon="fa fa-download" [onClick]="downloadFile"></dxi-button>   
+        </dxi-column>
+        <dxi-column type="buttons" dataField="bt2" caption="Rechazar" width="6%" [visible]="true">
+            <dxi-button icon="clear" [onClick]="rechazarReciboAdmin"></dxi-button>   
+        </dxi-column>
+        <dxi-column type="buttons" dataField="bt2" caption="Autorizar" width="6%" [visible]="true" >
+            <dxi-button icon="fa fa-check-square-o" [onClick]="autorizarReciboAdmin"></dxi-button>   
+        </dxi-column>
+      
+
+        
+        <dxo-paging [pageSize]="12"></dxo-paging>
+        <dxo-pager
+            [showPageSizeSelector]="true"
+            [allowedPageSizes]="[8, 12, 20]"
+        ></dxo-pager>
+    </dx-data-grid>
+</div>
+
+ 
+
+<div *ngIf="mostrarLoading">
+    <dx-popup
+        [width]="450"
+        [height]="250"
+        [showTitle]="false"
+        [dragEnabled]="false"
+        [closeOnOutsideClick]="false"
+        [visible]="true">
+        <div *dxTemplate="let data of 'content'" class="content">
+            <br><br><br>
+            <dx-load-indicator id="large-indicator" height="60" width="60"></dx-load-indicator>
+            <h4>{{textLoading}}</h4>
+        </div>
+    </dx-popup>
+</div>
+
+
+
+<dx-popup [width]="700" [height]="500" [showTitle]="true" title="Notas" [dragEnabled]="false"
+    [closeOnOutsideClick]="true" [(visible)]="popupVisibleNotas">
+    <div *dxTemplate="let data of 'content'">
+        <dx-scroll-view width="100%" height="100%">
+        <div class="col-md-12">
+            <div class="row espacio" style="text-align: right;">
+                <dx-radio-group
+                    [items]="opciones"
+                    [(value)]="valorOption"
+                    layout="horizontal"
+                    (onValueChanged)="opcionRadio2($event)">
+                </dx-radio-group>            
+            </div>
+
+            <br>
+            <div *ngIf="mostrarListaNotas">
+                <dx-data-grid #datag2
+                    id="gridContainer"
+                    [dataSource]="listadoNotas"
+                    [showBorders]="true">
+                    <dxi-column dataField="descripcion" caption="Descripcion" dataType="string"></dxi-column>
+
+                    <dxi-column type="buttons" dataField="bt2" caption="Eliminar" width="15%" >
+                        <dxi-button icon="clear" [onClick]="deleteNota"></dxi-button>   
+                    </dxi-column>
+
+                    <dxo-paging [pageSize]="12"></dxo-paging>
+                    <dxo-pager
+                        [showPageSizeSelector]="true"
+                        [allowedPageSizes]="[8, 12, 20]"
+                    ></dxo-pager>
+                </dx-data-grid>
+                <br><br>
+            </div>
+
+            <div *ngIf="mostrarNuevaNotas">
+                <div class="row">
+                    <div class="col-md-4" style="text-align: left;margin-top: 2em;">Detalle</div>
+                    <div class="col-md-8" style="margin-top: 1em;"> <input type="text" [(ngModel)]="nota.descripcion"
+                        name="nombre" class="form-control select" placeholder="Descripcion"
+                        required></div>
+
+                        <br><br><br>
+                    <div class="col-md-4"></div>
+                    <div class="col-md-4 btnSearch">
+                        <button class="btn btn-block btn-success" style="background-color: #ff5722;border-color: #ff5722;" (click)="guardarNuevaNota()">Guardar</button>
+                    </div>
+                    <div class="col-md-4"></div>
+                </div>
+            </div>
+        </div>
+
+       
+    </dx-scroll-view>
+    </div>
+</dx-popup>

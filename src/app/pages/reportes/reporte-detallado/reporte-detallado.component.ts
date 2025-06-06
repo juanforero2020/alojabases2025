@@ -1,0 +1,372 @@
+import { Component, OnInit } from "@angular/core";
+import { AuthenService } from "src/app/servicios/authen.service";
+import { IngresosService } from "src/app/servicios/ingreso-diario";
+import { ReporteDetalladoService } from "src/app/servicios/reporte-detallado";
+import { TransaccionesService } from "src/app/servicios/transacciones.service";
+import Swal from "sweetalert2";
+import { inventario } from "../../consolidado/consolidado";
+import { objDate, transaccion } from "../../transacciones/transacciones";
+import { ingresoDiario } from "../ingreso-diario/ingreso-diario";
+import { reporteDetallado } from "./reporte";
+
+@Component({
+  selector: "app-reporte-detallado",
+  templateUrl: "./reporte-detallado.component.html",
+  styleUrls: ["./reporte-detallado.component.scss"],
+})
+export class ReporteDetalladoComponent implements OnInit {
+  invetarioP: inventario[] = [];
+  transaccionesGlobales: transaccion[] = [];
+  mostrarLoading: boolean = false;
+  reporteDetallado: reporteDetallado[] = [];
+  reporteDIndividual: reporteDetallado;
+  obj: objDate;
+  nowdesde: Date = new Date();
+  nowhasta: Date = new Date();
+  viewTabla : boolean = false;
+  popupVisibleNotas: boolean = false;
+  noteDate: string = "";
+  fechaPopup: Date;
+  fechaAnteriorDesde: Date = new Date();
+  ingresosDiarios : ingresoDiario[] = [];
+  reportesDetBase : reporteDetallado[] = [];
+  reportesDetBaseNuevo : reporteDetallado;
+  nota: string = "";
+  arregloNotas: string[] = [];
+  mensajeLoading = "Cargando Datos..."
+  
+  constructor(
+    public transaccionesService: TransaccionesService,
+    public authenService: AuthenService,
+    public reporteDetalladoService: ReporteDetalladoService,
+    public ingresosService :IngresosService
+  ) {}
+
+  ngOnInit() {
+    this.traerRegistrosIngresos();
+    this.traerRegistrosReportes();
+  }
+
+  traerRegistrosReportes(){
+    this.reporteDetalladoService.getReporteDetallado().subscribe(res => {
+      this.reportesDetBase = res as reporteDetallado[];
+    })
+  }
+
+  traerRegistrosIngresos(){
+    this.ingresosService.getIngresosClientes().subscribe(res => {
+      this.ingresosDiarios = res as ingresoDiario[];
+   })
+  }
+
+  traerTransaccionesPorRango() {
+    this.transaccionesGlobales = [];
+    this.reporteDetallado = [];
+    this.mostrarLoading = true;
+    this.fechaAnteriorDesde = this.nowdesde
+    var fechaHoy = this.nowdesde
+    fechaHoy.setDate(this.nowdesde.getDate() - 15);
+    var fechaHasta = new Date()
+    fechaHasta.setDate(this.nowhasta.getDate() + 15);
+    this.obj = new objDate();
+    this.obj.fechaActual = fechaHasta;
+    this.obj.fechaAnterior = fechaHoy;
+    this.transaccionesService.getTransaccionesPorRango(this.obj).subscribe(
+      (res) => {
+        this.transaccionesGlobales = res as transaccion[];
+        this.separarTransacciones();
+      },
+      () => {}
+    );
+  }
+
+  separarTransacciones() {
+    this.fechaAnteriorDesde.setDate(this.nowdesde.getDate() + 15) 
+    var start = this.fechaAnteriorDesde;
+    var end = this.nowhasta
+    var loop = new Date(start);
+    loop.setDate(loop.getDate() - 1);
+    var sumaN: number = 0;
+    var sumaSuc1: number = 0;
+    var sumaTotal: number = 0;
+    //Variables matriz
+    var sumaCalculoPCostoMat: number = 0;
+    var sumaCalculoPVentaMat: number = 0;
+    var sumaCalUtilidadMat: number = 0;
+    var sumaTotalCalculoUtilidadMat = 0;
+    //Variables Suc1
+    var sumaCalculoPCostoSuc1: number = 0;
+    var sumaCalculoPVentaSuc1: number = 0;
+    var sumaCalUtilidadSuc1: number = 0;
+    var sumaTotalCalculoUtilidadSuc1 = 0;
+    var sumaDevolMatriz = 0;
+    var sumaDevolSuc1 = 0;
+    var diferenciaIngresoMatriz =0;
+    var diferenciaIngresoSucursal1 =0;
+    while (loop < end) {
+      this.transaccionesGlobales.forEach((element) => {
+        var loop5 = new Date(element.fecha_transaccion);
+          loop5.setDate(loop5.getDate() - 1);
+        if (loop5.toLocaleDateString() == loop.toLocaleDateString()
+        ) {
+          switch (element.tipo_transaccion) {
+            case "venta-not":
+              if(element.sucursal == "matriz"){
+                sumaN = Number(sumaN) + Number(element.totalsuma);
+                sumaCalculoPCostoMat = Number(element.costo_unitario) * Number (element.cantM2)
+                sumaCalculoPVentaMat = Number(element.valor) * Number (element.cantM2)
+                if(element.producto.substring(0,5)=="COMBO") sumaCalUtilidadMat = Number(element.totalsuma)
+                else sumaCalUtilidadMat = Number(sumaCalculoPVentaMat) - Number(sumaCalculoPCostoMat)
+                sumaTotalCalculoUtilidadMat =  Number(sumaTotalCalculoUtilidadMat) + Number(sumaCalUtilidadMat)
+
+              }else if(element.sucursal == "sucursal1"){
+                sumaSuc1 = Number(sumaSuc1) + Number(element.totalsuma);
+                sumaCalculoPCostoSuc1 = Number(element.costo_unitario) * Number (element.cantM2)
+                sumaCalculoPVentaSuc1 = Number(element.valor) * Number (element.cantM2)
+                if(element.producto.substring(0,5)=="COMBO") sumaCalUtilidadSuc1 = Number(element.totalsuma)
+                else sumaCalUtilidadSuc1 = Number(sumaCalculoPVentaSuc1) - Number(sumaCalculoPCostoSuc1)
+                sumaTotalCalculoUtilidadSuc1 =  Number(sumaTotalCalculoUtilidadSuc1) + Number(sumaCalUtilidadSuc1)
+              }
+              
+              break;
+            case "venta-fact":
+              if(element.sucursal == "matriz"){
+                sumaN = Number(sumaN) + Number(element.totalsuma);
+                sumaCalculoPCostoMat = Number(element.costo_unitario) * Number (element.cantM2)
+                sumaCalculoPVentaMat = Number(element.valor) * Number (element.cantM2)
+                if(element.producto.substring(0,5)=="COMBO") sumaCalUtilidadMat = Number(element.totalsuma)
+                else sumaCalUtilidadMat = Number(sumaCalculoPVentaMat) - Number(sumaCalculoPCostoMat)
+                sumaTotalCalculoUtilidadMat =  Number(sumaTotalCalculoUtilidadMat) + Number(sumaCalUtilidadMat)
+
+              }else if(element.sucursal == "sucursal1"){
+                sumaSuc1 = Number(sumaSuc1) + Number(element.totalsuma);
+                sumaCalculoPCostoSuc1 = Number(element.costo_unitario) * Number (element.cantM2)
+                sumaCalculoPVentaSuc1 = Number(element.valor) * Number (element.cantM2)
+                if(element.producto.substring(0,5)=="COMBO") sumaCalUtilidadSuc1 = Number(element.totalsuma)
+                else sumaCalUtilidadSuc1 = Number(sumaCalculoPVentaSuc1) - Number(sumaCalculoPCostoSuc1)
+                sumaTotalCalculoUtilidadSuc1 =  Number(sumaTotalCalculoUtilidadSuc1) + Number(sumaCalUtilidadSuc1)
+              }
+              
+              break;
+            case "devolucion":
+              if(element.sucursal == "matriz"){
+                sumaN = Number(sumaN) - Number(element.totalsuma? element.totalsuma:0);
+                sumaDevolMatriz = Number(sumaDevolMatriz)+ Number(element.totalsuma? element.totalsuma:0)
+                sumaCalculoPCostoMat = Number(element.costo_unitario) * Number (element.cantM2)
+                sumaCalculoPVentaMat = Number(element.valor) * Number (element.cantM2)
+                sumaCalUtilidadMat = Number(sumaCalculoPVentaMat) - Number(sumaCalculoPCostoMat)
+                sumaTotalCalculoUtilidadMat =  Number(sumaTotalCalculoUtilidadMat) - Number(sumaCalUtilidadMat)
+
+              }else if(element.sucursal == "sucursal1"){
+                sumaSuc1 = Number(sumaSuc1) - Number(element.totalsuma? element.totalsuma:0);
+                sumaDevolSuc1 = Number(sumaDevolSuc1)+ Number(element.totalsuma? element.totalsuma:0)
+              }
+              break;
+            default:
+              break;
+          }
+        }
+      });
+      sumaTotal = Number(sumaN)+Number(sumaSuc1);
+      this.reporteDIndividual = new reporteDetallado();
+      this.reporteDIndividual.fecha = loop;
+      this.reporteDIndividual.VDiariaMatriz = Number(sumaN.toFixed(2));
+      this.reporteDIndividual.DevDiariaMatriz = Number(sumaDevolMatriz.toFixed(2));
+      this.reporteDIndividual.VDiariaSucursal1 = Number(sumaSuc1.toFixed(2));
+      this.reporteDIndividual.DevDiariaSucursal1 = Number(sumaDevolSuc1.toFixed(2));
+      this.reporteDIndividual.VDiariaTotal = Number(sumaTotal.toFixed(2));
+      this.reporteDIndividual.MatUBruta = sumaN == 0 ? 0 : Number(sumaTotalCalculoUtilidadMat.toFixed(2));
+      this.reporteDIndividual.MatPorcentaje = sumaN == 0 ? 0 : Number(sumaTotalCalculoUtilidadMat.toFixed(2)) / Number(sumaN.toFixed(2)) ;
+      this.reporteDIndividual.Suc1UBruta = sumaSuc1 == 0 ? 0 : Number(sumaTotalCalculoUtilidadSuc1.toFixed(2));
+      this.reporteDIndividual.Suc1Porcentaje = sumaSuc1 == 0 ? 0 : Number(sumaTotalCalculoUtilidadSuc1.toFixed(2)) / Number(sumaSuc1.toFixed(2)) ;
+      diferenciaIngresoMatriz = 0 - this.reporteDIndividual.VDiariaMatriz
+      diferenciaIngresoSucursal1 = 0 - this.reporteDIndividual.VDiariaSucursal1
+      
+      this.ingresosDiarios.forEach((element) => {
+        var loop4 = new Date(element.fecha);
+          loop4.setDate(loop4.getDate() - 1);
+        if (loop4.toLocaleDateString() == loop.toLocaleDateString()) {
+          if(element.sucursal == "matriz")
+            diferenciaIngresoMatriz =  Number(element.valor) - Number(this.reporteDIndividual.VDiariaMatriz)
+
+            if(element.sucursal == "sucursal1")
+            diferenciaIngresoSucursal1 = Number(element.valor) -Number(this.reporteDIndividual.VDiariaSucursal1)
+        }
+      });
+
+      this.reportesDetBase.forEach((element) => {
+        var loop7 = new Date(element.fecha);
+        loop7.setDate(loop7.getDate() - 1);
+        if(loop7.toLocaleDateString() == loop.toLocaleDateString()){
+          this.reporteDIndividual.notas = element.notas;
+        }
+      })
+
+      this.reporteDIndividual.validacionMatriz = diferenciaIngresoMatriz;
+      this.reporteDIndividual.validacionSucursal1 = diferenciaIngresoSucursal1;
+      if(isNaN(this.reporteDIndividual.MatPorcentaje ))
+      this.reporteDIndividual.MatPorcentaje =0 
+      if(isNaN(this.reporteDIndividual.Suc1Porcentaje ))
+      this.reporteDIndividual.Suc1Porcentaje =0 
+      this.reporteDetallado.push(this.reporteDIndividual);
+      var newDate = loop.setDate(loop.getDate() + 1);
+      loop = new Date(newDate);
+      sumaN = 0;
+      sumaSuc1 = 0;
+      sumaTotal = 0;
+      sumaTotalCalculoUtilidadMat = 0;
+      sumaTotalCalculoUtilidadSuc1 = 0;
+      sumaDevolMatriz = 0;
+      sumaDevolSuc1 = 0;
+      diferenciaIngresoSucursal1 =0;
+      diferenciaIngresoMatriz = 0;
+    }
+    this.viewTabla = true;
+    this.mostrarLoading = false
+  }
+
+  calcularDiferenciaIngresos(){
+     console.log("global", this.transaccionesGlobales.length);
+    this.fechaAnteriorDesde.setDate(this.nowdesde.getDate() + 15) 
+    var start = this.fechaAnteriorDesde;
+    var end = this.nowhasta
+    var loop = new Date(start);
+    loop.setDate(loop.getDate() - 1);
+    var sumaN: number = 0;
+    var sumaSuc1: number = 0;
+    var sumaTotal: number = 0;
+    //Variables matriz
+
+    while (loop < end) {
+      this.transaccionesGlobales.forEach((element) => {
+        if (
+          new Date(element.fecha_transaccion).toLocaleDateString() ==
+          loop.toLocaleDateString()
+        ) {
+      
+        }
+      });
+      sumaTotal = Number(sumaN)+Number(sumaSuc1);
+     
+    }
+    this.viewTabla = true;
+    this.mostrarLoading = false
+  }
+
+  mostrarNotas = (e) => {
+    this.mostrarPopupNotas(e.row.data);
+  };
+
+  mostrarPopupNotas(e: any) {
+    this.arregloNotas =[];
+    this.noteDate = e.fecha.toLocaleDateString();
+    this.fechaPopup = e.fecha;
+    this.popupVisibleNotas = true;
+    this.mostrarLoading = true;
+    this.arregloNotas = e.notas;
+    /*this.reportesDetBase.forEach((element) => {
+      if(new Date(element.fecha).toLocaleDateString() == this.noteDate){
+       this.arregloNotas = element.notas;
+      }
+    })*/
+    this.mostrarLoading = false;
+  }
+
+
+  mensajeCorrecto(){
+    Swal.fire({
+      title: "Correcto",
+      text: "Su proceso se realizó con éxito",
+      icon: "success",
+      confirmButtonText: "Ok",
+    }).then((result) => {
+      window.location.reload();
+    });
+  }
+
+
+   actualizarNotas() {
+    this.popupVisibleNotas = false;
+    var bandera = false;
+    this.reportesDetBase.forEach((element) => {
+      if(new Date(element.fecha).toLocaleDateString() == this.noteDate){
+        console.log("entre",element)
+        bandera = true
+        element.notas = this.arregloNotas;
+        this.reporteDetalladoService.updateReporteDetallado(element).subscribe((res) => {
+           this.mensajeCorrecto();
+          },
+          (err) => {
+            alert("error");
+          }
+        );
+      }
+    })
+
+    if(!bandera){
+      this.reportesDetBaseNuevo = new reporteDetallado();
+      this.reportesDetBaseNuevo.fecha = new Date(this.fechaPopup);
+      this.reportesDetBaseNuevo.notas = this.arregloNotas;
+      console.log("sdsd ",this.reportesDetBaseNuevo)
+      this.reporteDetalladoService.newReporteDetallado(this.reportesDetBaseNuevo).subscribe((res) => {
+        this.mensajeCorrecto();
+        },
+        (err) => {
+          alert("error");
+        }
+      );
+    }
+  }
+
+  nuevaNota() {
+    this.arregloNotas.push(this.nota);
+  }
+
+  onCustomizeColumns(columns){  
+        for(var i = 0; i < columns.length; i++)  
+            columns[i].alignment = 'center';  
+    }  
+
+  customizeValue(data: any) { 
+    var valor = "$"+data.value.toFixed(2) 
+      return valor;  
+  }
+
+  customizeValue2(data: any) { 
+    var valor = data.value.toFixed(2) + "%"
+    return valor;  
+  }
+
+  customizeValueRow(data: any) { 
+    var valor= data.value.toFixed(2) 
+      return valor;  
+  }
+
+  customizeValuePercent(data: any) { 
+    var valor= data.value.toFixed(2)  +"%"
+      return valor;  
+  }
+
+  eliminar4(id: number) {
+    this.arregloNotas.splice(id, 1);
+  }
+
+  modificar4(id: number, event: any) {
+    this.arregloNotas[id] = event.target.textContent;
+  }
+
+
+
+  onExporting(e) {
+    e.component.beginUpdate();
+    e.component.columnOption("notas", "visible", true);
+  }
+
+
+  onExported(e) {
+    e.component.columnOption("notas", "visible", false);
+    e.component.endUpdate();
+  }
+
+
+}

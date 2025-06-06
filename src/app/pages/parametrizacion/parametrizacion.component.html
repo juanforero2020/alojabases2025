@@ -1,0 +1,254 @@
+
+<div class="row" *ngIf="mostrarBloqueo"></div>
+<div id="administracion" *ngIf="!mostrarBloqueo">
+
+<br>
+    <div class="card mb-3">
+        <div class="card-header">
+        <i class="fa fa-lg fa-user  text-danger"></i> PARAMETRIZACIÓN FACTURAS
+        </div>
+        <div class="card-body">
+            <div class="row">
+                <div class="col-md-2">
+                    <div class="row botones">
+                      
+                        <div class="col-md-12"><button class="btn" type="button" (click)="mostrar(1)">Matriz</button></div>
+                        <div class="col-md-12"><button class="btn" type="button" (click)="mostrar(2)">Sucursal1</button></div>
+                        <div class="col-md-12"><button class="btn" type="button" (click)="mostrar(3)">Sucursal2</button></div>
+                    </div>
+                </div>
+                <div class="col-md-10 card carIn">
+                    <div  style="display: block;">
+                        <div class="row" class="fomR">
+                            <div class="col-md-12" style="text-align: right;"><button class="btn"  type="button" (click)="desbloquear()"><i class="fa fa-pencil-square-o" aria-hidden="true"></i></button></div>
+                            <div id="op1" style="text-align: center;display: block;"> <h2>Sucursal {{parametroSuc.nombre}}</h2></div>
+                            <div id="op2" style="text-align: center;display: none"> <h2>Sucursal {{parametroSuc.nombre}}</h2></div>
+                            <div id="op3" style="text-align: center;display: none;"> <h2>Sucursal {{parametroSuc.nombre}}</h2></div>
+
+                            <div class="col-md-12">
+                                <div class="row">
+                                    <div class="col-md-2"></div>
+                               
+                                    <div class="col-md-8">
+                                        <div class="row espacio" >
+                                            <div class="col-md-4" style="text-align: left;">Sucursal:</div>
+                                            <div class="col-md-8"><input type="text" [(ngModel)]="parametroSuc.nombre" name="nombre" [disabled]="varDis" class="form-control" placeholder="Nombre Sucursal" autocomplete="nombre" required></div>
+                                        </div>
+
+                                        <div class="row espacio" >
+                                            <div class="col-md-4" style="text-align: left;">RUC:</div>
+                                            <div class="col-md-8">  <input type="text" [(ngModel)]="parametroSuc.ruc" name="ruc" [disabled]="varDis" class="form-control" placeholder="Ruc" autocomplete="ruc" required></div>
+                                        </div>
+
+                                        <div class="row espacio" >
+                                            <div class="col-md-4" style="text-align: left;">NRO. Establecimiento:</div>
+                                            <div class="col-md-8">  <input type="text" [(ngModel)]="parametroSuc.nroEstablecimiento" name="nroEstablecimiento" [disabled]="varDis" class="form-control" placeholder="NroEstablecimiento" autocomplete="nroEstablecimiento" required></div>
+                                        </div>
+        
+                                        <div class="row espacio" >
+                                            <div class="col-md-4" style="text-align: left;">Razón Social:</div>
+                                            <div class="col-md-8">  <input type="text" [(ngModel)]="parametroSuc.razon_social" [disabled]="varDis" name="razonsocial" class="form-control" placeholder="Razon social" autocomplete="razonsocial" required></div>
+                                        </div>
+        
+                                        <div class="row espacio" >
+                                            <div class="col-md-4" style="text-align: left;">Auto SRI:</div>
+                                            <div class="col-md-8">  <input type="text" [(ngModel)]="parametroSuc.sri" name="sri"  [disabled]="varDis" class="form-control" placeholder="SRI" autocomplete="Sri" required></div>
+                                        </div>
+    
+                                        <div class="row espacio" >
+                                            <div class="col-md-4" style="text-align: left;">Dirección:</div>
+                                            <div class="col-md-8">  <input type="text" [(ngModel)]="parametroSuc.direccion" name="direccion"  [disabled]="varDis" class="form-control" placeholder="Dirección" autocomplete="direccion" required></div>
+                                        </div>
+    
+                                        <div class="row espacio" >
+                                            <div class="col-md-4" style="text-align: left;">Teléfonos:</div>
+                                            <div class="col-md-8">  <input type="text" [(ngModel)]="parametroSuc.telefonos" name="telefonos"  [disabled]="varDis" class="form-control" placeholder="Teléfonos" autocomplete="telefonos" required></div>
+                                        </div>
+
+                                        <div class="row espacio" >
+                                            <div class="col-md-4" style="text-align: left;">Contacto Principal:</div>
+                                            <div class="col-md-8">  <input type="text" [(ngModel)]="parametroSuc.contactoPrincipal" name="contactoPrincipal"  [disabled]="varDis" class="form-control" placeholder="Contacto Principal" autocomplete="contactoPrincipal" required></div>
+                                        </div>
+
+                                        <div class="row espacio" >
+                                            <div class="col-md-4" style="text-align: left;">Celular Principal:</div>
+                                            <div class="col-md-8">  <input type="text" [(ngModel)]="parametroSuc.celularPrincipal" name="celularPrincipal"  [disabled]="varDis" class="form-control" placeholder="Celular Principal" autocomplete="celularPrincipal" required></div>
+                                        </div>
+        
+                                        <div class="row espacio" >
+                                            <div class="col-md-4" style="text-align: left;">Fecha de Vigencia:</div>
+                                            <div class="col-md-8">  <input type="date" [(ngModel)]="parametroSuc.fecha" name="fecha" class="form-control"  [disabled]="varDis" placeholder="Vigencia" autocomplete="fecha" required></div>
+                                        </div>
+
+                                        <div class="row espacio" >
+                                            <div class="col-md-4" style="text-align: left;">Raiz Consecutivo:</div>
+                                            <div class="col-md-8">  <input type="text" [(ngModel)]="parametroSuc.cabeceraData" name="cabecera" class="form-control"  [disabled]="varDis" placeholder="Cabecera" required></div>
+                                        </div>
+
+                                        
+        
+                                        <!-- <div class="row espacio" >
+                                            
+                                            <div class="col-md-4" style="text-align: left;">Consecutivos</div>
+                                            <div class="col-md-8">  
+                                                <div class="row">
+                                                    <div class="col-md-5"><input type="number" [(ngModel)]="parametroSuc.inicio" name="inicio"  [disabled]="varDis" class="form-control" placeholder="inicio" autocomplete="cc-number" required></div>
+                                                    <div class="col-md-2" style="text-align: center;font-size: 0.8em;"> hasta </div>
+                                                    <div class="col-md-5"><input type="number" [(ngModel)]="parametroSuc.fin" name="fin"  [disabled]="varDis" class="form-control" placeholder="fin" autocomplete="cc-number" required></div>
+                                                </div>
+                                            </div>
+                                        </div> -->
+                                        <br>
+                                        <div class="card mb-3 texto">
+                                            <br><br>
+                                            <p>{{parametroSuc.razon_social}}</p>
+                                            <p>RUC: {{parametroSuc.ruc}}</p>
+                                            <p>Dirección {{parametroSuc.direccion}}</p>
+                                            <p>Teléfonos: {{parametroSuc.telefonos}}</p>
+                                            <p>Auto SRI {{parametroSuc.sri}}</p>
+                                            <p>Fecha de Autorización {{parametroSuc.fecha}}</p>
+                                        </div>
+                                        
+                                    </div>
+                                    <div class="col-md-2"></div>
+
+                                </div>
+                            </div>
+                               
+                                <div class="col-md-12" style="margin-top: -3rem;">
+                                    <div class="row">
+                                        <div class="col-md-4"></div>
+                                        <div class="col-md-4"><button class="btn btn2" type="button" (click)="newParametrizacion()">Guardar</button></div>
+                                       
+                                        <div class="col-md-4"></div>
+                                    </div>
+                                </div>
+
+
+                                
+                                <div class="row" style="margin-top: 4em;" >
+                                    <div class="col-md-2"></div>
+                                    <div class="col-md-8">
+                                        <div style="text-align: center;"><h2>Consecutivos </h2></div>
+                                        <div class="card mb-3 row ">
+                                            <div class="col-md-12" style="text-align: right;"><button class="btn"  type="button" (click)="desbloquear2()"><i class="fa fa-pencil-square-o" aria-hidden="true"></i></button></div>
+                                            <div class="col-md-12" style="text-align: center;margin-top: 1rem;"></div>
+                                            <div class="col-md-12" style="margin-top: 1rem;margin-bottom: 1rem;">  
+                                                <div class="row">
+                                                    <div class="col-md-5" ><input type="number" class="cons" [(ngModel)]="parametroSuc.inicio" name="inicio"  [disabled]="varDis2" class="form-control" placeholder="inicio" autocomplete="cc-number" required></div>
+                                                    <div class="col-md-2" style="text-align: center;font-size: 1em;"> hasta </div>
+                                                    <div class="col-md-5" ><input type="number" class="cons" [(ngModel)]="parametroSuc.fin" name="fin"  [disabled]="varDis2" class="form-control" placeholder="fin" autocomplete="cc-number" required></div>
+                                                </div>
+                                                <div class="row" >
+                                                    <div class="col-md-4"></div>
+                                                    <div class="col-md-4"><button class="btn btn2" type="button" (click)="actualizarConsecutivos()">Actualizar</button></div>
+                                                    <div class="col-md-4"></div>
+                                                </div> 
+                                            </div>
+                                        </div>
+                                    </div>
+                                    <div class="col-md-2"></div>
+                                </div>
+                                
+                            <!-- <dx-accordion
+                            #accordion
+                            [dataSource]="locales"
+                            [collapsible]="true"
+                            [multiple]="false"
+                            [animationDuration]="300"
+                            [selectedItems]="[locales[0]]">
+                            <div *dxTemplate="let locales of 'title'">
+                                <h5>{{locales.nombre}}</h5>
+                            </div>
+                            <div *dxTemplate="let locales of 'item'">
+                                <div class="col-md-12">
+                                    <div class="row">
+                                        <div class="col-md-2"></div>
+                                   
+                                        <div class="col-md-8">
+                                            <div class="row espacio" >
+                                                <div class="col-md-4" style="text-align: left;">Sucursal:</div>
+                                                <div class="col-md-8">{{locales.nombre}}</div>
+                                            </div>
+
+                                            <div class="row espacio" >
+                                                <div class="col-md-4" style="text-align: left;">RUC:</div>
+                                                <div class="col-md-8">  <input type="text" [(ngModel)]="parametroSuc.ruc" name="ruc" class="form-control" placeholder="Ruc" autocomplete="ruc" required></div>
+                                            </div>
+            
+                                            <div class="row espacio" >
+                                                <div class="col-md-4" style="text-align: left;">Razón Social:</div>
+                                                <div class="col-md-8">  <input type="text" [(ngModel)]="parametroSuc.razon_social" name="razonsocial" class="form-control" placeholder="Razon social" autocomplete="razonsocial" required></div>
+                                            </div>
+            
+                                            <div class="row espacio" >
+                                                <div class="col-md-4" style="text-align: left;">Auto SRI:</div>
+                                                <div class="col-md-8">  <input type="text" [(ngModel)]="parametroSuc.sri" name="sri" class="form-control" placeholder="SRI" autocomplete="Sri" required></div>
+                                            </div>
+        
+                                            <div class="row espacio" >
+                                                <div class="col-md-4" style="text-align: left;">Dirección:</div>
+                                                <div class="col-md-8">  <input type="text" [(ngModel)]="parametroSuc.direccion" name="direccion" class="form-control" placeholder="Dirección" autocomplete="direccion" required></div>
+                                            </div>
+        
+                                            <div class="row espacio" >
+                                                <div class="col-md-4" style="text-align: left;">Teléfonos:</div>
+                                                <div class="col-md-8">  <input type="text" [(ngModel)]="parametroSuc.telefonos" name="telefonos" class="form-control" placeholder="Teléfonos" autocomplete="telefonos" required></div>
+                                            </div>
+            
+                                            <div class="row espacio" >
+                                                <div class="col-md-4" style="text-align: left;">Fecha de Vigencia:</div>
+                                                <div class="col-md-8">  <input type="date" [(ngModel)]="parametroSuc.fecha" name="fecha" class="form-control" placeholder="Vigencia" autocomplete="fecha" required></div>
+                                            </div>
+            
+                                            <div class="row espacio" >
+                                                
+                                                <div class="col-md-4" style="text-align: left;">Consecutivos</div>
+                                                <div class="col-md-8">  
+                                                    <div class="row">
+                                                        <div class="col-md-5"><input type="number" [(ngModel)]="parametroSuc.inicio" name="inicio" class="form-control" placeholder="inicio" autocomplete="cc-number" required></div>
+                                                        <div class="col-md-2" style="text-align: center;font-size: 0.8em;"> hasta </div>
+                                                        <div class="col-md-5"><input type="number" [(ngModel)]="parametroSuc.fin" name="fin" class="form-control" placeholder="fin" autocomplete="cc-number" required></div>
+                                                    </div>
+                                                </div>
+                                            </div>
+
+                                            <div class="card mb-3 texto">
+                                                <br><br>
+                                                <p>{{parametroSuc.razon_social}}</p>
+                                                <p>RUC: {{parametroSuc.ruc}}</p>
+                                                <p>Dirección {{parametroSuc.direccion}}</p>
+                                                <p>Teléfonos: {{parametroSuc.telefonos}}</p>
+                                                <p>Auto SRI {{parametroSuc.sri}}</p>
+                                                <p>Fecha de Autorización {{parametroSuc.fecha}}</p>
+                                            </div>
+                                            
+                                        </div>
+                                        <div class="col-md-2"></div>
+
+                                    </div>
+                                </div>
+                                   
+                                    <div class="col-md-12">
+                                        <div class="row">
+                                            <div class="col-md-4"></div>
+                                            <div class="col-md-4"><button class="btn btn2" type="button" (click)="newParametrizacion()">Guardar</button></div>
+                                           
+                                            <div class="col-md-4"></div>
+                                        </div>
+                                    </div>
+                            </div>
+                        </dx-accordion> -->
+                        </div>
+                        
+                    </div>
+
+
+                   
+                </div>
+                
+            </div>
+        </div>
+        </div>
+</div>
+

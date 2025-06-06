@@ -1,0 +1,529 @@
+
+
+
+<br><br>
+
+<div class="row remiPro" *ngIf="!isUser">
+    <div class="col-md-8"></div>
+    <div class="col-md-4"> 
+        <dx-select-box [items]="menu" 
+        [value]="menu[0]" 
+        [readOnly]="false" 
+        [disabled]="false"
+        class="form-control select"
+        (onValueChanged)="opcionMenu($event)"
+        ></dx-select-box>
+    </div>
+</div>
+
+<div *ngIf="mostrarLoadingBase">
+  <app-loading-messagge [messagge]="mensajeLoading"></app-loading-messagge>
+</div>
+
+
+<br><br>
+<div class="row" *ngIf="newComprobante">
+    <div class="col-md-1"></div>
+    <div class="col-md-10">
+        <div class="row">
+            <div class="col-md-6"></div>
+            <div class="col-md-4"></div>
+            <div class="col-md-2 btnSearch" style="text-align: right;">
+                <button class="btn btn-block btn-success" style="background-color: #ff5722;border-color: #ff5722;" (click)="mostrarPopupNotas()">Notas</button>
+            </div>
+        </div>
+        
+        <div class="row">
+            <div class="col-md-6"></div>
+            <div class="col-md-6">
+                <div class="dx-field radio">
+                    <div class="dx-field-value">
+                        <dx-radio-group
+                        [items]="tiposComprobantes"
+                        [(value)]="tipoComprobante"
+                        layout="horizontal"
+                        (onValueChanged)="opcionRadioTipos($event)">
+                        </dx-radio-group>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        
+
+        <br>
+        
+        <div class="card">
+            <h5 class="card-header text-center font-weight-bold text-uppercase ">COMPROBANTE DE PAGO</h5>
+            <div class="card-body">
+                <div class="row">
+                    <div class="col-md-9">
+                        <div class="row">
+                            <div class="col-md-6">
+                                <div class="row espacioDivs">
+                                    <div class="col-md-4">Fecha:</div>
+                                    <div class="col-md-8 dateB"><dx-date-box [(value)]="comprobantePago.fecha" type="date"></dx-date-box></div>
+
+                                    <div class="col-md-4" *ngIf="isNormal">Documento:</div>
+                                    <div class="col-md-8" *ngIf="isNormal"><dx-text-box [(value)]="comprobantePago.documento" [readOnly]="isReadOnly"></dx-text-box></div>
+                                    
+                                    <div class="col-md-4" *ngIf="isNormal">Centro/Costo:</div>
+                                    <div class="col-md-8" *ngIf="isNormal"><dx-autocomplete
+                                                            [dataSource]="detallesCostos"
+                                                            valueExpr="nombre"
+                                                            [(value)]= "comprobantePago.centroCosto">
+                                                        </dx-autocomplete>
+                                    </div>
+
+                                    <div class="col-md-4" *ngIf="!isNormal">Tipo Búsqueda:</div>
+                                    <div class="col-md-8" *ngIf="!isNormal">
+                                        <dx-select-box [items]="tiposBusqueda" 
+                                                [(value)]="valorTipoBusqueda"
+                                                [searchEnabled]="true"
+                                                [readOnly]="false" 
+                                                (onValueChanged)="asignarValorBusqueda($event)"
+                                                [disabled]="false">
+                                        </dx-select-box>
+                                    </div>
+
+                                    <div class="col-md-4" *ngIf="!isNormal && mostrarBeneficiario"> Beneficiario :</div>
+                                    <div class="col-md-8" *ngIf="!isNormal && mostrarBeneficiario">
+                                        <dx-autocomplete #data2
+                                            [dataSource]="beneficiarios"
+                                            [(value)]="nombre_Beneficiario"
+                                            valueExpr="nombre"
+                                            (onChange)="setClienteData($event)">
+                                        </dx-autocomplete>
+                                    </div>
+
+                                    <div class="col-md-4" *ngIf="!isNormal && mostrarProveedor"> Proveedor :</div>
+                                    <div class="col-md-8" *ngIf="!isNormal && mostrarProveedor">
+                                        <dx-autocomplete #data2
+                                            [dataSource]="proveedores"
+                                            valueExpr="nombre_proveedor"
+                                            [(value)]="nombre_Beneficiario"
+                                            (onChange)="setClienteData($event)">
+                                        </dx-autocomplete>
+                                    </div>
+
+                                    <div class="col-md-4" *ngIf="!isNormal && mostrarDocumento ">Documento:</div>
+                                    <div class="col-md-8" *ngIf="!isNormal && mostrarDocumento "><dx-text-box [(value)]="valorDocumento" (onChange)="setClienteData($event)" [readOnly]="isReadOnly" [disabled]="isNormal"></dx-text-box></div>
+
+
+                                    <div class="col-md-4" *ngIf="!isNormal">Registros:</div>
+                                    <div class="col-md-8" *ngIf="!isNormal">
+                                        <dx-select-box [items]="datosDocumento" 
+                                                displayExpr="textoCombo"
+                                                [searchEnabled]="true"
+                                                [readOnly]="false" 
+                                                hint={{textoDatosFactura}}
+                                                (onValueChanged)="asignarDatos($event)"
+                                                [disabled]="isNormal">
+                                        </dx-select-box>
+                                    </div>
+
+                                    <div class="col-md-4">Sucursal:</div>
+                                    <div class="col-md-8"><dx-select-box [items]="arraySucursales" 
+                                            [(value)]="comprobantePago.sucursal" 
+                                            [readOnly]="isReadOnly"
+                                            [disabled]="false">
+                                        </dx-select-box></div>
+                                </div>
+                            </div>
+
+
+                            <div class="col-md-6">
+                                <div class="row espacioDivs">
+                                    <div class="col-md-4" >Beneficiario:</div>
+                                    <div class="col-md-8" ><dx-autocomplete
+                                                            [dataSource]="beneficiarios"
+                                                            valueExpr="nombre"
+                                                            [readOnly]="!isNormal"
+                                                            [(value)]= "comprobantePago.beneficiario">
+                                                        </dx-autocomplete>
+                                    </div>
+
+                                    <div class="col-md-4">Proveedor:</div>
+                                    <div class="col-md-8"><dx-autocomplete
+                                                            [dataSource]="proveedores"
+                                                            valueExpr="nombre_proveedor"
+                                                            [readOnly]="!isNormal"
+                                                            (onValueChanged)="asignarDatosProveedor($event)"
+                                                            [(value)]= "comprobantePago.proveedor">
+                                                        </dx-autocomplete>
+                                    </div>
+                                    
+
+                                    <div class="col-md-4">RUC:</div>
+                                    <div class="col-md-8"><dx-text-box [(value)]="comprobantePago.ruc" [readOnly]="false"></dx-text-box></div>
+
+                                    <div class="col-md-4">Teléfono:</div>
+                                    <div class="col-md-8"><dx-text-box [(value)]="comprobantePago.telefono" [readOnly]="false"></dx-text-box></div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="col-md-3">
+                        <br>
+                        <div style="text-align: center;">CONSECUTIVO</div>
+                        <div style="text-align: center;font-size: 4rem;margin-top: -1rem;">{{comprobantePago.idDocumento}}</div>
+                    </div>
+                </div>
+
+                
+                <div style="text-align: right;">
+                    <dx-button [text]="'Agregar'" [type]="'success'" style="background-color: #ff5722;" (onClick)="addElement()"></dx-button>              
+                </div>
+                
+                <div class="card cardPadding">
+                    <div class="espacioDivs2 espacioSelect">
+                        <div *ngFor="let p of listadoOperaciones;let i = index" style="text-align: center;margin-top: 1em;">
+                            <div class="row">
+                                <div class="col-md-4"> 
+                                    <div class="row">
+                                        <div class="col-md-4">Cuenta</div>
+                                        <div class="col-md-8">
+                                            <dx-select-box [items]="listaCuentas" 
+                                                displayExpr="nombre"
+                                                [(value)]="p.idCuenta"
+                                                [searchEnabled]="true"
+                                                valueExpr="_id"
+                                                [readOnly]="false" 
+                                                (onValueChanged)="traersubCuentas($event,i)"
+                                                [disabled]="false">
+                                            </dx-select-box>
+                                        </div>
+                                    </div>
+                                    
+                                </div>
+
+                                <div class="col-md-4" *ngIf="i==0"> 
+                                    <div class="row">
+                                        <div class="col-md-4">SubCuenta</div>
+                                        <div class="col-md-8">
+                                            <dx-select-box [items]="listaSubCuentas" 
+                                                displayExpr="nombre"
+                                                [(value)]="p.idSubCuenta"
+                                                [searchEnabled]="true"
+                                                valueExpr="_id"
+                                                (onValueChanged)="verificar($event,i)"
+                                                [readOnly]="false" 
+                                                [disabled]="false">
+                                            </dx-select-box>
+                                        </div>
+                                    </div>
+                                    <div class="row orden" *ngIf="p.idSubCuenta == '6195b2d0f75a418e9c2eba0a'" style="margin-top: 0.5em;">
+                                        <div class="col-md-4"># Orden</div>
+                                        <div class="col-md-8">
+                                             <dx-number-box [(value)]="p.nOrden" (onChange)="buscarOrden($event,i)"></dx-number-box>
+                                        </div>
+                                    </div>
+
+                                    <div class="row orden" style="margin-top: 0.5em;" *ngIf="mostrarFact">
+                                        <div class="col-md-4"># Factura</div>
+                                        <div class="col-md-8">
+                                             <dx-text-box [(value)]="p.numFactura" (onChange)="buscarFactura($event,i)"></dx-text-box>
+                                        </div>
+                                    </div>
+                                </div>
+
+                                <div class="col-md-4" *ngIf="i==1"> 
+                                    <div class="row">
+                                        <div class="col-md-4">SubCuenta</div>
+                                        <div class="col-md-8">
+                                            <dx-select-box [items]="listaSubCuentas2" 
+                                                displayExpr="nombre"
+                                                [(value)]="p.idSubCuenta"
+                                                [searchEnabled]="true"
+                                                valueExpr="_id"
+                                                (onValueChanged)="verificar($event,i)"
+                                                [readOnly]="false" 
+                                                [disabled]="false">
+                                            </dx-select-box>
+                                        </div>
+                                    </div>
+                                    <div class="row orden" *ngIf="p.idSubCuenta == '6195b2d0f75a418e9c2eba0a'" style="margin-top: 0.5em;">
+                                        <div class="col-md-4"># Orden</div>
+                                        <div class="col-md-8 ">
+                                             <dx-number-box [(value)]="p.nOrden" (onChange)="buscarOrden($event,i)"></dx-number-box>
+                                        </div>
+                                    </div>
+                                </div>
+
+                                <div class="col-md-4" *ngIf="i==2"> 
+                                    <div class="row">
+                                        <div class="col-md-4">SubCuenta</div>
+                                        <div class="col-md-8">
+                                            <dx-select-box [items]="listaSubCuentas3" 
+                                                displayExpr="nombre"
+                                                 [(value)]="p.idSubCuenta"
+                                                [searchEnabled]="true"
+                                                valueExpr="_id"
+                                                (onValueChanged)="verificar($event,i)"
+                                                [readOnly]="false" 
+                                                [disabled]="false">
+                                            </dx-select-box>
+                                        </div>
+                                    </div>
+                                    <div class="row orden" *ngIf="p.idSubCuenta == '6195b2d0f75a418e9c2eba0a'" style="margin-top: 0.5em;">
+                                        <div class="col-md-4"># Orden</div>
+                                        <div class="col-md-8">
+                                             <dx-number-box [(value)]="p.nOrden" (onChange)="buscarOrden($event,i)"></dx-number-box>
+                                        </div>
+                                    </div>
+                                </div>
+
+                                <div class="col-md-4"> 
+                                    <div class="row">
+                                        <div class="col-md-4">Valor</div>
+                                        <div class="col-md-4">
+                                        <dx-number-box [(value)]="p.valor" (onChange)="calcularTotal($event)"></dx-number-box>
+                                        </div>
+                                        <div class="col-md-4"><dx-button icon="clear" (onClick)="eliminarRegistro(i)" ></dx-button></div>
+                                    </div>
+                                    
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                
+
+                <br><br>
+
+                <div class="row">
+                    <div class="col-md-8">
+                        Observaciones:
+                        <br>
+                        <dx-text-area [height]="80" class="form-control padding-ob" [maxLength]="500" [(value)]="comprobantePago.observaciones">
+                        </dx-text-area>
+                    </div>
+                    <div class="col-md-4" *ngIf="isNormal">
+                        <div class="row cssTotal" style="text-align: center;">
+                            <div class="col-md-12"><h5>Total</h5></div>
+                            <div class="col-md-12"> <dx-number-box [(value)]="comprobantePago.total" [readOnly]="true"></dx-number-box></div>
+                            <div class="col-md-2"></div>
+                        </div>
+                    </div>
+                    <div class="col-md-4" *ngIf="!isNormal">
+                        <br>
+                        <div class="row cssTotal" style="text-align: center;">
+                            <div class="col-md-6"><h5>Deuda Total</h5></div>
+                            <div class="col-md-6"> <dx-number-box [(value)]="totalDeuda" [readOnly]="true"></dx-number-box></div>
+                            
+                            <div class="col-md-6"><h5>Total CP</h5></div>
+                            <div class="col-md-6"> <dx-number-box [(value)]="comprobantePago.total" [readOnly]="true"></dx-number-box></div>
+                        </div>
+                    </div>
+                </div>
+
+                <div style="text-align: center;">
+                    <br><br>
+                    <dx-button [text]="'Guardar'" [type]="'success'" [disabled]="bloquearBoton" style="background-color: #ff5722;" (onClick)="validarEstadoCaja()"></dx-button>
+                </div>
+
+            </div>
+        </div>
+    </div>
+    <div class="col-md-1"></div>
+</div>
+
+
+<div *ngIf="!newComprobante">
+    <div class="card">
+        <h5 class="card-header text-center font-weight-bold text-uppercase ">Comprobantes de Pago Generados</h5>
+        <div class="card-body">
+                <div class="row">
+                    <div class="col-md-2"></div>
+                    <div class="col-md-4">
+                        <div class="col-md-12" style="text-align: center;font-weight: bold;"><h6>Consulta Específica</h6></div>
+                        <div class="row card">
+                            <div class="col-md-12"> 
+                                <div class="row">
+                                    <div class="col-md-3"  style="margin-top: 0.5em;">Desde</div>
+                                    <div class="col-md-9">
+                                    <dx-date-box
+                                        [(value)]="nowdesde"
+                                        type="date">
+                                    </dx-date-box>
+                                    </div>
+
+                                    <div class="col-md-3" style="margin-top: 0.5em;">Hasta</div>
+                                    <div class="col-md-9">
+                                    <dx-date-box
+                                        [(value)]="nowhasta"
+                                        type="date">
+                                    </dx-date-box>
+                                    </div>
+
+                                    <div class="col-md-4"></div>
+                                    <div class="col-md-4 btnSearch">
+                                        <button class="btn btn-block btn-success" style="background-color: #ff5722;border-color: #ff5722;" (click)="traerComprobantesPagoPorRango()">Buscar</button>
+                                    </div>
+                                    <div class="col-md-4"></div>
+                                </div>        
+                            </div>
+                        </div>                
+                    </div>
+                    
+                    <div class="col-md-4 " style="margin-left: 1em;">
+                    <div class="col-md-12" style="text-align: center;font-weight: bold;"><h6>Consulta General</h6></div>
+                    <div class="row card">
+                        <br><br>
+                        <div class="col-md-12"> 
+                            <div class="row">  
+                        
+                                <div class="col-md-3"></div>
+                                <div class="col-md-6 btnSearch">
+                                    <button class="btn btn-block btn-success" style="background-color: #ff5722;border-color: #ff5722;" (click)="traerComprobantesPago()">Buscar Todos</button>
+                                </div>
+                                <div class="col-md-3"></div>
+                            </div>        
+                        </div>
+                        <br>
+                    </div>         
+
+                </div>
+                <div class="col-md-2"></div>
+            </div>   
+        </div>
+    </div>
+
+    <div class="row">
+        <div class="col-md-6"></div>
+        <div class="col-md-6">
+            <div class="dx-field radio">
+                <div class="dx-field-value">
+                    <dx-radio-group
+                    [items]="estados"
+                    [value]="estados[0]"
+                    layout="horizontal"
+                    (onValueChanged)="opcionRadio($event)">
+                    </dx-radio-group>
+                </div>
+            </div>
+        </div>
+    </div>
+    
+
+    <br>
+    <dx-data-grid #datag2
+        id="gridContainer"
+        [dataSource]="listadoComprobantes"
+        [showBorders]="true"
+        (onExporting)="onExporting($event)"
+        (onExported)="onExported($event)">
+        <dxo-filter-row [visible]="true" ></dxo-filter-row>
+        <dxo-export [enabled]="true" fileName="Comprobante_Pago" [allowExportSelectedData]="true"></dxo-export>
+        <dxo-search-panel [visible]="true" [width]="240" placeholder="Buscar..."></dxo-search-panel>
+        <dxi-column dataField="idDocumento" caption="CP" dataType="number" sortOrder="desc"></dxi-column>
+        <dxi-column dataField="fecha" dataType="date" format="dd/MM/yyyy"  caption="Fecha" ></dxi-column>
+        <dxi-column dataField="documento" caption="Documento" dataType="string"></dxi-column>
+        <dxi-column dataField="centroCosto" caption="Centro/Costo" dataType="string"></dxi-column>
+        <dxi-column dataField="beneficiario" caption="Beneficiario" dataType="string"></dxi-column>
+        <dxi-column dataField="proveedor" caption="Proveedor" dataType="string"></dxi-column>
+        <dxi-column dataField="ruc" caption="RUC /CI" dataType="string"></dxi-column>
+        <dxi-column dataField="telefono" caption="Telefono" dataType="string"></dxi-column>
+        <dxi-column dataField="total" caption="Total" dataType="string"></dxi-column>
+
+        <dxi-column dataField="usuario" caption="Usuario" dataType="string" [visible]="false"></dxi-column>
+        <dxi-column dataField="sucursal" caption="Sucursal" dataType="string" [visible]="false"></dxi-column>
+        <dxi-column dataField="observaciones" caption="Notas" dataType="string" [visible]="false"></dxi-column>
+       
+
+        <dxi-column type="buttons" dataField="bt1" caption="Descargar" width="6%">
+            <dxi-button icon="fa fa-download" [onClick]="downloadFile"></dxi-button>   
+        </dxi-column>
+        <dxi-column type="buttons" dataField="bt2" caption="Anular" width="6%" [visible]="true" *ngIf="mostrarDelete">
+            <dxi-button icon="clear" [onClick]="deleteComprobante"></dxi-button>   
+        </dxi-column>
+        <dxi-column type="buttons" dataField="bt2" caption="Aprobar" width="6%" [visible]="true" *ngIf="mostrarAprobacion">
+            <dxi-button icon="clear" [onClick]="aprobarEliminacion"></dxi-button>   
+        </dxi-column>
+        <dxi-column type="buttons" dataField="bt2" caption="Rechazar" width="6%" [visible]="true" *ngIf="mostrarAprobacion">
+            <dxi-button icon="fa fa-reply" [onClick]="rechazarEliminacion"></dxi-button>   
+        </dxi-column>
+        <dxo-paging [pageSize]="12"></dxo-paging>
+        <dxo-pager
+            [showPageSizeSelector]="true"
+            [allowedPageSizes]="[8, 12, 20]"
+        ></dxo-pager>
+    </dx-data-grid>
+</div>
+
+ 
+
+<div *ngIf="mostrarLoading">
+    <dx-popup
+        [width]="450"
+        [height]="250"
+        [showTitle]="false"
+        [dragEnabled]="false"
+        [closeOnOutsideClick]="false"
+        [visible]="true">
+        <div *dxTemplate="let data of 'content'" class="content">
+            <br><br><br>
+            <dx-load-indicator id="large-indicator" height="60" width="60"></dx-load-indicator>
+            <h4>{{textLoading}}</h4>
+        </div>
+    </dx-popup>
+</div>
+
+
+
+<dx-popup [width]="700" [height]="500" [showTitle]="true" title="Notas" [dragEnabled]="false"
+    [closeOnOutsideClick]="true" [(visible)]="popupVisibleNotas">
+    <div *dxTemplate="let data of 'content'">
+        <dx-scroll-view width="100%" height="100%">
+        <div class="col-md-12">
+            <div class="row espacio" style="text-align: right;">
+                <dx-radio-group
+                    [items]="opciones"
+                    [(value)]="valorOption"
+                    layout="horizontal"
+                    (onValueChanged)="opcionRadio2($event)">
+                </dx-radio-group>            
+            </div>
+
+            <br>
+            <div *ngIf="mostrarListaNotas">
+                <dx-data-grid #datag2
+                    id="gridContainer"
+                    [dataSource]="listadoNotas"
+                    [showBorders]="true">
+                    <dxi-column dataField="descripcion" caption="Descripcion" dataType="string"></dxi-column>
+
+                    <dxi-column type="buttons" dataField="bt2" caption="Eliminar" width="15%" >
+                        <dxi-button icon="clear" [onClick]="deleteNota"></dxi-button>   
+                    </dxi-column>
+
+                    <dxo-paging [pageSize]="12"></dxo-paging>
+                    <dxo-pager
+                        [showPageSizeSelector]="true"
+                        [allowedPageSizes]="[8, 12, 20]"
+                    ></dxo-pager>
+                </dx-data-grid>
+                <br><br>
+            </div>
+
+            <div *ngIf="mostrarNuevaNotas">
+                <div class="row">
+                    <div class="col-md-4" style="text-align: left;margin-top: 2em;">Detalle</div>
+                    <div class="col-md-8" style="margin-top: 1em;"> <input type="text" [(ngModel)]="nota.descripcion"
+                        name="nombre" class="form-control select" placeholder="Descripcion"
+                        required></div>
+
+                        <br><br><br>
+                    <div class="col-md-4"></div>
+                    <div class="col-md-4 btnSearch">
+                        <button class="btn btn-block btn-success" style="background-color: #ff5722;border-color: #ff5722;" (click)="guardarNuevaNota()">Guardar</button>
+                    </div>
+                    <div class="col-md-4"></div>
+                </div>
+            </div>
+        </div>
+
+       
+    </dx-scroll-view>
+    </div>
+</dx-popup>

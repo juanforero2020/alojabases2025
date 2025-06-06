@@ -1,0 +1,225 @@
+<div *ngIf="mostrarLoading">
+  <app-loading></app-loading>
+</div>
+
+
+<br><br>
+ <div class="card">
+    <h5 class="card-header text-center font-weight-bold text-uppercase ">Transacciones Nóminas</h5>
+    <div class="card-body">
+            <div class="row">
+            <div class="col-md-2"></div>
+            <div class="col-md-4">
+                <div class="col-md-12" style="text-align: center;font-weight: bold;"><h6>Consulta Específica</h6></div>
+                <div class="row card">
+                    <div class="col-md-12"> 
+                        <div class="row">
+                            <div class="col-md-3">Desde</div>
+                            <div class="col-md-9">
+                            <dx-date-box
+                                [(value)]="nowdesde"
+                                type="date">
+                            </dx-date-box>
+                            </div>
+
+                            <div class="col-md-3">Hasta</div>
+                            <div class="col-md-9">
+                            <dx-date-box
+                                [(value)]="nowhasta"
+                                type="date">
+                            </dx-date-box>
+                            </div>
+
+                            <div class="col-md-3">Beneficiario</div>
+                            <div class="col-md-9">
+                                <dx-select-box [items]="beneficiarios" 
+                                    [(value)]="beneficiario"
+                                    [searchEnabled]="true"
+                                    valueExpr="nombre"
+                                    displayExpr="nombre"
+                                    [readOnly]="false" 
+                                    [disabled]="false">
+                                </dx-select-box>
+                            </div>
+
+
+                            <div class="col-md-4"></div>
+                            <div class="col-md-4 btnSearch">
+                                <button class="btn btn-block btn-success" style="background-color: #ff5722;border-color: #ff5722;" (click)="traerTransaccionesPorRangoYBeneficiario()">Buscar</button>
+                            </div>
+                            <div class="col-md-4"></div>
+                        </div>        
+                    </div>
+                </div>                
+            </div>
+            
+            <div class="col-md-4 " style="margin-left: 1em;">
+                <div class="col-md-12" style="text-align: center;font-weight: bold;"><h6>Consulta General</h6></div>
+                <div class="row card">
+                    <br><br><br>
+                    <div class="col-md-12"> 
+                        <div class="row">  
+                    
+                            <div class="col-md-3"></div>
+                            <div class="col-md-6 btnSearch">
+                                <button class="btn btn-block btn-success" style="background-color: #ff5722;border-color: #ff5722;" (click)="traerListaTransacciones()">Buscar Todos</button>
+                            </div>
+                            <div class="col-md-3"></div>
+                        </div>        
+                    </div>
+                    <br>
+                </div>         
+
+            </div>
+            <div class="col-md-2"></div>
+        </div>   
+    </div>
+</div>
+
+ <div class="row">
+    <div class="col-md-6"></div>
+    <div class="col-md-4"></div>
+    <div class="col-md-2 btnSearch" style="text-align: right;">
+        <button class="btn btn-block btn-success" style="background-color: #ff5722;border-color: #ff5722;" (click)="mostrarPopupNotas()">Notas</button>
+    </div>
+</div>
+
+        
+<br>
+
+<dx-data-grid #datag2
+    id="gridContainer"
+    [dataSource]="listaTransacciones"
+    (onExporting)="onExporting($event)"
+    (onExported)="onExported($event)"
+    [showBorders]="true">
+    <dxo-filter-row [visible]="true" ></dxo-filter-row>
+    <dxo-export [enabled]="true" fileName="Transacciones Financieras" [allowExportSelectedData]="true"></dxo-export>
+    <dxo-search-panel [visible]="true" [width]="240" placeholder="Buscar..."></dxo-search-panel>
+     <dxi-column dataField="createdAt" caption="Fecha de creación"  format="dd/MM/yyyy" dataType="date" sortOrder="desc" [visible]="false"></dxi-column>
+    <dxi-column dataField="fecha" dataType="date" format="dd/MM/yyyy"  caption="Fecha"></dxi-column>
+   <!--  <dxi-column dataField="sucursal" caption="Sucursal" dataType="string"></dxi-column> -->
+    <dxi-column dataField="cliente" caption="Cliente" dataType="string"></dxi-column>
+    <dxi-column dataField="rCajaId" caption="RC" dataType="string" ></dxi-column>
+    <!-- <dxi-column dataField="documentoVenta" caption="Fact" dataType="string"></dxi-column>
+    <dxi-column dataField="cedula" caption="Cedula" dataType="string" [visible]="false"></dxi-column>
+    <dxi-column dataField="numDocumento" caption="Documento" dataType="string"></dxi-column> -->
+    
+    <dxi-column dataField="cuenta" caption="Cuenta" dataType="string"></dxi-column>
+    <dxi-column dataField="subCuenta" caption="SubCuenta" dataType="string" width="18%"></dxi-column>
+    <dxi-column dataField="valor" caption="Valor" dataType="number" [visible]="true"></dxi-column>
+    <dxi-column dataField="notas" caption="Notas" dataType="string" [visible]="false"></dxi-column>
+    <dxi-column dataField="beneficiario" caption="Beneficiario" dataType="string" [visible]="false"></dxi-column>
+    <dxi-column dataField="proveedor" caption="Proveedor" dataType="string" [visible]="false"></dxi-column>
+    <dxi-column dataField="centroCosto" caption="Centro Costo" dataType="string" [visible]="false"></dxi-column>
+    <dxi-column type="buttons" dataField="bt1" caption="Notas" width="7%">
+        <dxi-button hint="Notas" icon="fa fa-list-alt" [onClick]="mostrarNotas"></dxi-button>
+    </dxi-column>
+
+    <dxo-scrolling columnRenderingMode="virtual"></dxo-scrolling>
+    <dxo-paging [pageSize]="12"></dxo-paging>
+    <dxo-pager
+        [showPageSizeSelector]="true"
+        [allowedPageSizes]="[8, 12, 20]"
+    ></dxo-pager>
+</dx-data-grid>
+
+<div class="row sectionDatos">
+    <div class="col-md-5" style="text-align: center;margin-top: 0.5em;">NÓMINAS</div>
+    <div class="col-md-7" style="text-align: right;margin-top: 0.5em;">${{valorNominas | number : '.2-2'}}</div>
+    <hr width="100%">
+    <div class="col-md-5" style="text-align: center;margin-top: -1em;">ANTICIPOS</div>
+    <div class="col-md-7" style="text-align: right;margin-top: -1em;">${{valorAnticipos | number : '.2-2'}}</div>
+    <hr width="100%">
+    <div class="col-md-5" style="text-align: center;margin-top: -1em;">PAGOS EXTRAS</div>
+    <div class="col-md-7" style="text-align: right;margin-top: -1em;">${{valorPagosExtras | number : '.2-2'}}</div>
+    <hr width="100%">
+    <div class="col-md-5" style="text-align: center;margin-top: -1em;">COMISIONES X FLETES</div>
+    <div class="col-md-7" style="text-align: right;margin-top: -1em;">${{valorComisiones | number : '.2-2'}}</div>
+    <hr width="100%">
+    <div class="col-md-5" style="text-align: center;color: red;margin-top: -1em;">DESCUENTOS</div>
+    <div class="col-md-7" style="text-align: right;color: red;margin-top: -1em;">-${{valorDescuentos | number : '.2-2'}}</div>
+     <hr width="100%">
+    <div class="col-md-5" style="text-align: center;color: red;margin-top: -1em;">PAGO O ABONO PRÉSTAMOS</div>
+    <div class="col-md-7" style="text-align: right;color: red;margin-top: -1em;">-${{valorPagoPrestamos | number : '.2-2'}}</div>
+    <hr width="100%">
+    <div class="col-md-5" style="text-align: center;margin-bottom: 0.9em;margin-top: -1em;">TOTAL PAGO</div>
+    <div class="col-md-7" style="text-align: right;margin-bottom:  1.3em;margin-top: -1em;">${{resultado | number : '.2-2'}}</div>
+</div>
+
+
+
+
+
+<dx-popup [width]="700" [height]="500" [showTitle]="true" title="Notas" [dragEnabled]="false"
+    [closeOnOutsideClick]="true" [(visible)]="popupVisibleNotas">
+    <div *dxTemplate="let data of 'content'">
+        <dx-scroll-view width="100%" height="100%">
+        <div class="col-md-12">
+            <div class="row espacio" style="text-align: right;">
+                <dx-radio-group
+                    [items]="opciones"
+                    [(value)]="valorOption"
+                    layout="horizontal"
+                    (onValueChanged)="opcionRadio2($event)">
+                </dx-radio-group>            
+            </div>
+
+            <br>
+            <div *ngIf="mostrarListaNotas">
+                <dx-data-grid #datag2
+                    id="gridContainer"
+                    [dataSource]="listadoNotas"
+                    [showBorders]="true">
+                    <dxi-column dataField="descripcion" caption="Descripcion" dataType="string"></dxi-column>
+
+                    <dxi-column type="buttons" dataField="bt2" caption="Eliminar" width="15%" >
+                        <dxi-button icon="clear" [onClick]="deleteNota"></dxi-button>   
+                    </dxi-column>
+
+                    <dxo-paging [pageSize]="12"></dxo-paging>
+                    <dxo-pager
+                        [showPageSizeSelector]="true"
+                        [allowedPageSizes]="[8, 12, 20]"
+                    ></dxo-pager>
+                </dx-data-grid>
+                <br><br>
+            </div>
+
+            <div *ngIf="mostrarNuevaNotas">
+                <div class="row">
+                    <div class="col-md-4" style="text-align: left;margin-top: 2em;">Detalle</div>
+                    <div class="col-md-8" style="margin-top: 1em;"> <input type="text" [(ngModel)]="nota.descripcion"
+                        name="nombre" class="form-control select" placeholder="Descripcion"
+                        required></div>
+
+                        <br><br><br>
+                    <div class="col-md-4"></div>
+                    <div class="col-md-4 btnSearch">
+                        <button class="btn btn-block btn-success" style="background-color: #ff5722;border-color: #ff5722;" (click)="guardarNuevaNota()">Guardar</button>
+                    </div>
+                    <div class="col-md-4"></div>
+                </div>
+            </div>
+        </div>
+
+       
+    </dx-scroll-view>
+    </div>
+</dx-popup>
+
+
+
+<dx-popup [width]="500" [height]="300" [showTitle]="true" title="{{nombre}}" [dragEnabled]="false"
+    [closeOnOutsideClick]="true" [(visible)]="popupVisibleNotasTabla">
+    <div *dxTemplate="let data of 'content'">
+        <dx-scroll-view width="100%" height="100%">
+        <div class="col-md-12" style="font-size: 15pt;">
+            <div style="text-align: center;"><p>{{nombreSubCuenta}}</p></div>
+            <div>
+            <p style="font-weight: bold;float: left;">Observaciones:</p>  <span style="float: left;"> <p> &nbsp; {{textoNota}}</p></span>    
+            </div>     
+        </div>       
+    </dx-scroll-view>
+    </div>
+</dx-popup>

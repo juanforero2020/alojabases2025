@@ -1,0 +1,419 @@
+<div *ngIf="mostrarLoading">
+    <app-loading-messagge [messagge]="mensajeLoading"></app-loading-messagge>
+</div>
+<br>
+<div class="card">
+    <h5 class="card-header text-center font-weight-bold text-uppercase ">REPORTE DETALLADO</h5>
+    <div class="card-body">
+            <div class="row">
+            <div class="col-md-4"></div>
+            <div class="col-md-4">
+                <div class="col-md-12" style="text-align: center;font-weight: bold;"><h6>Seleccione un Rango de Fechas</h6></div>
+                <div class="row card">
+                    <div class="col-md-12"> 
+                        <div class="row">
+                            <div class="col-md-3">Desde</div>
+                            <div class="col-md-9">
+                            <dx-date-box
+                                [(value)]="nowdesde"
+                                type="date">
+                            </dx-date-box>
+                            </div>
+
+                            <div class="col-md-3">Hasta</div>
+                            <div class="col-md-9">
+                            <dx-date-box
+                                [(value)]="nowhasta"
+                                type="date">
+                            </dx-date-box>
+                            </div>
+
+                            <div class="col-md-4"></div>
+                            <div class="col-md-4 btnSearch">
+                                <button class="btn btn-block btn-success" style="background-color: #ff5722;border-color: #ff5722;" (click)="traerTransaccionesPorRango()">Buscar</button>
+                            </div>
+                            <div class="col-md-4"></div>
+                        </div>        
+                    </div>
+                </div>                
+            </div>
+            
+            <div class="col-md-4"></div>
+        </div>   
+    </div>
+</div>
+
+<div  class="marginTabla" >
+  <dx-data-grid
+    #datag2
+    id="gridContainer"
+    [dataSource]="reporteDetallado"
+    [customizeColumns]="onCustomizeColumns"
+    (onExporting)="onExporting($event)"
+    (onExported)="onExported($event)"
+    [showBorders]="true"
+    [columnWidth]="125">
+    <dxo-search-panel
+      [visible]="true"
+      [width]="240"
+      placeholder="Buscar..."
+    ></dxo-search-panel>
+    <i class="fa fa-exclamation-triangle" aria-hidden="true"></i>
+    <dxo-export
+      [enabled]="true"
+      fileName="Reporte-Detallado"
+      [allowExportSelectedData]="true"
+    ></dxo-export>
+    <dxi-column
+      dataField="fecha"
+      caption="FECHA"
+      dataType="date"
+      sortOrder="asc"
+      [width]="130"
+    >
+    </dxi-column>
+
+    <dxi-column caption="Ventas Diarias" dataField="sucursal1">
+      <dxi-column
+        dataField="VDiariaMatriz"
+        caption="MATRIZ"
+        alignment="right"
+        [customizeText]="customizeValueRow"
+        dataType="currency">
+        <dxo-format
+            type="currency"
+            [precision]="2">
+        </dxo-format>
+      </dxi-column>
+      <dxi-column
+        dataField="DevDiariaMatriz"
+        caption="DEV.MATRIZ"
+        alignment="right"
+        [customizeText]="customizeValueRow"
+        dataType="currency">
+        <dxo-format
+            type="currency"
+            [precision]="2">
+        </dxo-format>
+      </dxi-column>
+      <dxi-column
+        dataField="VDiariaSucursal1"
+        caption="SUCURSAL 1"
+        alignment="right"
+        [customizeText]="customizeValueRow"
+        dataType="currency">
+        <dxo-format
+            type="currency"
+            [precision]="2">
+        </dxo-format>
+      </dxi-column>
+      <dxi-column
+        dataField="DevDiariaSucursal1"
+        caption="DEV.SUC1"
+        alignment="right"
+        [customizeText]="customizeValueRow"
+        dataType="currency">
+        <dxo-format
+            type="currency"
+            [precision]="2">
+        </dxo-format>
+      </dxi-column>
+      <dxi-column
+        dataField="VDiariaTotal"
+        caption="TOTAL"
+        alignment="right"
+        [customizeText]="customizeValueRow"
+        dataType="currency">
+        <dxo-format
+            type="currency"
+            [precision]="2">
+        </dxo-format>
+      </dxi-column>
+    </dxi-column>
+
+    <dxi-column caption="Matriz">
+      <dxi-column
+        dataField="MatUBruta"
+        caption="UBRUTA"
+        alignment="right"
+        [customizeText]="customizeValueRow"
+        dataType="currency">
+         <dxo-format
+            type="currency"
+            [precision]="2">
+        </dxo-format>
+      </dxi-column>
+      <dxi-column
+        dataField="MatPorcentaje"
+        caption="%"
+        alignment="right"
+        [customizeText]="customizeValuePercent"
+        dataType="percent">
+         <dxo-format
+            type="percent"
+            [precision]="2">
+        </dxo-format>
+      </dxi-column>
+    </dxi-column>
+
+   <dxi-column caption="Sucursal 1">
+      <dxi-column
+        dataField="Suc1UBruta"
+        caption="UBRUTA"
+        alignment="right"
+        [customizeText]="customizeValueRow"
+        dataType="currency">
+         <dxo-format
+            type="currency"
+            [precision]="2">
+        </dxo-format>
+      </dxi-column>
+      <dxi-column
+        dataField="Suc1Porcentaje"
+        caption="%"
+        alignment="right"
+        [customizeText]="customizeValuePercent"
+        dataType="percent">
+        <dxo-format
+            type="percent"
+            [precision]="2">
+        </dxo-format>
+      </dxi-column>
+    </dxi-column>
+
+   <!--  <dxi-column caption="Validación">
+      <dxi-column
+        dataField="validacionMatriz"
+        caption="MATRIZ"
+        alignment="right"
+        [customizeText]="customizeValueRow"
+        dataType="currency">
+        <dxo-format
+            type="currency"
+            [precision]="2">
+        </dxo-format>
+      </dxi-column>
+      <dxi-column
+        dataField="validacionSucursal1"
+        caption="SUCURSAL1"
+        alignment="right"
+        [customizeText]="customizeValueRow"
+        dataType="currency">
+        <dxo-format
+            type="currency"
+            [precision]="2">
+        </dxo-format>
+      </dxi-column>
+    </dxi-column> -->
+    <dxi-column type="buttons" dataField="bt1" caption="Notas" [width]="130">
+      <dxi-button hint="Notas" icon="fa fa-list-alt" [onClick]="mostrarNotas"></dxi-button>
+    </dxi-column>
+
+    <dxi-column dataField="notas" caption="Notas" [visible]="false"></dxi-column>
+
+    <dxi-sort-by-group-summary-info summaryItem="count"></dxi-sort-by-group-summary-info>
+
+
+    <dxo-summary>
+                <dxi-total-item
+                    column="VDiariaMatriz"
+                    dataType="number"
+                    summaryType="sum"
+                    showInColumn="TotalAmount"
+                    [customizeText]="customizeValue"
+                    displayFormat="$ {0}"
+                    alignment="center">
+                  <dxo-format
+                      type="number"
+                      [precision]="2">
+                  </dxo-format>
+                </dxi-total-item>
+
+                <dxi-total-item
+                    column="DevDiariaMatriz"
+                    dataType="number"
+                    summaryType="sum"
+                    showInColumn="TotalAmount"
+                    [customizeText]="customizeValue"
+                    displayFormat="$ {0}"
+                    alignment="center">
+                  <dxo-format
+                      type="number"
+                      [precision]="2">
+                  </dxo-format>
+                </dxi-total-item>
+
+                <dxi-total-item
+                    column="VDiariaSucursal1"
+                    dataType="number"
+                    displayFormat="$ {0}"
+                    [customizeText]="customizeValue"
+                    summaryType="sum"
+                    alignment="center">
+                    <dxo-format
+                      type="number"
+                      [precision]="2">
+                  </dxo-format>
+                </dxi-total-item>
+
+                <dxi-total-item
+                    column="DevDiariaSucursal1"
+                    dataType="number"
+                    summaryType="sum"
+                    showInColumn="TotalAmount"
+                    [customizeText]="customizeValue"
+                    displayFormat="$ {0}"
+                    alignment="center">
+                  <dxo-format
+                      type="number"
+                      [precision]="2">
+                  </dxo-format>
+                </dxi-total-item>
+
+                <dxi-total-item
+                    column="VDiariaTotal"
+                    dataType="number"
+                    displayFormat="$ {0}"
+                    [customizeText]="customizeValue"
+                    summaryType="sum"
+                    alignment="center">
+                    <dxo-format
+                      type="number"
+                      [precision]="2">
+                    </dxo-format>
+                </dxi-total-item>
+                <dxi-total-item
+                    column="MatUBruta"
+                    dataType="number"
+                    displayFormat="$ {0}"
+                    [customizeText]="customizeValue"
+                    summaryType="sum"
+                    alignment="center">
+                    <dxo-format
+                      type="number"
+                      [precision]="2">
+                    </dxo-format>
+                </dxi-total-item>
+
+                <dxi-total-item
+                    column="MatPorcentaje"
+                    dataType="number"
+                    displayFormat=" {0}%"
+                    [customizeText]="customizeValue2"
+                    summaryType="avg"
+                    alignment="center">
+                    <dxo-format
+                      type="number"
+                      [precision]="2">
+                    </dxo-format>
+                </dxi-total-item>
+
+                <dxi-total-item
+                    column="Suc1UBruta"
+                    dataType="number"
+                    displayFormat="$ {0}"
+                    [customizeText]="customizeValue"
+                    summaryType="sum"
+                    alignment="center">
+                    <dxo-format
+                      type="number"
+                      [precision]="2">
+                    </dxo-format>
+                </dxi-total-item>
+
+                <dxi-total-item
+                    column="Suc1Porcentaje"
+                    dataType="number"
+                    displayFormat=" {0}%"
+                    [customizeText]="customizeValue2"
+                    summaryType="avg"
+                    alignment="center">
+                    <dxo-format
+                      type="number"
+                      [precision]="2">
+                    </dxo-format>
+                </dxi-total-item>
+
+                
+
+               <!--  <dxi-total-item
+                    column="validacionMatriz"
+                    dataType="number"
+                    displayFormat="$ {0}"
+                    [customizeText]="customizeValue"
+                    summaryType="sum"
+                    alignment="center">
+                    <dxo-format
+                      type="number"
+                      [precision]="2">
+                    </dxo-format>
+                </dxi-total-item>
+
+                <dxi-total-item
+                    column="validacionSucursal1"
+                    dataType="number"
+                    displayFormat="$ {0}"
+                    [customizeText]="customizeValue"
+                    summaryType="sum"
+                    alignment="center">
+                    <dxo-format
+                      type="number"
+                      [precision]="2">
+                    </dxo-format>
+                </dxi-total-item> -->
+                
+   
+            </dxo-summary>
+    <dxo-paging [pageSize]="12"></dxo-paging>
+    <dxo-pager
+      [showPageSizeSelector]="true"
+      [allowedPageSizes]="[8, 12, 20]"
+    ></dxo-pager>
+    <dxo-scrolling columnRenderingMode="virtual"></dxo-scrolling>
+  </dx-data-grid>
+</div>
+
+
+
+<dx-popup [width]="600" [height]="450" [showTitle]="true" title="Fecha:  {{noteDate}}" [dragEnabled]="false"
+    [closeOnOutsideClick]="true" [(visible)]="popupVisibleNotas">
+    <div *dxTemplate="let data of 'content'">
+        <dx-scroll-view width="100%" height="100%">
+        <div class="col-md-12">
+            <div class="row espacio">
+                <div class="col-md-10" style="text-align: center;padding-top: 0.5em;"><h6>Notas</h6> </div>
+                <div class="col-md-2"><span style="text-align: right;"><button class="btn3" type="button"
+                    (click)="nuevaNota()"> + </button></span></div>
+                <table>
+                    <tr>
+                        <th class="text-center" >Texto</th>
+                        <th class="text-center">Acciones</th>
+                    </tr>
+                    <tr *ngFor="let ubi1 of arregloNotas; let id = index">
+                        <td style="text-align: center;width: 85%;">
+                            <span contenteditable="true" (blur)="modificar4(id, $event)" >{{ubi1}}</span>
+                        </td>
+                        <td style="text-align: center;width: 15%;">
+                            <button class="btn btn-primary btn-xs" (click)="eliminar4(id)">
+                                <i class="fa fa-trash"></i>
+                            </button>
+                        </td>
+                        
+                    </tr>
+                </table>
+                
+            </div>
+           
+        </div>
+
+        <div class="col-md-12">
+            <div class="row">
+                <div class="col-md-4"></div>
+                <div class="col-md-4"><button class="btn btn2" type="button"
+                        (click)="actualizarNotas()">Actualizar</button></div>
+                <div class="col-md-4"></div>
+            </div>
+        </div>
+    </dx-scroll-view>
+    </div>
+</dx-popup>

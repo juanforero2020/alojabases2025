@@ -1,0 +1,117 @@
+.remiPro{
+    padding: 2em;
+    margin-top: 2em;
+ 
+    margin-bottom: 1.5em;
+    }
+
+.remiPro p{
+       
+        margin-top: 1em;
+        
+}
+
+.titulo{
+    margin-bottom: 1em;
+    font-weight: bold;
+    text-align: center;
+    
+}
+
+.dates dx-date-box{
+    margin-top: 0.05em;
+}
+
+.alinearBoton{
+    text-align: left;
+    margin-bottom: 2em;
+}
+
+.detalle{
+    padding: 3em;
+    padding-top: 0em;
+}
+
+.bt{
+    background-color: red;
+    color: white;
+   
+}
+
+::ng-deep .bt .dx-icon {
+    font-size: 12px;
+    color: white;
+}
+
+
+.bt2{
+    background-color: green;
+    color: white;
+}
+
+#historial{
+    margin: 2em;
+}
+
+.titulosT h5{
+    text-align: center;
+    font-weight: bold;
+    font-size: 1em;
+}
+
+::ng-deep  .dx-texteditor-input{
+    text-align: center;
+}
+
+::ng-deep .total .dx-texteditor-input{
+    text-align: center;
+    font-size: 2em;
+    font-weight: bold;
+}
+
+
+::ng-deep .id .dx-texteditor-input{
+    text-align: center;
+    font-size: 2em;
+    font-weight: bold;
+}
+
+.mover{
+    text-align: right;
+}
+
+.btn-xs{
+    background-color: red;
+    border: red;
+    text-align: right;
+}
+
+
+.espacioDivs dx-text-box,dx-select-box,dx-autocomplete,dx-date-box{
+    margin-top: -1em;
+}
+
+.espacioDivs dx-number-box{
+    text-align: right;
+}
+
+::ng-deep .espacioDivs .dx-texteditor-input{
+    text-align: center;
+}
+
+.select{
+    text-align: center;
+    background-color: white;
+}
+
+.btnSearch{
+    text-align: center;
+    margin-top: 0.4em;
+    margin-bottom: 0.4em;
+}
+
+
+::ng-deep .dx-theme-material-typography h2 {
+    font-weight: bold;
+    font-size: 40px;
+}
