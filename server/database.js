@@ -12,19 +12,18 @@ const mongoose = require("mongoose");
 //const URI ="mongodb+srv://yander:yander1234@cluster0.dbmpy.mongodb.net/alojabasesOctubre"; // PRUEBAS-OCTUBRE-------------
 
 
-const URI ="mongodb+srv://ysantana:YanderGrace096@alojabasesabril.1wfv9w1.mongodb.net/Alojabases_Abril"; // PRODUCCION-ABRIL-------------
+// 1. COMENTAR LA URI DE PRODUCCIÓN ACTIVA:
+// const URI ="mongodb+srv://ysantana:YanderGrace096@alojabasesabril.1wfv9w1.mongodb.net/Alojabases_Abril"; // PRODUCCION-ABRIL-------------
 
-
-
-
-
+// 2. [NUEVA LÍNEA] URI DE PRUEBAS ACTIVA:
+const URI ="mongodb+srv://jeffzambrano66:PruebasAlojabases@prueba.ftkzhyv.mongodb.net/base_prueba?retryWrites=true&w=majority"; 
+// ...
 
 mongoose
-  .connect(URI, {
-    useNewUrlParser: true,
-    useUnifiedTopology: true,
-  })
-  .then((db) => console.log("DB is connected"))
-  .catch((err) => console.error(err));
-
-//module.exports = mongoose;
+  .connect(URI, {
+    useNewUrlParser: true,
+    useUnifiedTopology: true,
+  })
+  // 3. MENSAJE CLARO DE CONEXIÓN A PRUEBAS:
+  .then((db) => console.log("DB de PRUEBAS (base_prueba) conectada con éxito")) 
+  .catch((err) => console.error(err));
