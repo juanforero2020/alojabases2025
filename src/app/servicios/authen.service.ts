@@ -4,65 +4,69 @@ import { Router } from "@angular/router";
 import { user } from "../pages/user/user";
 
 @Injectable({
-  providedIn: "root",
+  providedIn: "root",
 })
 export class AuthenService {
-  userEmail = "";
-  userLogin;
-  usuario: user;
-  usuarios: user[] = [];
-  usuarios2: user[] = [];
-  estalogeado: boolean = true;
+  userEmail = "";
+  userLogin;
+  usuario: user;
+  usuarios: user[] = [];
+  usuarios2: user[] = [];
+  estalogeado: boolean = true;
 
-  //private URL = "http://159.223.107.115:3000/usuario";
-  private URL = "http://104.131.82.174:3000/usuario";
-  //private URL = 'http://localhost:3000/usuario';
+  // [COMENTADAS] URIs de Producción/Remotas:
+  // private URL = "http://159.223.107.115:3000/usuario";
+  // private URL = "http://104.131.82.174:3000/usuario";
+  
+  // [ACTIVA] URI de Desarrollo (Localhost):
+  private URL = 'http://localhost:3000/usuario';
 
-  constructor(private http: HttpClient, private router: Router) {}
+  constructor(private http: HttpClient, private router: Router) {}
 
-  signup(user) {
-    return this.http.post<any>(this.URL + "/register", user);
-  }
+  signup(user) {
+    return this.http.post<any>(this.URL + "/register", user);
+  }
 
-  signIn(user) {
-    this.userEmail = user.email;
-    localStorage.setItem("maily", (this.userEmail = user.email));
-    return this.http.post<any>(this.URL + "/signIn", user);
-  }
+  signIn(user) {
+    this.userEmail = user.email;
+    localStorage.setItem("maily", (this.userEmail = user.email));
+    // CAMBIO TEMPORAL: apunta a /newUser para crear el usuario. ¡IMPORTANTE!
+    return this.http.post<any>(this.URL + "/newUser", user); 
+  }
 
-  loggedIn() {
-    //comprobar si el usuario esta logeado
-    return !!localStorage.getItem("token");
-  }
+  loggedIn() {
+    //comprobar si el usuario esta logeado
+    return !!localStorage.getItem("token");
+  }
 
-  returnUserRol() {
-    const pr = localStorage.getItem("maily");
-    return this.http.get(this.URL + `/getUsers1/${pr}`);
-  }
+  returnUserRol() {
+    const pr = localStorage.getItem("maily");
+    return this.http.get(this.URL + `/getUsers1/${pr}`);
+  }
 
-  getToken() {
-    return localStorage.getItem("token");
-  }
+  getToken() {
+    return localStorage.getItem("token");
+  }
 
-  logout() {
-    localStorage.removeItem("token");
-    localStorage.removeItem("contrasena");
-    localStorage.removeItem("sucursal");
-    localStorage.removeItem("rol");
-    this.router.navigate(["/login"]);
-  }
+  logout() {
+    localStorage.removeItem("token");
+    localStorage.removeItem("contrasena");
+    localStorage.removeItem("sucursal");
+    localStorage.removeItem("rol");
+    this.router.navigate(["/login"]);
+  }
 
-  getUsers() {
-    return this.http.get(this.URL + "/getUsers");
-  }
+  getUsers() {
+    return this.http.get(this.URL + "/getUsers");
+  }
 
-  getUserLogueado(correo: string) {
-    return this.http.get(this.URL + `/getUsers1/${correo}`);
-  }
+  getUserLogueado(correo: string) {
+    return this.http.get(this.URL + `/getUsers1/${correo}`);
+  }
 
-  Savesresponse(responce) {
-    this.userEmail = responce["email"];
-    localStorage.setItem("maily", (this.userEmail = responce["email"]));
-    return this.http.post<any>(this.URL + "/signInGoogle", responce);
-  }
+  Savesresponse(responce) {
+    this.userEmail = responce["email"];
+    localStorage.setItem("maily", (this.userEmail = responce["email"]));
+    return this.http.post<any>(this.URL + "/signInGoogle", responce);
+  }
 }

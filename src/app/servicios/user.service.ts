@@ -6,14 +6,16 @@ import { user } from "../pages/user/user";
   providedIn: "root",
 })
 export class UserService {
-  usuarios: user[];
-  role = "";
-  userEmail = "";
-  //private URL = 'http://localhost:3000/usuario';
-  //private URL = "http://159.223.107.115:3000/usuario";
-  private URL = 'http://104.131.82.174:3000/usuario';
-  constructor(private http: HttpClient,) {}
-
+  usuarios: user[];
+  role = "";
+  userEmail = "";
+  
+  private URL = 'http://localhost:3000/usuario'; // <--- ¡ACTIVAR ESTA LÍNEA!
+  
+  // Desactivar la línea de Producción:
+  // private URL = 'http://104.131.82.174:3000/usuario';
+  
+  constructor(private http: HttpClient,) {}
   newUser(user) {
     return this.http.post<any>(this.URL + "/newUser", user);
   }
@@ -39,8 +41,9 @@ export class UserService {
   }
 
   signIn(user) {
-    this.userEmail = user.email;
-    localStorage.setItem("maily", (this.userEmail = user.email));
-    return this.http.post<any>(this.URL + "/signIn", user);
-  }
+    this.userEmail = user.email;
+    localStorage.setItem("maily", (this.userEmail = user.email));
+    // VUELVE A LA RUTA CORRECTA: /signIn
+    return this.http.post<any>(this.URL + "/signIn", user); 
+  }
 }
