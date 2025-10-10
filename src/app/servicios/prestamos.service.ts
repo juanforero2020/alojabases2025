@@ -3,68 +3,72 @@ import { HttpClient } from "@angular/common/http";
 import { Router } from "@angular/router";
 
 @Injectable({
-  providedIn: "root",
+  providedIn: "root",
 })
 export class PrestamosService {
-  //private URL = "http://localhost:3000/prestamos"; //localhost
-  private URL = "http://104.131.82.174:3000/prestamos";
-  //private URL = "http://159.223.107.115:3000/prestamos";
-  constructor(public http: HttpClient, public router: Router) {}
+  // [ACTIVO] Usamos la URL de Desarrollo (Localhost)
+  private URL = "http://localhost:3000/prestamos"; //localhost
+  
+  // [COMENTADAS] Desactivamos las IPs de Producción
+  // private URL = "http://104.131.82.174:3000/prestamos";
+  // private URL = "http://159.223.107.115:3000/prestamos";
+  
+  constructor(public http: HttpClient, public router: Router) {}
 
-  newPrestamo(prestamo) {
-    return this.http.post<any>(this.URL + "/newPrestamo", prestamo);
-  }
+  newPrestamo(prestamo) {
+    return this.http.post<any>(this.URL + "/newPrestamo", prestamo);
+  }
 
-  getPrestamos() {
-    return this.http.get(this.URL + "/getPrestamos");
-  }
+  getPrestamos() {
+    return this.http.get(this.URL + "/getPrestamos");
+  }
 
-  getPrestamosPorRUC(objeto) {
-    return this.http.post(this.URL + `/getPrestamosPorRUC/${objeto.rucCliente}`,objeto );
-  }
+  getPrestamosPorRUC(objeto) {
+    return this.http.post(this.URL + `/getPrestamosPorRUC/${objeto.rucCliente}`,objeto );
+  }
 
-  getPrestamosPorReferencias(objeto) {
-    console.log("---",objeto)
-    return this.http.post(this.URL + `/getPrestamosPorReferencias/${objeto.referenciaPrestamo}`,objeto );
-  }
+  getPrestamosPorReferencias(objeto) {
+    console.log("---",objeto)
+    return this.http.post(this.URL + `/getPrestamosPorReferencias/${objeto.referenciaPrestamo}`,objeto );
+  }
 
-  getPrestamosPorNombre(objeto) {
-    return this.http.post(this.URL + `/getPrestamosPorNombre/${objeto.nombreCliente}`,objeto );
-  }
+  getPrestamosPorNombre(objeto) {
+    return this.http.post(this.URL + `/getPrestamosPorNombre/${objeto.nombreCliente}`,objeto );
+  }
 
-  getCuentasPorPagarActivas() {
-    return this.http.get(this.URL + "/getCuentasPorPagarActivas");
-  }
+  getCuentasPorPagarActivas() {
+    return this.http.get(this.URL + "/getCuentasPorPagarActivas");
+  }
 
-  getCuentasPorPagarPendientes() {
-    return this.http.get(this.URL + "/getCuentasPorPagarPendientes");
-  }
+  getCuentasPorPagarPendientes() {
+    return this.http.get(this.URL + "/getCuentasPorPagarPendientes");
+  }
 
-  getPrestamosPorRango(objFecha) {
-    return this.http.post(this.URL + "/getPrestamosPorRango", objFecha);
-  }
+  getPrestamosPorRango(objFecha) {
+    return this.http.post(this.URL + "/getPrestamosPorRango", objFecha);
+  }
 
-  getCuentasXPagarPorRUC(objeto) {
-    return this.http.post(this.URL + `/getCuentasPorRUC/${objeto.rucCliente}`,objeto );
-  }
+  getCuentasXPagarPorRUC(objeto) {
+    return this.http.post(this.URL + `/getCuentasPorRUC/${objeto.rucCliente}`,objeto );
+  }
 
-  getCuentasXPagarPorNombre(objeto) {
-    return this.http.post(this.URL + `/getCuentasPorNombre/${objeto.nombreCliente}`,objeto );
-  }
+  getCuentasXPagarPorNombre(objeto) {
+    return this.http.post(this.URL + `/getCuentasPorNombre/${objeto.nombreCliente}`,objeto );
+  }
 
-  updateEstadoPrestamo(objeto, estado: string) {
-    return this.http.put(this.URL + `/updateEstado/${objeto._id}/${estado}`, objeto);
-  }
+  updateEstadoPrestamo(objeto, estado: string) {
+    return this.http.put(this.URL + `/updateEstado/${objeto._id}/${estado}`, objeto);
+  }
 
-  updateValorPrestamo(objeto, valor: number) {
-    return this.http.put(this.URL + `/updateValor/${objeto._id}/${valor}`, objeto);
-  }
+  updateValorPrestamo(objeto, valor: number) {
+    return this.http.put(this.URL + `/updateValor/${objeto._id}/${valor}`, objeto);
+  }
 
-  deleteCuenta(cuenta) {
-    return this.http.delete(this.URL + `/delete/${cuenta._id}`, cuenta);
-  }
+  deleteCuenta(cuenta) {
+    return this.http.delete(this.URL + `/delete/${cuenta._id}`, cuenta);
+  }
 
-  deleteCuentaPorPagar(cuenta) {
-    return this.http.delete(this.URL + `/deleteDoc/${cuenta.rCajaId}`, cuenta);
-  }
+  deleteCuentaPorPagar(cuenta) {
+    return this.http.delete(this.URL + `/deleteDoc/${cuenta.rCajaId}`, cuenta);
+  }
 }

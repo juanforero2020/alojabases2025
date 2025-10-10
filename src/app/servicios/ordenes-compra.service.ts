@@ -3,21 +3,25 @@ import { HttpClient } from "@angular/common/http";
 import { Router } from "@angular/router";
 
 @Injectable({
-  providedIn: "root",
+  providedIn: "root",
 })
 export class OrdenesCompraService {
-  //private URL = 'http://localhost:3000/ordenesCompra'; //localhost
-  //private URL = "http://159.223.107.115:3000/ordenesCompra";
-  private URL = 'http://104.131.82.174:3000/ordenesCompra';
-  constructor(public http: HttpClient, public router: Router) {}
+  // [ACTIVO] Usamos la URL de Desarrollo (Localhost)
+  private URL = 'http://localhost:3000/ordenesCompra'; //localhost
+  
+  // [COMENTADAS] Desactivamos las IPs de Producción
+  //private URL = "http://159.223.107.115:3000/ordenesCompra";
+  // private URL = 'http://104.131.82.174:3000/ordenesCompra';
+  
+  constructor(public http: HttpClient, public router: Router) {}
 
-  newOrden(venta) {
-    return this.http.post<any>(this.URL + "/newOrdenes", venta);
-  }
+  newOrden(venta) {
+    return this.http.post<any>(this.URL + "/newOrdenes", venta);
+  }
 
-  getOrden() {
-    return this.http.get(this.URL + "/getOrdenesCompra");
-  }
+  getOrden() {
+    return this.http.get(this.URL + "/getOrdenesCompra");
+  }
 
   getOrdenEspecifica(ordenNueva) {
     return this.http.post(this.URL + `/getOrdenCompraEspecifica/${ordenNueva.n_orden}`,ordenNueva);

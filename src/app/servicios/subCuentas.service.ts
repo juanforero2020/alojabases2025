@@ -3,32 +3,35 @@ import { HttpClient } from "@angular/common/http";
 import { Router } from "@angular/router";
 
 @Injectable({
-  providedIn: "root",
+  providedIn: "root",
 })
 export class SubCuentasService {
-  //private URL = "http://159.223.107.115:3000/subCuentas";
-  private URL = "http://104.131.82.174:3000/subCuentas";
-  //private URL = 'http://localhost:3000/subCuentas'; //localhost
+  // [COMENTADA] Desactivamos la IP de Producción
+  //private URL = "http://159.223.107.115:3000/subCuentas";
+  // private URL = "http://104.131.82.174:3000/subCuentas";
+  
+  // [ACTIVO] Usamos la URL de Desarrollo (Localhost)
+  private URL = 'http://localhost:3000/subCuentas'; //localhost
 
-  constructor(public http: HttpClient, public router: Router) {}
+  constructor(public http: HttpClient, public router: Router) {}
 
-  newSubCuenta(subcuenta) {
-    return this.http.post<any>(this.URL + "/newSubCuenta", subcuenta);
-  }
+  newSubCuenta(subcuenta) {
+    return this.http.post<any>(this.URL + "/newSubCuenta", subcuenta);
+  }
 
-  getSubCuentas() {
-    return this.http.get(this.URL + "/getSubCuentas");
-  }
+  getSubCuentas() {
+    return this.http.get(this.URL + "/getSubCuentas");
+  }
 
-  getSubCuentasPorId(idCuenta) {
-    return this.http.post(this.URL +`/getSubCuentasPorId/${idCuenta}` ,idCuenta);
-  }
+  getSubCuentasPorId(idCuenta) {
+    return this.http.post(this.URL +`/getSubCuentasPorId/${idCuenta}` ,idCuenta);
+  }
 
-  updateSubCuentas(subcuenta) {
-    return this.http.put(this.URL + `/update/${subcuenta._id}`, subcuenta);
-  }
+  updateSubCuentas(subcuenta) {
+    return this.http.put(this.URL + `/update/${subcuenta._id}`, subcuenta);
+  }
 
-  deleteSubCuentas(subcuenta) {
-    return this.http.delete(this.URL + `/delete/${subcuenta._id}`, subcuenta);
-  }
+  deleteSubCuentas(subcuenta) {
+    return this.http.delete(this.URL + `/delete/${subcuenta._id}`, subcuenta);
+  }
 }

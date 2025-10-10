@@ -3,30 +3,34 @@ import { HttpClient } from "@angular/common/http";
 import { Router } from "@angular/router";
 
 @Injectable({
-  providedIn: "root",
+  providedIn: "root",
 })
 export class ProductosObsequioService {
-  //private URL = 'http://localhost:3000/productosObsequio'; //localhost
-  //private URL = "http://159.223.107.115:3000/productosObsequio";
-  private URL = 'http://104.131.82.174:3000/productosObsequio';
-  constructor(public http: HttpClient, public router: Router) {}
+  // [ACTIVO] Usamos la URL de Desarrollo (Localhost)
+  private URL = 'http://localhost:3000/productosObsequio'; //localhost
+  
+  // [COMENTADAS] Desactivamos las IPs de Producción
+  //private URL = "http://159.223.107.115:3000/productosObsequio";
+  // private URL = 'http://104.131.82.174:3000/productosObsequio';
+  
+  constructor(public http: HttpClient, public router: Router) {}
 
-  newProductoObsequio(productoObs) {
-    return this.http.post<any>(this.URL + "/newProductoObsequio", productoObs);
-  }
+  newProductoObsequio(productoObs) {
+    return this.http.post<any>(this.URL + "/newProductoObsequio", productoObs);
+  }
 
-  getProductosObsequio() {
-    return this.http.get(this.URL + "/getProductosObsequio");
-  }
+  getProductosObsequio() {
+    return this.http.get(this.URL + "/getProductosObsequio");
+  }
 
-  updateProductoObsequio(productoObs) {
-    return this.http.put(this.URL + `/update/${productoObs._id}`, productoObs);
-  }
+  updateProductoObsequio(productoObs) {
+    return this.http.put(this.URL + `/update/${productoObs._id}`, productoObs);
+  }
 
-  deleteProductoObsequio(productoObs) {
-    return this.http.delete(
-      this.URL + `/delete/${productoObs._id}`,
-      productoObs
-    );
-  }
+  deleteProductoObsequio(productoObs) {
+    return this.http.delete(
+      this.URL + `/delete/${productoObs._id}`,
+      productoObs
+    );
+  }
 }

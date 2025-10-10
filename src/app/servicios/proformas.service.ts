@@ -4,44 +4,48 @@ import { Router } from "@angular/router";
 import { factura } from "../pages/ventas/venta";
 
 @Injectable({
-  providedIn: "root",
+  providedIn: "root",
 })
 export class ProformasService {
-  facturas: factura[];
-  //private URL = 'http://localhost:3000/proformas'; //localhost
-  //private URL = "http://159.223.107.115:3000/proformas";
-  private URL = 'http://104.131.82.174:3000/proformas';
-  constructor(public http: HttpClient, public router: Router) {}
+  facturas: factura[];
+  // [ACTIVO] Usamos la URL de Desarrollo (Localhost)
+  private URL = 'http://localhost:3000/proformas'; //localhost
+  
+  // [COMENTADAS] Desactivamos las IPs de Producción
+  //private URL = "http://159.223.107.115:3000/proformas";
+  // private URL = 'http://104.131.82.174:3000/proformas';
+  
+  constructor(public http: HttpClient, public router: Router) {}
 
-  newProforma(proforma) {
-    return this.http.post<any>(this.URL + "/newProforma", proforma);
-  }
+  newProforma(proforma) {
+    return this.http.post<any>(this.URL + "/newProforma", proforma);
+  }
 
-  getProformas() {
-    return this.http.get(this.URL + "/getProformas");
-  }
+  getProformas() {
+    return this.http.get(this.URL + "/getProformas");
+  }
 
-  getProformasMensuales(objFecha) {
-    return this.http.post(this.URL + "/getProformasMensuales", objFecha);
-  }
+  getProformasMensuales(objFecha) {
+    return this.http.post(this.URL + "/getProformasMensuales", objFecha);
+  }
 
-  getProformaPorId(idComprobante) {
-    return this.http.post(this.URL + "/getProformaPorId", idComprobante);
-  }
+  getProformaPorId(idComprobante) {
+    return this.http.post(this.URL + "/getProformaPorId", idComprobante);
+  }
 
-  getProformasPorRango(objFecha) {
-    return this.http.post(this.URL + "/getProformasPorRango", objFecha);
-  }
+  getProformasPorRango(objFecha) {
+    return this.http.post(this.URL + "/getProformasPorRango", objFecha);
+  }
 
-  updateProformas(proforma) {
-    return this.http.put(this.URL + `/update/${proforma._id}`, proforma);
-  }
+  updateProformas(proforma) {
+    return this.http.put(this.URL + `/update/${proforma._id}`, proforma);
+  }
 
-  actualizarNota(proforma, nota: string) {
-    return this.http.put(this.URL + `/actualizarNota/${proforma._id}/${nota}`,proforma);
-  }
+  actualizarNota(proforma, nota: string) {
+    return this.http.put(this.URL + `/actualizarNota/${proforma._id}/${nota}`,proforma);
+  }
 
-  deleteProformas(proforma) {
-    return this.http.delete(this.URL + `/delete/${proforma._id}`, proforma);
-  }
+  deleteProformas(proforma) {
+    return this.http.delete(this.URL + `/delete/${proforma._id}`, proforma);
+  }
 }

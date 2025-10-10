@@ -4,28 +4,32 @@ import { Router } from "@angular/router";
 import { Producto } from "../pages/compras/compra";
 
 @Injectable({
-  providedIn: "root",
+  providedIn: "root",
 })
 export class SucursalesService {
-  empresa: Producto[];
-  //private URL = 'http://localhost:3000/sucursales'; //localhost
-  //private URL = "http://159.223.107.115:3000/sucursales";
-  private URL = 'http://104.131.82.174:3000/sucursales';
-  constructor(public http: HttpClient, public router: Router) {}
+  empresa: Producto[];
+  // [ACTIVO] Usamos la URL de Desarrollo (Localhost)
+  private URL = 'http://localhost:3000/sucursales'; //localhost
+  
+  // [COMENTADAS] Desactivamos las IPs de Producción
+  //private URL = "http://159.223.107.115:3000/sucursales";
+  // private URL = 'http://104.131.82.174:3000/sucursales';
+  
+  constructor(public http: HttpClient, public router: Router) {}
 
-  newSucursal(sucursal) {
-    return this.http.post<any>(this.URL + "/newSucursal", sucursal);
-  }
+  newSucursal(sucursal) {
+    return this.http.post<any>(this.URL + "/newSucursal", sucursal);
+  }
 
-  getSucursales() {
-    return this.http.get(this.URL + "/getSucursales");
-  }
+  getSucursales() {
+    return this.http.get(this.URL + "/getSucursales");
+  }
 
-  updateSucursales(sucursal) {
-    return this.http.put(this.URL + `/update/${sucursal._id}`, sucursal);
-  }
+  updateSucursales(sucursal) {
+    return this.http.put(this.URL + `/update/${sucursal._id}`, sucursal);
+  }
 
-  deleteSucursales(sucursal) {
-    return this.http.delete(this.URL + `/delete/${sucursal._id}`, sucursal);
-  }
+  deleteSucursales(sucursal) {
+    return this.http.delete(this.URL + `/delete/${sucursal._id}`, sucursal);
+  }
 }

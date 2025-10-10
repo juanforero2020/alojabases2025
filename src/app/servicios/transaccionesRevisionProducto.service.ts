@@ -3,23 +3,27 @@ import { HttpClient } from "@angular/common/http";
 import { Router } from "@angular/router";
 
 @Injectable({
-  providedIn: "root",
+  providedIn: "root",
 })
 export class TransaccionesRevisionProductoService {
-  //private URL = "http://localhost:3000/transaccionRevisionProducto"; //localhost
-  private URL = "http://104.131.82.174:3000/transaccionRevisionProducto";
-  //private URL = "http://159.223.107.115:3000/transaccionRevisionProducto";
-  constructor(public http: HttpClient, public router: Router) {}
+  // [ACTIVO] Usamos la URL de Desarrollo (Localhost)
+  private URL = "http://localhost:3000/transaccionRevisionProducto"; //localhost
+  
+  // [COMENTADAS] Desactivamos las IPs de Producción
+  // private URL = "http://104.131.82.174:3000/transaccionRevisionProducto";
+  //private URL = "http://159.223.107.115:3000/transaccionRevisionProducto";
+  
+  constructor(public http: HttpClient, public router: Router) {}
 
-  newTransaccion(transaccion) {
-    return this.http.post<any>(this.URL + "/newTransaccion", transaccion);
-  }
+  newTransaccion(transaccion) {
+    return this.http.post<any>(this.URL + "/newTransaccion", transaccion);
+  }
 
-  getTransacciones() {
-    return this.http.get(this.URL + "/getTransacciones");
-  }
+  getTransacciones() {
+    return this.http.get(this.URL + "/getTransacciones");
+  }
 
-  getTransaccionesFinancierasPorRango(objFecha) {
-    return this.http.post(this.URL + "/getTransaccionesPorRango", objFecha);
-  }
+  getTransaccionesFinancierasPorRango(objFecha) {
+    return this.http.post(this.URL + "/getTransaccionesPorRango", objFecha);
+  }
 }

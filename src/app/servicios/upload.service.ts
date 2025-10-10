@@ -1,74 +1,79 @@
 import { Injectable } from "@angular/core";
 import { HttpClient } from "@angular/common/http";
+import { Router } from "@angular/router"; // Router fue importado en otros servicios, lo añado por si se usa en el futuro, aunque no se usa aquí.
 
 @Injectable({
-  providedIn: "root",
+  providedIn: "root",
 })
 export class UploadService {
-  //private URL = "http://159.223.107.115:3000/upload";
-  private URL = 'http://104.131.82.174:3000/upload';
-  //private URL = 'http://localhost:3000/upload';
-  constructor(private http: HttpClient) {}
+  // [COMENTADAS] Desactivamos las IPs de Producción
+  //private URL = "http://159.223.107.115:3000/upload";
+  // private URL = 'http://104.131.82.174:3000/upload';
+  
+  // [ACTIVO] Usamos la URL de Desarrollo (Localhost)
+  private URL = 'http://localhost:3000/upload'; //localhost
+  
+  constructor(private http: HttpClient, public router: Router) {} // Mantengo Router para consistencia con otros servicios
 
-  uploadFile(formData) {
-    return this.http.post<any>(this.URL + "/uploadFile", formData);
-  }
+  uploadFile(formData) {
+    return this.http.post<any>(this.URL + "/uploadFile", formData);
+  }
 
-  uploadFile2(formData) {
-    return this.http.post<any>(this.URL + "/upload3", formData);
-  }
+  uploadFile2(formData) {
+    return this.http.post<any>(this.URL + "/upload3", formData);
+  }
 
-  uploadFile3(formData) {
-    console.log("yes " + JSON.stringify(formData));
-    return this.http.post<any>(this.URL + "/upload23", formData);
-  }
+  uploadFile3(formData) {
+    console.log("yes " + JSON.stringify(formData));
+    return this.http.post<any>(this.URL + "/upload23", formData);
+  }
 
-  uploadFile4(formData) {
-    console.log("yes " + JSON.stringify(formData));
-    return this.http.post<any>(this.URL + "/uploadNew5", formData);
-  }
+  uploadFile4(formData) {
+    console.log("yes " + JSON.stringify(formData));
+    return this.http.post<any>(this.URL + "/uploadNew5", formData);
+  }
 
-  newDocumento(documento) {
-    console.log("el documento tiene " + JSON.stringify(documento));
-    return this.http.post<any>(this.URL + "/newDocument", documento);
-  }
+  newDocumento(documento) {
+    console.log("el documento tiene " + JSON.stringify(documento));
+    return this.http.post<any>(this.URL + "/newDocument", documento);
+  }
 
-  getDocumentos() {
-    return this.http.get(this.URL + "/getDocumentos");
-  }
+  getDocumentos() {
+    return this.http.get(this.URL + "/getDocumentos");
+  }
 
-  getDocumetosbyEmpresa(empresa: string) {
-    return this.http.get(this.URL + `/getDocumentos2/${empresa}`);
-  }
+  getDocumetosbyEmpresa(empresa: string) {
+    return this.http.get(this.URL + `/getDocumentos2/${empresa}`);
+  }
 
-  /* getDocumetosbyClase(clase:string){ 
-    return this.http.get(this.URL+`/getDocumentos3/${clase}`);
-  }*/
+  /* getDocumetosbyClase(clase:string){ 
+    return this.http.get(this.URL+`/getDocumentos3/${clase}`);
+  }*/
 
-  getDocumetosbyClase(clase) {
-    console.log("soy clasex1" + clase);
-    return this.http.post<any>(this.URL + "/DocumentosByClass/", clase);
-  }
+  getDocumetosbyClase(clase) {
+    console.log("soy clasex1" + clase);
+    return this.http.post<any>(this.URL + "/DocumentosByClass/", clase);
+  }
 
-  updateFile(documento) {
-    console.log("yaaa " + JSON.stringify(documento));
-    return this.http.put(this.URL + `/updateFile/${documento._id}`, documento);
-  }
+  updateFile(documento) {
+    console.log("yaaa " + JSON.stringify(documento));
+    return this.http.put(this.URL + `/updateFile/${documento._id}`, documento);
+  }
 
-  updateDocumento(documento) {
-    console.log("aqui es " + this.URL + `/update/${documento._id}`);
-    return this.http.put(this.URL + `/update/${documento._id}`, documento);
-  }
+  updateDocumento(documento) {
+    console.log("aqui es " + this.URL + `/update/${documento._id}`);
+    return this.http.put(this.URL + `/update/${documento._id}`, documento);
+  }
 
-  deleteDocumento(documento) {
-    return this.http.delete(this.URL + `/delete/${documento._id}`, documento);
-  }
+  deleteDocumento(documento) {
+    return this.http.delete(this.URL + `/delete/${documento._id}`, documento);
+  }
 
-  updateDocumemto(documento) {
-    console.log("aqui es " + this.URL + `/update/${documento._id}`);
-    return this.http.put(
-      this.URL + `/updateDocumento/${documento._id}`,
-      documento
-    );
-  }
+  updateDocumemto(documento) {
+    console.log("aqui es " + this.URL + `/update/${documento._id}`);
+    return this.http.put(
+      this.URL + `/updateDocumento/${documento._id}`,
+      documento
+    );
+  }
 }
