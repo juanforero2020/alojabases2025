@@ -30,8 +30,8 @@ export class AuthenService {
   signIn(user) {
     this.userEmail = user.email;
     localStorage.setItem("maily", (this.userEmail = user.email));
-    // CAMBIO TEMPORAL: apunta a /newUser para crear el usuario. ¡IMPORTANTE!
-    return this.http.post<any>(this.URL + "/newUser", user); 
+    // ESTADO FINAL CORRECTO: Ruta de inicio de sesión
+    return this.http.post<any>(this.URL + "/signIn", user); 
   }
 
   loggedIn() {

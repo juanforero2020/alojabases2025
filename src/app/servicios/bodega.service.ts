@@ -3,28 +3,31 @@ import { HttpClient } from "@angular/common/http";
 import { Router } from "@angular/router";
 
 @Injectable({
-  providedIn: "root",
+  providedIn: "root",
 })
 export class BodegaService {
-  //private URL = 'http://localhost:3000/bodegas'; //localhost
-  //private URL = "http://159.223.107.115:3000/bodegas"; //localhost
-  private URL = "http://104.131.82.174:3000/bodegas";
+  // [ACTIVO] Usamos la URL de Desarrollo (Localhost)
+  private URL = 'http://localhost:3000/bodegas'; //localhost
+  
+  // [COMENTADOS] Desactivamos la IP de Producción y la otra remota
+  //private URL = "http://159.223.107.115:3000/bodegas"; //localhost
+  // private URL = "http://104.131.82.174:3000/bodegas";
 
-  constructor(public http: HttpClient, public router: Router) {}
+  constructor(public http: HttpClient, public router: Router) {}
 
-  newBodegas(bodegas) {
-    return this.http.post<any>(this.URL + "/newBodega", bodegas);
-  }
+  newBodegas(bodegas) {
+    return this.http.post<any>(this.URL + "/newBodega", bodegas);
+  }
 
-  getBodegas() {
-    return this.http.get(this.URL + "/getBodegas");
-  }
+  getBodegas() {
+    return this.http.get(this.URL + "/getBodegas");
+  }
 
-  updateBodega(bodegas) {
-    return this.http.put(this.URL + `/update/${bodegas._id}`, bodegas);
-  }
+  updateBodega(bodegas) {
+    return this.http.put(this.URL + `/update/${bodegas._id}`, bodegas);
+  }
 
-  deleteBodegas(bodegas) {
-    return this.http.delete(this.URL + `/delete/${bodegas._id}`, bodegas);
-  }
+  deleteBodegas(bodegas) {
+    return this.http.delete(this.URL + `/delete/${bodegas._id}`, bodegas);
+  }
 }

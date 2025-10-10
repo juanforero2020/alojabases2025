@@ -4,26 +4,30 @@ import { Router } from "@angular/router";
 import { factura } from "../pages/ventas/venta";
 
 @Injectable({
-  providedIn: "root",
+  providedIn: "root",
 })
 export class FacturasProveedorService {
-  facturas: factura[];
-  //private URL = 'http://localhost:3000/facturasProveedor'; //localhost
-  //private URL = "http://159.223.107.115:3000/facturasProveedor";
-  private URL = 'http://104.131.82.174:3000/facturasProveedor';
-  constructor(public http: HttpClient, public router: Router) {}
+  facturas: factura[];
+  // [ACTIVO] Usamos la URL de Desarrollo (Localhost)
+  private URL = 'http://localhost:3000/facturasProveedor'; //localhost
+  
+  // [COMENTADAS] Desactivamos la IP de Producción
+  //private URL = "http://159.223.107.115:3000/facturasProveedor";
+  // private URL = 'http://104.131.82.174:3000/facturasProveedor';
+  
+  constructor(public http: HttpClient, public router: Router) {}
 
-  newFacturaProveedor(facturasProveedor) {
-    return this.http.post<any>(this.URL + "/newFacturaProveedor", facturasProveedor);
-  }
+  newFacturaProveedor(facturasProveedor) {
+    return this.http.post<any>(this.URL + "/newFacturaProveedor", facturasProveedor);
+  }
 
-  getFacturasProveedor() {
-    return this.http.get(this.URL + "/getFacturasProveedor");
-  }
+  getFacturasProveedor() {
+    return this.http.get(this.URL + "/getFacturasProveedor");
+  }
 
-  getFacturasDocumento(documento) {
-    return this.http.post(this.URL + `/getFacturasPorDocumento/${documento.nSolicitud}`,documento);
-  }
+  getFacturasDocumento(documento) {
+    return this.http.post(this.URL + `/getFacturasPorDocumento/${documento.nSolicitud}`,documento);
+  }
 
   getFacturasPendientesPorProveedor(documento) {
     return this.http.post(this.URL + `/getFacturasPendientesPorProveedor/${documento.proveedor}`,documento);

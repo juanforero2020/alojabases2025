@@ -43,7 +43,7 @@ export class UserService {
   signIn(user) {
     this.userEmail = user.email;
     localStorage.setItem("maily", (this.userEmail = user.email));
-    // VUELVE A LA RUTA CORRECTA: /signIn
-    return this.http.post<any>(this.URL + "/signIn", user); 
+    // ESTADO FINAL CORRECTO: Ruta de inicio de sesión
+    return this.http.post<any>(this.URL + "/signIn", user);
   }
 }

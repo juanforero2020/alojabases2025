@@ -3,12 +3,16 @@ import { HttpClient } from "@angular/common/http";
 import { Router } from "@angular/router";
 
 @Injectable({
-  providedIn: "root",
+  providedIn: "root",
 })
 export class CuentasPorPagarService {
-  //private URL = "http://localhost:3000/cuentaPorPagar"; //localhost
-  private URL = "http://104.131.82.174:3000/cuentaPorPagar";
-  //private URL = "http://159.223.107.115:3000/cuentaPorPagar";
+  // [ACTIVO] Usamos la URL de Desarrollo (Localhost)
+  private URL = "http://localhost:3000/cuentaPorPagar"; //localhost
+  
+  // [COMENTADAS] Desactivamos la IP de Producción
+  // private URL = "http://104.131.82.174:3000/cuentaPorPagar";
+  // private URL = "http://159.223.107.115:3000/cuentaPorPagar";
+
   constructor(public http: HttpClient, public router: Router) {}
 
   newCuentaPorPagar(cuenta) {

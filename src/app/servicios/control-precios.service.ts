@@ -3,28 +3,31 @@ import { HttpClient } from "@angular/common/http";
 import { Router } from "@angular/router";
 
 @Injectable({
-  providedIn: "root",
+  providedIn: "root",
 })
 export class ControlPreciosService {
-  //private URL = "http://159.223.107.115:3000/precios";
-  private URL = 'http://104.131.82.174:3000/precios';
-  //private URL = 'http://localhost:3000/precios'; //localhost
+  // [COMENTADAS] Desactivamos la IP de Producción
+  //private URL = "http://159.223.107.115:3000/precios";
+  // private URL = 'http://104.131.82.174:3000/precios';
+  
+  // [ACTIVO] Usamos la URL de Desarrollo (Localhost)
+  private URL = 'http://localhost:3000/precios'; //localhost
 
-  constructor(public http: HttpClient, public router: Router) {}
+  constructor(public http: HttpClient, public router: Router) {}
 
-  newPrecio(precio) {
-    return this.http.post<any>(this.URL + "/newPrecio", precio);
-  }
+  newPrecio(precio) {
+    return this.http.post<any>(this.URL + "/newPrecio", precio);
+  }
 
-  getPrecio() {
-    return this.http.get(this.URL + "/getPrecios");
-  }
+  getPrecio() {
+    return this.http.get(this.URL + "/getPrecios");
+  }
 
-  updatePrecio(precio) {
-    return this.http.put(this.URL + `/update/${precio._id}`, precio);
-  }
+  updatePrecio(precio) {
+    return this.http.put(this.URL + `/update/${precio._id}`, precio);
+  }
 
-  deletePrecio(precio) {
-    return this.http.delete(this.URL + `/delete/${precio._id}`, precio);
-  }
+  deletePrecio(precio) {
+    return this.http.delete(this.URL + `/delete/${precio._id}`, precio);
+  }
 }

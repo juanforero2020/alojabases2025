@@ -3,18 +3,21 @@ import { HttpClient } from "@angular/common/http";
 import { Router } from "@angular/router";
 
 @Injectable({
-  providedIn: "root",
+  providedIn: "root",
 })
 export class ContadoresDocumentosService {
-  //private URL = 'http://localhost:3000/contadores'; //localhost
-  //private URL = "http://159.223.107.115:3000/contadores";
-  private URL = "http://104.131.82.174:3000/contadores";
+  // [ACTIVO] Usamos la URL de Desarrollo (Localhost)
+  private URL = 'http://localhost:3000/contadores'; //localhost
+  
+  // [COMENTADOS] Desactivamos la IP de Producción y la otra remota
+  //private URL = "http://159.223.107.115:3000/contadores";
+  // private URL = "http://104.131.82.174:3000/contadores";
 
-  constructor(public http: HttpClient, public router: Router) {}
+  constructor(public http: HttpClient, public router: Router) {}
 
-  newContadores(contadores) {
-    return this.http.post<any>(this.URL + "/newContadores", contadores);
-  }
+  newContadores(contadores) {
+    return this.http.post<any>(this.URL + "/newContadores", contadores);
+  }
 
   getContadores() {
     return this.http.get(this.URL + "/getContadores");

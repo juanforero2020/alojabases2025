@@ -3,36 +3,39 @@ import { HttpClient } from "@angular/common/http";
 import { Router } from "@angular/router";
 
 @Injectable({
-  providedIn: "root",
+  providedIn: "root",
 })
 export class CombosService {
-  //private URL = "http://159.223.107.115:3000/comboProductos";
-  private URL = "http://104.131.82.174:3000/comboProductos";
-  //private URL = 'http://localhost:3000/comboProductos'; //localhost
+  // [COMENTADA] Desactivamos la IP de Producción
+  //private URL = "http://159.223.107.115:3000/comboProductos";
+  // private URL = "http://104.131.82.174:3000/comboProductos";
+  
+  // [ACTIVO] Usamos la URL de Desarrollo (Localhost)
+  private URL = 'http://localhost:3000/comboProductos'; //localhost
 
-  constructor(public http: HttpClient, public router: Router) {}
+  constructor(public http: HttpClient, public router: Router) {}
 
-  newCombo(combos) {
-    return this.http.post<any>(this.URL + "/newComboProducto", combos);
-  }
+  newCombo(combos) {
+    return this.http.post<any>(this.URL + "/newComboProducto", combos);
+  }
 
-  getComboProductos() {
-    return this.http.get(this.URL + "/getComboProductos");
-  }
+  getComboProductos() {
+    return this.http.get(this.URL + "/getComboProductos");
+  }
 
-  getComboPorNombre(combo) {
-    return this.http.post(this.URL + "/getComboPorNombre", combo);
-  }
+  getComboPorNombre(combo) {
+    return this.http.post(this.URL + "/getComboPorNombre", combo);
+  }
 
-  getComboPorNombreProducto(combo) {
-    return this.http.post(this.URL + "/getComboPorNombreProducto", combo);
-  }
+  getComboPorNombreProducto(combo) {
+    return this.http.post(this.URL + "/getComboPorNombreProducto", combo);
+  }
 
-  updateCombo(combo) {
-    return this.http.put(this.URL + `/update/${combo._id}`, combo);
-  }
+  updateCombo(combo) {
+    return this.http.put(this.URL + `/update/${combo._id}`, combo);
+  }
 
-  deleteCombos(combo) {
-    return this.http.delete(this.URL + `/delete/${combo._id}`, combo);
-  }
+  deleteCombos(combo) {
+    return this.http.delete(this.URL + `/delete/${combo._id}`, combo);
+  }
 }
