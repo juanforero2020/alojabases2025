@@ -88,7 +88,7 @@ app.use('/revisionInventario', require('./routes/revisionInventarioRoutes'));
 app.use('/revisionInventarioProducto', require('./routes/revisionInventarioProductoRoutes'));
 app.use('/transaccionRevisionProducto', require('./routes/transaccionesRevisionesProductosRoutes'));
 app.use('/stockProductosLocales', require('./routes/stockLocalesRoutes'));
-app.use('/servicioWebVeronica', require('./routes/servicioWebVeronicaRoutes'));
+//app.use('/servicioWebVeronica', require('./routes/servicioWebVeronicaRoutes'));
 app.use('/controlMercaderia', require('./routes/controlMercaderiaRoutes'));
 app.use('/descuentos', require('./routes/descuentosRoutes'));
 

@@ -1630,6 +1630,9 @@ cambiarestado(e,i:number){
       this.textoTipoDocumento= "NOTA DE VENTA 001"
       this.textoTipoDocumento2= "ed.producto.PRODUCTO"
       const documentDefinition = this.getDocumentDefinitionNotaVenta();
+
+      console.log("pase x aqui")
+      console.log(documentDefinition)
       var generacion = new Promise<any>((resolve, reject) => {
         pdfMake.createPdf(documentDefinition).download('Nota/Venta '+this.variab, function(response) { Swal.close(),
           Swal.fire({
@@ -2345,7 +2348,7 @@ cambiarestado(e,i:number){
 
 
     getDocumentDefinitionNotaVenta() {
-
+      console.log("ENTRO A NOTA DE VENTA")
       this.calcularValoresFactura()
       return {
         pageSize: 'A4',
@@ -3157,7 +3160,7 @@ cambiarestado(e,i:number){
           this.factura.rucFactura = element.ruc
           this.RucSucursal = element.ruc
           this.textoConsecutivo = element.cabeceraData
-          this.traerConsecutivoVeronica(this.RucSucursal)
+          //this.traerConsecutivoVeronica(this.RucSucursal)
         }
       })
     }
@@ -3198,7 +3201,22 @@ cambiarestado(e,i:number){
     this.factura.fecha2= new Date().toLocaleString()
     this.factura.productosVendidos=this.productosVendidos
     this.facturasService.newFactura(this.factura).subscribe(
-      res => {this.validarFormaPago();this.registrarFacturaSRI();this.actualizarFacturero();},
+      res => {this.validarFormaPago();
+        //this.registrarFacturaSRI();
+        this.actualizarFacturero();
+        Swal.fire({
+                              title: 'Correcto',
+                              text: 'Factura registrada con éxito',
+                              icon: 'success',
+                              confirmButtonText: 'Ok'
+                            }).then((result) => {
+                              if(this.formaPago == "Otros medios Pago" || this.formaPago == "Abonos")
+                                this.router.navigate(['/recibo-caja'], { queryParams: { id: this.factura.documento_n , tipo: 1 } });
+                              else
+                                window.location.reload();
+                            })  
+      },
+
       err => {this.mostrarMensajeGenerico(2,"Error al guardar")});
 
 
@@ -3614,6 +3632,7 @@ cambiarestado(e,i:number){
   }
 
   contadorValidaciones(i:number){
+    console.log("si esta llegando ")
     if(this.productosVendidos.length==i){
       this.actualizarProductos()
       this.crearPDF()
@@ -3814,6 +3833,7 @@ cambiarestado(e,i:number){
                 this.transaccionesService.newTransaccion(this.transaccion).subscribe(
                   res => {
                     this.contadores[0].transacciones_Ndocumento = this.number_transaccion
+                    console.log("estoy aq")
                     this.contadoresService.updateContadoresIDTransacciones(this.contadores[0]).subscribe(
                       res => {
                         this.db.collection("/consectivosBaseMongoDB").doc("base").update({ transacciones_Ndocumento:this.number_transaccion })

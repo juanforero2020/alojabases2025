@@ -275,7 +275,7 @@ export class ParametrizacionComponent implements OnInit {
       var sucurs= this.parametroSuc.sucursal
       new Promise<any>((resolve, reject) => {
         this.parametrizacionService.updateParametrizacion(this.parametroSuc).subscribe(
-          res => {
+          res => {console.log("Entro aquí")
             this.actualizarsucursal()
           },
           err => {
@@ -320,6 +320,7 @@ export class ParametrizacionComponent implements OnInit {
 
 
   actualizarsucursal(){
+    console.log(this.locales)
     this.locales.forEach(element=>{
       if(this.parametroSuc.sucursal == element.nombre){
         //alert(this.nombreSucursal)
