@@ -2,6 +2,7 @@ import { Injectable } from "@angular/core";
 import { HttpClient } from "@angular/common/http";
 import { Router } from "@angular/router";
 import { factura } from "../pages/ventas/venta";
+import { environment } from "src/environments/environment";
 
 @Injectable({
   providedIn: "root",
@@ -10,7 +11,7 @@ export class DevolucionesService {
   facturas: factura[];
   //private URL = 'http://localhost:3000/devoluciones'; //localhost
   //private URL = "http://159.223.107.115:3000/devoluciones";
-  private URL = "http://104.131.82.174:3000/devoluciones";
+  private URL = `${environment.services.urlServices}/devoluciones`;
   constructor(public http: HttpClient, public router: Router) {}
 
   newDevolucion(devolucion) {

@@ -46,6 +46,7 @@
     "ngx-spinner": "^8.1.0",
     "node-cron": "^3.0.2",
     "node-fetch": "^3.3.0",
+    "nodemon": "^3.1.11",
     "pdfmake": "^0.1.65",
     "pdfmake-wrapper": "^2.0.0",
     "rxjs": "~6.5.5",

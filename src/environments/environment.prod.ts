@@ -1,5 +1,5 @@
 
- export const environment = {
+export const environment = {
   production: false,
   firebase: {
     apiKey: "AIzaSyCY-C-U5-2_XexmIfcXMRdx2ETGS3Powt0",
@@ -10,8 +10,11 @@
     messagingSenderId: "218887375082",
     appId: "1:218887375082:web:7b24f52596d74dd5cfaf93",
     measurementId: "G-338L2LR9XQ"
+  },
+  services:{
+    urlServices : "http://143.198.60.33:3000"   //NUEVO SERVIDOR
   }
-}; 
+};
 
 
 

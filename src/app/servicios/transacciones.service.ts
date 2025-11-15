@@ -4,6 +4,7 @@ import { Router } from "@angular/router";
 import { inventario, invFaltanteSucursal, productoTransaccion } from "../pages/consolidado/consolidado";
 import { transaccion } from "../pages/transacciones/transacciones";
 import { producto } from "../pages/ventas/venta";
+import { environment } from "src/environments/environment";
 
 
 @Injectable({
@@ -12,7 +13,7 @@ import { producto } from "../pages/ventas/venta";
 
 export class TransaccionesService {
   //private URL = "http://localhost:3000/transaccion"; //localhost
-  private URL = "http://104.131.82.174:3000/transaccion";
+  private URL = `${environment.services.urlServices}/transaccion`;
   //private URL = "http://159.223.107.115:3000/transaccion";
 
 

@@ -12,7 +12,8 @@ const mongoose = require("mongoose");
 //const URI ="mongodb+srv://yander:yander1234@cluster0.dbmpy.mongodb.net/alojabasesOctubre"; // PRUEBAS-OCTUBRE-------------
 
 
-const URI ="mongodb+srv://ysantana:YanderGrace096@alojabasesabril.1wfv9w1.mongodb.net/Alojabases_Abril"; // PRODUCCION-ABRIL-------------
+//const URI ="mongodb+srv://ysantana:YanderGrace096@alojabasesabril.1wfv9w1.mongodb.net/Alojabases_Abril"; // PRODUCCION-ABRIL-------------
+const URI ="mongodb+srv://alojabases_db_user:dA3Yi6OmPVvD7O8o@alojabasesnoviembre2025.fgbmush.mongodb.net/AlojabasesNoviembre2025"; // PRUEBAS NOVIEMBRE-------------
 
 
 

@@ -1,6 +1,7 @@
 import { Injectable } from "@angular/core";
 import { HttpClient, HttpRequest, HttpEvent } from "@angular/common/http";
 import { Observable } from "rxjs";
+import { environment } from "src/environments/environment";
 
 @Injectable({
   providedIn: "root",
@@ -8,7 +9,7 @@ import { Observable } from "rxjs";
 export class BulkUploadService {
   //private baseUrl = 'http://localhost:3000/upload';
   //private baseUrl = "http://159.223.107.115:3000/upload"; //localhost
-  private baseUrl = "http://104.131.82.174:3000/upload";
+  private baseUrl = `${environment.services.urlServices}/upload`;
 
   constructor(private http: HttpClient) {}
 

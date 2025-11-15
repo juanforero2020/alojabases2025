@@ -1,5 +1,6 @@
 import { ChangeDetectorRef, Component, OnInit, ViewChild } from '@angular/core';
 import { compra } from '../compras/compra';
+import { tap } from 'rxjs/operators';
 import { DxFormComponent } from 'devextreme-angular';
 import { transaccion } from '../transacciones/transacciones';
 import { ConsolidadoComponent } from '../consolidado/consolidado.component';
@@ -52,6 +53,7 @@ import { ServicioWebVeronicaService } from 'src/app/servicios/servicioWebVeronic
 import { ControlMercaderiaService } from 'src/app/servicios/control-mercaderia.service';
 import { controlUnidades } from '../control-unidades/control-unidades';
 import { element } from 'protractor';
+import { throwError } from 'rxjs';
 pdfMake.vfs = pdfFonts.pdfMake.vfs;
 
 @Component({
@@ -3153,11 +3155,11 @@ cambiarestado(e,i:number){
       this.parametrizaciones.forEach(element=>{
         if(element.sucursal == this.factura.sucursal){
           this.parametrizacionSucu = element
-          console.log(this.parametrizacionSucu)
           this.factura.rucFactura = element.ruc
           this.RucSucursal = element.ruc
           this.textoConsecutivo = element.cabeceraData
-          this.traerConsecutivoVeronica(this.RucSucursal)
+          //TODO --- DESCOMENTAR
+          //this.traerConsecutivoVeronica(this.RucSucursal)
         }
       })
     }
@@ -3198,8 +3200,13 @@ cambiarestado(e,i:number){
     this.factura.fecha2= new Date().toLocaleString()
     this.factura.productosVendidos=this.productosVendidos
     this.facturasService.newFactura(this.factura).subscribe(
-      res => {this.validarFormaPago();this.registrarFacturaSRI();this.actualizarFacturero();},
-      err => {this.mostrarMensajeGenerico(2,"Error al guardar")});
+      res => {
+        this.validarFormaPago();
+        this.registrarFacturaSRI();
+        //this.actualizarFacturero();
+      },
+      err => {
+        this.mostrarMensajeGenerico(2,"Error al guardar")});
 
 
     
@@ -3266,7 +3273,23 @@ cambiarestado(e,i:number){
 
     console.log(logApiVeronica)
 
-    this._apiVeronicaService.newFactura(this.facturaVeronica).subscribe(
+    //EMILINAR LUEGO DE PRUEBAS
+    this.mostrarLoading = false;
+    Swal.fire({
+      title: 'Correcto',
+      text: 'Factura registrada con éxito',
+      icon: 'success',
+      confirmButtonText: 'Ok'
+    }).then((result) => {
+      if(this.formaPago == "Otros medios Pago" || this.formaPago == "Abonos")
+        this.router.navigate(['/recibo-caja'], { queryParams: { id: this.factura.documento_n , tipo: 1 } });
+      else
+        window.location.reload();
+    })
+
+
+    //TO-DO, DESCOMENTAR LUEGO DE PRUEBAS
+    /* this._apiVeronicaService.newFactura(this.facturaVeronica).subscribe(
       res => {  var resultado = res as ResponseVeronicaDto;
                 logApiVeronica.objetoResponse = JSON.stringify(res)
                 logApiVeronica.claveAcceso = resultado.result.claveAccesoConsultada
@@ -3307,7 +3330,7 @@ cambiarestado(e,i:number){
                             })
                         },
                   err => {  });              
-              });
+              }); */
   }
   
 
@@ -3317,10 +3340,20 @@ cambiarestado(e,i:number){
       this.factura.username= this.username
       this.factura.fecha= this.now
       this.factura.fecha2= new Date().toLocaleString()
-      this.factura.productosVendidos=this.productosVendidos
-      this.notasVentService.newNotaVenta(this.factura).subscribe(
-        res => {this.actualizarFactureroNotasVenta();this.validarFormaPago()},
-        err => {this.mostrarMensajeGenerico(2,"Error al guardar")})
+      this.factura.productosVendidos=this.productosVendidos;
+      this.obtenerConsecutivoNotaVentaYActualizar().subscribe({
+        next: () => {
+          this.notasVentService.newNotaVenta(this.factura).subscribe(
+            res => {
+              this.validarFormaPago()
+            },
+            err => {this.mostrarMensajeGenerico(2,"Error al guardar")}
+          );
+        },
+        error: (err) => {
+          this.mostrarMensajeGenerico(2,"Error al guardar el consecutivo de Nota de Venta");
+        }
+      });
     }
 
 
@@ -3335,7 +3368,6 @@ cambiarestado(e,i:number){
     }
 
     actualizarFacturero(){
-      
       switch (this.factura.sucursal) {
         case "matriz":
           this.contadores[0].facturaMatriz_Ndocumento = this.factura.documento_n
@@ -3367,6 +3399,55 @@ cambiarestado(e,i:number){
         res => { },
         err => {this.mostrarMensajeGenerico(2,"Revise e intente nuevamente")})
     }
+
+    obtenerConsecutivoNotaVentaYActualizar() {
+      if (this.contadores && this.contadores[0] && this.contadores[0]._id) {
+        return this.contadoresService.getAndIncrementNotaVentas(this.contadores[0]._id)
+          .pipe(
+            tap((res: any) => {
+              this.factura.documento_n = res.notasVenta_Ndocumento;
+            })
+          );
+    
+      } else {
+        return throwError("No se encontró información de contadores"); // <-- RxJS 6
+      }
+    }
+
+
+    obtenerConsecutivoFacturasYActualizar() {
+      if (this.contadores && this.contadores[0] && this.contadores[0]._id) {
+        switch (this.factura.sucursal) {
+          case "matriz":
+            return this.contadoresService.getAndIncrementFactMatriz(this.contadores[0]._id)
+              .pipe(
+                tap((res: any) => {
+                  this.factura.documento_n = res.facturaMatriz_Ndocumento;
+                })
+              );
+          case "sucursal1":
+            return this.contadoresService.getAndIncrementFactSuc1(this.contadores[0]._id)
+              .pipe(
+                tap((res: any) => {
+                  this.factura.documento_n = res.facturaSucursal1_Ndocumento;
+                })
+              );
+          case "sucursal2":
+            return this.contadoresService.getAndIncrementFactSuc2(this.contadores[0]._id)
+              .pipe(
+                tap((res: any) => {
+                  this.factura.documento_n = res.facturaSucursal2_Ndocumento;
+                })
+              );
+          default:
+            break;
+        }    
+    
+      } else {
+        return throwError("No se encontró información de contadores"); // <-- RxJS 6
+      }
+    }
+    
 
     actualizarFactureroProformas(){
       this.contadores[0].proformas_Ndocumento = this.factura.documento_n
@@ -3483,14 +3564,14 @@ cambiarestado(e,i:number){
         cancelButtonText: 'No'
       }).then((result) => {
         if (result.value) {
-          this.generarFactura();
+          this.extraerNroFactura();//this.generarFactura();
         } else if (result.dismiss === Swal.DismissReason.cancel) {
           console.log("hare algo")
         }
       })
     }
     else
-      this.generarFactura();
+      this.extraerNroFactura();//this.generarFactura();
   }
 
   validarNotaVenta(){
@@ -3514,6 +3595,18 @@ cambiarestado(e,i:number){
     }
     else
       this.generarNotaDeVenta();
+  }
+
+
+  extraerNroFactura(){
+    this.obtenerConsecutivoFacturasYActualizar().subscribe({
+      next: () => {
+        this.generarFactura();
+      },
+      error: (err) => {
+        this.mostrarMensajeGenerico(2,"Error al guardar el consecutivo de Nota de Venta");
+      }
+    });
   }
 
 

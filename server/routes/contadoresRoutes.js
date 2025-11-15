@@ -65,6 +65,7 @@ router.put('/updateIdFacturaMatriz/:id', async (req, res,next) => {
     res.json({status: 'Actualización Exitosa'}); 
 })
 
+
 router.put('/updateIdFacturaSuc1/:id', async (req, res,next) => {
     const { id } = req.params;
     console.log("xx "+JSON.stringify(req.body))
@@ -223,6 +224,76 @@ router.delete('/delete/:id', async (req, res,next) => {
     await Contadores.findByIdAndRemove(req.params.id);
     res.json({status: 'Contadores Eliminado'});
 })
+
+
+
+//NUEVOOOOOOOOO
+router.put('/getAndIncrementNotaVentas/:id', async (req, res, next) => {
+    try {
+        const { id } = req.params;
+        console.log("voy llegando por aqui",id)
+        // Atomically increment notasVenta_Ndocumento by 1 and return the previous value
+        const result = await Contadores.findOneAndUpdate(
+            { _id: id },
+            { $inc: { notasVenta_Ndocumento: 1 } },
+            { new: false, useFindAndModify: false }
+        );
+        if (!result) return res.status(404).json({ error: "Contador no encontrado" });
+        res.json({ notasVenta_Ndocumento: result.notasVenta_Ndocumento });
+    } catch (err) {
+        next(err);
+    }
+});
+
+
+router.put('/getAndIncrementFactMatriz/:id', async (req, res, next) => {
+    try {
+        const { id } = req.params;
+        // Atomically increment facturaMatriz_Ndocumento by 1 and return the previous value
+        const result = await Contadores.findOneAndUpdate(
+            { _id: id },
+            { $inc: { facturaMatriz_Ndocumento: 1 } },
+            { new: false, useFindAndModify: false }
+        );
+        if (!result) return res.status(404).json({ error: "Contador no encontrado" });
+        res.json({ facturaMatriz_Ndocumento: result.facturaMatriz_Ndocumento });
+    } catch (err) {
+        next(err);
+    }
+});
+
+
+router.put('/getAndIncrementFactSuc1/:id', async (req, res, next) => {
+    try {
+        const { id } = req.params;
+        // Atomically increment facturaSucursal1_Ndocumento by 1 and return the previous value
+        const result = await Contadores.findOneAndUpdate(
+            { _id: id },
+            { $inc: { facturaSucursal1_Ndocumento: 1 } },
+            { new: false, useFindAndModify: false }
+        );
+        if (!result) return res.status(404).json({ error: "Contador no encontrado" });
+        res.json({ facturaSucursal1_Ndocumento: result.facturaSucursal1_Ndocumento });
+    } catch (err) {
+        next(err);
+    }
+});
+
+router.put('/getAndIncrementFactSuc2/:id', async (req, res, next) => {
+    try {
+        const { id } = req.params;
+        // Atomically increment facturaSucursal2_Ndocumento by 1 and return the previous value
+        const result = await Contadores.findOneAndUpdate(
+            { _id: id },
+            { $inc: { facturaSucursal2_Ndocumento: 1 } },
+            { new: false, useFindAndModify: false }
+        );
+        if (!result) return res.status(404).json({ error: "Contador no encontrado" });
+        res.json({ facturaSucursal2_Ndocumento: result.facturaSucursal2_Ndocumento });
+    } catch (err) {
+        next(err);
+    }
+});
 
 
 module.exports = router;

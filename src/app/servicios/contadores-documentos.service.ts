@@ -1,6 +1,7 @@
 import { Injectable } from "@angular/core";
 import { HttpClient } from "@angular/common/http";
 import { Router } from "@angular/router";
+import { environment } from "src/environments/environment";
 
 @Injectable({
   providedIn: "root",
@@ -8,7 +9,7 @@ import { Router } from "@angular/router";
 export class ContadoresDocumentosService {
   //private URL = 'http://localhost:3000/contadores'; //localhost
   //private URL = "http://159.223.107.115:3000/contadores";
-  private URL = "http://104.131.82.174:3000/contadores";
+  private URL = `${environment.services.urlServices}/contadores`;
 
   constructor(public http: HttpClient, public router: Router) {}
 
@@ -190,5 +191,22 @@ export class ContadoresDocumentosService {
   
   deleteContadores(contadores) {
     return this.http.delete(this.URL + `/delete/${contadores._id}`, contadores);
+  }
+
+
+  getAndIncrementNotaVentas(id: string) {
+    return this.http.put<any>(this.URL + `/getAndIncrementNotaVentas/${id}`, {});
+  }
+
+  getAndIncrementFactMatriz(id: string) {
+    return this.http.put<any>(this.URL + `/getAndIncrementFactMatriz/${id}`, {});
+  }
+
+  getAndIncrementFactSuc1(id: string) {
+    return this.http.put<any>(this.URL + `/getAndIncrementFactSuc1/${id}`, {});
+  }
+
+  getAndIncrementFactSuc2(id: string) {
+    return this.http.put<any>(this.URL + `/getAndIncrementFactSuc2/${id}`, {});
   }
 }

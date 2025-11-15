@@ -1,6 +1,7 @@
 import { Injectable } from "@angular/core";
 import { HttpClient } from "@angular/common/http";
 import { Router } from "@angular/router";
+import { environment } from "src/environments/environment";
 
 @Injectable({
   providedIn: "root",
@@ -8,7 +9,7 @@ import { Router } from "@angular/router";
 export class ProductosObsequioService {
   //private URL = 'http://localhost:3000/productosObsequio'; //localhost
   //private URL = "http://159.223.107.115:3000/productosObsequio";
-  private URL = 'http://104.131.82.174:3000/productosObsequio';
+  private URL = `${environment.services.urlServices}/productosObsequio`;
   constructor(public http: HttpClient, public router: Router) {}
 
   newProductoObsequio(productoObs) {

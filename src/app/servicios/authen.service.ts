@@ -2,6 +2,7 @@ import { Injectable } from "@angular/core";
 import { HttpClient } from "@angular/common/http";
 import { Router } from "@angular/router";
 import { user } from "../pages/user/user";
+import { environment } from "src/environments/environment";
 
 @Injectable({
   providedIn: "root",
@@ -15,7 +16,7 @@ export class AuthenService {
   estalogeado: boolean = true;
 
   //private URL = "http://159.223.107.115:3000/usuario";
-  private URL = "http://104.131.82.174:3000/usuario";
+  private URL = `${environment.services.urlServices}/usuario`;
   //private URL = 'http://localhost:3000/usuario';
 
   constructor(private http: HttpClient, private router: Router) {}

@@ -1,12 +1,13 @@
 import { Injectable } from "@angular/core";
 import { HttpClient } from "@angular/common/http";
+import { environment } from "src/environments/environment";
 
 @Injectable({
   providedIn: "root",
 })
 export class UploadService {
   //private URL = "http://159.223.107.115:3000/upload";
-  private URL = 'http://104.131.82.174:3000/upload';
+  private URL = `${environment.services.urlServices}/upload`;
   //private URL = 'http://localhost:3000/upload';
   constructor(private http: HttpClient) {}
 

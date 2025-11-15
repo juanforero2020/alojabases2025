@@ -2,6 +2,7 @@ import { Injectable } from "@angular/core";
 import { HttpClient } from "@angular/common/http";
 import { Router } from "@angular/router";
 import { factura } from "../pages/ventas/venta";
+import { environment } from "src/environments/environment";
 
 @Injectable({
   providedIn: "root",
@@ -10,7 +11,7 @@ export class DocumentoGeneradoEntregaService {
   facturas: factura[];
   //private URL = 'http://localhost:3000/documentoGenerado'; //localhost
   //private URL = "http://159.223.107.115:3000/documentoGenerado";
-  private URL = 'http://104.131.82.174:3000/documentoGenerado';
+  private URL = `${environment.services.urlServices}/documentoGenerado`;
   constructor(public http: HttpClient, public router: Router) {}
 
   newDocumentoGenerado(documento) {

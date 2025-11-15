@@ -1,13 +1,14 @@
 import { Injectable } from "@angular/core";
 import { HttpClient } from "@angular/common/http";
 import { Router } from "@angular/router";
+import { environment } from "src/environments/environment";
 
 @Injectable({
   providedIn: "root",
 })
 export class CajaMenorService {
   //private URL = "http://159.223.107.115:3000/cajaMenor";
-  private URL = "http://104.131.82.174:3000/cajaMenor";
+  private URL = `${environment.services.urlServices}/cajaMenor`;
   //private URL = 'http://localhost:3000/cajaMenor'; //localhost
 
   constructor(public http: HttpClient, public router: Router) {}
