@@ -295,6 +295,22 @@ router.put('/getAndIncrementFactSuc2/:id', async (req, res, next) => {
     }
 });
 
+router.put('/getAndIncrementProformas/:id', async (req, res, next) => {
+    try {
+        const { id } = req.params;
+        // Atomically increment notasVenta_Ndocumento by 1 and return the previous value
+        const result = await Contadores.findOneAndUpdate(
+            { _id: id },
+            { $inc: { proformas_Ndocumento: 1 } },
+            { new: false, useFindAndModify: false }
+        );
+        if (!result) return res.status(404).json({ error: "Contador no encontrado" });
+        res.json({ proformas_Ndocumento: result.proformas_Ndocumento });
+    } catch (err) {
+        next(err);
+    }
+});
+
 
 module.exports = router;
 

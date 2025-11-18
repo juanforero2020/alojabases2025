@@ -3363,7 +3363,7 @@ cambiarestado(e,i:number){
       this.factura.fecha2= new Date().toLocaleString()
       this.factura.productosVendidos=this.productosVendidos
       this.proformasService.newProforma(this.factura).subscribe(
-        res => {this.actualizarFactureroProformas()},
+        res => {},
         err => {this.mostrarMensajeGenerico(2,"Error al guardar")})
     }
 
@@ -3398,6 +3398,20 @@ cambiarestado(e,i:number){
       this.contadoresService.updateContadoresIDNotasVenta(this.contadores[0]).subscribe(
         res => { },
         err => {this.mostrarMensajeGenerico(2,"Revise e intente nuevamente")})
+    }
+
+    obtenerConsecutivoProformasYActualizar() {
+      if (this.contadores && this.contadores[0] && this.contadores[0]._id) {
+        return this.contadoresService.getAndIncrementProformas(this.contadores[0]._id)
+          .pipe(
+            tap((res: any) => {
+              this.factura.documento_n = res.proformas_Ndocumento;
+            })
+          );
+    
+      } else {
+        return throwError("No se encontró información de contadores"); // <-- RxJS 6
+      }
     }
 
     obtenerConsecutivoNotaVentaYActualizar() {
@@ -3770,37 +3784,44 @@ cambiarestado(e,i:number){
     this.factura.cliente.cliente_nombre= this.mensaje
     if(this.factura.cliente!=undefined){
       if(this.factura.cliente.cliente_nombre!=undefined){
-        this.buscarDatosSucursal()
-        var contpro=0
-        var bandera:boolean=true
-        this.productosVendidos.forEach(element => {
-          contpro++     
-          if(element.total==0){ 
-            bandera=false
+        this.obtenerConsecutivoProformasYActualizar().subscribe({
+          next: () => {
+            this.buscarDatosSucursal()
+            var contpro=0
+            var bandera:boolean=true
+            this.productosVendidos.forEach(element => {
+              contpro++     
+              if(element.total==0){ 
+                bandera=false
+              }
+            });
+            if(contpro>=1 &&bandera){
+              this.factura.dni_comprador= this.factura.cliente.ruc
+              this.factura.cliente.cliente_nombre= this.mensaje
+              this.factura.productosVendidos=this.productosVendidos
+              this.guardarDatosCliente()
+              this.factura.dni_comprador= this.factura.cliente.ruc
+              if(this.ventasForm.instance.validate().isValid){
+                this.factura.cliente= this.factura.cliente
+                new Promise<any>((resolve, reject) => {
+                  this.crearCliente()
+                  this.guardarCotización()
+                  this.productosVendidos.forEach(element => {
+                    element.factura_id = this.factura.documento_n
+                    this.productosVenService.newProductoVendido(element).subscribe(
+                      res => {},
+                      err => {this.mostrarMensajeGenerico(2,"Revise e intente nuevamente")})
+                  });
+
+                });
+                this.crearPDF();
+              }else{ this.mostrarMensajeGenerico(2,"Error al crear el documento")}
+            }else{ this.mostrarMensajeGenerico(2,"Error no hay productos en la lista") } 
+          },
+          error: (err) => {
+            this.mostrarMensajeGenerico(2,"Error al guardar el consecutivo de Nota de Venta");
           }
         });
-        if(contpro>=1 &&bandera){
-          this.factura.dni_comprador= this.factura.cliente.ruc
-          this.factura.cliente.cliente_nombre= this.mensaje
-          this.factura.productosVendidos=this.productosVendidos
-          this.guardarDatosCliente()
-          this.factura.dni_comprador= this.factura.cliente.ruc
-          if(this.ventasForm.instance.validate().isValid){
-            this.factura.cliente= this.factura.cliente
-            new Promise<any>((resolve, reject) => {
-              this.crearCliente()
-              this.guardarCotización()
-              this.productosVendidos.forEach(element => {
-                element.factura_id = this.factura.documento_n
-                this.productosVenService.newProductoVendido(element).subscribe(
-                  res => {},
-                  err => {this.mostrarMensajeGenerico(2,"Revise e intente nuevamente")})
-              });
-
-            });
-            this.crearPDF();
-          }else{ this.mostrarMensajeGenerico(2,"Error al crear el documento")}
-        }else{ this.mostrarMensajeGenerico(2,"Error no hay productos en la lista") }  
       }else{ this.mostrarMensajeGenerico(2,"Error hay campos vacios, revise e intente nuevamente") } 
     }else{ this.mostrarMensajeGenerico(2,"Error hay campos vacios, revise e intente nuevamente") }  
   }

@@ -209,4 +209,8 @@ export class ContadoresDocumentosService {
   getAndIncrementFactSuc2(id: string) {
     return this.http.put<any>(this.URL + `/getAndIncrementFactSuc2/${id}`, {});
   }
+
+  getAndIncrementProformas(id: string) {
+    return this.http.put<any>(this.URL + `/getAndIncrementProformas/${id}`, {});
+  }
 }
