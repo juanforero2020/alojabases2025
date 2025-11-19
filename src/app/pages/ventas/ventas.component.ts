@@ -527,7 +527,6 @@ export class VentasComponent implements OnInit {
           case "matriz":
             this.factura.documento_n =this.contadores[0].facturaMatriz_Ndocumento+1
             this.numeroFactura2=this.contadores[0].facturaMatriz_Ndocumento+1
-            console.log(this.factura.documento_n)
             break;
           case "sucursal1":
             this.factura.documento_n =this.contadores[0].facturaSucursal1_Ndocumento+1
@@ -568,7 +567,6 @@ export class VentasComponent implements OnInit {
           case "matriz":
             this.factura.documento_n =this.contadores[0].facturaMatriz_Ndocumento+1
             this.numeroFactura2=this.contadores[0].facturaMatriz_Ndocumento+1
-            console.log(this.factura.documento_n)
             break;
           case "sucursal1":
             this.factura.documento_n =this.contadores[0].facturaSucursal1_Ndocumento+1
@@ -1167,8 +1165,7 @@ setSelectedProducto(i:number){
             }
           }
         })
-        console.log(this.productosVendidos[i].precio_min)
-        
+
         break;
       case "Distribuidor":
         this.productosVendidos[i].precio_min = parseFloat((this.productosVendidos[i].producto.precio * this.preciosEspeciales[0].precioDistribuidor / 100 + this.productosVendidos[i].producto.precio).toFixed(2))
@@ -1318,8 +1315,6 @@ buscarCantidadesPRODUCTOS(){
 async compararCantidad2(){
   var cont=0
   await this.productosVendidos.forEach(element=>{
-    cont++
-    
     if(element.disponible<element.cantidad){
       Swal.fire({
         title: 'Cantidad no disponible',
@@ -1347,6 +1342,7 @@ async compararCantidad2(){
       })
     }
     this.carcularTotalProducto(null,cont);
+    cont++;
   })
 }
 
