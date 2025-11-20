@@ -1,6 +1,6 @@
 import { ChangeDetectorRef, Component, OnInit, ViewChild } from '@angular/core';
 import { compra } from '../compras/compra';
-import { tap } from 'rxjs/operators';
+import { catchError, tap } from 'rxjs/operators';
 import { DxFormComponent } from 'devextreme-angular';
 import { transaccion } from '../transacciones/transacciones';
 import { ConsolidadoComponent } from '../consolidado/consolidado.component';
@@ -511,11 +511,25 @@ export class VentasComponent implements OnInit {
 
 
   traerConsecutivoVeronica(ruc : string){
-    this._apiVeronicaService.obtenerSecuencia(ruc).subscribe(
-      res => {  this.consecutivoVeronica = res as ConsecutivoDto
-                this.secuencialFactura = this.consecutivoVeronica.result[0].establecimiento.puntosEmision[0].secuencialFactura
-        },
-      err => { this.mostrarMensajeGenerico(2,"No se ha podido establecer conexión con el SRI")});
+    const observable = this._apiVeronicaService.obtenerSecuencia(ruc)
+      .pipe(
+        tap((res: any) => {
+          console.log("Respuesta de obtenerSecuencia Veronica:", res);
+          this.consecutivoVeronica = res as ConsecutivoDto;
+          this.secuencialFactura = this.consecutivoVeronica.result[0].establecimiento.puntosEmision[0].secuencialFactura;
+        }),
+        catchError((error) => {
+          console.error("Error al obtener la secuencia de facturación de Veronica:", error);
+          this.mostrarMensajeGenerico(2, "No se ha podido establecer conexión con el SRI");
+          throw error;
+        })
+      );
+    // Adjuntar para poder rastrear en el network tab el observable
+    observable.subscribe({
+      next: r => { /* No hacer nada aquí, solo para forzar la llamada si no se hace subscribe externamente */ },
+      error: e => { /* Error ya manejado en catchError */ }
+    });
+    return observable;
   }
 
 
@@ -3154,8 +3168,8 @@ cambiarestado(e,i:number){
           this.factura.rucFactura = element.ruc
           this.RucSucursal = element.ruc
           this.textoConsecutivo = element.cabeceraData
-          //TODO --- DESCOMENTAR
-          //this.traerConsecutivoVeronica(this.RucSucursal)
+          //TODO --- COMENTAR CUANDO SE HAGAN PRUEBAS
+          this.traerConsecutivoVeronica(this.RucSucursal)
         }
       })
     }
@@ -3198,8 +3212,14 @@ cambiarestado(e,i:number){
     this.facturasService.newFactura(this.factura).subscribe(
       res => {
         this.validarFormaPago();
-        this.registrarFacturaSRI();
-        //this.actualizarFacturero();
+        this.traerConsecutivoVeronica(this.RucSucursal).subscribe({
+          next: () => {
+            this.registrarFacturaSRI();
+          },
+          error: (err) => {
+            this.mostrarMensajeGenerico(2,"Error al guardar el consecutivo de Nota de Venta");
+          }
+        });
       },
       err => {
         this.mostrarMensajeGenerico(2,"Error al guardar")});
@@ -3270,7 +3290,7 @@ cambiarestado(e,i:number){
     console.log(logApiVeronica)
 
     //EMILINAR LUEGO DE PRUEBAS
-    this.mostrarLoading = false;
+    /* this.mostrarLoading = false;
     Swal.fire({
       title: 'Correcto',
       text: 'Factura registrada con éxito',
@@ -3283,9 +3303,25 @@ cambiarestado(e,i:number){
         window.location.reload();
     })
 
+    this._logApiVeronicaService.newLog(logApiVeronica).subscribe(
+      res =>{   this.mostrarLoading = false;
+                Swal.fire({
+                  title: 'Correcto',
+                  text: 'Factura registrada con éxito',
+                  icon: 'success',
+                  confirmButtonText: 'Ok'
+                }).then((result) => {
+                  if(this.formaPago == "Otros medios Pago" || this.formaPago == "Abonos")
+                    this.router.navigate(['/recibo-caja'], { queryParams: { id: this.factura.documento_n , tipo: 1 } });
+                  else
+                    window.location.reload();
+                })
+            },
+      err => {  }); */
+
 
     //TO-DO, DESCOMENTAR LUEGO DE PRUEBAS
-    /* this._apiVeronicaService.newFactura(this.facturaVeronica).subscribe(
+    this._apiVeronicaService.newFactura(this.facturaVeronica).subscribe(
       res => {  var resultado = res as ResponseVeronicaDto;
                 logApiVeronica.objetoResponse = JSON.stringify(res)
                 logApiVeronica.claveAcceso = resultado.result.claveAccesoConsultada
@@ -3326,7 +3362,7 @@ cambiarestado(e,i:number){
                             })
                         },
                   err => {  });              
-              }); */
+              });
   }
   
 
