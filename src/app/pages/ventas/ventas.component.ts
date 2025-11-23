@@ -160,6 +160,7 @@ export class VentasComponent implements OnInit {
   sIva12=0;
   subtotal2=0;
   iva=0;
+  ivaPorcentaje=0;
   tDocumento: string
   textoTipoDocumento: string        //se especifica si es proforma o nota de venta
   textoTipoDocumento2: string         //para detalle de nombre comercial 
@@ -305,6 +306,7 @@ export class VentasComponent implements OnInit {
     this.traerUsuarios()
     this.traerDatosConfiguracion();
     this.traerParametrizacionesMercaderia();
+    this.traerIva();
 
     this.factura.tipo_venta="Normal"
     this.factura.tipo_cliente="C"
@@ -327,6 +329,12 @@ export class VentasComponent implements OnInit {
   traerParametrizacionesMercaderia(){
     this._controlMercaderiaService.getParametrizaciones().subscribe(res => {
       this.listaParametrizaciones = res as controlUnidades[];
+    })
+  }
+
+  traerIva(){
+    this.parametrizacionService.getParametrizacionPorNombre("iva").subscribe(res => {
+      this.ivaPorcentaje = res["value"] as number;
     })
   }
 
@@ -822,7 +830,8 @@ setSelectedProducto(i:number){
           if(this.productosVendidos[i].disponible < 0 || this.productosVendidos[i].disponible == null ){
             this.productosVendidos[i].disponible=0
           }
-          this.productosVendidos[i].precio_min = parseFloat((element.precio * element.porcentaje_ganancia / 100 + element.precio).toFixed(2))
+          this.productosVendidos[i].precio_min = parseFloat((element.precio * (element.porcentaje_ganancia - (element.ivaExcepcion || this.ivaPorcentaje)) / 100 + element.precio).toFixed(2))
+          this.productosVendidos[i].precio_minConIVA = parseFloat((element.precio * element.porcentaje_ganancia / 100 + element.precio).toFixed(2))
           this.productosVendidos[i].equivalencia="0C 0P"
           this.productosVendidos[i].tipoDocumentoVenta= this.tDocumento
         }
@@ -1166,27 +1175,27 @@ setSelectedProducto(i:number){
         this.precios.forEach(element=>{
           if(element.aplicacion == this.productosVendidos[i].producto.APLICACION){
             if(this.productosVendidos[i].cantidad >0 && this.productosVendidos[i].cantidad <=element.cant1){
-              this.productosVendidos[i].precio_min = parseFloat((this.productosVendidos[i].producto.precio * element.percent1 / 100 + this.productosVendidos[i].producto.precio).toFixed(2))
+              this.productosVendidos[i].precio_minConIVA = parseFloat((this.productosVendidos[i].producto.precio * element.percent1 / 100 + this.productosVendidos[i].producto.precio).toFixed(2))
               
             }
             if(this.productosVendidos[i].cantidad >element.cant1 && this.productosVendidos[i].cantidad <=element.cant2){
-              this.productosVendidos[i].precio_min = parseFloat((this.productosVendidos[i].producto.precio * element.percent2 / 100 + this.productosVendidos[i].producto.precio).toFixed(2))
+              this.productosVendidos[i].precio_minConIVA = parseFloat((this.productosVendidos[i].producto.precio * element.percent2 / 100 + this.productosVendidos[i].producto.precio).toFixed(2))
             
             }
 
             if(this.productosVendidos[i].cantidad >element.cant2){
-              this.productosVendidos[i].precio_min = parseFloat((this.productosVendidos[i].producto.precio * element.percent3 / 100 + this.productosVendidos[i].producto.precio).toFixed(2))
+              this.productosVendidos[i].precio_minConIVA = parseFloat((this.productosVendidos[i].producto.precio * element.percent3 / 100 + this.productosVendidos[i].producto.precio).toFixed(2))
             }
           }
         })
 
         break;
       case "Distribuidor":
-        this.productosVendidos[i].precio_min = parseFloat((this.productosVendidos[i].producto.precio * this.preciosEspeciales[0].precioDistribuidor / 100 + this.productosVendidos[i].producto.precio).toFixed(2))
+        this.productosVendidos[i].precio_minConIVA = parseFloat((this.productosVendidos[i].producto.precio * this.preciosEspeciales[0].precioDistribuidor / 100 + this.productosVendidos[i].producto.precio).toFixed(2))
         
         break;
       case "Socio":
-        this.productosVendidos[i].precio_min = parseFloat((this.productosVendidos[i].producto.precio * this.preciosEspeciales[0].precioSocio / 100 + this.productosVendidos[i].producto.precio).toFixed(2))
+        this.productosVendidos[i].precio_minConIVA = parseFloat((this.productosVendidos[i].producto.precio * this.preciosEspeciales[0].precioSocio / 100 + this.productosVendidos[i].producto.precio).toFixed(2))
         
         break;
     
@@ -1480,13 +1489,16 @@ cambiarestado(e,i:number){
   }
 
   calcularTotalRow(i:number) {
+    const ivaToDiscount = ((this.productosVendidos[i].producto.ivaExcepcion || this.ivaPorcentaje)/100)+1;
+    this.productosVendidos[i].precio_ventaSinIVA = parseFloat((this.productosVendidos[i].precio_venta/ivaToDiscount).toFixed(2))
     this.productosVendidos[i].total = parseFloat((this.productosVendidos[i].cantidad * this.productosVendidos[i].precio_venta).toFixed(2))
     this.productosVendidos[i].subtotal=  this.productosVendidos[i].total -( this.productosVendidos[i].total*(this.productosVendidos[i].descuento/100))  
-
+    
     if(this.productosVendidos[i].iva){
-        this.productosVendidos[i].subtP2=this.productosVendidos[i].subtotal/1.12
-        this.productosVendidos[i].subtP1=this.productosVendidos[i].total/1.12
-        this.productosVendidos[i].subtIva=this.productosVendidos[i].subtotal-(this.productosVendidos[i].subtotal/1.12)
+        this.productosVendidos[i].subtP2=this.productosVendidos[i].subtotal/ivaToDiscount
+        this.productosVendidos[i].subtP1=this.productosVendidos[i].total/ivaToDiscount
+        this.productosVendidos[i].subtIva=this.productosVendidos[i].subtotal-(this.productosVendidos[i].subtotal/ivaToDiscount)
+        this.productosVendidos[i].totalSinIVA = parseFloat((this.productosVendidos[i].subtotal - this.productosVendidos[i].subtIva).toFixed(2))
     }else{
       this.productosVendidos[i].subtP2=this.productosVendidos[i].subtotal
       this.productosVendidos[i].subtP1=this.productosVendidos[i].total
@@ -1700,12 +1712,12 @@ cambiarestado(e,i:number){
 
 
   calcularValoresFactura(){
-    this.subtotal1=(((this.factura.total+this.factura.coste_transporte)-this.factura.coste_transporte)/1.12)+this.factura.coste_transporte
+    this.subtotal1=(((this.factura.total+this.factura.coste_transporte)-this.factura.coste_transporte)/(this.ivaPorcentaje/100+1))+this.factura.coste_transporte
     this.Sdescuento=this.factura.subtotalF1-this.factura.subtotalF2
     this.subtotal2=this.subtotal1-this.Sdescuento
     this.sIva0= this.factura.coste_transporte;
     this.sIva12=this.subtotal2-this.sIva0
-    this.iva= this.sIva12*0.12
+    this.iva= this.sIva12*(this.ivaPorcentaje/100)
   }
 
      
@@ -1713,7 +1725,7 @@ cambiarestado(e,i:number){
     getDocumentDefinition() {
       this.calcularValoresFactura()
       sessionStorage.setItem('resume', JSON.stringify("jj"));
-      let tipoDocumento="Factura";
+      console.log("FACTURA CHECA" + JSON.stringify(this.factura))
       return {
         pageSize: 'A4',
         
@@ -1847,7 +1859,7 @@ cambiarestado(e,i:number){
                 body: [
                   [ { text: 'SUBTOTAL', bold: true ,style: "detalleTotales"},{text: this.factura.subtotalF1.toFixed(2), style:"totales" }],
                   [ { text: 'DESCUENTO', bold: true ,style: "detalleTotales"},{text:this.Sdescuento.toFixed(2), style:"totales" } ],
-                  [ { text: 'IVA 12%', bold: true ,style: "detalleTotales"},{text: this.factura.totalIva.toFixed(2), style:"totales" } ],
+                  [ { text: 'IVA', bold: true ,style: "detalleTotales"},{text: this.factura.totalIva.toFixed(2), style:"totales" } ],
                   [ { text: 'IVA 0%', bold: true ,style: "detalleTotales"},{text:this.sIva0.toFixed(2), style:"totales" } ],
                   [ { text: 'TOTAL US$', bold: true ,style: "detalleTotales"},{text:this.factura.total.toFixed(2), style:"totales" } ]
                 ]
@@ -1994,7 +2006,7 @@ cambiarestado(e,i:number){
                 body: [
                   [ { text: 'SUBTOTAL', bold: true ,style: "detalleTotales"},{text: this.factura.subtotalF1.toFixed(2), style:"totales" }],
                   [ { text: 'DESCUENTO', bold: true ,style: "detalleTotales"},{text:this.Sdescuento.toFixed(2), style:"totales" } ],
-                  [ { text: 'IVA 12%', bold: true ,style: "detalleTotales"},{text: this.factura.totalIva.toFixed(2), style:"totales" } ],
+                  [ { text: 'IVA', bold: true ,style: "detalleTotales"},{text: this.factura.totalIva.toFixed(2), style:"totales" } ],
                   [ { text: 'IVA 0%', bold: true ,style: "detalleTotales"},{text:this.sIva0.toFixed(2), style:"totales" } ],
                   [ { text: 'TOTAL US$', bold: true ,style: "detalleTotales"},{text:this.factura.total.toFixed(2), style:"totales" } ]
                 ]
@@ -2249,16 +2261,15 @@ cambiarestado(e,i:number){
           {
             //Desde aqui comienza los datos del cliente
             style: 'tableExample4',
-           
             table: {
               widths: [125,100],
               body: [
-                [ { text: 'Valor', bold: true ,style: "detalleTotales"}, {text:this.subtotal1.toFixed(2), style:"totales" }],
-                [ { text: 'Otros descuentos', bold: true ,style: "detalleTotales"}, {text:this.Sdescuento.toFixed(2), style:"totales" } ],
-                [ { text: 'Subtotal', bold: true, style: "detalleTotales" }, {text:this.subtotal2.toFixed(2), style:"totales" } ],
-                [ { text: 'Total', bold: true, style: "detalleTotales" }, {text:this.factura.total.toFixed(2), style:"totales" } ]
+                [ { text: 'SUBTOTAL', bold: true ,style: "detalleTotales"},{text: this.subtotal1.toFixed(2), style:"totales" }],
+                [ { text: 'DESCUENTO', bold: true ,style: "detalleTotales"},{text:this.Sdescuento.toFixed(2), style:"totales" } ],
+                [ { text: 'IVA', bold: true ,style: "detalleTotales"},{text: this.factura.totalIva.toFixed(2), style:"totales" } ],
+                [ { text: 'TOTAL US$', bold: true ,style: "detalleTotales"},{text:this.factura.total.toFixed(2), style:"totales" } ]
               ]
-            }
+            },
             },
           ]
           },
@@ -2505,7 +2516,7 @@ cambiarestado(e,i:number){
               body: [
                 [ { text: 'SUBTOTAL', bold: true ,style: "detalleTotales"},{text: this.factura.subtotalF1.toFixed(2), style:"totales" }],
                 [ { text: 'DESCUENTO', bold: true ,style: "detalleTotales"},{text:this.Sdescuento.toFixed(2), style:"totales" } ],
-                [ { text: 'IVA 12%', bold: true ,style: "detalleTotales"},{text: this.factura.totalIva.toFixed(2), style:"totales" } ],
+                [ { text: 'IVA', bold: true ,style: "detalleTotales"},{text: this.factura.totalIva.toFixed(2), style:"totales" } ],
                 [ { text: 'IVA 0%', bold: true ,style: "detalleTotales"},{text:this.sIva0.toFixed(2), style:"totales" } ],
                 [ { text: 'TOTAL US$', bold: true ,style: "detalleTotales"},{text:this.factura.total.toFixed(2), style:"totales" } ]
               ]
@@ -2662,7 +2673,7 @@ cambiarestado(e,i:number){
                   body: [
                     [ { text: 'SUBTOTAL', bold: true ,style: "detalleTotales"},{text: this.factura.subtotalF1.toFixed(2), style:"totales" }],
                     [ { text: 'DESCUENTO', bold: true ,style: "detalleTotales"},{text:this.Sdescuento.toFixed(2), style:"totales" } ],
-                    [ { text: 'IVA 12%', bold: true ,style: "detalleTotales"},{text: this.factura.totalIva.toFixed(2), style:"totales" } ],
+                    [ { text: 'IVA', bold: true ,style: "detalleTotales"},{text: this.factura.totalIva.toFixed(2), style:"totales" } ],
                     [ { text: 'IVA 0%', bold: true ,style: "detalleTotales"},{text:this.sIva0.toFixed(2), style:"totales" } ],
                     [ { text: 'TOTAL US$', bold: true ,style: "detalleTotales"},{text:this.factura.total.toFixed(2), style:"totales" } ]
                   ]
@@ -2863,8 +2874,8 @@ cambiarestado(e,i:number){
               {text:ed.producto.UNIDAD,fontSize:8,alignment:"center"},
               {text:ed.producto.PRODUCTO,fontSize:8}, 
               {text:ed.entregar ? "ENT":"PTE",fontSize:8, alignment:"center"}, 
-              {text:ed.precio_venta.toFixed(2),fontSize:8, alignment:"center"}, 
-              {text:ed.total.toFixed(2), alignment:"right",fontSize:8}];
+              {text:ed.precio_ventaSinIVA.toFixed(2),fontSize:8, alignment:"center"}, 
+              {text:ed.totalSinIVA.toFixed(2), alignment:"right",fontSize:8}];
             }),
           ]
         },
@@ -2937,8 +2948,8 @@ cambiarestado(e,i:number){
               {text:ed.producto.UNIDAD,fontSize:8,alignment:"center"},
               {text:ed.producto.PRODUCTO,fontSize:8}, 
               {text:ed.entregar ? "ENT":"PTE",fontSize:8, alignment:"center"},
-              {text:ed.precio_venta.toFixed(2),fontSize:8, alignment:"center"}, 
-              {text:ed.total.toFixed(2), alignment:"right",fontSize:8}];
+              {text:ed.precio_ventaSinIVA.toFixed(2),fontSize:8, alignment:"center"}, 
+              {text:ed.totalSinIVA.toFixed(2), alignment:"right",fontSize:8}];
               
             }),
           ]
@@ -3020,7 +3031,7 @@ cambiarestado(e,i:number){
             ],
             
             ...productos.map(ed =>{
-              return [ { text: ed.cantidad, alignment: 'center' },{text:ed.producto.UNIDAD,fontSize:8,alignment:"center"},ed.producto.nombre_comercial, {text:ed.precio_venta.toFixed(2), alignment:"center"}, {text:ed.descuento, alignment:"center"}, {text:ed.total.toFixed(2), alignment:"right",style:"totales2"}];
+              return [ { text: ed.cantidad, alignment: 'center' },{text:ed.producto.UNIDAD,fontSize:8,alignment:"center"},ed.producto.nombre_comercial, {text:ed.precio_ventaSinIVA.toFixed(2), alignment:"center"}, {text:ed.descuento, alignment:"center"}, {text:ed.totalSinIVA.toFixed(2), alignment:"right",style:"totales2"}];
               
             }),
 
@@ -3253,12 +3264,13 @@ cambiarestado(e,i:number){
         detalle.codigoAuxiliar = "000000"
         detalle.descripcion = element.producto.PRODUCTO
         detalle.cantidad = element.cantidad
-        detalle.precioUnitario = element.precio_venta/1.12
+        detalle.precioUnitario = element.precio_venta/((element.producto.ivaExcepcion || this.ivaPorcentaje)/100+1)
         detalle.descuento = 0
       var impuesto = new ImpuestoModel();
-        impuesto.tarifa = 12
+        if(element.producto.ivaExcepcion) impuesto.codigoPorcentaje = '5'
+        impuesto.tarifa = element.producto.ivaExcepcion || this.ivaPorcentaje
         impuesto.baseImponible = Number(element.subtP1.toFixed(2))
-        impuesto.valor = impuesto.baseImponible * 0.12
+        impuesto.valor = impuesto.baseImponible * ((element.producto.ivaExcepcion || this.ivaPorcentaje)/100)
         detalle.impuesto.push(impuesto)
       this.facturaVeronica.detalles.push(detalle);
     });

@@ -73,6 +73,7 @@ export class VentasNuevoComponent implements OnInit {
   facturasEctdas : factura[]=[]
   newRecibo = new ReciboCaja();
   btnDis = false
+  ivaPorcentaje=0;
 
   formasPago: string[] = [
     'Cancelado',
@@ -302,6 +303,7 @@ export class VentasNuevoComponent implements OnInit {
     this.traerUsuarios()
     this.traerDatosConfiguracion();
     this.traerParametrizacionesMercaderia();
+    this.traerIva();
     this.factura.tipo_venta="Normal"
     this.factura.tipo_cliente="C"
     this.tDocumento= "Factura"
@@ -321,6 +323,13 @@ export class VentasNuevoComponent implements OnInit {
       this.listaParametrizaciones = res as controlUnidades[];
     })
   }
+
+  traerIva(){
+    this.parametrizacionService.getParametrizacionPorNombre("iva").subscribe(res => {
+      this.ivaPorcentaje = res["value"] as number;
+    })
+  }
+
 
   cargarUsuarioLogueado() {
     new Promise((res, err) => {
@@ -1459,9 +1468,10 @@ cambiarestado(e,i:number){
     this.productosVendidos[i].subtotal=  this.productosVendidos[i].total -( this.productosVendidos[i].total*(this.productosVendidos[i].descuento/100))  
 
     if(this.productosVendidos[i].iva){
-        this.productosVendidos[i].subtP2=this.productosVendidos[i].subtotal/1.12
-        this.productosVendidos[i].subtP1=this.productosVendidos[i].total/1.12
-        this.productosVendidos[i].subtIva=this.productosVendidos[i].subtotal-(this.productosVendidos[i].subtotal/1.12)
+        const ivaToDiscount = (this.ivaPorcentaje/100) + 1
+        this.productosVendidos[i].subtP2=this.productosVendidos[i].subtotal/ivaToDiscount
+        this.productosVendidos[i].subtP1=this.productosVendidos[i].total/ivaToDiscount
+        this.productosVendidos[i].subtIva=this.productosVendidos[i].subtotal-(this.productosVendidos[i].subtotal/ivaToDiscount)
     }else{
       this.productosVendidos[i].subtP2=this.productosVendidos[i].subtotal
       this.productosVendidos[i].subtP1=this.productosVendidos[i].total
@@ -1675,12 +1685,12 @@ cambiarestado(e,i:number){
 
 
   calcularValoresFactura(){
-    this.subtotal1=(((this.factura.total+this.factura.coste_transporte)-this.factura.coste_transporte)/1.12)+this.factura.coste_transporte
+    this.subtotal1=(((this.factura.total+this.factura.coste_transporte)-this.factura.coste_transporte)/(this.ivaPorcentaje/100+1))+this.factura.coste_transporte
     this.Sdescuento=this.factura.subtotalF1-this.factura.subtotalF2
     this.subtotal2=this.subtotal1-this.Sdescuento
     this.sIva0= this.factura.coste_transporte;
     this.sIva12=this.subtotal2-this.sIva0
-    this.iva= this.sIva12*0.12
+    this.iva= this.sIva12*(this.ivaPorcentaje/100)
   }
 
      
@@ -1822,7 +1832,7 @@ cambiarestado(e,i:number){
                 body: [
                   [ { text: 'SUBTOTAL', bold: true ,style: "detalleTotales"},{text: this.factura.subtotalF1.toFixed(2), style:"totales" }],
                   [ { text: 'DESCUENTO', bold: true ,style: "detalleTotales"},{text:this.Sdescuento.toFixed(2), style:"totales" } ],
-                  [ { text: 'IVA 12%', bold: true ,style: "detalleTotales"},{text: this.factura.totalIva.toFixed(2), style:"totales" } ],
+                  [ { text: 'IVA '+ this.ivaPorcentaje + '%', bold: true ,style: "detalleTotales"},{text: this.factura.totalIva.toFixed(2), style:"totales" } ],
                   [ { text: 'IVA 0%', bold: true ,style: "detalleTotales"},{text:this.sIva0.toFixed(2), style:"totales" } ],
                   [ { text: 'TOTAL US$', bold: true ,style: "detalleTotales"},{text:this.factura.total.toFixed(2), style:"totales" } ]
                 ]
@@ -1969,7 +1979,7 @@ cambiarestado(e,i:number){
                 body: [
                   [ { text: 'SUBTOTAL', bold: true ,style: "detalleTotales"},{text: this.factura.subtotalF1.toFixed(2), style:"totales" }],
                   [ { text: 'DESCUENTO', bold: true ,style: "detalleTotales"},{text:this.Sdescuento.toFixed(2), style:"totales" } ],
-                  [ { text: 'IVA 12%', bold: true ,style: "detalleTotales"},{text: this.factura.totalIva.toFixed(2), style:"totales" } ],
+                  [ { text: 'IVA ' + this.ivaPorcentaje + '%', bold: true ,style: "detalleTotales"},{text: this.factura.totalIva.toFixed(2), style:"totales" } ],
                   [ { text: 'IVA 0%', bold: true ,style: "detalleTotales"},{text:this.sIva0.toFixed(2), style:"totales" } ],
                   [ { text: 'TOTAL US$', bold: true ,style: "detalleTotales"},{text:this.factura.total.toFixed(2), style:"totales" } ]
                 ]
@@ -2480,7 +2490,7 @@ cambiarestado(e,i:number){
               body: [
                 [ { text: 'SUBTOTAL', bold: true ,style: "detalleTotales"},{text: this.factura.subtotalF1.toFixed(2), style:"totales" }],
                 [ { text: 'DESCUENTO', bold: true ,style: "detalleTotales"},{text:this.Sdescuento.toFixed(2), style:"totales" } ],
-                [ { text: 'IVA 12%', bold: true ,style: "detalleTotales"},{text: this.factura.totalIva.toFixed(2), style:"totales" } ],
+                [ { text: 'IVA '+ this.ivaPorcentaje +'%', bold: true ,style: "detalleTotales"},{text: this.factura.totalIva.toFixed(2), style:"totales" } ],
                 [ { text: 'IVA 0%', bold: true ,style: "detalleTotales"},{text:this.sIva0.toFixed(2), style:"totales" } ],
                 [ { text: 'TOTAL US$', bold: true ,style: "detalleTotales"},{text:this.factura.total.toFixed(2), style:"totales" } ]
               ]
@@ -2637,7 +2647,7 @@ cambiarestado(e,i:number){
                   body: [
                     [ { text: 'SUBTOTAL', bold: true ,style: "detalleTotales"},{text: this.factura.subtotalF1.toFixed(2), style:"totales" }],
                     [ { text: 'DESCUENTO', bold: true ,style: "detalleTotales"},{text:this.Sdescuento.toFixed(2), style:"totales" } ],
-                    [ { text: 'IVA 12%', bold: true ,style: "detalleTotales"},{text: this.factura.totalIva.toFixed(2), style:"totales" } ],
+                    [ { text: 'IVA '+ this.ivaPorcentaje +'%', bold: true ,style: "detalleTotales"},{text: this.factura.totalIva.toFixed(2), style:"totales" } ],
                     [ { text: 'IVA 0%', bold: true ,style: "detalleTotales"},{text:this.sIva0.toFixed(2), style:"totales" } ],
                     [ { text: 'TOTAL US$', bold: true ,style: "detalleTotales"},{text:this.factura.total.toFixed(2), style:"totales" } ]
                   ]
@@ -3215,12 +3225,12 @@ cambiarestado(e,i:number){
         detalle.codigoAuxiliar = "000000"
         detalle.descripcion = element.producto.PRODUCTO
         detalle.cantidad = element.cantidad
-        detalle.precioUnitario = element.precio_venta/1.12
+        detalle.precioUnitario = element.precio_venta/(this.ivaPorcentaje/100+1)
         detalle.descuento = 0
       var impuesto = new ImpuestoModel();
-        impuesto.tarifa = 12
+        impuesto.tarifa = this.ivaPorcentaje;
         impuesto.baseImponible = Number(element.subtP1.toFixed(2))
-        impuesto.valor = impuesto.baseImponible * 0.12
+        impuesto.valor = impuesto.baseImponible * (this.ivaPorcentaje/100)
         detalle.impuesto.push(impuesto)
       this.facturaVeronica.detalles.push(detalle);
     });

@@ -1,0 +1,99 @@
+<div class="row" *ngIf="mostrarBloqueo"></div>
+<div id="administracion" *ngIf="!mostrarBloqueo">
+    <div class="card mb-3">
+        <div class="card-header">
+            <i class="fa fa-lg fa-user  text-danger"></i>
+            IVA
+        </div>
+        <div class="card-body">
+            <div class="row">
+                <div class="col-md-12 card carIn">
+                    <div style="display: block;">
+                        <div class="row" class="fomR">
+                            <div class="col-md-12" style="text-align: right;">
+                                <button class="btn" type="button" (click)="desbloquear()">
+                                    <i class="fa fa-pencil-square-o" aria-hidden="true"></i>
+                                </button>
+                            </div>
+                            <div class="col-md-12">
+                                <div class="row">
+                                    <div class="col-md-3"></div>
+                                    <div class="col-md-6">
+                                        <div class="row espacio">
+                                            <div class="col-md-4" style="text-align: left;">IVA:</div>
+                                            <div class="col-md-8">
+                                                <input type="number" [(ngModel)]="iva" name="iva" [disabled]="varDis" class="form-control" placeholder="IVA" required="required"></div>
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
+
+                            </div>
+
+
+                        </div>
+
+                    </div>
+                </div>
+            </div>
+        </div>
+    <div>
+        <h4>Excepciones</h4>
+        <div *ngFor="let e of excepciones;let i = index">
+            <div class="col-6">
+                <div class="dx-field">
+                  <div class="dx-field-value">
+                    <dx-tag-box
+                      [dataSource]="excepcionesParseadas"
+                      [items]="products"
+                      [inputAttr]="{ 'aria-label': 'Product' }"
+                    ></dx-tag-box>
+                  </div>
+                </div>
+        </div>
+        <div class="col-3">
+            <div class="row">
+                <div class="col-6" >
+                    <dx-text-box></dx-text-box>
+                </div>
+                <div class="col-6">
+                    <dx-text-box></dx-text-box>
+                </div>
+                
+            </div>
+        </div>
+        </div>
+
+        <div class="row">
+            <div class="col-6">
+                    <div class="dx-field">
+                      <div class="dx-field-value">
+                        <dx-tag-box
+                          [items]="products"
+                          [inputAttr]="{ 'aria-label': 'Product' }"
+                        ></dx-tag-box>
+                      </div>
+                    </div>
+            </div>
+            <div class="col-3">
+                <div class="row">
+                    <div class="col-6" >
+                        <dx-text-box></dx-text-box>
+                    </div>
+                    <div class="col-6">
+                        <dx-text-box></dx-text-box>
+                    </div>
+                    
+                </div>
+            </div>
+        </div>
+    </div>
+    <div class="row">
+        <div class="col-md-4"></div>
+        <div class="col-md-4">
+            <button class="btn btn2" type="button" (click)="guardarIva()">Guardar</button>
+        </div>
+
+        <div class="col-md-4"></div>
+    </div>
+    </div>

@@ -59,6 +59,7 @@ import { VentasNuevoComponent } from "./pages/ventas copy/ventas-nuevo.component
 import { ControlUnidadesComponent } from "./pages/control-unidades/control-unidades.component";
 import { CargaMasivaComponent } from "./pages/carga-masiva/carga-masiva.component";
 import { DescuentoComponent } from "./pages/descuentos/descuentos.component";
+import { IvaComponent } from "./pages/iva/iva.component";
 
 const routes: Routes = [
   {
@@ -183,6 +184,12 @@ const routes: Routes = [
     canActivate: [AuthGuardService],
     data: { roles: ["Administrador"] },
     component: ControlPreciosComponent,
+  },
+  {
+    path: "iva",
+    canActivate: [AuthGuardService],
+    data: { roles: ["Administrador"] },
+    component: IvaComponent,
   },
   {
     path: "control-unidades",

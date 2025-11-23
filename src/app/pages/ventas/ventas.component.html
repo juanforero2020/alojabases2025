@@ -380,7 +380,7 @@
                         <dx-text-box [(value)]="p.disponible" [disabled]="true" [readOnly]="true"></dx-text-box>
                     </div>
                     <div class="col-6">
-                        <dx-text-box [(value)]="p.precio_min" [disabled]="true" [readOnly]="true"></dx-text-box>
+                        <dx-text-box [(value)]="p.precio_minConIVA" [disabled]="true" [readOnly]="true"></dx-text-box>
                     </div>
                     
                 </div>
@@ -396,7 +396,7 @@
             </div>
             <div class="col-1">
                 <dx-number-box [(value)]="p.precio_venta" [disabled]="false" [readOnly]="false"
-                    (onChange)="carcularTotalProducto($event, i)" [min]="p.precio_min">
+                    (onChange)="carcularTotalProducto($event, i)" [min]="p.precio_minConIVA">
                 </dx-number-box>
             </div>
             <div class="col-1">

@@ -81,7 +81,7 @@ export class ImpuestoModel{
     constructor(){
         this.baseImponible = 0
         this.codigo = "2"
-        this.codigoPorcentaje = "2"
+        this.codigoPorcentaje = "4"
         this.tarifa = 0
         this.valor = 0
     }

@@ -363,6 +363,7 @@ export const navigationAdmin = [
           },
           {
             text: "IVA",
+            path: "/iva",
           },
           {
             text: "Matriz Precios",
