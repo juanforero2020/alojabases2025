@@ -156,6 +156,7 @@ subtotal:number=0
   obj: objDate;
   fechaAnteriorDesde: Date = new Date();
   busquedaTransaccion: tipoBusquedaTransaccion;
+  ivaPorcentaje: number=0
 
   expensesCollection3: AngularFirestoreCollection<transaccion>;
   usuarioLogueado : user;
@@ -187,8 +188,14 @@ subtotal:number=0
     this.traerProductos()
     this.traerFacturasProveedor()
     this.traerDatosConfiguracion();
+    this.traerIva()
   }
 
+  traerIva(){
+    this.parametrizacionService.getParametrizacionPorNombre("iva").subscribe(res => {
+      this.ivaPorcentaje = res["value"] as number;
+    })
+  }
   cargarUsuarioLogueado() {
     var correo = ""
     new Promise((res, err) => {
@@ -819,12 +826,12 @@ subtotal:number=0
   }
 
   calcularValoresFactura(){
-   this.subtotal1=(((this.factura.total+this.factura.coste_transporte)-this.factura.coste_transporte)/1.12)+this.factura.coste_transporte
+   this.subtotal1=(((this.factura.total+this.factura.coste_transporte)-this.factura.coste_transporte)/(this.ivaPorcentaje/100+1))+this.factura.coste_transporte
    this.Sdescuento=this.factura.subtotalF1-this.factura.subtotalF2
    this.subtotal2=this.subtotal1-this.Sdescuento
    this.sIva0= this.factura.coste_transporte;
    this.sIva12=this.subtotal2-this.sIva0
-   this.iva= this.sIva12*0.12
+   this.iva= this.sIva12*(this.ivaPorcentaje/100)
   }
 
   setearNFactura2(){
@@ -1064,8 +1071,8 @@ subtotal:number=0
               [ { text: 'Otros descuentos', bold: true ,style: "detalleTotales"}, {text:this.Sdescuento.toFixed(2), style:"totales" } ],
               [ { text: 'Subtotal', bold: true, style: "detalleTotales" }, {text: this.factura.subtotalF2.toFixed(2), style:"totales" } ],
               [ { text: 'Tarifa 0', bold: true , style: "detalleTotales" }, {text:this.sIva0.toFixed(2), style:"totales" } ],
-              [ { text: 'Tarifa 12', bold: true ,style: "detalleTotales"}, {text: this.factura.subtotalF2.toFixed(2) , style:"totales" }],
-              [ { text: '12% IVA', bold: true ,style: "detalleTotales"}, {text: this.factura.totalIva.toFixed(2), style:"totales" } ],
+              [ { text: 'Tarifa IVA', bold: true ,style: "detalleTotales"}, {text: this.factura.subtotalF2.toFixed(2) , style:"totales" }],
+              [ { text: 'IVA', bold: true ,style: "detalleTotales"}, {text: this.factura.totalIva.toFixed(2), style:"totales" } ],
               [ { text: 'Total', bold: true, style: "detalleTotales" }, {text:this.factura.total.toFixed(2), style:"totales" } ]
             ]
           }
@@ -3089,7 +3096,7 @@ getDocumentDefinition() {
   };
 }
 
-cargarValoresFactura(){
+cargarValoresFactura(){ 
    
 
   let products=0
@@ -3098,7 +3105,7 @@ cargarValoresFactura(){
   })
 
   let subtotal2=0
-  this.subtotalFactura1=this.ordenDeCompra2.subtotal/1.12
+  this.subtotalFactura1=this.ordenDeCompra2.subtotal/(this.ivaPorcentaje/100+1)
   //this.subtotalFactura2=products/1.12
  // console.log("subt "+this.subtotalFactura2)
   console.log("total "+this.ordenDeCompra2.total)
@@ -3110,12 +3117,12 @@ cargarValoresFactura(){
   subtotal2= ((this.ordenDeCompra2.otrosDescuentosGen/100)*this.ordenDeCompra2.subtotalDetalles)
   this.subtotalGeneral2= this.ordenDeCompra2.subtotalDetalles-subtotal2
   
-  this.subtCostosGenerales=this.ordenDeCompra2.otrosCostosGen/1.12
-  this.subtotalIva=(this.subtCostosGenerales+this.subtotalGeneral2)*0.12
+  this.subtCostosGenerales=this.ordenDeCompra2.otrosCostosGen/(this.ivaPorcentaje/100+1)
+  this.subtotalIva=(this.subtCostosGenerales+this.subtotalGeneral2)*(this.ivaPorcentaje/100)
   this.subtOtrsoDesc=subtotal2
    
   //desde aqui comienza los totales
-  this.subtotal1 =this.subtotal/1.12
+  this.subtotal1 =this.subtotal/(this.ivaPorcentaje/100+1)
 
 }
 

@@ -36,6 +36,7 @@ export class producto {
     precio1:number
     precio2:number
     precio3:number
+    ivaExcepcion?: number
     constructor() {
         this.REFERENCIA=""
         this.DIMENSION = ""
@@ -48,13 +49,17 @@ export class venta {
     entregar: boolean
     equivalencia: string
     iva: boolean
+    ivaValue: number
     producto: producto
     pedir: boolean
     seleccionado: boolean
     precio_min: number
+    precio_minConIVA: number 
     REFERENCIA:string
     precio_venta: number
+    precio_ventaSinIVA: number
     total: number
+    totalSinIVA: number
     tipo_documento_emitido: string
     factura_id : number
     descuento: number
@@ -166,6 +171,7 @@ export class factura {
     nota:string
     nombreUsuario : string
     nombreVendedor : string
+    iva: number
     constructor() { 
         this.estado  = "CONTABILIZADA"
         this.mensaje = " "

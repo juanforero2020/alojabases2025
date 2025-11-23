@@ -38,6 +38,8 @@ import {
   DxMenuModule,
   DxDropDownBoxModule,
   DxTreeViewModule,
+  DxPopoverModule,
+  DxTagBoxModule,
 } from "devextreme-angular";
 import { AngularFireModule } from "angularfire2";
 import { AngularFirestoreModule } from "angularfire2/firestore";
@@ -111,6 +113,7 @@ import { VentasNuevoComponent } from "./pages/ventas copy/ventas-nuevo.component
 import { ControlUnidadesComponent } from "./pages/control-unidades/control-unidades.component";
 import { CargaMasivaComponent } from "./pages/carga-masiva/carga-masiva.component";
 import { DescuentoComponent } from "./pages/descuentos/descuentos.component";
+import { IvaComponent } from './pages/iva/iva.component';
 
 @NgModule({
   declarations: [
@@ -174,7 +177,8 @@ import { DescuentoComponent } from "./pages/descuentos/descuentos.component";
     StockMinimoComponent,
     StockLocalesComponent,
     VentasNuevoComponent,
-    CargaMasivaComponent
+    CargaMasivaComponent,
+    IvaComponent
   ],
   imports: [
     BrowserModule,
@@ -215,7 +219,10 @@ import { DescuentoComponent } from "./pages/descuentos/descuentos.component";
     DxoToolbarModule,
     AlertsModule.forRoot(),
     DxRadioGroupModule,
-    DxMenuModule
+    DxMenuModule,
+    DxTemplateModule,
+    DxTagBoxModule,
+    DxPopoverModule,
   ],
   exports: [CatalogoComponent],
   providers: [

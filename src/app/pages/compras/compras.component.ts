@@ -119,6 +119,7 @@ export class ComprasComponent implements OnInit {
   disponibilidadProducto:string=""
   popupvisible:boolean=false
   usuarioLogueado:user
+  ivaPorcentaje=0 
   productos22: DataSource;
   constructor(public authenService: AuthenService,public authService: AuthService, public transaccionesService: TransaccionesService,public productosCompradosService: ProductosCompradosService, public ordenesService: OrdenesCompraService, public proveedoresService:ProveedoresService, public productosVenService:ProductosVendidosService,public parametrizacionService:ParametrizacionesService, public contadoresService: ContadoresDocumentosService, public catalogoService: CatalogoService, 
     public _configuracionService : DatosConfiguracionService,
@@ -146,8 +147,14 @@ export class ComprasComponent implements OnInit {
     this.traerSucursales()
     this.traerProveedores()
     this.traerContadoresDocumentos()
+    this.traerIva()
   }
 
+  traerIva(){
+    this.parametrizacionService.getParametrizacionPorNombre("iva").subscribe(res => {
+      this.ivaPorcentaje = res["value"] as number;
+    })
+  }
 
   traerDatosConfiguracion() {
     this._configuracionService.getDatosConfiguracion().subscribe((res) => {
@@ -653,8 +660,8 @@ verGaleria(imagenes:string[]){
       this.ordenDeCompra.subtotal = element.subtotal + this.ordenDeCompra.subtotal 
 
     });
-    this.subtotalFactura1=(this.ordenDeCompra.subtotal/1.12)
-    this.subtotalFactura2=this.ordenDeCompra.total/1.12
+    this.subtotalFactura1=(this.ordenDeCompra.subtotal/(this.ivaPorcentaje/100+1))
+    this.subtotalFactura2=this.ordenDeCompra.total/(this.ivaPorcentaje/100+1)
     
     console.log("lalalala"+this.subtotal)
     this.subtotal = this.ordenDeCompra.total +this.costeUnitaTransport+this.otrosCostosGen
@@ -673,12 +680,12 @@ verGaleria(imagenes:string[]){
     this.subtMenosDesc=this.subtotalFactura2-this.subtotalFactura1
     //this.subtDesc= subtotal2
     this.subtotalGeneral2= this.subtotalFactura2-subtotal2
-    this.subtCostosGenerales=this.otrosCostosGen/1.12
-    this.subtotalIva=(this.subtCostosGenerales+this.subtotalGeneral2)*0.12
+    this.subtCostosGenerales=this.otrosCostosGen/(this.ivaPorcentaje/100+1)
+    this.subtotalIva=(this.subtCostosGenerales+this.subtotalGeneral2)*this.ivaPorcentaje/100
     this.subtOtrsoDesc=subtotal2
      
     //desde aqui comienza los totales
-    this.subtotal1 =this.subtotal/1.12
+    this.subtotal1 =this.subtotal/this.ivaPorcentaje/100+1
     //console.log("He sumado ")
 
 
@@ -707,15 +714,15 @@ verGaleria(imagenes:string[]){
       this.ordenDeCompra.subtotalDetalles= element.subtDet + this.ordenDeCompra.subtotalDetalles
       this.ordenDeCompra.subtDetalles2= element.subtDetP + this.ordenDeCompra.subtDetalles2
     });
-    this.subtotalFactura1=(this.ordenDeCompra.subtotal/1.12)
-    this.subtotalFactura2=this.ordenDeCompra.total/1.12
+    this.subtotalFactura1=(this.ordenDeCompra.subtotal/(this.ivaPorcentaje/100+1))
+    this.subtotalFactura2=this.ordenDeCompra.total/(this.ivaPorcentaje/100+1)
     
     let suma=0
     let suma2=0
     let suma3=0
     //suma=((this.ordenDeCompra.subtotalIva)/1.12)+(this.otrosCostosGen-(this.otrosCostosGen/1.12))
-    suma3=(this.otrosCostosGen-(this.otrosCostosGen/1.12))
-    suma= ((this.ordenDeCompra.subtotalIva)/1.12)-(((this.ordenDeCompra.subtotalIva)/1.12)*(this.otrosDescuentosGen/100))+suma3
+    suma3=(this.otrosCostosGen-(this.otrosCostosGen/(this.ivaPorcentaje/100+1)))
+    suma= ((this.ordenDeCompra.subtotalIva)/(this.ivaPorcentaje/100+1))-(((this.ordenDeCompra.subtotalIva)/(this.ivaPorcentaje/100+1))*(this.otrosDescuentosGen/100))+suma3
     
     //+(this.otrosCostosGen-(this.otrosCostosGen/1.12))
    // suma3=(this.otrosCostosGen-(this.otrosCostosGen/1.12))
@@ -743,12 +750,12 @@ verGaleria(imagenes:string[]){
     this.subtMenosDesc=this.ordenDeCompra.subtotalDetalles-this.ordenDeCompra.subtDetalles2
     //this.subtDesc= subtotal2
     this.subtotalGeneral2= this.ordenDeCompra.subtotalDetalles-subtotal2
-    this.subtCostosGenerales=this.otrosCostosGen/1.12
+    this.subtCostosGenerales=this.otrosCostosGen/(this.ivaPorcentaje/100+1)
     this.ordenDeCompra.TotalIva=suma
     this.subtOtrsoDesc=subtotal2
      
     //desde aqui comienza los totales
-    this.subtotal1 =this.subtotal/1.12
+    this.subtotal1 =this.subtotal/(this.ivaPorcentaje/100+1)
     //console.log("He sumado ")
 
 
@@ -777,9 +784,9 @@ cambiarEstadoSeleccionado(e){
     this.productosComprados[i].subtotal=this.productosComprados[i].total
     this.productosComprados[i].total =this.productosComprados[i].total -calculo
     if(this.productosComprados[i].iva){
-      this.productosComprados[i].subtIva=this.productosComprados[i].total*0.12
-      this.productosComprados[i].subtDet=this.productosComprados[i].total/1.12
-      this.productosComprados[i].subtDetP=this.productosComprados[i].subtotal/1.12
+      this.productosComprados[i].subtIva=this.productosComprados[i].total*(this.ivaPorcentaje/100)
+      this.productosComprados[i].subtDet=this.productosComprados[i].total/(this.ivaPorcentaje/100+1)
+      this.productosComprados[i].subtDetP=this.productosComprados[i].subtotal/(this.ivaPorcentaje/100+1)
       console.log("esto quiero mostrar"+this.productosComprados[i].subtDetP)
     }else{
       this.productosComprados[i].subtIva=0

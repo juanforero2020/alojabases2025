@@ -161,6 +161,7 @@ export class OrdenCompraComponent implements OnInit {
   selectAllModeVlaue: string = "page";
   selectionModeValue: string = "all";
   contadorFirebase:contadoresDocumentos[]=[]
+  ivaPorcentaje = 0
   @ViewChild('list', { static: false }) comprasForm: DxListComponent;
   @ViewChild('datag2') dataGrid2: DxDataGridComponent;
 
@@ -186,7 +187,13 @@ export class OrdenCompraComponent implements OnInit {
     this.traerProductos()
     this.traerProductosComprados()
     this.traerOrdenesCompraMensuales()
-    //this.getIDDocumentos()
+    this.traerIva()
+  }
+
+  traerIva(){
+    this.parametrizacionService.getParametrizacionPorNombre("iva").subscribe(res => {
+      this.ivaPorcentaje = res["value"] as number;
+    })
   }
 
   cargarUsuarioLogueado() {
@@ -1117,7 +1124,7 @@ anadirDetallePago = (e) => {
     })
 
     let subtotal2=0
-    this.subtotalFactura1=this.ordenDeCompra2.subtotal/1.12
+    this.subtotalFactura1=this.ordenDeCompra2.subtotal/(this.ivaPorcentaje/100+1)
     this.subtotal = this.ordenDeCompra2.total +this.ordenDeCompra2.costeUnitaTransport+this.ordenDeCompra2.otrosCostosGen
     this.subtotal1 =this.subtotal
     this.subtMenosDesc=this.ordenDeCompra2.subtotalDetalles-this.ordenDeCompra2.subtDetalles2
@@ -1125,12 +1132,12 @@ anadirDetallePago = (e) => {
     subtotal2= ((this.ordenDeCompra2.otrosDescuentosGen/100)*this.ordenDeCompra2.subtotalDetalles)
     this.subtotalGeneral2= this.ordenDeCompra2.subtotalDetalles-subtotal2
     
-    this.subtCostosGenerales=this.ordenDeCompra2.otrosCostosGen/1.12
-    this.subtotalIva=(this.subtCostosGenerales+this.subtotalGeneral2)*0.12
+    this.subtCostosGenerales=this.ordenDeCompra2.otrosCostosGen/(this.ivaPorcentaje/100+1)
+    this.subtotalIva=(this.subtCostosGenerales+this.subtotalGeneral2)*(this.ivaPorcentaje/100)
     this.subtOtrsoDesc=subtotal2
      
     //desde aqui comienza los totales
-    this.subtotal1 =this.subtotal/1.12
+    this.subtotal1 =this.subtotal/(this.ivaPorcentaje/100+1)
 
   }
 

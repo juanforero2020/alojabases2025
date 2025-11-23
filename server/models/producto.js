@@ -34,6 +34,7 @@ const ProductoSchema = new Schema({
     precio1: { type: Number, required: false},
     precio2: { type: Number, required: false},
     precio3: { type: Number, required: false},
+    ivaExcepcion: { type: Number, required: false},
 },{
     timestamps:true
 });
