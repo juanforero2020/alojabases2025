@@ -12,6 +12,7 @@ export class ParametrizacionesService {
   private URLGenerales = 'http://104.131.82.174:3000/parametrizaciones/generales'
   //private URL = "http://159.223.107.115:3000/parametrizaciones";
   private URL = `${environment.services.urlServices}/parametrizaciones`;
+  
   constructor(public http: HttpClient, public router: Router) {}
 
   newParametrizacion(parametrizacion) {
