@@ -9,7 +9,7 @@ import { environment } from "src/environments/environment";
 export class ParametrizacionesService {
   //private URL = 'http://localhost:3000/parametrizaciones'; //localhost
   // private URLGenerales = 'http://localhost:3000/parametrizaciones/generales'; //localhost
-  private URLGenerales = 'http://104.131.82.174:3000/parametrizaciones/generales'
+  private URLGenerales = `${environment.services.urlServices}/parametrizaciones/generales`
   //private URL = "http://159.223.107.115:3000/parametrizaciones";
   private URL = `${environment.services.urlServices}/parametrizaciones`;
   
