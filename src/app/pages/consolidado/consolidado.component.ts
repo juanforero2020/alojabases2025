@@ -312,6 +312,7 @@ export class ConsolidadoComponent implements OnInit {
 
   traerTransaccionesPorProducto() {
     var existe = false;
+    this.invetarioP = [];
     this.proTransaccion.nombre = this.nombreProducto;
     this.invetarioP.forEach((element2) => {
       if (this.proTransaccion.nombre == element2.producto.PRODUCTO) {
