@@ -62,7 +62,10 @@ export class IvaComponent implements OnInit {
     this.productoService.getProductosActivos().subscribe((res) => {
       this.productos = res as producto[];
       this.mostrarLoading = false;
-      this.simpleProducts = this.productos.map(p => p.PRODUCTO);
+      this.simpleProducts = this.productos
+        .map(p => p.PRODUCTO)
+        .sort((a, b) => a.localeCompare(b)); // Ordenar alfabéticamente de menor a mayor
+        console.log(this.simpleProducts);
       this.productosConExcepciones = this.productos.filter(x=> x.ivaExcepcion != null);
     });
   }
