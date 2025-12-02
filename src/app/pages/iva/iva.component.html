@@ -1,9 +1,13 @@
+<div *ngIf="mostrarLoading">
+    <app-loading-messagge [messagge]="mensajeLoading"></app-loading-messagge>
+</div>
 <div class="row" *ngIf="mostrarBloqueo"></div>
 <div id="administracion" *ngIf="!mostrarBloqueo">
+    <br>
     <div class="card mb-3">
         <div class="card-header">
             <i class="fa fa-lg fa-user  text-danger"></i>
-            IVA
+            IVA GENERAL
         </div>
         <div class="card-body">
             <div class="row">
@@ -20,80 +24,115 @@
                                     <div class="col-md-3"></div>
                                     <div class="col-md-6">
                                         <div class="row espacio">
-                                            <div class="col-md-4" style="text-align: left;">IVA:</div>
+                                            <div class="col-md-4" style="text-align: left;">IVA GENERAL:</div>
                                             <div class="col-md-8">
                                                 <input type="number" [(ngModel)]="iva" name="iva" [disabled]="varDis" class="form-control" placeholder="IVA" required="required"></div>
                                             </div>
                                         </div>
                                     </div>
                                 </div>
-
                             </div>
-
-
                         </div>
 
+                        <div class="row">
+                            <div class="col-md-4"></div>
+                            <div class="col-md-4">
+                                <div style="margin-left: 3em;margin-right: 3em;">
+                                    <button class="btn btn2" style="background-color: #ff5722;border-color: #ff5722;" type="button" (click)="guardarIva()">Guardar</button>
+                                </div>
+                            </div>
+                            <div class="col-md-4"></div>
+                        </div>
+                        <br><br>
+
                     </div>
                 </div>
-            </div>
         </div>
-    <div>
-        <h4>Excepciones</h4>
-        <div *ngFor="let e of excepciones;let i = index">
-            <div class="col-6">
-                <div class="dx-field">
-                  <div class="dx-field-value">
-                    <dx-tag-box
-                      [dataSource]="excepcionesParseadas"
-                      [items]="products"
-                      [inputAttr]="{ 'aria-label': 'Product' }"
-                    ></dx-tag-box>
-                  </div>
-                </div>
-        </div>
-        <div class="col-3">
+    </div>
+   
+
+
+    <div class="card mb-3">
+        <h5 class="card-header text-center font-weight-bold text-uppercase"> EXCEPCIONES</h5>
+        <div class="card-body">
             <div class="row">
-                <div class="col-6" >
-                    <dx-text-box></dx-text-box>
-                </div>
-                <div class="col-6">
-                    <dx-text-box></dx-text-box>
-                </div>
-                
-            </div>
-        </div>
-        </div>
-
-        <div class="row">
-            <div class="col-6">
-                    <div class="dx-field">
-                      <div class="dx-field-value">
-                        <dx-tag-box
-                          [items]="products"
-                          [inputAttr]="{ 'aria-label': 'Product' }"
-                        ></dx-tag-box>
-                      </div>
-                    </div>
-            </div>
-            <div class="col-3">
-                <div class="row">
-                    <div class="col-6" >
-                        <dx-text-box></dx-text-box>
-                    </div>
-                    <div class="col-6">
-                        <dx-text-box></dx-text-box>
-                    </div>
+                <div class="col-md-12 ">
                     
-                </div>
+                        <div class="row">
+                            <div class="col-md-2"></div>
+                            <div class="col-md-8">
+                                <div class="row">
+                                    <br><br>
+                                    <div class="col-md-4" style="padding-top: 0.7em;">Valor IVA Excepción</div>
+                                    <div class="col-md-8">
+                                        <input type="number" [(ngModel)]="valorExcepcion" name="valorExcepcion"  class="form-control" placeholder="Valor IVA Excepción" required="required"></div>
+                                    </div>
+
+                                    <div class="row">
+                                        <div class="col-md-4" style="padding-top: 0.7em;">Grupo Producto</div>
+                                        <div class="col-md-8">
+                                            <dx-tag-box
+                                                [items]="simpleProducts"
+                                                [showSelectionControls]="true"
+                                                applyValueMode="useButtons"
+                                                [inputAttr]="{ 'aria-label': 'Product' }"
+                                                [(value)]="selectedValues">
+                                            </dx-tag-box>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                            
+                            <div class="col-md-2"></div>
+                            <div class="col-md-12">
+                                <div class="row">
+                                    <div class="col-md-5"></div>
+                                    <div class="col-md-2">
+                                    <button class="btn btn-block btn-success espacio" style="background-color: #ff5722;border-color: #ff5722;" (click)="registrarExcepciones()">Registrar</button>
+                                    <br>
+                                    <br>
+                                    <br>
+                                    </div>
+                                    <div class="col-md-5"></div>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="col-md-12">
+                            <div class="row">
+                                <div class="col-md-12">
+                                    <div class="card">
+                                        <h5 class="card-header text-center font-weight-bold text-uppercase ">Listado de Excepciones</h5>
+                                        <div class="card-body">
+                                        <div class="table-editable">
+                                            <span class="table-add float-right mb-3 mr-2">
+                                            <a class="text-success" >
+                                            
+                                            </a>
+                                            </span>
+                                            <table class="table table-bordered table-responsive-md table-striped text-center">
+                                                <tr>
+                                                    <th class="text-center" >PRODUCTO</th>
+                                                    <th class="text-center">Valor IVA</th>
+                                                    <th class="text-center" >Eliminar</th>
+                                                    
+                                                </tr>
+                                                
+                                                <tr *ngFor="let producto of productosConExcepciones; let id = index">
+                                                    <td><span>{{producto.PRODUCTO}}</span></td>
+                                                    <td style="text-align: center;"><span>{{producto.ivaExcepcion}}</span></td>
+                                                    <td style="text-align: center;">
+                                                        <span><button class="btnIcons5" (click)="eliminarValorExcepcion(producto)"><i class="fa fa-trash-o"></i></button></span>
+                                                    </td>
+                                                </tr>
+                                            </table>
+                                        </div>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                </div> 
             </div>
         </div>
     </div>
-    <div class="row">
-        <div class="col-md-4"></div>
-        <div class="col-md-4">
-            <button class="btn btn2" type="button" (click)="guardarIva()">Guardar</button>
-        </div>
 
-        <div class="col-md-4"></div>
-    </div>
-    </div>

@@ -95,6 +95,10 @@ export class ProductoService {
     return this.http.put(this.URL + `/updatePrecioProducto`, producto);
   }
 
+  updateValorIVA(producto) {
+    return this.http.put(this.URL + `/updateValorIVA`, producto);
+  }
+
   deleteProducto(producto) {
     return this.http.delete(this.URL + `/delete/${producto._id}`, producto);
   }

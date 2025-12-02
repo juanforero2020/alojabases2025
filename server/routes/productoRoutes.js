@@ -403,6 +403,11 @@ router.post('/newProducto', async (req, res) => {
 
 });
 
+router.put('/updateValorIVA', async (req, res,next) => {
+  await Producto.findOneAndUpdate({"PRODUCTO" : req.body.PRODUCTO}, {$set: {ivaExcepcion: req.body.ivaExcepcion}}, {new: true});
+  res.json({status: 'Actualización Exitosa'}); 
+})
+
 
 
 

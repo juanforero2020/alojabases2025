@@ -2264,7 +2264,7 @@ cambiarestado(e,i:number){
             table: {
               widths: [125,100],
               body: [
-                [ { text: 'SUBTOTAL', bold: true ,style: "detalleTotales"},{text: this.subtotal1.toFixed(2), style:"totales" }],
+                [ { text: 'SUBTOTAL', bold: true ,style: "detalleTotales"},{text: this.factura.subtotalF1.toFixed(2), style:"totales" }],
                 [ { text: 'DESCUENTO', bold: true ,style: "detalleTotales"},{text:this.Sdescuento.toFixed(2), style:"totales" } ],
                 [ { text: 'IVA', bold: true ,style: "detalleTotales"},{text: this.factura.totalIva.toFixed(2), style:"totales" } ],
                 [ { text: 'TOTAL US$', bold: true ,style: "detalleTotales"},{text:this.factura.total.toFixed(2), style:"totales" } ]
@@ -3302,7 +3302,7 @@ cambiarestado(e,i:number){
     console.log(logApiVeronica)
 
     //EMILINAR LUEGO DE PRUEBAS
-    /* this.mostrarLoading = false;
+    this.mostrarLoading = false;
     Swal.fire({
       title: 'Correcto',
       text: 'Factura registrada con éxito',
@@ -3329,11 +3329,11 @@ cambiarestado(e,i:number){
                     window.location.reload();
                 })
             },
-      err => {  }); */
+      err => {  });
 
 
     //TO-DO, DESCOMENTAR LUEGO DE PRUEBAS
-    this._apiVeronicaService.newFactura(this.facturaVeronica).subscribe(
+    /* this._apiVeronicaService.newFactura(this.facturaVeronica).subscribe(
       res => {  var resultado = res as ResponseVeronicaDto;
                 logApiVeronica.objetoResponse = JSON.stringify(res)
                 logApiVeronica.claveAcceso = resultado.result.claveAccesoConsultada
@@ -3374,7 +3374,7 @@ cambiarestado(e,i:number){
                             })
                         },
                   err => {  });              
-              }); 
+              });  */
   }
   
 
