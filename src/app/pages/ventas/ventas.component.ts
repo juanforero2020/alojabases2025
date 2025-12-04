@@ -3223,14 +3223,7 @@ cambiarestado(e,i:number){
     this.facturasService.newFactura(this.factura).subscribe(
       res => {
         this.validarFormaPago();
-        this.traerConsecutivoVeronica(this.RucSucursal).subscribe({
-          next: () => {
-            this.registrarFacturaSRI();
-          },
-          error: (err) => {
-            this.mostrarMensajeGenerico(2,"Error al guardar el consecutivo de Nota de Venta");
-          }
-        });
+        this.registrarFacturaSRI();
       },
       err => {
         this.mostrarMensajeGenerico(2,"Error al guardar")});
