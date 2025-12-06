@@ -177,7 +177,71 @@ export class ServicioWebVeronica{
 }
 
 
+export class ServicioWebVeronicaLectura{
+    objetoRequest : string
+    objetoResponse : string
+    nroDocumento : string
+    sucursal : string
+    resultado : string
+    claveAcceso : string
+    fecha : Date
+    dataResponse: VeronicaHttpErrorResponse
+    constructor(){
+        this.fecha = new Date();
+        this.objetoRequest = ""
+        this.objetoResponse = ""
+        this.resultado = ""
+    }
+}
 
+
+
+
+export class VeronicaHttpErrorResponse {
+    headers: {
+        normalizedNames: object,
+        lazyUpdate: any
+    };
+    status: number;
+    statusText: string;
+    url: string;
+    ok: boolean;
+    name: string;
+    message: string;
+    error: {
+        success: boolean,
+        result: {
+            code: string,
+            timestamp: string,
+            resource: string,
+            accessKey: string,
+            messages: string[]
+        }
+    };
+
+    constructor() {
+        this.headers = {
+            normalizedNames: {},
+            lazyUpdate: null
+        };
+        this.status = 500;
+        this.statusText = "OK";
+        this.url = "";
+        this.ok = false;
+        this.name = "HttpErrorResponse";
+        this.message = "";
+        this.error = {
+            success: false,
+            result: {
+                code: "",
+                timestamp: "",
+                resource: "",
+                accessKey: "",
+                messages: []
+            }
+        };
+    }
+}
 
 
 // ----------------MODELO PARA OBTENCION DE RESPUESTA REGISTRO FACTURA------------------

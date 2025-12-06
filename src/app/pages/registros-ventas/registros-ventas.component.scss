@@ -28,3 +28,35 @@
 ::ng-deep .remiPro .dx-selectbox-popup-wrapper .dx-list-item {  
     text-align: center;  
 } 
+
+.btn-sect{
+    background-color: transparent;
+    color: red;
+    text-align: center;
+    font-size: 1.3em;
+    border: none;
+}
+
+.btn-sect-warning{
+    background-color: transparent;
+    color: rgb(255, 133, 3);
+    text-align: center;
+    font-size: 1.3em;
+    border: none;
+}
+
+.btn-sect-success{
+    background-color: transparent;
+    color: green;
+    text-align: center;
+    font-size: 1.3em;
+    border: none;
+}
+
+.btn-center{
+    text-align: center;
+}
+
+.cs-popup{
+    margin: 1.5em;
+}

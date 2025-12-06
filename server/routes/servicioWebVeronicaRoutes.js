@@ -16,5 +16,17 @@ router.post('/newLog', async (req, res) => {
     res.json({status: 'Factura CREADA'});
 });
 
+router.post("/getLogsVeronica", async (req, res, next) => {
+    var start = req.body.fechaAnterior;
+    var end = req.body.fechaActual;
+    const logs = await ServicioWebVeronica.find({
+      createdAt: {
+        $gte: start,
+        $lt: end,
+      },
+    });
+    res.json(logs);
+  });
+
 
 module.exports = router;

@@ -12,6 +12,10 @@ import { AuthenService } from 'src/app/servicios/authen.service';
 import { objDate } from '../transacciones/transacciones';
 import { AuthService } from 'src/app/shared/services';
 import { DatosConfiguracionService } from 'src/app/servicios/datosConfiguracion.service';
+import { ApiVeronicaService } from 'src/app/servicios/api_veronica.service';
+import { ServicioWebVeronicaService } from 'src/app/servicios/servicioWebVeronica.service';
+import { CampoAdicionalModel, ComprobanteDetalle, ConsecutivoDto, FacturaModel, ImpuestoModel, PagosModel, ReceptorModel, ResponseVeronicaDto, ServicioWebVeronica, ServicioWebVeronicaLectura, VeronicaHttpErrorResponse } from '../api-veronica/api-veronica';
+import { catchError, tap } from 'rxjs/operators';
 
 @Component({
   selector: 'app-registros-ventas',
@@ -31,6 +35,7 @@ export class RegistrosVentasComponent implements OnInit {
   productosVendidos2:venta[]=[]
   tDocumento:string
   parametrizaciones:parametrizacionsuc[]=[]
+  logsVeronica:ServicioWebVeronica[]=[]
   parametrizacionSucu:parametrizacionsuc
   correo:string
   nowdesde: Date = new Date();
@@ -40,6 +45,9 @@ export class RegistrosVentasComponent implements OnInit {
   mostrarSeccionNotasVenta = false;
   mostrarSeccionCotizacion = false;
   tipoBusqueda = "Factura"
+  isPopupVisible = false;
+  dataLog: ServicioWebVeronicaLectura
+  msgDefault = "Factura NO Enviada"
 
   menu2: string[] = [
     "Facturas",
@@ -59,6 +67,9 @@ export class RegistrosVentasComponent implements OnInit {
   numeroFactura:string=""
   imagenLogotipo= ''
   mensajeLoading = "Cargando"
+  facturaVeronica : FacturaModel
+  ivaPorcentaje=0;
+  secuencialFactura = "";
 
   constructor(public parametrizacionService:ParametrizacionesService,
     public authService: AuthService, 
@@ -66,9 +77,12 @@ export class RegistrosVentasComponent implements OnInit {
     public facturasService:FacturasService,
     public authenService:AuthenService,
     public _configuracionService : DatosConfiguracionService,
+    public _logApiVeronicaService : ServicioWebVeronicaService,
+    public _apiVeronicaService : ApiVeronicaService,
     public proformasService:ProformasService) { 
     this.factura = new factura()
     this.obj = new objDate()
+    this.facturaVeronica  = new FacturaModel();
   }
 
   ngOnInit() {
@@ -76,6 +90,13 @@ export class RegistrosVentasComponent implements OnInit {
     this.setearFechaMensual()
     this.traerParametrizaciones()
     this.traerDatosConfiguracion()
+    this.traerIva()
+  }
+
+  traerIva(){
+    this.parametrizacionService.getParametrizacionPorNombre("iva").subscribe(res => {
+      this.ivaPorcentaje = res["value"] as number;
+    })
   }
 
    traerDatosConfiguracion() {
@@ -207,8 +228,66 @@ export class RegistrosVentasComponent implements OnInit {
       this.facturas=this.facturasGlobales
     }
     this.mostrarLoading=false;
+    this.obtenerLogsVeronica();    
   }
 
+  obtenerLogsVeronica(){
+    console.log("buscando logs")
+    this._logApiVeronicaService.getLogsVeronica(this.obj).subscribe(res => {
+      this.logsVeronica = res as ServicioWebVeronica[];
+      this.actualizarEstadoFacturaVeronica();
+      console.log(this.logsVeronica)
+    }) 
+  }
+  
+
+  actualizarEstadoFacturaVeronica(){
+    this.facturas.forEach(factura => {
+      // Buscar en logsVeronica el registro cuyo nroDocumento coincida con documento_n
+      // Buscar todos los logs que coincidan con el nroDocumento de la factura
+      const logs = this.logsVeronica.filter(logItem => logItem.nroDocumento === factura.documento_n.toString());
+      let log: ServicioWebVeronica | undefined;
+
+      if (logs.length > 1) {
+        // Si hay más de uno, priorizar el de resultado "OK"
+        log = logs.find(item => item.resultado === "OK") || logs[0];
+      } else {
+        log = logs[0];
+      }
+      if (log) {
+        // El log es de tipo ServicioWebVeronica y log.objetoResponse es un string (JSON).
+        // Necesitamos convertir ese string en un objeto de tipo VeronicaHttpErrorResponse.
+        factura.logVeronica = log as any;
+
+        try {
+          // Parsear el string a un objeto normal
+          const parsedResponse = JSON.parse(log.objetoResponse);
+
+          // Crear una instancia del tipo esperado e inyectar los valores parseados
+          const responseObj = new VeronicaHttpErrorResponse();
+          Object.assign(responseObj, parsedResponse);
+
+          factura.logVeronica.dataResponse = responseObj;
+          console.log("aiuhasihdias")
+          console.log(responseObj)
+        } catch (e) {
+          // Si hay un error al hacer el parseo, asignamos null o un objeto por defecto
+          factura.logVeronica.dataResponse = new VeronicaHttpErrorResponse();
+        }
+
+        if (log.resultado === 'OK') {
+          factura.estadoFacturaVeronica = 'ENVIADA';
+        } else if (log.resultado === 'NOK') {
+          factura.estadoFacturaVeronica = 'ERROR';
+        } else {
+          factura.estadoFacturaVeronica = 'ERROR';
+        }
+      } else {
+        // No existe log para esta factura
+        factura.estadoFacturaVeronica = 'ERROR';
+      }
+    });   
+  }
 
 
   traerRegistrosPorRango() {
@@ -333,6 +412,167 @@ export class RegistrosVentasComponent implements OnInit {
   }
 
 
+  getViewLog = (e) => {  
+    this.isPopupVisible = true;
+    this.dataLog = e.row.data.logVeronica
+  }
+
+  reprocesarFacturaVeronica = (e) => {  
+    Swal.fire({
+      title: 'Alerta',
+      text: 'Esta seguro de volver a procesar la factura?',
+      icon: 'warning',
+      showCancelButton: true,
+      confirmButtonText: 'SI',
+      cancelButtonText : 'NO'
+    }).then((result) => {
+      if (result.value) {
+        console.log("entrabndo aqui")
+        var dataFactura = e.row.data as factura;
+        console.log(dataFactura)
+        this.continuarProcesoFactura(dataFactura)
+        
+      } else if (result.dismiss === Swal.DismissReason.cancel) {
+        Swal.fire(
+          'Cancelado!',
+          'Se ha cancelado su proceso.',
+          'error'
+        )
+      }
+    })
+    
+  }
+
+  continuarProcesoFactura(dataFactura: factura){
+    console.log("llegando")
+    this.parametrizaciones.forEach(element=>{
+      if(element.sucursal == dataFactura.sucursal)
+        this.parametrizacionSucu= element
+    })
+    this.mensajeLoading = "Enviando Factura SRI"
+    this.mostrarLoading = true;
+
+    this._apiVeronicaService.obtenerSecuencia(dataFactura.rucFactura).subscribe(res => {
+        console.log("Respuesta de obtenerSecuencia Veronica:", res);
+        var consecutivoVeronica = res as ConsecutivoDto;
+        this.secuencialFactura = consecutivoVeronica.result[0].establecimiento.puntosEmision[0].secuencialFactura;
+
+        
+        //--------------INICIO LLENADO DE OBJETO SRI VERONICA--------------------
+        // Asegura que dataFactura.fecha sea un Date válido y lo formatea a "dd/MM/yyyy"
+        this.facturaVeronica.fechaEmision = dataFactura?.fecha
+          ? (typeof dataFactura.fecha === 'string'
+              ? new Date(dataFactura.fecha)
+              : dataFactura.fecha
+            ).toLocaleDateString('es-EC', { day: '2-digit', month: '2-digit', year: 'numeric' })
+          : '';
+
+        this.facturaVeronica.ruc = this.parametrizacionSucu.ruc
+        this.facturaVeronica.secuencial = this.secuencialFactura
+        //this.facturaVeronica.estab = this.factura.sucursal == "matriz" ? "002":"001"
+        this.facturaVeronica.estab = this.parametrizacionSucu.nroEstablecimiento
+
+        //******DATOS DEL RECEPTOR********** */
+        this.facturaVeronica.receptor = new ReceptorModel()
+        this.facturaVeronica.receptor.tipoIdentificacion = dataFactura.cliente.ruc.length == 13 ? "04" : "05"
+        this.facturaVeronica.receptor.razonSocial = dataFactura.cliente.cliente_nombre
+        this.facturaVeronica.receptor.identificacion = dataFactura.cliente.ruc
+        this.facturaVeronica.receptor.direccion = dataFactura.cliente.direccion
+
+        //*********DETALLE FACTURA********** */
+        dataFactura.productosVendidos.forEach(element => {
+          var detalle = new ComprobanteDetalle()
+            detalle.codigoPrincipal = "000000"
+            detalle.codigoAuxiliar = "000000"
+            detalle.descripcion = element.producto.PRODUCTO
+            detalle.cantidad = element.cantidad
+            detalle.precioUnitario = element.precio_venta/((element.producto.ivaExcepcion || this.ivaPorcentaje)/100+1)
+            detalle.descuento = 0
+          var impuesto = new ImpuestoModel();
+            if(element.producto.ivaExcepcion) impuesto.codigoPorcentaje = '5'
+            impuesto.tarifa = element.producto.ivaExcepcion || this.ivaPorcentaje
+            impuesto.baseImponible = Number(element.subtP1.toFixed(2))
+            impuesto.valor = impuesto.baseImponible * ((element.producto.ivaExcepcion || this.ivaPorcentaje)/100)
+            detalle.impuesto.push(impuesto)
+          this.facturaVeronica.detalles.push(detalle);
+        });
+        
+
+        //*************FORMA DE PAGO*********** */
+        var pago = new PagosModel();
+        pago.total = Number(dataFactura.total.toFixed(2))
+        this.facturaVeronica.pagos.push(pago);
+
+
+        //************CAMPOS ADICIONALES*********** */
+        var campoAdicional = new CampoAdicionalModel();
+        campoAdicional.nombre = "email"
+        campoAdicional.value = dataFactura.cliente.correo //cambiar*********
+        this.facturaVeronica.campoAdicional.push(campoAdicional)
+        var campoAdicional2 = new CampoAdicionalModel();
+        campoAdicional2.nombre = "NFactura"
+        campoAdicional2.value = dataFactura.documento_n.toString() //cambiar*********
+        this.facturaVeronica.campoAdicional.push(campoAdicional2)
+
+        //****************LOG SERVICIO WEB VERONICA**********/
+        var logApiVeronica = new ServicioWebVeronica()
+        logApiVeronica.objetoRequest = JSON.stringify(this.facturaVeronica)
+        logApiVeronica.nroDocumento = dataFactura.documento_n.toString()
+        logApiVeronica.fecha = dataFactura.fecha
+        logApiVeronica.sucursal = dataFactura.sucursal
+
+        console.log(this.facturaVeronica)
+        console.log(logApiVeronica)
+
+                    
+
+
+        //TO-DO, DESCOMENTAR LUEGO DE PRUEBAS
+        this._apiVeronicaService.newFactura(this.facturaVeronica).subscribe(
+          res => {  var resultado = res as ResponseVeronicaDto;
+                    logApiVeronica.objetoResponse = JSON.stringify(res)
+                    logApiVeronica.claveAcceso = resultado.result.claveAccesoConsultada
+                    logApiVeronica.resultado = "OK"
+                    this._logApiVeronicaService.newLog(logApiVeronica).subscribe(
+                      res =>{   this.mostrarLoading = false;
+                                Swal.fire({
+                                  title: 'Correcto',
+                                  text: 'Factura registrada con éxito',
+                                  icon: 'success'
+                                })
+                                this.traerFacturasMensuales();
+                            },
+                      err => {  });
+                },
+          err => {  
+                  
+                    logApiVeronica.objetoResponse = JSON.stringify(err);
+                    logApiVeronica.claveAcceso = null;
+                    logApiVeronica.resultado = "NOK"
+                    this._logApiVeronicaService.newLog(logApiVeronica).subscribe(
+                      res =>{   this.mostrarLoading = false;
+                                Swal.fire({
+                                  title: 'Error',
+                                  text: 'Error al establecer coneccion con el SRI',
+                                  icon: 'error',
+                                  confirmButtonText: 'Ok'
+                                })
+                            },
+                      err => {  });              
+                  }); 
+
+      },
+      err => { 
+        Swal.fire({
+          title: 'Error',
+          text: 'No se ha podido establecer conexión con el SRI',
+          icon: 'error'
+        })
+      })
+  
+  }
+
+ 
 
   getCourseFile = (e) => {  
     this.cargarFactura(e.row.data)  

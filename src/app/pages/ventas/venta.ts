@@ -1,5 +1,6 @@
 import { Recoverable } from 'repl'
 import {ProductoDetalleVenta } from '../producto/producto'
+import { ServicioWebVeronica, ServicioWebVeronicaLectura } from '../api-veronica/api-veronica'
 
 
 export class producto {
@@ -172,11 +173,14 @@ export class factura {
     nombreUsuario : string
     nombreVendedor : string
     iva: number
+    estadoFacturaVeronica:string
+    logVeronica:ServicioWebVeronicaLectura
     constructor() { 
         this.estado  = "CONTABILIZADA"
         this.mensaje = " "
         this.maestro = ""
         this.nota    = ""
+        this.estadoFacturaVeronica = "PENDIENTE"
     }
 }
 

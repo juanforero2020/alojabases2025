@@ -17,4 +17,8 @@ export class ServicioWebVeronicaService {
   newLog(log) {
     return this.http.post<any>(this.URL + "/newLog", log);
   }
+
+  getLogsVeronica(objFecha) {
+    return this.http.post(this.URL + "/getLogsVeronica", objFecha);
+  }
 }

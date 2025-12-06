@@ -108,6 +108,29 @@
         <dxi-column  dataField="maestro" caption="Maestro" dataType="string" [visible]=false></dxi-column>
         <dxi-column dataField="observaciones" caption="Observaciones"  dataType="string" [visible]=false></dxi-column>
         <dxi-column dataField="nota" caption="Notas" dataType="string" [visible]=false></dxi-column>
+        <dxi-column
+            dataField="estadoFacturaVeronica"
+            caption="Est.Facturación"
+            cellTemplate="estadoVeronicaTemplate">
+        </dxi-column>
+
+        <div *dxTemplate="let data of 'estadoVeronicaTemplate'" style="text-align: center;">
+            <ng-container [ngSwitch]="data.value" class="btn-center">
+
+                <button *ngSwitchCase="'ERROR'" class="btn-sect-warning btn btn-danger btn-sm"
+                        (click)="getViewLog({row: {data: data.data}})">
+                    <i class="fa fa-solid fa-exclamation"></i> </button>
+
+                <button *ngSwitchCase="'ERROR'" class="btn-sect btn btn-warning btn-sm"
+                        (click)="reprocesarFacturaVeronica({row: {data: data.data}})">
+                    <i class="fa fa-solid fa-rotate-right"></i> </button>
+
+                <button *ngSwitchCase="'ENVIADA'" class="btn-sect-success btn btn-success btn-sm"
+                        (click)="getCourseFile({row: {data: data.data}})">
+                    <i class="fa fa-solid fa-check-circle"></i> </button>
+            </ng-container>
+        </div>
+        
         <dxi-column type="buttons"  caption="Ver">
             <dxi-button icon="fa fa-arrow-down" [onClick]="getCourseFile"></dxi-button>    
         </dxi-column>
@@ -120,6 +143,31 @@
         <dxo-pager [showPageSizeSelector]="true" [allowedPageSizes]="[8, 12, 20]"></dxo-pager>
     </dx-data-grid>
 </div>
+
+<dx-popup
+    [(visible)]="isPopupVisible"
+    [width]="800"
+    [height]="600"
+    [showTitle]="true"
+    title="Información"
+    [dragEnabled]="true"
+    [closeOnOutsideClick]="true">
+    
+    <dx-scroll-view width="100%" height="100%">
+        <div class="cs-popup">
+            <span style="font-weight: bold;"><h6>Detalle Error:</h6></span>
+            <div style="background-color: #f8ff18;">
+                <p>
+                    {{ dataLog?.dataResponse?.error?.result?.messages || 'Factura No Enviada' }}
+                </p>
+            </div>
+            <span style="font-weight: bold;"><h6>Objeto Enviado:</h6></span>
+            <P>{{dataLog?.objetoRequest}}</P>
+            <span style="font-weight: bold;"><h6>Objeto Recibido:</h6></span>
+            <P>{{dataLog?.objetoResponse}}</P>
+        </div>
+    </dx-scroll-view>
+</dx-popup>
 
 
 <div *ngIf="mostrarSeccionNotasVenta">
