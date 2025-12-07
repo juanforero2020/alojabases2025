@@ -68462,6 +68462,9 @@ class RegistrosVentasComponent {
     }
     continuarProcesoFactura(dataFactura) {
         console.log("llegando");
+        this.facturaVeronica = new _api_veronica_api_veronica__WEBPACK_IMPORTED_MODULE_5__["FacturaModel"]();
+        this.facturaVeronica.pagos = [];
+        this.facturaVeronica.detalles = [];
         this.parametrizaciones.forEach(element => {
             if (element.sucursal == dataFactura.sucursal)
                 this.parametrizacionSucu = element;

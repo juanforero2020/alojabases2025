@@ -418,6 +418,7 @@ export class RegistrosVentasComponent implements OnInit {
   }
 
   reprocesarFacturaVeronica = (e) => {  
+
     Swal.fire({
       title: 'Alerta',
       text: 'Esta seguro de volver a procesar la factura?',
@@ -445,6 +446,10 @@ export class RegistrosVentasComponent implements OnInit {
 
   continuarProcesoFactura(dataFactura: factura){
     console.log("llegando")
+    this.facturaVeronica = new FacturaModel();
+    this.facturaVeronica.pagos = [];
+    this.facturaVeronica.detalles = [];
+
     this.parametrizaciones.forEach(element=>{
       if(element.sucursal == dataFactura.sucursal)
         this.parametrizacionSucu= element
@@ -523,8 +528,7 @@ export class RegistrosVentasComponent implements OnInit {
 
         console.log(this.facturaVeronica)
         console.log(logApiVeronica)
-
-                    
+                   
 
 
         //TO-DO, DESCOMENTAR LUEGO DE PRUEBAS

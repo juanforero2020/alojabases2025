@@ -113711,6 +113711,9 @@ function _classCallCheck(instance, Constructor) { if (!(instance instanceof Cons
           var _this1016 = this;
 
           console.log("llegando");
+          this.facturaVeronica = new _api_veronica_api_veronica__WEBPACK_IMPORTED_MODULE_5__["FacturaModel"]();
+          this.facturaVeronica.pagos = [];
+          this.facturaVeronica.detalles = [];
           this.parametrizaciones.forEach(function (element) {
             if (element.sucursal == dataFactura.sucursal) _this1016.parametrizacionSucu = element;
           });
