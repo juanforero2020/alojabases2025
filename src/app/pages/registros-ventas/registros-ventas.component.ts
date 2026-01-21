@@ -537,15 +537,24 @@ export class RegistrosVentasComponent implements OnInit {
         campoAdicional2.nombre = "Documento Interno"
         campoAdicional2.value = dataFactura.documento_n.toString() //cambiar*********
         this.facturaVeronica.campoAdicional.push(campoAdicional2)
-        var campoAdicional3 = new CampoAdicionalModel();
-        campoAdicional3.nombre = "Teléfono Cliente"
-        campoAdicional3.value = this.factura.cliente?.celular.toString() //cambiar*********
-        this.facturaVeronica.campoAdicional.push(campoAdicional3)
-        var campoAdicional4 = new CampoAdicionalModel();
-        campoAdicional4.nombre = "Nota" 
-        campoAdicional4.value = this.factura.observaciones //cambiar*********
-        this.facturaVeronica.campoAdicional.push(campoAdicional4)
-
+        console.log("imprimiendonn "+ dataFactura.cliente?.celular)
+        if (dataFactura.cliente?.celular != undefined) {
+          console.log("entrando a cliente")
+          var campoAdicional3 = new CampoAdicionalModel();
+          campoAdicional3.nombre = "Teléfono Cliente";
+          campoAdicional3.value = dataFactura?.cliente?.celular?.toString(); //cambiar*********
+          this.facturaVeronica.campoAdicional.push(campoAdicional3);
+        }
+        if (dataFactura?.observaciones != undefined ) {
+          if (dataFactura?.observaciones != " " ) {
+            console.log("entrando en observaciones")
+            this.facturaVeronica.campoAdicional.push(campoAdicional3)
+            var campoAdicional4 = new CampoAdicionalModel();
+            campoAdicional4.nombre = "Nota" 
+            campoAdicional4.value = dataFactura?.observaciones //cambiar*********
+            this.facturaVeronica.campoAdicional.push(campoAdicional4)
+          }
+        }
         //****************LOG SERVICIO WEB VERONICA**********/
         var logApiVeronica = new ServicioWebVeronica()
         logApiVeronica.objetoRequest = JSON.stringify(this.facturaVeronica)

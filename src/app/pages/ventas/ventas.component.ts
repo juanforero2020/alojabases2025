@@ -3317,7 +3317,7 @@ cambiarestado(e,i:number){
         window.location.reload();
     })
 
-    this._logApiVeronicaService.newLog(logApiVeronica).subscribe(
+    /* this._logApiVeronicaService.newLog(logApiVeronica).subscribe(
       res =>{   this.mostrarLoading = false;
                 Swal.fire({
                   title: 'Correcto',
@@ -3331,7 +3331,7 @@ cambiarestado(e,i:number){
                     window.location.reload();
                 })
             },
-      err => {  });
+      err => {  }); */
 
 
     //TO-DO, DESCOMENTAR LUEGO DE PRUEBAS

@@ -68488,7 +68488,7 @@ class RegistrosVentasComponent {
         this.mensajeLoading = "Enviando Factura SRI";
         this.mostrarLoading = true;
         this._apiVeronicaService.obtenerSecuencia(dataFactura.rucFactura).subscribe(res => {
-            var _a, _b, _c;
+            var _a, _b, _c, _d, _e, _f, _g, _h, _j, _k;
             console.log("Respuesta de obtenerSecuencia Veronica:", res);
             var consecutivoVeronica = res;
             this.secuencialFactura = consecutivoVeronica.result[0].establecimiento.puntosEmision[0].secuencialFactura;
@@ -68539,14 +68539,24 @@ class RegistrosVentasComponent {
             campoAdicional2.nombre = "Documento Interno";
             campoAdicional2.value = dataFactura.documento_n.toString(); //cambiar*********
             this.facturaVeronica.campoAdicional.push(campoAdicional2);
-            var campoAdicional3 = new _api_veronica_api_veronica__WEBPACK_IMPORTED_MODULE_5__["CampoAdicionalModel"]();
-            campoAdicional3.nombre = "Teléfono Cliente";
-            campoAdicional3.value = (_c = this.factura.cliente) === null || _c === void 0 ? void 0 : _c.celular.toString(); //cambiar*********
-            this.facturaVeronica.campoAdicional.push(campoAdicional3);
-            var campoAdicional4 = new _api_veronica_api_veronica__WEBPACK_IMPORTED_MODULE_5__["CampoAdicionalModel"]();
-            campoAdicional4.nombre = "Nota";
-            campoAdicional4.value = this.factura.observaciones; //cambiar*********
-            this.facturaVeronica.campoAdicional.push(campoAdicional4);
+            console.log("imprimiendonn " + ((_c = dataFactura.cliente) === null || _c === void 0 ? void 0 : _c.celular));
+            if (((_d = dataFactura.cliente) === null || _d === void 0 ? void 0 : _d.celular) != undefined) {
+                console.log("entrando a cliente");
+                var campoAdicional3 = new _api_veronica_api_veronica__WEBPACK_IMPORTED_MODULE_5__["CampoAdicionalModel"]();
+                campoAdicional3.nombre = "Teléfono Cliente";
+                campoAdicional3.value = (_g = (_f = (_e = dataFactura) === null || _e === void 0 ? void 0 : _e.cliente) === null || _f === void 0 ? void 0 : _f.celular) === null || _g === void 0 ? void 0 : _g.toString(); //cambiar*********
+                this.facturaVeronica.campoAdicional.push(campoAdicional3);
+            }
+            if (((_h = dataFactura) === null || _h === void 0 ? void 0 : _h.observaciones) != undefined) {
+                if (((_j = dataFactura) === null || _j === void 0 ? void 0 : _j.observaciones) != " ") {
+                    console.log("entrando en observaciones");
+                    this.facturaVeronica.campoAdicional.push(campoAdicional3);
+                    var campoAdicional4 = new _api_veronica_api_veronica__WEBPACK_IMPORTED_MODULE_5__["CampoAdicionalModel"]();
+                    campoAdicional4.nombre = "Nota";
+                    campoAdicional4.value = (_k = dataFactura) === null || _k === void 0 ? void 0 : _k.observaciones; //cambiar*********
+                    this.facturaVeronica.campoAdicional.push(campoAdicional4);
+                }
+            }
             //****************LOG SERVICIO WEB VERONICA**********/
             var logApiVeronica = new _api_veronica_api_veronica__WEBPACK_IMPORTED_MODULE_5__["ServicioWebVeronica"]();
             logApiVeronica.objetoRequest = JSON.stringify(this.facturaVeronica);
@@ -92458,20 +92468,21 @@ class VentasComponent {
             else
                 window.location.reload();
         });
-        this._logApiVeronicaService.newLog(logApiVeronica).subscribe(res => {
-            this.mostrarLoading = false;
-            sweetalert2__WEBPACK_IMPORTED_MODULE_9___default.a.fire({
-                title: 'Correcto',
-                text: 'Factura registrada con éxito',
-                icon: 'success',
-                confirmButtonText: 'Ok'
-            }).then((result) => {
-                if (this.formaPago == "Otros medios Pago" || this.formaPago == "Abonos")
-                    this.router.navigate(['/recibo-caja'], { queryParams: { id: this.factura.documento_n, tipo: 1 } });
-                else
-                    window.location.reload();
-            });
-        }, err => { });
+        /* this._logApiVeronicaService.newLog(logApiVeronica).subscribe(
+          res =>{   this.mostrarLoading = false;
+                    Swal.fire({
+                      title: 'Correcto',
+                      text: 'Factura registrada con éxito',
+                      icon: 'success',
+                      confirmButtonText: 'Ok'
+                    }).then((result) => {
+                      if(this.formaPago == "Otros medios Pago" || this.formaPago == "Abonos")
+                        this.router.navigate(['/recibo-caja'], { queryParams: { id: this.factura.documento_n , tipo: 1 } });
+                      else
+                        window.location.reload();
+                    })
+                },
+          err => {  }); */
         //TO-DO, DESCOMENTAR LUEGO DE PRUEBAS
         this._apiVeronicaService.newFactura(this.facturaVeronica).subscribe(res => {
             var resultado = res;
