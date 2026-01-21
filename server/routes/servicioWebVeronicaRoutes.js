@@ -28,5 +28,13 @@ router.post("/getLogsVeronica", async (req, res, next) => {
     res.json(logs);
   });
 
+router.post("/getLogsVeronicaPorFactura/:documento", async (req, res, next) => {
+    const { documento } = req.params;
+    const logs = await ServicioWebVeronica.find({
+      nroDocumento: documento
+    });
+    res.json(logs);
+  });
+
 
 module.exports = router;

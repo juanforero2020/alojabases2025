@@ -431,7 +431,7 @@ export class RegistrosVentasComponent implements OnInit {
         console.log("entrabndo aqui")
         var dataFactura = e.row.data as factura;
         console.log(dataFactura)
-        this.continuarProcesoFactura(dataFactura)
+        this.validarReprocesamiento(dataFactura)
         
       } else if (result.dismiss === Swal.DismissReason.cancel) {
         Swal.fire(
@@ -442,6 +442,25 @@ export class RegistrosVentasComponent implements OnInit {
       }
     })
     
+  }
+
+  validarReprocesamiento(dataFactura: factura){
+    this._logApiVeronicaService.getLogsVeronicaPorFactura(this.obj, dataFactura?.documento_n).subscribe(res => {
+      this.logsVeronica = res as ServicioWebVeronica[];
+      const logOk = this.logsVeronica.some(log => log.resultado === "OK");
+      if (logOk) {
+        Swal.fire(
+          'Aviso',
+          'La factura ya ha sido actualizada.',
+          'info'
+        );
+        this.obtenerLogsVeronica();
+      } else {
+        this.continuarProcesoFactura(dataFactura);
+      }
+      //this.continuarProcesoFactura(dataFactura)
+      console.log(this.logsVeronica)
+    }) 
   }
 
   continuarProcesoFactura(dataFactura: factura){
@@ -529,10 +548,10 @@ export class RegistrosVentasComponent implements OnInit {
         console.log(this.facturaVeronica)
         console.log(logApiVeronica)
                    
-
+        alert("hasta aqui llegue")
 
         //TO-DO, DESCOMENTAR LUEGO DE PRUEBAS
-        this._apiVeronicaService.newFactura(this.facturaVeronica).subscribe(
+        /* this._apiVeronicaService.newFactura(this.facturaVeronica).subscribe(
           res => {  var resultado = res as ResponseVeronicaDto;
                     logApiVeronica.objetoResponse = JSON.stringify(res)
                     logApiVeronica.claveAcceso = resultado.result.claveAccesoConsultada
@@ -563,7 +582,7 @@ export class RegistrosVentasComponent implements OnInit {
                                 })
                             },
                       err => {  });              
-                  }); 
+                  });  */
 
       },
       err => { 
@@ -1373,7 +1392,8 @@ export class RegistrosVentasComponent implements OnInit {
                           'Cliente',
                           'Contacto',
                           "Dirección",
-                          "Teléfonos"
+                          "Teléfonos",
+                          "Correo"
                         ]
                       }
                     ]
@@ -1383,10 +1403,11 @@ export class RegistrosVentasComponent implements OnInit {
                       {
                         type: 'none',
                         ul: [
-                          ''+this.factura.cliente.cliente_nombre,
-                          ''+this.factura.cliente.direccion,
-                          ''+this.factura.cliente.direccion,
-                          ''+this.factura.cliente.celular,
+                          ''+this.factura.cliente?.cliente_nombre,
+                          ''+this.factura.cliente?.direccion,
+                          ''+this.factura.cliente?.direccion,
+                          ''+this.factura.cliente?.celular,
+                          ''+this.factura.cliente?.correo,
                         ]
                       }
                     ]
@@ -1687,7 +1708,8 @@ export class RegistrosVentasComponent implements OnInit {
                           'Cliente',
                           'Contacto',
                           "Dirección",
-                          "Teléfonos"
+                          "Teléfonos",
+                          "Correo"
                         ]
                       }
                     ]
@@ -1697,10 +1719,11 @@ export class RegistrosVentasComponent implements OnInit {
                       {
                         type: 'none',
                         ul: [
-                          ''+this.factura.cliente.cliente_nombre,
-                          ''+this.factura.cliente.direccion,
-                          ''+this.factura.cliente.direccion,
-                          ''+this.factura.cliente.celular,
+                          ''+this.factura.cliente?.cliente_nombre,
+                          ''+this.factura.cliente?.direccion,
+                          ''+this.factura.cliente?.direccion,
+                          ''+this.factura.cliente?.celular,
+                          ''+this.factura.cliente?.correo,
                         ]
                       }
                     ]

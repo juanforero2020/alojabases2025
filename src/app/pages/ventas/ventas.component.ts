@@ -1769,9 +1769,9 @@ cambiarestado(e,i:number){
                                           bold: true,
                                           fontSize:7,
                                           ul: [
-                                            'Cliente    : '+this.factura.cliente.cliente_nombre,
-                                            'Dirección  : '+this.factura.cliente.direccion,  
-                                            'Teléfono   : '+this.factura.cliente.celular,  
+                                            'Cliente    : '+this.factura.cliente?.cliente_nombre,
+                                            'Dirección  : '+this.factura.cliente?.direccion,  
+                                            'Teléfono   : '+this.factura.cliente?.celular   + '           Correo:   ' + this.factura?.cliente?.correo,  
                                           ]
                                         }
                                 ]
@@ -1916,9 +1916,9 @@ cambiarestado(e,i:number){
                                       bold: true,
                                       fontSize:7,
                                       ul: [
-                                        'Cliente    : '+this.factura.cliente.cliente_nombre,
-                                        'Dirección  : '+this.factura.cliente.direccion,  
-                                        'Teléfono   : '+this.factura.cliente.celular,  
+                                      'Cliente    : ' +this.factura.cliente?.cliente_nombre,
+                                      'Dirección  : ' +this.factura.cliente?.direccion,  
+                                      'Teléfono   : ' +this.factura.cliente?.celular  + '           Correo:   ' + this.factura?.cliente?.correo,
                                       ]
                                     }
                                   ]
@@ -2425,9 +2425,9 @@ cambiarestado(e,i:number){
                               bold: true,
                               fontSize:7,
                               ul: [
-                                'Cliente    : '+this.factura.cliente.cliente_nombre,
-                                'Dirección  : '+this.factura.cliente.direccion,  
-                                'Teléfono   : '+this.factura.cliente.celular,  
+                                'Cliente    : '+this.factura.cliente?.cliente_nombre,
+                                'Dirección  : '+this.factura.cliente?.direccion,  
+                                'Teléfono   : '+this.factura.cliente?.celular   + '           Correo:   ' + this.factura?.cliente?.correo, 
                               ]
                             }
                           ]
@@ -2584,7 +2584,7 @@ cambiarestado(e,i:number){
                             ul: [
                               'Cliente    : '+this.factura.cliente.cliente_nombre,
                               'Dirección  : '+this.factura.cliente.direccion,  
-                              'Teléfono   : '+this.factura.cliente.celular,  
+                              'Teléfono   : '+this.factura.cliente?.celular   + '           Correo:   ' + this.factura?.cliente?.correo,  
                             ]
                           }
                         ]
@@ -3187,10 +3187,10 @@ cambiarestado(e,i:number){
 
     crearCliente(){
       if(this.factura.cliente._id) {
-        console.log("No actualizo")
-        /* this.clienteService.updateClienteDataContacto(this.factura.cliente).subscribe(
+        console.log("entre a actualizar")
+        this.clienteService.updateClienteDataContacto(this.factura.cliente).subscribe(
           res => {},
-          err => {this.mostrarMensajeGenerico(2,"Revise e intente nuevamente")}) */
+          err => {this.mostrarMensajeGenerico(2,"Revise e intente nuevamente")})
       } else {
         this.clienteService.newCliente(this.factura.cliente).subscribe(
           res => {},
@@ -3272,6 +3272,7 @@ cambiarestado(e,i:number){
     //*************FORMA DE PAGO*********** */
     var pago = new PagosModel();
     pago.total = Number(this.factura.total.toFixed(2))
+    pago.formaPago = this.formaPago == "Otros medios Pago" ? "20" : "01";
     this.facturaVeronica.pagos.push(pago);
 
 
@@ -3295,7 +3296,7 @@ cambiarestado(e,i:number){
     console.log(logApiVeronica)
 
     //EMILINAR LUEGO DE PRUEBAS
-    /* this.mostrarLoading = false;
+    this.mostrarLoading = false;
     Swal.fire({
       title: 'Correcto',
       text: 'Factura registrada con éxito',
@@ -3322,11 +3323,11 @@ cambiarestado(e,i:number){
                     window.location.reload();
                 })
             },
-      err => {  }); */
+      err => {  });
 
 
     //TO-DO, DESCOMENTAR LUEGO DE PRUEBAS
-    this._apiVeronicaService.newFactura(this.facturaVeronica).subscribe(
+    /* this._apiVeronicaService.newFactura(this.facturaVeronica).subscribe(
       res => {  var resultado = res as ResponseVeronicaDto;
                 logApiVeronica.objetoResponse = JSON.stringify(res)
                 logApiVeronica.claveAcceso = resultado.result.claveAccesoConsultada
@@ -3367,7 +3368,7 @@ cambiarestado(e,i:number){
                             })
                         },
                   err => {  });              
-              }); 
+              });  */
   }
   
 

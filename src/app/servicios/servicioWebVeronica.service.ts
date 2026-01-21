@@ -21,4 +21,8 @@ export class ServicioWebVeronicaService {
   getLogsVeronica(objFecha) {
     return this.http.post(this.URL + "/getLogsVeronica", objFecha);
   }
+
+  getLogsVeronicaPorFactura(objetoBusqueda,nroDocumento) {
+    return this.http.post(this.URL + `/getLogsVeronicaPorFactura/${nroDocumento}`, objetoBusqueda);
+  }
 }
