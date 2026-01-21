@@ -3282,9 +3282,17 @@ cambiarestado(e,i:number){
     campoAdicional.value = this.factura.cliente.correo //cambiar*********
     this.facturaVeronica.campoAdicional.push(campoAdicional)
     var campoAdicional2 = new CampoAdicionalModel();
-    campoAdicional2.nombre = "NFactura"
+    campoAdicional2.nombre = "Documento Interno"
     campoAdicional2.value = this.factura.documento_n.toString() //cambiar*********
     this.facturaVeronica.campoAdicional.push(campoAdicional2)
+    var campoAdicional3 = new CampoAdicionalModel();
+    campoAdicional3.nombre = "Teléfono Cliente"
+    campoAdicional3.value = this.factura.cliente?.celular?.toString() //cambiar*********
+    this.facturaVeronica.campoAdicional.push(campoAdicional3)
+    var campoAdicional4 = new CampoAdicionalModel();
+    campoAdicional4.nombre = "Nota" 
+    campoAdicional4.value = this.factura?.observaciones //cambiar*********
+    this.facturaVeronica.campoAdicional.push(campoAdicional4)
 
     //****************LOG SERVICIO WEB VERONICA**********/
     var logApiVeronica = new ServicioWebVeronica()
@@ -3327,7 +3335,7 @@ cambiarestado(e,i:number){
 
 
     //TO-DO, DESCOMENTAR LUEGO DE PRUEBAS
-    /* this._apiVeronicaService.newFactura(this.facturaVeronica).subscribe(
+    this._apiVeronicaService.newFactura(this.facturaVeronica).subscribe(
       res => {  var resultado = res as ResponseVeronicaDto;
                 logApiVeronica.objetoResponse = JSON.stringify(res)
                 logApiVeronica.claveAcceso = resultado.result.claveAccesoConsultada
@@ -3368,7 +3376,7 @@ cambiarestado(e,i:number){
                             })
                         },
                   err => {  });              
-              });  */
+              }); 
   }
   
 
