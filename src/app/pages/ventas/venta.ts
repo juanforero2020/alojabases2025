@@ -180,6 +180,7 @@ export class factura {
         this.mensaje = " "
         this.maestro = ""
         this.nota    = ""
+        this.observaciones = "Sin observaciones"
         this.estadoFacturaVeronica = "PENDIENTE"
     }
 }

@@ -3285,10 +3285,15 @@ cambiarestado(e,i:number){
     campoAdicional2.nombre = "Documento Interno"
     campoAdicional2.value = this.factura.documento_n.toString() //cambiar*********
     this.facturaVeronica.campoAdicional.push(campoAdicional2)
-    var campoAdicional3 = new CampoAdicionalModel();
-    campoAdicional3.nombre = "Teléfono Cliente"
-    campoAdicional3.value = this.factura.cliente?.celular?.toString() //cambiar*********
-    this.facturaVeronica.campoAdicional.push(campoAdicional3)
+    if (this.factura.cliente?.celular != undefined) {
+      var campoAdicional3 = new CampoAdicionalModel();
+      campoAdicional3.nombre = "Teléfono Cliente"
+      campoAdicional3.value = this.factura.cliente?.celular?.toString() //cambiar*********
+      this.facturaVeronica.campoAdicional.push(campoAdicional3)
+    }
+    if(this.factura?.observaciones == " ")
+        this.factura.observaciones = "Sin observaciones"
+
     var campoAdicional4 = new CampoAdicionalModel();
     campoAdicional4.nombre = "Nota" 
     campoAdicional4.value = this.factura?.observaciones //cambiar*********
@@ -3304,7 +3309,7 @@ cambiarestado(e,i:number){
     console.log(logApiVeronica)
 
     //EMILINAR LUEGO DE PRUEBAS
-    this.mostrarLoading = false;
+    /* this.mostrarLoading = false;
     Swal.fire({
       title: 'Correcto',
       text: 'Factura registrada con éxito',
@@ -3315,7 +3320,7 @@ cambiarestado(e,i:number){
         this.router.navigate(['/recibo-caja'], { queryParams: { id: this.factura.documento_n , tipo: 1 } });
       else
         window.location.reload();
-    })
+    }) */
 
     /* this._logApiVeronicaService.newLog(logApiVeronica).subscribe(
       res =>{   this.mostrarLoading = false;
@@ -3362,7 +3367,8 @@ cambiarestado(e,i:number){
                 logApiVeronica.claveAcceso = null;
                 logApiVeronica.resultado = "NOK"
                 this._logApiVeronicaService.newLog(logApiVeronica).subscribe(
-                  res =>{   this.mostrarLoading = false;
+                  res =>{   
+                            this.mostrarLoading = false;
                             Swal.fire({
                               title: 'Error',
                               text: 'Error al establecer coneccion con el SRI',
@@ -4107,33 +4113,35 @@ cambiarestado(e,i:number){
       } catch (error) {} 
     })
 
-    IdNum.then((data) => {this.generarReciboCaja(idRecibo);})
+    IdNum.then((data) => {
+      this.generarReciboCaja(idRecibo);
+    })
   }
 
 
     generarReciboCaja(idRecibo){
       var recibo = new ReciboCaja();
       recibo.idDocumento = idRecibo;
-      recibo.fecha = this.factura.fecha;
+      recibo.fecha = this.factura?.fecha;
       recibo.docVenta = this.tDocumento;
-      recibo.cliente = this.factura.cliente.nombreContacto;
-      recibo.ruc = this.factura.cliente.ruc;
-      recibo.sucursal = this.factura.sucursal;
-      recibo.numDocumento = this.factura.documento_n.toString(); 
+      recibo.cliente = this.factura?.cliente?.nombreContacto;
+      recibo.ruc = this.factura?.cliente?.ruc;
+      recibo.sucursal = this.factura?.sucursal;
+      recibo.numDocumento = this.factura?.documento_n.toString(); 
       recibo.banco = "";
-      recibo.valorFactura = this.factura.total;
+      recibo.valorFactura = this.factura?.total;
       recibo.valorRecargo = 0;
      
       recibo.observaciones = "Generado desde el modulo de facturación"
       recibo.estadoRecibo = "Activo";
       if(this.formaPago == "Cancelado"){
         recibo.tipoPago = "Contado";
-        recibo.valorPagoEfectivo = this.factura.total;
+        recibo.valorPagoEfectivo = this.factura?.total;
         recibo.valorSaldos = 0;
       }else{
         recibo.tipoPago = "Pendiente de Pago";
         recibo.valorPagoEfectivo = 0;
-        recibo.valorSaldos = this.factura.total;
+        recibo.valorSaldos = this.factura?.total;
       }
 
       this.listaOperaciones.push(this.generarOperacionPrincipal());

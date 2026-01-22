@@ -145074,6 +145074,7 @@ function _classCallCheck(instance, Constructor) { if (!(instance instanceof Cons
       this.mensaje = " ";
       this.maestro = "";
       this.nota = "";
+      this.observaciones = "Sin observaciones";
       this.estadoFacturaVeronica = "PENDIENTE";
     };
 
@@ -150063,7 +150064,7 @@ function _classCallCheck(instance, Constructor) { if (!(instance instanceof Cons
         value: function registrarFacturaSRI() {
           var _this1338 = this;
 
-          var _a, _b, _c;
+          var _a, _b, _c, _d, _e;
 
           this.mensajeLoading = "Enviando Factura SRI";
           this.mostrarLoading = true; //--------------INICIO LLENADO DE OBJETO SRI VERONICA--------------------
@@ -150117,14 +150118,19 @@ function _classCallCheck(instance, Constructor) { if (!(instance instanceof Cons
           campoAdicional2.value = this.factura.documento_n.toString(); //cambiar*********
 
           this.facturaVeronica.campoAdicional.push(campoAdicional2);
-          var campoAdicional3 = new _api_veronica_api_veronica__WEBPACK_IMPORTED_MODULE_17__["CampoAdicionalModel"]();
-          campoAdicional3.nombre = "Teléfono Cliente";
-          campoAdicional3.value = (_b = (_a = this.factura.cliente) === null || _a === void 0 ? void 0 : _a.celular) === null || _b === void 0 ? void 0 : _b.toString(); //cambiar*********
 
-          this.facturaVeronica.campoAdicional.push(campoAdicional3);
+          if (((_a = this.factura.cliente) === null || _a === void 0 ? void 0 : _a.celular) != undefined) {
+            var campoAdicional3 = new _api_veronica_api_veronica__WEBPACK_IMPORTED_MODULE_17__["CampoAdicionalModel"]();
+            campoAdicional3.nombre = "Teléfono Cliente";
+            campoAdicional3.value = (_c = (_b = this.factura.cliente) === null || _b === void 0 ? void 0 : _b.celular) === null || _c === void 0 ? void 0 : _c.toString(); //cambiar*********
+
+            this.facturaVeronica.campoAdicional.push(campoAdicional3);
+          }
+
+          if (((_d = this.factura) === null || _d === void 0 ? void 0 : _d.observaciones) == " ") this.factura.observaciones = "Sin observaciones";
           var campoAdicional4 = new _api_veronica_api_veronica__WEBPACK_IMPORTED_MODULE_17__["CampoAdicionalModel"]();
           campoAdicional4.nombre = "Nota";
-          campoAdicional4.value = (_c = this.factura) === null || _c === void 0 ? void 0 : _c.observaciones; //cambiar*********
+          campoAdicional4.value = (_e = this.factura) === null || _e === void 0 ? void 0 : _e.observaciones; //cambiar*********
 
           this.facturaVeronica.campoAdicional.push(campoAdicional4); //****************LOG SERVICIO WEB VERONICA**********/
 
@@ -150135,20 +150141,19 @@ function _classCallCheck(instance, Constructor) { if (!(instance instanceof Cons
           logApiVeronica.sucursal = this.factura.sucursal;
           console.log(logApiVeronica); //EMILINAR LUEGO DE PRUEBAS
 
-          this.mostrarLoading = false;
-          sweetalert2__WEBPACK_IMPORTED_MODULE_9___default.a.fire({
+          /* this.mostrarLoading = false;
+          Swal.fire({
             title: 'Correcto',
             text: 'Factura registrada con éxito',
             icon: 'success',
             confirmButtonText: 'Ok'
-          }).then(function (result) {
-            if (_this1338.formaPago == "Otros medios Pago" || _this1338.formaPago == "Abonos") _this1338.router.navigate(['/recibo-caja'], {
-              queryParams: {
-                id: _this1338.factura.documento_n,
-                tipo: 1
-              }
-            });else window.location.reload();
-          });
+          }).then((result) => {
+            if(this.formaPago == "Otros medios Pago" || this.formaPago == "Abonos")
+              this.router.navigate(['/recibo-caja'], { queryParams: { id: this.factura.documento_n , tipo: 1 } });
+            else
+              window.location.reload();
+          }) */
+
           /* this._logApiVeronicaService.newLog(logApiVeronica).subscribe(
             res =>{   this.mostrarLoading = false;
                       Swal.fire({
@@ -151029,28 +151034,30 @@ function _classCallCheck(instance, Constructor) { if (!(instance instanceof Cons
         value: function generarReciboCaja(idRecibo) {
           var _this1360 = this;
 
+          var _a, _b, _c, _d, _e, _f, _g, _h, _j, _k;
+
           var recibo = new _reciboCaja_recibo_caja__WEBPACK_IMPORTED_MODULE_14__["ReciboCaja"]();
           recibo.idDocumento = idRecibo;
-          recibo.fecha = this.factura.fecha;
+          recibo.fecha = (_a = this.factura) === null || _a === void 0 ? void 0 : _a.fecha;
           recibo.docVenta = this.tDocumento;
-          recibo.cliente = this.factura.cliente.nombreContacto;
-          recibo.ruc = this.factura.cliente.ruc;
-          recibo.sucursal = this.factura.sucursal;
-          recibo.numDocumento = this.factura.documento_n.toString();
+          recibo.cliente = (_c = (_b = this.factura) === null || _b === void 0 ? void 0 : _b.cliente) === null || _c === void 0 ? void 0 : _c.nombreContacto;
+          recibo.ruc = (_e = (_d = this.factura) === null || _d === void 0 ? void 0 : _d.cliente) === null || _e === void 0 ? void 0 : _e.ruc;
+          recibo.sucursal = (_f = this.factura) === null || _f === void 0 ? void 0 : _f.sucursal;
+          recibo.numDocumento = (_g = this.factura) === null || _g === void 0 ? void 0 : _g.documento_n.toString();
           recibo.banco = "";
-          recibo.valorFactura = this.factura.total;
+          recibo.valorFactura = (_h = this.factura) === null || _h === void 0 ? void 0 : _h.total;
           recibo.valorRecargo = 0;
           recibo.observaciones = "Generado desde el modulo de facturación";
           recibo.estadoRecibo = "Activo";
 
           if (this.formaPago == "Cancelado") {
             recibo.tipoPago = "Contado";
-            recibo.valorPagoEfectivo = this.factura.total;
+            recibo.valorPagoEfectivo = (_j = this.factura) === null || _j === void 0 ? void 0 : _j.total;
             recibo.valorSaldos = 0;
           } else {
             recibo.tipoPago = "Pendiente de Pago";
             recibo.valorPagoEfectivo = 0;
-            recibo.valorSaldos = this.factura.total;
+            recibo.valorSaldos = (_k = this.factura) === null || _k === void 0 ? void 0 : _k.total;
           }
 
           this.listaOperaciones.push(this.generarOperacionPrincipal());
