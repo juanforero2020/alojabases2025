@@ -44,7 +44,6 @@ export class ReporteGlobalComponent implements OnInit {
 
   ngOnInit() {
     const currentYear = new Date().getFullYear();
-    console.log(currentYear);
     this.years = [];
     for (let year = 2019; year <= currentYear; year++) {
       this.years.push(year.toString());
@@ -101,6 +100,14 @@ export class ReporteGlobalComponent implements OnInit {
       case "2030":
         this.nowdesde = new Date("01/01/2030");
         this.nowhasta = new Date("12/31/2030");
+        break;
+      case "2031":
+        this.nowdesde = new Date("01/01/2031");
+        this.nowhasta = new Date("12/31/2031");
+        break;
+      case "2032":
+        this.nowdesde = new Date("01/01/2032");
+        this.nowhasta = new Date("12/31/2032");
         break;
       default:
     }
