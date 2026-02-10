@@ -117,6 +117,7 @@ export class ProductoService {
   }
 
   updateProductoEstado(producto: string, estado: string) {
+    console.log("producto: "+producto, "estado: "+estado);
     return this.http.put(
       this.URL + `/updateEstado/${producto}/${estado}`,
       producto

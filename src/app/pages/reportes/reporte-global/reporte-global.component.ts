@@ -43,6 +43,12 @@ export class ReporteGlobalComponent implements OnInit {
   ) {}
 
   ngOnInit() {
+    const currentYear = new Date().getFullYear();
+    console.log(currentYear);
+    this.years = [];
+    for (let year = 2019; year <= currentYear; year++) {
+      this.years.push(year.toString());
+    }
   }
 
   anioSeleccionado(e) {
@@ -79,6 +85,22 @@ export class ReporteGlobalComponent implements OnInit {
       case "2026":
         this.nowdesde = new Date("01/01/2026");
         this.nowhasta = new Date("12/31/2026");
+        break;
+      case "2027":
+        this.nowdesde = new Date("01/01/2027");
+        this.nowhasta = new Date("12/31/2027");
+        break;
+      case "2028":
+        this.nowdesde = new Date("01/01/2028");
+        this.nowhasta = new Date("12/31/2028");
+        break;
+      case "2029":
+        this.nowdesde = new Date("01/01/2029");
+        this.nowhasta = new Date("12/31/2029");
+        break;
+      case "2030":
+        this.nowdesde = new Date("01/01/2030");
+        this.nowhasta = new Date("12/31/2030");
         break;
       default:
     }

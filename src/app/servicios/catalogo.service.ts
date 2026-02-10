@@ -38,7 +38,7 @@ export class CatalogoService {
     );
   }
 
-  updateCatalogoEstado(productoId: number, estado: string) {
+  updateCatalogoEstado(productoId: string, estado: string) {
     return this.http.put(this.URL + `/updateEstado/${productoId}/${estado}`, productoId);
   }
 

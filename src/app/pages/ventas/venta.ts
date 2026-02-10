@@ -1,6 +1,5 @@
-import { Recoverable } from 'repl'
 import {ProductoDetalleVenta } from '../producto/producto'
-import { ServicioWebVeronica, ServicioWebVeronicaLectura } from '../api-veronica/api-veronica'
+import { ServicioWebVeronicaLectura } from '../api-veronica/api-veronica'
 
 
 export class producto {

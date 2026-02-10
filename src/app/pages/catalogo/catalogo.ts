@@ -2,7 +2,7 @@ import { producto } from '../ventas/venta'
 
 
 export class catalogo{
-    _id:number
+    _id:string
     PRODUCTO:string
     NOMBRE_PRODUCTO:string
     CLASIFICA:string

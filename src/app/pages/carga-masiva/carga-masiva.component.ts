@@ -1,7 +1,6 @@
 import { Component, OnInit } from "@angular/core";
 import { producto, productosPendientesEntrega } from "../ventas/venta";
 import { transaccion } from "../transacciones/transacciones";
-
 import { TransaccionesService } from "src/app/servicios/transacciones.service";
 import { ProductoService } from "src/app/servicios/producto.service";
 import { ProductosPendientesService } from "src/app/servicios/productos-pendientes.service";
@@ -21,7 +20,6 @@ import { comparacionResultadosRevision } from "../revision-inventario/revision-i
 import * as XLSX from 'xlsx';
 import { clasificacionActualizacion, inventario, invFaltanteSucursal, productoActualizable, productoMultiple, productosPorFiltros, productoTransaccion } from "../consolidado/consolidado";
 import { ProductoCargaModel } from "./carga-masiva";
-import { element } from "protractor";
 
 @Component({
   selector: "app-carga-masiva",
@@ -42,6 +40,7 @@ export class CargaMasivaComponent implements OnInit {
   popupVisibleNotas: boolean = false;
   popupVisiblePendientes: boolean = false;
   productos: producto[] = [];
+  productosGlobales: producto[] = [];
   arregloUbicaciones1: string[] = [];
   arregloUbicaciones2: string[] = [];
   arregloUbicaciones3: string[] = [];
@@ -133,7 +132,15 @@ export class CargaMasivaComponent implements OnInit {
     this.traerCatalogoUnitarios();
     this.traerProductosUnitarios();
     this.traerOpcionesCatalogo();
-    this.traerBodegas();    
+    this.traerBodegas();   
+    this.traerProductosGlobales(); 
+  }
+
+  traerProductosGlobales(){
+    this.productosGlobales = [];
+    this.productoService.getProductosActivos().subscribe(res => {
+      this.productosGlobales = res as producto[];
+    }) 
   }
 
   traerOpcionesCatalogo(){
@@ -1197,7 +1204,6 @@ export class CargaMasivaComponent implements OnInit {
   }
 
   mostrarMensajeActualizacion(contador:number){
-    console.log(contador)
     if(contador == this.transacciones.length){
       this.mostrarLoading = false;
       Swal.fire("Correcto!", "Se guardaron sus cambios con éxito", "success"); 
@@ -1952,20 +1958,16 @@ export class CargaMasivaComponent implements OnInit {
   actualizarProductos(){
     var cont = 0;
     this.listadoProductosCargaFinal.forEach(element=>{
-      var prod = this.productosCatalogo.find(x=> x.PRODUCTO == element.Producto);
-      this._catalogoService.updateCatalogoEstado(prod._id , element.Estado).subscribe(
-          res => {
-            var producto = this.productos.find(x=> x.PRODUCTO == element.Producto);
-            this.productoService.updateEstadoPorId(producto._id , element.Estado).subscribe(
-              res => { cont++; this.contador(cont)},
-              err => { cont++; this.contador(cont) }
-            )
-          },
+      var prod = this.productosGlobales.find(x => (x.PRODUCTO || '').trim() == (element.Producto || '').trim());
+      if(prod){
+        this.productoService.updateEstadoPorId(prod?._id , element?.Estado).subscribe(
+          res => { cont++; this.contador(cont)},
           err => { cont++; this.contador(cont)}
         )  
-        
-    
-      })
+      }  else {
+        cont++; this.contador(cont)
+      }
+    })
   }
 
   contador(cont : number){

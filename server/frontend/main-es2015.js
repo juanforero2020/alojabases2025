@@ -22595,6 +22595,7 @@ class CargaMasivaComponent {
         this.popupVisibleNotas = false;
         this.popupVisiblePendientes = false;
         this.productos = [];
+        this.productosGlobales = [];
         this.arregloUbicaciones1 = [];
         this.arregloUbicaciones2 = [];
         this.arregloUbicaciones3 = [];
@@ -22671,6 +22672,13 @@ class CargaMasivaComponent {
         this.traerProductosUnitarios();
         this.traerOpcionesCatalogo();
         this.traerBodegas();
+        this.traerProductosGlobales();
+    }
+    traerProductosGlobales() {
+        this.productosGlobales = [];
+        this.productoService.getProductosActivos().subscribe(res => {
+            this.productosGlobales = res;
+        });
     }
     traerOpcionesCatalogo() {
         this.opcionesService.getOpciones().subscribe(res => {
@@ -23610,7 +23618,6 @@ class CargaMasivaComponent {
         });
     }
     mostrarMensajeActualizacion(contador) {
-        console.log(contador);
         if (contador == this.transacciones.length) {
             this.mostrarLoading = false;
             sweetalert2__WEBPACK_IMPORTED_MODULE_3___default.a.fire("Correcto!", "Se guardaron sus cambios con éxito", "success");
@@ -24228,11 +24235,15 @@ class CargaMasivaComponent {
     actualizarProductos() {
         var cont = 0;
         this.listadoProductosCargaFinal.forEach(element => {
-            var prod = this.productosCatalogo.find(x => x.PRODUCTO == element.Producto);
-            this._catalogoService.updateCatalogoEstado(prod._id, element.Estado).subscribe(res => {
-                var producto = this.productos.find(x => x.PRODUCTO == element.Producto);
-                this.productoService.updateEstadoPorId(producto._id, element.Estado).subscribe(res => { cont++; this.contador(cont); }, err => { cont++; this.contador(cont); });
-            }, err => { cont++; this.contador(cont); });
+            var _a, _b;
+            var prod = this.productosGlobales.find(x => (x.PRODUCTO || '').trim() == (element.Producto || '').trim());
+            if (prod) {
+                this.productoService.updateEstadoPorId((_a = prod) === null || _a === void 0 ? void 0 : _a._id, (_b = element) === null || _b === void 0 ? void 0 : _b.Estado).subscribe(res => { cont++; this.contador(cont); }, err => { cont++; this.contador(cont); });
+            }
+            else {
+                cont++;
+                this.contador(cont);
+            }
         });
     }
     contador(cont) {
@@ -68566,34 +68577,38 @@ class RegistrosVentasComponent {
             console.log(this.facturaVeronica);
             console.log(logApiVeronica);
             //TO-DO, DESCOMENTAR LUEGO DE PRUEBAS
-            this._apiVeronicaService.newFactura(this.facturaVeronica).subscribe(res => {
-                var resultado = res;
-                logApiVeronica.objetoResponse = JSON.stringify(res);
-                logApiVeronica.claveAcceso = resultado.result.claveAccesoConsultada;
-                logApiVeronica.resultado = "OK";
-                this._logApiVeronicaService.newLog(logApiVeronica).subscribe(res => {
-                    this.mostrarLoading = false;
-                    sweetalert2__WEBPACK_IMPORTED_MODULE_3___default.a.fire({
-                        title: 'Correcto',
-                        text: 'Factura registrada con éxito',
-                        icon: 'success'
-                    });
-                    this.traerFacturasMensuales();
-                }, err => { });
-            }, err => {
-                logApiVeronica.objetoResponse = JSON.stringify(err);
-                logApiVeronica.claveAcceso = null;
-                logApiVeronica.resultado = "NOK";
-                this._logApiVeronicaService.newLog(logApiVeronica).subscribe(res => {
-                    this.mostrarLoading = false;
-                    sweetalert2__WEBPACK_IMPORTED_MODULE_3___default.a.fire({
-                        title: 'Error',
-                        text: 'Error al establecer coneccion con el SRI',
-                        icon: 'error',
-                        confirmButtonText: 'Ok'
-                    });
-                }, err => { });
-            });
+            /* this._apiVeronicaService.newFactura(this.facturaVeronica).subscribe(
+              res => {  var resultado = res as ResponseVeronicaDto;
+                        logApiVeronica.objetoResponse = JSON.stringify(res)
+                        logApiVeronica.claveAcceso = resultado.result.claveAccesoConsultada
+                        logApiVeronica.resultado = "OK"
+                        this._logApiVeronicaService.newLog(logApiVeronica).subscribe(
+                          res =>{   this.mostrarLoading = false;
+                                    Swal.fire({
+                                      title: 'Correcto',
+                                      text: 'Factura registrada con éxito',
+                                      icon: 'success'
+                                    })
+                                    this.traerFacturasMensuales();
+                                },
+                          err => {  });
+                    },
+              err => {
+                      
+                        logApiVeronica.objetoResponse = JSON.stringify(err);
+                        logApiVeronica.claveAcceso = null;
+                        logApiVeronica.resultado = "NOK"
+                        this._logApiVeronicaService.newLog(logApiVeronica).subscribe(
+                          res =>{   this.mostrarLoading = false;
+                                    Swal.fire({
+                                      title: 'Error',
+                                      text: 'Error al establecer coneccion con el SRI',
+                                      icon: 'error',
+                                      confirmButtonText: 'Ok'
+                                    })
+                                },
+                          err => {  });
+                      });  */
         }, err => {
             sweetalert2__WEBPACK_IMPORTED_MODULE_3___default.a.fire({
                 title: 'Error',
@@ -71484,6 +71499,12 @@ class ReporteGlobalComponent {
         this.aniosSeleccionado = "";
     }
     ngOnInit() {
+        const currentYear = new Date().getFullYear();
+        console.log(currentYear);
+        this.years = [];
+        for (let year = 2019; year <= currentYear; year++) {
+            this.years.push(year.toString());
+        }
     }
     anioSeleccionado(e) {
         this.aniosSeleccionado = e.value;
@@ -71519,6 +71540,22 @@ class ReporteGlobalComponent {
             case "2026":
                 this.nowdesde = new Date("01/01/2026");
                 this.nowhasta = new Date("12/31/2026");
+                break;
+            case "2027":
+                this.nowdesde = new Date("01/01/2027");
+                this.nowhasta = new Date("12/31/2027");
+                break;
+            case "2028":
+                this.nowdesde = new Date("01/01/2028");
+                this.nowhasta = new Date("12/31/2028");
+                break;
+            case "2029":
+                this.nowdesde = new Date("01/01/2029");
+                this.nowhasta = new Date("12/31/2029");
+                break;
+            case "2030":
+                this.nowdesde = new Date("01/01/2030");
+                this.nowhasta = new Date("12/31/2030");
                 break;
             default:
         }
@@ -92461,72 +92498,76 @@ class VentasComponent {
         logApiVeronica.sucursal = this.factura.sucursal;
         console.log(logApiVeronica);
         //EMILINAR LUEGO DE PRUEBAS
-        /* this.mostrarLoading = false;
-        Swal.fire({
-          title: 'Correcto',
-          text: 'Factura registrada con éxito',
-          icon: 'success',
-          confirmButtonText: 'Ok'
+        this.mostrarLoading = false;
+        sweetalert2__WEBPACK_IMPORTED_MODULE_9___default.a.fire({
+            title: 'Correcto',
+            text: 'Factura registrada con éxito',
+            icon: 'success',
+            confirmButtonText: 'Ok'
         }).then((result) => {
-          if(this.formaPago == "Otros medios Pago" || this.formaPago == "Abonos")
-            this.router.navigate(['/recibo-caja'], { queryParams: { id: this.factura.documento_n , tipo: 1 } });
-          else
-            window.location.reload();
-        }) */
-        /* this._logApiVeronicaService.newLog(logApiVeronica).subscribe(
-          res =>{   this.mostrarLoading = false;
-                    Swal.fire({
-                      title: 'Correcto',
-                      text: 'Factura registrada con éxito',
-                      icon: 'success',
-                      confirmButtonText: 'Ok'
-                    }).then((result) => {
-                      if(this.formaPago == "Otros medios Pago" || this.formaPago == "Abonos")
-                        this.router.navigate(['/recibo-caja'], { queryParams: { id: this.factura.documento_n , tipo: 1 } });
-                      else
-                        window.location.reload();
-                    })
-                },
-          err => {  }); */
-        //TO-DO, DESCOMENTAR LUEGO DE PRUEBAS
-        this._apiVeronicaService.newFactura(this.facturaVeronica).subscribe(res => {
-            var resultado = res;
-            logApiVeronica.objetoResponse = JSON.stringify(res);
-            logApiVeronica.claveAcceso = resultado.result.claveAccesoConsultada;
-            logApiVeronica.resultado = "OK";
-            this._logApiVeronicaService.newLog(logApiVeronica).subscribe(res => {
-                this.mostrarLoading = false;
-                sweetalert2__WEBPACK_IMPORTED_MODULE_9___default.a.fire({
-                    title: 'Correcto',
-                    text: 'Factura registrada con éxito',
-                    icon: 'success',
-                    confirmButtonText: 'Ok'
-                }).then((result) => {
-                    if (this.formaPago == "Otros medios Pago" || this.formaPago == "Abonos")
-                        this.router.navigate(['/recibo-caja'], { queryParams: { id: this.factura.documento_n, tipo: 1 } });
-                    else
-                        window.location.reload();
-                });
-            }, err => { });
-        }, err => {
-            logApiVeronica.objetoResponse = JSON.stringify(err);
-            logApiVeronica.claveAcceso = null;
-            logApiVeronica.resultado = "NOK";
-            this._logApiVeronicaService.newLog(logApiVeronica).subscribe(res => {
-                this.mostrarLoading = false;
-                sweetalert2__WEBPACK_IMPORTED_MODULE_9___default.a.fire({
-                    title: 'Error',
-                    text: 'Error al establecer coneccion con el SRI',
-                    icon: 'error',
-                    confirmButtonText: 'Ok'
-                }).then((result) => {
-                    if (this.formaPago == "Otros medios Pago" || this.formaPago == "Abonos")
-                        this.router.navigate(['/recibo-caja'], { queryParams: { id: this.factura.documento_n, tipo: 1 } });
-                    else
-                        window.location.reload();
-                });
-            }, err => { });
+            if (this.formaPago == "Otros medios Pago" || this.formaPago == "Abonos")
+                this.router.navigate(['/recibo-caja'], { queryParams: { id: this.factura.documento_n, tipo: 1 } });
+            else
+                window.location.reload();
         });
+        this._logApiVeronicaService.newLog(logApiVeronica).subscribe(res => {
+            this.mostrarLoading = false;
+            sweetalert2__WEBPACK_IMPORTED_MODULE_9___default.a.fire({
+                title: 'Correcto',
+                text: 'Factura registrada con éxito',
+                icon: 'success',
+                confirmButtonText: 'Ok'
+            }).then((result) => {
+                if (this.formaPago == "Otros medios Pago" || this.formaPago == "Abonos")
+                    this.router.navigate(['/recibo-caja'], { queryParams: { id: this.factura.documento_n, tipo: 1 } });
+                else
+                    window.location.reload();
+            });
+        }, err => { });
+        //TO-DO, DESCOMENTAR LUEGO DE PRUEBAS
+        /* this._apiVeronicaService.newFactura(this.facturaVeronica).subscribe(
+          res => {  var resultado = res as ResponseVeronicaDto;
+                    logApiVeronica.objetoResponse = JSON.stringify(res)
+                    logApiVeronica.claveAcceso = resultado.result.claveAccesoConsultada
+                    logApiVeronica.resultado = "OK"
+                    this._logApiVeronicaService.newLog(logApiVeronica).subscribe(
+                      res =>{   this.mostrarLoading = false;
+                                Swal.fire({
+                                  title: 'Correcto',
+                                  text: 'Factura registrada con éxito',
+                                  icon: 'success',
+                                  confirmButtonText: 'Ok'
+                                }).then((result) => {
+                                  if(this.formaPago == "Otros medios Pago" || this.formaPago == "Abonos")
+                                    this.router.navigate(['/recibo-caja'], { queryParams: { id: this.factura.documento_n , tipo: 1 } });
+                                  else
+                                    window.location.reload();
+                                })
+                            },
+                      err => {  });
+                },
+          err => {
+                  
+                    logApiVeronica.objetoResponse = JSON.stringify(err);
+                    logApiVeronica.claveAcceso = null;
+                    logApiVeronica.resultado = "NOK"
+                    this._logApiVeronicaService.newLog(logApiVeronica).subscribe(
+                      res =>{
+                                this.mostrarLoading = false;
+                                Swal.fire({
+                                  title: 'Error',
+                                  text: 'Error al establecer coneccion con el SRI',
+                                  icon: 'error',
+                                  confirmButtonText: 'Ok'
+                                }).then((result) => {
+                                  if(this.formaPago == "Otros medios Pago" || this.formaPago == "Abonos")
+                                    this.router.navigate(['/recibo-caja'], { queryParams: { id: this.factura.documento_n , tipo: 1 } });
+                                  else
+                                    window.location.reload();
+                                })
+                            },
+                      err => {  });
+                  });  */
     }
     guardarNotaVenta() {
         this.factura.username = this.username;
@@ -96924,6 +96965,7 @@ class ProductoService {
         return this.http.post(this.URL + `/updateProductosSucursalesNuevo`, productoActualizable);
     }
     updateProductoEstado(producto, estado) {
+        console.log("producto: " + producto, "estado: " + estado);
         return this.http.put(this.URL + `/updateEstado/${producto}/${estado}`, producto);
     }
     updateEstadoPorId(productoId, estado) {
@@ -99800,8 +99842,8 @@ const environment = {
         measurementId: "G-338L2LR9XQ"
     },
     services: {
-        //urlServices : "http://143.198.60.33:3000"   //NUEVO SERVIDOR PRUEBAS
-        urlServices: "http://104.131.82.174:3000" //SERVIDOR PRODUCCIÓN
+        urlServices: "http://143.198.60.33:3000" //NUEVO SERVIDOR PRUEBAS
+        //urlServices : "http://104.131.82.174:3000"   //SERVIDOR PRODUCCIÓN
         //urlServices : "http://localhost:3000"   //LOCAL
     }
 };
