@@ -64,6 +64,9 @@
                                     <div class="col-md-4">Fecha:</div>
                                     <div class="col-md-8 dateB"><dx-date-box [(value)]="comprobantePago.fecha" type="date"></dx-date-box></div>
 
+                                    <div class="col-md-4">Fecha Contable:</div>
+                                    <div class="col-md-8 dateB"><dx-date-box [(value)]="comprobantePago.fechaContable" type="date"></dx-date-box></div>
+
                                     <div class="col-md-4" *ngIf="isNormal">Documento:</div>
                                     <div class="col-md-8" *ngIf="isNormal"><dx-text-box [(value)]="comprobantePago.documento" [readOnly]="isReadOnly"></dx-text-box></div>
                                     

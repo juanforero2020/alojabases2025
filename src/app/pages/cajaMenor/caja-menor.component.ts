@@ -12,6 +12,8 @@ import { CajaMenor, DetalleCajaMenor, FormatoImpresion } from './caja-menor';
 import pdfMake from "pdfmake/build/pdfmake";
 import { DatosConfiguracionService } from 'src/app/servicios/datosConfiguracion.service';
 import 'jspdf-autotable';
+import { CuentaPorCobrar } from '../cuentasPorCobrar/cuentasPorCobrar';
+import { CuentasPorCobrarService } from 'src/app/servicios/cuentasPorCobrar.service';
 
 @Component({
   selector: 'app-caja-menor',
@@ -63,11 +65,15 @@ export class CajaMenorComponent implements OnInit {
     "sucursal1",
     "sucursal2"
   ];
+
+  listaCuentas: CuentaPorCobrar [] = []
+  listaCuentasActivas: CuentaPorCobrar [] = []
   
   constructor(
     public _transaccionesFinancierasService : TransaccionesFinancierasService,
     public _authenService: AuthenService,
     public _cajaMenorService : CajaMenorService,
+    public _cuentasporCobrarService : CuentasPorCobrarService,
     public _contadoresService : ContadoresDocumentosService,
     public _configurationService : DatosConfiguracionService
     ) {
@@ -81,7 +87,19 @@ export class CajaMenorComponent implements OnInit {
     this.traerContadoresDocumentos();
     this.traerDatosConfiguracion();
     this.validarEstadoCaja();
+    this.traerListaCuentasPorPagar();
     this.formImpresion = new FormatoImpresion();
+  }
+
+  traerListaCuentasPorPagar(){
+    this.listaCuentas = [];
+    this.listaCuentasActivas = [];
+    
+    this.mostrarLoading = true;
+    this._cuentasporCobrarService.getCuentasPorCobrar().subscribe(res => {
+      this.listaCuentas = res as CuentaPorCobrar[];
+      this.listaCuentasActivas = this.listaCuentas.filter(x=> x.estado == "Activa")
+   })
   }
 
   validarEstadoCaja(){
@@ -710,6 +728,26 @@ export class CajaMenorComponent implements OnInit {
             ]
           }
         },
+        // Puedes dejar un espacio extra en PDFMake insertando un objeto tipo { text: '', margin: [0, espacioArriba, 0, espacioAbajo] }
+        // Por ejemplo, 50px es aproximadamente 1.75cm, y 5cm serían unos 142 puntos (1cm ≈ 28.35pt).
+        // Aquí te dejo un espacio de aprox. 5cm (unos 142 puntos) de alto:
+
+        { text: '', margin: [0, 40, 0, 40] }, // Suma ambos (142) o ajusta como prefieras
+
+
+        {
+          columns: [
+            {
+              width: 490,
+              text: "CUENTAS POR COBRAR",
+              bold: true,
+              fontSize: 15,
+              alignment: "center",
+            },
+          ],
+        },
+
+        this.getListadoCuentasporCobrar(),
 
       ],
       footer: function () {
@@ -830,8 +868,8 @@ export class CajaMenorComponent implements OnInit {
               { text: ed.SubCuenta, alignment: "center", fontSize: 7 },
               { text: ed.Sub1, alignment: "center", fontSize: 7 },
               { text: ed.Sub2, alignment: "center", fontSize: 7 },
-              { text: ed.TotalIngresos.toFixed(2), alignment: "center", fontSize: 7 },
-              { text: ed.TotalSalidas.toFixed(2), alignment: "center", fontSize: 7 },
+              { text: ed.TotalIngresos?.toFixed(2), alignment: "center", fontSize: 7 },
+              { text: ed.TotalSalidas?.toFixed(2), alignment: "center", fontSize: 7 },
               { text: ed.TotalRC.toFixed(2), alignment: "center", fontSize: 7 },
             ];
           }),
@@ -841,6 +879,48 @@ export class CajaMenorComponent implements OnInit {
       
     }; 
   }
+
+
+  getListadoCuentasporCobrar() {
+    // Armado de la tabla usando el array listaCuentasActivas
+    return {
+      table: {
+        widths: ["35%", "10%", "10%", "10%", "25%", "10%"],
+        alignment: "center",
+        fontSize: 7,
+        headerRows: 2,
+        body: [
+          [
+            { text: "Cliente", style: "tableHeader2", fontSize: 7,},
+            { text: "DocVenta", style: "tableHeader2", fontSize: 7,},
+            { text: "Valor Factura", style: "tableHeader2", fontSize: 7,},
+            { text: "Valor Deuda", style: "tableHeader2", fontSize: 7,},          
+            { text: "Notas", style: "tableHeader2", fontSize: 7,},
+            { text: "Fecha Deuda", style: "tableHeader2", fontSize: 7,},
+          ],
+
+          ...(this.listaCuentasActivas || []).map((cuenta: any) => {
+            return [
+              { text: cuenta.cliente || '', alignment: "center", fontSize: 7 },
+              { text: cuenta.documentoVenta || '', alignment: "center", fontSize: 7 },
+              { text: cuenta.valorFactura || '', alignment: "center", fontSize: 7 },
+              { text: cuenta.valor || '', alignment: "center", fontSize: 7 },
+              { text: cuenta.notas || '', alignment: "center", fontSize: 7 },
+              { 
+                text: cuenta.fecha_deuda 
+                  ? new Date(cuenta.fecha_deuda).toISOString().slice(0, 10)
+                  : '', 
+                alignment: "center", 
+                fontSize: 7 
+              },
+            ];
+          }),
+        ],
+      },
+     layout: 'lightHorizontalLines'
+     
+   }; 
+ }
 
 
 

@@ -1,6 +1,7 @@
 export class TransaccionesFinancieras{
     _id: string
     fecha: Date
+    fechaContable: Date
     sucursal: string
     cliente: string
     rCajaId: string
@@ -27,5 +28,6 @@ export class TransaccionesFinancieras{
     numFactura : string
     constructor(){
         this.isContabilizada = true;
+        this.fechaContable = new Date();
     }
 }

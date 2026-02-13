@@ -4,6 +4,7 @@ const { Schema } = mongoose;
 const TransaccionesFinancierasSchema = new Schema({
     id: { type: Number, required: false},
     fecha: { type: Date, required: false},
+    fechaContable: { type: Date, required: false},
     sucursal: { type: String, required: false},
     cliente: { type: String, required: false},
     rCajaId: { type: String, required: false},

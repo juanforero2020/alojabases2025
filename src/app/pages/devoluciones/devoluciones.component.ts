@@ -968,6 +968,7 @@ export class DevolucionesComponent implements OnInit {
         this.transaccion.usuario = this.devolucioLeida.usuario;
         this.transaccion.factPro = this.devolucioLeida.num_documento + "";
         this.transaccion.idTransaccion = this.number_transaccion++;
+        this.transaccion.cliente = this.devolucioLeida?.cliente;
         this.transaccionesService.newTransaccion(this.transaccion).subscribe(
           (res) => { contVal++, this.contadorValidaciones(contVal);},
           (err) => {}
@@ -983,21 +984,22 @@ export class DevolucionesComponent implements OnInit {
       nombreSubCuenta = "1.4.0 Factura"
     else if(this.devolucioLeida.tipo_documento == "Nota de Venta")
       nombreSubCuenta = "1.4.1 Nota_Venta"
+
     var transaccion = new TransaccionesFinancieras();
-    transaccion.fecha = this.devolucioLeida.fecha;
-    transaccion.sucursal = this.devolucioLeida.sucursal.nombre;
-    transaccion.cliente = this.devolucioLeida.cliente;
-    transaccion.rCajaId = "DV"+this.devolucioLeida.id_devolucion;
+    transaccion.fecha = this.devolucioLeida?.fecha;
+    transaccion.sucursal = this.devolucioLeida?.sucursal?.nombre;
+    transaccion.cliente = this.devolucioLeida?.cliente;
+    transaccion.rCajaId = "DV"+this.devolucioLeida?.id_devolucion;
     transaccion.tipoTransaccion = "devolucion";
-    transaccion.id_documento = this.devolucioLeida.id_devolucion;
-    transaccion.documentoVenta = this.devolucioLeida.num_documento.toString();
-    transaccion.cedula = this.devolucioLeida.ruc;
-    transaccion.numDocumento = this.devolucioLeida.num_documento.toString();
+    transaccion.id_documento = this.devolucioLeida?.id_devolucion;
+    transaccion.documentoVenta = this.devolucioLeida?.num_documento.toString();
+    transaccion.cedula = this.devolucioLeida?.ruc;
+    transaccion.numDocumento = this.devolucioLeida?.num_documento.toString();
     transaccion.valor = producto.total;
     transaccion.isContabilizada = true;
     transaccion.cuenta = "1.4 DEVOLUCIONES";
     transaccion.subCuenta = nombreSubCuenta;
-    transaccion.notas = this.devolucioLeida.observaciones;
+    transaccion.notas = this.devolucioLeida?.observaciones;
     transaccion.tipoCuenta = "Salidas";
 
     try {
@@ -1553,6 +1555,8 @@ export class DevolucionesComponent implements OnInit {
     var contIng: number = 0;
     var entre: boolean = true;
     new Promise<any>((resolve, reject) => {
+      console.log("mosyrabdo los productos devueltos")
+      console.log(this.productosDevueltosCarga)
       this.productosDevueltosCarga.forEach((element) => {
         this.productos.forEach((elemento1) => {
           if (elemento1.PRODUCTO == element.producto.PRODUCTO) {

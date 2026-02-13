@@ -3,6 +3,7 @@ import { OperacionComercial } from "../reciboCaja/recibo-caja"
 export class ComprobantePago{
     idDocumento: number
     fecha: Date
+    fechaContable: Date
     documento: string
     centroCosto: string
     usuario: string
@@ -24,6 +25,7 @@ export class ComprobantePago{
         this.telefono = "";
         this.observaciones = "";
         this.fecha = new Date();
+        this.fechaContable = new Date();
         this.estadoComprobante = "Activo";
     }
 }

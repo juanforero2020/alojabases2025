@@ -58,6 +58,7 @@ export class TransaccionesFinancierasComponent implements OnInit {
     e.component.columnOption("proveedor", "visible", true);
     e.component.columnOption("centroCosto", "visible", true);
     e.component.columnOption("ordenCompra", "visible", true);
+    e.component.columnOption("fechaContable", "visible", true);
    
   };
   
@@ -67,6 +68,7 @@ export class TransaccionesFinancierasComponent implements OnInit {
     e.component.columnOption("proveedor", "visible", false);
     e.component.columnOption("centroCosto", "visible", false);
     e.component.columnOption("ordenCompra", "visible", false);
+    e.component.columnOption("fechaContable", "visible", false);
     e.component.endUpdate();
   }
 
