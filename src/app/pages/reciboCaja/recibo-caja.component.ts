@@ -1467,9 +1467,9 @@ export class ReciboCajaComponent implements OnInit {
         confirmButtonText: 'Ok'
       }).then((result) => {
         
-        window.location.replace('http://159.223.107.115:3000/#/recibo-caja');
-        //window.location.replace('http://localhost:4200/#/recibo-caja');
-        window.location.reload()//this._router.navigate(['/recibo-caja']);
+        // Redirige a la ruta limpia, eliminando query params y fragmentos, y recargando la página
+        window.location.href = window.location.origin + window.location.pathname + '#/recibo-caja';
+        window.location.reload();
       })
   }
 

@@ -131,7 +131,7 @@ router.put("/updateContabilizada/:id/:estado", async (req, res, next) => {
 router.post("/newTransaccion", async (req, res) => {
   const newTransaccion = new TransaccionFinanciera({
     fecha: req.body.fecha,
-    fechaContable: req.body.fecha,
+    fechaContable: req.body.fechaContable,
     sucursal: req.body.sucursal,
     cliente: req.body.cliente,
     rCajaId: req.body.rCajaId,

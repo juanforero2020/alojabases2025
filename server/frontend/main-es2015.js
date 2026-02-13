@@ -21151,7 +21151,11 @@ class CajaMenorComponent {
         this.listaCuentasActivas = [];
         this.mostrarLoading = true;
         this._cuentasporCobrarService.getCuentasPorCobrar().subscribe(res => {
-            this.listaCuentas = res;
+            this.listaCuentas = res.sort((a, b) => {
+                const dateA = a.fecha_deuda ? new Date(a.fecha_deuda).getTime() : 0;
+                const dateB = b.fecha_deuda ? new Date(b.fecha_deuda).getTime() : 0;
+                return dateA - dateB;
+            });
             this.listaCuentasActivas = this.listaCuentas.filter(x => x.estado == "Activa");
         });
     }
@@ -35133,18 +35137,20 @@ function ComprobantePagoComponent_div_8_div_2_Template(rf, ctx) { if (rf & 1) {
     _angular_core__WEBPACK_IMPORTED_MODULE_1__["ɵɵelement"](3, "br");
     _angular_core__WEBPACK_IMPORTED_MODULE_1__["ɵɵelement"](4, "dx-load-indicator", 96);
     _angular_core__WEBPACK_IMPORTED_MODULE_1__["ɵɵelementStart"](5, "h4");
-    _angular_core__WEBPACK_IMPORTED_MODULE_1__["ɵɵtext"](6);
+    _angular_core__WEBPACK_IMPORTED_MODULE_1__["ɵɵelementStart"](6, "b");
+    _angular_core__WEBPACK_IMPORTED_MODULE_1__["ɵɵtext"](7);
+    _angular_core__WEBPACK_IMPORTED_MODULE_1__["ɵɵelementEnd"]();
     _angular_core__WEBPACK_IMPORTED_MODULE_1__["ɵɵelementEnd"]();
     _angular_core__WEBPACK_IMPORTED_MODULE_1__["ɵɵelementEnd"]();
 } if (rf & 2) {
     const ctx_r134 = _angular_core__WEBPACK_IMPORTED_MODULE_1__["ɵɵnextContext"](2);
-    _angular_core__WEBPACK_IMPORTED_MODULE_1__["ɵɵadvance"](6);
+    _angular_core__WEBPACK_IMPORTED_MODULE_1__["ɵɵadvance"](7);
     _angular_core__WEBPACK_IMPORTED_MODULE_1__["ɵɵtextInterpolate"](ctx_r134.textLoading);
 } }
 function ComprobantePagoComponent_div_8_Template(rf, ctx) { if (rf & 1) {
     _angular_core__WEBPACK_IMPORTED_MODULE_1__["ɵɵelementStart"](0, "div");
     _angular_core__WEBPACK_IMPORTED_MODULE_1__["ɵɵelementStart"](1, "dx-popup", 93);
-    _angular_core__WEBPACK_IMPORTED_MODULE_1__["ɵɵtemplate"](2, ComprobantePagoComponent_div_8_div_2_Template, 7, 1, "div", 94);
+    _angular_core__WEBPACK_IMPORTED_MODULE_1__["ɵɵtemplate"](2, ComprobantePagoComponent_div_8_div_2_Template, 8, 1, "div", 94);
     _angular_core__WEBPACK_IMPORTED_MODULE_1__["ɵɵelementEnd"]();
     _angular_core__WEBPACK_IMPORTED_MODULE_1__["ɵɵelementEnd"]();
 } if (rf & 2) {
@@ -64515,9 +64521,9 @@ class ReciboCajaComponent {
             icon: 'success',
             confirmButtonText: 'Ok'
         }).then((result) => {
-            window.location.replace('http://159.223.107.115:3000/#/recibo-caja');
-            //window.location.replace('http://localhost:4200/#/recibo-caja');
-            window.location.reload(); //this._router.navigate(['/recibo-caja']);
+            // Redirige a la ruta limpia, eliminando query params y fragmentos, y recargando la página
+            window.location.href = window.location.origin + window.location.pathname + '#/recibo-caja';
+            window.location.reload();
         });
     }
     terminarDescarga() {

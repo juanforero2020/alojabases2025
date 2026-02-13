@@ -97,8 +97,12 @@ export class CajaMenorComponent implements OnInit {
     
     this.mostrarLoading = true;
     this._cuentasporCobrarService.getCuentasPorCobrar().subscribe(res => {
-      this.listaCuentas = res as CuentaPorCobrar[];
-      this.listaCuentasActivas = this.listaCuentas.filter(x=> x.estado == "Activa")
+      this.listaCuentas = (res as CuentaPorCobrar[]).sort((a, b) => {
+        const dateA = a.fecha_deuda ? new Date(a.fecha_deuda).getTime() : 0;
+        const dateB = b.fecha_deuda ? new Date(b.fecha_deuda).getTime() : 0;
+        return dateA - dateB;
+      });
+      this.listaCuentasActivas = this.listaCuentas.filter(x => x.estado == "Activa");
    })
   }
 
