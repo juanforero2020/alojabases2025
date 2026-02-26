@@ -104,8 +104,8 @@
         <dxi-column dataField="estado" caption="Estado" dataType="string" [visible]=true></dxi-column>
         <dxi-column dataField="caja" caption="Caja" dataType="number" [visible]=false></dxi-column>
         <dxi-column dataField="username" caption="Vendedor" dataType="string" [visible]=false></dxi-column>
-        <dxi-column  dataField="username" caption="Usuario" dataType="string" [visible]=false></dxi-column>
-        <dxi-column  dataField="maestro" caption="Maestro" dataType="string" [visible]=false></dxi-column>
+        <dxi-column dataField="username" caption="Usuario" dataType="string" [visible]=false></dxi-column>
+        <dxi-column dataField="maestro" caption="Maestro" dataType="string" [visible]=false></dxi-column>
         <dxi-column dataField="observaciones" caption="Observaciones"  dataType="string" [visible]=false></dxi-column>
         <dxi-column dataField="nota" caption="Notas" dataType="string" [visible]=false></dxi-column>
         <dxi-column
@@ -124,6 +124,10 @@
                 <button *ngSwitchCase="'ERROR'" class="btn-sect btn btn-warning btn-sm"
                         (click)="reprocesarFacturaVeronica({row: {data: data.data}})">
                     <i class="fa fa-solid fa-rotate-right"></i> </button>
+
+                <button *ngSwitchCase="'ERROR'" class="btn-sect-success btn btn-warning btn-sm"
+                    (click)="reprocesarFacturaDirecta({row: {data: data.data}})">
+                    <i class="fa fa-solid fa-check"></i> </button>
 
                 <button *ngSwitchCase="'ENVIADA'" class="btn-sect-success btn btn-success btn-sm">
                     <i class="fa fa-solid fa-check-circle"></i> </button>

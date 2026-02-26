@@ -36,5 +36,15 @@ router.post("/getLogsVeronicaPorFactura/:documento", async (req, res, next) => {
     res.json(logs);
   });
 
+router.put("/updateEstadoLog/:id/:estado", async (req, res, next) => {
+  const { id } = req.params;
+  const { estado } = req.params;
+  await ServicioWebVeronica.findByIdAndUpdate(
+    id,
+    { $set: { resultado: estado } },
+    { new: true }
+  );
+  res.json({ status: "servicioWeb Updated" });
+});
 
 module.exports = router;

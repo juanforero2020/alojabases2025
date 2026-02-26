@@ -15,6 +15,7 @@ export class user{
     imageProfile:string
     codigo : string
     codigoFacturacion : string
+    codigoAutorizacion : string
     constructor(){
        
     }

@@ -11,7 +11,8 @@ const UserSchema = new mongoose.Schema({
     status:{ type: String, required: false},
     imageProfile: { type: String, required: false},
     codigo: { type: String, required: false},
-    codigoFacturacion: { type: String, required: false}
+    codigoFacturacion: { type: String, required: false},
+    codigoAutorizacion: { type: String, required: false}
 },{
     timestamps:true
 });

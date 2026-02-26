@@ -16,6 +16,7 @@ import { ApiVeronicaService } from 'src/app/servicios/api_veronica.service';
 import { ServicioWebVeronicaService } from 'src/app/servicios/servicioWebVeronica.service';
 import { CampoAdicionalModel, ComprobanteDetalle, ConsecutivoDto, FacturaModel, ImpuestoModel, PagosModel, ReceptorModel, ResponseVeronicaDto, ServicioWebVeronica, ServicioWebVeronicaLectura, VeronicaHttpErrorResponse } from '../api-veronica/api-veronica';
 import { catchError, tap } from 'rxjs/operators';
+import { UserService } from 'src/app/servicios/user.service';
 
 @Component({
   selector: 'app-registros-ventas',
@@ -48,6 +49,7 @@ export class RegistrosVentasComponent implements OnInit {
   isPopupVisible = false;
   dataLog: ServicioWebVeronicaLectura
   msgDefault = "Factura NO Enviada"
+  usuarios: user[] = []
 
   menu2: string[] = [
     "Facturas",
@@ -79,6 +81,7 @@ export class RegistrosVentasComponent implements OnInit {
     public _configuracionService : DatosConfiguracionService,
     public _logApiVeronicaService : ServicioWebVeronicaService,
     public _apiVeronicaService : ApiVeronicaService,
+    public _userService : UserService,
     public proformasService:ProformasService) { 
     this.factura = new factura()
     this.obj = new objDate()
@@ -91,6 +94,13 @@ export class RegistrosVentasComponent implements OnInit {
     this.traerParametrizaciones()
     this.traerDatosConfiguracion()
     this.traerIva()
+    this.traerUsuarios()
+  }
+
+  traerUsuarios(){
+    this._userService.getUsers().subscribe(res => {
+      this.usuarios= res as user[];
+    },err => {})
   }
 
   traerIva(){
@@ -232,11 +242,9 @@ export class RegistrosVentasComponent implements OnInit {
   }
 
   obtenerLogsVeronica(){
-    console.log("buscando logs")
     this._logApiVeronicaService.getLogsVeronica(this.obj).subscribe(res => {
       this.logsVeronica = res as ServicioWebVeronica[];
       this.actualizarEstadoFacturaVeronica();
-      console.log(this.logsVeronica)
     }) 
   }
   
@@ -268,8 +276,6 @@ export class RegistrosVentasComponent implements OnInit {
           Object.assign(responseObj, parsedResponse);
 
           factura.logVeronica.dataResponse = responseObj;
-          console.log("aiuhasihdias")
-          console.log(responseObj)
         } catch (e) {
           // Si hay un error al hacer el parseo, asignamos null o un objeto por defecto
           factura.logVeronica.dataResponse = new VeronicaHttpErrorResponse();
@@ -418,7 +424,6 @@ export class RegistrosVentasComponent implements OnInit {
   }
 
   reprocesarFacturaVeronica = (e) => {  
-
     Swal.fire({
       title: 'Alerta',
       text: 'Esta seguro de volver a procesar la factura?',
@@ -428,9 +433,7 @@ export class RegistrosVentasComponent implements OnInit {
       cancelButtonText : 'NO'
     }).then((result) => {
       if (result.value) {
-        console.log("entrabndo aqui")
         var dataFactura = e.row.data as factura;
-        console.log(dataFactura)
         this.validarReprocesamiento(dataFactura)
         
       } else if (result.dismiss === Swal.DismissReason.cancel) {
@@ -442,6 +445,69 @@ export class RegistrosVentasComponent implements OnInit {
       }
     })
     
+  }
+
+  reprocesarFacturaDirecta = (e) => {  
+    Swal.fire({
+      title: 'Alerta',
+      text: 'Estimado usuario recuerde que este proceso deja marcada la factura como enviada, desea continuar?',
+      icon: 'warning',
+      showCancelButton: true,
+      confirmButtonText: 'SI',
+      cancelButtonText : 'NO'
+    }).then((result) => {
+      if (result.value) {
+        Swal.fire({
+          title: 'Ingrese código autorización',
+          allowOutsideClick: false,
+          showCancelButton: false,
+          allowEscapeKey : false,
+          input: 'text',
+          inputAttributes: {
+            autocapitalize: 'off',
+            autocomplete: 'off', // <-- importante para que no autocompleten
+            autocorrect: 'off',
+            spellcheck: 'false'
+          },
+          confirmButtonText: 'Ingresar',
+        }).then((result) => {
+          var usuarioLogueado = sessionStorage.getItem("user");
+          var dataUsuarioLogueado = this.usuarios.find(el => el.username == usuarioLogueado);
+          var usuarioClave = this.usuarios.find(el => el.codigoAutorizacion == result.value);
+          if(dataUsuarioLogueado.codigoAutorizacion == result.value){
+            var dataFactura = e.row.data as factura;
+            this.cambiarEstadoLogValidacion(dataFactura)
+          }else{
+            Swal.fire({
+              title: 'Error',
+              text: 'El código ingresado no corresponde a ningun usuario',
+              icon: 'error',
+              confirmButtonText: 'Ok'
+            })
+          }
+        })
+      } else if (result.dismiss === Swal.DismissReason.cancel) {
+        Swal.fire(
+          'Cancelado!',
+          'Se ha cancelado su proceso.',
+          'error'
+        )
+      }
+    })
+
+    
+  }
+
+  cambiarEstadoLogValidacion(dataFactura: factura){
+    var dataLog = this.logsVeronica.find(log => log.nroDocumento === dataFactura.documento_n.toString());
+    this._logApiVeronicaService.updateEstadoLog(dataLog, "OK").subscribe(res => {
+      Swal.fire(
+        'Correcto!',
+        'Se ha realizado su actualización con éxito.',
+        'success'
+      )
+      this.obtenerLogsVeronica();
+    }) 
   }
 
   validarReprocesamiento(dataFactura: factura){
@@ -459,12 +525,10 @@ export class RegistrosVentasComponent implements OnInit {
         this.continuarProcesoFactura(dataFactura);
       }
       //this.continuarProcesoFactura(dataFactura)
-      console.log(this.logsVeronica)
     }) 
   }
 
   continuarProcesoFactura(dataFactura: factura){
-    console.log("llegando")
     this.facturaVeronica = new FacturaModel();
     this.facturaVeronica.pagos = [];
     this.facturaVeronica.detalles = [];
@@ -477,7 +541,6 @@ export class RegistrosVentasComponent implements OnInit {
     this.mostrarLoading = true;
 
     this._apiVeronicaService.obtenerSecuencia(dataFactura.rucFactura).subscribe(res => {
-        console.log("Respuesta de obtenerSecuencia Veronica:", res);
         var consecutivoVeronica = res as ConsecutivoDto;
         this.secuencialFactura = consecutivoVeronica.result[0].establecimiento.puntosEmision[0].secuencialFactura;
 
@@ -537,9 +600,7 @@ export class RegistrosVentasComponent implements OnInit {
         campoAdicional2.nombre = "Documento Interno"
         campoAdicional2.value = dataFactura.documento_n.toString() //cambiar*********
         this.facturaVeronica.campoAdicional.push(campoAdicional2)
-        console.log("imprimiendonn "+ dataFactura.cliente?.celular)
         if (dataFactura.cliente?.celular != undefined) {
-          console.log("entrando a cliente")
           var campoAdicional3 = new CampoAdicionalModel();
           campoAdicional3.nombre = "Teléfono Cliente";
           campoAdicional3.value = dataFactura?.cliente?.celular?.toString(); //cambiar*********
@@ -547,7 +608,6 @@ export class RegistrosVentasComponent implements OnInit {
         }
         if (dataFactura?.observaciones != undefined ) {
           if (dataFactura?.observaciones != " " ) {
-            console.log("entrando en observaciones")
             this.facturaVeronica.campoAdicional.push(campoAdicional3)
             var campoAdicional4 = new CampoAdicionalModel();
             campoAdicional4.nombre = "Nota" 
@@ -566,7 +626,7 @@ export class RegistrosVentasComponent implements OnInit {
         console.log(logApiVeronica)
                    
         //TO-DO, DESCOMENTAR LUEGO DE PRUEBAS
-        this._apiVeronicaService.newFactura(this.facturaVeronica).subscribe(
+        /* this._apiVeronicaService.newFactura(this.facturaVeronica).subscribe(
           res => {  var resultado = res as ResponseVeronicaDto;
                     logApiVeronica.objetoResponse = JSON.stringify(res)
                     logApiVeronica.claveAcceso = resultado.result.claveAccesoConsultada
@@ -597,7 +657,7 @@ export class RegistrosVentasComponent implements OnInit {
                                 })
                             },
                       err => {  });              
-                  }); 
+                  });  */
 
       },
       err => { 
