@@ -32,3 +32,70 @@
     }
   }
 }
+
+/* Productos bajo stock mínimo */
+.stock-minimo-card {
+  .subtext {
+    margin-top: -0.5rem;
+    color: #666;
+    font-size: 0.9rem;
+  }
+
+  .loading-wrap,
+  .error-wrap,
+  .empty-wrap {
+    display: flex;
+    align-items: center;
+    gap: 0.75rem;
+    padding: 1rem;
+    flex-wrap: wrap;
+  }
+
+  .error-wrap {
+    color: #c00;
+  }
+
+  .empty-wrap {
+    color: #666;
+  }
+
+  .accordion-title {
+    font-weight: 600;
+  }
+
+  .accordion-badge {
+    margin-left: 0.5rem;
+    padding: 0.15rem 0.5rem;
+    border-radius: 12px;
+    background: #ff5722;
+    color: #fff;
+    font-size: 0.8rem;
+  }
+
+  .producto-item {
+    padding: 0.5rem 0;
+    border-bottom: 1px solid #eee;
+
+    &:last-child {
+      border-bottom: none;
+    }
+  }
+
+  .producto-nombre {
+    font-weight: 500;
+    margin-bottom: 0.25rem;
+  }
+
+  .producto-detalle {
+    display: flex;
+    gap: 1rem;
+    flex-wrap: wrap;
+    font-size: 0.85rem;
+    color: #555;
+
+    .falta {
+      color: #ff5722;
+      font-weight: 500;
+    }
+  }
+}

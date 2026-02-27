@@ -1,11 +1,20 @@
 import { NgModule } from "@angular/core";
+import { CommonModule } from "@angular/common";
 import { Routes, RouterModule } from "@angular/router";
 import { LoginFormComponent } from "./shared/components";
 import { AuthGuardService } from "./shared/services";
 import { HomeComponent } from "./pages/home/home.component";
 import { ProfileComponent } from "./pages/profile/profile.component";
 import { DisplayDataComponent } from "./pages/display-data/display-data.component";
-import { DxDataGridModule, DxFormModule } from "devextreme-angular";
+import {
+  DxDataGridModule,
+  DxFormModule,
+  DxAccordionModule,
+  DxListModule,
+  DxLoadIndicatorModule,
+  DxButtonModule,
+  DxTemplateModule,
+} from "devextreme-angular";
 import { VentasComponent } from "./pages/ventas/ventas.component";
 import { TransaccionesComponent } from "./pages/transacciones/transacciones.component";
 import { OrdenCompraComponent } from "./pages/orden-compra/orden-compra.component";
@@ -366,7 +375,17 @@ const routes: Routes = [
 ];
 
 @NgModule({
-  imports: [RouterModule.forRoot(routes), DxDataGridModule, DxFormModule],
+  imports: [
+    RouterModule.forRoot(routes),
+    CommonModule,
+    DxDataGridModule,
+    DxFormModule,
+    DxAccordionModule,
+    DxListModule,
+    DxLoadIndicatorModule,
+    DxButtonModule,
+    DxTemplateModule,
+  ],
   providers: [AuthGuardService],
   exports: [RouterModule],
   declarations: [HomeComponent, ProfileComponent, DisplayDataComponent],

@@ -14,7 +14,7 @@ import dxAutocomplete from 'devextreme/ui/autocomplete';
 import { dxFormGroupItem } from 'devextreme/ui/form';
 import { inventario, productoTransaccion } from '../consolidado/consolidado';
 import { parametrizacionsuc } from '../parametrizacion/parametrizacion';
-import { catalogo, comboProducto, ProductoCombo, productosCombo } from '../catalogo/catalogo';
+import { catalogo, ProductoCombo, productosCombo } from '../catalogo/catalogo';
 import { ProductoService } from '../../servicios/producto.service';
 import { SucursalesService } from 'src/app/servicios/sucursales.service';
 import { CatalogoService } from 'src/app/servicios/catalogo.service';
@@ -52,7 +52,6 @@ import { CampoAdicionalModel, ComprobanteDetalle, ConsecutivoDto, FacturaModel, 
 import { ServicioWebVeronicaService } from 'src/app/servicios/servicioWebVeronica.service';
 import { ControlMercaderiaService } from 'src/app/servicios/control-mercaderia.service';
 import { controlUnidades } from '../control-unidades/control-unidades';
-import { element } from 'protractor';
 import { throwError } from 'rxjs';
 pdfMake.vfs = pdfFonts.pdfMake.vfs;
 
@@ -298,7 +297,7 @@ export class VentasComponent implements OnInit {
     this.traerSucursales()
     this.traerContadoresDocumentos()
     this.traerClientes()
-    this.traerFacturas()
+    //this.traerFacturas()
     this.traerParametrizaciones()
     this.traerProductosCatalogo()
     this.traerPrecios()
@@ -4095,27 +4094,39 @@ cambiarestado(e,i:number){
      
   }
 
-  obtenerIdRecibo(){
-    var idRecibo = 0;
-    var IdNum = new Promise<any>((resolve, reject) => {
-      try {
-        this._reciboCajaService.getReciboCajaPorIdConsecutivo(this.newRecibo).subscribe(
-          res => {
-            this.recibosEncontrados = res as ReciboCaja[];
-            if(this.recibosEncontrados.length == 0){
-              idRecibo = this.newRecibo.idDocumento;
-              resolve("listo");
-            }else{
-              this.newRecibo.idDocumento = this.newRecibo.idDocumento+1
-              this.obtenerIdRecibo();
-            }
-          },(err) => {});
-      } catch (error) {} 
-    })
+  /**
+   * Obtiene un ID único para el Recibo de Caja y garantiza que siempre se genere correctamente,
+   * encadenando la verificación hasta encontrar un ID no ocupado.
+   * Ahora usa async/await para mejor control de flujo asíncrono y evitar llamadas múltiples anidadas.
+   */
+  async obtenerIdRecibo() {
+    let idRecibo = this.newRecibo.idDocumento;
 
-    IdNum.then((data) => {
+    const getFreeReciboId = async (): Promise<number> => {
+      while (true) {
+        try {
+          const res: any = await this._reciboCajaService.getReciboCajaPorIdConsecutivo(this.newRecibo).toPromise();
+          this.recibosEncontrados = res as ReciboCaja[];
+          if (this.recibosEncontrados.length === 0) {
+            return this.newRecibo.idDocumento;
+          } else {
+            this.newRecibo.idDocumento = this.newRecibo.idDocumento + 1;
+            // continue loop with incremented id
+          }
+        } catch (error) {
+          // Si ocurre un error al consultar el servicio, volver a intentar
+          continue;
+        }
+      }
+    }
+
+    try {
+      idRecibo = await getFreeReciboId();
       this.generarReciboCaja(idRecibo);
-    })
+    } catch (e) {
+      // Si ocurre cualquier error inesperado, informar al usuario.
+      this.mostrarMensajeGenerico(2, "Error al obtener un ID de Recibo disponible.");
+    }
   }
 
 
