@@ -7,7 +7,7 @@ import {
   SingleCardModule,
 } from "./layouts";
 import { FooterModule, LoginFormModule } from "./shared/components";
-import { AuthService, ScreenService, AppInfoService } from "./shared/services";
+import { AuthService, ScreenService, AppInfoService, InactivityService } from "./shared/services";
 import { AppRoutingModule } from "./app-routing.module";
 import { VentasComponent } from "./pages/ventas/ventas.component";
 import { ComprasComponent } from "./pages/compras/compras.component";
@@ -227,6 +227,7 @@ import { IvaComponent } from './pages/iva/iva.component';
   exports: [CatalogoComponent],
   providers: [
     AuthService,
+    InactivityService,
     ScreenService,
     DecimalPipe,
     AppInfoService,

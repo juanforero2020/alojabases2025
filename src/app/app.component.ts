@@ -1,5 +1,5 @@
-import { Component, HostBinding } from '@angular/core';
-import { AuthService, ScreenService, AppInfoService } from './shared/services';
+import { Component, HostBinding, OnInit } from '@angular/core';
+import { AuthService, ScreenService, AppInfoService, InactivityService } from './shared/services';
 import { ConnectionService } from 'ng-connection-service';
 
 @Component({
@@ -7,12 +7,18 @@ import { ConnectionService } from 'ng-connection-service';
   templateUrl: './app.component.html',
   styleUrls: ['./app.component.scss']
 })
-export class AppComponent  {
+export class AppComponent implements OnInit {
   @HostBinding('class') get getClass() {
     return Object.keys(this.screen.sizes).filter(cl => this.screen.sizes[cl]).join(' ');
   }
 
-  constructor(private authService: AuthService, private screen: ScreenService, public appInfo: AppInfoService, private connectionService:ConnectionService) {
+  constructor(
+    private authService: AuthService,
+    private screen: ScreenService,
+    public appInfo: AppInfoService,
+    private connectionService: ConnectionService,
+    private inactivityService: InactivityService
+  ) {
     this.connectionService.monitor().subscribe(isConnected => {
       this.isConnected = isConnected;
       if(this.isConnected){
@@ -22,7 +28,13 @@ export class AppComponent  {
       }
       alert(this.status);
       });
-   }
+  }
+
+  ngOnInit(): void {
+    if (this.authService.isLoggedIn) {
+      this.inactivityService.startWatching(() => this.authService.logOut(true));
+    }
+  }
 
   isAutorized() {
     return this.authService.isLoggedIn;

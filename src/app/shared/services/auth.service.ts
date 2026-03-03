@@ -3,6 +3,7 @@ import { CanActivate, Router, ActivatedRouteSnapshot } from '@angular/router';
 import { AngularFireAuth } from  "@angular/fire/auth";
 import { User } from  'firebase';
 import { AuthenService } from 'src/app/servicios/authen.service';
+import { InactivityService } from './inactivity.service';
 
 @Injectable()
 export class AuthService {
@@ -13,7 +14,12 @@ export class AuthService {
   }
 
 
-  constructor(private router: Router,public authenService: AuthenService, public  afAuth:  AngularFireAuth) {
+  constructor(
+    private router: Router,
+    public authenService: AuthenService,
+    public afAuth: AngularFireAuth,
+    private inactivityService: InactivityService
+  ) {
     if(localStorage.getItem("logged") == undefined){
       localStorage.setItem("logged", false.toString())
     }
@@ -40,6 +46,7 @@ export class AuthService {
             localStorage.setItem('token', res.token);
             this.loggedIn = true;
             localStorage.setItem("logged", this.loggedIn.toString())
+            this.inactivityService.startWatching(() => this.logOut(true));
             this.router.navigate(['/']);
           },
           error => {
@@ -61,13 +68,17 @@ export class AuthService {
     }catch(e){}
   }
 
-  async logOut() {
+  async logOut(porInactividad?: boolean) {
+    this.inactivityService.stopWatching();
     await this.afAuth.auth.signOut();
     localStorage.removeItem('user');
     localStorage.removeItem('token');
     localStorage.removeItem('rol');
     this.loggedIn = false;
-    localStorage.setItem("logged", this.loggedIn.toString())
+    localStorage.setItem("logged", this.loggedIn.toString());
+    if (porInactividad) {
+      alert('Su sesión ha sido cerrada por inactividad (30 minutos). Por favor, inicie sesión nuevamente.');
+    }
     this.router.navigate(['/login-form']);
   }
 

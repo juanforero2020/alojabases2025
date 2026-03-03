@@ -1,5 +1,5 @@
 import { Component, OnInit } from '@angular/core';
-import { factura, venta } from '../ventas/venta';
+import { factura, venta, contadoresDocumentos } from '../ventas/venta';
 import pdfMake from 'pdfmake/build/pdfmake';
 import { parametrizacionsuc } from '../parametrizacion/parametrizacion';
 import { ParametrizacionesService } from 'src/app/servicios/parametrizaciones.service';
@@ -17,6 +17,13 @@ import { ServicioWebVeronicaService } from 'src/app/servicios/servicioWebVeronic
 import { CampoAdicionalModel, ComprobanteDetalle, ConsecutivoDto, FacturaModel, ImpuestoModel, PagosModel, ReceptorModel, ResponseVeronicaDto, ServicioWebVeronica, ServicioWebVeronicaLectura, VeronicaHttpErrorResponse } from '../api-veronica/api-veronica';
 import { catchError, tap } from 'rxjs/operators';
 import { UserService } from 'src/app/servicios/user.service';
+import { ReciboCajaService } from 'src/app/servicios/reciboCaja.service';
+import { ContadoresDocumentosService } from 'src/app/servicios/contadores-documentos.service';
+import { TransaccionesFinancierasService } from 'src/app/servicios/transaccionesFinancieras.service';
+import { CuentasPorCobrarService } from 'src/app/servicios/cuentasPorCobrar.service';
+import { OperacionComercial, ReciboCaja } from '../reciboCaja/recibo-caja';
+import { TransaccionesFinancieras } from '../transaccionesFinancieras/transaccionesFinancieras';
+import { CuentaPorCobrar } from '../cuentasPorCobrar/cuentasPorCobrar';
 
 @Component({
   selector: 'app-registros-ventas',
@@ -73,6 +80,13 @@ export class RegistrosVentasComponent implements OnInit {
   ivaPorcentaje=0;
   secuencialFactura = "";
 
+  // Recibo de caja: match facturas/notas con recibos
+  listadoRecibosCaja: ReciboCaja[] = [];
+  contadores: contadoresDocumentos[] = [];
+  recibosEncontrados: ReciboCaja[] = [];
+  newRecibo = new ReciboCaja();
+  generandoReciboParaFactura = false;
+
   constructor(public parametrizacionService:ParametrizacionesService,
     public authService: AuthService, 
     public notasventaService:NotasVentasService, 
@@ -82,7 +96,11 @@ export class RegistrosVentasComponent implements OnInit {
     public _logApiVeronicaService : ServicioWebVeronicaService,
     public _apiVeronicaService : ApiVeronicaService,
     public _userService : UserService,
-    public proformasService:ProformasService) { 
+    public proformasService:ProformasService,
+    private _reciboCajaService: ReciboCajaService,
+    private contadoresService: ContadoresDocumentosService,
+    private _transaccionFinancieraService: TransaccionesFinancierasService,
+    private _cuentaPorCobrar: CuentasPorCobrarService) { 
     this.factura = new factura()
     this.obj = new objDate()
     this.facturaVeronica  = new FacturaModel();
@@ -95,6 +113,9 @@ export class RegistrosVentasComponent implements OnInit {
     this.traerDatosConfiguracion()
     this.traerIva()
     this.traerUsuarios()
+    this.contadoresService.getContadores().subscribe(res => {
+      this.contadores = res as contadoresDocumentos[];
+    }, err => {});
   }
 
   traerUsuarios(){
@@ -245,6 +266,7 @@ export class RegistrosVentasComponent implements OnInit {
     this._logApiVeronicaService.getLogsVeronica(this.obj).subscribe(res => {
       this.logsVeronica = res as ServicioWebVeronica[];
       this.actualizarEstadoFacturaVeronica();
+      this.traerRecibosCajaYMarcarFacturas();
     }) 
   }
   
@@ -381,6 +403,237 @@ export class RegistrosVentasComponent implements OnInit {
       this.notasVenta=this.notasVentaGlobales
     }
     this.mostrarLoading = false;
+    this.traerRecibosCajaYMarcarNotasVenta();
+  }
+
+  /**
+   * Carga recibos de caja del rango actual y marca cada factura con tieneReciboCaja.
+   */
+  traerRecibosCajaYMarcarFacturas() {
+    this._reciboCajaService.getReciboCajaPorRango(this.obj).subscribe(
+      (res: any) => {
+        this.listadoRecibosCaja = res as ReciboCaja[];
+        this.actualizarEstadoReciboCajaEnLista(this.facturas, 'Factura');
+      },
+      err => {}
+    );
+  }
+
+  /**
+   * Carga recibos de caja del rango actual y marca cada nota de venta con tieneReciboCaja.
+   */
+  traerRecibosCajaYMarcarNotasVenta() {
+    this._reciboCajaService.getReciboCajaPorRango(this.obj).subscribe(
+      (res: any) => {
+        this.listadoRecibosCaja = res as ReciboCaja[];
+        this.actualizarEstadoReciboCajaEnLista(this.notasVenta, 'Nota de Venta');
+      },
+      err => {}
+    );
+  }
+
+  /**
+   * Marca cada ítem de la lista con tieneReciboCaja según match por docVenta y numDocumento.
+   */
+  actualizarEstadoReciboCajaEnLista(lista: factura[], docVenta: string) {
+    if (!lista) return;
+    lista.forEach(f => {
+      const match = this.listadoRecibosCaja.some(
+        rc => rc.docVenta === docVenta && String(rc.numDocumento) === String(f.documento_n)
+      );
+      f['tieneReciboCaja'] = match;
+    });
+  }
+
+  /**
+   * Handler del botón "Generar recibo" en la grilla. Obtiene ID y genera recibo + transacciones.
+   */
+  generarReciboCajaParaFactura = (e) => {
+    const dataFactura = e.row.data as factura;
+    const tDocumento = this.mostrarSeccionFacturas ? 'Factura' : 'Nota de Venta';
+    if (dataFactura['tieneReciboCaja']) return;
+    if (this.generandoReciboParaFactura) return;
+    Swal.fire({
+      title: 'Generar recibo de caja',
+      text: `¿Generar recibo de caja y transacciones para ${tDocumento} #${dataFactura.documento_n}?`,
+      icon: 'question',
+      showCancelButton: true,
+      confirmButtonText: 'Sí',
+      cancelButtonText: 'No'
+    }).then((result) => {
+      if (result.value) {
+        this.obtenerIdReciboParaFactura(dataFactura, tDocumento);
+      }
+    });
+  };
+
+  /**
+   * Obtiene un ID libre para recibo y luego genera el recibo desde la factura/nota.
+   */
+  async obtenerIdReciboParaFactura(facturaSeleccionada: factura, tDocumento: string) {
+    if (!this.contadores || !this.contadores.length) {
+      Swal.fire('Error', 'No se pudo cargar contadores. Intente de nuevo.', 'error');
+      return;
+    }
+    this.generandoReciboParaFactura = true;
+    this.newRecibo = new ReciboCaja();
+    this.newRecibo.idDocumento = this.contadores[0].reciboCaja_Ndocumento + 1;
+
+    const getFreeReciboId = async (): Promise<number> => {
+      while (true) {
+        try {
+          const res: any = await this._reciboCajaService.getReciboCajaPorIdConsecutivo(this.newRecibo).toPromise();
+          this.recibosEncontrados = res as ReciboCaja[];
+          if (!this.recibosEncontrados || this.recibosEncontrados.length === 0) {
+            return this.newRecibo.idDocumento;
+          }
+          this.newRecibo.idDocumento = this.newRecibo.idDocumento + 1;
+        } catch (error) {
+          continue;
+        }
+      }
+    };
+
+    try {
+      const idRecibo = await getFreeReciboId();
+      this.generarReciboCajaDesdeRegistro(facturaSeleccionada, idRecibo, tDocumento);
+    } catch (e) {
+      Swal.fire('Error', 'No se pudo obtener un ID de recibo disponible.', 'error');
+    } finally {
+      this.generandoReciboParaFactura = false;
+    }
+  }
+
+  /**
+   * Genera el recibo de caja y las transacciones financieras a partir de una factura/nota (desde registro ventas).
+   */
+  generarReciboCajaDesdeRegistro(facturaItem: factura, idRecibo: number, tDocumento: string) {
+    const formaPago = 'Cancelado';
+    const recibo = new ReciboCaja();
+    recibo.idDocumento = idRecibo;
+    recibo.fecha = facturaItem.fecha;
+    recibo.docVenta = tDocumento;
+    recibo.cliente = facturaItem.cliente?.nombreContacto || facturaItem.cliente?.cliente_nombre || '';
+    recibo.ruc = facturaItem.cliente?.ruc || '';
+    recibo.sucursal = facturaItem.sucursal;
+    recibo.numDocumento = String(facturaItem.documento_n);
+    recibo.banco = '';
+    recibo.valorFactura = facturaItem.total;
+    recibo.valorRecargo = 0;
+    recibo.observaciones = 'Generado desde Registro de Ventas';
+    recibo.estadoRecibo = 'Activo';
+
+    if (formaPago === 'Cancelado') {
+      recibo.tipoPago = 'Contado';
+      recibo.valorPagoEfectivo = facturaItem.total;
+      recibo.valorSaldos = 0;
+    } else {
+      recibo.tipoPago = 'Pendiente de Pago';
+      recibo.valorPagoEfectivo = 0;
+      recibo.valorSaldos = facturaItem.total;
+    }
+
+    const listaOperaciones: OperacionComercial[] = [];
+    listaOperaciones.push(this.generarOperacionPrincipalDesdeRegistro(facturaItem, tDocumento));
+    /* if (formaPago === 'Pendiente de Pago') {
+      listaOperaciones.push(this.generarOperacionSaldoDesdeRegistro(facturaItem));
+    } */
+    recibo.operacionesComercialesList = listaOperaciones;
+
+    this._reciboCajaService.newReciboCaja(recibo).subscribe(
+      (res) => {
+        this.generarTransaccionesFinancierasDesdeRegistro(recibo, facturaItem);
+        this.generarCuentaPorCobrarDesdeRegistro(facturaItem, recibo.idDocumento, formaPago);
+        this.actualizarContadorRecibo(recibo);
+        facturaItem['tieneReciboCaja'] = true;
+        this.listadoRecibosCaja = [...this.listadoRecibosCaja, recibo];
+        Swal.fire('Éxito', 'Recibo de caja y transacciones generados correctamente.', 'success');
+      },
+      (err) => {
+        Swal.fire('Error', 'No se pudo guardar el recibo de caja.', 'error');
+      }
+    );
+  }
+
+  generarOperacionPrincipalDesdeRegistro(facturaItem: factura, tDocumento: string): OperacionComercial {
+    const operacionCC = new OperacionComercial();
+    operacionCC.valor = facturaItem.total;
+    operacionCC.tipoCuenta = 'Ingresos';
+    operacionCC.nombreCuenta = '1.3 INGRESOS';
+    operacionCC.idCuenta = '61bcef301a0afd3ac9084cce';
+    if (tDocumento === 'Factura') {
+      operacionCC.nombreSubcuenta = '1.3.0 Facturacion';
+      operacionCC.idSubCuenta = '61bcef4e1a0afd3ac9084ccf';
+    } else {
+      operacionCC.nombreSubcuenta = '1.3.1 Nota_Venta';
+      operacionCC.idSubCuenta = '61bcef301a0afd3ac9084cce';
+    }
+    return operacionCC;
+  }
+
+  generarOperacionSaldoDesdeRegistro(facturaItem: factura): OperacionComercial {
+    const operacionCC = new OperacionComercial();
+    operacionCC.valor = facturaItem.total;
+    operacionCC.tipoCuenta = 'Reales y Transitorias';
+    operacionCC.nombreCuenta = '2.0 SALDOS';
+    operacionCC.idCuenta = '6195b036f75a418e9c2eba06';
+    operacionCC.nombreSubcuenta = '2.0.0 Cuentas x Cobrar';
+    operacionCC.idSubCuenta = '61c50005270abc667ec3f8f7';
+    return operacionCC;
+  }
+
+  generarTransaccionesFinancierasDesdeRegistro(recibo: ReciboCaja, facturaItem: factura) {
+    (recibo.operacionesComercialesList || []).forEach(element => {
+      const transaccion = new TransaccionesFinancieras();
+      transaccion.fecha = facturaItem.fecha;
+      transaccion.sucursal = recibo.sucursal;
+      transaccion.cliente = recibo.cliente;
+      transaccion.isContabilizada = true;
+      transaccion.rCajaId = 'RC' + recibo.idDocumento.toString();
+      transaccion.tipoTransaccion = 'recibo-caja';
+      transaccion.id_documento = recibo.idDocumento;
+      transaccion.documentoVenta = recibo.docVenta;
+      transaccion.cedula = facturaItem.cliente?.ruc || '';
+      transaccion.numDocumento = recibo.numDocumento;
+      transaccion.valor = element.valor;
+      transaccion.tipoPago = '';
+      transaccion.soporte = '';
+      transaccion.dias = 0;
+      transaccion.cuenta = element.nombreCuenta;
+      transaccion.subCuenta = element.nombreSubcuenta;
+      transaccion.notas = recibo.observaciones;
+      transaccion.tipoCuenta = element.tipoCuenta;
+      try {
+        this._transaccionFinancieraService.newTransaccionFinanciera(transaccion).subscribe(() => {}, () => {});
+      } catch (error) {}
+    });
+  }
+
+  generarCuentaPorCobrarDesdeRegistro(facturaItem: factura, idRecibo: number, formaPago: string) {
+    if (formaPago !== 'Pendiente de Pago') return;
+    let cliente = facturaItem.cliente?.cliente_nombre || '';
+    if (cliente && cliente.slice(-1) === ' ') cliente = cliente.substring(0, cliente.length - 1);
+    const cuentaPorCobrar = new CuentaPorCobrar();
+    cuentaPorCobrar.fecha = new Date();
+    cuentaPorCobrar.sucursal = facturaItem.sucursal;
+    cuentaPorCobrar.cliente = cliente;
+    cuentaPorCobrar.rucCliente = facturaItem.cliente?.ruc || '';
+    cuentaPorCobrar.rCajaId = 'RC' + idRecibo;
+    cuentaPorCobrar.documentoVenta = String(facturaItem.documento_n);
+    cuentaPorCobrar.numDocumento = '';
+    cuentaPorCobrar.valor = facturaItem.total;
+    cuentaPorCobrar.valorFactura = facturaItem.total;
+    cuentaPorCobrar.tipo_doc = facturaItem.tipoDocumento || '';
+    cuentaPorCobrar.fecha_deuda = facturaItem.fecha;
+    cuentaPorCobrar.notas = 'Generado desde Registro de Ventas';
+    this._cuentaPorCobrar.newCuentaPorCobrar(cuentaPorCobrar).subscribe(() => {}, () => {});
+  }
+
+  actualizarContadorRecibo(recibo: ReciboCaja) {
+    if (this.contadores && this.contadores[0]) {
+      this.contadores[0].reciboCaja_Ndocumento = recibo.idDocumento;
+      this.contadoresService.updateContadoresIDRegistroCaja(this.contadores[0]).subscribe(() => {}, () => {});
+    }
   }
 
   separarRegistrosCotizaciones(){
@@ -626,7 +879,7 @@ export class RegistrosVentasComponent implements OnInit {
         console.log(logApiVeronica)
                    
         //TO-DO, DESCOMENTAR LUEGO DE PRUEBAS
-        this._apiVeronicaService.newFactura(this.facturaVeronica).subscribe(
+        /* this._apiVeronicaService.newFactura(this.facturaVeronica).subscribe(
           res => {  var resultado = res as ResponseVeronicaDto;
                     logApiVeronica.objetoResponse = JSON.stringify(res)
                     logApiVeronica.claveAcceso = resultado.result.claveAccesoConsultada
@@ -657,7 +910,7 @@ export class RegistrosVentasComponent implements OnInit {
                                 })
                             },
                       err => {  });              
-                  }); 
+                  });  */
 
       },
       err => { 

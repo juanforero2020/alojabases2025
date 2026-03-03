@@ -113,6 +113,13 @@
             caption="Est.Facturación"
             cellTemplate="estadoVeronicaTemplate">
         </dxi-column>
+        <dxi-column
+            caption="Recibo Caja"
+            cellTemplate="reciboCajaTemplate"
+            [allowSorting]="false"
+            [allowFiltering]="false"
+            width="120">
+        </dxi-column>
 
         <div *dxTemplate="let data of 'estadoVeronicaTemplate'" style="text-align: center;">
             <ng-container [ngSwitch]="data.value" class="btn-center">
@@ -131,6 +138,23 @@
 
                 <button *ngSwitchCase="'ENVIADA'" class="btn-sect-success btn btn-success btn-sm">
                     <i class="fa fa-solid fa-check-circle"></i> </button>
+            </ng-container>
+        </div>
+
+        <div *dxTemplate="let data of 'reciboCajaTemplate'" style="text-align: center;">
+            <ng-container *ngIf="data.data.tieneReciboCaja">
+                <button class="btn-sect-success btn btn-success btn-sm">
+                    <i class="fa fa-solid fa-check-circle text-success" title="Recibo de caja generado"></i> 
+                </button>
+            </ng-container>
+            <ng-container *ngIf="!data.data.tieneReciboCaja">
+                <button 
+                    type="button" 
+                    class="btn btn-sm btn-sect"
+                    title="Generar recibo de caja"
+                    (click)="generarReciboCajaParaFactura({ row: { data: data.data } })">
+                    <i class="fa fa-solid fa-times-circle text-danger"></i>
+                </button>
             </ng-container>
         </div>
         
@@ -203,6 +227,25 @@
         <dxi-column dataField="username" caption="Usuario" dataType="string" [visible]=false></dxi-column>
         <dxi-column dataField="observaciones" caption="Observaciones" dataType="string" [visible]=false></dxi-column>
         <dxi-column dataField="nota" caption="Notas" dataType="string" [visible]=false></dxi-column>
+        <dxi-column
+            caption="Recibo Caja"
+            cellTemplate="reciboCajaTemplateNotas"
+            [allowSorting]="false"
+            [allowFiltering]="false"
+            width="120">
+        </dxi-column>
+        <div *dxTemplate="let data of 'reciboCajaTemplateNotas'" style="text-align: center;">
+            <ng-container *ngIf="data.data.tieneReciboCaja">
+                <i class="fa fa-check-circle text-success" title="Recibo de caja generado"></i>
+            </ng-container>
+            <ng-container *ngIf="!data.data.tieneReciboCaja">
+                <i class="fa fa-times-circle text-danger" title="Sin recibo de caja"></i>
+                <button type="button" class="btn btn-sm btn-outline-primary ml-1" title="Generar recibo de caja"
+                    (click)="generarReciboCajaParaFactura({ row: { data: data.data } })">
+                    Generar recibo
+                </button>
+            </ng-container>
+        </div>
         <dxi-column type="buttons"  caption="Ver">
             <dxi-button icon="fa fa-arrow-down" [onClick]="getCourseFile2"></dxi-button>    
         </dxi-column>
