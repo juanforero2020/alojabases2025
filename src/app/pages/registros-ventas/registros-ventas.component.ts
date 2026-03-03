@@ -473,8 +473,8 @@ export class RegistrosVentasComponent implements OnInit {
         }).then((result) => {
           var usuarioLogueado = sessionStorage.getItem("user");
           var dataUsuarioLogueado = this.usuarios.find(el => el.username == usuarioLogueado);
-          var usuarioClave = this.usuarios.find(el => el.codigoAutorizacion == result.value);
-          if(dataUsuarioLogueado.codigoAutorizacion == result.value){
+          var usuarioClave = this.usuarios.find(el => el.codigo == result.value);
+          if(dataUsuarioLogueado.codigo == result.value){
             var dataFactura = e.row.data as factura;
             this.cambiarEstadoLogValidacion(dataFactura)
           }else{

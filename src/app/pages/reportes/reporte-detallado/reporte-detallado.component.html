@@ -140,18 +140,18 @@
         dataType="currency">
          <dxo-format
             type="currency"
-            [precision]="2">
+            [precision]="4">
         </dxo-format>
       </dxi-column>
       <dxi-column
         dataField="MatPorcentaje"
         caption="%"
         alignment="right"
-        [customizeText]="customizeValuePercent"
+        [customizeText]="customizeValuePercent4"
         dataType="percent">
          <dxo-format
             type="percent"
-            [precision]="2">
+            [precision]="4">
         </dxo-format>
       </dxi-column>
     </dxi-column>
@@ -298,12 +298,12 @@
                 <dxi-total-item
                     column="MatPorcentaje"
                     dataType="number"
-                    displayFormat=" {0}%"
-                    [customizeText]="customizeValue2"
+                    displayFormat=" {0} %"
+                    [customizeText]="customizeValue4"
                     summaryType="avg"
                     alignment="center">
                     <dxo-format
-                      type="number"
+                      type="percent"
                       [precision]="2">
                     </dxo-format>
                 </dxi-total-item>

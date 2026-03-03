@@ -25,6 +25,7 @@ export class HomeComponent implements OnInit {
     this.stockMinimoData.getProductosBajoMinimoAgrupadosPorCategoria().subscribe({
       next: (grupos) => {
         this.productosBajoMinimoPorCategoria = grupos;
+        console.log(this.productosBajoMinimoPorCategoria);
         this.loading = false;
       },
       error: () => {

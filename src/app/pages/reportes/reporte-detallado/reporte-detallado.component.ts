@@ -176,7 +176,7 @@ export class ReporteDetalladoComponent implements OnInit {
       this.reporteDIndividual.DevDiariaSucursal1 = Number(sumaDevolSuc1.toFixed(2));
       this.reporteDIndividual.VDiariaTotal = Number(sumaTotal.toFixed(2));
       this.reporteDIndividual.MatUBruta = sumaN == 0 ? 0 : Number(sumaTotalCalculoUtilidadMat.toFixed(2));
-      this.reporteDIndividual.MatPorcentaje = sumaN == 0 ? 0 : Number(sumaTotalCalculoUtilidadMat.toFixed(2)) / Number(sumaN.toFixed(2)) ;
+      this.reporteDIndividual.MatPorcentaje = sumaN == 0 ? 0 : Number((Number(sumaTotalCalculoUtilidadMat.toFixed(2)) / Number(sumaN.toFixed(2))).toFixed(4)) ;
       this.reporteDIndividual.Suc1UBruta = sumaSuc1 == 0 ? 0 : Number(sumaTotalCalculoUtilidadSuc1.toFixed(2));
       this.reporteDIndividual.Suc1Porcentaje = sumaSuc1 == 0 ? 0 : Number(sumaTotalCalculoUtilidadSuc1.toFixed(2)) / Number(sumaSuc1.toFixed(2)) ;
       diferenciaIngresoMatriz = 0 - this.reporteDIndividual.VDiariaMatriz
@@ -223,6 +223,7 @@ export class ReporteDetalladoComponent implements OnInit {
     }
     this.viewTabla = true;
     this.mostrarLoading = false
+    console.log("reporteDetallado", JSON.stringify(this.reporteDetallado));
   }
 
   calcularDiferenciaIngresos(){
@@ -337,6 +338,11 @@ export class ReporteDetalladoComponent implements OnInit {
     return valor;  
   }
 
+  customizeValue4(data: any) { 
+    var valor = data.value.toFixed(4) + "%"
+    return valor;  
+  }
+
   customizeValueRow(data: any) { 
     var valor= data.value.toFixed(2) 
       return valor;  
@@ -344,6 +350,11 @@ export class ReporteDetalladoComponent implements OnInit {
 
   customizeValuePercent(data: any) { 
     var valor= data.value.toFixed(2)  +"%"
+      return valor;  
+  }
+
+  customizeValuePercent4(data: any) { 
+    var valor= data.value.toFixed(4)  +"%"
       return valor;  
   }
 

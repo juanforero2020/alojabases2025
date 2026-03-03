@@ -8,7 +8,8 @@
         </div>
         <div class="col-md-9">
             <div class="welcome-box px-4 py-3 bg-white rounded shadow-sm h-100 d-flex flex-column justify-content-center" style="text-align: center;">
-                <h2 class="mb-2 text-primary font-weight-bold" style="font-size: 2rem;">Bienvenido a Comercial Blanquita Constructor</h2>
+                <h2 class="mb-2 text-primary font-weight-bold" style="font-size: 2rem;">Bienvenido al Sistema Centralizado de Información</h2>
+                <h4 class="mb-2 text-secondary" style="font-size: 1.2rem; font-weight: normal;">Desarrollado por Juan Forero Delgado</h4>
                 <div class="sistema-version-fecha mt-2 text-muted" style="font-size: 1rem;">
                     <span>
                         <i class="dx-icon-info-circle text-primary mr-1"></i>
@@ -30,7 +31,7 @@
     <div class="row">  
         <div class="col-md-12">
             <div class="dx-card responsive-paddings stock-minimo-card">
-                <h3 class="content-block">Productos bajo stock mínimo</h3>
+                <h5 class="content-block">Productos bajo stock mínimo</h5>
                 <p class="content-block subtext">Productos con stock actual por debajo del mínimo definido (Matriz), agrupados por categoría.</p>
         
                 <div *ngIf="loading" class="loading-wrap">
@@ -67,9 +68,16 @@
                                     <div class="producto-item">
                                         <div class="producto-nombre">{{ prod.producto.PRODUCTO }}</div>
                                         <div class="producto-detalle">
-                                            <span>Stock actual: <strong>{{ prod.cantidadM2 | number:'1.2-2' }}</strong> m²</span>
-                                            <span>Mínimo: <strong>{{ prod.producto.cantidad | number:'1.2-2' }}</strong> m²</span>
-                                            <span class="falta">Faltante: {{ (prod.producto.cantidad - prod.cantidadM2) | number:'1.2-2' }} m²</span>
+                                            <ng-container *ngIf="prod.producto.UNIDAD === 'Metros'">
+                                                <span>Stock actual: <strong>{{ prod.cantidadM2 | number:'1.2-2' }}</strong> m²</span>
+                                                <span>Mínimo: <strong>{{ prod.producto.cantidad | number:'1.2-2' }}</strong> m²</span>
+                                                <span class="falta">Faltante: {{ (prod.producto.cantidad - prod.cantidadM2) | number:'1.2-2' }} m²</span>
+                                            </ng-container>
+                                            <ng-container *ngIf="prod.producto.UNIDAD === 'Unidad'">
+                                                <span>Stock actual: <strong>{{ prod.cantidadM2 | number:'1.2-2' }}</strong></span>
+                                                <span>Mínimo: <strong>{{ prod.producto.cantidad | number:'1.2-2' }}</strong></span>
+                                                <span class="falta">Faltante: {{ (prod.producto.cantidad - prod.cantidadM2) | number:'1.2-2' }}</span>
+                                            </ng-container>
                                         </div>
                                     </div>
                                 </div>
