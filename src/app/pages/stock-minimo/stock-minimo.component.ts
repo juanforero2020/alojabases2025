@@ -16,6 +16,7 @@ import { AuthService } from "src/app/shared/services";
 import { CombosService } from "src/app/servicios/combos.service";
 import { CatalogoService } from "src/app/servicios/catalogo.service";
 import { clasificacionActualizacion, inventario, invFaltanteSucursal, productoActualizable, productoMultiple, productosPorFiltros, productoTransaccion } from "../consolidado/consolidado";
+import { forkJoin } from "rxjs";
 
 @Component({
   selector: "app-stock-minimo",
@@ -154,7 +155,10 @@ export class StockMinimoComponent implements OnInit {
            var clasi = new clasificacionActualizacion()
            clasi.nombreClasificacion = element
            this.listaClasificacion.push(clasi)
-           this.listadoCategorias.push(clasi.nombreClasificacion)
+           if (this.listadoCategorias.length === 0) {
+             this.listadoCategorias.push('Todos');
+           }
+           this.listadoCategorias.push(clasi.nombreClasificacion);
          })
     })
   }
@@ -209,6 +213,12 @@ export class StockMinimoComponent implements OnInit {
       return;
     }
 
+    // Cuando se selecciona "Todos" en categoría (sin otros filtros), cargar todos los productos con cantidad mínima
+    if (this.nombreClasificacion === "Todos" && !this.nombreCasa && !this.nombreReferencia) {
+      this.traerTodosProductosBajoMinimo();
+      return;
+    }
+
     if(filtro1 == true && filtro2 == false && filtro3 == false)
       this.traerProductosFiltrados(1, productoFiltro);
 
@@ -230,6 +240,54 @@ export class StockMinimoComponent implements OnInit {
     else if(filtro1 == true && filtro2 == false && filtro3 == true)
       this.traerProductosFiltrados(7, productoFiltro);
   
+  }
+
+  /**
+   * Carga todos los productos que tienen cantidad mínima definida, obtiene sus transacciones
+   * y llena invetarioMinimoProductos (mismo flujo que en home: productos bajo mínimo por sucursal).
+   */
+  traerTodosProductosBajoMinimo() {
+    this.transacciones = [];
+    this.invetarioP = [];
+    this.invetarioFaltante = [];
+    this.productosPendientes = [];
+    this.productosPendientesNoEN = [];
+    this.invetarioMinimoProductosMatriz = [];
+    this.invetarioMinimoProductosSucursal1 = [];
+    this.invetarioMinimoProductosSucursal2 = [];
+    this.invetarioMinimoProductos = [];
+    this.mostrarLoading = true;
+
+    forkJoin({
+      productos: this.productoService.getProductosActivos(),
+      catalogos: this._catalogoService.getCatalogoActivos(),
+    }).subscribe({
+      next: ({ productos, catalogos }) => {
+        const productosList = (productos || []) as producto[];
+        const catalogosList = (catalogos || []) as catalogo[];
+        const productosConMinimo = productosList.filter((p) => {
+          const c = catalogosList.find((cat) => cat.PRODUCTO === p.PRODUCTO);
+          return c && c.CANT_MINIMA != null && c.CANT_MINIMA !== 0;
+        });
+
+        if (productosConMinimo.length === 0) {
+          this.mostrarLoading = false;
+          Swal.fire("Info", "No hay productos con cantidad mínima definida", "info");
+          return;
+        }
+
+        this.productosCatalogo = catalogosList;
+        this.productos = productosConMinimo;
+        this.productos.forEach((element) => {
+          element.DIMENSION = this.productosCatalogo?.find((c) => c.PRODUCTO === element.PRODUCTO)?.DIM;
+        });
+        this.traerTransaccionesMultiples();
+      },
+      error: () => {
+        this.mostrarLoading = false;
+        Swal.fire("Error", "No se pudo cargar la información", "error");
+      },
+    });
   }
 
   traerProductosFiltrados(num : number, productoFiltro : productosPorFiltros){
