@@ -1,4 +1,7 @@
-import { Component, OnInit } from "@angular/core";
+import { Component, OnInit, OnDestroy } from "@angular/core";
+import { Subject } from "rxjs";
+import { forkJoin } from "rxjs";
+import { switchMap, retry, take, takeUntil } from "rxjs/operators";
 
 import {
   devolucion,
@@ -40,14 +43,14 @@ import { AuthService } from "src/app/shared/services";
 import { AngularFirestore } from "angularfire2/firestore";
 import { ProductoCombo, productosCombo } from "../catalogo/catalogo";
 import { CombosService } from "src/app/servicios/combos.service";
-import { element } from "protractor";
 
 @Component({
   selector: "app-devoluciones",
   templateUrl: "./devoluciones.component.html",
   styleUrls: ["./devoluciones.component.scss"],
 })
-export class DevolucionesComponent implements OnInit {
+export class DevolucionesComponent implements OnInit, OnDestroy {
+  private destroy$ = new Subject<void>();
   idDocumento: number;
   cliente: string;
   usuario: string = "";
@@ -163,50 +166,61 @@ export class DevolucionesComponent implements OnInit {
 
   ngOnInit() {
     this.nowdesde.setDate(this.nowdesde.getDate() - 15);
-    this.traerContadoresDocumentos();
-    this.traerProductos();
-    this.traerOrdenesCompra();
-    this.traerParametrizaciones();
-    this.getIDDocumentos();
-    this.traerProductosPendientesEntrega();
-    this.traerSucursales();
-    this.traerDatosConfiguracion();
-  }
-
-  traerDatosConfiguracion() {
-    this._configuracionService.getDatosConfiguracion().subscribe((res) => {
-      this.imagenLogotipo = res[0].urlImage;
+    forkJoin({
+      contadores: this.contadoresService.getContadores(),
+      productos: this.productoService.getProducto(),
+      ordenes: this.ordenesService.getOrden(),
+      parametrizaciones: this.parametrizacionService.getParametrizacion(),
+      pendientes: this.productosPendientesService.getProductosPendientesEntrega(),
+      sucursales: this.sucursalesService.getSucursales(),
+      config: this._configuracionService.getDatosConfiguracion(),
+    }).pipe(
+      take(1),
+      takeUntil(this.destroy$)
+    ).subscribe({
+      next: (res) => {
+        this.contadores = res.contadores as contadoresDocumentos[];
+        this.productos = res.productos as producto[];
+        this.ordenesCompra = res.ordenes as OrdenDeCompra[];
+        this.parametrizaciones = res.parametrizaciones as parametrizacionsuc[];
+        this.productosPendientes = res.pendientes as productosPendientesEntrega[];
+        this.locales = res.sucursales as Sucursal[];
+        this.imagenLogotipo = (res.config as any)[0]?.urlImage ?? "";
+        this.asignarIDdocumentos();
+        this.cargarUsuarioLogueado();
+      },
+      error: () => {
+        Swal.fire("Error", "Error al cargar datos iniciales", "error");
+      },
     });
+    this.getIDDocumentos();
   }
 
   cargarUsuarioLogueado() {
-    const promesaUser = new Promise((res, err) => {
-      if (localStorage.getItem("maily") != "") {
-        this.correo = localStorage.getItem("maily");
-      }
-      this.authenService.getUserLogueado(this.correo).subscribe(
+    const mail = localStorage.getItem("maily");
+    if (mail) this.correo = mail;
+    this.authenService
+      .getUserLogueado(this.correo)
+      .pipe(take(1), takeUntil(this.destroy$))
+      .subscribe(
         (res) => {
           this.usuarioLogueado = res as user;
-          this.devolucion.usuario = this.usuarioLogueado[0].username;
-          this.usuario = this.usuarioLogueado[0].username;
-          this.buscarSucursal(this.usuarioLogueado[0].sucursal);
+          if (!this.usuarioLogueado?.[0]) return;
+          const u = this.usuarioLogueado[0];
+          this.devolucion.usuario = u.username;
+          this.usuario = u.username;
+          this.buscarSucursal(u.sucursal);
           this.separarRegistrosDevoluciones();
-          if (this.usuarioLogueado[0].rol == "Usuario")
-            this.isUsuario = true;
-          else {
-            this.isUsuario = false;
-            this.mostrarAprobacion = true
-          }
+          this.isUsuario = u.rol === "Usuario";
+          this.mostrarAprobacion = !this.isUsuario;
             
           
 
-          if(this.usuarioLogueado[0].status == "Inactivo")
-              this.authService.logOut();
+          if (u.status === "Inactivo") this.authService.logOut();
 
         },
         (err) => {}
       );
-    });
   }
 
   traerComprobantesPagoPorRango() {
@@ -216,10 +230,18 @@ export class DevolucionesComponent implements OnInit {
     this.obj.fechaActual = this.nowhasta;
     this.obj.fechaAnterior = this.nowdesde;
     this.obj.fechaAnterior.setHours(0, 0, 0, 0);
-    this.devolucionesService.getDevolucionesPorRango(this.obj).subscribe(res => {
-      this.devoluciones = res as devolucion[];
-      this.cargarDevoluciones();
-    })
+    this.devolucionesService
+      .getDevolucionesPorRango(this.obj)
+      .pipe(take(1), takeUntil(this.destroy$))
+      .subscribe({
+        next: (res) => {
+          this.devoluciones = res as devolucion[];
+          this.cargarDevoluciones();
+        },
+        error: () => {
+          this.mostrarLoading = false;
+        },
+      });
   }
 
   limpiarArrays(){
@@ -271,18 +293,20 @@ export class DevolucionesComponent implements OnInit {
 
 
 
+  private asignarDatosCliente() {
+    if (!this.facturaTraida) return;
+    this.cliente = this.facturaTraida.cliente.cliente_nombre;
+    this.fecha_transaccion = this.facturaTraida.fecha2;
+    this.sucursal = this.facturaTraida.sucursal;
+    this.devolucion.ruc = this.facturaTraida.cliente.ruc;
+  }
+
   buscarSucursal(sucursal: string) {
     this.locales.forEach((element) => {
       if (element.nombre == sucursal) {
         this.devolucion.sucursal = element;
         this.sucursal = element.nombre;
       }
-    });
-  }
-
-  traerParametrizaciones() {
-    this.parametrizacionService.getParametrizacion().subscribe((res) => {
-      this.parametrizaciones = res as parametrizacionsuc[];
     });
   }
 
@@ -324,18 +348,20 @@ export class DevolucionesComponent implements OnInit {
   traerDevoluciones() {
     this.limpiarArrays();
     this.mostrarLoading = true;
-    this.devolucionesService.getDevoluciones().subscribe((res) => {
-      this.devoluciones = res as devolucion[];
-      this.cargarDevoluciones();
-    });
+    this.devolucionesService
+      .getDevoluciones()
+      .pipe(take(1), takeUntil(this.destroy$))
+      .subscribe({
+        next: (res) => {
+          this.devoluciones = res as devolucion[];
+          this.cargarDevoluciones();
+        },
+        error: () => {
+          this.mostrarLoading = false;
+        },
+      });
   }
 
-  traerContadoresDocumentos() {
-    this.contadoresService.getContadores().subscribe((res) => {
-      this.contadores = res as contadoresDocumentos[];
-      this.asignarIDdocumentos();
-    });
-  }
 
   separarRegistrosDevoluciones() {
     if (this.usuarioLogueado[0].rol != "Administrador") {
@@ -374,27 +400,15 @@ export class DevolucionesComponent implements OnInit {
     this.id_devolucion = this.contadores[0].contDevoluciones_Ndocumento + 1;
   }
 
-  traerProductosPendientesEntrega() {
-    this.productosPendientesService
-      .getProductosPendientesEntrega()
-      .subscribe((res) => {
-        this.productosPendientes = res as productosPendientesEntrega[];
-      });
-  }
-
-
-
-  async getIDDocumentos() {
-    //REVISAR OPTIMIZACION
-    await this.db
+  getIDDocumentos() {
+    this.db
       .collection("consectivosBaseMongoDB")
       .valueChanges()
+      .pipe(take(1), takeUntil(this.destroy$))
       .subscribe((data: contadoresDocumentos[]) => {
-        new Promise<any>((resolve, reject) => {
-          if (data != null) {
-            this.contadorFirebase = data;
-          }
-        });
+        if (data != null) {
+          this.contadorFirebase = data;
+        }
         this.asignarIDdocumentos2();
       });
   }
@@ -417,97 +431,107 @@ export class DevolucionesComponent implements OnInit {
 
   obtenerDocumento(e) {
     this.mostrarLoading = true;
-    var bandera = true;
     this.devolucion.tipo_documento = e.value;
     this.arrayFacturas = [];
-    if (e.value == "Factura") {
-      this.limpiarArreglo();
-      this.facturasService.getFacturasDocumento(this.idDocumento).subscribe((res) => {
-          this.arrayFacturas = res as factura[];
-          this.llenarDatosCombo(this.arrayFacturas);
-          bandera = false;
-        });
-      if (bandera) {
-        this.cliente = "";
-        this.fecha_transaccion = "";
-        this.sucursal = "";
-      }
-    } else if (e.value == "Nota de Venta") {
-      this.limpiarArreglo();
-      this.notasVentaService.getNotasVemtaDocumento(this.idDocumento).subscribe((res) => {
-          this.arrayFacturas = res as factura[];
-          this.llenarDatosCombo(this.arrayFacturas);
-          bandera = false;
-        });
+    this.cliente = "";
+    this.fecha_transaccion = "";
+    this.sucursal = "";
 
-      if (bandera) {
-        this.cliente = "";
-        this.fecha_transaccion = "";
-        this.sucursal = "";
-      }
+    // Verificar que idDocumento no sea null ni undefined
+    if (this.idDocumento !== null && this.idDocumento !== undefined) {
+      const obs = e.value === "Factura"
+        ? this.facturasService.getFacturasDocumento(this.idDocumento)
+        : this.notasVentaService.getNotasVemtaDocumento(this.idDocumento);
+      this.limpiarArreglo();
+      obs.pipe(takeUntil(this.destroy$), retry(2)).subscribe({
+        next: (res) => {
+          this.arrayFacturas = res as factura[];
+          this.llenarDatosCombo(this.arrayFacturas);
+          this.mostrarLoading = false;
+        },
+        error: () => {
+          this.mostrarLoading = false;
+          Swal.fire("Error", "No se pudo cargar el documento", "error");
+        },
+      });
+    } else {
+      this.mostrarLoading = false;
+      Swal.fire(
+        "Advertencia",
+        "Debe seleccionar un documento válido antes de continuar.",
+        "warning"
+      );
     }
-    this.mostrarLoading = false;
   }
 
   
-  llenarDatosCombo(array: factura[]){
-    this.datosDocumento = [];
-    array.forEach(element => {
-      var object = new dataDocumento();
+  llenarDatosCombo(array: factura[]) {
+    this.datosDocumento = array.map((element) => {
+      const object = new dataDocumento();
       object._id = element._id;
       object.nombreCliente = element.cliente.cliente_nombre;
       object.rucCliente = element.cliente.ruc;
       object.totalFactura = element.total.toString();
       object.valorInicialFactura = element.total.toString();
       object.tipo_documento = element.tipoDocumento;
-      object.textoCombo = object.nombreCliente+" - "+object.rucCliente+" - "+object.totalFactura;
+      object.textoCombo = object.nombreCliente + " - " + object.rucCliente + " - " + object.totalFactura;
       object.fecha = element.fecha;
       object.fecha_deuda = element.fecha;
       object.sucursal = element.sucursal;
-      console.log(object)
-      this.datosDocumento.push(object);
+      return object;
     });
   }
 
-  asignarDatos(e){
+  asignarDatos(e) {
     this.textoDatosFactura = e.value.textoCombo;
-    this.facturaTraida = this.arrayFacturas.find(element=> element._id == e.value._id);
-    this.productosVendidos2 = this.facturaTraida.productosVendidos;
-    this.productosVendidos2.forEach((element) => {
-      if(element.producto.CLASIFICA == "COMBO" ) {
-        var combo = new ProductoCombo();
-        combo.PRODUCTO = element.producto.PRODUCTO;
-        this.mensajeLoading = "Cargando Productos.."
-        this.mostrarLoading = true;
-        this._comboService.getComboPorNombre(combo).subscribe(res => {
-          var listado = res as ProductoCombo[];
-          this.listadoProductosCombo = listado[0].productosCombo 
-          this.listadoProductosCombo.forEach((element2) => {
-            var venta2 = new venta();
-            venta2.cantidad = element.cantidad * element2.cantidad;
-            venta2.producto = element2.producto;
-            venta2.total = element2.precioVenta * element.cantidad;
-            this.productosVendidos2.push(venta2)
-          });
-          this.mostrarLoading = false;
-          //-----------eliminar repetidos del array
-          let hash = {};
-          this.productosVendidos2 = this.productosVendidos2.filter(o => hash[o.producto.PRODUCTO] ? false : hash[o.producto.PRODUCTO] = true);
-          this.productosVendidos2.splice(this.productosVendidos2.indexOf(element), 1);
-        })
-      }
-
+    this.facturaTraida = this.arrayFacturas.find((el) => el._id === e.value._id);
+    this.productosVendidos2 = [...(this.facturaTraida?.productosVendidos ?? [])];
+    const combos = this.productosVendidos2.filter((el) => el.producto?.CLASIFICA === "COMBO");
+    if (combos.length === 0) {
+      this.listadoProductosCombo = [];
+      this.asignarDatosCliente();
+      return;
+    }
+    this.mensajeLoading = "Cargando Productos..";
+    this.mostrarLoading = true;
+    const comboRequests = combos.map((element) => {
+      const combo = new ProductoCombo();
+      combo.PRODUCTO = element.producto.PRODUCTO;
+      return this._comboService.getComboPorNombre(combo).pipe(take(1));
     });
-
-   
-
-     
-   
-    this.cliente = this.facturaTraida.cliente.cliente_nombre;
-    this.fecha_transaccion = this.facturaTraida.fecha2;
-    this.sucursal = this.facturaTraida.sucursal; 
-    this.devolucion.ruc = this.facturaTraida.cliente.ruc;
-
+    forkJoin(comboRequests)
+      .pipe(takeUntil(this.destroy$), retry(2))
+      .subscribe({
+        next: (listados) => {
+          const noCombo: venta[] = this.productosVendidos2.filter((el) => el.producto?.CLASIFICA !== "COMBO");
+          const expandidos: venta[] = [];
+          (listados as ProductoCombo[][]).forEach((listado, i) => {
+            const element = combos[i];
+            const listadoProductosCombo = listado[0]?.productosCombo ?? [];
+            listadoProductosCombo.forEach((element2) => {
+              const venta2 = new venta();
+              venta2.cantidad = element.cantidad * element2.cantidad;
+              venta2.producto = element2.producto;
+              venta2.total = element2.precioVenta * element.cantidad;
+              expandidos.push(venta2);
+            });
+          });
+          const hash: Record<string, boolean> = {};
+          this.productosVendidos2 = [...noCombo, ...expandidos].filter((o) =>
+            hash[o.producto.PRODUCTO] ? false : (hash[o.producto.PRODUCTO] = true)
+          );
+          this.listadoProductosCombo = (listados as ProductoCombo[][]).reduce(
+            (acc, l) => acc.concat((l[0] as ProductoCombo)?.productosCombo ?? []),
+            [] as productosCombo[]
+          );
+          this.mostrarLoading = false;
+          this.asignarDatosCliente();
+        },
+        error: () => {
+          this.mostrarLoading = false;
+          Swal.fire("Error", "Error al cargar combos", "error");
+        },
+      });
   }
 
 
@@ -521,17 +545,10 @@ export class DevolucionesComponent implements OnInit {
   }
 
   cargarDevoluciones() {
-    this.devoluciones.forEach((element) => {
-      if (element.estado == "Pendiente") {
-        this.devolucionesPendientes.push(element);
-      } else if (element.estado == "Aprobado") {
-        this.devolucionesAprobadas.push(element);
-      } else if (element.estado == "Rechazado") {
-        this.devolucionesRechazadas.push(element);
-      } else if (element.estado == "Anulada") {
-        this.devolucionesAnuladas.push(element);
-      }
-    });
+    this.devolucionesPendientes = this.devoluciones.filter((el) => el.estado === "Pendiente");
+    this.devolucionesAprobadas = this.devoluciones.filter((el) => el.estado === "Aprobado");
+    this.devolucionesRechazadas = this.devoluciones.filter((el) => el.estado === "Rechazado");
+    this.devolucionesAnuladas = this.devoluciones.filter((el) => el.estado === "Anulada");
     this.listadoDevoluciones = this.devolucionesPendientes;
     this.mostrarLoading = false;
   }
@@ -546,19 +563,10 @@ export class DevolucionesComponent implements OnInit {
   }
 
   limpiarArreglo() {
-    var cont = 0;
-    this.productosVendidos2.forEach((element) => {
-      cont++;
-    });
-    if (cont >= 0) {
-      this.productosVendidos2.forEach((element) => {
-        this.productosVendidos2.splice(0);
-      });
-    }
+    this.productosVendidos2.length = 0;
   }
 
   obtenerDetallesDoc(e, i: number) {
-    console.log(this.productosDevueltos)
     var existeP = this.productosDevueltos.filter(element=>element.REFERENCIA == this.productosDevueltos[i].REFERENCIA)
     if(existeP.length > 1){
       Swal.fire("Error", "El producto ya existe", "error");
@@ -678,25 +686,28 @@ export class DevolucionesComponent implements OnInit {
   }
 
 
-  validarEstadoCaja(){
+  validarEstadoCaja() {
     this.devolucion.fecha = this.fecha;
-    this.devolucion.fecha.setHours(0,0,0,0);
-    this._cajaMenorService.getCajaMenorPorFecha(this.devolucion).subscribe(
-      res => {
-       var listaCaja = res as CajaMenor[];
-        if(listaCaja.length != 0 ){
-          var caja = listaCaja.find(element=>element.sucursal == this.devolucion.sucursal.nombre) ;
-          if(caja != undefined){
-            if(caja.sucursal == this.devolucion.sucursal.nombre && caja.estado == "Cerrada" )
-              Swal.fire( "Atención","No puede generar registros para la fecha establecida, la caja menor se encuentra cerrada",'error')
-            else
-              this.guardarDevolucion()
-          }else
-            this.guardarDevolucion()
-        }else
-          this.guardarDevolucion()
-      },
-      (err) => {});
+    this.devolucion.fecha.setHours(0, 0, 0, 0);
+    this._cajaMenorService
+      .getCajaMenorPorFecha(this.devolucion)
+      .pipe(take(1), takeUntil(this.destroy$))
+      .subscribe({
+        next: (res) => {
+          const listaCaja = (res as CajaMenor[]) || [];
+          const caja = listaCaja.find((el) => el.sucursal === this.devolucion.sucursal?.nombre);
+          if (caja?.estado === "Cerrada") {
+            Swal.fire(
+              "Atención",
+              "No puede generar registros para la fecha establecida, la caja menor se encuentra cerrada",
+              "error"
+            );
+          } else {
+            this.guardarDevolucion();
+          }
+        },
+        error: () => this.guardarDevolucion(),
+      });
   }
 
 
@@ -705,64 +716,48 @@ export class DevolucionesComponent implements OnInit {
     this.devolucion.fecha = this.fecha;
     this.devolucion.fecha_transaccion = this.fecha_transaccion;
     this.devolucion.observaciones = this.observaciones;
-    
     this.devolucion.usuario = this.usuario;
     this.devolucion.id_devolucion = this.id_devolucion;
     this.devolucion.totalDevolucion = this.total;
     this.devolucion.num_documento = this.idDocumento;
     this.devolucion.productosDevueltos = this.productosDevueltos;
-    var contV = 0;
-    var text = "";
 
-    text = this.facturaTraida.observaciones + "/ Documento Devolucion " + this.id_devolucion;
     if (
-      this.devolucion.cliente != undefined &&
-      this.devolucion.fecha != undefined &&
-      this.devolucion.sucursal != undefined &&
-      this.devolucion.fecha_transaccion != undefined
+      this.devolucion.cliente == null ||
+      this.devolucion.cliente === "" ||
+      this.devolucion.fecha == null ||
+      this.devolucion.sucursal == null ||
+      this.devolucion.fecha_transaccion == null
     ) {
-      this.mostrarMensaje();
-      new Promise<any>((resolve, reject) => {
-        this.devolucionesService.newDevolucion(this.devolucion).subscribe(
-          (res) => {
-            this.contadores[0].contDevoluciones_Ndocumento = this.id_devolucion;
-            this.contadoresService
-              .updateContadoresDevoluciones(this.contadores[0])
-              .subscribe(
-                (res) => {},
-                (err) => {}
-              );
-          },
-          (err) => {}
-        );
-        if (this.devolucion.tipo_documento == "Factura") {
-          this.facturaTraida.observaciones = text;
-          this.facturasService.updateFacturas(this.facturaTraida).subscribe(
-            (res) => {
-              this.confirmarDevolucion();
-            },
-            (err) => {
-              alert("error");
-            }
-          );
-        } else if (this.devolucion.tipo_documento == "Nota de Venta") {
-          this.facturaTraida.observaciones = text;
-          this.notasVentaService.updateNotasVenta(this.facturaTraida).subscribe(
-            (res) => {
-              this.confirmarDevolucion();
-            },
-            (err) => {}
-          );
-        }
-
-      });
-    } else {
-      Swal.fire({
-        title: "Error",
-        text: "Hay campos vacíos",
-        icon: "error",
-      });
+      Swal.fire({ title: "Error", text: "Hay campos vacíos", icon: "error" });
+      return;
     }
+
+    const text = (this.facturaTraida.observaciones || "") + "/ Documento Devolucion " + this.id_devolucion;
+    this.facturaTraida.observaciones = text;
+    const updateDoc$ =
+      this.devolucion.tipo_documento === "Factura"
+        ? this.facturasService.updateFacturas(this.facturaTraida)
+        : this.notasVentaService.updateNotasVenta(this.facturaTraida);
+
+    this.mostrarMensaje();
+    this.devolucionesService
+      .newDevolucion(this.devolucion)
+      .pipe(
+        retry(2),
+        takeUntil(this.destroy$),
+        switchMap(() => {
+          this.contadores[0].contDevoluciones_Ndocumento = this.id_devolucion;
+          return this.contadoresService.updateContadoresDevoluciones(this.contadores[0]).pipe(retry(2));
+        }),
+        switchMap(() => updateDoc$.pipe(retry(2)))
+      )
+      .subscribe({
+        next: () => this.confirmarDevolucion(),
+        error: () => {
+          Swal.fire("Error", "No se pudo guardar la devolución. Revise la conexión e intente de nuevo.", "error");
+        },
+      });
   }
 
   asignarsucursalD(e) {
@@ -799,22 +794,20 @@ export class DevolucionesComponent implements OnInit {
       cancelButtonText: "No",
     }).then((result) => {
       if (result.value) {
-        new Promise<any>((resolve, reject) => {
-          this.devolucionesService.updateEstado(e, "Rechazado").subscribe(
-            (res) => {
+        this.devolucionesService
+          .updateEstado(e, "Rechazado")
+          .pipe(take(1), retry(2), takeUntil(this.destroy$))
+          .subscribe({
+            next: () => {
               Swal.fire({
                 title: "Correcto",
                 text: "Se guardó con éxito",
                 icon: "success",
                 confirmButtonText: "Ok",
-              }).then((result) => {
-                window.location.reload();
-              });
+              }).then(() => this.refrescarListado());
             },
-            (err) => {}
-          );
-          //this.db.collection('/devoluciones').doc(e.id_devolucion+"").update({"estado":"Rechazado"}).then(res => {  }, err => alert(err));
-        });
+            error: () => Swal.fire("Error", "No se pudo rechazar la devolución", "error"),
+          });
       } else if (result.dismiss === Swal.DismissReason.cancel) {
         Swal.fire("Cancelado!", "Se ha cancelado su proceso.", "error");
       }
@@ -832,12 +825,13 @@ export class DevolucionesComponent implements OnInit {
     }).then((result) => {
       if (result.value) {
         this.mostrarMensaje();
-        new Promise<any>((resolve, reject) => {
-          this.devolucionesService.updateEstado(e, "Anulada").subscribe(
-            (res) => { this.buscarProductos(e);},
-            (err) => {}
-          );
-        });
+        this.devolucionesService
+          .updateEstado(e, "Anulada")
+          .pipe(take(1), retry(2), takeUntil(this.destroy$))
+          .subscribe({
+            next: () => this.buscarProductos(e),
+            error: () => Swal.fire("Error", "No se pudo anular la devolución", "error"),
+          });
       } else if (result.dismiss === Swal.DismissReason.cancel) {
         Swal.fire("Cancelado!", "Se ha cancelado su proceso.", "error");
       }
@@ -865,13 +859,14 @@ export class DevolucionesComponent implements OnInit {
       cancelButtonText: "No",
     }).then((result) => {
       if (result.value) {
-        new Promise<any>((resolve, reject) => {
-          this.mostrarMensaje();
-          this.devolucionesService.updateEstado(e, "Aprobado").subscribe(
-            (res) => {this.realizarTransacciones(e);},
-            (err) => {alert("error");}
-          );
-        });
+        this.mostrarMensaje();
+        this.devolucionesService
+          .updateEstado(e, "Aprobado")
+          .pipe(take(1), retry(2), takeUntil(this.destroy$))
+          .subscribe({
+            next: () => this.realizarTransacciones(e),
+            error: () => Swal.fire("Error", "No se pudo aprobar la devolución", "error"),
+          });
       } else if (result.dismiss === Swal.DismissReason.cancel) {
         Swal.fire("Cancelado!", "Se ha cancelado su proceso.", "error");
       }
@@ -937,154 +932,147 @@ export class DevolucionesComponent implements OnInit {
   }
 
   realizarTransacciones(e: any) {
-    var contVal = 0;
-    this.devoluciones.forEach((element) => {
-      if (element.id_devolucion == e.id_devolucion) {
-        this.devolucioLeida = element;
-        this.productosDevueltosCarga = element.productosDevueltos;
-      }
-    });
+    const dev = this.devoluciones.find((el) => el.id_devolucion === e.id_devolucion);
+    if (!dev) return;
+    this.devolucioLeida = dev;
+    this.productosDevueltosCarga = dev.productosDevueltos;
 
-    new Promise<any>((resolve, reject) => {
-      this.productosDevueltosCarga.forEach((element) => {
-        this.generarTransaccionFinanciera(element)
-        this.transaccion = new transaccion();
-        this.transaccion.fecha_mov = new Date().toLocaleString();
-        this.transaccion.fecha_transaccion = this.devolucioLeida.fecha;
-        this.transaccion.sucursal = this.devolucioLeida.sucursal.nombre;
-        this.transaccion.bodega = "bodega2";
-        this.transaccion.documento = this.devolucioLeida.id_devolucion + "";
-        this.transaccion.producto = element.producto.PRODUCTO;
-        this.transaccion.costo_unitario = element.producto.precio;
-        this.transaccion.cajas = element.cantDevueltaCajas;
-        this.transaccion.piezas = element.cantDevueltaPiezas;
-        this.transaccion.observaciones = element.justificacion;
-        this.transaccion.tipo_transaccion = "devolucion";
-        this.transaccion.movimiento = 1;
-        this.transaccion.valor = element.valorunitario;
-        this.transaccion.cantM2 = element.cantDevueltam2;
-        this.transaccion.totalsuma = element.total;
-        this.transaccion.usu_autorizado = this.devolucioLeida.usuario;
-        this.transaccion.usuario = this.devolucioLeida.usuario;
-        this.transaccion.factPro = this.devolucioLeida.num_documento + "";
-        this.transaccion.idTransaccion = this.number_transaccion++;
-        this.transaccion.cliente = this.devolucioLeida?.cliente;
-        this.transaccionesService.newTransaccion(this.transaccion).subscribe(
-          (res) => { contVal++, this.contadorValidaciones(contVal);},
-          (err) => {}
-        );
-      });
+    const transacciones$ = this.productosDevueltosCarga.map((element) => {
+      const t = new transaccion();
+      t.fecha_mov = new Date().toLocaleString();
+      t.fecha_transaccion = this.devolucioLeida.fecha;
+      t.sucursal = this.devolucioLeida.sucursal.nombre;
+      t.bodega = "bodega2";
+      t.documento = this.devolucioLeida.id_devolucion + "";
+      t.producto = element.producto.PRODUCTO;
+      t.costo_unitario = element.producto.precio;
+      t.cajas = element.cantDevueltaCajas;
+      t.piezas = element.cantDevueltaPiezas;
+      t.observaciones = element.justificacion;
+      t.tipo_transaccion = "devolucion";
+      t.movimiento = 1;
+      t.valor = element.valorunitario;
+      t.cantM2 = element.cantDevueltam2;
+      t.totalsuma = element.total;
+      t.usu_autorizado = this.devolucioLeida.usuario;
+      t.usuario = this.devolucioLeida.usuario;
+      t.factPro = this.devolucioLeida.num_documento + "";
+      t.idTransaccion = this.number_transaccion++;
+      t.cliente = this.devolucioLeida?.cliente;
+      return this.transaccionesService.newTransaccion(t).pipe(take(1), retry(2));
     });
+    const financieras$ = this.productosDevueltosCarga.map((element) =>
+      this.crearTransaccionFinancieraObs(element).pipe(take(1), retry(2))
+    );
+
+    forkJoin([...transacciones$, ...financieras$])
+      .pipe(takeUntil(this.destroy$))
+      .subscribe({
+        next: () => this.actualizarProductos(),
+        error: () => {
+          Swal.fire("Error", "Error al guardar transacciones. Revise la conexión.", "error");
+        },
+      });
   }
 
 
-  generarTransaccionFinanciera(producto : productosDevueltos){
-    var nombreSubCuenta = ""
-    if(this.devolucioLeida.tipo_documento == "Factura")
-      nombreSubCuenta = "1.4.0 Factura"
-    else if(this.devolucioLeida.tipo_documento == "Nota de Venta")
-      nombreSubCuenta = "1.4.1 Nota_Venta"
-
-    var transaccion = new TransaccionesFinancieras();
+  private crearTransaccionFinancieraObs(producto: productosDevueltos) {
+    const nombreSubCuenta =
+      this.devolucioLeida.tipo_documento === "Factura"
+        ? "1.4.0 Factura"
+        : this.devolucioLeida.tipo_documento === "Nota de Venta"
+        ? "1.4.1 Nota_Venta"
+        : "";
+    const transaccion = new TransaccionesFinancieras();
     transaccion.fecha = this.devolucioLeida?.fecha;
     transaccion.sucursal = this.devolucioLeida?.sucursal?.nombre;
     transaccion.cliente = this.devolucioLeida?.cliente;
-    transaccion.rCajaId = "DV"+this.devolucioLeida?.id_devolucion;
+    transaccion.rCajaId = "DV" + this.devolucioLeida?.id_devolucion;
     transaccion.tipoTransaccion = "devolucion";
     transaccion.id_documento = this.devolucioLeida?.id_devolucion;
-    transaccion.documentoVenta = this.devolucioLeida?.num_documento.toString();
+    transaccion.documentoVenta = this.devolucioLeida?.num_documento?.toString();
     transaccion.cedula = this.devolucioLeida?.ruc;
-    transaccion.numDocumento = this.devolucioLeida?.num_documento.toString();
+    transaccion.numDocumento = this.devolucioLeida?.num_documento?.toString();
     transaccion.valor = producto.total;
     transaccion.isContabilizada = true;
     transaccion.cuenta = "1.4 DEVOLUCIONES";
     transaccion.subCuenta = nombreSubCuenta;
     transaccion.notas = this.devolucioLeida?.observaciones;
     transaccion.tipoCuenta = "Salidas";
-
-    try {
-      this._transaccionFinancieraService.newTransaccionFinanciera(transaccion).subscribe((res) => {},(err) => {});
-    } catch (error) {
-      Swal.fire("Error","Error al guardar la transaccion","error"); 
-    }    
+    return this._transaccionFinancieraService.newTransaccionFinanciera(transaccion);
   }
 
-  contadorValidaciones(i: number) {
-    if (this.productosDevueltosCarga.length == i) {
-      this.actualizarProductos();
-    } else {
-      console.log("no he entrado " + i);
-    }
+  contadorValidaciones(_i: number) {
+    // Usado solo por flujo legacy; realizarTransacciones ahora usa forkJoin
   }
 
   eliminarTransacciones(num: number) {
-    var newTipoDocEliminacion = new tipoDocEliminacion();
+    const newTipoDocEliminacion = new tipoDocEliminacion();
     newTipoDocEliminacion.nroDocumento = num.toString();
     newTipoDocEliminacion.tipoDocumento = "devolucion";
     this.transaccionesService
       .deleteTransaccionPorDevoluciones(newTipoDocEliminacion)
-      .subscribe(
-        (res) => {
-          console.log(res + "termine1");
-        },
-        (err) => {
-          alert("error");
-        }
-      );
+      .pipe(take(1), retry(2), takeUntil(this.destroy$))
+      .subscribe({
+        error: () => Swal.fire("Error", "Error al eliminar transacciones", "error"),
+      });
   }
 
   contadorValidaciones2(i: number) {
-    if (this.productosDevueltosCarga.length == i) {
-      console.log("recien termine");
+    if (this.productosDevueltosCarga.length === i) {
       Swal.close();
       Swal.fire({
-        title: "Devolucion Aprobada",
+        title: "Devolución Aprobada",
         text: "Se ha guardado con éxito",
         icon: "success",
         confirmButtonText: "Ok",
-      }).then((result) => {
-        window.location.reload();
-      });
-    } else {
-      console.log("no he entrado actualizar" + i);
+      }).then(() => this.refrescarListado());
     }
   }
 
   contadorValidacionesAnulacion(i: number) {
-    if (this.productosDevueltosCarga.length == i) {
-      console.log("recien termine");
+    if (this.productosDevueltosCarga.length === i) {
       Swal.close();
       Swal.fire({
-        title: "Devolucion Anulada",
+        title: "Devolución Anulada",
         text: "Se ha realizado con éxito",
         icon: "success",
         confirmButtonText: "Ok",
-      }).then((result) => {
-        window.location.reload();
-      });
-    } else {
-      console.log("no he entrado actualizar" + i);
+      }).then(() => this.refrescarListado());
     }
   }
 
   confirmarDevolucion() {
     Swal.fire({
-      title: "Devolucion Registrada",
+      title: "Devolución Registrada",
       text: "Se ha guardado con éxito",
       icon: "success",
       confirmButtonText: "Ok",
-    }).then((result) => {
-      window.location.reload();
-    });
+    }).then(() => this.refrescarListado());
   }
 
-  contadorValidaciones3(i: number) {
-    if (this.productosDevueltos.length == i) {
-      console.log("recien termine");
-      Swal.close();
-    } else {
-      console.log("no he entrado actualizar" + i);
-    }
+  refrescarListado() {
+    const obj = new objDate();
+    obj.fechaActual = this.nowhasta;
+    obj.fechaAnterior = this.nowdesde;
+    obj.fechaAnterior.setHours(0, 0, 0, 0);
+    this.devolucionesService
+      .getDevolucionesPorRango(obj)
+      .pipe(take(1), takeUntil(this.destroy$))
+      .subscribe({
+        next: (res) => {
+          this.devoluciones = res as devolucion[];
+          this.cargarDevoluciones();
+        },
+        error: () => {
+          this.devoluciones = [];
+          this.cargarDevoluciones();
+        },
+      });
+  }
+
+  contadorValidaciones3(_i: number) {
+    // Legado
   }
 
   cargarDatosDevolucion(e: any) {
@@ -1136,7 +1124,6 @@ export class DevolucionesComponent implements OnInit {
   }
 
   crearPDF() {
-    console.log("entre  a creaar PDF");
     const documentDefinition = this.getDocumentDefinition();
     pdfMake
       .createPdf(documentDefinition)
@@ -1147,9 +1134,8 @@ export class DevolucionesComponent implements OnInit {
   }
 
   setearNFactura() {
-    let nf = this.devolucioLeida.id_devolucion;
-    let num = ("" + nf).length;
-    console.log("el numero es" + num);
+    const nf = this.devolucioLeida.id_devolucion;
+    const num = ("" + nf).length;
     switch (num) {
       case 1:
         this.numeroFactura = "00000" + nf;
@@ -1546,189 +1532,112 @@ export class DevolucionesComponent implements OnInit {
   }
 
   actualizarProductos() {
-    console.log("entre a actualizar");
-    var sumaProductos = 0;
-    var num1: number = 0;
-    var num2: number = 0;
-    var num3: number = 0;
-    var cont2ing = 0;
-    var contIng: number = 0;
-    var entre: boolean = true;
-    new Promise<any>((resolve, reject) => {
-      console.log("mosyrabdo los productos devueltos")
-      console.log(this.productosDevueltosCarga)
-      this.productosDevueltosCarga.forEach((element) => {
-        this.productos.forEach((elemento1) => {
-          if (elemento1.PRODUCTO == element.producto.PRODUCTO) {
-            switch (this.devolucioLeida.sucursal.nombre) {
-              case "matriz":
-                num1 = parseInt(element.cantDevueltam2.toFixed(0));
-                num2 = elemento1.sucursal1;
-                sumaProductos = Number(num2) + Number(num1);
-                break;
-              case "sucursal1":
-                num1 = parseInt(element.cantDevueltam2.toFixed(0));
-                num2 = elemento1.sucursal2;
-                sumaProductos = Number(num2) + Number(num1);
-                break;
-              case "sucursal2":
-                num1 = parseInt(element.cantDevueltam2.toFixed(0));
-                num2 = elemento1.sucursal3;
-                sumaProductos = Number(num2) + Number(num1);
-                break;
-              default:
-            }
-          }
-        });
-        if (entre) {
-          switch (this.devolucioLeida.sucursal.nombre) {
-            case "matriz":
-              element.producto.sucursal1 = sumaProductos;
-              this.productoService
-                .updateProductoSucursal1(element.producto)
-                .subscribe(
-                  (res) => {
-                    cont2ing++, this.contadorValidaciones2(cont2ing);
-                  },
-                  (err) => {
-                    alert("error");
-                  }
-                );
-              //this.db.collection('/productos').doc(element.producto.PRODUCTO).update({"sucursal1" :sumaProductos}).then(res => {cont2ing++, this.contadorValidaciones2(cont2ing)}, err => alert(err));
-              break;
-            case "sucursal1":
-              element.producto.sucursal2 = sumaProductos;
-              this.productoService
-                .updateProductoSucursal2(element.producto)
-                .subscribe(
-                  (res) => {
-                    cont2ing++, this.contadorValidaciones2(cont2ing);
-                  },
-                  (err) => {
-                    alert("error");
-                  }
-                );
-              //this.db.collection('/productos').doc(element.producto.PRODUCTO).update({"sucursal2" :sumaProductos}).then(res => {cont2ing++, this.contadorValidaciones2(cont2ing)}, err => alert(err));
-              break;
-            case "sucursal2":
-              //alert("entre aqui ")
-              element.producto.sucursal3 = sumaProductos;
-              this.productoService
-                .updateProductoSucursal3(element.producto)
-                .subscribe(
-                  (res) => {
-                    cont2ing++, this.contadorValidaciones2(cont2ing);
-                  },
-                  (err) => {
-                    alert("error");
-                  }
-                );
-
-              break;
-            default:
-          }
-        }
-      });
-    });
-  }
-
-  eliminarTransaccionesFinancieras(){
-    this.busquedaTransaccion = new tipoBusquedaTransaccion()
-    this.busquedaTransaccion.NumDocumento = this.devolucioLeida.id_devolucion.toString();
-    this.busquedaTransaccion.tipoTransaccion = "devolucion"
-    this._transaccionFinancieraService.getTransaccionesPorTipoDocumento(this.busquedaTransaccion).subscribe(res => {
-      this.transaccionesFinancieras = res as TransaccionesFinancieras[];
-      if(this.transaccionesFinancieras.length != 0){
-        this.transaccionesFinancieras.forEach(element=>{
-          this._transaccionFinancieraService.deleteTransaccionFinanciera(element).subscribe( res => {}, err => {alert("error")})
-        })
+    const suc = this.devolucioLeida?.sucursal?.nombre;
+    const updates: any[] = [];
+    for (const element of this.productosDevueltosCarga) {
+      const prod = this.productos.find((p) => p.PRODUCTO === element.producto.PRODUCTO);
+      if (!prod) continue;
+      let sumaProductos: number;
+      const num1 = parseInt(element.cantDevueltam2.toFixed(0), 10);
+      switch (suc) {
+        case "matriz":
+          sumaProductos = Number(prod.sucursal1) + num1;
+          element.producto.sucursal1 = sumaProductos;
+          updates.push(this.productoService.updateProductoSucursal1(element.producto).pipe(take(1), retry(2)));
+          break;
+        case "sucursal1":
+          sumaProductos = Number(prod.sucursal2) + num1;
+          element.producto.sucursal2 = sumaProductos;
+          updates.push(this.productoService.updateProductoSucursal2(element.producto).pipe(take(1), retry(2)));
+          break;
+        case "sucursal2":
+          sumaProductos = Number(prod.sucursal3) + num1;
+          element.producto.sucursal3 = sumaProductos;
+          updates.push(this.productoService.updateProductoSucursal3(element.producto).pipe(take(1), retry(2)));
+          break;
+        default:
+          break;
       }
-    })
+    }
+    if (updates.length === 0) {
+      this.contadorValidaciones2(0);
+      return;
+    }
+    forkJoin(updates)
+      .pipe(takeUntil(this.destroy$))
+      .subscribe({
+        next: () => this.contadorValidaciones2(this.productosDevueltosCarga.length),
+        error: () => Swal.fire("Error", "Error al actualizar productos", "error"),
+      });
   }
 
-  actualizarProductosAnulacion(num) {
+  eliminarTransaccionesFinancieras() {
+    this.busquedaTransaccion = new tipoBusquedaTransaccion();
+    this.busquedaTransaccion.NumDocumento = this.devolucioLeida.id_devolucion.toString();
+    this.busquedaTransaccion.tipoTransaccion = "devolucion";
+    this._transaccionFinancieraService
+      .getTransaccionesPorTipoDocumento(this.busquedaTransaccion)
+      .pipe(take(1), takeUntil(this.destroy$))
+      .subscribe({
+        next: (res) => {
+          const list = (res as TransaccionesFinancieras[]) || [];
+          if (list.length === 0) return;
+          forkJoin(list.map((el) => this._transaccionFinancieraService.deleteTransaccionFinanciera(el).pipe(take(1), retry(2))))
+            .pipe(takeUntil(this.destroy$))
+            .subscribe({ error: () => Swal.fire("Error", "Error al eliminar transacciones financieras", "error") });
+        },
+        error: () => {},
+      });
+  }
+
+  actualizarProductosAnulacion(num: number) {
     this.eliminarTransacciones(num);
     this.eliminarTransaccionesFinancieras();
-    var sumaProductos = 0;
-    var num1: number = 0;
-    var num2: number = 0;
-    var num3: number = 0;
-    var cont2ing = 0;
-    var contIng: number = 0;
-    var entre: boolean = true;
-    new Promise<any>((resolve, reject) => {
-      this.productosDevueltosCarga.forEach((element) => {
-        this.productos.forEach((elemento1) => {
-          if (elemento1.PRODUCTO == element.producto.PRODUCTO) {
-            switch (this.devolucioLeida.sucursal.nombre) {
-              case "matriz":
-                num1 = parseInt(element.cantDevueltam2.toFixed(0));
-                num2 = elemento1.sucursal1;
-                sumaProductos = Number(num2) - Number(num1);
-                break;
-              case "sucursal1":
-                num1 = parseInt(element.cantDevueltam2.toFixed(0));
-                num2 = elemento1.sucursal2;
-                sumaProductos = Number(num2) - Number(num1);
-                break;
-              case "sucursal2":
-                num1 = parseInt(element.cantDevueltam2.toFixed(0));
-                num2 = elemento1.sucursal3;
-                sumaProductos = Number(num2) - Number(num1);
-                break;
-              default:
-            }
-          }
-        });
-        if (entre) {
-          switch (this.devolucioLeida.sucursal.nombre) {
-            case "matriz":
-              element.producto.sucursal1 = sumaProductos;
-              this.productoService
-                .updateProductoSucursal1(element.producto)
-                .subscribe(
-                  (res) => {
-                    cont2ing++, this.contadorValidacionesAnulacion(cont2ing);
-                  },
-                  (err) => {
-                    alert("error");
-                  }
-                );
-              break;
-            case "sucursal1":
-              element.producto.sucursal2 = sumaProductos;
-              this.productoService
-                .updateProductoSucursal2(element.producto)
-                .subscribe(
-                  (res) => {
-                    cont2ing++, this.contadorValidacionesAnulacion(cont2ing);
-                  },
-                  (err) => {
-                    alert("error");
-                  }
-                );
-              break;
-            case "sucursal2":
-              element.producto.sucursal3 = sumaProductos;
-              this.productoService
-                .updateProductoSucursal3(element.producto)
-                .subscribe(
-                  (res) => {
-                    cont2ing++, this.contadorValidacionesAnulacion(cont2ing);
-                  },
-                  (err) => {
-                    alert("error");
-                  }
-                );
-              break;
-            default:
-          }
-        }
+    const suc = this.devolucioLeida?.sucursal?.nombre;
+    const updates: any[] = [];
+    for (const element of this.productosDevueltosCarga) {
+      const prod = this.productos.find((p) => p.PRODUCTO === element.producto.PRODUCTO);
+      if (!prod) continue;
+      const num1 = parseInt(element.cantDevueltam2.toFixed(0), 10);
+      let sumaProductos: number;
+      switch (suc) {
+        case "matriz":
+          sumaProductos = Number(prod.sucursal1) - num1;
+          element.producto.sucursal1 = sumaProductos;
+          updates.push(this.productoService.updateProductoSucursal1(element.producto).pipe(take(1), retry(2)));
+          break;
+        case "sucursal1":
+          sumaProductos = Number(prod.sucursal2) - num1;
+          element.producto.sucursal2 = sumaProductos;
+          updates.push(this.productoService.updateProductoSucursal2(element.producto).pipe(take(1), retry(2)));
+          break;
+        case "sucursal2":
+          sumaProductos = Number(prod.sucursal3) - num1;
+          element.producto.sucursal3 = sumaProductos;
+          updates.push(this.productoService.updateProductoSucursal3(element.producto).pipe(take(1), retry(2)));
+          break;
+        default:
+          break;
+      }
+    }
+    if (updates.length === 0) {
+      this.contadorValidacionesAnulacion(0);
+      return;
+    }
+    forkJoin(updates)
+      .pipe(takeUntil(this.destroy$))
+      .subscribe({
+        next: () => this.contadorValidacionesAnulacion(this.productosDevueltosCarga.length),
+        error: () => Swal.fire("Error", "Error al actualizar productos", "error"),
       });
-    });
   }
 
   anadirProducto(e) {
     this.productosDevueltos.push(new productosDevueltos());
+  }
+
+  ngOnDestroy() {
+    this.destroy$.next();
+    this.destroy$.complete();
   }
 }
