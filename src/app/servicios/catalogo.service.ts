@@ -1,6 +1,7 @@
 import { Injectable } from "@angular/core";
 import { HttpClient } from "@angular/common/http";
 import { Router } from "@angular/router";
+import { shareReplay } from "rxjs/operators";
 import { catalogo } from "../pages/catalogo/catalogo";
 import { environment } from "src/environments/environment";
 
@@ -23,8 +24,18 @@ export class CatalogoService {
     return this.http.get(this.URL + "/getCatalogos");
   }
 
+  /** Catálogo activos completo; resultado cacheado para evitar llamadas repetidas. */
   getCatalogoActivos() {
-    return this.http.get(this.URL + "/getCatalogosActivos");
+    return this.http
+      .get<catalogo[]>(this.URL + "/getCatalogosActivos")
+      .pipe(shareReplay(1));
+  }
+
+  /** Solo PRODUCTO y CANT_MINIMA; más rápido y menos payload (para stock mínimo). */
+  getCatalogoActivosLigero() {
+    return this.http.get<Pick<catalogo, "PRODUCTO" | "CANT_MINIMA">[]>(
+      this.URL + "/getCatalogosActivosLigero"
+    );
   }
 
   updateCatalogo(catalogo) {

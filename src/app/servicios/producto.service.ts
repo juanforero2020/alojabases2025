@@ -1,6 +1,7 @@
 import { Injectable } from "@angular/core";
 import { HttpClient } from "@angular/common/http";
 import { Router } from "@angular/router";
+import { shareReplay } from "rxjs/operators";
 import { Producto } from "../pages/compras/compra";
 import { environment } from "src/environments/environment";
 
@@ -27,8 +28,16 @@ export class ProductoService {
     return this.http.get(this.URL + `/getProductobyID/${id}`);
   }
 
+  /** Productos activos completos; resultado cacheado para evitar llamadas repetidas. */
   getProductosActivos() {
-    return this.http.get(this.URL + "/getProductosActivos");
+    return this.http
+      .get<Producto[]>(this.URL + "/getProductosActivos")
+      .pipe(shareReplay(1));
+  }
+
+  /** Solo campos necesarios para stock mínimo; más rápido y menos payload. */
+  getProductosActivosLigero() {
+    return this.http.get<Producto[]>(this.URL + "/getProductosActivosLigero");
   }
 
   getProductosPorFiltros1(producto) {

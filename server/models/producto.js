@@ -39,4 +39,7 @@ const ProductoSchema = new Schema({
     timestamps:true
 });
 
+// Índice para consultas por ESTADO (getProductosActivos)
+ProductoSchema.index({ ESTADO: 1 });
+
 module.exports = mongoose.model('Producto', ProductoSchema);

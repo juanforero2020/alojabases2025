@@ -47,7 +47,16 @@ router.get('/getCatalogos', async (req, res) => {
 
 router.get('/getCatalogosActivos', async (req, res) => {
     const catalogo = await Catalogo.find({"ESTADO":"ACTIVO"});
-    res.json(catalogo); 
+    res.json(catalogo);
+})
+
+// Versión ligera: solo PRODUCTO y CANT_MINIMA (para stock mínimo, menos datos = más rápido)
+router.get('/getCatalogosActivosLigero', async (req, res) => {
+    const catalogo = await Catalogo.find(
+        { ESTADO: 'ACTIVO' },
+        { PRODUCTO: 1, CANT_MINIMA: 1, _id: 0 }
+    ).lean();
+    res.json(catalogo);
 })
 
 router.put('/updateEstado/:id/:estado', async (req, res,next) => {

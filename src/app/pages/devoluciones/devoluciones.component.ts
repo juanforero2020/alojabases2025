@@ -1048,7 +1048,10 @@ export class DevolucionesComponent implements OnInit, OnDestroy {
       text: "Se ha guardado con éxito",
       icon: "success",
       confirmButtonText: "Ok",
-    }).then(() => this.refrescarListado());
+    }).then(() => 
+      window.location.reload()
+      //this.refrescarListado()
+    );
   }
 
   refrescarListado() {

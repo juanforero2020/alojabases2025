@@ -46248,7 +46248,9 @@ class DevolucionesComponent {
             text: "Se ha guardado con éxito",
             icon: "success",
             confirmButtonText: "Ok",
-        }).then(() => this.refrescarListado());
+        }).then(() => window.location.reload()
+        //this.refrescarListado()
+        );
     }
     refrescarListado() {
         const obj = new _transacciones_transacciones__WEBPACK_IMPORTED_MODULE_7__["objDate"]();
@@ -51853,8 +51855,8 @@ class HomeComponent {
         this.productosBajoMinimoPorCategoria = [];
         this.loading = false;
         this.errorCarga = false;
-        this.versionSistema = "1.0.5";
-        this.ultimaFechaActualizacion = "03/03/2026 13:00";
+        this.versionSistema = "1.0.6";
+        this.ultimaFechaActualizacion = "04/03/2026 21:00";
     }
     ngOnInit() {
         this.cargarProductosBajoMinimo();
@@ -95789,10 +95791,12 @@ CajaMenorService.ɵprov = _angular_core__WEBPACK_IMPORTED_MODULE_0__["ɵɵdefine
 __webpack_require__.r(__webpack_exports__);
 /* harmony export (binding) */ __webpack_require__.d(__webpack_exports__, "CatalogoService", function() { return CatalogoService; });
 /* harmony import */ var _angular_core__WEBPACK_IMPORTED_MODULE_0__ = __webpack_require__(/*! @angular/core */ "./node_modules/@angular/core/__ivy_ngcc__/fesm2015/core.js");
-/* harmony import */ var _pages_catalogo_catalogo__WEBPACK_IMPORTED_MODULE_1__ = __webpack_require__(/*! ../pages/catalogo/catalogo */ "./src/app/pages/catalogo/catalogo.ts");
-/* harmony import */ var src_environments_environment__WEBPACK_IMPORTED_MODULE_2__ = __webpack_require__(/*! src/environments/environment */ "./src/environments/environment.ts");
-/* harmony import */ var _angular_common_http__WEBPACK_IMPORTED_MODULE_3__ = __webpack_require__(/*! @angular/common/http */ "./node_modules/@angular/common/__ivy_ngcc__/fesm2015/http.js");
-/* harmony import */ var _angular_router__WEBPACK_IMPORTED_MODULE_4__ = __webpack_require__(/*! @angular/router */ "./node_modules/@angular/router/__ivy_ngcc__/fesm2015/router.js");
+/* harmony import */ var rxjs_operators__WEBPACK_IMPORTED_MODULE_1__ = __webpack_require__(/*! rxjs/operators */ "./node_modules/rxjs/_esm2015/operators/index.js");
+/* harmony import */ var _pages_catalogo_catalogo__WEBPACK_IMPORTED_MODULE_2__ = __webpack_require__(/*! ../pages/catalogo/catalogo */ "./src/app/pages/catalogo/catalogo.ts");
+/* harmony import */ var src_environments_environment__WEBPACK_IMPORTED_MODULE_3__ = __webpack_require__(/*! src/environments/environment */ "./src/environments/environment.ts");
+/* harmony import */ var _angular_common_http__WEBPACK_IMPORTED_MODULE_4__ = __webpack_require__(/*! @angular/common/http */ "./node_modules/@angular/common/__ivy_ngcc__/fesm2015/http.js");
+/* harmony import */ var _angular_router__WEBPACK_IMPORTED_MODULE_5__ = __webpack_require__(/*! @angular/router */ "./node_modules/@angular/router/__ivy_ngcc__/fesm2015/router.js");
+
 
 
 
@@ -95805,7 +95809,7 @@ class CatalogoService {
         this.http = http;
         this.router = router;
         //private URL = "http://159.223.107.115:3000/catalogo";
-        this.URL = `${src_environments_environment__WEBPACK_IMPORTED_MODULE_2__["environment"].services.urlServices}/catalogo`;
+        this.URL = `${src_environments_environment__WEBPACK_IMPORTED_MODULE_3__["environment"].services.urlServices}/catalogo`;
     }
     newCatalogo(catalogo) {
         return this.http.post(this.URL + "/newCatalogo", catalogo);
@@ -95813,8 +95817,15 @@ class CatalogoService {
     getCatalogo() {
         return this.http.get(this.URL + "/getCatalogos");
     }
+    /** Catálogo activos completo; resultado cacheado para evitar llamadas repetidas. */
     getCatalogoActivos() {
-        return this.http.get(this.URL + "/getCatalogosActivos");
+        return this.http
+            .get(this.URL + "/getCatalogosActivos")
+            .pipe(Object(rxjs_operators__WEBPACK_IMPORTED_MODULE_1__["shareReplay"])(1));
+    }
+    /** Solo PRODUCTO y CANT_MINIMA; más rápido y menos payload (para stock mínimo). */
+    getCatalogoActivosLigero() {
+        return this.http.get(this.URL + "/getCatalogosActivosLigero");
     }
     updateCatalogo(catalogo) {
         return this.http.put(this.URL + `/update/${catalogo._id}`, catalogo);
@@ -95826,20 +95837,20 @@ class CatalogoService {
         return this.http.put(this.URL + `/updateEstado/${productoId}/${estado}`, productoId);
     }
     updateCatalogoAplicacion(nombre, aplicacion) {
-        return this.http.put(this.URL + `/updateAplicacion/${nombre}/${aplicacion}`, _pages_catalogo_catalogo__WEBPACK_IMPORTED_MODULE_1__["catalogo"]);
+        return this.http.put(this.URL + `/updateAplicacion/${nombre}/${aplicacion}`, _pages_catalogo_catalogo__WEBPACK_IMPORTED_MODULE_2__["catalogo"]);
     }
     deleteCatalogo(catalogo) {
         return this.http.delete(this.URL + `/delete/${catalogo._id}`, catalogo);
     }
 }
-CatalogoService.ɵfac = function CatalogoService_Factory(t) { return new (t || CatalogoService)(_angular_core__WEBPACK_IMPORTED_MODULE_0__["ɵɵinject"](_angular_common_http__WEBPACK_IMPORTED_MODULE_3__["HttpClient"]), _angular_core__WEBPACK_IMPORTED_MODULE_0__["ɵɵinject"](_angular_router__WEBPACK_IMPORTED_MODULE_4__["Router"])); };
+CatalogoService.ɵfac = function CatalogoService_Factory(t) { return new (t || CatalogoService)(_angular_core__WEBPACK_IMPORTED_MODULE_0__["ɵɵinject"](_angular_common_http__WEBPACK_IMPORTED_MODULE_4__["HttpClient"]), _angular_core__WEBPACK_IMPORTED_MODULE_0__["ɵɵinject"](_angular_router__WEBPACK_IMPORTED_MODULE_5__["Router"])); };
 CatalogoService.ɵprov = _angular_core__WEBPACK_IMPORTED_MODULE_0__["ɵɵdefineInjectable"]({ token: CatalogoService, factory: CatalogoService.ɵfac, providedIn: "root" });
 /*@__PURE__*/ (function () { _angular_core__WEBPACK_IMPORTED_MODULE_0__["ɵsetClassMetadata"](CatalogoService, [{
         type: _angular_core__WEBPACK_IMPORTED_MODULE_0__["Injectable"],
         args: [{
                 providedIn: "root",
             }]
-    }], function () { return [{ type: _angular_common_http__WEBPACK_IMPORTED_MODULE_3__["HttpClient"] }, { type: _angular_router__WEBPACK_IMPORTED_MODULE_4__["Router"] }]; }, null); })();
+    }], function () { return [{ type: _angular_common_http__WEBPACK_IMPORTED_MODULE_4__["HttpClient"] }, { type: _angular_router__WEBPACK_IMPORTED_MODULE_5__["Router"] }]; }, null); })();
 
 
 /***/ }),
@@ -97668,9 +97679,11 @@ PrestamosService.ɵprov = _angular_core__WEBPACK_IMPORTED_MODULE_0__["ɵɵdefine
 __webpack_require__.r(__webpack_exports__);
 /* harmony export (binding) */ __webpack_require__.d(__webpack_exports__, "ProductoService", function() { return ProductoService; });
 /* harmony import */ var _angular_core__WEBPACK_IMPORTED_MODULE_0__ = __webpack_require__(/*! @angular/core */ "./node_modules/@angular/core/__ivy_ngcc__/fesm2015/core.js");
-/* harmony import */ var src_environments_environment__WEBPACK_IMPORTED_MODULE_1__ = __webpack_require__(/*! src/environments/environment */ "./src/environments/environment.ts");
-/* harmony import */ var _angular_common_http__WEBPACK_IMPORTED_MODULE_2__ = __webpack_require__(/*! @angular/common/http */ "./node_modules/@angular/common/__ivy_ngcc__/fesm2015/http.js");
-/* harmony import */ var _angular_router__WEBPACK_IMPORTED_MODULE_3__ = __webpack_require__(/*! @angular/router */ "./node_modules/@angular/router/__ivy_ngcc__/fesm2015/router.js");
+/* harmony import */ var rxjs_operators__WEBPACK_IMPORTED_MODULE_1__ = __webpack_require__(/*! rxjs/operators */ "./node_modules/rxjs/_esm2015/operators/index.js");
+/* harmony import */ var src_environments_environment__WEBPACK_IMPORTED_MODULE_2__ = __webpack_require__(/*! src/environments/environment */ "./src/environments/environment.ts");
+/* harmony import */ var _angular_common_http__WEBPACK_IMPORTED_MODULE_3__ = __webpack_require__(/*! @angular/common/http */ "./node_modules/@angular/common/__ivy_ngcc__/fesm2015/http.js");
+/* harmony import */ var _angular_router__WEBPACK_IMPORTED_MODULE_4__ = __webpack_require__(/*! @angular/router */ "./node_modules/@angular/router/__ivy_ngcc__/fesm2015/router.js");
+
 
 
 
@@ -97682,7 +97695,7 @@ class ProductoService {
         this.router = router;
         //private URL = 'http://localhost:3000/producto'; //localhost
         //private URL = "http://159.223.107.115:3000/producto";
-        this.URL = `${src_environments_environment__WEBPACK_IMPORTED_MODULE_1__["environment"].services.urlServices}/producto`;
+        this.URL = `${src_environments_environment__WEBPACK_IMPORTED_MODULE_2__["environment"].services.urlServices}/producto`;
     }
     newProducto(producto) {
         return this.http.post(this.URL + "/newProducto", producto);
@@ -97693,8 +97706,15 @@ class ProductoService {
     getProductobyId(id) {
         return this.http.get(this.URL + `/getProductobyID/${id}`);
     }
+    /** Productos activos completos; resultado cacheado para evitar llamadas repetidas. */
     getProductosActivos() {
-        return this.http.get(this.URL + "/getProductosActivos");
+        return this.http
+            .get(this.URL + "/getProductosActivos")
+            .pipe(Object(rxjs_operators__WEBPACK_IMPORTED_MODULE_1__["shareReplay"])(1));
+    }
+    /** Solo campos necesarios para stock mínimo; más rápido y menos payload. */
+    getProductosActivosLigero() {
+        return this.http.get(this.URL + "/getProductosActivosLigero");
     }
     getProductosPorFiltros1(producto) {
         return this.http.post(this.URL + "/getProductosPorFiltros1", producto);
@@ -97828,14 +97848,14 @@ class ProductoService {
         return this.http.put(this.URL + `/updateProductoPenSuc3/${producto._id}/${num}`, producto);
     }
 }
-ProductoService.ɵfac = function ProductoService_Factory(t) { return new (t || ProductoService)(_angular_core__WEBPACK_IMPORTED_MODULE_0__["ɵɵinject"](_angular_common_http__WEBPACK_IMPORTED_MODULE_2__["HttpClient"]), _angular_core__WEBPACK_IMPORTED_MODULE_0__["ɵɵinject"](_angular_router__WEBPACK_IMPORTED_MODULE_3__["Router"])); };
+ProductoService.ɵfac = function ProductoService_Factory(t) { return new (t || ProductoService)(_angular_core__WEBPACK_IMPORTED_MODULE_0__["ɵɵinject"](_angular_common_http__WEBPACK_IMPORTED_MODULE_3__["HttpClient"]), _angular_core__WEBPACK_IMPORTED_MODULE_0__["ɵɵinject"](_angular_router__WEBPACK_IMPORTED_MODULE_4__["Router"])); };
 ProductoService.ɵprov = _angular_core__WEBPACK_IMPORTED_MODULE_0__["ɵɵdefineInjectable"]({ token: ProductoService, factory: ProductoService.ɵfac, providedIn: "root" });
 /*@__PURE__*/ (function () { _angular_core__WEBPACK_IMPORTED_MODULE_0__["ɵsetClassMetadata"](ProductoService, [{
         type: _angular_core__WEBPACK_IMPORTED_MODULE_0__["Injectable"],
         args: [{
                 providedIn: "root",
             }]
-    }], function () { return [{ type: _angular_common_http__WEBPACK_IMPORTED_MODULE_2__["HttpClient"] }, { type: _angular_router__WEBPACK_IMPORTED_MODULE_3__["Router"] }]; }, null); })();
+    }], function () { return [{ type: _angular_common_http__WEBPACK_IMPORTED_MODULE_3__["HttpClient"] }, { type: _angular_router__WEBPACK_IMPORTED_MODULE_4__["Router"] }]; }, null); })();
 
 
 /***/ }),
@@ -98751,8 +98771,8 @@ class StockMinimoDataService {
      */
     getProductosBajoMinimoAgrupadosPorCategoria() {
         return Object(rxjs__WEBPACK_IMPORTED_MODULE_1__["forkJoin"])({
-            productos: this.productoService.getProductosActivos(),
-            catalogos: this.catalogoService.getCatalogoActivos(),
+            productos: this.productoService.getProductosActivosLigero(),
+            catalogos: this.catalogoService.getCatalogoActivosLigero(),
         }).pipe(Object(rxjs_operators__WEBPACK_IMPORTED_MODULE_2__["switchMap"])(({ productos, catalogos }) => {
             const productosList = (productos || []);
             const catalogosList = (catalogos || []);
@@ -98881,11 +98901,14 @@ class StockMinimoDataService {
     }
     filtrarBajoMinimo(invetarioP, catalogos) {
         const resultado = [];
+        const minimoPorProducto = new Map(catalogos
+            .filter((c) => c.CANT_MINIMA != null && c.CANT_MINIMA !== 0)
+            .map((c) => [c.PRODUCTO, Number(c.CANT_MINIMA)]));
         invetarioP.forEach((element) => {
-            const catal = catalogos.find((p) => p.PRODUCTO === element.producto.PRODUCTO);
-            if (catal != null && catal.CANT_MINIMA != null && catal.CANT_MINIMA !== 0) {
-                element.producto.cantidad = catal.CANT_MINIMA;
-                if (element.cantidadM2 <= catal.CANT_MINIMA) {
+            const cantMinima = minimoPorProducto.get(element.producto.PRODUCTO);
+            if (cantMinima != null) {
+                element.producto.cantidad = cantMinima;
+                if (element.cantidadM2 <= cantMinima) {
                     resultado.push(element);
                 }
             }

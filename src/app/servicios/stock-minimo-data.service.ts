@@ -33,8 +33,8 @@ export class StockMinimoDataService {
     ProductosBajoMinimoPorCategoria[]
   > {
     return forkJoin({
-      productos: this.productoService.getProductosActivos(),
-      catalogos: this.catalogoService.getCatalogoActivos(),
+      productos: this.productoService.getProductosActivosLigero(),
+      catalogos: this.catalogoService.getCatalogoActivosLigero(),
     }).pipe(
       switchMap(({ productos, catalogos }) => {
         const productosList = (productos || []) as producto[];
@@ -205,13 +205,16 @@ export class StockMinimoDataService {
     catalogos: catalogo[]
   ): inventario[] {
     const resultado: inventario[] = [];
+    const minimoPorProducto = new Map(
+      catalogos
+        .filter((c) => c.CANT_MINIMA != null && c.CANT_MINIMA !== 0)
+        .map((c) => [c.PRODUCTO, Number(c.CANT_MINIMA)])
+    );
     invetarioP.forEach((element) => {
-      const catal = catalogos.find(
-        (p) => p.PRODUCTO === element.producto.PRODUCTO
-      );
-      if (catal != null && catal.CANT_MINIMA != null && catal.CANT_MINIMA !== 0) {
-        element.producto.cantidad = catal.CANT_MINIMA;
-        if (element.cantidadM2 <= catal.CANT_MINIMA) {
+      const cantMinima = minimoPorProducto.get(element.producto.PRODUCTO);
+      if (cantMinima != null) {
+        element.producto.cantidad = cantMinima;
+        if (element.cantidadM2 <= cantMinima) {
           resultado.push(element);
         }
       }

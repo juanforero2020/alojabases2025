@@ -33,4 +33,7 @@ const CatalogoSchema = new Schema({
     timestamps:true
 });
 
+// Índice para consultas por ESTADO (getCatalogosActivos)
+CatalogoSchema.index({ ESTADO: 1 });
+
 module.exports = mongoose.model('Catalogo', CatalogoSchema);

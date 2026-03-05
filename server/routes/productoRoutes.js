@@ -9,7 +9,23 @@ router.get('/getProductos', async (req, res) => {
 
 router.get('/getProductosActivos', async (req, res) => {
     const productos = await Producto.find({"ESTADO":"ACTIVO"});
-    res.send(productos)      
+    res.send(productos);
+})
+
+// Versión ligera: solo campos necesarios para stock mínimo (menos datos = más rápido)
+router.get('/getProductosActivosLigero', async (req, res) => {
+    const productos = await Producto.find(
+        { ESTADO: 'ACTIVO' },
+        {
+            PRODUCTO: 1, CASA: 1, CLASIFICA: 1, M2: 1, P_CAJA: 1,
+            UNIDAD: 1,
+            ubicacionSuc1: 1, ubicacionSuc2: 1, ubicacionSuc3: 1,
+            ultimoPrecioCompra: 1, porcentaje_ganancia: 1, precio: 1,
+            ultimaFechaCompra: 1, notas: 1,
+            _id: 0
+        }
+    ).lean();
+    res.send(productos);
 })
 
 router.get('/getProductobyID/:id', async (req, res) => {
