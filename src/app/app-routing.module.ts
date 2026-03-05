@@ -69,6 +69,7 @@ import { ControlUnidadesComponent } from "./pages/control-unidades/control-unida
 import { CargaMasivaComponent } from "./pages/carga-masiva/carga-masiva.component";
 import { DescuentoComponent } from "./pages/descuentos/descuentos.component";
 import { IvaComponent } from "./pages/iva/iva.component";
+import { ConfiguracionPresentacionComponent } from "./pages/configuracion-presentacion/configuracion-presentacion.component";
 
 const routes: Routes = [
   {
@@ -205,6 +206,12 @@ const routes: Routes = [
     canActivate: [AuthGuardService],
     data: { roles: ["Administrador"] },
     component: ControlUnidadesComponent,
+  },
+  {
+    path: "configuracion-presentacion",
+    canActivate: [AuthGuardService],
+    data: { roles: ["Administrador"] },
+    component: ConfiguracionPresentacionComponent,
   },
   {
     path: "proveedores",

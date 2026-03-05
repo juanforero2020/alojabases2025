@@ -114,6 +114,7 @@ import { ControlUnidadesComponent } from "./pages/control-unidades/control-unida
 import { CargaMasivaComponent } from "./pages/carga-masiva/carga-masiva.component";
 import { DescuentoComponent } from "./pages/descuentos/descuentos.component";
 import { IvaComponent } from './pages/iva/iva.component';
+import { ConfiguracionPresentacionComponent } from './pages/configuracion-presentacion/configuracion-presentacion.component';
 
 @NgModule({
   declarations: [
@@ -178,7 +179,8 @@ import { IvaComponent } from './pages/iva/iva.component';
     StockLocalesComponent,
     VentasNuevoComponent,
     CargaMasivaComponent,
-    IvaComponent
+    IvaComponent,
+    ConfiguracionPresentacionComponent
   ],
   imports: [
     BrowserModule,

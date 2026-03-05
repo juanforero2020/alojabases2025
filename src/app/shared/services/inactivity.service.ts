@@ -1,7 +1,8 @@
 import { Injectable } from '@angular/core';
+import { DatosConfiguracionService } from 'src/app/servicios/datosConfiguracion.service';
 
-/** Tiempo de inactividad en milisegundos (30 minutos) */
-const INACTIVITY_TIMEOUT_MS = 30 * 60 * 1000;
+/** Valor por defecto de minutos de inactividad si no viene en configuración */
+const DEFAULT_MINUTOS_INACTIVIDAD = 30;
 
 @Injectable()
 export class InactivityService {
@@ -9,22 +10,39 @@ export class InactivityService {
   private listeners: Array<() => void> = [];
   private onInactivityCallback: (() => void) | null = null;
 
-  constructor() {}
+  constructor(private datosConfiguracionService: DatosConfiguracionService) {}
 
   /**
    * Inicia la vigilancia de inactividad. Ante cualquier interacción (ratón, teclado, touch)
-   * se reinicia el temporizador. Tras 30 minutos sin actividad se ejecuta el callback.
+   * se reinicia el temporizador. El tiempo en minutos se obtiene de la configuración (minutosInactividad).
    * @param onInactivity Callback a ejecutar cuando se detecte inactividad (ej: cerrar sesión).
    */
   startWatching(onInactivity: () => void): void {
     this.stopWatching();
     this.onInactivityCallback = onInactivity;
 
+    this.datosConfiguracionService.getDatosConfiguracion().subscribe({
+      next: (config) => {
+        const minutos = config?.[0]?.minutosInactividad ?? DEFAULT_MINUTOS_INACTIVIDAD;
+        console.log('minutos', minutos);
+        const inactivityTimeoutMs = minutos * 60 * 1000;
+        this.startWatchingWithTimeout(onInactivity, inactivityTimeoutMs);
+      },
+      error: () => {
+        const inactivityTimeoutMs = DEFAULT_MINUTOS_INACTIVIDAD * 60 * 1000;
+        this.startWatchingWithTimeout(onInactivity, inactivityTimeoutMs);
+      }
+    });
+  }
+
+  private startWatchingWithTimeout(onInactivity: () => void, inactivityTimeoutMs: number): void {
+    this.onInactivityCallback = onInactivity;
+
     const resetTimer = () => {
       if (this.timeoutId) {
         clearTimeout(this.timeoutId);
       }
-      this.timeoutId = setTimeout(() => this.handleInactivity(), INACTIVITY_TIMEOUT_MS);
+      this.timeoutId = setTimeout(() => this.handleInactivity(), inactivityTimeoutMs);
     };
 
     const events = ['mousemove', 'mousedown', 'keydown', 'scroll', 'touchstart', 'click'];

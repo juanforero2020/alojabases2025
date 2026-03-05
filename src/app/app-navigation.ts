@@ -355,7 +355,8 @@ export const navigationAdmin = [
             text: "Cierres",
           },
           {
-            text: "Presentación",
+            text: "Software",
+            path: "/configuracion-presentacion",
           },
           {
             text: "Datos Fuente",
