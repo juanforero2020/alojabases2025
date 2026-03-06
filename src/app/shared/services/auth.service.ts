@@ -77,7 +77,7 @@ export class AuthService {
     this.loggedIn = false;
     localStorage.setItem("logged", this.loggedIn.toString());
     if (porInactividad) {
-      alert('Su sesión ha sido cerrada por inactividad (30 minutos). Por favor, inicie sesión nuevamente.');
+      alert('Su sesión ha sido cerrada por inactividad. Por favor, inicie sesión nuevamente.');
     }
     this.router.navigate(['/login-form']);
   }

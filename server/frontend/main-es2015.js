@@ -100938,7 +100938,7 @@ class AuthService {
             this.loggedIn = false;
             localStorage.setItem("logged", this.loggedIn.toString());
             if (porInactividad) {
-                alert('Su sesión ha sido cerrada por inactividad (30 minutos). Por favor, inicie sesión nuevamente.');
+                alert('Su sesión ha sido cerrada por inactividad. Por favor, inicie sesión nuevamente.');
             }
             this.router.navigate(['/login-form']);
         });
@@ -100997,19 +100997,16 @@ __webpack_require__.r(__webpack_exports__);
 
 
 
-/** Valor por defecto de minutos de inactividad si no viene en configuración */
 const DEFAULT_MINUTOS_INACTIVIDAD = 30;
 class InactivityService {
-    constructor(datosConfiguracionService) {
+    constructor(datosConfiguracionService, ngZone) {
         this.datosConfiguracionService = datosConfiguracionService;
+        this.ngZone = ngZone;
         this.listeners = [];
         this.onInactivityCallback = null;
+        this.lastActivity = Date.now();
+        this.inactivityTimeoutMs = DEFAULT_MINUTOS_INACTIVIDAD * 60 * 1000;
     }
-    /**
-     * Inicia la vigilancia de inactividad. Ante cualquier interacción (ratón, teclado, touch)
-     * se reinicia el temporizador. El tiempo en minutos se obtiene de la configuración (minutosInactividad).
-     * @param onInactivity Callback a ejecutar cuando se detecte inactividad (ej: cerrar sesión).
-     */
     startWatching(onInactivity) {
         this.stopWatching();
         this.onInactivityCallback = onInactivity;
@@ -101017,39 +101014,62 @@ class InactivityService {
             next: (config) => {
                 var _a, _b, _c;
                 const minutos = (_c = (_b = (_a = config) === null || _a === void 0 ? void 0 : _a[0]) === null || _b === void 0 ? void 0 : _b.minutosInactividad, (_c !== null && _c !== void 0 ? _c : DEFAULT_MINUTOS_INACTIVIDAD));
-                console.log('minutos', minutos);
-                const inactivityTimeoutMs = minutos * 60 * 1000;
-                this.startWatchingWithTimeout(onInactivity, inactivityTimeoutMs);
+                this.inactivityTimeoutMs = minutos * 60 * 1000;
+                console.log('Tiempo de inactividad configurado:', minutos, 'min');
+                this.initializeListeners();
+                this.startIntervalCheck();
             },
             error: () => {
-                const inactivityTimeoutMs = DEFAULT_MINUTOS_INACTIVIDAD * 60 * 1000;
-                this.startWatchingWithTimeout(onInactivity, inactivityTimeoutMs);
+                this.inactivityTimeoutMs = DEFAULT_MINUTOS_INACTIVIDAD * 60 * 1000;
+                this.initializeListeners();
+                this.startIntervalCheck();
             }
         });
     }
-    startWatchingWithTimeout(onInactivity, inactivityTimeoutMs) {
-        this.onInactivityCallback = onInactivity;
-        const resetTimer = () => {
-            if (this.timeoutId) {
-                clearTimeout(this.timeoutId);
-            }
-            this.timeoutId = setTimeout(() => this.handleInactivity(), inactivityTimeoutMs);
+    initializeListeners() {
+        const updateActivity = () => {
+            this.lastActivity = Date.now();
         };
-        const events = ['mousemove', 'mousedown', 'keydown', 'scroll', 'touchstart', 'click'];
-        events.forEach(eventName => {
-            const handler = () => resetTimer();
-            document.addEventListener(eventName, handler);
-            this.listeners.push(() => document.removeEventListener(eventName, handler));
+        const events = [
+            'pointerdown',
+            'pointermove',
+            'keydown',
+            'scroll',
+            'touchstart',
+            'touchmove'
+        ];
+        events.forEach(event => {
+            const handler = () => updateActivity();
+            document.addEventListener(event, handler, true);
+            this.listeners.push(() => document.removeEventListener(event, handler, true));
         });
-        resetTimer();
+        // Detectar cuando el usuario vuelve a la pestaña
+        const visibilityHandler = () => {
+            if (!document.hidden) {
+                this.lastActivity = Date.now();
+            }
+        };
+        document.addEventListener('visibilitychange', visibilityHandler);
+        this.listeners.push(() => document.removeEventListener('visibilitychange', visibilityHandler));
+        this.lastActivity = Date.now();
     }
-    /**
-     * Detiene la vigilancia y elimina los listeners.
-     */
+    startIntervalCheck() {
+        this.ngZone.runOutsideAngular(() => {
+            this.checkIntervalId = setInterval(() => {
+                const now = Date.now();
+                const diff = now - this.lastActivity;
+                if (diff > this.inactivityTimeoutMs) {
+                    this.ngZone.run(() => {
+                        this.handleInactivity();
+                    });
+                }
+            }, 10000); // revisa cada 10 segundos
+        });
+    }
     stopWatching() {
-        if (this.timeoutId) {
-            clearTimeout(this.timeoutId);
-            this.timeoutId = null;
+        if (this.checkIntervalId) {
+            clearInterval(this.checkIntervalId);
+            this.checkIntervalId = null;
         }
         this.listeners.forEach(remove => remove());
         this.listeners = [];
@@ -101063,11 +101083,14 @@ class InactivityService {
         }
     }
 }
-InactivityService.ɵfac = function InactivityService_Factory(t) { return new (t || InactivityService)(_angular_core__WEBPACK_IMPORTED_MODULE_0__["ɵɵinject"](src_app_servicios_datosConfiguracion_service__WEBPACK_IMPORTED_MODULE_1__["DatosConfiguracionService"])); };
-InactivityService.ɵprov = _angular_core__WEBPACK_IMPORTED_MODULE_0__["ɵɵdefineInjectable"]({ token: InactivityService, factory: InactivityService.ɵfac });
+InactivityService.ɵfac = function InactivityService_Factory(t) { return new (t || InactivityService)(_angular_core__WEBPACK_IMPORTED_MODULE_0__["ɵɵinject"](src_app_servicios_datosConfiguracion_service__WEBPACK_IMPORTED_MODULE_1__["DatosConfiguracionService"]), _angular_core__WEBPACK_IMPORTED_MODULE_0__["ɵɵinject"](_angular_core__WEBPACK_IMPORTED_MODULE_0__["NgZone"])); };
+InactivityService.ɵprov = _angular_core__WEBPACK_IMPORTED_MODULE_0__["ɵɵdefineInjectable"]({ token: InactivityService, factory: InactivityService.ɵfac, providedIn: 'root' });
 /*@__PURE__*/ (function () { _angular_core__WEBPACK_IMPORTED_MODULE_0__["ɵsetClassMetadata"](InactivityService, [{
-        type: _angular_core__WEBPACK_IMPORTED_MODULE_0__["Injectable"]
-    }], function () { return [{ type: src_app_servicios_datosConfiguracion_service__WEBPACK_IMPORTED_MODULE_1__["DatosConfiguracionService"] }]; }, null); })();
+        type: _angular_core__WEBPACK_IMPORTED_MODULE_0__["Injectable"],
+        args: [{
+                providedIn: 'root'
+            }]
+    }], function () { return [{ type: src_app_servicios_datosConfiguracion_service__WEBPACK_IMPORTED_MODULE_1__["DatosConfiguracionService"] }, { type: _angular_core__WEBPACK_IMPORTED_MODULE_0__["NgZone"] }]; }, null); })();
 
 
 /***/ }),

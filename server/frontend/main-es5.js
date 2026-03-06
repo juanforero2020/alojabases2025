@@ -165721,7 +165721,7 @@ function _classCallCheck(instance, Constructor) { if (!(instance instanceof Cons
                     localStorage.setItem("logged", this.loggedIn.toString());
 
                     if (porInactividad) {
-                      alert('Su sesión ha sido cerrada por inactividad (30 minutos). Por favor, inicie sesión nuevamente.');
+                      alert('Su sesión ha sido cerrada por inactividad. Por favor, inicie sesión nuevamente.');
                     }
 
                     this.router.navigate(['/login-form']);
@@ -165861,25 +165861,20 @@ function _classCallCheck(instance, Constructor) { if (!(instance instanceof Cons
     var src_app_servicios_datosConfiguracion_service__WEBPACK_IMPORTED_MODULE_1__ = __webpack_require__(
     /*! src/app/servicios/datosConfiguracion.service */
     "./src/app/servicios/datosConfiguracion.service.ts");
-    /** Valor por defecto de minutos de inactividad si no viene en configuración */
-
 
     var DEFAULT_MINUTOS_INACTIVIDAD = 30;
 
     var InactivityService = /*#__PURE__*/function () {
-      function InactivityService(datosConfiguracionService) {
+      function InactivityService(datosConfiguracionService, ngZone) {
         _classCallCheck(this, InactivityService);
 
         this.datosConfiguracionService = datosConfiguracionService;
+        this.ngZone = ngZone;
         this.listeners = [];
         this.onInactivityCallback = null;
+        this.lastActivity = Date.now();
+        this.inactivityTimeoutMs = DEFAULT_MINUTOS_INACTIVIDAD * 60 * 1000;
       }
-      /**
-       * Inicia la vigilancia de inactividad. Ante cualquier interacción (ratón, teclado, touch)
-       * se reinicia el temporizador. El tiempo en minutos se obtiene de la configuración (minutosInactividad).
-       * @param onInactivity Callback a ejecutar cuando se detecte inactividad (ej: cerrar sesión).
-       */
-
 
       _createClass(InactivityService, [{
         key: "startWatching",
@@ -165893,59 +165888,80 @@ function _classCallCheck(instance, Constructor) { if (!(instance instanceof Cons
               var _a, _b, _c;
 
               var minutos = (_c = (_b = (_a = config) === null || _a === void 0 ? void 0 : _a[0]) === null || _b === void 0 ? void 0 : _b.minutosInactividad, _c !== null && _c !== void 0 ? _c : DEFAULT_MINUTOS_INACTIVIDAD);
-              console.log('minutos', minutos);
-              var inactivityTimeoutMs = minutos * 60 * 1000;
+              _this1385.inactivityTimeoutMs = minutos * 60 * 1000;
+              console.log('Tiempo de inactividad configurado:', minutos, 'min');
 
-              _this1385.startWatchingWithTimeout(onInactivity, inactivityTimeoutMs);
+              _this1385.initializeListeners();
+
+              _this1385.startIntervalCheck();
             },
             error: function error() {
-              var inactivityTimeoutMs = DEFAULT_MINUTOS_INACTIVIDAD * 60 * 1000;
+              _this1385.inactivityTimeoutMs = DEFAULT_MINUTOS_INACTIVIDAD * 60 * 1000;
 
-              _this1385.startWatchingWithTimeout(onInactivity, inactivityTimeoutMs);
+              _this1385.initializeListeners();
+
+              _this1385.startIntervalCheck();
             }
           });
         }
       }, {
-        key: "startWatchingWithTimeout",
-        value: function startWatchingWithTimeout(onInactivity, inactivityTimeoutMs) {
+        key: "initializeListeners",
+        value: function initializeListeners() {
           var _this1386 = this;
 
-          this.onInactivityCallback = onInactivity;
-
-          var resetTimer = function resetTimer() {
-            if (_this1386.timeoutId) {
-              clearTimeout(_this1386.timeoutId);
-            }
-
-            _this1386.timeoutId = setTimeout(function () {
-              return _this1386.handleInactivity();
-            }, inactivityTimeoutMs);
+          var updateActivity = function updateActivity() {
+            _this1386.lastActivity = Date.now();
           };
 
-          var events = ['mousemove', 'mousedown', 'keydown', 'scroll', 'touchstart', 'click'];
-          events.forEach(function (eventName) {
+          var events = ['pointerdown', 'pointermove', 'keydown', 'scroll', 'touchstart', 'touchmove'];
+          events.forEach(function (event) {
             var handler = function handler() {
-              return resetTimer();
+              return updateActivity();
             };
 
-            document.addEventListener(eventName, handler);
+            document.addEventListener(event, handler, true);
 
             _this1386.listeners.push(function () {
-              return document.removeEventListener(eventName, handler);
+              return document.removeEventListener(event, handler, true);
             });
-          });
-          resetTimer();
-        }
-        /**
-         * Detiene la vigilancia y elimina los listeners.
-         */
+          }); // Detectar cuando el usuario vuelve a la pestaña
 
+          var visibilityHandler = function visibilityHandler() {
+            if (!document.hidden) {
+              _this1386.lastActivity = Date.now();
+            }
+          };
+
+          document.addEventListener('visibilitychange', visibilityHandler);
+          this.listeners.push(function () {
+            return document.removeEventListener('visibilitychange', visibilityHandler);
+          });
+          this.lastActivity = Date.now();
+        }
+      }, {
+        key: "startIntervalCheck",
+        value: function startIntervalCheck() {
+          var _this1387 = this;
+
+          this.ngZone.runOutsideAngular(function () {
+            _this1387.checkIntervalId = setInterval(function () {
+              var now = Date.now();
+              var diff = now - _this1387.lastActivity;
+
+              if (diff > _this1387.inactivityTimeoutMs) {
+                _this1387.ngZone.run(function () {
+                  _this1387.handleInactivity();
+                });
+              }
+            }, 10000); // revisa cada 10 segundos
+          });
+        }
       }, {
         key: "stopWatching",
         value: function stopWatching() {
-          if (this.timeoutId) {
-            clearTimeout(this.timeoutId);
-            this.timeoutId = null;
+          if (this.checkIntervalId) {
+            clearInterval(this.checkIntervalId);
+            this.checkIntervalId = null;
           }
 
           this.listeners.forEach(function (remove) {
@@ -165970,21 +165986,27 @@ function _classCallCheck(instance, Constructor) { if (!(instance instanceof Cons
     }();
 
     InactivityService.ɵfac = function InactivityService_Factory(t) {
-      return new (t || InactivityService)(_angular_core__WEBPACK_IMPORTED_MODULE_0__["ɵɵinject"](src_app_servicios_datosConfiguracion_service__WEBPACK_IMPORTED_MODULE_1__["DatosConfiguracionService"]));
+      return new (t || InactivityService)(_angular_core__WEBPACK_IMPORTED_MODULE_0__["ɵɵinject"](src_app_servicios_datosConfiguracion_service__WEBPACK_IMPORTED_MODULE_1__["DatosConfiguracionService"]), _angular_core__WEBPACK_IMPORTED_MODULE_0__["ɵɵinject"](_angular_core__WEBPACK_IMPORTED_MODULE_0__["NgZone"]));
     };
 
     InactivityService.ɵprov = _angular_core__WEBPACK_IMPORTED_MODULE_0__["ɵɵdefineInjectable"]({
       token: InactivityService,
-      factory: InactivityService.ɵfac
+      factory: InactivityService.ɵfac,
+      providedIn: 'root'
     });
     /*@__PURE__*/
 
     (function () {
       _angular_core__WEBPACK_IMPORTED_MODULE_0__["ɵsetClassMetadata"](InactivityService, [{
-        type: _angular_core__WEBPACK_IMPORTED_MODULE_0__["Injectable"]
+        type: _angular_core__WEBPACK_IMPORTED_MODULE_0__["Injectable"],
+        args: [{
+          providedIn: 'root'
+        }]
       }], function () {
         return [{
           type: src_app_servicios_datosConfiguracion_service__WEBPACK_IMPORTED_MODULE_1__["DatosConfiguracionService"]
+        }, {
+          type: _angular_core__WEBPACK_IMPORTED_MODULE_0__["NgZone"]
         }];
       }, null);
     })();
@@ -166097,14 +166119,14 @@ function _classCallCheck(instance, Constructor) { if (!(instance instanceof Cons
 
     var ScreenService = /*#__PURE__*/function () {
       function ScreenService(breakpointObserver) {
-        var _this1387 = this;
+        var _this1388 = this;
 
         _classCallCheck(this, ScreenService);
 
         this.breakpointObserver = breakpointObserver;
         this.changed = new _angular_core__WEBPACK_IMPORTED_MODULE_0__["EventEmitter"]();
         this.breakpointObserver.observe([_angular_cdk_layout__WEBPACK_IMPORTED_MODULE_1__["Breakpoints"].XSmall, _angular_cdk_layout__WEBPACK_IMPORTED_MODULE_1__["Breakpoints"].Small, _angular_cdk_layout__WEBPACK_IMPORTED_MODULE_1__["Breakpoints"].Medium, _angular_cdk_layout__WEBPACK_IMPORTED_MODULE_1__["Breakpoints"].Large]).subscribe(function () {
-          return _this1387.changed.next();
+          return _this1388.changed.next();
         });
       }
 
