@@ -101006,6 +101006,8 @@ class InactivityService {
         this.onInactivityCallback = null;
         this.lastActivity = Date.now();
         this.inactivityTimeoutMs = DEFAULT_MINUTOS_INACTIVIDAD * 60 * 1000;
+        /** Momento en que la pestaña pasó a segundo plano (para móviles). */
+        this.hiddenAt = null;
     }
     startWatching(onInactivity) {
         this.stopWatching();
@@ -101027,6 +101029,7 @@ class InactivityService {
         });
     }
     initializeListeners() {
+        this.hiddenAt = null;
         const updateActivity = () => {
             this.lastActivity = Date.now();
         };
@@ -101043,9 +101046,21 @@ class InactivityService {
             document.addEventListener(event, handler, true);
             this.listeners.push(() => document.removeEventListener(event, handler, true));
         });
-        // Detectar cuando el usuario vuelve a la pestaña
+        // Crítico para móviles: al salir guardamos cuándo se ocultó; al volver comprobamos tiempo oculto
         const visibilityHandler = () => {
-            if (!document.hidden) {
+            if (document.hidden) {
+                this.hiddenAt = Date.now();
+            }
+            else {
+                // El usuario volvió a la pestaña (o a la app en móvil)
+                if (this.hiddenAt !== null) {
+                    const hiddenDurationMs = Date.now() - this.hiddenAt;
+                    if (hiddenDurationMs >= this.inactivityTimeoutMs) {
+                        this.ngZone.run(() => this.handleInactivity());
+                        return;
+                    }
+                    this.hiddenAt = null;
+                }
                 this.lastActivity = Date.now();
             }
         };
@@ -101073,6 +101088,7 @@ class InactivityService {
         }
         this.listeners.forEach(remove => remove());
         this.listeners = [];
+        this.hiddenAt = null;
         this.onInactivityCallback = null;
     }
     handleInactivity() {

@@ -165874,6 +165874,9 @@ function _classCallCheck(instance, Constructor) { if (!(instance instanceof Cons
         this.onInactivityCallback = null;
         this.lastActivity = Date.now();
         this.inactivityTimeoutMs = DEFAULT_MINUTOS_INACTIVIDAD * 60 * 1000;
+        /** Momento en que la pestaña pasó a segundo plano (para móviles). */
+
+        this.hiddenAt = null;
       }
 
       _createClass(InactivityService, [{
@@ -165909,6 +165912,8 @@ function _classCallCheck(instance, Constructor) { if (!(instance instanceof Cons
         value: function initializeListeners() {
           var _this1386 = this;
 
+          this.hiddenAt = null;
+
           var updateActivity = function updateActivity() {
             _this1386.lastActivity = Date.now();
           };
@@ -165924,10 +165929,27 @@ function _classCallCheck(instance, Constructor) { if (!(instance instanceof Cons
             _this1386.listeners.push(function () {
               return document.removeEventListener(event, handler, true);
             });
-          }); // Detectar cuando el usuario vuelve a la pestaña
+          }); // Crítico para móviles: al salir guardamos cuándo se ocultó; al volver comprobamos tiempo oculto
 
           var visibilityHandler = function visibilityHandler() {
-            if (!document.hidden) {
+            if (document.hidden) {
+              _this1386.hiddenAt = Date.now();
+            } else {
+              // El usuario volvió a la pestaña (o a la app en móvil)
+              if (_this1386.hiddenAt !== null) {
+                var hiddenDurationMs = Date.now() - _this1386.hiddenAt;
+
+                if (hiddenDurationMs >= _this1386.inactivityTimeoutMs) {
+                  _this1386.ngZone.run(function () {
+                    return _this1386.handleInactivity();
+                  });
+
+                  return;
+                }
+
+                _this1386.hiddenAt = null;
+              }
+
               _this1386.lastActivity = Date.now();
             }
           };
@@ -165968,6 +165990,7 @@ function _classCallCheck(instance, Constructor) { if (!(instance instanceof Cons
             return remove();
           });
           this.listeners = [];
+          this.hiddenAt = null;
           this.onInactivityCallback = null;
         }
       }, {
