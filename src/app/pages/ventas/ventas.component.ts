@@ -249,6 +249,7 @@ export class VentasComponent implements OnInit {
   consecutivoVeronica : ConsecutivoDto
   secuencialFactura : string
   listaParametrizaciones : controlUnidades[]=[]
+  nroActualFactura: number = 0;
 
 
   constructor(private db: AngularFirestore,
@@ -3309,7 +3310,7 @@ cambiarestado(e,i:number){
 
     //EMILINAR LUEGO DE PRUEBAS
     //TO-DO
-    /* this.mostrarLoading = false;
+    this.mostrarLoading = false;
     Swal.fire({
       title: 'Correcto',
       text: 'Factura registrada con éxito',
@@ -3336,11 +3337,11 @@ cambiarestado(e,i:number){
                     window.location.reload();
                 })
             },
-      err => {  }); */
+      err => {  });
 
 
     //TO-DO, DESCOMENTAR LUEGO DE PRUEBAS
-    this._apiVeronicaService.newFactura(this.facturaVeronica).subscribe(
+    /* this._apiVeronicaService.newFactura(this.facturaVeronica).subscribe(
       res => {  var resultado = res as ResponseVeronicaDto;
                 logApiVeronica.objetoResponse = JSON.stringify(res)
                 logApiVeronica.claveAcceso = resultado.result.claveAccesoConsultada
@@ -3382,7 +3383,7 @@ cambiarestado(e,i:number){
                             })
                         },
                   err => {  });              
-              }); 
+              });  */
   }
   
 
@@ -3393,8 +3394,11 @@ cambiarestado(e,i:number){
       this.factura.fecha= this.now
       this.factura.fecha2= new Date().toLocaleString()
       this.factura.productosVendidos=this.productosVendidos;
+      
       this.obtenerConsecutivoNotaVentaYActualizar().subscribe({
         next: () => {
+          
+          console.log('nroActualFactura', this.nroActualFactura);
           this.notasVentService.newNotaVenta(this.factura).subscribe(
             res => {
               this.validarFormaPago()
@@ -3680,7 +3684,7 @@ cambiarestado(e,i:number){
     this.mostrarLoading = false;
     this.telefonoCliente= this.factura.cliente.celular
     this.factura.cliente.cliente_nombre= this.mensaje
-   
+    this.nroActualFactura = this.factura.documento_n;
     if(this.factura.cliente!=undefined){
       if(this.factura.cliente.cliente_nombre!=undefined){
         this.buscarDatosSucursal()
@@ -3707,12 +3711,13 @@ cambiarestado(e,i:number){
             if(this.factura.cliente.nombreContacto == "" || this.factura.cliente.nombreContacto == undefined)
               this.factura.cliente.nombreContacto=this.factura.cliente.cliente_nombre
             
-            new Promise<any>((resolve, reject) => { 
-              this.crearCliente()
-              this.guardarFactura()
-              this.productosVendidos.forEach(element => {
+            this.crearCliente()
+            const numeroDocFactura = this.factura.documento_n
+            this.nroActualFactura = numeroDocFactura
+            this.guardarFactura()
+            this.productosVendidos.forEach(element => {
                 this.validarExistencias(element)
-                element.factura_id = this.factura.documento_n
+                element.factura_id = numeroDocFactura
                 this.transaccion = new transaccion()
                 this.transaccion.fecha_mov=new Date().toLocaleString()
                 this.transaccion.fecha_transaccion=this.factura.fecha
@@ -3722,9 +3727,9 @@ cambiarestado(e,i:number){
                 this.transaccion.valor=element.precio_venta-(element.precio_venta*(element.descuento/100))
                 this.transaccion.cantM2=element.cantidad
                 this.transaccion.costo_unitario=element.producto.precio
-                this.transaccion.documento=this.factura.documento_n+""
+                this.transaccion.documento = numeroDocFactura.toString()
                 this.transaccion.rucSucursal = this.factura.rucFactura
-                this.transaccion.factPro=this.factura.documento_n+""
+                this.transaccion.factPro = numeroDocFactura + ""
                 this.transaccion.maestro=this.factura.maestro
                 this.transaccion.producto=element.producto.PRODUCTO
                 this.transaccion.cajas=Math.trunc((element.cantidad+0.01) / element.producto.M2);
@@ -3764,8 +3769,6 @@ cambiarestado(e,i:number){
                   },
                   err => { this.mostrarMensajeGenerico(2,"Revise e intente nuevamente") })
               });
-              
-            });
           }else{ this.mostrarMensajeGenerico(2,"Error al crear el documento"),this.botonFactura = false }
         }else{ this.mostrarMensajeGenerico(2,"Error no hay productos en la lista"),this.botonFactura = false}  
       }else{ this.mostrarMensajeGenerico(2,"Error hay campos vacios, revise e intente nuevamente"),this.botonFactura = false }
@@ -3803,7 +3806,7 @@ cambiarestado(e,i:number){
       this.transaccion.valor = element.precioCombo
       this.transaccion.cantM2 = proV.cantidad * element.cantidad
       this.transaccion.costo_unitario = element.precioMin
-      this.transaccion.documento = this.factura.documento_n.toString()
+      this.transaccion.documento = (this.factura.documento_n - 1)+""
       this.transaccion.rucSucursal = this.factura.rucFactura
       this.transaccion.factPro = this.factura.documento_n.toString()
       this.transaccion.maestro = this.factura.maestro
@@ -3928,13 +3931,23 @@ cambiarestado(e,i:number){
           this.factura.dni_comprador= this.factura.cliente.ruc
           if(this.ventasForm.instance.validate().isValid){
             this.factura.cliente= this.factura.cliente
-            new Promise<any>((resolve, reject) => {
-              this.setearNFactura()
-              this.crearCliente()
-              this.guardarNotaVenta()
-              this.productosVendidos.forEach(element => {
+            this.crearCliente()
+            this.factura.username = this.username
+            this.factura.fecha = this.now
+            this.factura.fecha2 = new Date().toLocaleString()
+            this.factura.productosVendidos = this.productosVendidos
+            this.obtenerConsecutivoNotaVentaYActualizar().subscribe({
+              next: () => {
+                const numeroDoc = this.factura.documento_n
+                this.setearNFactura()
+                this.nroActualFactura = numeroDoc
+                this.notasVentService.newNotaVenta(this.factura).subscribe(
+                  res => { this.validarFormaPago(); },
+                  err => { this.mostrarMensajeGenerico(2,"Error al guardar"); }
+                )
+                this.productosVendidos.forEach(element => {
                 this.validarExistencias(element)
-                element.factura_id = this.factura.documento_n
+                element.factura_id = numeroDoc
                 this.transaccion = new transaccion()
                 this.transaccion.fecha_mov=new Date().toLocaleString()
                 this.transaccion.fecha_transaccion=this.factura.fecha
@@ -3943,8 +3956,8 @@ cambiarestado(e,i:number){
                 this.transaccion.bodega="12"
                 this.transaccion.valor=element.precio_venta
                 this.transaccion.costo_unitario=element.producto.precio
-                this.transaccion.documento=this.factura.documento_n+""
-                this.transaccion.factPro=this.factura.documento_n+""
+                this.transaccion.documento = numeroDoc.toString()
+                this.transaccion.factPro = numeroDoc + ""
                 this.transaccion.producto=element.producto.PRODUCTO
                 this.transaccion.rucSucursal = this.factura.rucFactura
                 this.transaccion.maestro=this.factura.maestro
@@ -3989,7 +4002,10 @@ cambiarestado(e,i:number){
                   },
                   err => {this.mostrarMensajeGenerico(2,"Revise e intente nuevamente");})
               });
-          
+              },
+              error: (err) => {
+                this.mostrarMensajeGenerico(2,"Error al guardar el consecutivo de Nota de Venta");
+              }
             });
 
           }else{ this.mostrarMensajeGenerico(2,"Error al crear el documento");this.botonNotaVenta = false;}

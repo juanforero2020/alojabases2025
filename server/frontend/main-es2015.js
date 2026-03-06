@@ -69467,34 +69467,38 @@ class RegistrosVentasComponent {
             console.log(this.facturaVeronica);
             console.log(logApiVeronica);
             //TO-DO, DESCOMENTAR LUEGO DE PRUEBAS
-            this._apiVeronicaService.newFactura(this.facturaVeronica).subscribe(res => {
-                var resultado = res;
-                logApiVeronica.objetoResponse = JSON.stringify(res);
-                logApiVeronica.claveAcceso = resultado.result.claveAccesoConsultada;
-                logApiVeronica.resultado = "OK";
-                this._logApiVeronicaService.newLog(logApiVeronica).subscribe(res => {
-                    this.mostrarLoading = false;
-                    sweetalert2__WEBPACK_IMPORTED_MODULE_4___default.a.fire({
-                        title: 'Correcto',
-                        text: 'Factura registrada con éxito',
-                        icon: 'success'
-                    });
-                    this.traerFacturasMensuales();
-                }, err => { });
-            }, err => {
-                logApiVeronica.objetoResponse = JSON.stringify(err);
-                logApiVeronica.claveAcceso = null;
-                logApiVeronica.resultado = "NOK";
-                this._logApiVeronicaService.newLog(logApiVeronica).subscribe(res => {
-                    this.mostrarLoading = false;
-                    sweetalert2__WEBPACK_IMPORTED_MODULE_4___default.a.fire({
-                        title: 'Error',
-                        text: 'Error al establecer coneccion con el SRI',
-                        icon: 'error',
-                        confirmButtonText: 'Ok'
-                    });
-                }, err => { });
-            });
+            /* this._apiVeronicaService.newFactura(this.facturaVeronica).subscribe(
+              res => {  var resultado = res as ResponseVeronicaDto;
+                        logApiVeronica.objetoResponse = JSON.stringify(res)
+                        logApiVeronica.claveAcceso = resultado.result.claveAccesoConsultada
+                        logApiVeronica.resultado = "OK"
+                        this._logApiVeronicaService.newLog(logApiVeronica).subscribe(
+                          res =>{   this.mostrarLoading = false;
+                                    Swal.fire({
+                                      title: 'Correcto',
+                                      text: 'Factura registrada con éxito',
+                                      icon: 'success'
+                                    })
+                                    this.traerFacturasMensuales();
+                                },
+                          err => {  });
+                    },
+              err => {
+                      
+                        logApiVeronica.objetoResponse = JSON.stringify(err);
+                        logApiVeronica.claveAcceso = null;
+                        logApiVeronica.resultado = "NOK"
+                        this._logApiVeronicaService.newLog(logApiVeronica).subscribe(
+                          res =>{   this.mostrarLoading = false;
+                                    Swal.fire({
+                                      title: 'Error',
+                                      text: 'Error al establecer coneccion con el SRI',
+                                      icon: 'error',
+                                      confirmButtonText: 'Ok'
+                                    })
+                                },
+                          err => {  });
+                      });  */
         }, err => {
             sweetalert2__WEBPACK_IMPORTED_MODULE_4___default.a.fire({
                 title: 'Error',
@@ -90749,6 +90753,7 @@ class VentasComponent {
         this.productosComboLeidos = [];
         this.cantidadProductos = 0;
         this.listaParametrizaciones = [];
+        this.nroActualFactura = 0;
         this.anadirProducto = (e) => {
             this.newButtonEnabled = true;
             this.contadoProductos = 0;
@@ -93462,73 +93467,76 @@ class VentasComponent {
         console.log(logApiVeronica);
         //EMILINAR LUEGO DE PRUEBAS
         //TO-DO
-        /* this.mostrarLoading = false;
-        Swal.fire({
-          title: 'Correcto',
-          text: 'Factura registrada con éxito',
-          icon: 'success',
-          confirmButtonText: 'Ok'
+        this.mostrarLoading = false;
+        sweetalert2__WEBPACK_IMPORTED_MODULE_9___default.a.fire({
+            title: 'Correcto',
+            text: 'Factura registrada con éxito',
+            icon: 'success',
+            confirmButtonText: 'Ok'
         }).then((result) => {
-          if(this.formaPago == "Otros medios Pago" || this.formaPago == "Abonos")
-            this.router.navigate(['/recibo-caja'], { queryParams: { id: this.factura.documento_n , tipo: 1 } });
-          else
-            window.location.reload();
-        })
-    
-        this._logApiVeronicaService.newLog(logApiVeronica).subscribe(
-          res =>{   this.mostrarLoading = false;
-                    Swal.fire({
-                      title: 'Correcto',
-                      text: 'Factura registrada con éxito',
-                      icon: 'success',
-                      confirmButtonText: 'Ok'
-                    }).then((result) => {
-                      if(this.formaPago == "Otros medios Pago" || this.formaPago == "Abonos")
-                        this.router.navigate(['/recibo-caja'], { queryParams: { id: this.factura.documento_n , tipo: 1 } });
-                      else
-                        window.location.reload();
-                    })
-                },
-          err => {  }); */
-        //TO-DO, DESCOMENTAR LUEGO DE PRUEBAS
-        this._apiVeronicaService.newFactura(this.facturaVeronica).subscribe(res => {
-            var resultado = res;
-            logApiVeronica.objetoResponse = JSON.stringify(res);
-            logApiVeronica.claveAcceso = resultado.result.claveAccesoConsultada;
-            logApiVeronica.resultado = "OK";
-            this._logApiVeronicaService.newLog(logApiVeronica).subscribe(res => {
-                this.mostrarLoading = false;
-                sweetalert2__WEBPACK_IMPORTED_MODULE_9___default.a.fire({
-                    title: 'Correcto',
-                    text: 'Factura registrada con éxito',
-                    icon: 'success',
-                    confirmButtonText: 'Ok'
-                }).then((result) => {
-                    if (this.formaPago == "Otros medios Pago" || this.formaPago == "Abonos")
-                        this.router.navigate(['/recibo-caja'], { queryParams: { id: this.factura.documento_n, tipo: 1 } });
-                    else
-                        window.location.reload();
-                });
-            }, err => { });
-        }, err => {
-            logApiVeronica.objetoResponse = JSON.stringify(err);
-            logApiVeronica.claveAcceso = null;
-            logApiVeronica.resultado = "NOK";
-            this._logApiVeronicaService.newLog(logApiVeronica).subscribe(res => {
-                this.mostrarLoading = false;
-                sweetalert2__WEBPACK_IMPORTED_MODULE_9___default.a.fire({
-                    title: 'Error',
-                    text: 'Error al establecer coneccion con el SRI',
-                    icon: 'error',
-                    confirmButtonText: 'Ok'
-                }).then((result) => {
-                    if (this.formaPago == "Otros medios Pago" || this.formaPago == "Abonos")
-                        this.router.navigate(['/recibo-caja'], { queryParams: { id: this.factura.documento_n, tipo: 1 } });
-                    else
-                        window.location.reload();
-                });
-            }, err => { });
+            if (this.formaPago == "Otros medios Pago" || this.formaPago == "Abonos")
+                this.router.navigate(['/recibo-caja'], { queryParams: { id: this.factura.documento_n, tipo: 1 } });
+            else
+                window.location.reload();
         });
+        this._logApiVeronicaService.newLog(logApiVeronica).subscribe(res => {
+            this.mostrarLoading = false;
+            sweetalert2__WEBPACK_IMPORTED_MODULE_9___default.a.fire({
+                title: 'Correcto',
+                text: 'Factura registrada con éxito',
+                icon: 'success',
+                confirmButtonText: 'Ok'
+            }).then((result) => {
+                if (this.formaPago == "Otros medios Pago" || this.formaPago == "Abonos")
+                    this.router.navigate(['/recibo-caja'], { queryParams: { id: this.factura.documento_n, tipo: 1 } });
+                else
+                    window.location.reload();
+            });
+        }, err => { });
+        //TO-DO, DESCOMENTAR LUEGO DE PRUEBAS
+        /* this._apiVeronicaService.newFactura(this.facturaVeronica).subscribe(
+          res => {  var resultado = res as ResponseVeronicaDto;
+                    logApiVeronica.objetoResponse = JSON.stringify(res)
+                    logApiVeronica.claveAcceso = resultado.result.claveAccesoConsultada
+                    logApiVeronica.resultado = "OK"
+                    this._logApiVeronicaService.newLog(logApiVeronica).subscribe(
+                      res =>{   this.mostrarLoading = false;
+                                Swal.fire({
+                                  title: 'Correcto',
+                                  text: 'Factura registrada con éxito',
+                                  icon: 'success',
+                                  confirmButtonText: 'Ok'
+                                }).then((result) => {
+                                  if(this.formaPago == "Otros medios Pago" || this.formaPago == "Abonos")
+                                    this.router.navigate(['/recibo-caja'], { queryParams: { id: this.factura.documento_n , tipo: 1 } });
+                                  else
+                                    window.location.reload();
+                                })
+                            },
+                      err => {  });
+                },
+          err => {
+                  
+                    logApiVeronica.objetoResponse = JSON.stringify(err);
+                    logApiVeronica.claveAcceso = null;
+                    logApiVeronica.resultado = "NOK"
+                    this._logApiVeronicaService.newLog(logApiVeronica).subscribe(
+                      res =>{
+                                this.mostrarLoading = false;
+                                Swal.fire({
+                                  title: 'Error',
+                                  text: 'Error al establecer coneccion con el SRI',
+                                  icon: 'error',
+                                  confirmButtonText: 'Ok'
+                                }).then((result) => {
+                                  if(this.formaPago == "Otros medios Pago" || this.formaPago == "Abonos")
+                                    this.router.navigate(['/recibo-caja'], { queryParams: { id: this.factura.documento_n , tipo: 1 } });
+                                  else
+                                    window.location.reload();
+                                })
+                            },
+                      err => {  });
+                  });  */
     }
     guardarNotaVenta() {
         this.factura.username = this.username;
@@ -93537,6 +93545,7 @@ class VentasComponent {
         this.factura.productosVendidos = this.productosVendidos;
         this.obtenerConsecutivoNotaVentaYActualizar().subscribe({
             next: () => {
+                console.log('nroActualFactura', this.nroActualFactura);
                 this.notasVentService.newNotaVenta(this.factura).subscribe(res => {
                     this.validarFormaPago();
                 }, err => { this.mostrarMensajeGenerico(2, "Error al guardar"); });
@@ -93773,6 +93782,7 @@ class VentasComponent {
         this.mostrarLoading = false;
         this.telefonoCliente = this.factura.cliente.celular;
         this.factura.cliente.cliente_nombre = this.mensaje;
+        this.nroActualFactura = this.factura.documento_n;
         if (this.factura.cliente != undefined) {
             if (this.factura.cliente.cliente_nombre != undefined) {
                 this.buscarDatosSucursal();
@@ -93796,54 +93806,54 @@ class VentasComponent {
                         this.factura.cliente = this.factura.cliente;
                         if (this.factura.cliente.nombreContacto == "" || this.factura.cliente.nombreContacto == undefined)
                             this.factura.cliente.nombreContacto = this.factura.cliente.cliente_nombre;
-                        new Promise((resolve, reject) => {
-                            this.crearCliente();
-                            this.guardarFactura();
-                            this.productosVendidos.forEach(element => {
-                                this.validarExistencias(element);
-                                element.factura_id = this.factura.documento_n;
-                                this.transaccion = new _transacciones_transacciones__WEBPACK_IMPORTED_MODULE_3__["transaccion"]();
-                                this.transaccion.fecha_mov = new Date().toLocaleString();
-                                this.transaccion.fecha_transaccion = this.factura.fecha;
-                                this.transaccion.sucursal = this.factura.sucursal;
-                                this.transaccion.totalsuma = element.subtotal;
-                                this.transaccion.bodega = "12";
-                                this.transaccion.valor = element.precio_venta - (element.precio_venta * (element.descuento / 100));
-                                this.transaccion.cantM2 = element.cantidad;
-                                this.transaccion.costo_unitario = element.producto.precio;
-                                this.transaccion.documento = this.factura.documento_n + "";
-                                this.transaccion.rucSucursal = this.factura.rucFactura;
-                                this.transaccion.factPro = this.factura.documento_n + "";
-                                this.transaccion.maestro = this.factura.maestro;
-                                this.transaccion.producto = element.producto.PRODUCTO;
-                                this.transaccion.cajas = Math.trunc((element.cantidad + 0.01) / element.producto.M2);
-                                this.transaccion.piezas = (Math.trunc((element.cantidad + 0.01) * element.producto.P_CAJA / element.producto.M2) - (Math.trunc((element.cantidad + 0.01) / element.producto.M2) * element.producto.P_CAJA));
-                                this.transaccion.observaciones = this.factura.observaciones;
-                                this.transaccion.tipo_transaccion = "venta-fact";
-                                this.transaccion.movimiento = -1;
-                                this.transaccion.usu_autorizado = this.factura.username;
-                                this.transaccion.usuario = this.factura.username;
-                                this.transaccion.idTransaccion = this.number_transaccion++;
-                                this.transaccion.cliente = this.factura.cliente.cliente_nombre;
-                                this.transaccion.nombreUsuario = this.factura.nombreUsuario;
-                                this.transaccion.nombreVendedor = this.factura.nombreVendedor;
-                                this.transaccion.mcaEntregado = element.entregar == true ? "SI" : "NO";
-                                if (element.producto.CLASIFICA == "COMBO") {
-                                    this.generarTransaccionesComboProductos(element.producto.PRODUCTO);
-                                    if (this.transaccion.valor == element.producto.precio) {
-                                        this.transaccion.valor = 0;
-                                        this.transaccion.totalsuma = 0;
-                                    }
-                                    else {
-                                        this.transaccion.valor = this.transaccion.valor - element.producto.precio;
-                                        this.transaccion.totalsuma = this.transaccion.valor * this.transaccion.cantM2;
-                                    }
+                        this.crearCliente();
+                        const numeroDocFactura = this.factura.documento_n;
+                        this.nroActualFactura = numeroDocFactura;
+                        this.guardarFactura();
+                        this.productosVendidos.forEach(element => {
+                            this.validarExistencias(element);
+                            element.factura_id = numeroDocFactura;
+                            this.transaccion = new _transacciones_transacciones__WEBPACK_IMPORTED_MODULE_3__["transaccion"]();
+                            this.transaccion.fecha_mov = new Date().toLocaleString();
+                            this.transaccion.fecha_transaccion = this.factura.fecha;
+                            this.transaccion.sucursal = this.factura.sucursal;
+                            this.transaccion.totalsuma = element.subtotal;
+                            this.transaccion.bodega = "12";
+                            this.transaccion.valor = element.precio_venta - (element.precio_venta * (element.descuento / 100));
+                            this.transaccion.cantM2 = element.cantidad;
+                            this.transaccion.costo_unitario = element.producto.precio;
+                            this.transaccion.documento = numeroDocFactura.toString();
+                            this.transaccion.rucSucursal = this.factura.rucFactura;
+                            this.transaccion.factPro = numeroDocFactura + "";
+                            this.transaccion.maestro = this.factura.maestro;
+                            this.transaccion.producto = element.producto.PRODUCTO;
+                            this.transaccion.cajas = Math.trunc((element.cantidad + 0.01) / element.producto.M2);
+                            this.transaccion.piezas = (Math.trunc((element.cantidad + 0.01) * element.producto.P_CAJA / element.producto.M2) - (Math.trunc((element.cantidad + 0.01) / element.producto.M2) * element.producto.P_CAJA));
+                            this.transaccion.observaciones = this.factura.observaciones;
+                            this.transaccion.tipo_transaccion = "venta-fact";
+                            this.transaccion.movimiento = -1;
+                            this.transaccion.usu_autorizado = this.factura.username;
+                            this.transaccion.usuario = this.factura.username;
+                            this.transaccion.idTransaccion = this.number_transaccion++;
+                            this.transaccion.cliente = this.factura.cliente.cliente_nombre;
+                            this.transaccion.nombreUsuario = this.factura.nombreUsuario;
+                            this.transaccion.nombreVendedor = this.factura.nombreVendedor;
+                            this.transaccion.mcaEntregado = element.entregar == true ? "SI" : "NO";
+                            if (element.producto.CLASIFICA == "COMBO") {
+                                this.generarTransaccionesComboProductos(element.producto.PRODUCTO);
+                                if (this.transaccion.valor == element.producto.precio) {
+                                    this.transaccion.valor = 0;
+                                    this.transaccion.totalsuma = 0;
                                 }
-                                this.transaccionesService.newTransaccion(this.transaccion).subscribe(res => {
-                                    this.contadores[0].transacciones_Ndocumento = this.number_transaccion;
-                                    this.contadoresService.updateContadoresIDTransacciones(this.contadores[0]).subscribe(res => { contVal++, this.contadorValidaciones(contVal); }, err => { this.mostrarMensajeGenerico(2, "Revise e intente nuevamente"); });
-                                }, err => { this.mostrarMensajeGenerico(2, "Revise e intente nuevamente"); });
-                            });
+                                else {
+                                    this.transaccion.valor = this.transaccion.valor - element.producto.precio;
+                                    this.transaccion.totalsuma = this.transaccion.valor * this.transaccion.cantM2;
+                                }
+                            }
+                            this.transaccionesService.newTransaccion(this.transaccion).subscribe(res => {
+                                this.contadores[0].transacciones_Ndocumento = this.number_transaccion;
+                                this.contadoresService.updateContadoresIDTransacciones(this.contadores[0]).subscribe(res => { contVal++, this.contadorValidaciones(contVal); }, err => { this.mostrarMensajeGenerico(2, "Revise e intente nuevamente"); });
+                            }, err => { this.mostrarMensajeGenerico(2, "Revise e intente nuevamente"); });
                         });
                     }
                     else {
@@ -93891,7 +93901,7 @@ class VentasComponent {
             this.transaccion.valor = element.precioCombo;
             this.transaccion.cantM2 = proV.cantidad * element.cantidad;
             this.transaccion.costo_unitario = element.precioMin;
-            this.transaccion.documento = this.factura.documento_n.toString();
+            this.transaccion.documento = (this.factura.documento_n - 1) + "";
             this.transaccion.rucSucursal = this.factura.rucFactura;
             this.transaccion.factPro = this.factura.documento_n.toString();
             this.transaccion.maestro = this.factura.maestro;
@@ -94015,59 +94025,70 @@ class VentasComponent {
                     this.factura.dni_comprador = this.factura.cliente.ruc;
                     if (this.ventasForm.instance.validate().isValid) {
                         this.factura.cliente = this.factura.cliente;
-                        new Promise((resolve, reject) => {
-                            this.setearNFactura();
-                            this.crearCliente();
-                            this.guardarNotaVenta();
-                            this.productosVendidos.forEach(element => {
-                                this.validarExistencias(element);
-                                element.factura_id = this.factura.documento_n;
-                                this.transaccion = new _transacciones_transacciones__WEBPACK_IMPORTED_MODULE_3__["transaccion"]();
-                                this.transaccion.fecha_mov = new Date().toLocaleString();
-                                this.transaccion.fecha_transaccion = this.factura.fecha;
-                                this.transaccion.sucursal = this.factura.sucursal;
-                                this.transaccion.totalsuma = element.subtotal;
-                                this.transaccion.bodega = "12";
-                                this.transaccion.valor = element.precio_venta;
-                                this.transaccion.costo_unitario = element.producto.precio;
-                                this.transaccion.documento = this.factura.documento_n + "";
-                                this.transaccion.factPro = this.factura.documento_n + "";
-                                this.transaccion.producto = element.producto.PRODUCTO;
-                                this.transaccion.rucSucursal = this.factura.rucFactura;
-                                this.transaccion.maestro = this.factura.maestro;
-                                this.transaccion.valor = element.precio_venta - (element.precio_venta * (element.descuento / 100));
-                                this.transaccion.cantM2 = element.cantidad;
-                                this.transaccion.cajas = Math.trunc((element.cantidad + 0.01) / element.producto.M2);
-                                this.transaccion.piezas = (Math.trunc((element.cantidad + 0.01) * element.producto.P_CAJA / element.producto.M2) - (Math.trunc((element.cantidad + 0.01) / element.producto.M2) * element.producto.P_CAJA));
-                                this.transaccion.observaciones = this.factura.observaciones;
-                                this.transaccion.tipo_transaccion = "venta-not";
-                                this.transaccion.movimiento = -1;
-                                this.transaccion.usu_autorizado = this.factura.username;
-                                this.transaccion.usuario = this.factura.username;
-                                this.transaccion.idTransaccion = this.number_transaccion++;
-                                this.transaccion.cliente = this.factura.cliente.cliente_nombre;
-                                this.transaccion.nombreUsuario = this.factura.nombreUsuario;
-                                this.transaccion.nombreVendedor = this.factura.nombreVendedor;
-                                this.transaccion.mcaEntregado = element.entregar == true ? "SI" : "NO";
-                                if (element.producto.CLASIFICA == "COMBO") {
-                                    this.generarTransaccionesComboProductos(element.producto.PRODUCTO);
-                                    if (this.transaccion.valor == element.producto.precio) {
-                                        this.transaccion.valor = 0;
-                                        this.transaccion.totalsuma = 0;
+                        this.crearCliente();
+                        this.factura.username = this.username;
+                        this.factura.fecha = this.now;
+                        this.factura.fecha2 = new Date().toLocaleString();
+                        this.factura.productosVendidos = this.productosVendidos;
+                        this.obtenerConsecutivoNotaVentaYActualizar().subscribe({
+                            next: () => {
+                                const numeroDoc = this.factura.documento_n;
+                                this.setearNFactura();
+                                this.nroActualFactura = numeroDoc;
+                                this.notasVentService.newNotaVenta(this.factura).subscribe(res => { this.validarFormaPago(); }, err => { this.mostrarMensajeGenerico(2, "Error al guardar"); });
+                                this.productosVendidos.forEach(element => {
+                                    this.validarExistencias(element);
+                                    element.factura_id = numeroDoc;
+                                    this.transaccion = new _transacciones_transacciones__WEBPACK_IMPORTED_MODULE_3__["transaccion"]();
+                                    this.transaccion.fecha_mov = new Date().toLocaleString();
+                                    this.transaccion.fecha_transaccion = this.factura.fecha;
+                                    this.transaccion.sucursal = this.factura.sucursal;
+                                    this.transaccion.totalsuma = element.subtotal;
+                                    this.transaccion.bodega = "12";
+                                    this.transaccion.valor = element.precio_venta;
+                                    this.transaccion.costo_unitario = element.producto.precio;
+                                    this.transaccion.documento = numeroDoc.toString();
+                                    this.transaccion.factPro = numeroDoc + "";
+                                    this.transaccion.producto = element.producto.PRODUCTO;
+                                    this.transaccion.rucSucursal = this.factura.rucFactura;
+                                    this.transaccion.maestro = this.factura.maestro;
+                                    this.transaccion.valor = element.precio_venta - (element.precio_venta * (element.descuento / 100));
+                                    this.transaccion.cantM2 = element.cantidad;
+                                    this.transaccion.cajas = Math.trunc((element.cantidad + 0.01) / element.producto.M2);
+                                    this.transaccion.piezas = (Math.trunc((element.cantidad + 0.01) * element.producto.P_CAJA / element.producto.M2) - (Math.trunc((element.cantidad + 0.01) / element.producto.M2) * element.producto.P_CAJA));
+                                    this.transaccion.observaciones = this.factura.observaciones;
+                                    this.transaccion.tipo_transaccion = "venta-not";
+                                    this.transaccion.movimiento = -1;
+                                    this.transaccion.usu_autorizado = this.factura.username;
+                                    this.transaccion.usuario = this.factura.username;
+                                    this.transaccion.idTransaccion = this.number_transaccion++;
+                                    this.transaccion.cliente = this.factura.cliente.cliente_nombre;
+                                    this.transaccion.nombreUsuario = this.factura.nombreUsuario;
+                                    this.transaccion.nombreVendedor = this.factura.nombreVendedor;
+                                    this.transaccion.mcaEntregado = element.entregar == true ? "SI" : "NO";
+                                    if (element.producto.CLASIFICA == "COMBO") {
+                                        this.generarTransaccionesComboProductos(element.producto.PRODUCTO);
+                                        if (this.transaccion.valor == element.producto.precio) {
+                                            this.transaccion.valor = 0;
+                                            this.transaccion.totalsuma = 0;
+                                        }
+                                        else {
+                                            this.transaccion.valor = this.transaccion.valor - element.producto.precio;
+                                            this.transaccion.totalsuma = this.transaccion.valor * this.transaccion.cantM2;
+                                        }
                                     }
-                                    else {
-                                        this.transaccion.valor = this.transaccion.valor - element.producto.precio;
-                                        this.transaccion.totalsuma = this.transaccion.valor * this.transaccion.cantM2;
-                                    }
-                                }
-                                this.transaccionesService.newTransaccion(this.transaccion).subscribe(res => {
-                                    this.contadores[0].transacciones_Ndocumento = this.number_transaccion;
-                                    this.contadoresService.updateContadoresIDTransacciones(this.contadores[0]).subscribe(res => {
-                                        this.db.collection("/consectivosBaseMongoDB").doc("base").update({ transacciones_Ndocumento: this.number_transaccion })
-                                            .then(res => { contVal++, this.contadorValidaciones(contVal); }, err => (err));
+                                    this.transaccionesService.newTransaccion(this.transaccion).subscribe(res => {
+                                        this.contadores[0].transacciones_Ndocumento = this.number_transaccion;
+                                        this.contadoresService.updateContadoresIDTransacciones(this.contadores[0]).subscribe(res => {
+                                            this.db.collection("/consectivosBaseMongoDB").doc("base").update({ transacciones_Ndocumento: this.number_transaccion })
+                                                .then(res => { contVal++, this.contadorValidaciones(contVal); }, err => (err));
+                                        }, err => { this.mostrarMensajeGenerico(2, "Revise e intente nuevamente"); });
                                     }, err => { this.mostrarMensajeGenerico(2, "Revise e intente nuevamente"); });
-                                }, err => { this.mostrarMensajeGenerico(2, "Revise e intente nuevamente"); });
-                            });
+                                });
+                            },
+                            error: (err) => {
+                                this.mostrarMensajeGenerico(2, "Error al guardar el consecutivo de Nota de Venta");
+                            }
                         });
                     }
                     else {
@@ -101157,8 +101178,8 @@ const environment = {
         measurementId: "G-338L2LR9XQ"
     },
     services: {
-        //urlServices : "http://143.198.60.33:3000"   //NUEVO SERVIDOR PRUEBAS
-        urlServices: "http://104.131.82.174:3000" //SERVIDOR PRODUCCIÓN
+        urlServices: "http://143.198.60.33:3000" //NUEVO SERVIDOR PRUEBAS
+        //urlServices : "http://104.131.82.174:3000"   //SERVIDOR PRODUCCIÓN
         //urlServices : "http://localhost:3000"   //LOCAL
     }
 };

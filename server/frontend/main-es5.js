@@ -115523,37 +115523,38 @@ function _classCallCheck(instance, Constructor) { if (!(instance instanceof Cons
             console.log(_this1029.facturaVeronica);
             console.log(logApiVeronica); //TO-DO, DESCOMENTAR LUEGO DE PRUEBAS
 
-            _this1029._apiVeronicaService.newFactura(_this1029.facturaVeronica).subscribe(function (res) {
-              var resultado = res;
-              logApiVeronica.objetoResponse = JSON.stringify(res);
-              logApiVeronica.claveAcceso = resultado.result.claveAccesoConsultada;
-              logApiVeronica.resultado = "OK";
-
-              _this1029._logApiVeronicaService.newLog(logApiVeronica).subscribe(function (res) {
-                _this1029.mostrarLoading = false;
-                sweetalert2__WEBPACK_IMPORTED_MODULE_4___default.a.fire({
-                  title: 'Correcto',
-                  text: 'Factura registrada con éxito',
-                  icon: 'success'
-                });
-
-                _this1029.traerFacturasMensuales();
-              }, function (err) {});
-            }, function (err) {
-              logApiVeronica.objetoResponse = JSON.stringify(err);
-              logApiVeronica.claveAcceso = null;
-              logApiVeronica.resultado = "NOK";
-
-              _this1029._logApiVeronicaService.newLog(logApiVeronica).subscribe(function (res) {
-                _this1029.mostrarLoading = false;
-                sweetalert2__WEBPACK_IMPORTED_MODULE_4___default.a.fire({
-                  title: 'Error',
-                  text: 'Error al establecer coneccion con el SRI',
-                  icon: 'error',
-                  confirmButtonText: 'Ok'
-                });
-              }, function (err) {});
-            });
+            /* this._apiVeronicaService.newFactura(this.facturaVeronica).subscribe(
+              res => {  var resultado = res as ResponseVeronicaDto;
+                        logApiVeronica.objetoResponse = JSON.stringify(res)
+                        logApiVeronica.claveAcceso = resultado.result.claveAccesoConsultada
+                        logApiVeronica.resultado = "OK"
+                        this._logApiVeronicaService.newLog(logApiVeronica).subscribe(
+                          res =>{   this.mostrarLoading = false;
+                                    Swal.fire({
+                                      title: 'Correcto',
+                                      text: 'Factura registrada con éxito',
+                                      icon: 'success'
+                                    })
+                                    this.traerFacturasMensuales();
+                                },
+                          err => {  });
+                    },
+              err => {
+                      
+                        logApiVeronica.objetoResponse = JSON.stringify(err);
+                        logApiVeronica.claveAcceso = null;
+                        logApiVeronica.resultado = "NOK"
+                        this._logApiVeronicaService.newLog(logApiVeronica).subscribe(
+                          res =>{   this.mostrarLoading = false;
+                                    Swal.fire({
+                                      title: 'Error',
+                                      text: 'Error al establecer coneccion con el SRI',
+                                      icon: 'error',
+                                      confirmButtonText: 'Ok'
+                                    })
+                                },
+                          err => {  });
+                      });  */
           }, function (err) {
             sweetalert2__WEBPACK_IMPORTED_MODULE_4___default.a.fire({
               title: 'Error',
@@ -148779,6 +148780,7 @@ function _classCallCheck(instance, Constructor) { if (!(instance instanceof Cons
         this.productosComboLeidos = [];
         this.cantidadProductos = 0;
         this.listaParametrizaciones = [];
+        this.nroActualFactura = 0;
 
         this.anadirProducto = function (e) {
           _this1302.newButtonEnabled = true;
@@ -151971,79 +151973,82 @@ function _classCallCheck(instance, Constructor) { if (!(instance instanceof Cons
           console.log(logApiVeronica); //EMILINAR LUEGO DE PRUEBAS
           //TO-DO
 
-          /* this.mostrarLoading = false;
-          Swal.fire({
+          this.mostrarLoading = false;
+          sweetalert2__WEBPACK_IMPORTED_MODULE_9___default.a.fire({
             title: 'Correcto',
             text: 'Factura registrada con éxito',
             icon: 'success',
             confirmButtonText: 'Ok'
-          }).then((result) => {
-            if(this.formaPago == "Otros medios Pago" || this.formaPago == "Abonos")
-              this.router.navigate(['/recibo-caja'], { queryParams: { id: this.factura.documento_n , tipo: 1 } });
-            else
-              window.location.reload();
-          })
-                this._logApiVeronicaService.newLog(logApiVeronica).subscribe(
-            res =>{   this.mostrarLoading = false;
-                      Swal.fire({
-                        title: 'Correcto',
-                        text: 'Factura registrada con éxito',
-                        icon: 'success',
-                        confirmButtonText: 'Ok'
-                      }).then((result) => {
-                        if(this.formaPago == "Otros medios Pago" || this.formaPago == "Abonos")
-                          this.router.navigate(['/recibo-caja'], { queryParams: { id: this.factura.documento_n , tipo: 1 } });
-                        else
-                          window.location.reload();
-                      })
-                  },
-            err => {  }); */
-          //TO-DO, DESCOMENTAR LUEGO DE PRUEBAS
-
-          this._apiVeronicaService.newFactura(this.facturaVeronica).subscribe(function (res) {
-            var resultado = res;
-            logApiVeronica.objetoResponse = JSON.stringify(res);
-            logApiVeronica.claveAcceso = resultado.result.claveAccesoConsultada;
-            logApiVeronica.resultado = "OK";
-
-            _this1351._logApiVeronicaService.newLog(logApiVeronica).subscribe(function (res) {
-              _this1351.mostrarLoading = false;
-              sweetalert2__WEBPACK_IMPORTED_MODULE_9___default.a.fire({
-                title: 'Correcto',
-                text: 'Factura registrada con éxito',
-                icon: 'success',
-                confirmButtonText: 'Ok'
-              }).then(function (result) {
-                if (_this1351.formaPago == "Otros medios Pago" || _this1351.formaPago == "Abonos") _this1351.router.navigate(['/recibo-caja'], {
-                  queryParams: {
-                    id: _this1351.factura.documento_n,
-                    tipo: 1
-                  }
-                });else window.location.reload();
-              });
-            }, function (err) {});
-          }, function (err) {
-            logApiVeronica.objetoResponse = JSON.stringify(err);
-            logApiVeronica.claveAcceso = null;
-            logApiVeronica.resultado = "NOK";
-
-            _this1351._logApiVeronicaService.newLog(logApiVeronica).subscribe(function (res) {
-              _this1351.mostrarLoading = false;
-              sweetalert2__WEBPACK_IMPORTED_MODULE_9___default.a.fire({
-                title: 'Error',
-                text: 'Error al establecer coneccion con el SRI',
-                icon: 'error',
-                confirmButtonText: 'Ok'
-              }).then(function (result) {
-                if (_this1351.formaPago == "Otros medios Pago" || _this1351.formaPago == "Abonos") _this1351.router.navigate(['/recibo-caja'], {
-                  queryParams: {
-                    id: _this1351.factura.documento_n,
-                    tipo: 1
-                  }
-                });else window.location.reload();
-              });
-            }, function (err) {});
+          }).then(function (result) {
+            if (_this1351.formaPago == "Otros medios Pago" || _this1351.formaPago == "Abonos") _this1351.router.navigate(['/recibo-caja'], {
+              queryParams: {
+                id: _this1351.factura.documento_n,
+                tipo: 1
+              }
+            });else window.location.reload();
           });
+
+          this._logApiVeronicaService.newLog(logApiVeronica).subscribe(function (res) {
+            _this1351.mostrarLoading = false;
+            sweetalert2__WEBPACK_IMPORTED_MODULE_9___default.a.fire({
+              title: 'Correcto',
+              text: 'Factura registrada con éxito',
+              icon: 'success',
+              confirmButtonText: 'Ok'
+            }).then(function (result) {
+              if (_this1351.formaPago == "Otros medios Pago" || _this1351.formaPago == "Abonos") _this1351.router.navigate(['/recibo-caja'], {
+                queryParams: {
+                  id: _this1351.factura.documento_n,
+                  tipo: 1
+                }
+              });else window.location.reload();
+            });
+          }, function (err) {}); //TO-DO, DESCOMENTAR LUEGO DE PRUEBAS
+
+          /* this._apiVeronicaService.newFactura(this.facturaVeronica).subscribe(
+            res => {  var resultado = res as ResponseVeronicaDto;
+                      logApiVeronica.objetoResponse = JSON.stringify(res)
+                      logApiVeronica.claveAcceso = resultado.result.claveAccesoConsultada
+                      logApiVeronica.resultado = "OK"
+                      this._logApiVeronicaService.newLog(logApiVeronica).subscribe(
+                        res =>{   this.mostrarLoading = false;
+                                  Swal.fire({
+                                    title: 'Correcto',
+                                    text: 'Factura registrada con éxito',
+                                    icon: 'success',
+                                    confirmButtonText: 'Ok'
+                                  }).then((result) => {
+                                    if(this.formaPago == "Otros medios Pago" || this.formaPago == "Abonos")
+                                      this.router.navigate(['/recibo-caja'], { queryParams: { id: this.factura.documento_n , tipo: 1 } });
+                                    else
+                                      window.location.reload();
+                                  })
+                              },
+                        err => {  });
+                  },
+            err => {
+                    
+                      logApiVeronica.objetoResponse = JSON.stringify(err);
+                      logApiVeronica.claveAcceso = null;
+                      logApiVeronica.resultado = "NOK"
+                      this._logApiVeronicaService.newLog(logApiVeronica).subscribe(
+                        res =>{
+                                  this.mostrarLoading = false;
+                                  Swal.fire({
+                                    title: 'Error',
+                                    text: 'Error al establecer coneccion con el SRI',
+                                    icon: 'error',
+                                    confirmButtonText: 'Ok'
+                                  }).then((result) => {
+                                    if(this.formaPago == "Otros medios Pago" || this.formaPago == "Abonos")
+                                      this.router.navigate(['/recibo-caja'], { queryParams: { id: this.factura.documento_n , tipo: 1 } });
+                                    else
+                                      window.location.reload();
+                                  })
+                              },
+                        err => {  });
+                    });  */
+
         }
       }, {
         key: "guardarNotaVenta",
@@ -152056,6 +152061,8 @@ function _classCallCheck(instance, Constructor) { if (!(instance instanceof Cons
           this.factura.productosVendidos = this.productosVendidos;
           this.obtenerConsecutivoNotaVentaYActualizar().subscribe({
             next: function next() {
+              console.log('nroActualFactura', _this1352.nroActualFactura);
+
               _this1352.notasVentService.newNotaVenta(_this1352.factura).subscribe(function (res) {
                 _this1352.validarFormaPago();
               }, function (err) {
@@ -152356,6 +152363,7 @@ function _classCallCheck(instance, Constructor) { if (!(instance instanceof Cons
           this.mostrarLoading = false;
           this.telefonoCliente = this.factura.cliente.celular;
           this.factura.cliente.cliente_nombre = this.mensaje;
+          this.nroActualFactura = this.factura.documento_n;
 
           if (this.factura.cliente != undefined) {
             if (this.factura.cliente.cliente_nombre != undefined) {
@@ -152380,65 +152388,63 @@ function _classCallCheck(instance, Constructor) { if (!(instance instanceof Cons
                 if (this.ventasForm.instance.validate().isValid) {
                   this.factura.cliente = this.factura.cliente;
                   if (this.factura.cliente.nombreContacto == "" || this.factura.cliente.nombreContacto == undefined) this.factura.cliente.nombreContacto = this.factura.cliente.cliente_nombre;
-                  new Promise(function (resolve, reject) {
-                    _this1366.crearCliente();
+                  this.crearCliente();
+                  var numeroDocFactura = this.factura.documento_n;
+                  this.nroActualFactura = numeroDocFactura;
+                  this.guardarFactura();
+                  this.productosVendidos.forEach(function (element) {
+                    _this1366.validarExistencias(element);
 
-                    _this1366.guardarFactura();
+                    element.factura_id = numeroDocFactura;
+                    _this1366.transaccion = new _transacciones_transacciones__WEBPACK_IMPORTED_MODULE_3__["transaccion"]();
+                    _this1366.transaccion.fecha_mov = new Date().toLocaleString();
+                    _this1366.transaccion.fecha_transaccion = _this1366.factura.fecha;
+                    _this1366.transaccion.sucursal = _this1366.factura.sucursal;
+                    _this1366.transaccion.totalsuma = element.subtotal;
+                    _this1366.transaccion.bodega = "12";
+                    _this1366.transaccion.valor = element.precio_venta - element.precio_venta * (element.descuento / 100);
+                    _this1366.transaccion.cantM2 = element.cantidad;
+                    _this1366.transaccion.costo_unitario = element.producto.precio;
+                    _this1366.transaccion.documento = numeroDocFactura.toString();
+                    _this1366.transaccion.rucSucursal = _this1366.factura.rucFactura;
+                    _this1366.transaccion.factPro = numeroDocFactura + "";
+                    _this1366.transaccion.maestro = _this1366.factura.maestro;
+                    _this1366.transaccion.producto = element.producto.PRODUCTO;
+                    _this1366.transaccion.cajas = Math.trunc((element.cantidad + 0.01) / element.producto.M2);
+                    _this1366.transaccion.piezas = Math.trunc((element.cantidad + 0.01) * element.producto.P_CAJA / element.producto.M2) - Math.trunc((element.cantidad + 0.01) / element.producto.M2) * element.producto.P_CAJA;
+                    _this1366.transaccion.observaciones = _this1366.factura.observaciones;
+                    _this1366.transaccion.tipo_transaccion = "venta-fact";
+                    _this1366.transaccion.movimiento = -1;
+                    _this1366.transaccion.usu_autorizado = _this1366.factura.username;
+                    _this1366.transaccion.usuario = _this1366.factura.username;
+                    _this1366.transaccion.idTransaccion = _this1366.number_transaccion++;
+                    _this1366.transaccion.cliente = _this1366.factura.cliente.cliente_nombre;
+                    _this1366.transaccion.nombreUsuario = _this1366.factura.nombreUsuario;
+                    _this1366.transaccion.nombreVendedor = _this1366.factura.nombreVendedor;
+                    _this1366.transaccion.mcaEntregado = element.entregar == true ? "SI" : "NO";
 
-                    _this1366.productosVendidos.forEach(function (element) {
-                      _this1366.validarExistencias(element);
+                    if (element.producto.CLASIFICA == "COMBO") {
+                      _this1366.generarTransaccionesComboProductos(element.producto.PRODUCTO);
 
-                      element.factura_id = _this1366.factura.documento_n;
-                      _this1366.transaccion = new _transacciones_transacciones__WEBPACK_IMPORTED_MODULE_3__["transaccion"]();
-                      _this1366.transaccion.fecha_mov = new Date().toLocaleString();
-                      _this1366.transaccion.fecha_transaccion = _this1366.factura.fecha;
-                      _this1366.transaccion.sucursal = _this1366.factura.sucursal;
-                      _this1366.transaccion.totalsuma = element.subtotal;
-                      _this1366.transaccion.bodega = "12";
-                      _this1366.transaccion.valor = element.precio_venta - element.precio_venta * (element.descuento / 100);
-                      _this1366.transaccion.cantM2 = element.cantidad;
-                      _this1366.transaccion.costo_unitario = element.producto.precio;
-                      _this1366.transaccion.documento = _this1366.factura.documento_n + "";
-                      _this1366.transaccion.rucSucursal = _this1366.factura.rucFactura;
-                      _this1366.transaccion.factPro = _this1366.factura.documento_n + "";
-                      _this1366.transaccion.maestro = _this1366.factura.maestro;
-                      _this1366.transaccion.producto = element.producto.PRODUCTO;
-                      _this1366.transaccion.cajas = Math.trunc((element.cantidad + 0.01) / element.producto.M2);
-                      _this1366.transaccion.piezas = Math.trunc((element.cantidad + 0.01) * element.producto.P_CAJA / element.producto.M2) - Math.trunc((element.cantidad + 0.01) / element.producto.M2) * element.producto.P_CAJA;
-                      _this1366.transaccion.observaciones = _this1366.factura.observaciones;
-                      _this1366.transaccion.tipo_transaccion = "venta-fact";
-                      _this1366.transaccion.movimiento = -1;
-                      _this1366.transaccion.usu_autorizado = _this1366.factura.username;
-                      _this1366.transaccion.usuario = _this1366.factura.username;
-                      _this1366.transaccion.idTransaccion = _this1366.number_transaccion++;
-                      _this1366.transaccion.cliente = _this1366.factura.cliente.cliente_nombre;
-                      _this1366.transaccion.nombreUsuario = _this1366.factura.nombreUsuario;
-                      _this1366.transaccion.nombreVendedor = _this1366.factura.nombreVendedor;
-                      _this1366.transaccion.mcaEntregado = element.entregar == true ? "SI" : "NO";
-
-                      if (element.producto.CLASIFICA == "COMBO") {
-                        _this1366.generarTransaccionesComboProductos(element.producto.PRODUCTO);
-
-                        if (_this1366.transaccion.valor == element.producto.precio) {
-                          _this1366.transaccion.valor = 0;
-                          _this1366.transaccion.totalsuma = 0;
-                        } else {
-                          _this1366.transaccion.valor = _this1366.transaccion.valor - element.producto.precio;
-                          _this1366.transaccion.totalsuma = _this1366.transaccion.valor * _this1366.transaccion.cantM2;
-                        }
+                      if (_this1366.transaccion.valor == element.producto.precio) {
+                        _this1366.transaccion.valor = 0;
+                        _this1366.transaccion.totalsuma = 0;
+                      } else {
+                        _this1366.transaccion.valor = _this1366.transaccion.valor - element.producto.precio;
+                        _this1366.transaccion.totalsuma = _this1366.transaccion.valor * _this1366.transaccion.cantM2;
                       }
+                    }
 
-                      _this1366.transaccionesService.newTransaccion(_this1366.transaccion).subscribe(function (res) {
-                        _this1366.contadores[0].transacciones_Ndocumento = _this1366.number_transaccion;
+                    _this1366.transaccionesService.newTransaccion(_this1366.transaccion).subscribe(function (res) {
+                      _this1366.contadores[0].transacciones_Ndocumento = _this1366.number_transaccion;
 
-                        _this1366.contadoresService.updateContadoresIDTransacciones(_this1366.contadores[0]).subscribe(function (res) {
-                          contVal++, _this1366.contadorValidaciones(contVal);
-                        }, function (err) {
-                          _this1366.mostrarMensajeGenerico(2, "Revise e intente nuevamente");
-                        });
+                      _this1366.contadoresService.updateContadoresIDTransacciones(_this1366.contadores[0]).subscribe(function (res) {
+                        contVal++, _this1366.contadorValidaciones(contVal);
                       }, function (err) {
                         _this1366.mostrarMensajeGenerico(2, "Revise e intente nuevamente");
                       });
+                    }, function (err) {
+                      _this1366.mostrarMensajeGenerico(2, "Revise e intente nuevamente");
                     });
                   });
                 } else {
@@ -152495,7 +152501,7 @@ function _classCallCheck(instance, Constructor) { if (!(instance instanceof Cons
             _this1368.transaccion.valor = element.precioCombo;
             _this1368.transaccion.cantM2 = proV.cantidad * element.cantidad;
             _this1368.transaccion.costo_unitario = element.precioMin;
-            _this1368.transaccion.documento = _this1368.factura.documento_n.toString();
+            _this1368.transaccion.documento = _this1368.factura.documento_n - 1 + "";
             _this1368.transaccion.rucSucursal = _this1368.factura.rucFactura;
             _this1368.transaccion.factPro = _this1368.factura.documento_n.toString();
             _this1368.transaccion.maestro = _this1368.factura.maestro;
@@ -152650,75 +152656,91 @@ function _classCallCheck(instance, Constructor) { if (!(instance instanceof Cons
 
                 if (this.ventasForm.instance.validate().isValid) {
                   this.factura.cliente = this.factura.cliente;
-                  new Promise(function (resolve, reject) {
-                    _this1371.setearNFactura();
+                  this.crearCliente();
+                  this.factura.username = this.username;
+                  this.factura.fecha = this.now;
+                  this.factura.fecha2 = new Date().toLocaleString();
+                  this.factura.productosVendidos = this.productosVendidos;
+                  this.obtenerConsecutivoNotaVentaYActualizar().subscribe({
+                    next: function next() {
+                      var numeroDoc = _this1371.factura.documento_n;
 
-                    _this1371.crearCliente();
+                      _this1371.setearNFactura();
 
-                    _this1371.guardarNotaVenta();
+                      _this1371.nroActualFactura = numeroDoc;
 
-                    _this1371.productosVendidos.forEach(function (element) {
-                      _this1371.validarExistencias(element);
+                      _this1371.notasVentService.newNotaVenta(_this1371.factura).subscribe(function (res) {
+                        _this1371.validarFormaPago();
+                      }, function (err) {
+                        _this1371.mostrarMensajeGenerico(2, "Error al guardar");
+                      });
 
-                      element.factura_id = _this1371.factura.documento_n;
-                      _this1371.transaccion = new _transacciones_transacciones__WEBPACK_IMPORTED_MODULE_3__["transaccion"]();
-                      _this1371.transaccion.fecha_mov = new Date().toLocaleString();
-                      _this1371.transaccion.fecha_transaccion = _this1371.factura.fecha;
-                      _this1371.transaccion.sucursal = _this1371.factura.sucursal;
-                      _this1371.transaccion.totalsuma = element.subtotal;
-                      _this1371.transaccion.bodega = "12";
-                      _this1371.transaccion.valor = element.precio_venta;
-                      _this1371.transaccion.costo_unitario = element.producto.precio;
-                      _this1371.transaccion.documento = _this1371.factura.documento_n + "";
-                      _this1371.transaccion.factPro = _this1371.factura.documento_n + "";
-                      _this1371.transaccion.producto = element.producto.PRODUCTO;
-                      _this1371.transaccion.rucSucursal = _this1371.factura.rucFactura;
-                      _this1371.transaccion.maestro = _this1371.factura.maestro;
-                      _this1371.transaccion.valor = element.precio_venta - element.precio_venta * (element.descuento / 100);
-                      _this1371.transaccion.cantM2 = element.cantidad;
-                      _this1371.transaccion.cajas = Math.trunc((element.cantidad + 0.01) / element.producto.M2);
-                      _this1371.transaccion.piezas = Math.trunc((element.cantidad + 0.01) * element.producto.P_CAJA / element.producto.M2) - Math.trunc((element.cantidad + 0.01) / element.producto.M2) * element.producto.P_CAJA;
-                      _this1371.transaccion.observaciones = _this1371.factura.observaciones;
-                      _this1371.transaccion.tipo_transaccion = "venta-not";
-                      _this1371.transaccion.movimiento = -1;
-                      _this1371.transaccion.usu_autorizado = _this1371.factura.username;
-                      _this1371.transaccion.usuario = _this1371.factura.username;
-                      _this1371.transaccion.idTransaccion = _this1371.number_transaccion++;
-                      _this1371.transaccion.cliente = _this1371.factura.cliente.cliente_nombre;
-                      _this1371.transaccion.nombreUsuario = _this1371.factura.nombreUsuario;
-                      _this1371.transaccion.nombreVendedor = _this1371.factura.nombreVendedor;
-                      _this1371.transaccion.mcaEntregado = element.entregar == true ? "SI" : "NO";
+                      _this1371.productosVendidos.forEach(function (element) {
+                        _this1371.validarExistencias(element);
 
-                      if (element.producto.CLASIFICA == "COMBO") {
-                        _this1371.generarTransaccionesComboProductos(element.producto.PRODUCTO);
+                        element.factura_id = numeroDoc;
+                        _this1371.transaccion = new _transacciones_transacciones__WEBPACK_IMPORTED_MODULE_3__["transaccion"]();
+                        _this1371.transaccion.fecha_mov = new Date().toLocaleString();
+                        _this1371.transaccion.fecha_transaccion = _this1371.factura.fecha;
+                        _this1371.transaccion.sucursal = _this1371.factura.sucursal;
+                        _this1371.transaccion.totalsuma = element.subtotal;
+                        _this1371.transaccion.bodega = "12";
+                        _this1371.transaccion.valor = element.precio_venta;
+                        _this1371.transaccion.costo_unitario = element.producto.precio;
+                        _this1371.transaccion.documento = numeroDoc.toString();
+                        _this1371.transaccion.factPro = numeroDoc + "";
+                        _this1371.transaccion.producto = element.producto.PRODUCTO;
+                        _this1371.transaccion.rucSucursal = _this1371.factura.rucFactura;
+                        _this1371.transaccion.maestro = _this1371.factura.maestro;
+                        _this1371.transaccion.valor = element.precio_venta - element.precio_venta * (element.descuento / 100);
+                        _this1371.transaccion.cantM2 = element.cantidad;
+                        _this1371.transaccion.cajas = Math.trunc((element.cantidad + 0.01) / element.producto.M2);
+                        _this1371.transaccion.piezas = Math.trunc((element.cantidad + 0.01) * element.producto.P_CAJA / element.producto.M2) - Math.trunc((element.cantidad + 0.01) / element.producto.M2) * element.producto.P_CAJA;
+                        _this1371.transaccion.observaciones = _this1371.factura.observaciones;
+                        _this1371.transaccion.tipo_transaccion = "venta-not";
+                        _this1371.transaccion.movimiento = -1;
+                        _this1371.transaccion.usu_autorizado = _this1371.factura.username;
+                        _this1371.transaccion.usuario = _this1371.factura.username;
+                        _this1371.transaccion.idTransaccion = _this1371.number_transaccion++;
+                        _this1371.transaccion.cliente = _this1371.factura.cliente.cliente_nombre;
+                        _this1371.transaccion.nombreUsuario = _this1371.factura.nombreUsuario;
+                        _this1371.transaccion.nombreVendedor = _this1371.factura.nombreVendedor;
+                        _this1371.transaccion.mcaEntregado = element.entregar == true ? "SI" : "NO";
 
-                        if (_this1371.transaccion.valor == element.producto.precio) {
-                          _this1371.transaccion.valor = 0;
-                          _this1371.transaccion.totalsuma = 0;
-                        } else {
-                          _this1371.transaccion.valor = _this1371.transaccion.valor - element.producto.precio;
-                          _this1371.transaccion.totalsuma = _this1371.transaccion.valor * _this1371.transaccion.cantM2;
+                        if (element.producto.CLASIFICA == "COMBO") {
+                          _this1371.generarTransaccionesComboProductos(element.producto.PRODUCTO);
+
+                          if (_this1371.transaccion.valor == element.producto.precio) {
+                            _this1371.transaccion.valor = 0;
+                            _this1371.transaccion.totalsuma = 0;
+                          } else {
+                            _this1371.transaccion.valor = _this1371.transaccion.valor - element.producto.precio;
+                            _this1371.transaccion.totalsuma = _this1371.transaccion.valor * _this1371.transaccion.cantM2;
+                          }
                         }
-                      }
 
-                      _this1371.transaccionesService.newTransaccion(_this1371.transaccion).subscribe(function (res) {
-                        _this1371.contadores[0].transacciones_Ndocumento = _this1371.number_transaccion;
+                        _this1371.transaccionesService.newTransaccion(_this1371.transaccion).subscribe(function (res) {
+                          _this1371.contadores[0].transacciones_Ndocumento = _this1371.number_transaccion;
 
-                        _this1371.contadoresService.updateContadoresIDTransacciones(_this1371.contadores[0]).subscribe(function (res) {
-                          _this1371.db.collection("/consectivosBaseMongoDB").doc("base").update({
-                            transacciones_Ndocumento: _this1371.number_transaccion
-                          }).then(function (res) {
-                            contVal++, _this1371.contadorValidaciones(contVal);
+                          _this1371.contadoresService.updateContadoresIDTransacciones(_this1371.contadores[0]).subscribe(function (res) {
+                            _this1371.db.collection("/consectivosBaseMongoDB").doc("base").update({
+                              transacciones_Ndocumento: _this1371.number_transaccion
+                            }).then(function (res) {
+                              contVal++, _this1371.contadorValidaciones(contVal);
+                            }, function (err) {
+                              return err;
+                            });
                           }, function (err) {
-                            return err;
+                            _this1371.mostrarMensajeGenerico(2, "Revise e intente nuevamente");
                           });
                         }, function (err) {
                           _this1371.mostrarMensajeGenerico(2, "Revise e intente nuevamente");
                         });
-                      }, function (err) {
-                        _this1371.mostrarMensajeGenerico(2, "Revise e intente nuevamente");
                       });
-                    });
+                    },
+                    error: function error(err) {
+                      _this1371.mostrarMensajeGenerico(2, "Error al guardar el consecutivo de Nota de Venta");
+                    }
                   });
                 } else {
                   this.mostrarMensajeGenerico(2, "Error al crear el documento");
@@ -166171,8 +166193,8 @@ function _classCallCheck(instance, Constructor) { if (!(instance instanceof Cons
         measurementId: "G-338L2LR9XQ"
       },
       services: {
-        //urlServices : "http://143.198.60.33:3000"   //NUEVO SERVIDOR PRUEBAS
-        urlServices: "http://104.131.82.174:3000" //SERVIDOR PRODUCCIÓN
+        urlServices: "http://143.198.60.33:3000" //NUEVO SERVIDOR PRUEBAS
+        //urlServices : "http://104.131.82.174:3000"   //SERVIDOR PRODUCCIÓN
         //urlServices : "http://localhost:3000"   //LOCAL
 
       }
