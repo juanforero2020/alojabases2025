@@ -87329,8 +87329,8 @@ function _classCallCheck(instance, Constructor) { if (!(instance instanceof Cons
         this.productosBajoMinimoPorCategoria = [];
         this.loading = false;
         this.errorCarga = false;
-        this.versionSistema = "1.0.6";
-        this.ultimaFechaActualizacion = "04/03/2026 21:00";
+        this.versionSistema = "1.0.8";
+        this.ultimaFechaActualizacion = "06/03/2026 19:00";
       }
 
       _createClass(HomeComponent, [{
@@ -165874,9 +165874,6 @@ function _classCallCheck(instance, Constructor) { if (!(instance instanceof Cons
         this.onInactivityCallback = null;
         this.lastActivity = Date.now();
         this.inactivityTimeoutMs = DEFAULT_MINUTOS_INACTIVIDAD * 60 * 1000;
-        /** Momento en que la pestaña pasó a segundo plano (para móviles). */
-
-        this.hiddenAt = null;
       }
 
       _createClass(InactivityService, [{
@@ -165912,8 +165909,6 @@ function _classCallCheck(instance, Constructor) { if (!(instance instanceof Cons
         value: function initializeListeners() {
           var _this1386 = this;
 
-          this.hiddenAt = null;
-
           var updateActivity = function updateActivity() {
             _this1386.lastActivity = Date.now();
           };
@@ -165929,34 +165924,51 @@ function _classCallCheck(instance, Constructor) { if (!(instance instanceof Cons
             _this1386.listeners.push(function () {
               return document.removeEventListener(event, handler, true);
             });
-          }); // Crítico para móviles: al salir guardamos cuándo se ocultó; al volver comprobamos tiempo oculto
+          }); // Al volver a la pestaña/app: si pasó más del tiempo de inactividad → cerrar sesión.
+          // No dependemos de "hidden" (en móvil a veces no se dispara).
+
+          var checkInactivityOnReturn = function checkInactivityOnReturn() {
+            var elapsed = Date.now() - _this1386.lastActivity;
+
+            if (elapsed >= _this1386.inactivityTimeoutMs) {
+              _this1386.ngZone.run(function () {
+                return _this1386.handleInactivity();
+              });
+            } else {
+              _this1386.lastActivity = Date.now();
+            }
+          }; // 1) visibilitychange: estándar para pestaña/app visible de nuevo
+
 
           var visibilityHandler = function visibilityHandler() {
-            if (document.hidden) {
-              _this1386.hiddenAt = Date.now();
-            } else {
-              // El usuario volvió a la pestaña (o a la app en móvil)
-              if (_this1386.hiddenAt !== null) {
-                var hiddenDurationMs = Date.now() - _this1386.hiddenAt;
-
-                if (hiddenDurationMs >= _this1386.inactivityTimeoutMs) {
-                  _this1386.ngZone.run(function () {
-                    return _this1386.handleInactivity();
-                  });
-
-                  return;
-                }
-
-                _this1386.hiddenAt = null;
-              }
-
-              _this1386.lastActivity = Date.now();
+            if (!document.hidden) {
+              checkInactivityOnReturn();
             }
           };
 
           document.addEventListener('visibilitychange', visibilityHandler);
           this.listeners.push(function () {
             return document.removeEventListener('visibilitychange', visibilityHandler);
+          }); // 2) focus: en móviles a veces es más fiable que visibilitychange al volver
+
+          var focusHandler = function focusHandler() {
+            return checkInactivityOnReturn();
+          };
+
+          window.addEventListener('focus', focusHandler);
+          this.listeners.push(function () {
+            return window.removeEventListener('focus', focusHandler);
+          }); // 3) pageshow: se dispara al volver desde bfcache o cambio de pestaña en varios móviles
+
+          var pageShowHandler = function pageShowHandler(e) {
+            if (e.persisted || !document.hidden) {
+              checkInactivityOnReturn();
+            }
+          };
+
+          window.addEventListener('pageshow', pageShowHandler);
+          this.listeners.push(function () {
+            return window.removeEventListener('pageshow', pageShowHandler);
           });
           this.lastActivity = Date.now();
         }
@@ -165990,7 +166002,6 @@ function _classCallCheck(instance, Constructor) { if (!(instance instanceof Cons
             return remove();
           });
           this.listeners = [];
-          this.hiddenAt = null;
           this.onInactivityCallback = null;
         }
       }, {

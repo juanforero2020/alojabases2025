@@ -52043,8 +52043,8 @@ class HomeComponent {
         this.productosBajoMinimoPorCategoria = [];
         this.loading = false;
         this.errorCarga = false;
-        this.versionSistema = "1.0.6";
-        this.ultimaFechaActualizacion = "04/03/2026 21:00";
+        this.versionSistema = "1.0.8";
+        this.ultimaFechaActualizacion = "06/03/2026 19:00";
     }
     ngOnInit() {
         this.cargarProductosBajoMinimo();
@@ -101006,8 +101006,6 @@ class InactivityService {
         this.onInactivityCallback = null;
         this.lastActivity = Date.now();
         this.inactivityTimeoutMs = DEFAULT_MINUTOS_INACTIVIDAD * 60 * 1000;
-        /** Momento en que la pestaña pasó a segundo plano (para móviles). */
-        this.hiddenAt = null;
     }
     startWatching(onInactivity) {
         this.stopWatching();
@@ -101029,7 +101027,6 @@ class InactivityService {
         });
     }
     initializeListeners() {
-        this.hiddenAt = null;
         const updateActivity = () => {
             this.lastActivity = Date.now();
         };
@@ -101046,26 +101043,37 @@ class InactivityService {
             document.addEventListener(event, handler, true);
             this.listeners.push(() => document.removeEventListener(event, handler, true));
         });
-        // Crítico para móviles: al salir guardamos cuándo se ocultó; al volver comprobamos tiempo oculto
-        const visibilityHandler = () => {
-            if (document.hidden) {
-                this.hiddenAt = Date.now();
+        // Al volver a la pestaña/app: si pasó más del tiempo de inactividad → cerrar sesión.
+        // No dependemos de "hidden" (en móvil a veces no se dispara).
+        const checkInactivityOnReturn = () => {
+            const elapsed = Date.now() - this.lastActivity;
+            if (elapsed >= this.inactivityTimeoutMs) {
+                this.ngZone.run(() => this.handleInactivity());
             }
             else {
-                // El usuario volvió a la pestaña (o a la app en móvil)
-                if (this.hiddenAt !== null) {
-                    const hiddenDurationMs = Date.now() - this.hiddenAt;
-                    if (hiddenDurationMs >= this.inactivityTimeoutMs) {
-                        this.ngZone.run(() => this.handleInactivity());
-                        return;
-                    }
-                    this.hiddenAt = null;
-                }
                 this.lastActivity = Date.now();
+            }
+        };
+        // 1) visibilitychange: estándar para pestaña/app visible de nuevo
+        const visibilityHandler = () => {
+            if (!document.hidden) {
+                checkInactivityOnReturn();
             }
         };
         document.addEventListener('visibilitychange', visibilityHandler);
         this.listeners.push(() => document.removeEventListener('visibilitychange', visibilityHandler));
+        // 2) focus: en móviles a veces es más fiable que visibilitychange al volver
+        const focusHandler = () => checkInactivityOnReturn();
+        window.addEventListener('focus', focusHandler);
+        this.listeners.push(() => window.removeEventListener('focus', focusHandler));
+        // 3) pageshow: se dispara al volver desde bfcache o cambio de pestaña en varios móviles
+        const pageShowHandler = (e) => {
+            if (e.persisted || !document.hidden) {
+                checkInactivityOnReturn();
+            }
+        };
+        window.addEventListener('pageshow', pageShowHandler);
+        this.listeners.push(() => window.removeEventListener('pageshow', pageShowHandler));
         this.lastActivity = Date.now();
     }
     startIntervalCheck() {
@@ -101088,7 +101096,6 @@ class InactivityService {
         }
         this.listeners.forEach(remove => remove());
         this.listeners = [];
-        this.hiddenAt = null;
         this.onInactivityCallback = null;
     }
     handleInactivity() {
