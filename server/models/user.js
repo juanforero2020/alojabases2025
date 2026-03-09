@@ -12,7 +12,8 @@ const UserSchema = new mongoose.Schema({
     imageProfile: { type: String, required: false},
     codigo: { type: String, required: false},
     codigoFacturacion: { type: String, required: false},
-    codigoAutorizacion: { type: String, required: false}
+    codigoAutorizacion: { type: String, required: false},
+    lastActivityAt: { type: Date, required: false }
 },{
     timestamps:true
 });

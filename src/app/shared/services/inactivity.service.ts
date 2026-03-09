@@ -1,7 +1,10 @@
 import { Injectable, NgZone } from '@angular/core';
 import { DatosConfiguracionService } from 'src/app/servicios/datosConfiguracion.service';
+import { AuthenService } from 'src/app/servicios/authen.service';
 
 const DEFAULT_MINUTOS_INACTIVIDAD = 30;
+/** Intervalo del heartbeat al servidor (mantiene sesión viva y permite que el servidor expire por inactividad). */
+const HEARTBEAT_INTERVAL_MS = 90 * 1000; // 90 segundos
 
 @Injectable({
   providedIn: 'root'
@@ -9,6 +12,7 @@ const DEFAULT_MINUTOS_INACTIVIDAD = 30;
 export class InactivityService {
 
   private checkIntervalId: any;
+  private heartbeatIntervalId: any;
   private listeners: Array<() => void> = [];
   private onInactivityCallback: (() => void) | null = null;
 
@@ -17,6 +21,7 @@ export class InactivityService {
 
   constructor(
     private datosConfiguracionService: DatosConfiguracionService,
+    private authenService: AuthenService,
     private ngZone: NgZone
   ) {}
 
@@ -74,21 +79,26 @@ export class InactivityService {
       );
     });
 
-    // Al volver a la pestaña/app: si pasó más del tiempo de inactividad → cerrar sesión.
-    // No dependemos de "hidden" (en móvil a veces no se dispara).
-    const checkInactivityOnReturn = () => {
-      const elapsed = Date.now() - this.lastActivity;
-      if (elapsed >= this.inactivityTimeoutMs) {
-        this.ngZone.run(() => this.handleInactivity());
-      } else {
-        this.lastActivity = Date.now();
-      }
+    // Al volver a la pestaña/app: preguntamos al SERVIDOR si la sesión sigue vigente.
+    // El backend devuelve 401 si pasó el tiempo de inactividad → el interceptor cierra sesión.
+    // Así funciona en móviles aunque visibility/focus no se disparen bien.
+    const checkSessionOnReturn = () => {
+      if (!localStorage.getItem('token')) return;
+      this.ngZone.run(() => {
+        this.authenService.checkSession().subscribe({
+          next: () => { this.lastActivity = Date.now(); },
+          error: () => { /* 401 manejado por SessionExpiredInterceptor */ }
+        });
+      });
     };
 
     // 1) visibilitychange: estándar para pestaña/app visible de nuevo
     const visibilityHandler = () => {
       if (!document.hidden) {
-        checkInactivityOnReturn();
+        checkSessionOnReturn();
+        this.startHeartbeat();
+      } else {
+        this.stopHeartbeat();
       }
     };
     document.addEventListener('visibilitychange', visibilityHandler);
@@ -97,20 +107,44 @@ export class InactivityService {
     );
 
     // 2) focus: en móviles a veces es más fiable que visibilitychange al volver
-    const focusHandler = () => checkInactivityOnReturn();
+    const focusHandler = () => {
+      checkSessionOnReturn();
+      if (!document.hidden) this.startHeartbeat();
+    };
     window.addEventListener('focus', focusHandler);
     this.listeners.push(() => window.removeEventListener('focus', focusHandler));
 
     // 3) pageshow: se dispara al volver desde bfcache o cambio de pestaña en varios móviles
     const pageShowHandler = (e: PageTransitionEvent) => {
       if (e.persisted || !document.hidden) {
-        checkInactivityOnReturn();
+        checkSessionOnReturn();
+        this.startHeartbeat();
       }
     };
     window.addEventListener('pageshow', pageShowHandler);
     this.listeners.push(() => window.removeEventListener('pageshow', pageShowHandler));
 
     this.lastActivity = Date.now();
+    if (!document.hidden) this.startHeartbeat();
+  }
+
+  /** Heartbeat al servidor para que actualice last_activity; al dejar la app se detiene y el servidor puede expirar la sesión. */
+  private startHeartbeat(): void {
+    this.stopHeartbeat();
+    this.heartbeatIntervalId = setInterval(() => {
+      if (document.hidden || !localStorage.getItem('token')) return;
+      this.authenService.checkSession().subscribe({
+        next: () => { this.lastActivity = Date.now(); },
+        error: () => { /* 401 → interceptor cierra sesión */ }
+      });
+    }, HEARTBEAT_INTERVAL_MS);
+  }
+
+  private stopHeartbeat(): void {
+    if (this.heartbeatIntervalId) {
+      clearInterval(this.heartbeatIntervalId);
+      this.heartbeatIntervalId = null;
+    }
   }
 
   private startIntervalCheck(): void {
@@ -142,6 +176,8 @@ export class InactivityService {
       clearInterval(this.checkIntervalId);
       this.checkIntervalId = null;
     }
+
+    this.stopHeartbeat();
 
     this.listeners.forEach(remove => remove());
 

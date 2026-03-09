@@ -69,7 +69,8 @@ import { FormsModule } from "@angular/forms";
 import { PinchZoomModule } from "ngx-pinch-zoom";
 import { ParametrizacionComponent } from "./pages/parametrizacion/parametrizacion.component";
 import { EntregasPComponent } from "./pages/entregas-p/entregas-p.component";
-import { HttpClientModule } from "@angular/common/http";
+import { HttpClientModule, HTTP_INTERCEPTORS } from "@angular/common/http";
+import { SessionExpiredInterceptor } from "./shared/interceptors/session-expired.interceptor";
 import { UserComponent } from "./pages/user/user.component";
 import { ClientesComponent } from "./pages/clientes/clientes.component";
 import { CalculadorasComponent } from "./pages/calculadora/calculadora.component";
@@ -236,6 +237,11 @@ import { ConfiguracionPresentacionComponent } from './pages/configuracion-presen
     {
       provide: LocationStrategy,
       useClass: HashLocationStrategy,
+    },
+    {
+      provide: HTTP_INTERCEPTORS,
+      useClass: SessionExpiredInterceptor,
+      multi: true,
     },
   ],
 

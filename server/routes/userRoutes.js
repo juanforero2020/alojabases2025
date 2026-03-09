@@ -1,7 +1,8 @@
 const { Router } = require('express');
 const router = Router();
-const User = require('../models/user')
+const User = require('../models/user');
 const jwt = require('jsonwebtoken');
+const { verifyToken } = require('../middleware/auth');
 
 router.get('/', (req, res) => res.send('Holly Molly'))
 
@@ -20,7 +21,8 @@ router.post('/signInGoogle', async (req, res) => {
 
     const user = await User.findOne({ email });
     if (!user) return res.status(401).send('Correo no existe');
-    const token = jwt.sign({ _id: user.token }, 'secretkey');
+    await User.findByIdAndUpdate(user._id, { lastActivityAt: new Date() });
+    const token = jwt.sign({ _id: user._id }, 'secretkey');
 
     return res.status(200).json({ token });
 });
@@ -31,53 +33,39 @@ router.get('/dashboard', verifyToken, (req, res) => {//para rutas privadas
            
 });
 
-async function verifyToken(req, res, next) {
-	try {
-		if (!req.headers.authorization) {//revisa si en cada petición existe una cabecera autorizacion
-			return res.status(401).send('Unauhtorized Request');
-		}
-		let token = req.headers.authorization.split(' ')[1];
-		if (token === 'null') {// si existe revisa que el token no este vacio
-			return res.status(401).send('Unauhtorized Request');
-		}
+/**
+ * Comprueba sesión (heartbeat / al volver a la app en móvil).
+ * verifyToken ya valida token, inactividad y actualiza lastActivityAt; aquí solo respondemos 200.
+ */
+router.get('/session-check', verifyToken, (req, res) => {
+    res.status(200).json({ ok: true });
+});
 
-		const payload = await jwt.verify(token, 'secretkey');
-		if (!payload) { //si no esta vacio extrae los datos del token
-			return res.status(401).send('Unauhtorized Request');
-		}
-		req.userId = payload._id;
-		next();
-	} catch(e) {
-		return res.status(401).send('Unauhtorized Request');
-	}
-}
-
-router.get('/getUsers', async (req, res) => {
+router.get('/getUsers', verifyToken, async (req, res) => {
     const grupos = await User.find();
-    res.send(grupos)      
-})
+    res.send(grupos);
+});
 
-router.get('/getUsers2', async (req, res) => {
+router.get('/getUsers2', verifyToken, async (req, res) => {
     const grupos = await User.find({"empresa":"Webbi"});
-    res.send(grupos)      
-})
+    res.send(grupos);
+});
 
-router.get('/getUsers/:id', async (req, res) => {
+router.get('/getUsers/:id', verifyToken, async (req, res) => {
     const { id } = req.params;
-	const grupos = await User.findById(id);
-	res.json(grupos);   
-})
+    const grupos = await User.findById(id);
+    res.json(grupos);
+});
 
-
-router.get('/getUsers1/:correo', async (req, res) => {
+router.get('/getUsers1/:correo', verifyToken, async (req, res) => {
     const { correo } = req.params;
-    const grupos = await User.find({"email":correo});
-    res.json(grupos); 
-})
+    const grupos = await User.find({"email": correo});
+    res.json(grupos);
+});
 
 
 
-router.post('/newUser', async (req, res) => {
+router.post('/newUser', verifyToken, async (req, res) => {
     const { email, password, name, rol,grupo,sucursal,numUsuarios,username, status,codigoFacturacion } = req.body;
     const emailExiste = await User.findOne({ email });
     if (emailExiste){
@@ -98,12 +86,13 @@ router.post('/signIn', async (req, res) => {
     if (!user) return res.status(401).send('La cuenta no existe');
     if (user.password !== password) return res.status(401).send('Contraseña Incorrecta');
     if (user.status !== "Activo") return res.status(404).send('Usuario bloqueado');
+    await User.findByIdAndUpdate(user._id, { lastActivityAt: new Date() });
     const token = jwt.sign({ _id: user._id }, 'secretkey');
     return res.status(200).json({ token });
 });
 
 
-router.put('/updateUser/:id', async (req, res,next) => {
+router.put('/updateUser/:id', verifyToken, async (req, res, next) => {
     const { id } = req.params;
     const user = {
         name: req.body.name,
@@ -121,7 +110,7 @@ router.put('/updateUser/:id', async (req, res,next) => {
 })
 
 
-router.put('/update/:id', async (req, res,next) => {
+router.put('/update/:id', verifyToken, async (req, res, next) => {
     const { id } = req.params;
     const usuario = {
         name: req.body.name,
@@ -138,7 +127,7 @@ router.put('/update/:id', async (req, res,next) => {
 })
 
 
-router.delete('/delete/:id', async (req, res,next) => {
+router.delete('/delete/:id', verifyToken, async (req, res, next) => {
     await User.findByIdAndRemove(req.params.id);
     res.json({status: 'USER Deleted'});
 })

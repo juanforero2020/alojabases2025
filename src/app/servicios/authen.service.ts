@@ -45,6 +45,17 @@ export class AuthenService {
     return localStorage.getItem("token");
   }
 
+  /**
+   * Comprueba en el servidor si la sesión sigue vigente (por tiempo de inactividad).
+   * Si el backend devuelve 401, el interceptor SessionExpiredInterceptor cierra sesión.
+   * Usado al volver a la app (móvil) y como heartbeat para actualizar last_activity en servidor.
+   */
+  checkSession() {
+    return this.http.get<{ ok: boolean }>(this.URL + "/session-check", {
+      responseType: "json",
+    });
+  }
+
   logout() {
     localStorage.removeItem("token");
     localStorage.removeItem("contrasena");
