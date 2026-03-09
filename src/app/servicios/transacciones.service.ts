@@ -31,6 +31,14 @@ export class TransaccionesService {
     return this.http.post<any>(this.URL + "/newTransaccion", transaccion);
   }
 
+  /** Inserta muchas transacciones en una sola petición (evita timeouts con +300) */
+  newTransaccionesBulk(transacciones: any[]) {
+    return this.http.post<{ status: string; count: number }>(
+      this.URL + "/newTransaccionesBulk",
+      { transacciones }
+    );
+  }
+
   getTransaccion() {
     return this.http.get(this.URL + "/getTransacciones");
   }
@@ -77,6 +85,14 @@ export class TransaccionesService {
 
   updateEstadoTransaccion(transaccion) {
     return this.http.put(this.URL + `/updateEstadoTransaccion/${transaccion._id}`, transaccion);
+  }
+
+  /** Marca muchas transacciones como inactivas en una sola petición */
+  updateEstadoTransaccionesBulk(ids: string[]) {
+    return this.http.put<{ status: string; modifiedCount: number }>(
+      this.URL + "/updateEstadoTransaccionesBulk",
+      { ids }
+    );
   }
 
   deleteTransaccion(transaccion) {

@@ -29,6 +29,7 @@ import { CatalogoService } from "src/app/servicios/catalogo.service";
 import { TransaccionesRevisionProductoService } from "src/app/servicios/transaccionesRevisionProducto.service";
 import { comparacionResultadosRevision } from "../revision-inventario/revision-inventario";
 import { DxTreeViewComponent } from "devextreme-angular";
+import { forkJoin } from "rxjs";
 
 @Component({
   selector: "app-consolidado",
@@ -1138,113 +1139,132 @@ export class ConsolidadoComponent implements OnInit {
   }
 
 
-  realizarActualizacionTransacciones(){
-    this.mensajeLoading = "Realizando ajustes"
+  /** Tamaño del lote para inserciones/actualizaciones bulk (evita timeouts con +300) */
+  private readonly BULK_BATCH_SIZE = 100;
+
+  realizarActualizacionTransacciones() {
+    this.mensajeLoading = "Realizando ajustes";
     this.mostrarLoading = true;
-    var contadorProductos = 0;
+    const listaTransacciones: transaccion[] = [];
+    const fechaMov = new Date().toLocaleString();
+    const fechaTransaccion = new Date();
+    const observaciones = "Ajuste automatico de transacciones " + new Date().toLocaleDateString();
+    const usuario = this.usuarioLogueado[0].username;
+
     this.invetarioP.forEach((element) => {
-      this.transaccion = new transaccion()
-      this.transaccion.fecha_mov = new Date().toLocaleString()
-      this.transaccion.fecha_transaccion = new Date()
-      this.transaccion.sucursal = "matriz"
-      this.transaccion.totalsuma = 0
-      this.transaccion.bodega = "12"
-      this.transaccion.costo_unitario = element.producto.precio
-      this.transaccion.documento = "000000"
-      this.transaccion.factPro = ""
-      this.transaccion.maestro = ""
-      this.transaccion.producto = element.producto.PRODUCTO
-      this.transaccion.observaciones = "Ajuste automatico de transacciones "+ new Date().toLocaleDateString()
-      if(element.cantidadCajas < 0 || element.cantidadPiezas < 0){
-        this.transaccion.cajas = element.cantidadCajas*(-1)
-        this.transaccion.piezas = element.cantidadPiezas*(-1)
-        this.transaccion.cantM2 = element.cantidadM2*(-1)
-        this.transaccion.valor = 0
-        this.transaccion.totalsuma = 0
-        this.transaccion.tipo_transaccion = "ajuste-faltante"
-        this.transaccion.movimiento = -1
-      }else{
-        this.transaccion.cajas = element.cantidadCajas
-        this.transaccion.piezas = element.cantidadPiezas
-        this.transaccion.cantM2 = element.cantidadM2
-        this.transaccion.valor = 0
-        this.transaccion.totalsuma = 0
-        this.transaccion.tipo_transaccion = "ajuste-sobrante"
-        this.transaccion.movimiento = 1
+      // Transacción matriz
+      const t1 = new transaccion();
+      t1.fecha_mov = fechaMov;
+      t1.fecha_transaccion = fechaTransaccion;
+      t1.sucursal = "matriz";
+      t1.totalsuma = 0;
+      t1.bodega = "12";
+      t1.costo_unitario = element.producto.precio;
+      t1.documento = "000000";
+      t1.factPro = "";
+      t1.maestro = "";
+      t1.producto = element.producto.PRODUCTO;
+      t1.observaciones = observaciones;
+      t1.usu_autorizado = usuario;
+      t1.usuario = usuario;
+      t1.idTransaccion = 0;
+      t1.cliente = "";
+      if (element.cantidadCajas < 0 || element.cantidadPiezas < 0) {
+        t1.cajas = element.cantidadCajas * (-1);
+        t1.piezas = element.cantidadPiezas * (-1);
+        t1.cantM2 = element.cantidadM2 * (-1);
+        t1.valor = 0;
+        t1.tipo_transaccion = "ajuste-faltante";
+        t1.movimiento = -1;
+      } else {
+        t1.cajas = element.cantidadCajas;
+        t1.piezas = element.cantidadPiezas;
+        t1.cantM2 = element.cantidadM2;
+        t1.valor = 0;
+        t1.tipo_transaccion = "ajuste-sobrante";
+        t1.movimiento = 1;
       }
-        
-      this.transaccion.usu_autorizado = this.usuarioLogueado[0].username
-      this.transaccion.usuario = this.usuarioLogueado[0].username
-      this.transaccion.idTransaccion = 0
-      this.transaccion.cliente = ""
+      listaTransacciones.push(t1);
 
-
-      var p1 = new Promise((resolve, reject) => {
-        this.transaccionesService.newTransaccion(this.transaccion).subscribe(
-          res => { resolve(true)},
-          err => { })
-      });
-
-
-      this.transaccion = new transaccion()
-      this.transaccion.fecha_mov = new Date().toLocaleString()
-      this.transaccion.fecha_transaccion = new Date()
-      this.transaccion.sucursal = "sucursal1"
-      this.transaccion.totalsuma = 0
-      this.transaccion.bodega = "12"
-      this.transaccion.costo_unitario = element.producto.precio
-      this.transaccion.documento = "000000"
-      this.transaccion.factPro = ""
-      this.transaccion.maestro = ""
-      this.transaccion.producto = element.producto.PRODUCTO
-      this.transaccion.observaciones = "Ajuste automatico de transacciones "+ new Date().toLocaleDateString()
-      if(element.cantidadCajas2 < 0 || element.cantidadPiezas2 < 0){
-        this.transaccion.cajas = element.cantidadCajas2*(-1)
-        this.transaccion.piezas = element.cantidadPiezas2*(-1)
-        this.transaccion.cantM2 = element.cantidadM2b2*(-1)
-        this.transaccion.valor = 0
-        this.transaccion.totalsuma = 0
-        this.transaccion.tipo_transaccion = "ajuste-faltante"
-        this.transaccion.movimiento = -1
-      }else{
-        this.transaccion.cajas = element.cantidadCajas2
-        this.transaccion.piezas = element.cantidadPiezas2
-        this.transaccion.cantM2 = element.cantidadM2b2
-        this.transaccion.valor = 0
-        this.transaccion.totalsuma = 0
-        this.transaccion.tipo_transaccion = "ajuste-sobrante"
-        this.transaccion.movimiento = 1
+      // Transacción sucursal1
+      const t2 = new transaccion();
+      t2.fecha_mov = fechaMov;
+      t2.fecha_transaccion = fechaTransaccion;
+      t2.sucursal = "sucursal1";
+      t2.totalsuma = 0;
+      t2.bodega = "12";
+      t2.costo_unitario = element.producto.precio;
+      t2.documento = "000000";
+      t2.factPro = "";
+      t2.maestro = "";
+      t2.producto = element.producto.PRODUCTO;
+      t2.observaciones = observaciones;
+      t2.usu_autorizado = usuario;
+      t2.usuario = usuario;
+      t2.idTransaccion = 0;
+      t2.cliente = "";
+      if (element.cantidadCajas2 < 0 || element.cantidadPiezas2 < 0) {
+        t2.cajas = element.cantidadCajas2 * (-1);
+        t2.piezas = element.cantidadPiezas2 * (-1);
+        t2.cantM2 = element.cantidadM2b2 * (-1);
+        t2.valor = 0;
+        t2.tipo_transaccion = "ajuste-faltante";
+        t2.movimiento = -1;
+      } else {
+        t2.cajas = element.cantidadCajas2;
+        t2.piezas = element.cantidadPiezas2;
+        t2.cantM2 = element.cantidadM2b2;
+        t2.valor = 0;
+        t2.tipo_transaccion = "ajuste-sobrante";
+        t2.movimiento = 1;
       }
-        
-      this.transaccion.usu_autorizado = this.usuarioLogueado[0].username
-      this.transaccion.usuario = this.usuarioLogueado[0].username
-      this.transaccion.idTransaccion = 0
-      this.transaccion.cliente = ""
+      listaTransacciones.push(t2);
+    });
 
+    const lotes = this.crearLotes(listaTransacciones, this.BULK_BATCH_SIZE);
+    const peticiones = lotes.map((lote) => this.transaccionesService.newTransaccionesBulk(lote));
 
-      var p2 = new Promise((resolve, reject) => {
-        this.transaccionesService.newTransaccion(this.transaccion).subscribe(
-          res => { resolve(true)},
-          err => { })
-      });
+    if (peticiones.length === 0) {
+      this.actualizarTransaccionesEstado();
+      return;
+    }
 
-      Promise.all([p1, p2]).then(values => {
-        contadorProductos++;
-        if(contadorProductos == this.invetarioP.length)
-          this.actualizarTransaccionesEstado();
-      });  
-      
-    }); 
+    forkJoin(peticiones).subscribe({
+      next: () => this.actualizarTransaccionesEstado(),
+      error: () => {
+        this.mostrarLoading = false;
+        Swal.fire("Error", "Falló la creación de transacciones en lote.", "error");
+      },
+    });
   }
 
 
-  actualizarTransaccionesEstado(){
-    var cont= 0;
-    this.transacciones.forEach((element) => {
-      this.transaccionesService.updateEstadoTransaccion(element).subscribe(
-          res => { cont++;this.mostrarMensajeActualizacion(cont)},
-          err => { })
-    })
+  /** Divide un array en lotes de tamaño máximo size */
+  private crearLotes<T>(arr: T[], size: number): T[][] {
+    const lotes: T[][] = [];
+    for (let i = 0; i < arr.length; i += size) {
+      lotes.push(arr.slice(i, i + size));
+    }
+    return lotes;
+  }
+
+  actualizarTransaccionesEstado() {
+    const ids = this.transacciones.map((t) => (t as any)._id).filter((id) => id);
+    if (ids.length === 0) {
+      this.mostrarMensajeActualizacion(this.transacciones.length);
+      return;
+    }
+    const lotes = this.crearLotes(ids, this.BULK_BATCH_SIZE);
+    const peticiones = lotes.map((lote) =>
+      this.transaccionesService.updateEstadoTransaccionesBulk(lote)
+    );
+    forkJoin(peticiones).subscribe({
+      next: () => this.mostrarMensajeActualizacion(this.transacciones.length),
+      error: () => {
+        this.mostrarLoading = false;
+        Swal.fire("Error", "Falló la actualización de estado de transacciones.", "error");
+      },
+    });
   }
 
   mostrarMensajeActualizacion(contador:number){

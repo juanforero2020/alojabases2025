@@ -189,4 +189,57 @@ router.post("/newTransaccion", async (req, res) => {
   res.json({ status: "Transaccion creada" });
 });
 
+// Bulk: insertar muchas transacciones en una sola operación (evita timeouts con +300)
+router.post("/newTransaccionesBulk", async (req, res) => {
+  const transacciones = req.body.transacciones || [];
+  if (!transacciones.length) {
+    return res.status(400).json({ status: "No hay transacciones para insertar" });
+  }
+  const docs = transacciones.map((t) => ({
+    idTransaccion: t.idTransaccion,
+    fecha_transaccion: t.fecha_transaccion,
+    fecha_mov: t.fecha_mov,
+    sucursal: t.sucursal,
+    bodega: t.bodega,
+    tipo_transaccion: t.tipo_transaccion,
+    totalsuma: t.totalsuma,
+    documento: t.documento,
+    rucSucursal: t.rucSucursal,
+    producto: t.producto,
+    cajas: t.cajas,
+    piezas: t.piezas,
+    costo_unitario: t.costo_unitario,
+    usu_autorizado: t.usu_autorizado,
+    usuario: t.usuario,
+    observaciones: t.observaciones,
+    factPro: t.factPro,
+    valor: t.valor,
+    cliente: t.cliente,
+    proveedor: t.proveedor,
+    maestro: t.maestro,
+    orden_compra: t.orden_compra,
+    cantM2: t.cantM2,
+    movimiento: t.movimiento,
+    mcaEntregado: t.mcaEntregado,
+    nombreUsuario: t.nombreUsuario,
+    nombreVendedor: t.nombreVendedor,
+    isActive: t.isActive
+  }));
+  await Transacciones.insertMany(docs);
+  res.json({ status: "Transacciones creadas", count: docs.length });
+});
+
+// Bulk: marcar muchas transacciones como inactivas en una sola operación
+router.put("/updateEstadoTransaccionesBulk", async (req, res) => {
+  const ids = req.body.ids || [];
+  if (!ids.length) {
+    return res.status(400).json({ status: "No hay IDs para actualizar" });
+  }
+  const result = await Transacciones.updateMany(
+    { _id: { $in: ids } },
+    { $set: { isActive: false } }
+  );
+  res.json({ status: "Transacciones actualizadas", modifiedCount: result.modifiedCount });
+});
+
 module.exports = router;
