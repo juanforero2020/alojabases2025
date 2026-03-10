@@ -10,8 +10,8 @@ export class HomeComponent implements OnInit {
   productosBajoMinimoPorCategoria: ProductosBajoMinimoPorCategoria[] = [];
   loading = false;
   errorCarga = false;
-  versionSistema = "1.0.8";
-  ultimaFechaActualizacion = "09/03/2026 09:00";
+  versionSistema = "1.1.1";
+  ultimaFechaActualizacion = "10/03/2026 10:00";
 
   constructor(private stockMinimoData: StockMinimoDataService) {}
 
