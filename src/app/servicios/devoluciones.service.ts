@@ -30,8 +30,13 @@ export class DevolucionesService {
     return this.http.put(this.URL + `/update/${devolucion._id}`, devolucion);
   }
 
-  updateEstado(devolucion, estado: string) {
-    return this.http.put(this.URL + `/updateEstado/${devolucion._id}/${estado}`, devolucion);
+  updateEstado(devolucion: { _id?: string; id_devolucion?: number }, estado: string) {
+    const id = devolucion._id ?? devolucion.id_devolucion;
+    return this.http.put(
+      this.URL + `/updateEstado/${id}/${estado}`,
+      devolucion,
+      { responseType: "text" }
+    );
   }
 
   deleteDevolucion(devolucion) {

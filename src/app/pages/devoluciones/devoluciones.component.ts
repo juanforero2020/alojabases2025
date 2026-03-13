@@ -40,7 +40,6 @@ import { dataDocumento } from "../reciboCaja/recibo-caja";
 import { CajaMenor } from "../cajaMenor/caja-menor";
 import { CajaMenorService } from "src/app/servicios/cajaMenor.service";
 import { AuthService } from "src/app/shared/services";
-import { AngularFirestore } from "angularfire2/firestore";
 import { ProductoCombo, productosCombo } from "../catalogo/catalogo";
 import { CombosService } from "src/app/servicios/combos.service";
 
@@ -108,6 +107,7 @@ export class DevolucionesComponent implements OnInit, OnDestroy {
   numeroFactura: string;
   number_transaccion: number = 0;
   transaccion: transaccion;
+  botonGuardarDeshabilitado: boolean = false;
   productosDevueltos: productosDevueltos[] = [];
   productosDevueltosBase: productosDevueltos[] = [];
   productosDevueltosCarga: productosDevueltos[] = [];
@@ -141,7 +141,6 @@ export class DevolucionesComponent implements OnInit, OnDestroy {
 
 
   constructor(
-    private db: AngularFirestore,
     public parametrizacionService: ParametrizacionesService,
     public authenService: AuthenService,
     public transaccionesService: TransaccionesService,
@@ -194,6 +193,7 @@ export class DevolucionesComponent implements OnInit, OnDestroy {
       },
     });
     this.getIDDocumentos();
+    this.refrescarListado();
   }
 
   cargarUsuarioLogueado() {
@@ -401,16 +401,9 @@ export class DevolucionesComponent implements OnInit, OnDestroy {
   }
 
   getIDDocumentos() {
-    this.db
-      .collection("consectivosBaseMongoDB")
-      .valueChanges()
-      .pipe(take(1), takeUntil(this.destroy$))
-      .subscribe((data: contadoresDocumentos[]) => {
-        if (data != null) {
-          this.contadorFirebase = data;
-        }
-        this.asignarIDdocumentos2();
-      });
+    this.contadoresService.getContadores().subscribe(res => {
+      this.contadores = res as contadoresDocumentos[];
+    });
   }
 
   asignarIDdocumentos2() {
@@ -439,15 +432,17 @@ export class DevolucionesComponent implements OnInit, OnDestroy {
 
     // Verificar que idDocumento no sea null ni undefined
     if (this.idDocumento !== null && this.idDocumento !== undefined) {
-      const obs = e.value === "Factura"
-        ? this.facturasService.getFacturasDocumento(this.idDocumento)
-        : this.notasVentaService.getNotasVemtaDocumento(this.idDocumento);
+      const obs =
+        e.value === "Factura"
+          ? this.facturasService.getFacturasDocumento(this.idDocumento)
+          : this.notasVentaService.getNotasVemtaDocumento(this.idDocumento);
       this.limpiarArreglo();
       obs.pipe(takeUntil(this.destroy$), retry(2)).subscribe({
         next: (res) => {
           this.arrayFacturas = res as factura[];
           this.llenarDatosCombo(this.arrayFacturas);
           this.mostrarLoading = false;
+          this.cargarDevolucionesPorDocumento();
         },
         error: () => {
           this.mostrarLoading = false;
@@ -462,6 +457,38 @@ export class DevolucionesComponent implements OnInit, OnDestroy {
         "warning"
       );
     }
+  }
+
+  private cargarDevolucionesPorDocumento() {
+    if (this.idDocumento === null || this.idDocumento === undefined) {
+      return;
+    }
+
+    const objDev = new objDate();
+    objDev.fechaActual = new Date();
+    objDev.fechaAnterior = new Date(2000, 0, 1);
+    objDev.fechaAnterior.setHours(0, 0, 0, 0);
+
+    console.log("this.idDocumento", this.idDocumento);
+    console.log("this.devolucion.tipo_documento", this.devolucion.tipo_documento);
+
+    this.devolucionesService
+      .getDevolucionesPorRango(objDev)
+      .pipe(take(1), takeUntil(this.destroy$))
+      .subscribe({
+        next: (res) => {
+          const lista = res as devolucion[];
+          // Usamos conversion explicita a string para evitar problemas de tipo
+          this.devoluciones = lista.filter(
+            (dev) =>
+              String(dev.num_documento) === String(this.idDocumento) &&
+              String(dev.tipo_documento) === String(this.devolucion.tipo_documento)
+          );
+        },
+        error: () => {
+          this.devoluciones = [];
+        },
+      });
   }
 
   
@@ -567,44 +594,67 @@ export class DevolucionesComponent implements OnInit, OnDestroy {
   }
 
   obtenerDetallesDoc(e, i: number) {
-    var existeP = this.productosDevueltos.filter(element=>element.REFERENCIA == this.productosDevueltos[i].REFERENCIA)
-    if(existeP.length > 1){
-      Swal.fire("Error", "El producto ya existe", "error");
-      this.deleteProducto(e,i)
-    }else{
-      var canti = 0;
-      this.productosVendidos2.forEach((element) => {
-        if (element.producto.PRODUCTO == e.value) {
-          canti = 0;
-
-          this.productosDevueltos[i].producto = element.producto;
-          this.productosDevueltos[i].cantFactCajas = Math.trunc(
-            element.cantidad / element.producto.M2
-          );
-          this.productosDevueltos[i].cantFactPiezas =
-            Math.trunc((element.cantidad * element.producto.P_CAJA) / element.producto.M2) -
-            this.productosDevueltos[i].cantFactCajas * element.producto.P_CAJA;
-
-          this.productosDevueltos[i].valorunitariopiezas =
-            element.total /
-              (element.producto.P_CAJA *
-                this.productosDevueltos[i].cantFactCajas +
-                this.productosDevueltos[i].cantFactPiezas) -
-            (element.total /
-              (element.producto.P_CAJA *
-                this.productosDevueltos[i].cantFactCajas +
-                this.productosDevueltos[i].cantFactPiezas)) *
-              (element.descuento / 100);
-          this.productosDevueltos[i].valorunitario =
-            ((element.producto.P_CAJA * this.productosDevueltos[i].cantFactCajas +
-              this.productosDevueltos[i].cantFactPiezas) /
-              element.cantidad) *
-            this.productosDevueltos[i].valorunitariopiezas;
-          }
-      });
+    const existeP = this.productosDevueltos.filter(
+      (element) => element.REFERENCIA == this.productosDevueltos[i].REFERENCIA
+    );
+    if (existeP.length > 1) {
+      Swal.fire("Error", "El producto ya existe en esta devolución", "error");
+      this.deleteProducto(e, i);
+      return;
     }
-    
-    
+
+    this.productosVendidos2.forEach((element) => {
+      if (element.producto.PRODUCTO == e.value) {
+        this.productosDevueltos[i].producto = element.producto;
+        this.productosDevueltos[i].cantFactCajas = Math.trunc(
+          element.cantidad / element.producto.M2
+        );
+        this.productosDevueltos[i].cantFactPiezas =
+          Math.trunc((element.cantidad * element.producto.P_CAJA) / element.producto.M2) -
+          this.productosDevueltos[i].cantFactCajas * element.producto.P_CAJA;
+
+        this.productosDevueltos[i].valorunitariopiezas =
+          element.total /
+            (element.producto.P_CAJA *
+              this.productosDevueltos[i].cantFactCajas +
+              this.productosDevueltos[i].cantFactPiezas) -
+          (element.total /
+            (element.producto.P_CAJA *
+              this.productosDevueltos[i].cantFactCajas +
+              this.productosDevueltos[i].cantFactPiezas)) *
+            (element.descuento / 100);
+        this.productosDevueltos[i].valorunitario =
+          ((element.producto.P_CAJA * this.productosDevueltos[i].cantFactCajas +
+            this.productosDevueltos[i].cantFactPiezas) /
+            element.cantidad) *
+          this.productosDevueltos[i].valorunitariopiezas;
+      }
+    });
+  }
+
+  private getUnidadesDevueltasHistoricas(codigoProducto: string): number {
+    if (!this.idDocumento || !codigoProducto || !this.devoluciones?.length) {
+      return 0;
+    }
+
+    let total = 0;
+    this.devoluciones.forEach((dev) => {
+      if (
+        String(dev.num_documento) === String(this.idDocumento) &&
+        String(dev.tipo_documento) === String(this.devolucion.tipo_documento) &&
+        String(dev.estado) !== "Anulada" && String(dev.estado) !== "Rechazado" &&
+        dev.productosDevueltos?.length
+      ) {
+        dev.productosDevueltos.forEach((p) => {
+          if (p.producto && p.producto.PRODUCTO === codigoProducto && p.producto.P_CAJA) {
+            const unidades =
+              (p.cantDevueltaCajas || 0) * p.producto.P_CAJA + (p.cantDevueltaPiezas || 0);
+            total += unidades;
+          }
+        });
+      }
+    });
+    return total;
   }
 
   deleteProducto(e, i: number) {
@@ -636,21 +686,42 @@ export class DevolucionesComponent implements OnInit, OnDestroy {
           ).toFixed(2)
         );
 
-        var cal1 = 0;
-        var cal2 = 0;
-        var prodEncontrado = this.listadoProductosCombo?.find(element2=>element2.nombreProducto == element.producto.PRODUCTO)
+        let cal1 = 0;
+        let cal2 = 0;
+        const prodEncontrado = this.listadoProductosCombo?.find(
+          (element2) => element2.nombreProducto == element.producto.PRODUCTO
+        );
 
-        cal1 = this.productosDevueltos[i].cantDevueltaCajas * element.producto.P_CAJA + this.productosDevueltos[i].cantDevueltaPiezas;
-        
-        if(prodEncontrado != null)
-          cal2 = (this.productosDevueltos[i].cantFactCajas * element.producto.P_CAJA) * prodEncontrado.cantidad + this.productosDevueltos[i].cantFactPiezas;
+        // Cantidad que se está intentando devolver en esta línea (en unidades)
+        cal1 =
+          this.productosDevueltos[i].cantDevueltaCajas * element.producto.P_CAJA +
+          this.productosDevueltos[i].cantDevueltaPiezas;
+
+        // Cantidad total comprada (en unidades) según factura / combo
+        if (prodEncontrado != null)
+          cal2 =
+            this.productosDevueltos[i].cantFactCajas * element.producto.P_CAJA * prodEncontrado.cantidad +
+            this.productosDevueltos[i].cantFactPiezas;
         else
-          cal2 = this.productosDevueltos[i].cantFactCajas * element.producto.P_CAJA + this.productosDevueltos[i].cantFactPiezas;
+          cal2 =
+            this.productosDevueltos[i].cantFactCajas * element.producto.P_CAJA +
+            this.productosDevueltos[i].cantFactPiezas;
 
-        if (cal1 > cal2) {
-          alert("la cantidad es mayor");
+        // Restar lo que ya se devolvió en otras devoluciones del mismo documento
+        const yaDevuelto = this.getUnidadesDevueltasHistoricas(element.producto.PRODUCTO);
+        const disponible = Math.max(cal2 - yaDevuelto, 0);
+
+        if (cal1 > disponible) {
+          Swal.fire(
+            "Advertencia",
+            "La cantidad supera lo disponible para devolver considerando devoluciones anteriores.",
+            "warning"
+          );
           this.productosDevueltos[i].cantDevueltaCajas = 0;
           this.productosDevueltos[i].cantDevueltaPiezas = 0;
+          this.botonGuardarDeshabilitado = true;
+        } else {
+          this.botonGuardarDeshabilitado = false;
         }
       }
     });
@@ -864,8 +935,12 @@ export class DevolucionesComponent implements OnInit, OnDestroy {
           .updateEstado(e, "Aprobado")
           .pipe(take(1), retry(2), takeUntil(this.destroy$))
           .subscribe({
-            next: () => this.realizarTransacciones(e),
-            error: () => Swal.fire("Error", "No se pudo aprobar la devolución", "error"),
+            next: () => {
+              this.realizarTransacciones(e);
+            },
+            error: (err) => {
+              Swal.fire("Error", "No se pudo aprobar la devolución", "error");
+            },
           });
       } else if (result.dismiss === Swal.DismissReason.cancel) {
         Swal.fire("Cancelado!", "Se ha cancelado su proceso.", "error");
@@ -896,6 +971,10 @@ export class DevolucionesComponent implements OnInit, OnDestroy {
 
   buscarProductosPendientes() {
     var bandera = true;
+    if(this.total == 0 || this.total == null) {
+      Swal.fire("Advertencia", "Debe tener al menos un producto o el total debe ser mayor a 0", "warning");
+      return;
+    }
 
     this.productosDevueltos.forEach((element) => {
       this.productosPendientes.forEach((element1) => {

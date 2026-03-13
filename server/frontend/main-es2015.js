@@ -45007,32 +45007,29 @@ __webpack_require__.r(__webpack_exports__);
 /* harmony import */ var _transaccionesFinancieras_transaccionesFinancieras__WEBPACK_IMPORTED_MODULE_8__ = __webpack_require__(/*! ../transaccionesFinancieras/transaccionesFinancieras */ "./src/app/pages/transaccionesFinancieras/transaccionesFinancieras.ts");
 /* harmony import */ var _reciboCaja_recibo_caja__WEBPACK_IMPORTED_MODULE_9__ = __webpack_require__(/*! ../reciboCaja/recibo-caja */ "./src/app/pages/reciboCaja/recibo-caja.ts");
 /* harmony import */ var _catalogo_catalogo__WEBPACK_IMPORTED_MODULE_10__ = __webpack_require__(/*! ../catalogo/catalogo */ "./src/app/pages/catalogo/catalogo.ts");
-/* harmony import */ var angularfire2_firestore__WEBPACK_IMPORTED_MODULE_11__ = __webpack_require__(/*! angularfire2/firestore */ "./node_modules/angularfire2/firestore/index.js");
-/* harmony import */ var angularfire2_firestore__WEBPACK_IMPORTED_MODULE_11___default = /*#__PURE__*/__webpack_require__.n(angularfire2_firestore__WEBPACK_IMPORTED_MODULE_11__);
-/* harmony import */ var src_app_servicios_parametrizaciones_service__WEBPACK_IMPORTED_MODULE_12__ = __webpack_require__(/*! src/app/servicios/parametrizaciones.service */ "./src/app/servicios/parametrizaciones.service.ts");
-/* harmony import */ var src_app_servicios_authen_service__WEBPACK_IMPORTED_MODULE_13__ = __webpack_require__(/*! src/app/servicios/authen.service */ "./src/app/servicios/authen.service.ts");
-/* harmony import */ var src_app_servicios_transacciones_service__WEBPACK_IMPORTED_MODULE_14__ = __webpack_require__(/*! src/app/servicios/transacciones.service */ "./src/app/servicios/transacciones.service.ts");
-/* harmony import */ var src_app_servicios_devoluciones_service__WEBPACK_IMPORTED_MODULE_15__ = __webpack_require__(/*! src/app/servicios/devoluciones.service */ "./src/app/servicios/devoluciones.service.ts");
-/* harmony import */ var src_app_servicios_contadores_documentos_service__WEBPACK_IMPORTED_MODULE_16__ = __webpack_require__(/*! src/app/servicios/contadores-documentos.service */ "./src/app/servicios/contadores-documentos.service.ts");
-/* harmony import */ var src_app_servicios_notas_ventas_service__WEBPACK_IMPORTED_MODULE_17__ = __webpack_require__(/*! src/app/servicios/notas-ventas.service */ "./src/app/servicios/notas-ventas.service.ts");
-/* harmony import */ var src_app_servicios_facturas_service__WEBPACK_IMPORTED_MODULE_18__ = __webpack_require__(/*! src/app/servicios/facturas.service */ "./src/app/servicios/facturas.service.ts");
-/* harmony import */ var src_app_servicios_productos_pendientes_service__WEBPACK_IMPORTED_MODULE_19__ = __webpack_require__(/*! src/app/servicios/productos-pendientes.service */ "./src/app/servicios/productos-pendientes.service.ts");
-/* harmony import */ var src_app_servicios_ordenes_compra_service__WEBPACK_IMPORTED_MODULE_20__ = __webpack_require__(/*! src/app/servicios/ordenes-compra.service */ "./src/app/servicios/ordenes-compra.service.ts");
-/* harmony import */ var src_app_servicios_sucursales_service__WEBPACK_IMPORTED_MODULE_21__ = __webpack_require__(/*! src/app/servicios/sucursales.service */ "./src/app/servicios/sucursales.service.ts");
-/* harmony import */ var src_app_servicios_transaccionesFinancieras_service__WEBPACK_IMPORTED_MODULE_22__ = __webpack_require__(/*! src/app/servicios/transaccionesFinancieras.service */ "./src/app/servicios/transaccionesFinancieras.service.ts");
-/* harmony import */ var src_app_servicios_producto_service__WEBPACK_IMPORTED_MODULE_23__ = __webpack_require__(/*! src/app/servicios/producto.service */ "./src/app/servicios/producto.service.ts");
-/* harmony import */ var src_app_shared_services__WEBPACK_IMPORTED_MODULE_24__ = __webpack_require__(/*! src/app/shared/services */ "./src/app/shared/services/index.ts");
-/* harmony import */ var src_app_servicios_combos_service__WEBPACK_IMPORTED_MODULE_25__ = __webpack_require__(/*! src/app/servicios/combos.service */ "./src/app/servicios/combos.service.ts");
-/* harmony import */ var src_app_servicios_cajaMenor_service__WEBPACK_IMPORTED_MODULE_26__ = __webpack_require__(/*! src/app/servicios/cajaMenor.service */ "./src/app/servicios/cajaMenor.service.ts");
-/* harmony import */ var src_app_servicios_datosConfiguracion_service__WEBPACK_IMPORTED_MODULE_27__ = __webpack_require__(/*! src/app/servicios/datosConfiguracion.service */ "./src/app/servicios/datosConfiguracion.service.ts");
-/* harmony import */ var _angular_common__WEBPACK_IMPORTED_MODULE_28__ = __webpack_require__(/*! @angular/common */ "./node_modules/@angular/common/__ivy_ngcc__/fesm2015/common.js");
-/* harmony import */ var devextreme_angular__WEBPACK_IMPORTED_MODULE_29__ = __webpack_require__(/*! devextreme-angular */ "./node_modules/devextreme-angular/__ivy_ngcc__/fesm2015/devextreme-angular.js");
-/* harmony import */ var _loading_message_loading_messagge_component__WEBPACK_IMPORTED_MODULE_30__ = __webpack_require__(/*! ../loading-message/loading-messagge.component */ "./src/app/pages/loading-message/loading-messagge.component.ts");
-/* harmony import */ var devextreme_angular_ui_text_box__WEBPACK_IMPORTED_MODULE_31__ = __webpack_require__(/*! devextreme-angular/ui/text-box */ "./node_modules/devextreme-angular/__ivy_ngcc__/fesm2015/devextreme-angular-ui-text-box.js");
-/* harmony import */ var devextreme_angular_ui_validator__WEBPACK_IMPORTED_MODULE_32__ = __webpack_require__(/*! devextreme-angular/ui/validator */ "./node_modules/devextreme-angular/__ivy_ngcc__/fesm2015/devextreme-angular-ui-validator.js");
-/* harmony import */ var devextreme_angular_ui_nested__WEBPACK_IMPORTED_MODULE_33__ = __webpack_require__(/*! devextreme-angular/ui/nested */ "./node_modules/devextreme-angular/__ivy_ngcc__/fesm2015/devextreme-angular-ui-nested.js");
-/* harmony import */ var devextreme_angular_ui_button__WEBPACK_IMPORTED_MODULE_34__ = __webpack_require__(/*! devextreme-angular/ui/button */ "./node_modules/devextreme-angular/__ivy_ngcc__/fesm2015/devextreme-angular-ui-button.js");
-
+/* harmony import */ var src_app_servicios_parametrizaciones_service__WEBPACK_IMPORTED_MODULE_11__ = __webpack_require__(/*! src/app/servicios/parametrizaciones.service */ "./src/app/servicios/parametrizaciones.service.ts");
+/* harmony import */ var src_app_servicios_authen_service__WEBPACK_IMPORTED_MODULE_12__ = __webpack_require__(/*! src/app/servicios/authen.service */ "./src/app/servicios/authen.service.ts");
+/* harmony import */ var src_app_servicios_transacciones_service__WEBPACK_IMPORTED_MODULE_13__ = __webpack_require__(/*! src/app/servicios/transacciones.service */ "./src/app/servicios/transacciones.service.ts");
+/* harmony import */ var src_app_servicios_devoluciones_service__WEBPACK_IMPORTED_MODULE_14__ = __webpack_require__(/*! src/app/servicios/devoluciones.service */ "./src/app/servicios/devoluciones.service.ts");
+/* harmony import */ var src_app_servicios_contadores_documentos_service__WEBPACK_IMPORTED_MODULE_15__ = __webpack_require__(/*! src/app/servicios/contadores-documentos.service */ "./src/app/servicios/contadores-documentos.service.ts");
+/* harmony import */ var src_app_servicios_notas_ventas_service__WEBPACK_IMPORTED_MODULE_16__ = __webpack_require__(/*! src/app/servicios/notas-ventas.service */ "./src/app/servicios/notas-ventas.service.ts");
+/* harmony import */ var src_app_servicios_facturas_service__WEBPACK_IMPORTED_MODULE_17__ = __webpack_require__(/*! src/app/servicios/facturas.service */ "./src/app/servicios/facturas.service.ts");
+/* harmony import */ var src_app_servicios_productos_pendientes_service__WEBPACK_IMPORTED_MODULE_18__ = __webpack_require__(/*! src/app/servicios/productos-pendientes.service */ "./src/app/servicios/productos-pendientes.service.ts");
+/* harmony import */ var src_app_servicios_ordenes_compra_service__WEBPACK_IMPORTED_MODULE_19__ = __webpack_require__(/*! src/app/servicios/ordenes-compra.service */ "./src/app/servicios/ordenes-compra.service.ts");
+/* harmony import */ var src_app_servicios_sucursales_service__WEBPACK_IMPORTED_MODULE_20__ = __webpack_require__(/*! src/app/servicios/sucursales.service */ "./src/app/servicios/sucursales.service.ts");
+/* harmony import */ var src_app_servicios_transaccionesFinancieras_service__WEBPACK_IMPORTED_MODULE_21__ = __webpack_require__(/*! src/app/servicios/transaccionesFinancieras.service */ "./src/app/servicios/transaccionesFinancieras.service.ts");
+/* harmony import */ var src_app_servicios_producto_service__WEBPACK_IMPORTED_MODULE_22__ = __webpack_require__(/*! src/app/servicios/producto.service */ "./src/app/servicios/producto.service.ts");
+/* harmony import */ var src_app_shared_services__WEBPACK_IMPORTED_MODULE_23__ = __webpack_require__(/*! src/app/shared/services */ "./src/app/shared/services/index.ts");
+/* harmony import */ var src_app_servicios_combos_service__WEBPACK_IMPORTED_MODULE_24__ = __webpack_require__(/*! src/app/servicios/combos.service */ "./src/app/servicios/combos.service.ts");
+/* harmony import */ var src_app_servicios_cajaMenor_service__WEBPACK_IMPORTED_MODULE_25__ = __webpack_require__(/*! src/app/servicios/cajaMenor.service */ "./src/app/servicios/cajaMenor.service.ts");
+/* harmony import */ var src_app_servicios_datosConfiguracion_service__WEBPACK_IMPORTED_MODULE_26__ = __webpack_require__(/*! src/app/servicios/datosConfiguracion.service */ "./src/app/servicios/datosConfiguracion.service.ts");
+/* harmony import */ var _angular_common__WEBPACK_IMPORTED_MODULE_27__ = __webpack_require__(/*! @angular/common */ "./node_modules/@angular/common/__ivy_ngcc__/fesm2015/common.js");
+/* harmony import */ var devextreme_angular__WEBPACK_IMPORTED_MODULE_28__ = __webpack_require__(/*! devextreme-angular */ "./node_modules/devextreme-angular/__ivy_ngcc__/fesm2015/devextreme-angular.js");
+/* harmony import */ var _loading_message_loading_messagge_component__WEBPACK_IMPORTED_MODULE_29__ = __webpack_require__(/*! ../loading-message/loading-messagge.component */ "./src/app/pages/loading-message/loading-messagge.component.ts");
+/* harmony import */ var devextreme_angular_ui_text_box__WEBPACK_IMPORTED_MODULE_30__ = __webpack_require__(/*! devextreme-angular/ui/text-box */ "./node_modules/devextreme-angular/__ivy_ngcc__/fesm2015/devextreme-angular-ui-text-box.js");
+/* harmony import */ var devextreme_angular_ui_validator__WEBPACK_IMPORTED_MODULE_31__ = __webpack_require__(/*! devextreme-angular/ui/validator */ "./node_modules/devextreme-angular/__ivy_ngcc__/fesm2015/devextreme-angular-ui-validator.js");
+/* harmony import */ var devextreme_angular_ui_nested__WEBPACK_IMPORTED_MODULE_32__ = __webpack_require__(/*! devextreme-angular/ui/nested */ "./node_modules/devextreme-angular/__ivy_ngcc__/fesm2015/devextreme-angular-ui-nested.js");
+/* harmony import */ var devextreme_angular_ui_button__WEBPACK_IMPORTED_MODULE_33__ = __webpack_require__(/*! devextreme-angular/ui/button */ "./node_modules/devextreme-angular/__ivy_ngcc__/fesm2015/devextreme-angular-ui-button.js");
 
 
 
@@ -45435,7 +45432,7 @@ function DevolucionesComponent_div_5_Template(rf, ctx) { if (rf & 1) {
     _angular_core__WEBPACK_IMPORTED_MODULE_0__["ɵɵadvance"](10);
     _angular_core__WEBPACK_IMPORTED_MODULE_0__["ɵɵproperty"]("value", ctx_r1.total)("disabled", false)("readOnly", true);
     _angular_core__WEBPACK_IMPORTED_MODULE_0__["ɵɵadvance"](2);
-    _angular_core__WEBPACK_IMPORTED_MODULE_0__["ɵɵproperty"]("text", "Guardar")("type", "success")("disabled", false);
+    _angular_core__WEBPACK_IMPORTED_MODULE_0__["ɵɵproperty"]("text", "Guardar")("type", "success")("disabled", ctx_r1.botonGuardarDeshabilitado);
 } }
 function DevolucionesComponent_div_6_dxi_column_63_Template(rf, ctx) { if (rf & 1) {
     _angular_core__WEBPACK_IMPORTED_MODULE_0__["ɵɵelementStart"](0, "dxi-column", 80);
@@ -45609,8 +45606,7 @@ function DevolucionesComponent_div_6_Template(rf, ctx) { if (rf & 1) {
     _angular_core__WEBPACK_IMPORTED_MODULE_0__["ɵɵproperty"]("showPageSizeSelector", true)("allowedPageSizes", _angular_core__WEBPACK_IMPORTED_MODULE_0__["ɵɵpureFunction0"](20, _c0));
 } }
 class DevolucionesComponent {
-    constructor(db, parametrizacionService, authenService, transaccionesService, devolucionesService, contadoresService, notasVentaService, facturasService, productosPendientesService, ordenesService, sucursalesService, _transaccionFinancieraService, productoService, authService, _comboService, _cajaMenorService, _configuracionService) {
-        this.db = db;
+    constructor(parametrizacionService, authenService, transaccionesService, devolucionesService, contadoresService, notasVentaService, facturasService, productosPendientesService, ordenesService, sucursalesService, _transaccionFinancieraService, productoService, authService, _comboService, _cajaMenorService, _configuracionService) {
         this.parametrizacionService = parametrizacionService;
         this.authenService = authenService;
         this.transaccionesService = transaccionesService;
@@ -45665,6 +45661,7 @@ class DevolucionesComponent {
         this.variablesucursal = "Milagro";
         this.total = 0;
         this.number_transaccion = 0;
+        this.botonGuardarDeshabilitado = false;
         this.productosDevueltos = [];
         this.productosDevueltosBase = [];
         this.productosDevueltosCarga = [];
@@ -45734,6 +45731,7 @@ class DevolucionesComponent {
             },
         });
         this.getIDDocumentos();
+        this.refrescarListado();
     }
     cargarUsuarioLogueado() {
         const mail = localStorage.getItem("maily");
@@ -45919,15 +45917,8 @@ class DevolucionesComponent {
         this.id_devolucion = this.contadores[0].contDevoluciones_Ndocumento + 1;
     }
     getIDDocumentos() {
-        this.db
-            .collection("consectivosBaseMongoDB")
-            .valueChanges()
-            .pipe(Object(rxjs_operators__WEBPACK_IMPORTED_MODULE_2__["take"])(1), Object(rxjs_operators__WEBPACK_IMPORTED_MODULE_2__["takeUntil"])(this.destroy$))
-            .subscribe((data) => {
-            if (data != null) {
-                this.contadorFirebase = data;
-            }
-            this.asignarIDdocumentos2();
+        this.contadoresService.getContadores().subscribe(res => {
+            this.contadores = res;
         });
     }
     asignarIDdocumentos2() {
@@ -45960,6 +45951,7 @@ class DevolucionesComponent {
                     this.arrayFacturas = res;
                     this.llenarDatosCombo(this.arrayFacturas);
                     this.mostrarLoading = false;
+                    this.cargarDevolucionesPorDocumento();
                 },
                 error: () => {
                     this.mostrarLoading = false;
@@ -45971,6 +45963,31 @@ class DevolucionesComponent {
             this.mostrarLoading = false;
             sweetalert2__WEBPACK_IMPORTED_MODULE_6___default.a.fire("Advertencia", "Debe seleccionar un documento válido antes de continuar.", "warning");
         }
+    }
+    cargarDevolucionesPorDocumento() {
+        if (this.idDocumento === null || this.idDocumento === undefined) {
+            return;
+        }
+        const objDev = new _transacciones_transacciones__WEBPACK_IMPORTED_MODULE_7__["objDate"]();
+        objDev.fechaActual = new Date();
+        objDev.fechaAnterior = new Date(2000, 0, 1);
+        objDev.fechaAnterior.setHours(0, 0, 0, 0);
+        console.log("this.idDocumento", this.idDocumento);
+        console.log("this.devolucion.tipo_documento", this.devolucion.tipo_documento);
+        this.devolucionesService
+            .getDevolucionesPorRango(objDev)
+            .pipe(Object(rxjs_operators__WEBPACK_IMPORTED_MODULE_2__["take"])(1), Object(rxjs_operators__WEBPACK_IMPORTED_MODULE_2__["takeUntil"])(this.destroy$))
+            .subscribe({
+            next: (res) => {
+                const lista = res;
+                // Usamos conversion explicita a string para evitar problemas de tipo
+                this.devoluciones = lista.filter((dev) => String(dev.num_documento) === String(this.idDocumento) &&
+                    String(dev.tipo_documento) === String(this.devolucion.tipo_documento));
+            },
+            error: () => {
+                this.devoluciones = [];
+            },
+        });
     }
     llenarDatosCombo(array) {
         this.datosDocumento = array.map((element) => {
@@ -46063,39 +46080,57 @@ class DevolucionesComponent {
         this.productosVendidos2.length = 0;
     }
     obtenerDetallesDoc(e, i) {
-        var existeP = this.productosDevueltos.filter(element => element.REFERENCIA == this.productosDevueltos[i].REFERENCIA);
+        const existeP = this.productosDevueltos.filter((element) => element.REFERENCIA == this.productosDevueltos[i].REFERENCIA);
         if (existeP.length > 1) {
-            sweetalert2__WEBPACK_IMPORTED_MODULE_6___default.a.fire("Error", "El producto ya existe", "error");
+            sweetalert2__WEBPACK_IMPORTED_MODULE_6___default.a.fire("Error", "El producto ya existe en esta devolución", "error");
             this.deleteProducto(e, i);
+            return;
         }
-        else {
-            var canti = 0;
-            this.productosVendidos2.forEach((element) => {
-                if (element.producto.PRODUCTO == e.value) {
-                    canti = 0;
-                    this.productosDevueltos[i].producto = element.producto;
-                    this.productosDevueltos[i].cantFactCajas = Math.trunc(element.cantidad / element.producto.M2);
-                    this.productosDevueltos[i].cantFactPiezas =
-                        Math.trunc((element.cantidad * element.producto.P_CAJA) / element.producto.M2) -
-                            this.productosDevueltos[i].cantFactCajas * element.producto.P_CAJA;
-                    this.productosDevueltos[i].valorunitariopiezas =
-                        element.total /
+        this.productosVendidos2.forEach((element) => {
+            if (element.producto.PRODUCTO == e.value) {
+                this.productosDevueltos[i].producto = element.producto;
+                this.productosDevueltos[i].cantFactCajas = Math.trunc(element.cantidad / element.producto.M2);
+                this.productosDevueltos[i].cantFactPiezas =
+                    Math.trunc((element.cantidad * element.producto.P_CAJA) / element.producto.M2) -
+                        this.productosDevueltos[i].cantFactCajas * element.producto.P_CAJA;
+                this.productosDevueltos[i].valorunitariopiezas =
+                    element.total /
+                        (element.producto.P_CAJA *
+                            this.productosDevueltos[i].cantFactCajas +
+                            this.productosDevueltos[i].cantFactPiezas) -
+                        (element.total /
                             (element.producto.P_CAJA *
                                 this.productosDevueltos[i].cantFactCajas +
-                                this.productosDevueltos[i].cantFactPiezas) -
-                            (element.total /
-                                (element.producto.P_CAJA *
-                                    this.productosDevueltos[i].cantFactCajas +
-                                    this.productosDevueltos[i].cantFactPiezas)) *
-                                (element.descuento / 100);
-                    this.productosDevueltos[i].valorunitario =
-                        ((element.producto.P_CAJA * this.productosDevueltos[i].cantFactCajas +
-                            this.productosDevueltos[i].cantFactPiezas) /
-                            element.cantidad) *
-                            this.productosDevueltos[i].valorunitariopiezas;
-                }
-            });
+                                this.productosDevueltos[i].cantFactPiezas)) *
+                            (element.descuento / 100);
+                this.productosDevueltos[i].valorunitario =
+                    ((element.producto.P_CAJA * this.productosDevueltos[i].cantFactCajas +
+                        this.productosDevueltos[i].cantFactPiezas) /
+                        element.cantidad) *
+                        this.productosDevueltos[i].valorunitariopiezas;
+            }
+        });
+    }
+    getUnidadesDevueltasHistoricas(codigoProducto) {
+        var _a;
+        if (!this.idDocumento || !codigoProducto || !((_a = this.devoluciones) === null || _a === void 0 ? void 0 : _a.length)) {
+            return 0;
         }
+        let total = 0;
+        this.devoluciones.forEach((dev) => {
+            var _a;
+            if (String(dev.num_documento) === String(this.idDocumento) &&
+                String(dev.tipo_documento) === String(this.devolucion.tipo_documento) &&
+                String(dev.estado) !== "Anulada" && String(dev.estado) !== "Rechazado" && ((_a = dev.productosDevueltos) === null || _a === void 0 ? void 0 : _a.length)) {
+                dev.productosDevueltos.forEach((p) => {
+                    if (p.producto && p.producto.PRODUCTO === codigoProducto && p.producto.P_CAJA) {
+                        const unidades = (p.cantDevueltaCajas || 0) * p.producto.P_CAJA + (p.cantDevueltaPiezas || 0);
+                        total += unidades;
+                    }
+                });
+            }
+        });
+        return total;
     }
     deleteProducto(e, i) {
         if (this.productosDevueltos.length > 1) {
@@ -46118,18 +46153,33 @@ class DevolucionesComponent {
                     (this.productosDevueltos[i].cantDevueltaPiezas *
                         element.producto.M2) /
                         element.producto.P_CAJA).toFixed(2));
-                var cal1 = 0;
-                var cal2 = 0;
-                var prodEncontrado = (_a = this.listadoProductosCombo) === null || _a === void 0 ? void 0 : _a.find(element2 => element2.nombreProducto == element.producto.PRODUCTO);
-                cal1 = this.productosDevueltos[i].cantDevueltaCajas * element.producto.P_CAJA + this.productosDevueltos[i].cantDevueltaPiezas;
+                let cal1 = 0;
+                let cal2 = 0;
+                const prodEncontrado = (_a = this.listadoProductosCombo) === null || _a === void 0 ? void 0 : _a.find((element2) => element2.nombreProducto == element.producto.PRODUCTO);
+                // Cantidad que se está intentando devolver en esta línea (en unidades)
+                cal1 =
+                    this.productosDevueltos[i].cantDevueltaCajas * element.producto.P_CAJA +
+                        this.productosDevueltos[i].cantDevueltaPiezas;
+                // Cantidad total comprada (en unidades) según factura / combo
                 if (prodEncontrado != null)
-                    cal2 = (this.productosDevueltos[i].cantFactCajas * element.producto.P_CAJA) * prodEncontrado.cantidad + this.productosDevueltos[i].cantFactPiezas;
+                    cal2 =
+                        this.productosDevueltos[i].cantFactCajas * element.producto.P_CAJA * prodEncontrado.cantidad +
+                            this.productosDevueltos[i].cantFactPiezas;
                 else
-                    cal2 = this.productosDevueltos[i].cantFactCajas * element.producto.P_CAJA + this.productosDevueltos[i].cantFactPiezas;
-                if (cal1 > cal2) {
-                    alert("la cantidad es mayor");
+                    cal2 =
+                        this.productosDevueltos[i].cantFactCajas * element.producto.P_CAJA +
+                            this.productosDevueltos[i].cantFactPiezas;
+                // Restar lo que ya se devolvió en otras devoluciones del mismo documento
+                const yaDevuelto = this.getUnidadesDevueltasHistoricas(element.producto.PRODUCTO);
+                const disponible = Math.max(cal2 - yaDevuelto, 0);
+                if (cal1 > disponible) {
+                    sweetalert2__WEBPACK_IMPORTED_MODULE_6___default.a.fire("Advertencia", "La cantidad supera lo disponible para devolver considerando devoluciones anteriores.", "warning");
                     this.productosDevueltos[i].cantDevueltaCajas = 0;
                     this.productosDevueltos[i].cantDevueltaPiezas = 0;
+                    this.botonGuardarDeshabilitado = true;
+                }
+                else {
+                    this.botonGuardarDeshabilitado = false;
                 }
             }
         });
@@ -46306,8 +46356,12 @@ class DevolucionesComponent {
                     .updateEstado(e, "Aprobado")
                     .pipe(Object(rxjs_operators__WEBPACK_IMPORTED_MODULE_2__["take"])(1), Object(rxjs_operators__WEBPACK_IMPORTED_MODULE_2__["retry"])(2), Object(rxjs_operators__WEBPACK_IMPORTED_MODULE_2__["takeUntil"])(this.destroy$))
                     .subscribe({
-                    next: () => this.realizarTransacciones(e),
-                    error: () => sweetalert2__WEBPACK_IMPORTED_MODULE_6___default.a.fire("Error", "No se pudo aprobar la devolución", "error"),
+                    next: () => {
+                        this.realizarTransacciones(e);
+                    },
+                    error: (err) => {
+                        sweetalert2__WEBPACK_IMPORTED_MODULE_6___default.a.fire("Error", "No se pudo aprobar la devolución", "error");
+                    },
                 });
             }
             else if (result.dismiss === sweetalert2__WEBPACK_IMPORTED_MODULE_6___default.a.DismissReason.cancel) {
@@ -46337,6 +46391,10 @@ class DevolucionesComponent {
     }
     buscarProductosPendientes() {
         var bandera = true;
+        if (this.total == 0 || this.total == null) {
+            sweetalert2__WEBPACK_IMPORTED_MODULE_6___default.a.fire("Advertencia", "Debe tener al menos un producto o el total debe ser mayor a 0", "warning");
+            return;
+        }
         this.productosDevueltos.forEach((element) => {
             this.productosPendientes.forEach((element1) => {
                 if (element1.documento == this.idDocumento &&
@@ -47035,7 +47093,7 @@ class DevolucionesComponent {
         this.destroy$.complete();
     }
 }
-DevolucionesComponent.ɵfac = function DevolucionesComponent_Factory(t) { return new (t || DevolucionesComponent)(_angular_core__WEBPACK_IMPORTED_MODULE_0__["ɵɵdirectiveInject"](angularfire2_firestore__WEBPACK_IMPORTED_MODULE_11__["AngularFirestore"]), _angular_core__WEBPACK_IMPORTED_MODULE_0__["ɵɵdirectiveInject"](src_app_servicios_parametrizaciones_service__WEBPACK_IMPORTED_MODULE_12__["ParametrizacionesService"]), _angular_core__WEBPACK_IMPORTED_MODULE_0__["ɵɵdirectiveInject"](src_app_servicios_authen_service__WEBPACK_IMPORTED_MODULE_13__["AuthenService"]), _angular_core__WEBPACK_IMPORTED_MODULE_0__["ɵɵdirectiveInject"](src_app_servicios_transacciones_service__WEBPACK_IMPORTED_MODULE_14__["TransaccionesService"]), _angular_core__WEBPACK_IMPORTED_MODULE_0__["ɵɵdirectiveInject"](src_app_servicios_devoluciones_service__WEBPACK_IMPORTED_MODULE_15__["DevolucionesService"]), _angular_core__WEBPACK_IMPORTED_MODULE_0__["ɵɵdirectiveInject"](src_app_servicios_contadores_documentos_service__WEBPACK_IMPORTED_MODULE_16__["ContadoresDocumentosService"]), _angular_core__WEBPACK_IMPORTED_MODULE_0__["ɵɵdirectiveInject"](src_app_servicios_notas_ventas_service__WEBPACK_IMPORTED_MODULE_17__["NotasVentasService"]), _angular_core__WEBPACK_IMPORTED_MODULE_0__["ɵɵdirectiveInject"](src_app_servicios_facturas_service__WEBPACK_IMPORTED_MODULE_18__["FacturasService"]), _angular_core__WEBPACK_IMPORTED_MODULE_0__["ɵɵdirectiveInject"](src_app_servicios_productos_pendientes_service__WEBPACK_IMPORTED_MODULE_19__["ProductosPendientesService"]), _angular_core__WEBPACK_IMPORTED_MODULE_0__["ɵɵdirectiveInject"](src_app_servicios_ordenes_compra_service__WEBPACK_IMPORTED_MODULE_20__["OrdenesCompraService"]), _angular_core__WEBPACK_IMPORTED_MODULE_0__["ɵɵdirectiveInject"](src_app_servicios_sucursales_service__WEBPACK_IMPORTED_MODULE_21__["SucursalesService"]), _angular_core__WEBPACK_IMPORTED_MODULE_0__["ɵɵdirectiveInject"](src_app_servicios_transaccionesFinancieras_service__WEBPACK_IMPORTED_MODULE_22__["TransaccionesFinancierasService"]), _angular_core__WEBPACK_IMPORTED_MODULE_0__["ɵɵdirectiveInject"](src_app_servicios_producto_service__WEBPACK_IMPORTED_MODULE_23__["ProductoService"]), _angular_core__WEBPACK_IMPORTED_MODULE_0__["ɵɵdirectiveInject"](src_app_shared_services__WEBPACK_IMPORTED_MODULE_24__["AuthService"]), _angular_core__WEBPACK_IMPORTED_MODULE_0__["ɵɵdirectiveInject"](src_app_servicios_combos_service__WEBPACK_IMPORTED_MODULE_25__["CombosService"]), _angular_core__WEBPACK_IMPORTED_MODULE_0__["ɵɵdirectiveInject"](src_app_servicios_cajaMenor_service__WEBPACK_IMPORTED_MODULE_26__["CajaMenorService"]), _angular_core__WEBPACK_IMPORTED_MODULE_0__["ɵɵdirectiveInject"](src_app_servicios_datosConfiguracion_service__WEBPACK_IMPORTED_MODULE_27__["DatosConfiguracionService"])); };
+DevolucionesComponent.ɵfac = function DevolucionesComponent_Factory(t) { return new (t || DevolucionesComponent)(_angular_core__WEBPACK_IMPORTED_MODULE_0__["ɵɵdirectiveInject"](src_app_servicios_parametrizaciones_service__WEBPACK_IMPORTED_MODULE_11__["ParametrizacionesService"]), _angular_core__WEBPACK_IMPORTED_MODULE_0__["ɵɵdirectiveInject"](src_app_servicios_authen_service__WEBPACK_IMPORTED_MODULE_12__["AuthenService"]), _angular_core__WEBPACK_IMPORTED_MODULE_0__["ɵɵdirectiveInject"](src_app_servicios_transacciones_service__WEBPACK_IMPORTED_MODULE_13__["TransaccionesService"]), _angular_core__WEBPACK_IMPORTED_MODULE_0__["ɵɵdirectiveInject"](src_app_servicios_devoluciones_service__WEBPACK_IMPORTED_MODULE_14__["DevolucionesService"]), _angular_core__WEBPACK_IMPORTED_MODULE_0__["ɵɵdirectiveInject"](src_app_servicios_contadores_documentos_service__WEBPACK_IMPORTED_MODULE_15__["ContadoresDocumentosService"]), _angular_core__WEBPACK_IMPORTED_MODULE_0__["ɵɵdirectiveInject"](src_app_servicios_notas_ventas_service__WEBPACK_IMPORTED_MODULE_16__["NotasVentasService"]), _angular_core__WEBPACK_IMPORTED_MODULE_0__["ɵɵdirectiveInject"](src_app_servicios_facturas_service__WEBPACK_IMPORTED_MODULE_17__["FacturasService"]), _angular_core__WEBPACK_IMPORTED_MODULE_0__["ɵɵdirectiveInject"](src_app_servicios_productos_pendientes_service__WEBPACK_IMPORTED_MODULE_18__["ProductosPendientesService"]), _angular_core__WEBPACK_IMPORTED_MODULE_0__["ɵɵdirectiveInject"](src_app_servicios_ordenes_compra_service__WEBPACK_IMPORTED_MODULE_19__["OrdenesCompraService"]), _angular_core__WEBPACK_IMPORTED_MODULE_0__["ɵɵdirectiveInject"](src_app_servicios_sucursales_service__WEBPACK_IMPORTED_MODULE_20__["SucursalesService"]), _angular_core__WEBPACK_IMPORTED_MODULE_0__["ɵɵdirectiveInject"](src_app_servicios_transaccionesFinancieras_service__WEBPACK_IMPORTED_MODULE_21__["TransaccionesFinancierasService"]), _angular_core__WEBPACK_IMPORTED_MODULE_0__["ɵɵdirectiveInject"](src_app_servicios_producto_service__WEBPACK_IMPORTED_MODULE_22__["ProductoService"]), _angular_core__WEBPACK_IMPORTED_MODULE_0__["ɵɵdirectiveInject"](src_app_shared_services__WEBPACK_IMPORTED_MODULE_23__["AuthService"]), _angular_core__WEBPACK_IMPORTED_MODULE_0__["ɵɵdirectiveInject"](src_app_servicios_combos_service__WEBPACK_IMPORTED_MODULE_24__["CombosService"]), _angular_core__WEBPACK_IMPORTED_MODULE_0__["ɵɵdirectiveInject"](src_app_servicios_cajaMenor_service__WEBPACK_IMPORTED_MODULE_25__["CajaMenorService"]), _angular_core__WEBPACK_IMPORTED_MODULE_0__["ɵɵdirectiveInject"](src_app_servicios_datosConfiguracion_service__WEBPACK_IMPORTED_MODULE_26__["DatosConfiguracionService"])); };
 DevolucionesComponent.ɵcmp = _angular_core__WEBPACK_IMPORTED_MODULE_0__["ɵɵdefineComponent"]({ type: DevolucionesComponent, selectors: [["app-devoluciones"]], decls: 7, vars: 7, consts: [[4, "ngIf"], [1, "row", "remiPro", "titulos"], [1, "col-md-8"], [1, "col-md-4"], [1, "form-control", "select", 3, "items", "value", "readOnly", "disabled", "onValueChanged"], [3, "messagge"], [1, "card"], [1, "card-header", "text-center", "font-weight-bold", "text-uppercase"], [1, "card-body"], [1, "row"], [1, "col-md-9", 2, "padding-left", "4em"], [1, "row", "espacioDivs", 2, "margin-bottom", "1em"], [1, "col-md-6"], [3, "value", "readOnly", "valueChange"], [3, "items", "value", "readOnly", "disabled", "searchEnabled", "onValueChanged"], ["selectId", ""], ["displayExpr", "textoCombo", 3, "items", "searchEnabled", "readOnly", "hint", "onValueChanged"], [3, "value", "type", "showClearButton", "valueChange"], ["type", "required", "message", "La fecha es requerida"], [3, "value", "disabled", "readOnly", "valueChange"], [1, "col-md-12"], [1, "col-md-3"], [1, "col-md-9"], [1, "col-md-3", 2, "padding-right", "1em"], [2, "text-align", "center"], [2, "text-align", "center", "font-size", "4rem", "margin-top", "-1rem"], [1, "remiPro"], [1, "detalle"], [2, "text-align", "right"], [2, "background-color", "#ff5722", 3, "text", "type", "onClick"], [1, "titcent", "row"], [1, "col-md-12", 2, "text-align", "center"], [1, "row", "titulosT"], [1, "col-3"], [1, "col-1"], [1, "col-2"], ["style", "text-align: center; margin-top: 1em", 4, "ngFor", "ngForOf"], [1, "col-md-9", "total"], [2, "background-color", "#ff5722", 3, "text", "type", "disabled", "onClick"], [3, "items", "value", "readOnly", "disabled", "valueChange", "onValueChanged"], [2, "text-align", "center", "margin-top", "1em"], [1, "row", "altura"], [1, "col-3", 2, "margin-top", "1em"], ["valueExpr", "producto.PRODUCTO", "displayExpr", "producto.PRODUCTO", 3, "items", "value", "readOnly", "disabled", "searchEnabled", "valueChange", "onValueChanged"], [3, "value", "disabled", "readOnly", "valueChange", "onValueChanged"], [1, "col-2", 2, "margin-top", "1em"], [3, "items", "value", "readOnly", "disabled", "searchEnabled", "valueChange"], ["icon", "clear", "color", "white", 1, "bt", 3, "onClick"], [1, "col-md-2"], [1, "col-md-12", 2, "text-align", "center", "font-weight", "bold"], [1, "row", "card"], [1, "col-md-3", 2, "margin-top", "0.5em"], [1, "col-md-9", "dates"], ["type", "date", 3, "value", "valueChange"], [1, "col-md-4", "btnSearch"], [1, "btn", "btn-block", "btn-success", 2, "background-color", "#ff5722", "border-color", "#ff5722", 3, "click"], [1, "col-md-4", 2, "margin-left", "1em"], [1, "col-md-6", "btnSearch"], [1, "dx-field", "radio"], [1, "dx-field-value"], ["layout", "horizontal", 3, "items", "value", "onValueChanged"], ["id", "gridContainer", 3, "dataSource", "showBorders"], ["datag2", ""], [3, "visible"], ["placeholder", "Buscar...", 3, "visible", "width"], ["aria-hidden", "true", 1, "fa", "fa-exclamation-triangle"], ["fileName", "Devoluciones", 3, "enabled", "allowExportSelectedData"], ["dataField", "_id", "caption", "Devolucion N", "dataType", "string", 3, "visible"], ["dataField", "id_devolucion", "caption", "Devolucion N", "dataType", "string", "sortOrder", "desc"], ["dataField", "fecha", "caption", "Fecha", "dataType", "date"], ["dataField", "num_documento", "caption", "Documento #", "dataType", "string"], ["dataField", "cliente", "caption", "Cliente", "dataType", "string"], ["dataField", "totalDevolucion", "caption", "Total", "dataType", "string", 3, "visible"], ["type", "buttons", "dataField", "bt1", "caption", "Ver", "width", "10%"], ["icon", "fa fa-arrow-down", 3, "onClick"], ["type", "buttons", "dataField", "bt2", "caption", "Aprobar", "width", "12%", 3, "visible", 4, "ngIf"], ["type", "buttons", "dataField", "bt2", "caption", "Rechazar", "width", "12%", 3, "visible", 4, "ngIf"], ["type", "buttons", "dataField", "bt1", "caption", "Anular", "width", "10%", 4, "ngIf"], [3, "pageSize"], [3, "showPageSizeSelector", "allowedPageSizes"], ["type", "buttons", "dataField", "bt2", "caption", "Aprobar", "width", "12%", 3, "visible"], ["text", "Aprobar", 3, "onClick"], ["type", "buttons", "dataField", "bt2", "caption", "Rechazar", "width", "12%", 3, "visible"], ["text", "Rechazar", 3, "onClick"], ["type", "buttons", "dataField", "bt1", "caption", "Anular", "width", "10%"], ["text", "Anular", 3, "onClick"]], template: function DevolucionesComponent_Template(rf, ctx) { if (rf & 1) {
         _angular_core__WEBPACK_IMPORTED_MODULE_0__["ɵɵtemplate"](0, DevolucionesComponent_div_0_Template, 2, 1, "div", 0);
         _angular_core__WEBPACK_IMPORTED_MODULE_0__["ɵɵelementStart"](1, "div", 1);
@@ -47056,7 +47114,7 @@ DevolucionesComponent.ɵcmp = _angular_core__WEBPACK_IMPORTED_MODULE_0__["ɵɵde
         _angular_core__WEBPACK_IMPORTED_MODULE_0__["ɵɵproperty"]("ngIf", ctx.mostrarNewDevolucion);
         _angular_core__WEBPACK_IMPORTED_MODULE_0__["ɵɵadvance"](1);
         _angular_core__WEBPACK_IMPORTED_MODULE_0__["ɵɵproperty"]("ngIf", ctx.mostrarListado);
-    } }, directives: [_angular_common__WEBPACK_IMPORTED_MODULE_28__["NgIf"], devextreme_angular__WEBPACK_IMPORTED_MODULE_29__["DxSelectBoxComponent"], _loading_message_loading_messagge_component__WEBPACK_IMPORTED_MODULE_30__["LoadingMessaggeComponent"], devextreme_angular_ui_text_box__WEBPACK_IMPORTED_MODULE_31__["DxTextBoxComponent"], devextreme_angular__WEBPACK_IMPORTED_MODULE_29__["DxDateBoxComponent"], devextreme_angular_ui_validator__WEBPACK_IMPORTED_MODULE_32__["DxValidatorComponent"], devextreme_angular_ui_nested__WEBPACK_IMPORTED_MODULE_33__["DxiValidationRuleComponent"], devextreme_angular_ui_button__WEBPACK_IMPORTED_MODULE_34__["DxButtonComponent"], _angular_common__WEBPACK_IMPORTED_MODULE_28__["NgForOf"], devextreme_angular__WEBPACK_IMPORTED_MODULE_29__["DxNumberBoxComponent"], devextreme_angular__WEBPACK_IMPORTED_MODULE_29__["DxRadioGroupComponent"], devextreme_angular__WEBPACK_IMPORTED_MODULE_29__["DxDataGridComponent"], devextreme_angular_ui_nested__WEBPACK_IMPORTED_MODULE_33__["DxoFilterRowComponent"], devextreme_angular_ui_nested__WEBPACK_IMPORTED_MODULE_33__["DxoSearchPanelComponent"], devextreme_angular_ui_nested__WEBPACK_IMPORTED_MODULE_33__["DxoExportComponent"], devextreme_angular_ui_nested__WEBPACK_IMPORTED_MODULE_33__["DxiColumnComponent"], devextreme_angular_ui_nested__WEBPACK_IMPORTED_MODULE_33__["DxiButtonComponent"], devextreme_angular_ui_nested__WEBPACK_IMPORTED_MODULE_33__["DxoPagingComponent"], devextreme_angular_ui_nested__WEBPACK_IMPORTED_MODULE_33__["DxoPagerComponent"]], styles: [".remiPro[_ngcontent-%COMP%] {\n  padding: 2em;\n  margin-top: 2em;\n  margin-bottom: 1.5em;\n}\n\n.remiPro[_ngcontent-%COMP%]   p[_ngcontent-%COMP%] {\n  margin-top: 1em;\n}\n\n.titulo[_ngcontent-%COMP%] {\n  margin-bottom: 1em;\n  font-weight: bold;\n  text-align: center;\n}\n\n.dates[_ngcontent-%COMP%]   dx-date-box[_ngcontent-%COMP%] {\n  margin-top: 0.05em;\n}\n\n.alinearBoton[_ngcontent-%COMP%] {\n  text-align: left;\n  margin-bottom: 2em;\n}\n\n.detalle[_ngcontent-%COMP%] {\n  padding: 3em;\n  padding-top: 0em;\n}\n\n.bt[_ngcontent-%COMP%] {\n  background-color: red;\n  color: white;\n}\n\n  .bt .dx-icon {\n  font-size: 12px;\n  color: white;\n}\n\n.bt2[_ngcontent-%COMP%] {\n  background-color: green;\n  color: white;\n}\n\n#historial[_ngcontent-%COMP%] {\n  margin: 2em;\n}\n\n.titulosT[_ngcontent-%COMP%]   h5[_ngcontent-%COMP%] {\n  text-align: center;\n  font-weight: bold;\n  font-size: 1em;\n}\n\n  .dx-texteditor-input {\n  text-align: center;\n}\n\n  .total .dx-texteditor-input {\n  text-align: center;\n  font-size: 2em;\n  font-weight: bold;\n}\n\n  .id .dx-texteditor-input {\n  text-align: center;\n  font-size: 2em;\n  font-weight: bold;\n}\n\n.mover[_ngcontent-%COMP%] {\n  text-align: right;\n}\n\n.btn-xs[_ngcontent-%COMP%] {\n  background-color: red;\n  border: red;\n  text-align: right;\n}\n\n.espacioDivs[_ngcontent-%COMP%]   dx-text-box[_ngcontent-%COMP%], dx-select-box[_ngcontent-%COMP%], dx-autocomplete[_ngcontent-%COMP%], dx-date-box[_ngcontent-%COMP%] {\n  margin-top: -1em;\n}\n\n.espacioDivs[_ngcontent-%COMP%]   dx-number-box[_ngcontent-%COMP%] {\n  text-align: right;\n}\n\n  .espacioDivs .dx-texteditor-input {\n  text-align: center;\n}\n\n.select[_ngcontent-%COMP%] {\n  text-align: center;\n  background-color: white;\n}\n\n.btnSearch[_ngcontent-%COMP%] {\n  text-align: center;\n  margin-top: 0.4em;\n  margin-bottom: 0.4em;\n}\n\n  .dx-theme-material-typography h2 {\n  font-weight: bold;\n  font-size: 40px;\n}\n/*# sourceMappingURL=data:application/json;base64,eyJ2ZXJzaW9uIjozLCJzb3VyY2VzIjpbInNyYy9hcHAvcGFnZXMvZGV2b2x1Y2lvbmVzL0M6XFxGSURFTlNcXGFsb2phYmFzZXMyMDI1L3NyY1xcYXBwXFxwYWdlc1xcZGV2b2x1Y2lvbmVzXFxkZXZvbHVjaW9uZXMuY29tcG9uZW50LnNjc3MiLCJzcmMvYXBwL3BhZ2VzL2Rldm9sdWNpb25lcy9kZXZvbHVjaW9uZXMuY29tcG9uZW50LnNjc3MiXSwibmFtZXMiOltdLCJtYXBwaW5ncyI6IkFBQUE7RUFDSSxZQUFBO0VBQ0EsZUFBQTtFQUVBLG9CQUFBO0FDQUo7O0FER0E7RUFFUSxlQUFBO0FDRFI7O0FES0E7RUFDSSxrQkFBQTtFQUNBLGlCQUFBO0VBQ0Esa0JBQUE7QUNGSjs7QURNQTtFQUNJLGtCQUFBO0FDSEo7O0FETUE7RUFDSSxnQkFBQTtFQUNBLGtCQUFBO0FDSEo7O0FETUE7RUFDSSxZQUFBO0VBQ0EsZ0JBQUE7QUNISjs7QURNQTtFQUNJLHFCQUFBO0VBQ0EsWUFBQTtBQ0hKOztBRE9BO0VBQ0ksZUFBQTtFQUNBLFlBQUE7QUNKSjs7QURRQTtFQUNJLHVCQUFBO0VBQ0EsWUFBQTtBQ0xKOztBRFFBO0VBQ0ksV0FBQTtBQ0xKOztBRFFBO0VBQ0ksa0JBQUE7RUFDQSxpQkFBQTtFQUNBLGNBQUE7QUNMSjs7QURRQTtFQUNJLGtCQUFBO0FDTEo7O0FEUUE7RUFDSSxrQkFBQTtFQUNBLGNBQUE7RUFDQSxpQkFBQTtBQ0xKOztBRFNBO0VBQ0ksa0JBQUE7RUFDQSxjQUFBO0VBQ0EsaUJBQUE7QUNOSjs7QURTQTtFQUNJLGlCQUFBO0FDTko7O0FEU0E7RUFDSSxxQkFBQTtFQUNBLFdBQUE7RUFDQSxpQkFBQTtBQ05KOztBRFVBO0VBQ0ksZ0JBQUE7QUNQSjs7QURVQTtFQUNJLGlCQUFBO0FDUEo7O0FEVUE7RUFDSSxrQkFBQTtBQ1BKOztBRFVBO0VBQ0ksa0JBQUE7RUFDQSx1QkFBQTtBQ1BKOztBRFVBO0VBQ0ksa0JBQUE7RUFDQSxpQkFBQTtFQUNBLG9CQUFBO0FDUEo7O0FEV0E7RUFDSSxpQkFBQTtFQUNBLGVBQUE7QUNSSiIsImZpbGUiOiJzcmMvYXBwL3BhZ2VzL2Rldm9sdWNpb25lcy9kZXZvbHVjaW9uZXMuY29tcG9uZW50LnNjc3MiLCJzb3VyY2VzQ29udGVudCI6WyIucmVtaVByb3tcclxuICAgIHBhZGRpbmc6IDJlbTtcclxuICAgIG1hcmdpbi10b3A6IDJlbTtcclxuIFxyXG4gICAgbWFyZ2luLWJvdHRvbTogMS41ZW07XHJcbiAgICB9XHJcblxyXG4ucmVtaVBybyBwe1xyXG4gICAgICAgXHJcbiAgICAgICAgbWFyZ2luLXRvcDogMWVtO1xyXG4gICAgICAgIFxyXG59XHJcblxyXG4udGl0dWxve1xyXG4gICAgbWFyZ2luLWJvdHRvbTogMWVtO1xyXG4gICAgZm9udC13ZWlnaHQ6IGJvbGQ7XHJcbiAgICB0ZXh0LWFsaWduOiBjZW50ZXI7XHJcbiAgICBcclxufVxyXG5cclxuLmRhdGVzIGR4LWRhdGUtYm94e1xyXG4gICAgbWFyZ2luLXRvcDogMC4wNWVtO1xyXG59XHJcblxyXG4uYWxpbmVhckJvdG9ue1xyXG4gICAgdGV4dC1hbGlnbjogbGVmdDtcclxuICAgIG1hcmdpbi1ib3R0b206IDJlbTtcclxufVxyXG5cclxuLmRldGFsbGV7XHJcbiAgICBwYWRkaW5nOiAzZW07XHJcbiAgICBwYWRkaW5nLXRvcDogMGVtO1xyXG59XHJcblxyXG4uYnR7XHJcbiAgICBiYWNrZ3JvdW5kLWNvbG9yOiByZWQ7XHJcbiAgICBjb2xvcjogd2hpdGU7XHJcbiAgIFxyXG59XHJcblxyXG46Om5nLWRlZXAgLmJ0IC5keC1pY29uIHtcclxuICAgIGZvbnQtc2l6ZTogMTJweDtcclxuICAgIGNvbG9yOiB3aGl0ZTtcclxufVxyXG5cclxuXHJcbi5idDJ7XHJcbiAgICBiYWNrZ3JvdW5kLWNvbG9yOiBncmVlbjtcclxuICAgIGNvbG9yOiB3aGl0ZTtcclxufVxyXG5cclxuI2hpc3RvcmlhbHtcclxuICAgIG1hcmdpbjogMmVtO1xyXG59XHJcblxyXG4udGl0dWxvc1QgaDV7XHJcbiAgICB0ZXh0LWFsaWduOiBjZW50ZXI7XHJcbiAgICBmb250LXdlaWdodDogYm9sZDtcclxuICAgIGZvbnQtc2l6ZTogMWVtO1xyXG59XHJcblxyXG46Om5nLWRlZXAgIC5keC10ZXh0ZWRpdG9yLWlucHV0e1xyXG4gICAgdGV4dC1hbGlnbjogY2VudGVyO1xyXG59XHJcblxyXG46Om5nLWRlZXAgLnRvdGFsIC5keC10ZXh0ZWRpdG9yLWlucHV0e1xyXG4gICAgdGV4dC1hbGlnbjogY2VudGVyO1xyXG4gICAgZm9udC1zaXplOiAyZW07XHJcbiAgICBmb250LXdlaWdodDogYm9sZDtcclxufVxyXG5cclxuXHJcbjo6bmctZGVlcCAuaWQgLmR4LXRleHRlZGl0b3ItaW5wdXR7XHJcbiAgICB0ZXh0LWFsaWduOiBjZW50ZXI7XHJcbiAgICBmb250LXNpemU6IDJlbTtcclxuICAgIGZvbnQtd2VpZ2h0OiBib2xkO1xyXG59XHJcblxyXG4ubW92ZXJ7XHJcbiAgICB0ZXh0LWFsaWduOiByaWdodDtcclxufVxyXG5cclxuLmJ0bi14c3tcclxuICAgIGJhY2tncm91bmQtY29sb3I6IHJlZDtcclxuICAgIGJvcmRlcjogcmVkO1xyXG4gICAgdGV4dC1hbGlnbjogcmlnaHQ7XHJcbn1cclxuXHJcblxyXG4uZXNwYWNpb0RpdnMgZHgtdGV4dC1ib3gsZHgtc2VsZWN0LWJveCxkeC1hdXRvY29tcGxldGUsZHgtZGF0ZS1ib3h7XHJcbiAgICBtYXJnaW4tdG9wOiAtMWVtO1xyXG59XHJcblxyXG4uZXNwYWNpb0RpdnMgZHgtbnVtYmVyLWJveHtcclxuICAgIHRleHQtYWxpZ246IHJpZ2h0O1xyXG59XHJcblxyXG46Om5nLWRlZXAgLmVzcGFjaW9EaXZzIC5keC10ZXh0ZWRpdG9yLWlucHV0e1xyXG4gICAgdGV4dC1hbGlnbjogY2VudGVyO1xyXG59XHJcblxyXG4uc2VsZWN0e1xyXG4gICAgdGV4dC1hbGlnbjogY2VudGVyO1xyXG4gICAgYmFja2dyb3VuZC1jb2xvcjogd2hpdGU7XHJcbn1cclxuXHJcbi5idG5TZWFyY2h7XHJcbiAgICB0ZXh0LWFsaWduOiBjZW50ZXI7XHJcbiAgICBtYXJnaW4tdG9wOiAwLjRlbTtcclxuICAgIG1hcmdpbi1ib3R0b206IDAuNGVtO1xyXG59XHJcblxyXG5cclxuOjpuZy1kZWVwIC5keC10aGVtZS1tYXRlcmlhbC10eXBvZ3JhcGh5IGgyIHtcclxuICAgIGZvbnQtd2VpZ2h0OiBib2xkO1xyXG4gICAgZm9udC1zaXplOiA0MHB4O1xyXG59IiwiLnJlbWlQcm8ge1xuICBwYWRkaW5nOiAyZW07XG4gIG1hcmdpbi10b3A6IDJlbTtcbiAgbWFyZ2luLWJvdHRvbTogMS41ZW07XG59XG5cbi5yZW1pUHJvIHAge1xuICBtYXJnaW4tdG9wOiAxZW07XG59XG5cbi50aXR1bG8ge1xuICBtYXJnaW4tYm90dG9tOiAxZW07XG4gIGZvbnQtd2VpZ2h0OiBib2xkO1xuICB0ZXh0LWFsaWduOiBjZW50ZXI7XG59XG5cbi5kYXRlcyBkeC1kYXRlLWJveCB7XG4gIG1hcmdpbi10b3A6IDAuMDVlbTtcbn1cblxuLmFsaW5lYXJCb3RvbiB7XG4gIHRleHQtYWxpZ246IGxlZnQ7XG4gIG1hcmdpbi1ib3R0b206IDJlbTtcbn1cblxuLmRldGFsbGUge1xuICBwYWRkaW5nOiAzZW07XG4gIHBhZGRpbmctdG9wOiAwZW07XG59XG5cbi5idCB7XG4gIGJhY2tncm91bmQtY29sb3I6IHJlZDtcbiAgY29sb3I6IHdoaXRlO1xufVxuXG46Om5nLWRlZXAgLmJ0IC5keC1pY29uIHtcbiAgZm9udC1zaXplOiAxMnB4O1xuICBjb2xvcjogd2hpdGU7XG59XG5cbi5idDIge1xuICBiYWNrZ3JvdW5kLWNvbG9yOiBncmVlbjtcbiAgY29sb3I6IHdoaXRlO1xufVxuXG4jaGlzdG9yaWFsIHtcbiAgbWFyZ2luOiAyZW07XG59XG5cbi50aXR1bG9zVCBoNSB7XG4gIHRleHQtYWxpZ246IGNlbnRlcjtcbiAgZm9udC13ZWlnaHQ6IGJvbGQ7XG4gIGZvbnQtc2l6ZTogMWVtO1xufVxuXG46Om5nLWRlZXAgLmR4LXRleHRlZGl0b3ItaW5wdXQge1xuICB0ZXh0LWFsaWduOiBjZW50ZXI7XG59XG5cbjo6bmctZGVlcCAudG90YWwgLmR4LXRleHRlZGl0b3ItaW5wdXQge1xuICB0ZXh0LWFsaWduOiBjZW50ZXI7XG4gIGZvbnQtc2l6ZTogMmVtO1xuICBmb250LXdlaWdodDogYm9sZDtcbn1cblxuOjpuZy1kZWVwIC5pZCAuZHgtdGV4dGVkaXRvci1pbnB1dCB7XG4gIHRleHQtYWxpZ246IGNlbnRlcjtcbiAgZm9udC1zaXplOiAyZW07XG4gIGZvbnQtd2VpZ2h0OiBib2xkO1xufVxuXG4ubW92ZXIge1xuICB0ZXh0LWFsaWduOiByaWdodDtcbn1cblxuLmJ0bi14cyB7XG4gIGJhY2tncm91bmQtY29sb3I6IHJlZDtcbiAgYm9yZGVyOiByZWQ7XG4gIHRleHQtYWxpZ246IHJpZ2h0O1xufVxuXG4uZXNwYWNpb0RpdnMgZHgtdGV4dC1ib3gsIGR4LXNlbGVjdC1ib3gsIGR4LWF1dG9jb21wbGV0ZSwgZHgtZGF0ZS1ib3gge1xuICBtYXJnaW4tdG9wOiAtMWVtO1xufVxuXG4uZXNwYWNpb0RpdnMgZHgtbnVtYmVyLWJveCB7XG4gIHRleHQtYWxpZ246IHJpZ2h0O1xufVxuXG46Om5nLWRlZXAgLmVzcGFjaW9EaXZzIC5keC10ZXh0ZWRpdG9yLWlucHV0IHtcbiAgdGV4dC1hbGlnbjogY2VudGVyO1xufVxuXG4uc2VsZWN0IHtcbiAgdGV4dC1hbGlnbjogY2VudGVyO1xuICBiYWNrZ3JvdW5kLWNvbG9yOiB3aGl0ZTtcbn1cblxuLmJ0blNlYXJjaCB7XG4gIHRleHQtYWxpZ246IGNlbnRlcjtcbiAgbWFyZ2luLXRvcDogMC40ZW07XG4gIG1hcmdpbi1ib3R0b206IDAuNGVtO1xufVxuXG46Om5nLWRlZXAgLmR4LXRoZW1lLW1hdGVyaWFsLXR5cG9ncmFwaHkgaDIge1xuICBmb250LXdlaWdodDogYm9sZDtcbiAgZm9udC1zaXplOiA0MHB4O1xufSJdfQ== */"] });
+    } }, directives: [_angular_common__WEBPACK_IMPORTED_MODULE_27__["NgIf"], devextreme_angular__WEBPACK_IMPORTED_MODULE_28__["DxSelectBoxComponent"], _loading_message_loading_messagge_component__WEBPACK_IMPORTED_MODULE_29__["LoadingMessaggeComponent"], devextreme_angular_ui_text_box__WEBPACK_IMPORTED_MODULE_30__["DxTextBoxComponent"], devextreme_angular__WEBPACK_IMPORTED_MODULE_28__["DxDateBoxComponent"], devextreme_angular_ui_validator__WEBPACK_IMPORTED_MODULE_31__["DxValidatorComponent"], devextreme_angular_ui_nested__WEBPACK_IMPORTED_MODULE_32__["DxiValidationRuleComponent"], devextreme_angular_ui_button__WEBPACK_IMPORTED_MODULE_33__["DxButtonComponent"], _angular_common__WEBPACK_IMPORTED_MODULE_27__["NgForOf"], devextreme_angular__WEBPACK_IMPORTED_MODULE_28__["DxNumberBoxComponent"], devextreme_angular__WEBPACK_IMPORTED_MODULE_28__["DxRadioGroupComponent"], devextreme_angular__WEBPACK_IMPORTED_MODULE_28__["DxDataGridComponent"], devextreme_angular_ui_nested__WEBPACK_IMPORTED_MODULE_32__["DxoFilterRowComponent"], devextreme_angular_ui_nested__WEBPACK_IMPORTED_MODULE_32__["DxoSearchPanelComponent"], devextreme_angular_ui_nested__WEBPACK_IMPORTED_MODULE_32__["DxoExportComponent"], devextreme_angular_ui_nested__WEBPACK_IMPORTED_MODULE_32__["DxiColumnComponent"], devextreme_angular_ui_nested__WEBPACK_IMPORTED_MODULE_32__["DxiButtonComponent"], devextreme_angular_ui_nested__WEBPACK_IMPORTED_MODULE_32__["DxoPagingComponent"], devextreme_angular_ui_nested__WEBPACK_IMPORTED_MODULE_32__["DxoPagerComponent"]], styles: [".remiPro[_ngcontent-%COMP%] {\n  padding: 2em;\n  margin-top: 2em;\n  margin-bottom: 1.5em;\n}\n\n.remiPro[_ngcontent-%COMP%]   p[_ngcontent-%COMP%] {\n  margin-top: 1em;\n}\n\n.titulo[_ngcontent-%COMP%] {\n  margin-bottom: 1em;\n  font-weight: bold;\n  text-align: center;\n}\n\n.dates[_ngcontent-%COMP%]   dx-date-box[_ngcontent-%COMP%] {\n  margin-top: 0.05em;\n}\n\n.alinearBoton[_ngcontent-%COMP%] {\n  text-align: left;\n  margin-bottom: 2em;\n}\n\n.detalle[_ngcontent-%COMP%] {\n  padding: 3em;\n  padding-top: 0em;\n}\n\n.bt[_ngcontent-%COMP%] {\n  background-color: red;\n  color: white;\n}\n\n  .bt .dx-icon {\n  font-size: 12px;\n  color: white;\n}\n\n.bt2[_ngcontent-%COMP%] {\n  background-color: green;\n  color: white;\n}\n\n#historial[_ngcontent-%COMP%] {\n  margin: 2em;\n}\n\n.titulosT[_ngcontent-%COMP%]   h5[_ngcontent-%COMP%] {\n  text-align: center;\n  font-weight: bold;\n  font-size: 1em;\n}\n\n  .dx-texteditor-input {\n  text-align: center;\n}\n\n  .total .dx-texteditor-input {\n  text-align: center;\n  font-size: 2em;\n  font-weight: bold;\n}\n\n  .id .dx-texteditor-input {\n  text-align: center;\n  font-size: 2em;\n  font-weight: bold;\n}\n\n.mover[_ngcontent-%COMP%] {\n  text-align: right;\n}\n\n.btn-xs[_ngcontent-%COMP%] {\n  background-color: red;\n  border: red;\n  text-align: right;\n}\n\n.espacioDivs[_ngcontent-%COMP%]   dx-text-box[_ngcontent-%COMP%], dx-select-box[_ngcontent-%COMP%], dx-autocomplete[_ngcontent-%COMP%], dx-date-box[_ngcontent-%COMP%] {\n  margin-top: -1em;\n}\n\n.espacioDivs[_ngcontent-%COMP%]   dx-number-box[_ngcontent-%COMP%] {\n  text-align: right;\n}\n\n  .espacioDivs .dx-texteditor-input {\n  text-align: center;\n}\n\n.select[_ngcontent-%COMP%] {\n  text-align: center;\n  background-color: white;\n}\n\n.btnSearch[_ngcontent-%COMP%] {\n  text-align: center;\n  margin-top: 0.4em;\n  margin-bottom: 0.4em;\n}\n\n  .dx-theme-material-typography h2 {\n  font-weight: bold;\n  font-size: 40px;\n}\n/*# sourceMappingURL=data:application/json;base64,eyJ2ZXJzaW9uIjozLCJzb3VyY2VzIjpbInNyYy9hcHAvcGFnZXMvZGV2b2x1Y2lvbmVzL0M6XFxGSURFTlNcXGFsb2phYmFzZXMyMDI1L3NyY1xcYXBwXFxwYWdlc1xcZGV2b2x1Y2lvbmVzXFxkZXZvbHVjaW9uZXMuY29tcG9uZW50LnNjc3MiLCJzcmMvYXBwL3BhZ2VzL2Rldm9sdWNpb25lcy9kZXZvbHVjaW9uZXMuY29tcG9uZW50LnNjc3MiXSwibmFtZXMiOltdLCJtYXBwaW5ncyI6IkFBQUE7RUFDSSxZQUFBO0VBQ0EsZUFBQTtFQUVBLG9CQUFBO0FDQUo7O0FER0E7RUFFUSxlQUFBO0FDRFI7O0FES0E7RUFDSSxrQkFBQTtFQUNBLGlCQUFBO0VBQ0Esa0JBQUE7QUNGSjs7QURNQTtFQUNJLGtCQUFBO0FDSEo7O0FETUE7RUFDSSxnQkFBQTtFQUNBLGtCQUFBO0FDSEo7O0FETUE7RUFDSSxZQUFBO0VBQ0EsZ0JBQUE7QUNISjs7QURNQTtFQUNJLHFCQUFBO0VBQ0EsWUFBQTtBQ0hKOztBRE9BO0VBQ0ksZUFBQTtFQUNBLFlBQUE7QUNKSjs7QURRQTtFQUNJLHVCQUFBO0VBQ0EsWUFBQTtBQ0xKOztBRFFBO0VBQ0ksV0FBQTtBQ0xKOztBRFFBO0VBQ0ksa0JBQUE7RUFDQSxpQkFBQTtFQUNBLGNBQUE7QUNMSjs7QURRQTtFQUNJLGtCQUFBO0FDTEo7O0FEUUE7RUFDSSxrQkFBQTtFQUNBLGNBQUE7RUFDQSxpQkFBQTtBQ0xKOztBRFNBO0VBQ0ksa0JBQUE7RUFDQSxjQUFBO0VBQ0EsaUJBQUE7QUNOSjs7QURTQTtFQUNJLGlCQUFBO0FDTko7O0FEU0E7RUFDSSxxQkFBQTtFQUNBLFdBQUE7RUFDQSxpQkFBQTtBQ05KOztBRFVBO0VBQ0ksZ0JBQUE7QUNQSjs7QURVQTtFQUNJLGlCQUFBO0FDUEo7O0FEVUE7RUFDSSxrQkFBQTtBQ1BKOztBRFVBO0VBQ0ksa0JBQUE7RUFDQSx1QkFBQTtBQ1BKOztBRFVBO0VBQ0ksa0JBQUE7RUFDQSxpQkFBQTtFQUNBLG9CQUFBO0FDUEo7O0FEV0E7RUFDSSxpQkFBQTtFQUNBLGVBQUE7QUNSSiIsImZpbGUiOiJzcmMvYXBwL3BhZ2VzL2Rldm9sdWNpb25lcy9kZXZvbHVjaW9uZXMuY29tcG9uZW50LnNjc3MiLCJzb3VyY2VzQ29udGVudCI6WyIucmVtaVByb3tcclxuICAgIHBhZGRpbmc6IDJlbTtcclxuICAgIG1hcmdpbi10b3A6IDJlbTtcclxuIFxyXG4gICAgbWFyZ2luLWJvdHRvbTogMS41ZW07XHJcbiAgICB9XHJcblxyXG4ucmVtaVBybyBwe1xyXG4gICAgICAgXHJcbiAgICAgICAgbWFyZ2luLXRvcDogMWVtO1xyXG4gICAgICAgIFxyXG59XHJcblxyXG4udGl0dWxve1xyXG4gICAgbWFyZ2luLWJvdHRvbTogMWVtO1xyXG4gICAgZm9udC13ZWlnaHQ6IGJvbGQ7XHJcbiAgICB0ZXh0LWFsaWduOiBjZW50ZXI7XHJcbiAgICBcclxufVxyXG5cclxuLmRhdGVzIGR4LWRhdGUtYm94e1xyXG4gICAgbWFyZ2luLXRvcDogMC4wNWVtO1xyXG59XHJcblxyXG4uYWxpbmVhckJvdG9ue1xyXG4gICAgdGV4dC1hbGlnbjogbGVmdDtcclxuICAgIG1hcmdpbi1ib3R0b206IDJlbTtcclxufVxyXG5cclxuLmRldGFsbGV7XHJcbiAgICBwYWRkaW5nOiAzZW07XHJcbiAgICBwYWRkaW5nLXRvcDogMGVtO1xyXG59XHJcblxyXG4uYnR7XHJcbiAgICBiYWNrZ3JvdW5kLWNvbG9yOiByZWQ7XHJcbiAgICBjb2xvcjogd2hpdGU7XHJcbiAgIFxyXG59XHJcblxyXG46Om5nLWRlZXAgLmJ0IC5keC1pY29uIHtcclxuICAgIGZvbnQtc2l6ZTogMTJweDtcclxuICAgIGNvbG9yOiB3aGl0ZTtcclxufVxyXG5cclxuXHJcbi5idDJ7XHJcbiAgICBiYWNrZ3JvdW5kLWNvbG9yOiBncmVlbjtcclxuICAgIGNvbG9yOiB3aGl0ZTtcclxufVxyXG5cclxuI2hpc3RvcmlhbHtcclxuICAgIG1hcmdpbjogMmVtO1xyXG59XHJcblxyXG4udGl0dWxvc1QgaDV7XHJcbiAgICB0ZXh0LWFsaWduOiBjZW50ZXI7XHJcbiAgICBmb250LXdlaWdodDogYm9sZDtcclxuICAgIGZvbnQtc2l6ZTogMWVtO1xyXG59XHJcblxyXG46Om5nLWRlZXAgIC5keC10ZXh0ZWRpdG9yLWlucHV0e1xyXG4gICAgdGV4dC1hbGlnbjogY2VudGVyO1xyXG59XHJcblxyXG46Om5nLWRlZXAgLnRvdGFsIC5keC10ZXh0ZWRpdG9yLWlucHV0e1xyXG4gICAgdGV4dC1hbGlnbjogY2VudGVyO1xyXG4gICAgZm9udC1zaXplOiAyZW07XHJcbiAgICBmb250LXdlaWdodDogYm9sZDtcclxufVxyXG5cclxuXHJcbjo6bmctZGVlcCAuaWQgLmR4LXRleHRlZGl0b3ItaW5wdXR7XHJcbiAgICB0ZXh0LWFsaWduOiBjZW50ZXI7XHJcbiAgICBmb250LXNpemU6IDJlbTtcclxuICAgIGZvbnQtd2VpZ2h0OiBib2xkO1xyXG59XHJcblxyXG4ubW92ZXJ7XHJcbiAgICB0ZXh0LWFsaWduOiByaWdodDtcclxufVxyXG5cclxuLmJ0bi14c3tcclxuICAgIGJhY2tncm91bmQtY29sb3I6IHJlZDtcclxuICAgIGJvcmRlcjogcmVkO1xyXG4gICAgdGV4dC1hbGlnbjogcmlnaHQ7XHJcbn1cclxuXHJcblxyXG4uZXNwYWNpb0RpdnMgZHgtdGV4dC1ib3gsZHgtc2VsZWN0LWJveCxkeC1hdXRvY29tcGxldGUsZHgtZGF0ZS1ib3h7XHJcbiAgICBtYXJnaW4tdG9wOiAtMWVtO1xyXG59XHJcblxyXG4uZXNwYWNpb0RpdnMgZHgtbnVtYmVyLWJveHtcclxuICAgIHRleHQtYWxpZ246IHJpZ2h0O1xyXG59XHJcblxyXG46Om5nLWRlZXAgLmVzcGFjaW9EaXZzIC5keC10ZXh0ZWRpdG9yLWlucHV0e1xyXG4gICAgdGV4dC1hbGlnbjogY2VudGVyO1xyXG59XHJcblxyXG4uc2VsZWN0e1xyXG4gICAgdGV4dC1hbGlnbjogY2VudGVyO1xyXG4gICAgYmFja2dyb3VuZC1jb2xvcjogd2hpdGU7XHJcbn1cclxuXHJcbi5idG5TZWFyY2h7XHJcbiAgICB0ZXh0LWFsaWduOiBjZW50ZXI7XHJcbiAgICBtYXJnaW4tdG9wOiAwLjRlbTtcclxuICAgIG1hcmdpbi1ib3R0b206IDAuNGVtO1xyXG59XHJcblxyXG5cclxuOjpuZy1kZWVwIC5keC10aGVtZS1tYXRlcmlhbC10eXBvZ3JhcGh5IGgyIHtcclxuICAgIGZvbnQtd2VpZ2h0OiBib2xkO1xyXG4gICAgZm9udC1zaXplOiA0MHB4O1xyXG59IiwiLnJlbWlQcm8ge1xuICBwYWRkaW5nOiAyZW07XG4gIG1hcmdpbi10b3A6IDJlbTtcbiAgbWFyZ2luLWJvdHRvbTogMS41ZW07XG59XG5cbi5yZW1pUHJvIHAge1xuICBtYXJnaW4tdG9wOiAxZW07XG59XG5cbi50aXR1bG8ge1xuICBtYXJnaW4tYm90dG9tOiAxZW07XG4gIGZvbnQtd2VpZ2h0OiBib2xkO1xuICB0ZXh0LWFsaWduOiBjZW50ZXI7XG59XG5cbi5kYXRlcyBkeC1kYXRlLWJveCB7XG4gIG1hcmdpbi10b3A6IDAuMDVlbTtcbn1cblxuLmFsaW5lYXJCb3RvbiB7XG4gIHRleHQtYWxpZ246IGxlZnQ7XG4gIG1hcmdpbi1ib3R0b206IDJlbTtcbn1cblxuLmRldGFsbGUge1xuICBwYWRkaW5nOiAzZW07XG4gIHBhZGRpbmctdG9wOiAwZW07XG59XG5cbi5idCB7XG4gIGJhY2tncm91bmQtY29sb3I6IHJlZDtcbiAgY29sb3I6IHdoaXRlO1xufVxuXG46Om5nLWRlZXAgLmJ0IC5keC1pY29uIHtcbiAgZm9udC1zaXplOiAxMnB4O1xuICBjb2xvcjogd2hpdGU7XG59XG5cbi5idDIge1xuICBiYWNrZ3JvdW5kLWNvbG9yOiBncmVlbjtcbiAgY29sb3I6IHdoaXRlO1xufVxuXG4jaGlzdG9yaWFsIHtcbiAgbWFyZ2luOiAyZW07XG59XG5cbi50aXR1bG9zVCBoNSB7XG4gIHRleHQtYWxpZ246IGNlbnRlcjtcbiAgZm9udC13ZWlnaHQ6IGJvbGQ7XG4gIGZvbnQtc2l6ZTogMWVtO1xufVxuXG46Om5nLWRlZXAgLmR4LXRleHRlZGl0b3ItaW5wdXQge1xuICB0ZXh0LWFsaWduOiBjZW50ZXI7XG59XG5cbjo6bmctZGVlcCAudG90YWwgLmR4LXRleHRlZGl0b3ItaW5wdXQge1xuICB0ZXh0LWFsaWduOiBjZW50ZXI7XG4gIGZvbnQtc2l6ZTogMmVtO1xuICBmb250LXdlaWdodDogYm9sZDtcbn1cblxuOjpuZy1kZWVwIC5pZCAuZHgtdGV4dGVkaXRvci1pbnB1dCB7XG4gIHRleHQtYWxpZ246IGNlbnRlcjtcbiAgZm9udC1zaXplOiAyZW07XG4gIGZvbnQtd2VpZ2h0OiBib2xkO1xufVxuXG4ubW92ZXIge1xuICB0ZXh0LWFsaWduOiByaWdodDtcbn1cblxuLmJ0bi14cyB7XG4gIGJhY2tncm91bmQtY29sb3I6IHJlZDtcbiAgYm9yZGVyOiByZWQ7XG4gIHRleHQtYWxpZ246IHJpZ2h0O1xufVxuXG4uZXNwYWNpb0RpdnMgZHgtdGV4dC1ib3gsIGR4LXNlbGVjdC1ib3gsIGR4LWF1dG9jb21wbGV0ZSwgZHgtZGF0ZS1ib3gge1xuICBtYXJnaW4tdG9wOiAtMWVtO1xufVxuXG4uZXNwYWNpb0RpdnMgZHgtbnVtYmVyLWJveCB7XG4gIHRleHQtYWxpZ246IHJpZ2h0O1xufVxuXG46Om5nLWRlZXAgLmVzcGFjaW9EaXZzIC5keC10ZXh0ZWRpdG9yLWlucHV0IHtcbiAgdGV4dC1hbGlnbjogY2VudGVyO1xufVxuXG4uc2VsZWN0IHtcbiAgdGV4dC1hbGlnbjogY2VudGVyO1xuICBiYWNrZ3JvdW5kLWNvbG9yOiB3aGl0ZTtcbn1cblxuLmJ0blNlYXJjaCB7XG4gIHRleHQtYWxpZ246IGNlbnRlcjtcbiAgbWFyZ2luLXRvcDogMC40ZW07XG4gIG1hcmdpbi1ib3R0b206IDAuNGVtO1xufVxuXG46Om5nLWRlZXAgLmR4LXRoZW1lLW1hdGVyaWFsLXR5cG9ncmFwaHkgaDIge1xuICBmb250LXdlaWdodDogYm9sZDtcbiAgZm9udC1zaXplOiA0MHB4O1xufSJdfQ== */"] });
 /*@__PURE__*/ (function () { _angular_core__WEBPACK_IMPORTED_MODULE_0__["ɵsetClassMetadata"](DevolucionesComponent, [{
         type: _angular_core__WEBPACK_IMPORTED_MODULE_0__["Component"],
         args: [{
@@ -47064,7 +47122,7 @@ DevolucionesComponent.ɵcmp = _angular_core__WEBPACK_IMPORTED_MODULE_0__["ɵɵde
                 templateUrl: "./devoluciones.component.html",
                 styleUrls: ["./devoluciones.component.scss"],
             }]
-    }], function () { return [{ type: angularfire2_firestore__WEBPACK_IMPORTED_MODULE_11__["AngularFirestore"] }, { type: src_app_servicios_parametrizaciones_service__WEBPACK_IMPORTED_MODULE_12__["ParametrizacionesService"] }, { type: src_app_servicios_authen_service__WEBPACK_IMPORTED_MODULE_13__["AuthenService"] }, { type: src_app_servicios_transacciones_service__WEBPACK_IMPORTED_MODULE_14__["TransaccionesService"] }, { type: src_app_servicios_devoluciones_service__WEBPACK_IMPORTED_MODULE_15__["DevolucionesService"] }, { type: src_app_servicios_contadores_documentos_service__WEBPACK_IMPORTED_MODULE_16__["ContadoresDocumentosService"] }, { type: src_app_servicios_notas_ventas_service__WEBPACK_IMPORTED_MODULE_17__["NotasVentasService"] }, { type: src_app_servicios_facturas_service__WEBPACK_IMPORTED_MODULE_18__["FacturasService"] }, { type: src_app_servicios_productos_pendientes_service__WEBPACK_IMPORTED_MODULE_19__["ProductosPendientesService"] }, { type: src_app_servicios_ordenes_compra_service__WEBPACK_IMPORTED_MODULE_20__["OrdenesCompraService"] }, { type: src_app_servicios_sucursales_service__WEBPACK_IMPORTED_MODULE_21__["SucursalesService"] }, { type: src_app_servicios_transaccionesFinancieras_service__WEBPACK_IMPORTED_MODULE_22__["TransaccionesFinancierasService"] }, { type: src_app_servicios_producto_service__WEBPACK_IMPORTED_MODULE_23__["ProductoService"] }, { type: src_app_shared_services__WEBPACK_IMPORTED_MODULE_24__["AuthService"] }, { type: src_app_servicios_combos_service__WEBPACK_IMPORTED_MODULE_25__["CombosService"] }, { type: src_app_servicios_cajaMenor_service__WEBPACK_IMPORTED_MODULE_26__["CajaMenorService"] }, { type: src_app_servicios_datosConfiguracion_service__WEBPACK_IMPORTED_MODULE_27__["DatosConfiguracionService"] }]; }, null); })();
+    }], function () { return [{ type: src_app_servicios_parametrizaciones_service__WEBPACK_IMPORTED_MODULE_11__["ParametrizacionesService"] }, { type: src_app_servicios_authen_service__WEBPACK_IMPORTED_MODULE_12__["AuthenService"] }, { type: src_app_servicios_transacciones_service__WEBPACK_IMPORTED_MODULE_13__["TransaccionesService"] }, { type: src_app_servicios_devoluciones_service__WEBPACK_IMPORTED_MODULE_14__["DevolucionesService"] }, { type: src_app_servicios_contadores_documentos_service__WEBPACK_IMPORTED_MODULE_15__["ContadoresDocumentosService"] }, { type: src_app_servicios_notas_ventas_service__WEBPACK_IMPORTED_MODULE_16__["NotasVentasService"] }, { type: src_app_servicios_facturas_service__WEBPACK_IMPORTED_MODULE_17__["FacturasService"] }, { type: src_app_servicios_productos_pendientes_service__WEBPACK_IMPORTED_MODULE_18__["ProductosPendientesService"] }, { type: src_app_servicios_ordenes_compra_service__WEBPACK_IMPORTED_MODULE_19__["OrdenesCompraService"] }, { type: src_app_servicios_sucursales_service__WEBPACK_IMPORTED_MODULE_20__["SucursalesService"] }, { type: src_app_servicios_transaccionesFinancieras_service__WEBPACK_IMPORTED_MODULE_21__["TransaccionesFinancierasService"] }, { type: src_app_servicios_producto_service__WEBPACK_IMPORTED_MODULE_22__["ProductoService"] }, { type: src_app_shared_services__WEBPACK_IMPORTED_MODULE_23__["AuthService"] }, { type: src_app_servicios_combos_service__WEBPACK_IMPORTED_MODULE_24__["CombosService"] }, { type: src_app_servicios_cajaMenor_service__WEBPACK_IMPORTED_MODULE_25__["CajaMenorService"] }, { type: src_app_servicios_datosConfiguracion_service__WEBPACK_IMPORTED_MODULE_26__["DatosConfiguracionService"] }]; }, null); })();
 
 
 /***/ }),
@@ -69507,34 +69565,38 @@ class RegistrosVentasComponent {
             console.log(this.facturaVeronica);
             console.log(logApiVeronica);
             //TO-DO, DESCOMENTAR LUEGO DE PRUEBAS
-            this._apiVeronicaService.newFactura(this.facturaVeronica).subscribe(res => {
-                var resultado = res;
-                logApiVeronica.objetoResponse = JSON.stringify(res);
-                logApiVeronica.claveAcceso = resultado.result.claveAccesoConsultada;
-                logApiVeronica.resultado = "OK";
-                this._logApiVeronicaService.newLog(logApiVeronica).subscribe(res => {
-                    this.mostrarLoading = false;
-                    sweetalert2__WEBPACK_IMPORTED_MODULE_4___default.a.fire({
-                        title: 'Correcto',
-                        text: 'Factura registrada con éxito',
-                        icon: 'success'
-                    });
-                    this.traerFacturasMensuales();
-                }, err => { });
-            }, err => {
-                logApiVeronica.objetoResponse = JSON.stringify(err);
-                logApiVeronica.claveAcceso = null;
-                logApiVeronica.resultado = "NOK";
-                this._logApiVeronicaService.newLog(logApiVeronica).subscribe(res => {
-                    this.mostrarLoading = false;
-                    sweetalert2__WEBPACK_IMPORTED_MODULE_4___default.a.fire({
-                        title: 'Error',
-                        text: 'Error al establecer coneccion con el SRI',
-                        icon: 'error',
-                        confirmButtonText: 'Ok'
-                    });
-                }, err => { });
-            });
+            /* this._apiVeronicaService.newFactura(this.facturaVeronica).subscribe(
+              res => {  var resultado = res as ResponseVeronicaDto;
+                        logApiVeronica.objetoResponse = JSON.stringify(res)
+                        logApiVeronica.claveAcceso = resultado.result.claveAccesoConsultada
+                        logApiVeronica.resultado = "OK"
+                        this._logApiVeronicaService.newLog(logApiVeronica).subscribe(
+                          res =>{   this.mostrarLoading = false;
+                                    Swal.fire({
+                                      title: 'Correcto',
+                                      text: 'Factura registrada con éxito',
+                                      icon: 'success'
+                                    })
+                                    this.traerFacturasMensuales();
+                                },
+                          err => {  });
+                    },
+              err => {
+                      
+                        logApiVeronica.objetoResponse = JSON.stringify(err);
+                        logApiVeronica.claveAcceso = null;
+                        logApiVeronica.resultado = "NOK"
+                        this._logApiVeronicaService.newLog(logApiVeronica).subscribe(
+                          res =>{   this.mostrarLoading = false;
+                                    Swal.fire({
+                                      title: 'Error',
+                                      text: 'Error al establecer coneccion con el SRI',
+                                      icon: 'error',
+                                      confirmButtonText: 'Ok'
+                                    })
+                                },
+                          err => {  });
+                      });  */
         }, err => {
             sweetalert2__WEBPACK_IMPORTED_MODULE_4___default.a.fire({
                 title: 'Error',
@@ -93503,73 +93565,76 @@ class VentasComponent {
         console.log(logApiVeronica);
         //EMILINAR LUEGO DE PRUEBAS
         //TO-DO
-        /* this.mostrarLoading = false;
-        Swal.fire({
-          title: 'Correcto',
-          text: 'Factura registrada con éxito',
-          icon: 'success',
-          confirmButtonText: 'Ok'
+        this.mostrarLoading = false;
+        sweetalert2__WEBPACK_IMPORTED_MODULE_9___default.a.fire({
+            title: 'Correcto',
+            text: 'Factura registrada con éxito',
+            icon: 'success',
+            confirmButtonText: 'Ok'
         }).then((result) => {
-          if(this.formaPago == "Otros medios Pago" || this.formaPago == "Abonos")
-            this.router.navigate(['/recibo-caja'], { queryParams: { id: this.factura.documento_n , tipo: 1 } });
-          else
-            window.location.reload();
-        })
-    
-        this._logApiVeronicaService.newLog(logApiVeronica).subscribe(
-          res =>{   this.mostrarLoading = false;
-                    Swal.fire({
-                      title: 'Correcto',
-                      text: 'Factura registrada con éxito',
-                      icon: 'success',
-                      confirmButtonText: 'Ok'
-                    }).then((result) => {
-                      if(this.formaPago == "Otros medios Pago" || this.formaPago == "Abonos")
-                        this.router.navigate(['/recibo-caja'], { queryParams: { id: this.factura.documento_n , tipo: 1 } });
-                      else
-                        window.location.reload();
-                    })
-                },
-          err => {  }); */
-        //TO-DO, DESCOMENTAR LUEGO DE PRUEBAS
-        this._apiVeronicaService.newFactura(this.facturaVeronica).subscribe(res => {
-            var resultado = res;
-            logApiVeronica.objetoResponse = JSON.stringify(res);
-            logApiVeronica.claveAcceso = resultado.result.claveAccesoConsultada;
-            logApiVeronica.resultado = "OK";
-            this._logApiVeronicaService.newLog(logApiVeronica).subscribe(res => {
-                this.mostrarLoading = false;
-                sweetalert2__WEBPACK_IMPORTED_MODULE_9___default.a.fire({
-                    title: 'Correcto',
-                    text: 'Factura registrada con éxito',
-                    icon: 'success',
-                    confirmButtonText: 'Ok'
-                }).then((result) => {
-                    if (this.formaPago == "Otros medios Pago" || this.formaPago == "Abonos")
-                        this.router.navigate(['/recibo-caja'], { queryParams: { id: this.factura.documento_n, tipo: 1 } });
-                    else
-                        window.location.reload();
-                });
-            }, err => { });
-        }, err => {
-            logApiVeronica.objetoResponse = JSON.stringify(err);
-            logApiVeronica.claveAcceso = null;
-            logApiVeronica.resultado = "NOK";
-            this._logApiVeronicaService.newLog(logApiVeronica).subscribe(res => {
-                this.mostrarLoading = false;
-                sweetalert2__WEBPACK_IMPORTED_MODULE_9___default.a.fire({
-                    title: 'Error',
-                    text: 'Error al establecer coneccion con el SRI',
-                    icon: 'error',
-                    confirmButtonText: 'Ok'
-                }).then((result) => {
-                    if (this.formaPago == "Otros medios Pago" || this.formaPago == "Abonos")
-                        this.router.navigate(['/recibo-caja'], { queryParams: { id: this.factura.documento_n, tipo: 1 } });
-                    else
-                        window.location.reload();
-                });
-            }, err => { });
+            if (this.formaPago == "Otros medios Pago" || this.formaPago == "Abonos")
+                this.router.navigate(['/recibo-caja'], { queryParams: { id: this.factura.documento_n, tipo: 1 } });
+            else
+                window.location.reload();
         });
+        this._logApiVeronicaService.newLog(logApiVeronica).subscribe(res => {
+            this.mostrarLoading = false;
+            sweetalert2__WEBPACK_IMPORTED_MODULE_9___default.a.fire({
+                title: 'Correcto',
+                text: 'Factura registrada con éxito',
+                icon: 'success',
+                confirmButtonText: 'Ok'
+            }).then((result) => {
+                if (this.formaPago == "Otros medios Pago" || this.formaPago == "Abonos")
+                    this.router.navigate(['/recibo-caja'], { queryParams: { id: this.factura.documento_n, tipo: 1 } });
+                else
+                    window.location.reload();
+            });
+        }, err => { });
+        //TO-DO, DESCOMENTAR LUEGO DE PRUEBAS
+        /* this._apiVeronicaService.newFactura(this.facturaVeronica).subscribe(
+          res => {  var resultado = res as ResponseVeronicaDto;
+                    logApiVeronica.objetoResponse = JSON.stringify(res)
+                    logApiVeronica.claveAcceso = resultado.result.claveAccesoConsultada
+                    logApiVeronica.resultado = "OK"
+                    this._logApiVeronicaService.newLog(logApiVeronica).subscribe(
+                      res =>{   this.mostrarLoading = false;
+                                Swal.fire({
+                                  title: 'Correcto',
+                                  text: 'Factura registrada con éxito',
+                                  icon: 'success',
+                                  confirmButtonText: 'Ok'
+                                }).then((result) => {
+                                  if(this.formaPago == "Otros medios Pago" || this.formaPago == "Abonos")
+                                    this.router.navigate(['/recibo-caja'], { queryParams: { id: this.factura.documento_n , tipo: 1 } });
+                                  else
+                                    window.location.reload();
+                                })
+                            },
+                      err => {  });
+                },
+          err => {
+                  
+                    logApiVeronica.objetoResponse = JSON.stringify(err);
+                    logApiVeronica.claveAcceso = null;
+                    logApiVeronica.resultado = "NOK"
+                    this._logApiVeronicaService.newLog(logApiVeronica).subscribe(
+                      res =>{
+                                this.mostrarLoading = false;
+                                Swal.fire({
+                                  title: 'Error',
+                                  text: 'Error al establecer coneccion con el SRI',
+                                  icon: 'error',
+                                  confirmButtonText: 'Ok'
+                                }).then((result) => {
+                                  if(this.formaPago == "Otros medios Pago" || this.formaPago == "Abonos")
+                                    this.router.navigate(['/recibo-caja'], { queryParams: { id: this.factura.documento_n , tipo: 1 } });
+                                  else
+                                    window.location.reload();
+                                })
+                            },
+                      err => {  });
+                  });  */
     }
     guardarNotaVenta() {
         this.factura.username = this.username;
@@ -97086,7 +97151,9 @@ class DevolucionesService {
         return this.http.put(this.URL + `/update/${devolucion._id}`, devolucion);
     }
     updateEstado(devolucion, estado) {
-        return this.http.put(this.URL + `/updateEstado/${devolucion._id}/${estado}`, devolucion);
+        var _a;
+        const id = (_a = devolucion._id, (_a !== null && _a !== void 0 ? _a : devolucion.id_devolucion));
+        return this.http.put(this.URL + `/updateEstado/${id}/${estado}`, devolucion, { responseType: "text" });
     }
     deleteDevolucion(devolucion) {
         return this.http.delete(this.URL + `/delete/${devolucion._id}`, devolucion);
@@ -101378,8 +101445,8 @@ const environment = {
         measurementId: "G-338L2LR9XQ"
     },
     services: {
-        //urlServices : "http://143.198.60.33:3000"   //NUEVO SERVIDOR PRUEBAS
-        urlServices: "http://104.131.82.174:3000" //SERVIDOR PRODUCCIÓN
+        urlServices: "http://143.198.60.33:3000" //NUEVO SERVIDOR PRUEBAS
+        //urlServices : "http://104.131.82.174:3000"   //SERVIDOR PRODUCCIÓN
         //urlServices : "http://localhost:3000"   //LOCAL
     }
 };
