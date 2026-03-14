@@ -78565,8 +78565,9 @@ function _classCallCheck(instance, Constructor) { if (!(instance instanceof Cons
 
           console.log("realizarTransacciones");
           var dev = this.devoluciones.find(function (el) {
-            return el.id_devolucion === e.id_devolucion;
+            return String(el.id_devolucion) === String(e.id_devolucion);
           });
+          console.log("dev", dev);
           if (!dev) return;
           this.devolucioLeida = dev;
           this.productosDevueltosCarga = dev.productosDevueltos;

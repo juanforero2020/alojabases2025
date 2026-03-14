@@ -1021,7 +1021,8 @@ export class DevolucionesComponent implements OnInit, OnDestroy {
 
   realizarTransacciones(e: any) {
     console.log("realizarTransacciones");
-    const dev = this.devoluciones.find((el) => el.id_devolucion === e.id_devolucion);
+    const dev = this.devoluciones.find((el) => String(el.id_devolucion) === String(e.id_devolucion));
+    console.log("dev", dev);
     if (!dev) return;
     this.devolucioLeida = dev;
     this.productosDevueltosCarga = dev.productosDevueltos;
