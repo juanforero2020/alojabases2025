@@ -78563,8 +78563,8 @@ function _classCallCheck(instance, Constructor) { if (!(instance instanceof Cons
         value: function realizarTransacciones(e) {
           var _this670 = this;
 
-          console.log("realizarTransacciones");
-          var dev = this.devoluciones.find(function (el) {
+          console.log("realizarTransacciones", e);
+          var dev = this.listadoDevoluciones.find(function (el) {
             return String(el.id_devolucion) === String(e.id_devolucion);
           });
           console.log("dev", dev);

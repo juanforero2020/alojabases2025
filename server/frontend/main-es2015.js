@@ -46433,8 +46433,8 @@ class DevolucionesComponent {
         }
     }
     realizarTransacciones(e) {
-        console.log("realizarTransacciones");
-        const dev = this.devoluciones.find((el) => String(el.id_devolucion) === String(e.id_devolucion));
+        console.log("realizarTransacciones", e);
+        const dev = this.listadoDevoluciones.find((el) => String(el.id_devolucion) === String(e.id_devolucion));
         console.log("dev", dev);
         if (!dev)
             return;
