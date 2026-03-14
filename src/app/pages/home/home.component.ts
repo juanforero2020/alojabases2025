@@ -11,7 +11,7 @@ export class HomeComponent implements OnInit {
   loading = false;
   errorCarga = false;
   versionSistema = "1.1.1";
-  ultimaFechaActualizacion = "10/03/2026 10:00";
+  ultimaFechaActualizacion = "13/03/2026 14:00";
 
   constructor(private stockMinimoData: StockMinimoDataService) {}
 

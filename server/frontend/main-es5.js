@@ -78475,12 +78475,19 @@ function _classCallCheck(instance, Constructor) { if (!(instance instanceof Cons
             if (result.value) {
               _this668.mostrarMensaje();
 
-              _this668.devolucionesService.updateEstado(e, "Aprobado").pipe(Object(rxjs_operators__WEBPACK_IMPORTED_MODULE_2__["take"])(1), Object(rxjs_operators__WEBPACK_IMPORTED_MODULE_2__["retry"])(2), Object(rxjs_operators__WEBPACK_IMPORTED_MODULE_2__["takeUntil"])(_this668.destroy$)).subscribe({
-                next: function next() {
+              _this668.devolucionesService.updateEstado(e, "Aprobado").pipe(Object(rxjs_operators__WEBPACK_IMPORTED_MODULE_2__["retry"])(2), Object(rxjs_operators__WEBPACK_IMPORTED_MODULE_2__["takeUntil"])(_this668.destroy$)).subscribe({
+                next: function next(res) {
+                  console.log("Update OK", res);
+                  console.log("e", e);
+
                   _this668.realizarTransacciones(e);
                 },
                 error: function error(err) {
+                  console.error("Error updateEstado", err);
                   sweetalert2__WEBPACK_IMPORTED_MODULE_6___default.a.fire("Error", "No se pudo aprobar la devolución", "error");
+                },
+                complete: function complete() {
+                  console.log("Observable completado");
                 }
               });
             } else if (result.dismiss === sweetalert2__WEBPACK_IMPORTED_MODULE_6___default.a.DismissReason.cancel) {
@@ -78556,6 +78563,7 @@ function _classCallCheck(instance, Constructor) { if (!(instance instanceof Cons
         value: function realizarTransacciones(e) {
           var _this670 = this;
 
+          console.log("realizarTransacciones");
           var dev = this.devoluciones.find(function (el) {
             return el.id_devolucion === e.id_devolucion;
           });
@@ -87446,7 +87454,7 @@ function _classCallCheck(instance, Constructor) { if (!(instance instanceof Cons
         this.loading = false;
         this.errorCarga = false;
         this.versionSistema = "1.1.1";
-        this.ultimaFechaActualizacion = "10/03/2026 10:00";
+        this.ultimaFechaActualizacion = "13/03/2026 14:00";
       }
 
       _createClass(HomeComponent, [{

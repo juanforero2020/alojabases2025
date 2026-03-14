@@ -933,14 +933,23 @@ export class DevolucionesComponent implements OnInit, OnDestroy {
         this.mostrarMensaje();
         this.devolucionesService
           .updateEstado(e, "Aprobado")
-          .pipe(take(1), retry(2), takeUntil(this.destroy$))
+          .pipe(
+            retry(2),
+            takeUntil(this.destroy$)
+          )
           .subscribe({
-            next: () => {
+            next: (res) => {
+              console.log("Update OK", res);
+              console.log("e", e);
               this.realizarTransacciones(e);
             },
             error: (err) => {
+              console.error("Error updateEstado", err);
               Swal.fire("Error", "No se pudo aprobar la devolución", "error");
             },
+            complete: () => {
+              console.log("Observable completado");
+            }
           });
       } else if (result.dismiss === Swal.DismissReason.cancel) {
         Swal.fire("Cancelado!", "Se ha cancelado su proceso.", "error");
@@ -1011,6 +1020,7 @@ export class DevolucionesComponent implements OnInit, OnDestroy {
   }
 
   realizarTransacciones(e: any) {
+    console.log("realizarTransacciones");
     const dev = this.devoluciones.find((el) => el.id_devolucion === e.id_devolucion);
     if (!dev) return;
     this.devolucioLeida = dev;

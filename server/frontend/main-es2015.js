@@ -46354,14 +46354,20 @@ class DevolucionesComponent {
                 this.mostrarMensaje();
                 this.devolucionesService
                     .updateEstado(e, "Aprobado")
-                    .pipe(Object(rxjs_operators__WEBPACK_IMPORTED_MODULE_2__["take"])(1), Object(rxjs_operators__WEBPACK_IMPORTED_MODULE_2__["retry"])(2), Object(rxjs_operators__WEBPACK_IMPORTED_MODULE_2__["takeUntil"])(this.destroy$))
+                    .pipe(Object(rxjs_operators__WEBPACK_IMPORTED_MODULE_2__["retry"])(2), Object(rxjs_operators__WEBPACK_IMPORTED_MODULE_2__["takeUntil"])(this.destroy$))
                     .subscribe({
-                    next: () => {
+                    next: (res) => {
+                        console.log("Update OK", res);
+                        console.log("e", e);
                         this.realizarTransacciones(e);
                     },
                     error: (err) => {
+                        console.error("Error updateEstado", err);
                         sweetalert2__WEBPACK_IMPORTED_MODULE_6___default.a.fire("Error", "No se pudo aprobar la devolución", "error");
                     },
+                    complete: () => {
+                        console.log("Observable completado");
+                    }
                 });
             }
             else if (result.dismiss === sweetalert2__WEBPACK_IMPORTED_MODULE_6___default.a.DismissReason.cancel) {
@@ -46427,6 +46433,7 @@ class DevolucionesComponent {
         }
     }
     realizarTransacciones(e) {
+        console.log("realizarTransacciones");
         const dev = this.devoluciones.find((el) => el.id_devolucion === e.id_devolucion);
         if (!dev)
             return;
@@ -52142,7 +52149,7 @@ class HomeComponent {
         this.loading = false;
         this.errorCarga = false;
         this.versionSistema = "1.1.1";
-        this.ultimaFechaActualizacion = "10/03/2026 10:00";
+        this.ultimaFechaActualizacion = "13/03/2026 14:00";
     }
     ngOnInit() {
         this.cargarProductosBajoMinimo();
