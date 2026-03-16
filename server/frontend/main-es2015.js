@@ -52149,8 +52149,8 @@ class HomeComponent {
         this.productosBajoMinimoPorCategoria = [];
         this.loading = false;
         this.errorCarga = false;
-        this.versionSistema = "1.1.1";
-        this.ultimaFechaActualizacion = "13/03/2026 14:00";
+        this.versionSistema = "1.1.3";
+        this.ultimaFechaActualizacion = "16/03/2026 14:00";
     }
     ngOnInit() {
         this.cargarProductosBajoMinimo();
