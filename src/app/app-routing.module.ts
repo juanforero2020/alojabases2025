@@ -14,6 +14,7 @@ import {
   DxLoadIndicatorModule,
   DxButtonModule,
   DxTemplateModule,
+  DxPopupModule,
 } from "devextreme-angular";
 import { VentasComponent } from "./pages/ventas/ventas.component";
 import { TransaccionesComponent } from "./pages/transacciones/transacciones.component";
@@ -70,6 +71,7 @@ import { CargaMasivaComponent } from "./pages/carga-masiva/carga-masiva.componen
 import { DescuentoComponent } from "./pages/descuentos/descuentos.component";
 import { IvaComponent } from "./pages/iva/iva.component";
 import { ConfiguracionPresentacionComponent } from "./pages/configuracion-presentacion/configuracion-presentacion.component";
+import { GestionEntregasBodegaComponent } from "./pages/gestion-entregas-bodega/gestion-entregas-bodega.component";
 
 const routes: Routes = [
   {
@@ -125,6 +127,11 @@ const routes: Routes = [
   {
     path: "Entrega_productos",
     component: EntregasPComponent,
+    canActivate: [AuthGuardService],
+  },
+  {
+    path: "gestion-entregas-bodega",
+    component: GestionEntregasBodegaComponent,
     canActivate: [AuthGuardService],
   },
   {
@@ -392,6 +399,7 @@ const routes: Routes = [
     DxLoadIndicatorModule,
     DxButtonModule,
     DxTemplateModule,
+    DxPopupModule,
   ],
   providers: [AuthGuardService],
   exports: [RouterModule],

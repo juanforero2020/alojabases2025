@@ -1,0 +1,85 @@
+/* Fila del combo (mismo criterio que devoluciones). */
+.remiPro {
+  padding: 1.5em 2em 0;
+  margin-top: 0.5em;
+  text-align: center;
+}
+
+.remiPro.titulos .select {
+  text-align: center;
+  background-color: white;
+}
+
+.select{
+  text-align: center;
+  background-color: white;
+}
+
+.titulos{
+  text-align: center;
+  font-weight: bold;
+}
+
+/* Mismo criterio visual que caja-menor (textP, dateB, centrar). */
+.textP {
+  font-weight: bold;
+  font-size: 11pt;
+}
+
+.textP2 {
+  margin-top: 0.3em;
+}
+
+.dateB dx-date-box,
+.dateB dx-number-box,
+.dateB dx-text-box {
+  margin-top: -0.8em;
+}
+
+.centrar {
+  text-align: center;
+}
+
+.gestion-entregas-card {
+  border-radius: 0.25rem;
+}
+
+.gestion-entregas-card .card-header {
+  background-color: #f8f9fa;
+}
+
+.cons-label {
+  font-size: inherit;
+}
+
+.cons-valor {
+  font-size: 4rem;
+  font-weight: bold;
+  margin-top: -1rem;
+  line-height: 1.1;
+}
+
+.gestion-entregas-acciones dx-button + dx-button {
+  margin-left: 0.5rem;
+}
+
+::ng-deep .gestion-entregas-card .dateB .dx-texteditor-input {
+  text-align: center;
+}
+
+table td,
+table th {
+  vertical-align: middle;
+}
+
+.trazabilidad-popup h6 {
+  color: #333;
+}
+
+.trazabilidad-popup .w-25 {
+  width: 25%;
+}
+
+.entrega-cp-inputs {
+  gap: 4px;
+}

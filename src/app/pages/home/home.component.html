@@ -28,6 +28,141 @@
     </div>
 </div>
 <div class="content-block">
+    <div class="row mb-3">
+        <div class="col-md-12">
+            <div class="dx-card responsive-paddings">
+                <h5>Indicador - Gestión Entregas de Bodega</h5>
+                <p class="text-muted">Control de órdenes en estados ABIERTO, NOVEDAD y COMPLETO.</p>
+                <div class="row text-center">
+                    <div class="col-md-3">
+                        <div
+                            class="mini-kpi mini-kpi-clickable"
+                            role="button"
+                            tabindex="0"
+                            (click)="abrirDetalleIndicador('abiertas')"
+                            (keyup.enter)="abrirDetalleIndicador('abiertas')"
+                            (keyup.space)="$event.preventDefault(); abrirDetalleIndicador('abiertas')"
+                            title="Ver documentos de entrega abiertas"
+                        >
+                            <div class="mini-kpi-title">Abiertas</div>
+                            <div class="mini-kpi-value">{{ indicadoresEntregas.abiertas }}</div>
+                        </div>
+                    </div>
+                    <div class="col-md-3">
+                        <div
+                            class="mini-kpi mini-kpi-clickable"
+                            role="button"
+                            tabindex="0"
+                            (click)="abrirDetalleIndicador('novedad')"
+                            (keyup.enter)="abrirDetalleIndicador('novedad')"
+                            (keyup.space)="$event.preventDefault(); abrirDetalleIndicador('novedad')"
+                            title="Ver documentos con novedad"
+                        >
+                            <div class="mini-kpi-title">Con novedad</div>
+                            <div class="mini-kpi-value">{{ indicadoresEntregas.novedad }}</div>
+                        </div>
+                    </div>
+                    <div class="col-md-3">
+                        <div class="mini-kpi">
+                            <div class="mini-kpi-title">Concluidas</div>
+                            <div class="mini-kpi-value">{{ indicadoresEntregas.completo }}</div>
+                        </div>
+                    </div>
+                    <div class="col-md-3">
+                        <div class="mini-kpi">
+                            <div class="mini-kpi-title">Cerradas</div>
+                            <div class="mini-kpi-value">{{ indicadoresEntregas.cerradas }}</div>
+                        </div>
+                    </div>
+                </div>
+                <div class="row text-center mt-2">
+                    <div class="col-md-12">
+                        <div
+                            class="mini-kpi mini-kpi-alert mini-kpi-clickable"
+                            role="button"
+                            tabindex="0"
+                            (click)="abrirDetalleIndicador('compromisos-vencidos')"
+                            (keyup.enter)="abrirDetalleIndicador('compromisos-vencidos')"
+                            (keyup.space)="$event.preventDefault(); abrirDetalleIndicador('compromisos-vencidos')"
+                            title="Ver líneas con compromiso vencido"
+                        >
+                            <div class="mini-kpi-title">Compromisos vencidos</div>
+                            <div class="mini-kpi-value">{{ indicadoresEntregas.compromisosVencidos }}</div>
+                        </div>
+                    </div>
+                </div>
+                <div *ngIf="errorIndicadoresEntregas" class="error-wrap mt-2">
+                    <span>No se pudieron cargar los indicadores de entregas de bodega.</span>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <dx-popup
+        [width]="720"
+        [height]="520"
+        [showTitle]="true"
+        [title]="tituloPopupIndicadores"
+        [closeOnOutsideClick]="true"
+        [showCloseButton]="true"
+        [dragEnabled]="false"
+        [(visible)]="popupIndicadoresVisible"
+        (onHidden)="onPopupIndicadoresCerrado()"
+    >
+        <div *dxTemplate="let data of 'content'" class="popup-indicadores-entregas">
+            <div *ngIf="cargandoDetalleIndicadores" class="popup-indicadores-estado">
+                <dx-load-indicator [visible]="true" height="40" width="40"></dx-load-indicator>
+                <span>Cargando…</span>
+            </div>
+            <div *ngIf="!cargandoDetalleIndicadores && errorDetalleIndicadores" class="popup-indicadores-estado popup-indicadores-error">
+                No se pudo cargar el detalle. Intente de nuevo más tarde.
+            </div>
+            <div
+                *ngIf="!cargandoDetalleIndicadores && !errorDetalleIndicadores && tipoDetalleActivo !== 'compromisos-vencidos'"
+                class="popup-indicadores-scroll"
+            >
+                <p class="text-muted small mb-2">Listado referencial; no incluye acciones sobre las órdenes.</p>
+                <div *ngIf="detalleIndicadores.length === 0" class="text-muted">No hay registros en esta categoría.</div>
+                <div *ngFor="let o of detalleIndicadores" class="detalle-orden-card">
+                    <div class="detalle-orden-linea">
+                        <strong>Orden {{ o.consecutivoEntrega }}</strong>
+                        <span class="text-muted"> · {{ o.tipoDocumento }} #{{ o.documentoNumero }}</span>
+                    </div>
+                    <div class="detalle-orden-linea small">
+                        <span>{{ o.clienteNombre || '—' }}</span>
+                        <span *ngIf="o.clienteRuc" class="text-muted"> · RUC {{ o.clienteRuc }}</span>
+                    </div>
+                    <div class="detalle-orden-linea small text-muted">
+                        Estado: {{ o.estadoProceso }}
+                        <span *ngIf="o.fechaDocumento"> · Doc. {{ o.fechaDocumento }}</span>
+                    </div>
+                </div>
+            </div>
+            <div
+                *ngIf="!cargandoDetalleIndicadores && !errorDetalleIndicadores && tipoDetalleActivo === 'compromisos-vencidos'"
+                class="popup-indicadores-scroll"
+            >
+                <p class="text-muted small mb-2">
+                    Órdenes con al menos una línea pendiente cuya fecha de compromiso ya pasó (referencial).
+                </p>
+                <div *ngIf="detalleIndicadores.length === 0" class="text-muted">No hay compromisos vencidos.</div>
+                <div *ngFor="let o of detalleIndicadores" class="detalle-orden-card detalle-compromiso">
+                    <div class="detalle-orden-linea">
+                        <strong>Orden {{ o.consecutivoEntrega }}</strong>
+                        <span class="text-muted"> · {{ o.tipoDocumento }} #{{ o.documentoNumero }}</span>
+                    </div>
+                    <div class="detalle-orden-linea small">{{ o.clienteNombre || '—' }}</div>
+                    <ul class="detalle-compromiso-lista mb-0 pl-3">
+                        <li *ngFor="let l of o.lineasCompromisoVencido" class="small">
+                            {{ l.productoNombre }}
+                            <span class="text-muted"> — compromiso {{ formatearFechaCompromiso(l.fechaCompromiso) }}</span>
+                        </li>
+                    </ul>
+                </div>
+            </div>
+        </div>
+    </dx-popup>
+
     <div class="row">  
         <div class="col-md-12">
             <div class="dx-card responsive-paddings stock-minimo-card">

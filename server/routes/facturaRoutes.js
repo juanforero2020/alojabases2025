@@ -1,6 +1,10 @@
 const { Router } = require("express");
 const router = Router();
 const Factura = require("../models/factura");
+const {
+  crearOrdenDesdeDocumento,
+  intentarAnularPorDocumento,
+} = require("../services/entregaBodegaService");
 
 router.get("/getFacturas", async (req, res) => {
   const facturas = await Factura.find();
@@ -69,6 +73,16 @@ router.put("/update2/:id/:observaciones", async (req, res, next) => {
 router.put("/updateEstado/:id/:estado", async (req, res, next) => {
   const { id } = req.params;
   const { estado } = req.params;
+  if (estado === "ANULADA") {
+    const validacionAnulacion = await intentarAnularPorDocumento({
+      tipoDocumento: "FACTURA",
+      documentoMongoId: id,
+      usuario: (req.body && req.body.username) || "",
+    });
+    if (!validacionAnulacion.ok) {
+      return res.status(409).json({ status: "error", mensaje: validacionAnulacion.mensaje });
+    }
+  }
   await Factura.findByIdAndUpdate(
     id,
     { $set: { estado: estado } },
@@ -94,6 +108,16 @@ router.put("/updateEstadoMensaje/:id/:estado/:mensaje",async (req, res, next) =>
 router.put("/updateEstadoOb/:id/:estado", async (req, res, next) => {
   const { id } = req.params;
   const { estado } = req.params;
+  if (estado === "ANULADA") {
+    const validacionAnulacion = await intentarAnularPorDocumento({
+      tipoDocumento: "FACTURA",
+      documentoMongoId: id,
+      usuario: (req.body && req.body.username) || "",
+    });
+    if (!validacionAnulacion.ok) {
+      return res.status(409).json({ status: "error", mensaje: validacionAnulacion.mensaje });
+    }
+  }
   //const { observaciones } = req.params;
   console.log("22 " + req.body.observaciones);
   await Factura.findByIdAndUpdate(
@@ -177,6 +201,10 @@ router.post("/newFactura", async (req, res) => {
     productosVendidos: req.body.productosVendidos,
   });
   await Newfacturas.save();
+  await crearOrdenDesdeDocumento({
+    tipoDocumento: "FACTURA",
+    documento: Newfacturas,
+  });
   res.json({ status: "Factura CREADA" });
 });
 

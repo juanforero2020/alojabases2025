@@ -3310,7 +3310,7 @@ cambiarestado(e,i:number){
 
     //EMILINAR LUEGO DE PRUEBAS
     //TO-DO
-    /* this.mostrarLoading = false;
+    this.mostrarLoading = false;
     Swal.fire({
       title: 'Correcto',
       text: 'Factura registrada con éxito',
@@ -3337,11 +3337,11 @@ cambiarestado(e,i:number){
                     window.location.reload();
                 })
             },
-      err => {  }); */
+      err => {  });
 
 
     //TO-DO, DESCOMENTAR LUEGO DE PRUEBAS
-    this._apiVeronicaService.newFactura(this.facturaVeronica).subscribe(
+    /* this._apiVeronicaService.newFactura(this.facturaVeronica).subscribe(
       res => {  var resultado = res as ResponseVeronicaDto;
                 logApiVeronica.objetoResponse = JSON.stringify(res)
                 logApiVeronica.claveAcceso = resultado.result.claveAccesoConsultada
@@ -3383,7 +3383,7 @@ cambiarestado(e,i:number){
                             })
                         },
                   err => {  });              
-              }); 
+              });  */
   }
   
 

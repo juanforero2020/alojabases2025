@@ -1,6 +1,10 @@
 const { Router } = require("express");
 const router = Router();
 const NotasVenta = require("../models/notasVenta");
+const {
+  crearOrdenDesdeDocumento,
+  intentarAnularPorDocumento,
+} = require("../services/entregaBodegaService");
 
 router.get("/getNotasVenta", async (req, res) => {
   const notasVenta = await NotasVenta.find();
@@ -62,6 +66,16 @@ router.put("/updateObservaciones/:id/:observaciones",async (req, res, next) => {
 router.put("/updateEstado/:id/:estado", async (req, res, next) => {
   const { id } = req.params;
   const { estado } = req.params;
+  if (estado === "ANULADA") {
+    const validacionAnulacion = await intentarAnularPorDocumento({
+      tipoDocumento: "NOTA_VENTA",
+      documentoMongoId: id,
+      usuario: (req.body && req.body.username) || "",
+    });
+    if (!validacionAnulacion.ok) {
+      return res.status(409).json({ status: "error", mensaje: validacionAnulacion.mensaje });
+    }
+  }
   await NotasVenta.findByIdAndUpdate(
     id,
     { $set: { estado: estado } },
@@ -88,6 +102,16 @@ router.put(
 router.put("/updateEstadoObs/:id/:estado", async (req, res, next) => {
   const { id } = req.params;
   const { estado } = req.params;
+  if (estado === "ANULADA") {
+    const validacionAnulacion = await intentarAnularPorDocumento({
+      tipoDocumento: "NOTA_VENTA",
+      documentoMongoId: id,
+      usuario: (req.body && req.body.username) || "",
+    });
+    if (!validacionAnulacion.ok) {
+      return res.status(409).json({ status: "error", mensaje: validacionAnulacion.mensaje });
+    }
+  }
   await NotasVenta.findByIdAndUpdate(
     id,
     { $set: { estado: estado, observaciones: req.body.observaciones } },
@@ -169,6 +193,10 @@ router.post("/newNotaVenta", async (req, res) => {
     productosVendidos: req.body.productosVendidos,
   });
   await NewNota.save();
+  await crearOrdenDesdeDocumento({
+    tipoDocumento: "NOTA_VENTA",
+    documento: NewNota,
+  });
   res.json({ status: "Factura CREADA" });
 });
 

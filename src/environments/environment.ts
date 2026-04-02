@@ -15,8 +15,8 @@ export const environment = {
     measurementId: "G-338L2LR9XQ"
   },
   services:{
-    //urlServices : "http://143.198.60.33:3000"   //NUEVO SERVIDOR PRUEBAS
-    urlServices : "http://104.131.82.174:3000"   //SERVIDOR PRODUCCIÓN
+    urlServices : "http://143.198.60.33:3000"   //NUEVO SERVIDOR PRUEBAS
+    //urlServices : "http://104.131.82.174:3000"   //SERVIDOR PRODUCCIÓN
     //urlServices : "http://localhost:3000"   //LOCAL
   }
 };

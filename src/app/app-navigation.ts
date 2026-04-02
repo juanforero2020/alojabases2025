@@ -50,6 +50,10 @@ export const navigation = [
         text: "Entrega Productos",
         path: "/Entrega_productos",
       },
+      {
+        text: "Gestion Entregas Bodega",
+        path: "/gestion-entregas-bodega",
+      },
     ],
   },
   {
@@ -271,6 +275,10 @@ export const navigationAdmin = [
       {
         text: "Entrega Productos",
         path: "/Entrega_productos",
+      },
+      {
+        text: "Gestion Entregas Bodega",
+        path: "/gestion-entregas-bodega",
       },
     ],
   },
@@ -586,6 +594,10 @@ export const navigationSupervisor = [
       {
         text: "Entrega Productos",
         path: "/Entrega_productos",
+      },
+      {
+        text: "Gestion Entregas Bodega",
+        path: "/gestion-entregas-bodega",
       },
     ],
   },
