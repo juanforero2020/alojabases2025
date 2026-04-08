@@ -50,10 +50,7 @@ export const navigation = [
         text: "Entrega Productos",
         path: "/Entrega_productos",
       },
-      {
-        text: "Gestion Entregas Bodega",
-        path: "/gestion-entregas-bodega",
-      },
+      
     ],
   },
   {
@@ -275,10 +272,6 @@ export const navigationAdmin = [
       {
         text: "Entrega Productos",
         path: "/Entrega_productos",
-      },
-      {
-        text: "Gestion Entregas Bodega",
-        path: "/gestion-entregas-bodega",
       },
     ],
   },
@@ -503,6 +496,10 @@ export const navigationAdmin = [
     icon: "fa fa-spinner",
     items: [
       {
+        text: "Gestion Entregas Bodega",
+        path: "/gestion-entregas-bodega",
+      },
+      {
         text: "Tiquets",
         path: "",
       },
@@ -595,10 +592,7 @@ export const navigationSupervisor = [
         text: "Entrega Productos",
         path: "/Entrega_productos",
       },
-      {
-        text: "Gestion Entregas Bodega",
-        path: "/gestion-entregas-bodega",
-      },
+      
     ],
   },
   {
@@ -766,6 +760,10 @@ export const navigationSupervisor = [
     icon: "fa fa-spinner",
     items: [
       {
+        text: "Gestion Entregas Bodega",
+        path: "/gestion-entregas-bodega",
+      },
+      {
         text: "Tiquets",
         path: "",
       },
@@ -840,4 +838,24 @@ export const navigationDistribuidor = [
       },
     ],
   },
+];
+
+export const navigationBodeguero = [
+  {
+    text: "Operaciones",
+    icon: "fa fa-spinner",
+    items: [
+      {
+        text: "Gestion Entregas Bodega",
+        path: "/gestion-entregas-bodega",
+      },
+    ],
+  },
+  {
+    text: "Tutoriales",
+    path: "",
+    icon: "home",
+  },
+  {},
+  {},
 ];

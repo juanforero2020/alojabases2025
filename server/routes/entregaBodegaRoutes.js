@@ -1,6 +1,7 @@
 const { Router } = require("express");
 const router = Router();
 const EntregaBodega = require("../models/entregaBodega");
+const ProductosPendientes = require("../models/productosPendientes");
 const {
   recalcularEstadoYItems,
   normalizarNumero,
@@ -11,6 +12,37 @@ const {
   m2DesdeCajasPiezas,
 } = require("../services/entregaBodegaService");
 
+async function marcarPendienteComoEntregadoDesdeBodega(orden, item, usuario) {
+  const documento = normalizarNumero(orden && orden.documentoNumero);
+  if (documento <= 0 || !item) return;
+
+  const nombreProducto = String(
+    (item.producto && item.producto.PRODUCTO) ||
+      item.productoNombre ||
+      (item.producto && item.producto.REFERENCIA) ||
+      ""
+  ).trim();
+  if (!nombreProducto) return;
+
+  await ProductosPendientes.updateMany(
+    {
+      documento,
+      estado: "PENDIENTE",
+      $or: [
+        { "producto.PRODUCTO": nombreProducto },
+        { "producto.REFERENCIA": nombreProducto },
+      ],
+    },
+    {
+      $set: {
+        estado: "ENTREGADO",
+        mensaje: "Entregado automáticamente desde Gestión Entregas de bodega",
+        usuario: usuario || "",
+      },
+    }
+  );
+}
+
 /**
  * Mismo criterio para getPendientes (POST) y buscar: filtra en MongoDB.
  */
@@ -20,13 +52,13 @@ function construirFiltroConsulta(body) {
     cliente,
     fechaDesde,
     fechaHasta,
-    /** "gestion" = solo órdenes activas (ABIERTA, NOVEDAD). "listado" = todos los estados. */
+    /** "gestion" = órdenes activas y listas para cierre (ABIERTA, NOVEDAD, COMPLETO). "listado" = todos los estados. */
     modoConsulta = "gestion",
   } = body || {};
 
   const filtro = {};
   if (modoConsulta === "gestion") {
-    filtro.estadoProceso = { $in: ["ABIERTA", "NOVEDAD"] };
+    filtro.estadoProceso = { $in: ["ABIERTA", "NOVEDAD", "COMPLETO"] };
   }
   /* listado: sin filtro por estado → COMPLETO, CERRADO, ANULADO, etc. */
 
@@ -348,6 +380,23 @@ router.put("/actualizarItem/:id/:itemIndex", async (req, res) => {
   });
 
   recalcularEstadoYItems(orden);
+  const itemActualizado = orden.items[index];
+  const entregaTotalItem =
+    !!itemActualizado &&
+    (normalizarNumero(itemActualizado.cantidadFacturada) ===
+      normalizarNumero(itemActualizado.cantidadEntregada) +
+        normalizarNumero(itemActualizado.cantidadDevuelta) ||
+      pendienteVisualItem(itemActualizado) === 0);
+  if (entregaTotalItem) {
+    try {
+      await marcarPendienteComoEntregadoDesdeBodega(orden, itemActualizado, usuario);
+    } catch (errorPendiente) {
+      console.log(
+        "No se pudo sincronizar estado en productos pendientes:",
+        errorPendiente?.message || errorPendiente
+      );
+    }
+  }
   await orden.save();
   res.json(orden);
 });

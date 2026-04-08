@@ -9,12 +9,18 @@ import { EntregasBodegaService } from "src/app/servicios/entregas-bodega.service
 })
 export class GestionEntregasBodegaComponent implements OnInit {
   /** Misma idea que devoluciones: combo superior derecho. */
-  menuPrincipal: string[] = ["Gestión Entregas", "Listado Entregas"];
+  menuPrincipal: string[] = [
+    "Gestión Entregas",
+    "Listado Entregas",
+    "Productos Pendientes",
+  ];
   valorMenu = "Gestión Entregas";
   mostrarGestion = true;
   mostrarListado = false;
+  mostrarProductosPendientes = false;
 
   ordenes: any[] = [];
+  productosPendientes: any[] = [];
   ordenSeleccionada: any = null;
   loading = false;
 
@@ -30,8 +36,6 @@ export class GestionEntregasBodegaComponent implements OnInit {
   })();
   fechaHasta: Date = new Date();
   incluirCerradas = false;
-
-  estadosGestion = ["ENTREGA_TOTAL", "ENTREGA_PARCIAL", "DEVOLUCION"];
 
   /** Texto para cabecera estilo Caja Menor (orden seleccionada o guión). */
   get consecutivoVista(): string | number {
@@ -60,6 +64,7 @@ export class GestionEntregasBodegaComponent implements OnInit {
       case "Gestión Entregas":
         this.mostrarGestion = true;
         this.mostrarListado = false;
+        this.mostrarProductosPendientes = false;
         this.incluirCerradas = false;
         this.popupTrazabilidadVisible = false;
         this.cargarPendientes();
@@ -67,7 +72,17 @@ export class GestionEntregasBodegaComponent implements OnInit {
       case "Listado Entregas":
         this.mostrarGestion = false;
         this.mostrarListado = true;
+        this.mostrarProductosPendientes = false;
         this.incluirCerradas = true;
+        this.ordenSeleccionada = null;
+        this.popupTrazabilidadVisible = false;
+        this.cargarPendientes();
+        break;
+      case "Productos Pendientes":
+        this.mostrarGestion = false;
+        this.mostrarListado = false;
+        this.mostrarProductosPendientes = true;
+        this.incluirCerradas = false;
         this.ordenSeleccionada = null;
         this.popupTrazabilidadVisible = false;
         this.cargarPendientes();
@@ -79,6 +94,9 @@ export class GestionEntregasBodegaComponent implements OnInit {
 
   onRowClickGrid(e: any) {
     if (e.rowType !== "data") {
+      return;
+    }
+    if (this.mostrarProductosPendientes) {
       return;
     }
     if (this.mostrarListado) {
@@ -148,12 +166,18 @@ export class GestionEntregasBodegaComponent implements OnInit {
 
   /** Payload que se envía al API para filtrar en base de datos. */
   private filtrosConsultaApi(): object {
+    if (this.mostrarProductosPendientes) {
+      return { modoConsulta: "listado" };
+    }
     return {
       documentoNumero: this.filtroDocumento,
       cliente: (this.filtroCliente || "").trim(),
       fechaDesde: this.fechaDesde,
       fechaHasta: this.fechaHasta,
-      modoConsulta: this.mostrarListado ? "listado" : "gestion",
+      modoConsulta:
+        this.mostrarListado || this.mostrarProductosPendientes
+          ? "listado"
+          : "gestion",
     };
   }
 
@@ -161,7 +185,13 @@ export class GestionEntregasBodegaComponent implements OnInit {
     this.loading = true;
     this.entregasBodegaService.getPendientes(this.filtrosConsultaApi()).subscribe({
       next: (resp: any[]) => {
-        this.ordenes = (resp || []).map((orden) => this.prepararOrdenParaVista(orden));
+        const ordenesVista = (resp || []).map((orden) =>
+          this.prepararOrdenParaVista(orden)
+        );
+        this.ordenes = ordenesVista;
+        this.productosPendientes = this.mostrarProductosPendientes
+          ? this.construirResumenProductosPendientes(ordenesVista)
+          : [];
         this.loading = false;
       },
       error: () => {
@@ -195,15 +225,27 @@ export class GestionEntregasBodegaComponent implements OnInit {
     if (!this.ordenSeleccionada?._id) return;
     const item = this.ordenSeleccionada.items[index];
     const metro = this.esItemMetrosCajaPieza(item);
+    const ingreso = this.m2OperacionIngresada(item);
+    const pendiente = this.num(item?.pendiente);
+    if (ingreso > pendiente + 0.0001) {
+      Swal.fire(
+        "Cantidad inválida",
+        "La cantidad ingresada supera el pendiente del ítem. Ajuste el valor antes de guardar.",
+        "warning"
+      );
+      return;
+    }
+    const estadoCalculado = this.estadoGestionAutomatico(item);
+    const bloquearCompromiso = estadoCalculado === "ENTREGA_TOTAL";
     const payload: any = {
-      estadoItem: item.estadoGestion,
+      estadoItem: estadoCalculado,
       cantidadEntregada: metro
         ? 0
         : Number(this.num(item.cantidadEntregadaInput).toFixed(3)),
       entregaCajas: metro ? this.num(item.entregaCajasInput) : 0,
       entregaPiezas: metro ? this.num(item.entregaPiezasInput) : 0,
-      fechaCompromiso: item.fechaCompromiso || "",
-      notas: item.notas || "",
+      fechaCompromiso: bloquearCompromiso ? "" : item.fechaCompromisoInput || "",
+      notas: bloquearCompromiso ? "" : item.notasInput || "",
       usuario: sessionStorage.getItem("user") || "",
     };
 
@@ -212,6 +254,7 @@ export class GestionEntregasBodegaComponent implements OnInit {
       .subscribe({
         next: (ordenActualizada: any) => {
           this.ordenSeleccionada = this.prepararOrdenParaVista(ordenActualizada);
+          this.refrescarCamposEventoItem(index);
           this.actualizarOrdenEnListado(this.ordenSeleccionada);
           Swal.fire("OK", "Ítem actualizado correctamente.", "success");
         },
@@ -231,9 +274,9 @@ export class GestionEntregasBodegaComponent implements OnInit {
         usuario: sessionStorage.getItem("user") || "",
       })
       .subscribe({
-        next: (ordenActualizada: any) => {
-          this.ordenSeleccionada = this.prepararOrdenParaVista(ordenActualizada);
-          this.actualizarOrdenEnListado(this.ordenSeleccionada);
+        next: () => {
+          this.ordenSeleccionada = null;
+          this.cargarPendientes();
           Swal.fire("OK", "Orden cerrada correctamente.", "success");
         },
         error: (error) => {
@@ -356,9 +399,46 @@ export class GestionEntregasBodegaComponent implements OnInit {
         cantidadEntregadaInput: 0,
         entregaCajasInput: 0,
         entregaPiezasInput: 0,
+        fechaCompromisoInput: item.fechaCompromiso || "",
+        notasInput: "",
       };
     });
     return copia;
+  }
+
+  private m2OperacionIngresada(item: any): number {
+    if (this.esItemMetrosCajaPieza(item)) {
+      const m2c = this.m2PorCajaDeItem(item);
+      const ppc = this.piezasPorCajaDeItem(item);
+      const cajas = this.num(item?.entregaCajasInput);
+      const piezas = this.num(item?.entregaPiezasInput);
+      if (m2c <= 0 || ppc <= 0) return 0;
+      return cajas * m2c + (piezas / ppc) * m2c;
+    }
+    return this.num(item?.cantidadEntregadaInput);
+  }
+
+  estadoGestionAutomatico(item: any): "ENTREGA_TOTAL" | "ENTREGA_PARCIAL" {
+    const pendiente = this.num(item?.pendiente);
+    const ingreso = this.m2OperacionIngresada(item);
+    if (pendiente <= 0 || ingreso >= pendiente - 0.0001) {
+      return "ENTREGA_TOTAL";
+    }
+    return "ENTREGA_PARCIAL";
+  }
+
+  esCompromisoBloqueado(item: any): boolean {
+    return this.estadoGestionAutomatico(item) === "ENTREGA_TOTAL";
+  }
+
+  private refrescarCamposEventoItem(index: number) {
+    const item = this.ordenSeleccionada?.items?.[index];
+    if (!item || this.num(item?.pendiente) <= 0) return;
+    item.fechaCompromisoInput = "";
+    item.notasInput = "";
+    item.cantidadEntregadaInput = 0;
+    item.entregaCajasInput = 0;
+    item.entregaPiezasInput = 0;
   }
 
   private actualizarOrdenEnListado(ordenActualizada: any) {
@@ -368,5 +448,39 @@ export class GestionEntregasBodegaComponent implements OnInit {
     } else {
       this.ordenes.unshift(this.prepararOrdenParaVista(ordenActualizada));
     }
+  }
+
+  private formatoPendienteReporte(item: any, pendiente: number): string {
+    if (this.esItemMetrosCajaPieza(item)) {
+      const { cajas, piezas } = this.cajasPiezasDesdeM2(pendiente, item);
+      return `${cajas}C ${piezas}P`;
+    }
+    return String(Math.trunc(this.num(pendiente)));
+  }
+
+  private construirResumenProductosPendientes(ordenes: any[]): any[] {
+    const filas: any[] = [];
+    (ordenes || [])
+      .filter((o: any) => ["ABIERTA", "NOVEDAD"].includes(String(o?.estadoProceso || "")))
+      .forEach((orden: any) => {
+        (orden.items || []).forEach((item: any) => {
+          const pendiente = this.num(item?.pendiente);
+          if (pendiente <= 0) return;
+          filas.push({
+            documentoNumero: orden?.documentoNumero ?? "",
+            clienteNombre: orden?.clienteNombre || "Cliente sin nombre",
+            productoNombre: item?.productoNombre || "Producto sin nombre",
+            cantidadPendienteTexto: this.formatoPendienteReporte(item, pendiente),
+            fechaCompromisoTexto: item?.fechaCompromiso
+              ? this.formatearFechaIso(item.fechaCompromiso)
+              : "Sin fecha",
+            fechaCompromisoOrden: item?.fechaCompromiso
+              ? new Date(item.fechaCompromiso).getTime()
+              : Number.MAX_SAFE_INTEGER,
+          });
+        });
+      });
+
+    return filas.sort((a, b) => a.fechaCompromisoOrden - b.fechaCompromisoOrden);
   }
 }

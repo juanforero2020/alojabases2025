@@ -8,11 +8,12 @@
       [disabled]="false"
       class="form-control select"
       (onValueChanged)="opcionMenu($event)"
+      [inputAttr]="{ style: 'text-align: center;' }"
     ></dx-select-box>
   </div>
 </div>
 
-<div class="content-block">
+<div class="content-block" *ngIf="!mostrarProductosPendientes">
   <div class="card gestion-entregas-card">
     <h5 class="card-header text-center font-weight-bold text-uppercase">
       Gestión entregas de bodega
@@ -96,21 +97,24 @@
 
 <div
   class="content-block"
-  *ngIf="mostrarGestion || mostrarListado"
+  *ngIf="mostrarGestion || mostrarListado || mostrarProductosPendientes"
 >
   <div class="card gestion-entregas-card">
     <h5 class="card-header text-center font-weight-bold text-uppercase">
       <span *ngIf="mostrarGestion">Órdenes de entrega</span>
       <span *ngIf="mostrarListado">Listado entregas de bodega</span>
+      <span *ngIf="mostrarProductosPendientes">Productos pendientes</span>
     </h5>
     <div class="card-body p-2">
       <p *ngIf="mostrarGestion" class="text-muted small mb-2">
-        Solo órdenes en estado ABIERTA o NOVEDAD (sin completas ni cerradas).
+        Órdenes en estado ABIERTA, NOVEDAD o COMPLETO (sin cerradas).
       </p>
       <p *ngIf="mostrarListado" class="text-muted small mb-2">
         Todas las órdenes en cualquier estado. Haga clic en una fila para ver la trazabilidad.
       </p>
+
       <dx-data-grid
+        *ngIf="!mostrarProductosPendientes"
         [dataSource]="ordenes"
         [showBorders]="true"
         [hoverStateEnabled]="true"
@@ -125,31 +129,39 @@
         <dxi-column
           dataField="consecutivoEntrega"
           caption="Orden #"
+          width="15%"
           dataType="number"
         ></dxi-column>
         <dxi-column
           dataField="tipoDocumento"
           caption="Tipo"
+          width="20%"
+          dataType="string"
+        ></dxi-column>
+        <dxi-column
+          dataField="clienteNombre"
+          caption="Cliente"
+          width="20%"
           dataType="string"
         ></dxi-column>
         <dxi-column
           dataField="documentoNumero"
           caption="Documento"
+          width="15%"
+          textAlign="left"
           dataType="number"
         ></dxi-column>
-        <dxi-column
-          dataField="clienteNombre"
-          caption="Cliente"
-          dataType="string"
-        ></dxi-column>
+
         <dxi-column
           dataField="estadoProceso"
           caption="Estado"
+          width="15%"
           dataType="string"
         ></dxi-column>
         <dxi-column
           dataField="fechaDocumento"
           caption="Fecha Documento"
+          width="15%"
           dataType="date"
         ></dxi-column>
         <dxi-column
@@ -159,6 +171,57 @@
         >
           <dxi-button icon="fa fa-eye" [onClick]="seleccionarOrden"></dxi-button>
         </dxi-column>
+      </dx-data-grid>
+
+      <dx-data-grid
+        *ngIf="mostrarProductosPendientes"
+        [dataSource]="productosPendientes"
+        [showBorders]="true"
+        [hoverStateEnabled]="true"
+      >
+        <dxo-filter-row [visible]="true"></dxo-filter-row>
+        <dxo-export [enabled]="true" fileName="Productos_Pendientes" [allowExportSelectedData]="true"></dxo-export>
+        <dxo-search-panel
+          [visible]="true"
+          [width]="260"
+          placeholder="Buscar producto..."
+        ></dxo-search-panel>
+        <dxi-column
+          dataField="documentoNumero"
+          caption="Documento"
+          width="15%"
+          dataType="number"
+        ></dxi-column>
+        <dxi-column
+          dataField="tipoDocumento"
+          caption="Tipo Documento"
+          width="15%"
+          dataType="string"
+        ></dxi-column>
+        <dxi-column
+          dataField="clienteNombre"
+          caption="Cliente"
+          width="25%"
+          dataType="string"
+        ></dxi-column>
+        <dxi-column
+          dataField="productoNombre"
+          caption="Producto"
+          width="35%"
+          dataType="string"
+        ></dxi-column>
+        <dxi-column
+          dataField="cantidadPendienteTexto"
+          caption="Cantidad pendiente"
+          width="15%"
+          dataType="string"
+        ></dxi-column>
+        <dxi-column
+          dataField="fechaCompromisoTexto"
+          caption="Fecha compromiso"
+          width="10%"
+          dataType="date"
+        ></dxi-column>
       </dx-data-grid>
     </div>
   </div>
@@ -174,22 +237,53 @@
       <table class="table table-bordered table-sm table-striped">
         <thead>
           <tr>
-            <th>Producto</th>
-            <th>Facturado</th>
-            <th>Entregado</th>
-            <th>Devuelto</th>
-            <th>Pendiente</th>
-            <th>
-              Cant. a entregar ahora
+            <th
+              title="Nombre del producto involucrado en la orden"
+              style="cursor: help;"
+            >
+              Producto
+            </th>
+            <th
+              title="Cantidad facturada para este producto"
+              style="cursor: help;"
+            >Fact</th>
+            <th
+              title="Cantidad ya entregada al cliente"
+              style="cursor: help;"
+            >Ent</th>
+            <th
+              title="Cantidad devuelta por el cliente"
+              style="cursor: help;"
+            >Dev</th>
+            <th
+              title="Cantidad pendiente por entregar al cliente"
+              style="cursor: help;"
+            >Pend</th>
+            <th
+              title="Indica la cantidad a entregar en esta operación. Si aplica, será en cajas y piezas."
+              style="cursor: help;"
+            >
+              Despacho
               <br />
               <small class="text-muted font-weight-normal"
-                >(cajas · piezas si aplica)</small
-              >
+                >(cajas · piezas si aplica)</small>
             </th>
-            <th>Estado item</th>
-            <th>Fecha compromiso</th>
-            <th>Notas</th>
-            <th>Guardar</th>
+            <th
+              title="Estado actual del ítem en el proceso de entrega"
+              style="cursor: help;"
+            >Est</th>
+            <th
+              title="Fecha de compromiso para la entrega de este producto"
+              style="cursor: help;"
+            >F.Comp</th>
+            <th
+              title="Notas o comentarios adicionales relevantes para este ítem"
+              style="cursor: help;"
+            >Notas</th>
+            <th
+              title="Guardar los cambios realizados para esta línea"
+              style="cursor: help;"
+            >Guardar</th>
           </tr>
         </thead>
         <tbody>
@@ -227,19 +321,22 @@
               ></dx-number-box>
             </td>
             <td>
-              <dx-select-box
-                [items]="estadosGestion"
-                [(value)]="item.estadoGestion"
-              ></dx-select-box>
+              <span class="font-weight-bold">
+                {{ estadoGestionAutomatico(item) }}
+              </span>
             </td>
             <td>
               <dx-date-box
-                [(value)]="item.fechaCompromiso"
+                [(value)]="item.fechaCompromisoInput"
                 type="date"
+                [disabled]="esCompromisoBloqueado(item)"
               ></dx-date-box>
             </td>
             <td>
-              <dx-text-box [(value)]="item.notas"></dx-text-box>
+              <dx-text-box
+                [(value)]="item.notasInput"
+                [disabled]="esCompromisoBloqueado(item)"
+              ></dx-text-box>
             </td>
             <td>
               <ng-container *ngIf="item.pendiente > 0">
