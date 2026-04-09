@@ -39,6 +39,9 @@ export class EntregasPComponent implements OnInit {
   correo:string
   fechaAnteriorDesde: Date = new Date();
   mostrarLoading:boolean = false
+  vistaPendientesSeleccion = 'Pendientes entrega';
+  itemsVistaPendientes: string[] = ['Pendientes entrega', 'Eliminados'];
+  mostrarVistaEliminacionAdmin = false;
   usuarioLogueado:user
   cantidadEntCajas=0
   cantidadEntPiezas=0
@@ -165,13 +168,12 @@ export class EntregasPComponent implements OnInit {
         .subscribe(
           res => {
             this.usuarioLogueado = res as user;
-            if( this.usuarioLogueado[0].rol == "Usuario"){
-              var z = document.getElementById("admin");
-              z.style.display = "none";
-            }else{
-              var z = document.getElementById("admin");
-              z.style.display = "block";
-              
+            this.mostrarVistaEliminacionAdmin = this.usuarioLogueado[0].rol != "Usuario";
+            this.itemsVistaPendientes = this.mostrarVistaEliminacionAdmin
+              ? ['Pendientes entrega', 'Pendientes eliminación', 'Eliminados']
+              : ['Pendientes entrega', 'Eliminados'];
+            if (!this.mostrarVistaEliminacionAdmin && this.vistaPendientesSeleccion === 'Pendientes eliminación') {
+              this.vistaPendientesSeleccion = 'Pendientes entrega';
             }
             
 
@@ -186,7 +188,9 @@ export class EntregasPComponent implements OnInit {
     
   }
 
-
+  onVistaPendientesChanged(e: { value: string }) {
+    this.vistaPendientesSeleccion = e.value;
+  }
 
   separarRegistrosDevoluciones(){
     if(this.usuarioLogueado[0].rol=="Usuario"){
@@ -930,6 +934,15 @@ export class EntregasPComponent implements OnInit {
         break;
     }
     
+  }
+
+  traerTodosProductosPendientes() {
+    this.limpiarRegistros();
+    this.mostrarLoading = true;
+    this.productosPendientesService.getProductoPendiente().subscribe(res => {
+      this.productosPendientesGlobales = res as productosPendientesEntrega[];
+      this.separarRegistrosDevoluciones();
+    });
   }
 
 

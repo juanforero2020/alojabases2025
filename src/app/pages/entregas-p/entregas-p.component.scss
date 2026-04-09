@@ -1,4 +1,66 @@
+.entregas-p-consulta-card {
+    margin-top: 0.5em;
+}
 
+.entregas-p-listado-card {
+    margin-top: 1rem;
+}
+
+.entregas-p-radio-fila {
+    margin-bottom: 1rem;
+}
+
+.entregas-p-radio-wrap {
+    display: flex;
+    justify-content: center;
+    margin-bottom: 0;
+}
+
+.entregas-p-radio-wrap .dx-field-value {
+    width: auto;
+    flex: 0 1 auto;
+}
+
+::ng-deep .entregas-p-radio-wrap .dx-radiogroup-horizontal .dx-collection {
+    gap: 0 2rem;
+}
+
+::ng-deep .entregas-p-radio-wrap .dx-radiobutton-icon-checked .dx-radiobutton-icon-dot {
+    background-color: #ff5722;
+}
+
+::ng-deep .entregas-p-radio-wrap .dx-radiobutton-checked .dx-radiobutton-icon {
+    border-color: #ff5722;
+}
+
+.btnSearch {
+    text-align: center;
+    margin-top: 0.4em;
+    margin-bottom: 0.4em;
+}
+
+.btn-consulta-entregas {
+    background-color: #ff5722;
+    border-color: #ff5722;
+}
+
+.btn-consulta-entregas:hover {
+    background-color: #e64a19;
+    border-color: #e64a19;
+}
+
+.select {
+    text-align: center;
+    background-color: white;
+}
+
+::ng-deep .remiPro .dx-selectbox input {
+    text-align: center;
+}
+
+::ng-deep .remiPro .dx-selectbox-popup-wrapper .dx-list-item {
+    text-align: center;
+}
 
 .imgProducto{
     width: auto;
