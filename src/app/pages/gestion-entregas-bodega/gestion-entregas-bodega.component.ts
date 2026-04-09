@@ -1,13 +1,24 @@
-import { Component, OnInit } from "@angular/core";
+import { Component, OnDestroy, OnInit } from "@angular/core";
+import { Subscription } from "rxjs";
 import Swal from "sweetalert2";
 import { EntregasBodegaService } from "src/app/servicios/entregas-bodega.service";
+import { ScreenService } from "src/app/shared/services";
+
+/** Valores de entrada del usuario por línea (despacho / compromiso / notas). */
+interface BorradorLineaEntrega {
+  cantidadEntregadaInput: number;
+  entregaCajasInput: number;
+  entregaPiezasInput: number;
+  fechaCompromisoInput: any;
+  notasInput: string;
+}
 
 @Component({
   selector: "app-gestion-entregas-bodega",
   templateUrl: "./gestion-entregas-bodega.component.html",
   styleUrls: ["./gestion-entregas-bodega.component.scss"],
 })
-export class GestionEntregasBodegaComponent implements OnInit {
+export class GestionEntregasBodegaComponent implements OnInit, OnDestroy {
   /** Misma idea que devoluciones: combo superior derecho. */
   menuPrincipal: string[] = [
     "Gestión Entregas",
@@ -37,6 +48,19 @@ export class GestionEntregasBodegaComponent implements OnInit {
   fechaHasta: Date = new Date();
   incluirCerradas = false;
 
+  /**
+   * Vista acordeón (móvil / tablet pequeña): factura → ítems → formulario por línea.
+   */
+  vistaMovil = false;
+  expandedOrderId: string | null = null;
+  expandedItemIndex: number | null = null;
+
+  /** Índices de línea con confirmación visual reciente de guardado OK. */
+  lineasGuardadoFlash: Record<number, boolean> = {};
+
+  private screenSub: Subscription;
+  private timeoutsGuardadoFlash: { [k: number]: any } = {};
+
   /** Texto para cabecera estilo Caja Menor (orden seleccionada o guión). */
   get consecutivoVista(): string | number {
     if (this.ordenSeleccionada && this.ordenSeleccionada.consecutivoEntrega != null) {
@@ -53,10 +77,108 @@ export class GestionEntregasBodegaComponent implements OnInit {
     return sessionStorage.getItem("user") || "";
   }
 
-  constructor(private entregasBodegaService: EntregasBodegaService) {}
+  constructor(
+    private entregasBodegaService: EntregasBodegaService,
+    private screen: ScreenService
+  ) {}
 
   ngOnInit(): void {
+    this.actualizarVistaMovil();
+    this.screenSub = this.screen.changed.subscribe(() =>
+      this.actualizarVistaMovil()
+    );
     this.cargarPendientes();
+  }
+
+  ngOnDestroy(): void {
+    if (this.screenSub) {
+      this.screenSub.unsubscribe();
+    }
+    this.limpiarIndicadoresGuardadoLinea();
+  }
+
+  private actualizarVistaMovil(): void {
+    const s = this.screen.sizes;
+    const antes = this.vistaMovil;
+    this.vistaMovil = !!(s["screen-x-small"] || s["screen-small"]);
+    if (this.vistaMovil && !antes && this.ordenSeleccionada?._id) {
+      this.expandedOrderId = this.ordenSeleccionada._id;
+    }
+    if (!this.vistaMovil && antes) {
+      this.expandedOrderId = null;
+      this.expandedItemIndex = null;
+    }
+  }
+
+  ordenExpandidaEs(ord: any): boolean {
+    return !!ord && this.expandedOrderId === ord._id;
+  }
+
+  toggleOrdenMovil(ord: any): void {
+    if (!ord) {
+      return;
+    }
+    if (this.expandedOrderId === ord._id) {
+      this.expandedOrderId = null;
+      this.ordenSeleccionada = null;
+      this.expandedItemIndex = null;
+      this.limpiarIndicadoresGuardadoLinea();
+    } else {
+      this.limpiarIndicadoresGuardadoLinea();
+      this.expandedOrderId = ord._id;
+      this.ordenSeleccionada = ord;
+      this.expandedItemIndex = null;
+    }
+  }
+
+  toggleItemMovil(index: number): void {
+    this.expandedItemIndex =
+      this.expandedItemIndex === index ? null : index;
+  }
+
+  itemExpandidoEs(index: number): boolean {
+    return this.expandedItemIndex === index;
+  }
+
+  lineaGuardadaExitosa(index: number): boolean {
+    return !!this.lineasGuardadoFlash[index];
+  }
+
+  /** Color de tarjeta de factura (Smart-Dispatch). */
+  claseColorOrden(orden: any): string {
+    const e = String(orden?.estadoProceso || "").toUpperCase();
+    if (e === "CERRADO") {
+      return "sd-est-verde";
+    }
+    if (e === "COMPLETO") {
+      return "sd-est-azul";
+    }
+    if (e === "NOVEDAD") {
+      return "sd-est-rojo";
+    }
+    return "sd-est-amarillo";
+  }
+
+  /** Color del nombre del material según estado del ítem. */
+  claseColorItem(item: any): string {
+    const st = String(item?.estadoItem || "").toUpperCase();
+    const pend = this.num(item?.pendiente);
+    if (pend <= 0 || st === "COMPLETO") {
+      return "sd-est-azul";
+    }
+    if (st === "NOVEDAD") {
+      return "sd-est-rojo";
+    }
+    return "sd-est-amarillo";
+  }
+
+  /** Cantidad a registrar supera el pendiente (alerta en móvil). */
+  itemIngresoExcedePendiente(item: any): boolean {
+    const pendiente = this.num(item?.pendiente);
+    if (pendiente <= 0) {
+      return false;
+    }
+    return this.m2OperacionIngresada(item) > pendiente + 0.0001;
   }
 
   opcionMenu(e: any) {
@@ -67,6 +189,9 @@ export class GestionEntregasBodegaComponent implements OnInit {
         this.mostrarProductosPendientes = false;
         this.incluirCerradas = false;
         this.popupTrazabilidadVisible = false;
+        this.expandedOrderId = null;
+        this.expandedItemIndex = null;
+        this.limpiarIndicadoresGuardadoLinea();
         this.cargarPendientes();
         break;
       case "Listado Entregas":
@@ -75,6 +200,9 @@ export class GestionEntregasBodegaComponent implements OnInit {
         this.mostrarProductosPendientes = false;
         this.incluirCerradas = true;
         this.ordenSeleccionada = null;
+        this.expandedOrderId = null;
+        this.expandedItemIndex = null;
+        this.limpiarIndicadoresGuardadoLinea();
         this.popupTrazabilidadVisible = false;
         this.cargarPendientes();
         break;
@@ -84,6 +212,9 @@ export class GestionEntregasBodegaComponent implements OnInit {
         this.mostrarProductosPendientes = true;
         this.incluirCerradas = false;
         this.ordenSeleccionada = null;
+        this.expandedOrderId = null;
+        this.expandedItemIndex = null;
+        this.limpiarIndicadoresGuardadoLinea();
         this.popupTrazabilidadVisible = false;
         this.cargarPendientes();
         break;
@@ -102,6 +233,7 @@ export class GestionEntregasBodegaComponent implements OnInit {
     if (this.mostrarListado) {
       this.abrirPopupTrazabilidad(e.data);
     } else {
+      this.limpiarIndicadoresGuardadoLinea();
       this.ordenSeleccionada = this.prepararOrdenParaVista(e.data);
     }
   }
@@ -192,6 +324,18 @@ export class GestionEntregasBodegaComponent implements OnInit {
         this.productosPendientes = this.mostrarProductosPendientes
           ? this.construirResumenProductosPendientes(ordenesVista)
           : [];
+        if (this.expandedOrderId) {
+          const o = (this.ordenes || []).find(
+            (x) => x._id === this.expandedOrderId
+          );
+          if (o) {
+            this.ordenSeleccionada = o;
+          } else {
+            this.expandedOrderId = null;
+            this.ordenSeleccionada = null;
+            this.expandedItemIndex = null;
+          }
+        }
         this.loading = false;
       },
       error: () => {
@@ -211,6 +355,9 @@ export class GestionEntregasBodegaComponent implements OnInit {
     this.filtroCliente = "";
     this.incluirCerradas = this.mostrarListado;
     this.ordenSeleccionada = null;
+    this.expandedOrderId = null;
+    this.expandedItemIndex = null;
+    this.limpiarIndicadoresGuardadoLinea();
     this.cargarPendientes();
   }
 
@@ -218,11 +365,21 @@ export class GestionEntregasBodegaComponent implements OnInit {
     if (!this.mostrarGestion) {
       return;
     }
+    this.limpiarIndicadoresGuardadoLinea();
     this.ordenSeleccionada = this.prepararOrdenParaVista(e.row.data);
   };
 
   guardarItem(index: number) {
-    if (!this.ordenSeleccionada?._id) return;
+    if (!this.ordenSeleccionada?._id) {
+      return;
+    }
+    if (this.vistaMovil && this.expandedOrderId) {
+      const o = this.ordenes.find((x) => x._id === this.expandedOrderId);
+      if (o) {
+        this.ordenSeleccionada = o;
+      }
+    }
+    const borradorOtrasLineas = this.capturarEntradasItems(this.ordenSeleccionada);
     const item = this.ordenSeleccionada.items[index];
     const metro = this.esItemMetrosCajaPieza(item);
     const ingreso = this.m2OperacionIngresada(item);
@@ -253,10 +410,23 @@ export class GestionEntregasBodegaComponent implements OnInit {
       .actualizarItem(this.ordenSeleccionada._id, index, payload)
       .subscribe({
         next: (ordenActualizada: any) => {
-          this.ordenSeleccionada = this.prepararOrdenParaVista(ordenActualizada);
+          const nueva = this.prepararOrdenParaVista(ordenActualizada);
+          this.aplicarBorradorOtrasLineas(nueva, borradorOtrasLineas, index);
+          this.ordenSeleccionada = nueva;
           this.refrescarCamposEventoItem(index);
-          this.actualizarOrdenEnListado(this.ordenSeleccionada);
-          Swal.fire("OK", "Ítem actualizado correctamente.", "success");
+          this.sincronizarOrdenEnListado(this.ordenSeleccionada);
+          this.mostrarFeedbackGuardadoLinea(index);
+          if (this.vistaMovil) {
+            this.expandedItemIndex = null;
+          }
+          Swal.fire({
+            toast: true,
+            position: "top-end",
+            icon: "success",
+            title: "Línea guardada correctamente",
+            showConfirmButton: false,
+            timer: 2200,
+          });
         },
         error: (errors) => {
           console.log(errors);
@@ -265,6 +435,14 @@ export class GestionEntregasBodegaComponent implements OnInit {
           Swal.fire("Error", mensaje, "error");
         },
       });
+  }
+
+  /** Asegura la orden activa antes de cerrar desde la tarjeta móvil. */
+  cerrarOrdenDesdeMovil(ord: any): void {
+    if (ord) {
+      this.ordenSeleccionada = ord;
+    }
+    this.cerrarOrden();
   }
 
   cerrarOrden() {
@@ -276,6 +454,9 @@ export class GestionEntregasBodegaComponent implements OnInit {
       .subscribe({
         next: () => {
           this.ordenSeleccionada = null;
+          this.expandedOrderId = null;
+          this.expandedItemIndex = null;
+          this.limpiarIndicadoresGuardadoLinea();
           this.cargarPendientes();
           Swal.fire("OK", "Orden cerrada correctamente.", "success");
         },
@@ -441,13 +622,76 @@ export class GestionEntregasBodegaComponent implements OnInit {
     item.entregaPiezasInput = 0;
   }
 
-  private actualizarOrdenEnListado(ordenActualizada: any) {
-    const idx = this.ordenes.findIndex((x) => x._id === ordenActualizada._id);
-    if (idx >= 0) {
-      this.ordenes[idx] = this.prepararOrdenParaVista(ordenActualizada);
-    } else {
-      this.ordenes.unshift(this.prepararOrdenParaVista(ordenActualizada));
+  /** Copia lo que el usuario escribió en cada línea (antes del POST). */
+  private capturarEntradasItems(orden: any): BorradorLineaEntrega[] {
+    if (!orden?.items?.length) {
+      return [];
     }
+    return orden.items.map((it: any) => ({
+      cantidadEntregadaInput: this.num(it?.cantidadEntregadaInput),
+      entregaCajasInput: this.num(it?.entregaCajasInput),
+      entregaPiezasInput: this.num(it?.entregaPiezasInput),
+      fechaCompromisoInput: it?.fechaCompromisoInput,
+      notasInput: it?.notasInput != null ? String(it.notasInput) : "",
+    }));
+  }
+
+  /**
+   * Tras traer datos del servidor, restaura solo las líneas que no se acaban de guardar,
+   * para no perder cajas/piezas/notas pendientes de confirmar.
+   */
+  private aplicarBorradorOtrasLineas(
+    orden: any,
+    borrador: BorradorLineaEntrega[],
+    indiceGuardado: number
+  ): void {
+    if (!orden?.items?.length || !borrador?.length) {
+      return;
+    }
+    orden.items.forEach((it: any, j: number) => {
+      if (j === indiceGuardado) {
+        return;
+      }
+      const b = borrador[j];
+      if (!b) {
+        return;
+      }
+      it.cantidadEntregadaInput = b.cantidadEntregadaInput;
+      it.entregaCajasInput = b.entregaCajasInput;
+      it.entregaPiezasInput = b.entregaPiezasInput;
+      it.fechaCompromisoInput = b.fechaCompromisoInput;
+      it.notasInput = b.notasInput;
+    });
+  }
+
+  private sincronizarOrdenEnListado(ordenVista: any): void {
+    const idx = this.ordenes.findIndex((x) => x._id === ordenVista._id);
+    if (idx >= 0) {
+      this.ordenes[idx] = ordenVista;
+    } else {
+      this.ordenes.unshift(ordenVista);
+    }
+  }
+
+  private mostrarFeedbackGuardadoLinea(index: number): void {
+    if (this.timeoutsGuardadoFlash[index]) {
+      clearTimeout(this.timeoutsGuardadoFlash[index]);
+    }
+    this.lineasGuardadoFlash = { ...this.lineasGuardadoFlash, [index]: true };
+    this.timeoutsGuardadoFlash[index] = setTimeout(() => {
+      const next = { ...this.lineasGuardadoFlash };
+      delete next[index];
+      this.lineasGuardadoFlash = next;
+      delete this.timeoutsGuardadoFlash[index];
+    }, 3500);
+  }
+
+  private limpiarIndicadoresGuardadoLinea(): void {
+    Object.keys(this.timeoutsGuardadoFlash).forEach((k) =>
+      clearTimeout(this.timeoutsGuardadoFlash[+k])
+    );
+    this.timeoutsGuardadoFlash = {};
+    this.lineasGuardadoFlash = {};
   }
 
   private formatoPendienteReporte(item: any, pendiente: number): string {

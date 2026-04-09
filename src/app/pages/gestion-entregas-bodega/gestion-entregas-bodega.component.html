@@ -1,6 +1,5 @@
-<div class="row remiPro titulos" style="text-align: center;">
-  <div class="col-md-8"></div>
-  <div class="col-md-4" style="text-align: center;">
+<div class="row remiPro titulos gestion-menu-superior justify-content-md-end">
+  <div class="col-12 col-md-4 px-gestion-menu">
     <dx-select-box
       [items]="menuPrincipal"
       [(value)]="valorMenu"
@@ -18,71 +17,67 @@
     <h5 class="card-header text-center font-weight-bold text-uppercase">
       Gestión entregas de bodega
     </h5>
-    <div class="card-body">
-      <div class="row">
-        <div class="col-md-12">
+    <div class="card-body gestion-filtros">
+      <div class="row justify-content-center">
+        <div class="col-12 col-xl-10">
           <div class="row">
-            <div class="row">
-              <div class="col-md-3"></div>
-              <div class="col-md-6">
-                <div class="row">
-                  <div class="col-md-6 textP mt-2">Documento</div>
-                  <div class="col-md-4 dateB mt-2">
-                    <dx-number-box [(value)]="filtroDocumento"></dx-number-box>
-                  </div>
-                  <div class="col-md-2"></div>
-
-                  <div class="col-md-6 textP mt-2">Cliente</div>
-                  <div class="col-md-4 dateB mt-2">
-                    <dx-text-box [(value)]="filtroCliente"></dx-text-box>
-                  </div>
-                  <div class="col-md-2"></div>
-
-                  <div class="col-md-6 textP mt-2">Desde</div>
-                  <div class="col-md-4 dateB mt-2">
-                    <dx-date-box [(value)]="fechaDesde" type="date"></dx-date-box>
-                  </div>
-                  <div class="col-md-2"></div>
-
-                  <div class="col-md-6 textP mt-2">Hasta</div>
-                  <div class="col-md-4 dateB mt-2">
-                    <dx-date-box [(value)]="fechaHasta" type="date"></dx-date-box>
-                  </div>
-                  <div class="col-md-2"></div>
-
-                  <ng-container *ngIf="mostrarListado">
-                    <div class="col-md-6 textP textP2 mt-2">
-                      Incluir cerradas (todos los estados)
-                    </div>
-                    <div class="col-md-4 dateB textP2 mt-2">
-                      <dx-check-box
-                        [(value)]="incluirCerradas"
-                        [readOnly]="true"
-                      ></dx-check-box>
-                    </div>
-                    <div class="col-md-2"></div>
-                  </ng-container>
-
-                  <div
-                    class="col-md-10 dateB textP2 gestion-entregas-acciones"
-                    style="text-align: center;"
-                  >
-                    <dx-button
-                      text="Buscar"
-                      type="success"
-                      style="background-color: #ff5722;border-color: #ff5722;"
-                      (onClick)="buscar()"
-                    ></dx-button>
-                    <dx-button
-                      text="Limpiar"
-                      type="normal"
-                      (onClick)="limpiarFiltros()"
-                    ></dx-button>
-                  </div>
-                  <div class="col-md-2"></div>
-                </div>
+            <div class="col-12 col-md-6 mb-3 gestion-filtro-campo">
+              <label class="textP mb-1 d-block">Documento</label>
+              <div class="dateB gestion-filtro-editor">
+                <dx-number-box [(value)]="filtroDocumento"></dx-number-box>
               </div>
-              <div class="col-md-3"></div>
+            </div>
+            <div class="col-12 col-md-6 mb-3 gestion-filtro-campo">
+              <label class="textP mb-1 d-block">Cliente</label>
+              <div class="dateB gestion-filtro-editor">
+                <dx-text-box [(value)]="filtroCliente"></dx-text-box>
+              </div>
+            </div>
+            <div class="col-12 col-md-6 mb-3 gestion-filtro-campo">
+              <label class="textP mb-1 d-block">Desde</label>
+              <div class="dateB gestion-filtro-editor">
+                <dx-date-box [(value)]="fechaDesde" type="date"></dx-date-box>
+              </div>
+            </div>
+            <div class="col-12 col-md-6 mb-3 gestion-filtro-campo">
+              <label class="textP mb-1 d-block">Hasta</label>
+              <div class="dateB gestion-filtro-editor">
+                <dx-date-box [(value)]="fechaHasta" type="date"></dx-date-box>
+              </div>
+            </div>
+
+            <div
+              *ngIf="mostrarListado"
+              class="col-12 mb-3 gestion-filtro-cerradas"
+            >
+              <div
+                class="d-flex flex-row flex-wrap align-items-center gestion-filtro-cerradas-inner"
+              >
+                <dx-check-box
+                  [(value)]="incluirCerradas"
+                  [readOnly]="true"
+                  class="gestion-filtro-check"
+                ></dx-check-box>
+                <span class="textP gestion-filtro-cerradas-texto ml-2">
+                  Incluir cerradas (todos los estados)
+                </span>
+              </div>
+            </div>
+
+            <div
+              class="col-12 gestion-entregas-acciones gestion-filtro-acciones text-center pt-1"
+            >
+              <dx-button
+                text="Buscar"
+                type="success"
+                style="background-color: #ff5722;border-color: #ff5722;"
+                (onClick)="buscar()"
+              ></dx-button>
+              <dx-button
+                text="Limpiar"
+                type="normal"
+                (onClick)="limpiarFiltros()"
+              ></dx-button>
             </div>
           </div>
         </div>
@@ -113,8 +108,195 @@
         Todas las órdenes en cualquier estado. Haga clic en una fila para ver la trazabilidad.
       </p>
 
+      <!-- SMART-DISPATCH: solo gestión en móvil/tablet pequeña -->
+      <div
+        *ngIf="mostrarGestion && vistaMovil && !mostrarProductosPendientes"
+        class="smart-dispatch-movil"
+      >
+        <p class="small text-muted mb-2">
+          Toque una factura para ver los materiales; luego un material para registrar el despacho.
+        </p>
+        <div class="sd-leyenda small mb-3">
+          <span class="sd-leyenda-item"
+            ><i class="sd-punto sd-est-amarillo"></i> Abierto</span
+          >
+          <span class="sd-leyenda-item"
+            ><i class="sd-punto sd-est-rojo"></i> Novedad</span
+          >
+          <span class="sd-leyenda-item"
+            ><i class="sd-punto sd-est-azul"></i> Completado</span
+          >
+          <span class="sd-leyenda-item"
+            ><i class="sd-punto sd-est-verde"></i> Cerrado</span
+          >
+        </div>
+
+        <div *ngIf="!ordenes?.length" class="text-muted small">
+          No hay órdenes activas con los filtros actuales.
+        </div>
+
+        <div *ngFor="let ord of ordenes" class="sd-factura-card mb-2">
+          <button
+            type="button"
+            class="sd-factura-header"
+            (click)="toggleOrdenMovil(ord)"
+          >
+            <i class="sd-punto" [ngClass]="claseColorOrden(ord)"></i>
+            <div class="sd-factura-texto">
+              <span class="sd-factura-doc"
+                >{{ ord.tipoDocumento }} #{{ ord.documentoNumero }}</span
+              >
+              <span class="sd-factura-cliente">{{ ord.clienteNombre }}</span>
+              <span class="sd-factura-meta"
+                >Orden {{ ord.consecutivoEntrega }} ·
+                {{ ord.estadoProceso }}</span
+              >
+            </div>
+            <i
+              class="fa fa-chevron-down sd-chevron"
+              [class.sd-chevron-up]="ordenExpandidaEs(ord)"
+            ></i>
+          </button>
+
+          <div *ngIf="ordenExpandidaEs(ord)" class="sd-factura-cuerpo">
+            <div *ngFor="let item of ord.items; let i = index" class="sd-item-wrap">
+              <button
+                type="button"
+                class="sd-item-cab"
+                (click)="toggleItemMovil(i); $event.stopPropagation()"
+              >
+                <span
+                  class="sd-item-nombre"
+                  [ngClass]="[
+                    claseColorItem(item),
+                    itemIngresoExcedePendiente(item) ? 'sd-item-alerta' : ''
+                  ]"
+                >
+                  {{ item.productoNombre }}
+                </span>
+                <span class="sd-item-resumen small text-muted">
+                  Pend:
+                  {{ formatoCantidadLinea(item.pendiente, item) }} · Est:
+                  {{ estadoGestionAutomatico(item) }}
+                </span>
+                <i
+                  *ngIf="lineaGuardadaExitosa(i)"
+                  class="fa fa-check-circle sd-guardado-ok text-success"
+                  title="Guardado correctamente"
+                  aria-hidden="true"
+                ></i>
+                <i
+                  class="fa fa-chevron-down sd-chevron sd-chevron-sm"
+                  [class.sd-chevron-up]="itemExpandidoEs(i)"
+                ></i>
+              </button>
+
+              <div *ngIf="itemExpandidoEs(i)" class="sd-item-detalle">
+                <div class="sd-kv-grid small">
+                  <div class="text-muted">Facturado</div>
+                  <div>{{ formatoCantidadLinea(item.cantidadFacturada, item) }}</div>
+                  <div class="text-muted">Entregado</div>
+                  <div>{{ formatoCantidadLinea(item.cantidadEntregada, item) }}</div>
+                  <div class="text-muted">Devuelto</div>
+                  <div>{{ formatoCantidadLinea(item.cantidadDevuelta, item) }}</div>
+                  <div class="text-muted">Pendiente</div>
+                  <div class="font-weight-bold">
+                    {{ formatoCantidadLinea(item.pendiente, item) }}
+                  </div>
+                </div>
+
+                <div class="sd-campo">
+                  <label class="small font-weight-bold mb-1 d-block">Despacho</label>
+                  <div
+                    *ngIf="esItemMetrosCajaPieza(item)"
+                    class="d-flex flex-wrap align-items-center entrega-cp-inputs"
+                  >
+                    <span class="small text-muted mr-1">Cajas</span>
+                    <dx-number-box
+                      [width]="100"
+                      [(value)]="item.entregaCajasInput"
+                      [min]="0"
+                      [showSpinButtons]="true"
+                    ></dx-number-box>
+                    <span class="small text-muted mx-1">Piezas</span>
+                    <dx-number-box
+                      [width]="100"
+                      [(value)]="item.entregaPiezasInput"
+                      [min]="0"
+                      [showSpinButtons]="true"
+                    ></dx-number-box>
+                  </div>
+                  <dx-number-box
+                    *ngIf="!esItemMetrosCajaPieza(item)"
+                    [(value)]="item.cantidadEntregadaInput"
+                    [min]="0"
+                    [showSpinButtons]="true"
+                  ></dx-number-box>
+                </div>
+
+                <div class="sd-campo">
+                  <label class="small font-weight-bold mb-1 d-block"
+                    >F. compromiso</label
+                  >
+                  <dx-date-box
+                    [(value)]="item.fechaCompromisoInput"
+                    type="date"
+                    [disabled]="esCompromisoBloqueado(item)"
+                  ></dx-date-box>
+                </div>
+
+                <div class="sd-campo">
+                  <label class="small font-weight-bold mb-1 d-block">Notas</label>
+                  <dx-text-box
+                    [(value)]="item.notasInput"
+                    [disabled]="esCompromisoBloqueado(item)"
+                  ></dx-text-box>
+                </div>
+
+                <div class="sd-campo pt-1 sd-guardar-linea-wrap">
+                  <ng-container *ngIf="item.pendiente > 0">
+                    <dx-button
+                      text="Guardar línea"
+                      type="default"
+                      (onClick)="guardarItem(i)"
+                    ></dx-button>
+                  </ng-container>
+                  <ng-container *ngIf="item.pendiente === 0">
+                    <dx-button
+                      text="Línea completa"
+                      type="success"
+                      [disabled]="true"
+                    ></dx-button>
+                  </ng-container>
+                  <span
+                    *ngIf="lineaGuardadaExitosa(i)"
+                    class="sd-guardado-msg text-success small ml-2"
+                  >
+                    <i class="fa fa-check-circle" aria-hidden="true"></i>
+                    Guardado
+                  </span>
+                </div>
+              </div>
+            </div>
+
+            <div class="sd-cerrar-proceso mt-3 pt-2 border-top">
+              <dx-button
+                text="Cerrar proceso (factura)"
+                type="success"
+                [disabled]="ord.estadoProceso !== 'COMPLETO'"
+                (onClick)="cerrarOrdenDesdeMovil(ord)"
+              ></dx-button>
+              <p class="small text-muted mb-0 mt-2">
+                Solo disponible cuando la orden está en estado COMPLETO (todos los ítems
+                cuadrados).
+              </p>
+            </div>
+          </div>
+        </div>
+      </div>
+
       <dx-data-grid
-        *ngIf="!mostrarProductosPendientes"
+        *ngIf="!mostrarProductosPendientes && !(mostrarGestion && vistaMovil)"
         [dataSource]="ordenes"
         [showBorders]="true"
         [hoverStateEnabled]="true"
@@ -227,7 +409,10 @@
   </div>
 </div>
 
-<div class="content-block" *ngIf="mostrarGestion && ordenSeleccionada">
+<div
+  class="content-block"
+  *ngIf="mostrarGestion && ordenSeleccionada && !vistaMovil"
+>
   <div class="card gestion-entregas-card">
     <h5 class="card-header text-center font-weight-bold text-uppercase">
       {{ ordenSeleccionada.tipoDocumento }} #{{ ordenSeleccionada.documentoNumero }}
@@ -338,7 +523,7 @@
                 [disabled]="esCompromisoBloqueado(item)"
               ></dx-text-box>
             </td>
-            <td>
+            <td class="gestion-col-guardar text-nowrap">
               <ng-container *ngIf="item.pendiente > 0">
                 <dx-button
                   text="Guardar"
@@ -353,6 +538,13 @@
                 [disabled]="true"
               ></dx-button>
               </ng-container>
+              <span
+                *ngIf="lineaGuardadaExitosa(i)"
+                class="gestion-linea-ok text-success ml-1"
+                title="Guardado correctamente"
+              >
+                <i class="fa fa-check-circle" aria-hidden="true"></i>
+              </span>
             </td>
           </tr>
         </tbody>
