@@ -33,6 +33,22 @@ export class EntregasBodegaService {
     return this.http.put(`${this.URL}/cerrar/${ordenId}`, payload);
   }
 
+  /**
+   * Corrige un registro del historial de un ítem (trazabilidad).
+   * El servidor valida rol (Administrador vs Bodeguero mismo día) y orden no cerrada.
+   */
+  editarHistorialItem(
+    ordenId: string,
+    itemIndex: number,
+    historialIndex: number,
+    payload: any
+  ) {
+    return this.http.put(
+      `${this.URL}/editarHistorialItem/${ordenId}/${itemIndex}/${historialIndex}`,
+      payload
+    );
+  }
+
   getIndicadores() {
     return this.http.get(`${this.URL}/indicadores`);
   }

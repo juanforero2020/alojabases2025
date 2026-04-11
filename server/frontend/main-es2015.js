@@ -872,6 +872,16 @@ const navigationDistribuidor = [
 ];
 const navigationBodeguero = [
     {
+        text: "Inventarios",
+        icon: "contentlayout",
+        items: [
+            {
+                text: "Revisiones",
+                path: "/revision-inventario/0",
+            },
+        ],
+    },
+    {
         text: "Operaciones",
         icon: "fa fa-spinner",
         items: [
@@ -4102,10 +4112,12 @@ __webpack_require__.r(__webpack_exports__);
 /* harmony import */ var src_app_servicios_transaccionesFinancieras_service__WEBPACK_IMPORTED_MODULE_18__ = __webpack_require__(/*! src/app/servicios/transaccionesFinancieras.service */ "./src/app/servicios/transaccionesFinancieras.service.ts");
 /* harmony import */ var src_app_servicios_reciboCaja_service__WEBPACK_IMPORTED_MODULE_19__ = __webpack_require__(/*! src/app/servicios/reciboCaja.service */ "./src/app/servicios/reciboCaja.service.ts");
 /* harmony import */ var src_app_servicios_cajaMenor_service__WEBPACK_IMPORTED_MODULE_20__ = __webpack_require__(/*! src/app/servicios/cajaMenor.service */ "./src/app/servicios/cajaMenor.service.ts");
-/* harmony import */ var _angular_common__WEBPACK_IMPORTED_MODULE_21__ = __webpack_require__(/*! @angular/common */ "./node_modules/@angular/common/__ivy_ngcc__/fesm2015/common.js");
-/* harmony import */ var devextreme_angular__WEBPACK_IMPORTED_MODULE_22__ = __webpack_require__(/*! devextreme-angular */ "./node_modules/devextreme-angular/__ivy_ngcc__/fesm2015/devextreme-angular.js");
-/* harmony import */ var _loading_message_loading_messagge_component__WEBPACK_IMPORTED_MODULE_23__ = __webpack_require__(/*! ../loading-message/loading-messagge.component */ "./src/app/pages/loading-message/loading-messagge.component.ts");
-/* harmony import */ var devextreme_angular_ui_nested__WEBPACK_IMPORTED_MODULE_24__ = __webpack_require__(/*! devextreme-angular/ui/nested */ "./node_modules/devextreme-angular/__ivy_ngcc__/fesm2015/devextreme-angular-ui-nested.js");
+/* harmony import */ var src_app_servicios_entregas_bodega_service__WEBPACK_IMPORTED_MODULE_21__ = __webpack_require__(/*! src/app/servicios/entregas-bodega.service */ "./src/app/servicios/entregas-bodega.service.ts");
+/* harmony import */ var _angular_common__WEBPACK_IMPORTED_MODULE_22__ = __webpack_require__(/*! @angular/common */ "./node_modules/@angular/common/__ivy_ngcc__/fesm2015/common.js");
+/* harmony import */ var devextreme_angular__WEBPACK_IMPORTED_MODULE_23__ = __webpack_require__(/*! devextreme-angular */ "./node_modules/devextreme-angular/__ivy_ngcc__/fesm2015/devextreme-angular.js");
+/* harmony import */ var _loading_message_loading_messagge_component__WEBPACK_IMPORTED_MODULE_24__ = __webpack_require__(/*! ../loading-message/loading-messagge.component */ "./src/app/pages/loading-message/loading-messagge.component.ts");
+/* harmony import */ var devextreme_angular_ui_nested__WEBPACK_IMPORTED_MODULE_25__ = __webpack_require__(/*! devextreme-angular/ui/nested */ "./node_modules/devextreme-angular/__ivy_ngcc__/fesm2015/devextreme-angular-ui-nested.js");
+
 
 
 
@@ -4926,7 +4938,7 @@ function AnulacionesComponent_div_1_Template(rf, ctx) { if (rf & 1) {
     _angular_core__WEBPACK_IMPORTED_MODULE_0__["ɵɵproperty"]("ngIf", ctx_r1.mostrarNotasVenta);
 } }
 class AnulacionesComponent {
-    constructor(parametrizacionService, _configuracionService, facturasProveedorService, contadoresService, notasventaService, facturasService, proformasService, ordenesService, authenService, transaccionesService, productoService, _cuentaPorCobrarService, _transaccionesFinancierasService, _reciboCajaService, _cajaMenorService) {
+    constructor(parametrizacionService, _configuracionService, facturasProveedorService, contadoresService, notasventaService, facturasService, proformasService, ordenesService, authenService, transaccionesService, productoService, _cuentaPorCobrarService, _transaccionesFinancierasService, _reciboCajaService, _cajaMenorService, entregasBodegaService) {
         this.parametrizacionService = parametrizacionService;
         this._configuracionService = _configuracionService;
         this.facturasProveedorService = facturasProveedorService;
@@ -4942,6 +4954,7 @@ class AnulacionesComponent {
         this._transaccionesFinancierasService = _transaccionesFinancierasService;
         this._reciboCajaService = _reciboCajaService;
         this._cajaMenorService = _cajaMenorService;
+        this.entregasBodegaService = entregasBodegaService;
         this.num_orden = 0;
         this.mensajeLoading = "Cargando...";
         this.mostrarMotivo = false;
@@ -5066,11 +5079,11 @@ class AnulacionesComponent {
         };
         this.anularFactura = (e) => {
             //this.validarEliminacionFactura(e.row.data) 
-            this.actualizarFact(e.row.data);
+            this.validarEntregasBodegaAntesAnular(e.row.data, "FACTURA", () => this.actualizarFact(e.row.data));
         };
         this.anularNotaVenta = (e) => {
             //this.validarEliminacionNotaVenta(e.row.data) 
-            this.actualizarNotV(e.row.data);
+            this.validarEntregasBodegaAntesAnular(e.row.data, "NOTA_VENTA", () => this.actualizarNotV(e.row.data));
         };
         this.getCourseFile = (e) => {
             this.cargarOrdenCompra(e.row.data);
@@ -6552,6 +6565,53 @@ class AnulacionesComponent {
             }
         };
     }
+    /**
+     * Si existe orden de entrega de bodega para el documento y su estado no es ABIERTA
+     * (p. ej. NOVEDAD, COMPLETO, CERRADO), no se permite solicitar anulación.
+     * ANULADO no bloquea (orden ya cancelada en bodega).
+     */
+    validarEntregasBodegaAntesAnular(doc, tipoEntregaBodega, continuar) {
+        var _a;
+        const num = Number((_a = doc) === null || _a === void 0 ? void 0 : _a.documento_n);
+        if (!num || Number.isNaN(num)) {
+            continuar();
+            return;
+        }
+        this.mostrarLoading = true;
+        this.entregasBodegaService
+            .getPendientes({
+            documentoNumero: num,
+            modoConsulta: "listado",
+        })
+            .subscribe({
+            next: (ordenes) => {
+                this.mostrarLoading = false;
+                const relevantes = (ordenes || []).filter((o) => { var _a; return String((_a = o) === null || _a === void 0 ? void 0 : _a.tipoDocumento) === tipoEntregaBodega; });
+                const bloquea = relevantes.some((o) => {
+                    var _a;
+                    const st = String(((_a = o) === null || _a === void 0 ? void 0 : _a.estadoProceso) || "").toUpperCase();
+                    return st !== "ABIERTA" && st !== "ANULADO";
+                });
+                if (bloquea) {
+                    const esFactura = tipoEntregaBodega === "FACTURA";
+                    sweetalert2__WEBPACK_IMPORTED_MODULE_3___default.a.fire({
+                        title: "No se puede anular",
+                        text: esFactura
+                            ? "No se puede anular la factura porque tiene órdenes de entrega de bodega ya en curso o completadas. Revise el módulo Gestión de entregas de bodega."
+                            : "No se puede anular la nota de venta porque tiene órdenes de entrega de bodega ya en curso o completadas. Revise el módulo Gestión de entregas de bodega.",
+                        icon: "warning",
+                        confirmButtonText: "Entendido",
+                    });
+                    return;
+                }
+                continuar();
+            },
+            error: () => {
+                this.mostrarLoading = false;
+                sweetalert2__WEBPACK_IMPORTED_MODULE_3___default.a.fire("Error", "No se pudo verificar el estado de entregas de bodega. Intente de nuevo.", "error");
+            },
+        });
+    }
     validarEliminacionNotaVenta(e) {
         var reciboCaja = new _reciboCaja_recibo_caja__WEBPACK_IMPORTED_MODULE_5__["ReciboCaja"]();
         reciboCaja.numDocumento = e.documento_n;
@@ -7747,7 +7807,7 @@ class AnulacionesComponent {
         };
     }
 }
-AnulacionesComponent.ɵfac = function AnulacionesComponent_Factory(t) { return new (t || AnulacionesComponent)(_angular_core__WEBPACK_IMPORTED_MODULE_0__["ɵɵdirectiveInject"](src_app_servicios_parametrizaciones_service__WEBPACK_IMPORTED_MODULE_6__["ParametrizacionesService"]), _angular_core__WEBPACK_IMPORTED_MODULE_0__["ɵɵdirectiveInject"](src_app_servicios_datosConfiguracion_service__WEBPACK_IMPORTED_MODULE_7__["DatosConfiguracionService"]), _angular_core__WEBPACK_IMPORTED_MODULE_0__["ɵɵdirectiveInject"](src_app_servicios_facturas_proveedor_service__WEBPACK_IMPORTED_MODULE_8__["FacturasProveedorService"]), _angular_core__WEBPACK_IMPORTED_MODULE_0__["ɵɵdirectiveInject"](src_app_servicios_contadores_documentos_service__WEBPACK_IMPORTED_MODULE_9__["ContadoresDocumentosService"]), _angular_core__WEBPACK_IMPORTED_MODULE_0__["ɵɵdirectiveInject"](src_app_servicios_notas_ventas_service__WEBPACK_IMPORTED_MODULE_10__["NotasVentasService"]), _angular_core__WEBPACK_IMPORTED_MODULE_0__["ɵɵdirectiveInject"](src_app_servicios_facturas_service__WEBPACK_IMPORTED_MODULE_11__["FacturasService"]), _angular_core__WEBPACK_IMPORTED_MODULE_0__["ɵɵdirectiveInject"](src_app_servicios_proformas_service__WEBPACK_IMPORTED_MODULE_12__["ProformasService"]), _angular_core__WEBPACK_IMPORTED_MODULE_0__["ɵɵdirectiveInject"](src_app_servicios_ordenes_compra_service__WEBPACK_IMPORTED_MODULE_13__["OrdenesCompraService"]), _angular_core__WEBPACK_IMPORTED_MODULE_0__["ɵɵdirectiveInject"](src_app_servicios_authen_service__WEBPACK_IMPORTED_MODULE_14__["AuthenService"]), _angular_core__WEBPACK_IMPORTED_MODULE_0__["ɵɵdirectiveInject"](src_app_servicios_transacciones_service__WEBPACK_IMPORTED_MODULE_15__["TransaccionesService"]), _angular_core__WEBPACK_IMPORTED_MODULE_0__["ɵɵdirectiveInject"](src_app_servicios_producto_service__WEBPACK_IMPORTED_MODULE_16__["ProductoService"]), _angular_core__WEBPACK_IMPORTED_MODULE_0__["ɵɵdirectiveInject"](src_app_servicios_cuentasPorCobrar_service__WEBPACK_IMPORTED_MODULE_17__["CuentasPorCobrarService"]), _angular_core__WEBPACK_IMPORTED_MODULE_0__["ɵɵdirectiveInject"](src_app_servicios_transaccionesFinancieras_service__WEBPACK_IMPORTED_MODULE_18__["TransaccionesFinancierasService"]), _angular_core__WEBPACK_IMPORTED_MODULE_0__["ɵɵdirectiveInject"](src_app_servicios_reciboCaja_service__WEBPACK_IMPORTED_MODULE_19__["ReciboCajaService"]), _angular_core__WEBPACK_IMPORTED_MODULE_0__["ɵɵdirectiveInject"](src_app_servicios_cajaMenor_service__WEBPACK_IMPORTED_MODULE_20__["CajaMenorService"])); };
+AnulacionesComponent.ɵfac = function AnulacionesComponent_Factory(t) { return new (t || AnulacionesComponent)(_angular_core__WEBPACK_IMPORTED_MODULE_0__["ɵɵdirectiveInject"](src_app_servicios_parametrizaciones_service__WEBPACK_IMPORTED_MODULE_6__["ParametrizacionesService"]), _angular_core__WEBPACK_IMPORTED_MODULE_0__["ɵɵdirectiveInject"](src_app_servicios_datosConfiguracion_service__WEBPACK_IMPORTED_MODULE_7__["DatosConfiguracionService"]), _angular_core__WEBPACK_IMPORTED_MODULE_0__["ɵɵdirectiveInject"](src_app_servicios_facturas_proveedor_service__WEBPACK_IMPORTED_MODULE_8__["FacturasProveedorService"]), _angular_core__WEBPACK_IMPORTED_MODULE_0__["ɵɵdirectiveInject"](src_app_servicios_contadores_documentos_service__WEBPACK_IMPORTED_MODULE_9__["ContadoresDocumentosService"]), _angular_core__WEBPACK_IMPORTED_MODULE_0__["ɵɵdirectiveInject"](src_app_servicios_notas_ventas_service__WEBPACK_IMPORTED_MODULE_10__["NotasVentasService"]), _angular_core__WEBPACK_IMPORTED_MODULE_0__["ɵɵdirectiveInject"](src_app_servicios_facturas_service__WEBPACK_IMPORTED_MODULE_11__["FacturasService"]), _angular_core__WEBPACK_IMPORTED_MODULE_0__["ɵɵdirectiveInject"](src_app_servicios_proformas_service__WEBPACK_IMPORTED_MODULE_12__["ProformasService"]), _angular_core__WEBPACK_IMPORTED_MODULE_0__["ɵɵdirectiveInject"](src_app_servicios_ordenes_compra_service__WEBPACK_IMPORTED_MODULE_13__["OrdenesCompraService"]), _angular_core__WEBPACK_IMPORTED_MODULE_0__["ɵɵdirectiveInject"](src_app_servicios_authen_service__WEBPACK_IMPORTED_MODULE_14__["AuthenService"]), _angular_core__WEBPACK_IMPORTED_MODULE_0__["ɵɵdirectiveInject"](src_app_servicios_transacciones_service__WEBPACK_IMPORTED_MODULE_15__["TransaccionesService"]), _angular_core__WEBPACK_IMPORTED_MODULE_0__["ɵɵdirectiveInject"](src_app_servicios_producto_service__WEBPACK_IMPORTED_MODULE_16__["ProductoService"]), _angular_core__WEBPACK_IMPORTED_MODULE_0__["ɵɵdirectiveInject"](src_app_servicios_cuentasPorCobrar_service__WEBPACK_IMPORTED_MODULE_17__["CuentasPorCobrarService"]), _angular_core__WEBPACK_IMPORTED_MODULE_0__["ɵɵdirectiveInject"](src_app_servicios_transaccionesFinancieras_service__WEBPACK_IMPORTED_MODULE_18__["TransaccionesFinancierasService"]), _angular_core__WEBPACK_IMPORTED_MODULE_0__["ɵɵdirectiveInject"](src_app_servicios_reciboCaja_service__WEBPACK_IMPORTED_MODULE_19__["ReciboCajaService"]), _angular_core__WEBPACK_IMPORTED_MODULE_0__["ɵɵdirectiveInject"](src_app_servicios_cajaMenor_service__WEBPACK_IMPORTED_MODULE_20__["CajaMenorService"]), _angular_core__WEBPACK_IMPORTED_MODULE_0__["ɵɵdirectiveInject"](src_app_servicios_entregas_bodega_service__WEBPACK_IMPORTED_MODULE_21__["EntregasBodegaService"])); };
 AnulacionesComponent.ɵcmp = _angular_core__WEBPACK_IMPORTED_MODULE_0__["ɵɵdefineComponent"]({ type: AnulacionesComponent, selectors: [["app-anulaciones"]], decls: 2, vars: 2, consts: [["class", "row", 4, "ngIf"], [4, "ngIf"], [1, "row"], [1, "row", "alin2", "titulos", 2, "margin-top", "1em", "margin-right", "1em"], [1, "col-md-8"], [1, "col-md-4"], [1, "form-control", "select", 3, "items", "value", "readOnly", "disabled", "onValueChanged"], [1, "remiPro"], [3, "messagge"], [1, "card"], [1, "card-header", "text-center", "font-weight-bold", "text-uppercase"], [1, "card-body"], [1, "col-md-2"], [1, "col-md-12", 2, "text-align", "center", "font-weight", "bold"], [1, "row", "card"], [1, "col-md-12"], [1, "col-md-3", 2, "margin-top", "0.5em"], [1, "col-md-9"], ["type", "date", 3, "value", "valueChange"], [1, "col-md-4", "btnSearch"], [1, "btn", "btn-block", "btn-success", 2, "background-color", "#ff5722", "border-color", "#ff5722", 3, "click"], [1, "col-md-4", 2, "margin-left", "1em"], [1, "col-md-3"], [1, "col-md-6", "btnSearch"], [1, "col-md-5"], [1, "col-md-7"], [1, "dx-field", "radio"], [1, "dx-field-value"], ["layout", "horizontal", 3, "items", "value", "valueChange", "onValueChanged"], ["id", "gridContainer", 3, "dataSource", "showBorders", "remoteOperations"], ["placeholder", "Buscar...", 3, "visible", "width"], ["dataField", "_id", "caption", "N\u00B0 Orden", "dataType", "string", 3, "visible"], ["dataField", "n_orden", "caption", "N\u00B0 Orden", "dataType", "string", "sortOrder", "desc"], ["dataField", "documento", "caption", "Solicitud #", "dataType", "string"], ["dataField", "sucursal.nombre", "caption", "Sucursal", "dataType", "string"], ["dataField", "proveedor.nombre_proveedor", "caption", "Proveedor", "dataType", "string"], ["dataField", "msjGeneral", "caption", "Motivo de Anulaci\u00F3n", "dataType", "string", 3, "width", 4, "ngIf"], ["dataField", "total", "dataType", "number"], ["type", "buttons", "caption", "Ver"], ["icon", "fa fa-arrow-down", 3, "onClick"], ["type", "buttons", "caption", "Anular", "id", "botones", 4, "ngIf"], ["type", "buttons", "caption", "Aprobar Anul.", "id", "botones", 4, "ngIf"], [3, "autoExpandAll"], ["expand", ""], [3, "pageSize"], [3, "showPageSizeSelector", "allowedPageSizes"], ["dataField", "msjGeneral", "caption", "Motivo de Anulaci\u00F3n", "dataType", "string", 3, "width"], ["type", "buttons", "caption", "Anular", "id", "botones"], ["icon", "clear", 3, "onClick"], ["type", "buttons", "caption", "Aprobar Anul.", "id", "botones"], ["icon", "fa fa-check", 3, "onClick"], ["id", "gridContainer", 3, "dataSource", "showBorders", "remoteOperations", "onExporting", "onExported"], [3, "visible"], ["fileName", "Facturas_ingresadas", 3, "enabled", "allowExportSelectedData"], ["dataField", "documento_n", "caption", "Factura #", "dataType", "string", "sortOrder", "desc"], ["dataField", "fecha2", "caption", "Fecha", "dataType", "string"], ["dataField", "cotizacion", "caption", "Cotizaci\u00F3n", "dataType", "string"], ["dataField", "sucursal", "caption", "Sucursal", "dataType", "string", 3, "groupIndex"], ["dataField", "cliente.cliente_nombre", "caption", "Cliente", "dataType", "string"], ["dataField", "cliente.ruc", "caption", "Cliente", "dataType", "string", 3, "visible"], ["dataField", "tipo_venta", "caption", "Tipo Venta", "dataType", "string", 3, "visible"], ["dataField", "tipo_cliente", "caption", "Tipo Cliente", "dataType", "string", 3, "visible"], ["dataField", "coste_transporte", "caption", "Transporte", "dataType", "string", 3, "visible"], ["dataField", "totalIva", "caption", "Iva", "dataType", "number", 3, "visible"], ["dataField", "total", "caption", "Total", "dataType", "number", 3, "visible"], ["dataField", "username", "caption", "Vendedor", "dataType", "string", 3, "visible"], ["dataField", "mensaje", "caption", "Motivo de Anulaci\u00F3n", "dataType", "string", 3, "visible", 4, "ngIf"], ["dataField", "username", "caption", "Usuario", "dataType", "string", 3, "visible"], ["dataField", "observaciones", "caption", "Observaciones", "dataType", "string", 3, "visible"], ["type", "buttons", "caption", "Anular", 4, "ngIf"], ["type", "buttons", "caption", "Aprobar Anul.", 4, "ngIf"], ["type", "buttons", "caption", "Rechazar", 4, "ngIf"], ["dataField", "mensaje", "caption", "Motivo de Anulaci\u00F3n", "dataType", "string", 3, "visible"], ["type", "buttons", "caption", "Anular"], ["type", "buttons", "caption", "Aprobar Anul."], ["type", "buttons", "caption", "Rechazar"], ["icon", "fa fa-reply", 3, "onClick"]], template: function AnulacionesComponent_Template(rf, ctx) { if (rf & 1) {
         _angular_core__WEBPACK_IMPORTED_MODULE_0__["ɵɵtemplate"](0, AnulacionesComponent_div_0_Template, 1, 0, "div", 0);
         _angular_core__WEBPACK_IMPORTED_MODULE_0__["ɵɵtemplate"](1, AnulacionesComponent_div_1_Template, 11, 9, "div", 1);
@@ -7755,7 +7815,7 @@ AnulacionesComponent.ɵcmp = _angular_core__WEBPACK_IMPORTED_MODULE_0__["ɵɵdef
         _angular_core__WEBPACK_IMPORTED_MODULE_0__["ɵɵproperty"]("ngIf", ctx.mostrarBloqueo);
         _angular_core__WEBPACK_IMPORTED_MODULE_0__["ɵɵadvance"](1);
         _angular_core__WEBPACK_IMPORTED_MODULE_0__["ɵɵproperty"]("ngIf", !ctx.mostrarBloqueo);
-    } }, directives: [_angular_common__WEBPACK_IMPORTED_MODULE_21__["NgIf"], devextreme_angular__WEBPACK_IMPORTED_MODULE_22__["DxSelectBoxComponent"], _loading_message_loading_messagge_component__WEBPACK_IMPORTED_MODULE_23__["LoadingMessaggeComponent"], devextreme_angular__WEBPACK_IMPORTED_MODULE_22__["DxDateBoxComponent"], devextreme_angular__WEBPACK_IMPORTED_MODULE_22__["DxRadioGroupComponent"], devextreme_angular__WEBPACK_IMPORTED_MODULE_22__["DxDataGridComponent"], devextreme_angular_ui_nested__WEBPACK_IMPORTED_MODULE_24__["DxoSearchPanelComponent"], devextreme_angular_ui_nested__WEBPACK_IMPORTED_MODULE_24__["DxiColumnComponent"], devextreme_angular_ui_nested__WEBPACK_IMPORTED_MODULE_24__["DxiButtonComponent"], devextreme_angular_ui_nested__WEBPACK_IMPORTED_MODULE_24__["DxoGroupingComponent"], devextreme_angular_ui_nested__WEBPACK_IMPORTED_MODULE_24__["DxoPagingComponent"], devextreme_angular_ui_nested__WEBPACK_IMPORTED_MODULE_24__["DxoPagerComponent"], devextreme_angular_ui_nested__WEBPACK_IMPORTED_MODULE_24__["DxoFilterRowComponent"], devextreme_angular_ui_nested__WEBPACK_IMPORTED_MODULE_24__["DxoExportComponent"], devextreme_angular_ui_nested__WEBPACK_IMPORTED_MODULE_24__["DxoGroupPanelComponent"]], styles: [".remiPro[_ngcontent-%COMP%] {\n  padding: 2em;\n  margin-top: 2em;\n  margin-bottom: 1.5em;\n}\n\n.remiPro[_ngcontent-%COMP%]   p[_ngcontent-%COMP%] {\n  margin-top: 1em;\n}\n\n.select[_ngcontent-%COMP%] {\n  text-align: center;\n  background-color: white;\n}\n\n.btnSearch[_ngcontent-%COMP%] {\n  text-align: center;\n  margin-top: 0.4em;\n  margin-bottom: 0.4em;\n}\n\n.titulo[_ngcontent-%COMP%] {\n  margin-bottom: 1em;\n  font-weight: bold;\n  text-align: center;\n}\n\nh5[_ngcontent-%COMP%] {\n  font-size: 1.8em;\n}\n\n.alinearBoton[_ngcontent-%COMP%] {\n  text-align: left;\n  margin-bottom: 2em;\n}\n\n.detalle[_ngcontent-%COMP%] {\n  padding: 3em;\n  padding-top: 0em;\n}\n\n.bt[_ngcontent-%COMP%] {\n  background-color: red;\n  color: white;\n}\n\n  .bt .dx-icon {\n  font-size: 12px;\n  color: white;\n}\n\n.bt2[_ngcontent-%COMP%] {\n  background-color: green;\n  color: white;\n}\n\n#historial[_ngcontent-%COMP%] {\n  margin: 2em;\n}\n\n.titulosT[_ngcontent-%COMP%]   h5[_ngcontent-%COMP%] {\n  text-align: center;\n  font-weight: bold;\n}\n\n  .dx-texteditor-input {\n  text-align: center;\n}\n\n  .id .dx-texteditor-input {\n  text-align: center;\n  font-size: 2em;\n  font-weight: bold;\n}\n\n.mover[_ngcontent-%COMP%] {\n  text-align: right;\n}\n\n.btn-xs[_ngcontent-%COMP%] {\n  background-color: red;\n  border: red;\n  text-align: right;\n}\n\n.contenedorPrincipal[_ngcontent-%COMP%] {\n  padding: 2em;\n}\n\n  .dx-theme-material-typography h2 {\n  font-weight: bold;\n  font-size: 40px;\n}\n/*# sourceMappingURL=data:application/json;base64,eyJ2ZXJzaW9uIjozLCJzb3VyY2VzIjpbInNyYy9hcHAvcGFnZXMvYW51bGFjaW9uZXMvQzpcXEZJREVOU1xcYWxvamFiYXNlczIwMjUvc3JjXFxhcHBcXHBhZ2VzXFxhbnVsYWNpb25lc1xcYW51bGFjaW9uZXMuY29tcG9uZW50LnNjc3MiLCJzcmMvYXBwL3BhZ2VzL2FudWxhY2lvbmVzL2FudWxhY2lvbmVzLmNvbXBvbmVudC5zY3NzIl0sIm5hbWVzIjpbXSwibWFwcGluZ3MiOiJBQUFBO0VBQ0ksWUFBQTtFQUNBLGVBQUE7RUFFQSxvQkFBQTtBQ0FKOztBREdBO0VBRVEsZUFBQTtBQ0RSOztBREtBO0VBQ0ksa0JBQUE7RUFDQSx1QkFBQTtBQ0ZKOztBREtBO0VBQ0ksa0JBQUE7RUFDQSxpQkFBQTtFQUNBLG9CQUFBO0FDRko7O0FES0E7RUFDSSxrQkFBQTtFQUNBLGlCQUFBO0VBQ0Esa0JBQUE7QUNGSjs7QURLQTtFQUNJLGdCQUFBO0FDRko7O0FES0E7RUFDSSxnQkFBQTtFQUNBLGtCQUFBO0FDRko7O0FES0E7RUFDSSxZQUFBO0VBQ0EsZ0JBQUE7QUNGSjs7QURLQTtFQUNJLHFCQUFBO0VBQ0EsWUFBQTtBQ0ZKOztBRE1BO0VBQ0ksZUFBQTtFQUNBLFlBQUE7QUNISjs7QURPQTtFQUNJLHVCQUFBO0VBQ0EsWUFBQTtBQ0pKOztBRE9BO0VBQ0ksV0FBQTtBQ0pKOztBRE9BO0VBQ0ksa0JBQUE7RUFDQSxpQkFBQTtBQ0pKOztBRE9BO0VBQ0ksa0JBQUE7QUNKSjs7QURRQTtFQUNJLGtCQUFBO0VBQ0EsY0FBQTtFQUNBLGlCQUFBO0FDTEo7O0FEUUE7RUFDSSxpQkFBQTtBQ0xKOztBRFFBO0VBQ0kscUJBQUE7RUFDQSxXQUFBO0VBQ0EsaUJBQUE7QUNMSjs7QURTQTtFQUNJLFlBQUE7QUNOSjs7QURTQTtFQUNJLGlCQUFBO0VBQ0EsZUFBQTtBQ05KIiwiZmlsZSI6InNyYy9hcHAvcGFnZXMvYW51bGFjaW9uZXMvYW51bGFjaW9uZXMuY29tcG9uZW50LnNjc3MiLCJzb3VyY2VzQ29udGVudCI6WyIucmVtaVByb3tcclxuICAgIHBhZGRpbmc6IDJlbTtcclxuICAgIG1hcmdpbi10b3A6IDJlbTtcclxuIFxyXG4gICAgbWFyZ2luLWJvdHRvbTogMS41ZW07XHJcbiAgICB9XHJcblxyXG4ucmVtaVBybyBwe1xyXG4gICAgICAgXHJcbiAgICAgICAgbWFyZ2luLXRvcDogMWVtO1xyXG4gICAgICAgIFxyXG59XHJcblxyXG4uc2VsZWN0e1xyXG4gICAgdGV4dC1hbGlnbjogY2VudGVyO1xyXG4gICAgYmFja2dyb3VuZC1jb2xvcjogd2hpdGU7XHJcbn1cclxuXHJcbi5idG5TZWFyY2h7XHJcbiAgICB0ZXh0LWFsaWduOiBjZW50ZXI7XHJcbiAgICBtYXJnaW4tdG9wOiAwLjRlbTtcclxuICAgIG1hcmdpbi1ib3R0b206IDAuNGVtO1xyXG59XHJcblxyXG4udGl0dWxve1xyXG4gICAgbWFyZ2luLWJvdHRvbTogMWVtO1xyXG4gICAgZm9udC13ZWlnaHQ6IGJvbGQ7XHJcbiAgICB0ZXh0LWFsaWduOiBjZW50ZXI7XHJcbiAgICBcclxufVxyXG5oNXtcclxuICAgIGZvbnQtc2l6ZTogMS44ZW07XHJcbn1cclxuXHJcbi5hbGluZWFyQm90b257XHJcbiAgICB0ZXh0LWFsaWduOiBsZWZ0O1xyXG4gICAgbWFyZ2luLWJvdHRvbTogMmVtO1xyXG59XHJcblxyXG4uZGV0YWxsZXtcclxuICAgIHBhZGRpbmc6IDNlbTtcclxuICAgIHBhZGRpbmctdG9wOiAwZW07XHJcbn1cclxuXHJcbi5idHtcclxuICAgIGJhY2tncm91bmQtY29sb3I6IHJlZDtcclxuICAgIGNvbG9yOiB3aGl0ZTtcclxuICAgXHJcbn1cclxuXHJcbjo6bmctZGVlcCAuYnQgLmR4LWljb24ge1xyXG4gICAgZm9udC1zaXplOiAxMnB4O1xyXG4gICAgY29sb3I6IHdoaXRlO1xyXG59XHJcblxyXG5cclxuLmJ0MntcclxuICAgIGJhY2tncm91bmQtY29sb3I6IGdyZWVuO1xyXG4gICAgY29sb3I6IHdoaXRlO1xyXG59XHJcblxyXG4jaGlzdG9yaWFse1xyXG4gICAgbWFyZ2luOiAyZW07XHJcbn1cclxuXHJcbi50aXR1bG9zVCBoNXtcclxuICAgIHRleHQtYWxpZ246IGNlbnRlcjtcclxuICAgIGZvbnQtd2VpZ2h0OiBib2xkO1xyXG59XHJcblxyXG46Om5nLWRlZXAgIC5keC10ZXh0ZWRpdG9yLWlucHV0e1xyXG4gICAgdGV4dC1hbGlnbjogY2VudGVyO1xyXG59XHJcblxyXG5cclxuOjpuZy1kZWVwIC5pZCAuZHgtdGV4dGVkaXRvci1pbnB1dHtcclxuICAgIHRleHQtYWxpZ246IGNlbnRlcjtcclxuICAgIGZvbnQtc2l6ZTogMmVtO1xyXG4gICAgZm9udC13ZWlnaHQ6IGJvbGQ7XHJcbn1cclxuXHJcbi5tb3ZlcntcclxuICAgIHRleHQtYWxpZ246IHJpZ2h0O1xyXG59XHJcblxyXG4uYnRuLXhze1xyXG4gICAgYmFja2dyb3VuZC1jb2xvcjogcmVkO1xyXG4gICAgYm9yZGVyOiByZWQ7XHJcbiAgICB0ZXh0LWFsaWduOiByaWdodDtcclxufVxyXG5cclxuXHJcbi5jb250ZW5lZG9yUHJpbmNpcGFse1xyXG4gICAgcGFkZGluZzogMmVtO1xyXG59XHJcblxyXG46Om5nLWRlZXAgLmR4LXRoZW1lLW1hdGVyaWFsLXR5cG9ncmFwaHkgaDIge1xyXG4gICAgZm9udC13ZWlnaHQ6IGJvbGQ7XHJcbiAgICBmb250LXNpemU6IDQwcHg7XHJcbn0iLCIucmVtaVBybyB7XG4gIHBhZGRpbmc6IDJlbTtcbiAgbWFyZ2luLXRvcDogMmVtO1xuICBtYXJnaW4tYm90dG9tOiAxLjVlbTtcbn1cblxuLnJlbWlQcm8gcCB7XG4gIG1hcmdpbi10b3A6IDFlbTtcbn1cblxuLnNlbGVjdCB7XG4gIHRleHQtYWxpZ246IGNlbnRlcjtcbiAgYmFja2dyb3VuZC1jb2xvcjogd2hpdGU7XG59XG5cbi5idG5TZWFyY2gge1xuICB0ZXh0LWFsaWduOiBjZW50ZXI7XG4gIG1hcmdpbi10b3A6IDAuNGVtO1xuICBtYXJnaW4tYm90dG9tOiAwLjRlbTtcbn1cblxuLnRpdHVsbyB7XG4gIG1hcmdpbi1ib3R0b206IDFlbTtcbiAgZm9udC13ZWlnaHQ6IGJvbGQ7XG4gIHRleHQtYWxpZ246IGNlbnRlcjtcbn1cblxuaDUge1xuICBmb250LXNpemU6IDEuOGVtO1xufVxuXG4uYWxpbmVhckJvdG9uIHtcbiAgdGV4dC1hbGlnbjogbGVmdDtcbiAgbWFyZ2luLWJvdHRvbTogMmVtO1xufVxuXG4uZGV0YWxsZSB7XG4gIHBhZGRpbmc6IDNlbTtcbiAgcGFkZGluZy10b3A6IDBlbTtcbn1cblxuLmJ0IHtcbiAgYmFja2dyb3VuZC1jb2xvcjogcmVkO1xuICBjb2xvcjogd2hpdGU7XG59XG5cbjo6bmctZGVlcCAuYnQgLmR4LWljb24ge1xuICBmb250LXNpemU6IDEycHg7XG4gIGNvbG9yOiB3aGl0ZTtcbn1cblxuLmJ0MiB7XG4gIGJhY2tncm91bmQtY29sb3I6IGdyZWVuO1xuICBjb2xvcjogd2hpdGU7XG59XG5cbiNoaXN0b3JpYWwge1xuICBtYXJnaW46IDJlbTtcbn1cblxuLnRpdHVsb3NUIGg1IHtcbiAgdGV4dC1hbGlnbjogY2VudGVyO1xuICBmb250LXdlaWdodDogYm9sZDtcbn1cblxuOjpuZy1kZWVwIC5keC10ZXh0ZWRpdG9yLWlucHV0IHtcbiAgdGV4dC1hbGlnbjogY2VudGVyO1xufVxuXG46Om5nLWRlZXAgLmlkIC5keC10ZXh0ZWRpdG9yLWlucHV0IHtcbiAgdGV4dC1hbGlnbjogY2VudGVyO1xuICBmb250LXNpemU6IDJlbTtcbiAgZm9udC13ZWlnaHQ6IGJvbGQ7XG59XG5cbi5tb3ZlciB7XG4gIHRleHQtYWxpZ246IHJpZ2h0O1xufVxuXG4uYnRuLXhzIHtcbiAgYmFja2dyb3VuZC1jb2xvcjogcmVkO1xuICBib3JkZXI6IHJlZDtcbiAgdGV4dC1hbGlnbjogcmlnaHQ7XG59XG5cbi5jb250ZW5lZG9yUHJpbmNpcGFsIHtcbiAgcGFkZGluZzogMmVtO1xufVxuXG46Om5nLWRlZXAgLmR4LXRoZW1lLW1hdGVyaWFsLXR5cG9ncmFwaHkgaDIge1xuICBmb250LXdlaWdodDogYm9sZDtcbiAgZm9udC1zaXplOiA0MHB4O1xufSJdfQ== */"] });
+    } }, directives: [_angular_common__WEBPACK_IMPORTED_MODULE_22__["NgIf"], devextreme_angular__WEBPACK_IMPORTED_MODULE_23__["DxSelectBoxComponent"], _loading_message_loading_messagge_component__WEBPACK_IMPORTED_MODULE_24__["LoadingMessaggeComponent"], devextreme_angular__WEBPACK_IMPORTED_MODULE_23__["DxDateBoxComponent"], devextreme_angular__WEBPACK_IMPORTED_MODULE_23__["DxRadioGroupComponent"], devextreme_angular__WEBPACK_IMPORTED_MODULE_23__["DxDataGridComponent"], devextreme_angular_ui_nested__WEBPACK_IMPORTED_MODULE_25__["DxoSearchPanelComponent"], devextreme_angular_ui_nested__WEBPACK_IMPORTED_MODULE_25__["DxiColumnComponent"], devextreme_angular_ui_nested__WEBPACK_IMPORTED_MODULE_25__["DxiButtonComponent"], devextreme_angular_ui_nested__WEBPACK_IMPORTED_MODULE_25__["DxoGroupingComponent"], devextreme_angular_ui_nested__WEBPACK_IMPORTED_MODULE_25__["DxoPagingComponent"], devextreme_angular_ui_nested__WEBPACK_IMPORTED_MODULE_25__["DxoPagerComponent"], devextreme_angular_ui_nested__WEBPACK_IMPORTED_MODULE_25__["DxoFilterRowComponent"], devextreme_angular_ui_nested__WEBPACK_IMPORTED_MODULE_25__["DxoExportComponent"], devextreme_angular_ui_nested__WEBPACK_IMPORTED_MODULE_25__["DxoGroupPanelComponent"]], styles: [".remiPro[_ngcontent-%COMP%] {\n  padding: 2em;\n  margin-top: 2em;\n  margin-bottom: 1.5em;\n}\n\n.remiPro[_ngcontent-%COMP%]   p[_ngcontent-%COMP%] {\n  margin-top: 1em;\n}\n\n.select[_ngcontent-%COMP%] {\n  text-align: center;\n  background-color: white;\n}\n\n.btnSearch[_ngcontent-%COMP%] {\n  text-align: center;\n  margin-top: 0.4em;\n  margin-bottom: 0.4em;\n}\n\n.titulo[_ngcontent-%COMP%] {\n  margin-bottom: 1em;\n  font-weight: bold;\n  text-align: center;\n}\n\nh5[_ngcontent-%COMP%] {\n  font-size: 1.8em;\n}\n\n.alinearBoton[_ngcontent-%COMP%] {\n  text-align: left;\n  margin-bottom: 2em;\n}\n\n.detalle[_ngcontent-%COMP%] {\n  padding: 3em;\n  padding-top: 0em;\n}\n\n.bt[_ngcontent-%COMP%] {\n  background-color: red;\n  color: white;\n}\n\n  .bt .dx-icon {\n  font-size: 12px;\n  color: white;\n}\n\n.bt2[_ngcontent-%COMP%] {\n  background-color: green;\n  color: white;\n}\n\n#historial[_ngcontent-%COMP%] {\n  margin: 2em;\n}\n\n.titulosT[_ngcontent-%COMP%]   h5[_ngcontent-%COMP%] {\n  text-align: center;\n  font-weight: bold;\n}\n\n  .dx-texteditor-input {\n  text-align: center;\n}\n\n  .id .dx-texteditor-input {\n  text-align: center;\n  font-size: 2em;\n  font-weight: bold;\n}\n\n.mover[_ngcontent-%COMP%] {\n  text-align: right;\n}\n\n.btn-xs[_ngcontent-%COMP%] {\n  background-color: red;\n  border: red;\n  text-align: right;\n}\n\n.contenedorPrincipal[_ngcontent-%COMP%] {\n  padding: 2em;\n}\n\n  .dx-theme-material-typography h2 {\n  font-weight: bold;\n  font-size: 40px;\n}\n/*# sourceMappingURL=data:application/json;base64,eyJ2ZXJzaW9uIjozLCJzb3VyY2VzIjpbInNyYy9hcHAvcGFnZXMvYW51bGFjaW9uZXMvQzpcXEZJREVOU1xcYWxvamFiYXNlczIwMjUvc3JjXFxhcHBcXHBhZ2VzXFxhbnVsYWNpb25lc1xcYW51bGFjaW9uZXMuY29tcG9uZW50LnNjc3MiLCJzcmMvYXBwL3BhZ2VzL2FudWxhY2lvbmVzL2FudWxhY2lvbmVzLmNvbXBvbmVudC5zY3NzIl0sIm5hbWVzIjpbXSwibWFwcGluZ3MiOiJBQUFBO0VBQ0ksWUFBQTtFQUNBLGVBQUE7RUFFQSxvQkFBQTtBQ0FKOztBREdBO0VBRVEsZUFBQTtBQ0RSOztBREtBO0VBQ0ksa0JBQUE7RUFDQSx1QkFBQTtBQ0ZKOztBREtBO0VBQ0ksa0JBQUE7RUFDQSxpQkFBQTtFQUNBLG9CQUFBO0FDRko7O0FES0E7RUFDSSxrQkFBQTtFQUNBLGlCQUFBO0VBQ0Esa0JBQUE7QUNGSjs7QURLQTtFQUNJLGdCQUFBO0FDRko7O0FES0E7RUFDSSxnQkFBQTtFQUNBLGtCQUFBO0FDRko7O0FES0E7RUFDSSxZQUFBO0VBQ0EsZ0JBQUE7QUNGSjs7QURLQTtFQUNJLHFCQUFBO0VBQ0EsWUFBQTtBQ0ZKOztBRE1BO0VBQ0ksZUFBQTtFQUNBLFlBQUE7QUNISjs7QURPQTtFQUNJLHVCQUFBO0VBQ0EsWUFBQTtBQ0pKOztBRE9BO0VBQ0ksV0FBQTtBQ0pKOztBRE9BO0VBQ0ksa0JBQUE7RUFDQSxpQkFBQTtBQ0pKOztBRE9BO0VBQ0ksa0JBQUE7QUNKSjs7QURRQTtFQUNJLGtCQUFBO0VBQ0EsY0FBQTtFQUNBLGlCQUFBO0FDTEo7O0FEUUE7RUFDSSxpQkFBQTtBQ0xKOztBRFFBO0VBQ0kscUJBQUE7RUFDQSxXQUFBO0VBQ0EsaUJBQUE7QUNMSjs7QURTQTtFQUNJLFlBQUE7QUNOSjs7QURTQTtFQUNJLGlCQUFBO0VBQ0EsZUFBQTtBQ05KIiwiZmlsZSI6InNyYy9hcHAvcGFnZXMvYW51bGFjaW9uZXMvYW51bGFjaW9uZXMuY29tcG9uZW50LnNjc3MiLCJzb3VyY2VzQ29udGVudCI6WyIucmVtaVByb3tcclxuICAgIHBhZGRpbmc6IDJlbTtcclxuICAgIG1hcmdpbi10b3A6IDJlbTtcclxuIFxyXG4gICAgbWFyZ2luLWJvdHRvbTogMS41ZW07XHJcbiAgICB9XHJcblxyXG4ucmVtaVBybyBwe1xyXG4gICAgICAgXHJcbiAgICAgICAgbWFyZ2luLXRvcDogMWVtO1xyXG4gICAgICAgIFxyXG59XHJcblxyXG4uc2VsZWN0e1xyXG4gICAgdGV4dC1hbGlnbjogY2VudGVyO1xyXG4gICAgYmFja2dyb3VuZC1jb2xvcjogd2hpdGU7XHJcbn1cclxuXHJcbi5idG5TZWFyY2h7XHJcbiAgICB0ZXh0LWFsaWduOiBjZW50ZXI7XHJcbiAgICBtYXJnaW4tdG9wOiAwLjRlbTtcclxuICAgIG1hcmdpbi1ib3R0b206IDAuNGVtO1xyXG59XHJcblxyXG4udGl0dWxve1xyXG4gICAgbWFyZ2luLWJvdHRvbTogMWVtO1xyXG4gICAgZm9udC13ZWlnaHQ6IGJvbGQ7XHJcbiAgICB0ZXh0LWFsaWduOiBjZW50ZXI7XHJcbiAgICBcclxufVxyXG5oNXtcclxuICAgIGZvbnQtc2l6ZTogMS44ZW07XHJcbn1cclxuXHJcbi5hbGluZWFyQm90b257XHJcbiAgICB0ZXh0LWFsaWduOiBsZWZ0O1xyXG4gICAgbWFyZ2luLWJvdHRvbTogMmVtO1xyXG59XHJcblxyXG4uZGV0YWxsZXtcclxuICAgIHBhZGRpbmc6IDNlbTtcclxuICAgIHBhZGRpbmctdG9wOiAwZW07XHJcbn1cclxuXHJcbi5idHtcclxuICAgIGJhY2tncm91bmQtY29sb3I6IHJlZDtcclxuICAgIGNvbG9yOiB3aGl0ZTtcclxuICAgXHJcbn1cclxuXHJcbjo6bmctZGVlcCAuYnQgLmR4LWljb24ge1xyXG4gICAgZm9udC1zaXplOiAxMnB4O1xyXG4gICAgY29sb3I6IHdoaXRlO1xyXG59XHJcblxyXG5cclxuLmJ0MntcclxuICAgIGJhY2tncm91bmQtY29sb3I6IGdyZWVuO1xyXG4gICAgY29sb3I6IHdoaXRlO1xyXG59XHJcblxyXG4jaGlzdG9yaWFse1xyXG4gICAgbWFyZ2luOiAyZW07XHJcbn1cclxuXHJcbi50aXR1bG9zVCBoNXtcclxuICAgIHRleHQtYWxpZ246IGNlbnRlcjtcclxuICAgIGZvbnQtd2VpZ2h0OiBib2xkO1xyXG59XHJcblxyXG46Om5nLWRlZXAgIC5keC10ZXh0ZWRpdG9yLWlucHV0e1xyXG4gICAgdGV4dC1hbGlnbjogY2VudGVyO1xyXG59XHJcblxyXG5cclxuOjpuZy1kZWVwIC5pZCAuZHgtdGV4dGVkaXRvci1pbnB1dHtcclxuICAgIHRleHQtYWxpZ246IGNlbnRlcjtcclxuICAgIGZvbnQtc2l6ZTogMmVtO1xyXG4gICAgZm9udC13ZWlnaHQ6IGJvbGQ7XHJcbn1cclxuXHJcbi5tb3ZlcntcclxuICAgIHRleHQtYWxpZ246IHJpZ2h0O1xyXG59XHJcblxyXG4uYnRuLXhze1xyXG4gICAgYmFja2dyb3VuZC1jb2xvcjogcmVkO1xyXG4gICAgYm9yZGVyOiByZWQ7XHJcbiAgICB0ZXh0LWFsaWduOiByaWdodDtcclxufVxyXG5cclxuXHJcbi5jb250ZW5lZG9yUHJpbmNpcGFse1xyXG4gICAgcGFkZGluZzogMmVtO1xyXG59XHJcblxyXG46Om5nLWRlZXAgLmR4LXRoZW1lLW1hdGVyaWFsLXR5cG9ncmFwaHkgaDIge1xyXG4gICAgZm9udC13ZWlnaHQ6IGJvbGQ7XHJcbiAgICBmb250LXNpemU6IDQwcHg7XHJcbn0iLCIucmVtaVBybyB7XG4gIHBhZGRpbmc6IDJlbTtcbiAgbWFyZ2luLXRvcDogMmVtO1xuICBtYXJnaW4tYm90dG9tOiAxLjVlbTtcbn1cblxuLnJlbWlQcm8gcCB7XG4gIG1hcmdpbi10b3A6IDFlbTtcbn1cblxuLnNlbGVjdCB7XG4gIHRleHQtYWxpZ246IGNlbnRlcjtcbiAgYmFja2dyb3VuZC1jb2xvcjogd2hpdGU7XG59XG5cbi5idG5TZWFyY2gge1xuICB0ZXh0LWFsaWduOiBjZW50ZXI7XG4gIG1hcmdpbi10b3A6IDAuNGVtO1xuICBtYXJnaW4tYm90dG9tOiAwLjRlbTtcbn1cblxuLnRpdHVsbyB7XG4gIG1hcmdpbi1ib3R0b206IDFlbTtcbiAgZm9udC13ZWlnaHQ6IGJvbGQ7XG4gIHRleHQtYWxpZ246IGNlbnRlcjtcbn1cblxuaDUge1xuICBmb250LXNpemU6IDEuOGVtO1xufVxuXG4uYWxpbmVhckJvdG9uIHtcbiAgdGV4dC1hbGlnbjogbGVmdDtcbiAgbWFyZ2luLWJvdHRvbTogMmVtO1xufVxuXG4uZGV0YWxsZSB7XG4gIHBhZGRpbmc6IDNlbTtcbiAgcGFkZGluZy10b3A6IDBlbTtcbn1cblxuLmJ0IHtcbiAgYmFja2dyb3VuZC1jb2xvcjogcmVkO1xuICBjb2xvcjogd2hpdGU7XG59XG5cbjo6bmctZGVlcCAuYnQgLmR4LWljb24ge1xuICBmb250LXNpemU6IDEycHg7XG4gIGNvbG9yOiB3aGl0ZTtcbn1cblxuLmJ0MiB7XG4gIGJhY2tncm91bmQtY29sb3I6IGdyZWVuO1xuICBjb2xvcjogd2hpdGU7XG59XG5cbiNoaXN0b3JpYWwge1xuICBtYXJnaW46IDJlbTtcbn1cblxuLnRpdHVsb3NUIGg1IHtcbiAgdGV4dC1hbGlnbjogY2VudGVyO1xuICBmb250LXdlaWdodDogYm9sZDtcbn1cblxuOjpuZy1kZWVwIC5keC10ZXh0ZWRpdG9yLWlucHV0IHtcbiAgdGV4dC1hbGlnbjogY2VudGVyO1xufVxuXG46Om5nLWRlZXAgLmlkIC5keC10ZXh0ZWRpdG9yLWlucHV0IHtcbiAgdGV4dC1hbGlnbjogY2VudGVyO1xuICBmb250LXNpemU6IDJlbTtcbiAgZm9udC13ZWlnaHQ6IGJvbGQ7XG59XG5cbi5tb3ZlciB7XG4gIHRleHQtYWxpZ246IHJpZ2h0O1xufVxuXG4uYnRuLXhzIHtcbiAgYmFja2dyb3VuZC1jb2xvcjogcmVkO1xuICBib3JkZXI6IHJlZDtcbiAgdGV4dC1hbGlnbjogcmlnaHQ7XG59XG5cbi5jb250ZW5lZG9yUHJpbmNpcGFsIHtcbiAgcGFkZGluZzogMmVtO1xufVxuXG46Om5nLWRlZXAgLmR4LXRoZW1lLW1hdGVyaWFsLXR5cG9ncmFwaHkgaDIge1xuICBmb250LXdlaWdodDogYm9sZDtcbiAgZm9udC1zaXplOiA0MHB4O1xufSJdfQ== */"] });
 /*@__PURE__*/ (function () { _angular_core__WEBPACK_IMPORTED_MODULE_0__["ɵsetClassMetadata"](AnulacionesComponent, [{
         type: _angular_core__WEBPACK_IMPORTED_MODULE_0__["Component"],
         args: [{
@@ -7763,7 +7823,7 @@ AnulacionesComponent.ɵcmp = _angular_core__WEBPACK_IMPORTED_MODULE_0__["ɵɵdef
                 templateUrl: './anulaciones.component.html',
                 styleUrls: ['./anulaciones.component.scss']
             }]
-    }], function () { return [{ type: src_app_servicios_parametrizaciones_service__WEBPACK_IMPORTED_MODULE_6__["ParametrizacionesService"] }, { type: src_app_servicios_datosConfiguracion_service__WEBPACK_IMPORTED_MODULE_7__["DatosConfiguracionService"] }, { type: src_app_servicios_facturas_proveedor_service__WEBPACK_IMPORTED_MODULE_8__["FacturasProveedorService"] }, { type: src_app_servicios_contadores_documentos_service__WEBPACK_IMPORTED_MODULE_9__["ContadoresDocumentosService"] }, { type: src_app_servicios_notas_ventas_service__WEBPACK_IMPORTED_MODULE_10__["NotasVentasService"] }, { type: src_app_servicios_facturas_service__WEBPACK_IMPORTED_MODULE_11__["FacturasService"] }, { type: src_app_servicios_proformas_service__WEBPACK_IMPORTED_MODULE_12__["ProformasService"] }, { type: src_app_servicios_ordenes_compra_service__WEBPACK_IMPORTED_MODULE_13__["OrdenesCompraService"] }, { type: src_app_servicios_authen_service__WEBPACK_IMPORTED_MODULE_14__["AuthenService"] }, { type: src_app_servicios_transacciones_service__WEBPACK_IMPORTED_MODULE_15__["TransaccionesService"] }, { type: src_app_servicios_producto_service__WEBPACK_IMPORTED_MODULE_16__["ProductoService"] }, { type: src_app_servicios_cuentasPorCobrar_service__WEBPACK_IMPORTED_MODULE_17__["CuentasPorCobrarService"] }, { type: src_app_servicios_transaccionesFinancieras_service__WEBPACK_IMPORTED_MODULE_18__["TransaccionesFinancierasService"] }, { type: src_app_servicios_reciboCaja_service__WEBPACK_IMPORTED_MODULE_19__["ReciboCajaService"] }, { type: src_app_servicios_cajaMenor_service__WEBPACK_IMPORTED_MODULE_20__["CajaMenorService"] }]; }, null); })();
+    }], function () { return [{ type: src_app_servicios_parametrizaciones_service__WEBPACK_IMPORTED_MODULE_6__["ParametrizacionesService"] }, { type: src_app_servicios_datosConfiguracion_service__WEBPACK_IMPORTED_MODULE_7__["DatosConfiguracionService"] }, { type: src_app_servicios_facturas_proveedor_service__WEBPACK_IMPORTED_MODULE_8__["FacturasProveedorService"] }, { type: src_app_servicios_contadores_documentos_service__WEBPACK_IMPORTED_MODULE_9__["ContadoresDocumentosService"] }, { type: src_app_servicios_notas_ventas_service__WEBPACK_IMPORTED_MODULE_10__["NotasVentasService"] }, { type: src_app_servicios_facturas_service__WEBPACK_IMPORTED_MODULE_11__["FacturasService"] }, { type: src_app_servicios_proformas_service__WEBPACK_IMPORTED_MODULE_12__["ProformasService"] }, { type: src_app_servicios_ordenes_compra_service__WEBPACK_IMPORTED_MODULE_13__["OrdenesCompraService"] }, { type: src_app_servicios_authen_service__WEBPACK_IMPORTED_MODULE_14__["AuthenService"] }, { type: src_app_servicios_transacciones_service__WEBPACK_IMPORTED_MODULE_15__["TransaccionesService"] }, { type: src_app_servicios_producto_service__WEBPACK_IMPORTED_MODULE_16__["ProductoService"] }, { type: src_app_servicios_cuentasPorCobrar_service__WEBPACK_IMPORTED_MODULE_17__["CuentasPorCobrarService"] }, { type: src_app_servicios_transaccionesFinancieras_service__WEBPACK_IMPORTED_MODULE_18__["TransaccionesFinancierasService"] }, { type: src_app_servicios_reciboCaja_service__WEBPACK_IMPORTED_MODULE_19__["ReciboCajaService"] }, { type: src_app_servicios_cajaMenor_service__WEBPACK_IMPORTED_MODULE_20__["CajaMenorService"] }, { type: src_app_servicios_entregas_bodega_service__WEBPACK_IMPORTED_MODULE_21__["EntregasBodegaService"] }]; }, null); })();
 
 
 /***/ }),
@@ -51168,20 +51228,22 @@ class productoqr {
 "use strict";
 __webpack_require__.r(__webpack_exports__);
 /* harmony export (binding) */ __webpack_require__.d(__webpack_exports__, "GestionEntregasBodegaComponent", function() { return GestionEntregasBodegaComponent; });
-/* harmony import */ var _angular_core__WEBPACK_IMPORTED_MODULE_0__ = __webpack_require__(/*! @angular/core */ "./node_modules/@angular/core/__ivy_ngcc__/fesm2015/core.js");
-/* harmony import */ var sweetalert2__WEBPACK_IMPORTED_MODULE_1__ = __webpack_require__(/*! sweetalert2 */ "./node_modules/sweetalert2/dist/sweetalert2.all.js");
-/* harmony import */ var sweetalert2__WEBPACK_IMPORTED_MODULE_1___default = /*#__PURE__*/__webpack_require__.n(sweetalert2__WEBPACK_IMPORTED_MODULE_1__);
-/* harmony import */ var src_app_servicios_entregas_bodega_service__WEBPACK_IMPORTED_MODULE_2__ = __webpack_require__(/*! src/app/servicios/entregas-bodega.service */ "./src/app/servicios/entregas-bodega.service.ts");
-/* harmony import */ var src_app_shared_services__WEBPACK_IMPORTED_MODULE_3__ = __webpack_require__(/*! src/app/shared/services */ "./src/app/shared/services/index.ts");
-/* harmony import */ var devextreme_angular__WEBPACK_IMPORTED_MODULE_4__ = __webpack_require__(/*! devextreme-angular */ "./node_modules/devextreme-angular/__ivy_ngcc__/fesm2015/devextreme-angular.js");
-/* harmony import */ var _angular_common__WEBPACK_IMPORTED_MODULE_5__ = __webpack_require__(/*! @angular/common */ "./node_modules/@angular/common/__ivy_ngcc__/fesm2015/common.js");
-/* harmony import */ var devextreme_angular_core__WEBPACK_IMPORTED_MODULE_6__ = __webpack_require__(/*! devextreme-angular/core */ "./node_modules/devextreme-angular/__ivy_ngcc__/fesm2015/devextreme-angular-core.js");
-/* harmony import */ var devextreme_angular_ui_text_box__WEBPACK_IMPORTED_MODULE_7__ = __webpack_require__(/*! devextreme-angular/ui/text-box */ "./node_modules/devextreme-angular/__ivy_ngcc__/fesm2015/devextreme-angular-ui-text-box.js");
-/* harmony import */ var devextreme_angular_ui_button__WEBPACK_IMPORTED_MODULE_8__ = __webpack_require__(/*! devextreme-angular/ui/button */ "./node_modules/devextreme-angular/__ivy_ngcc__/fesm2015/devextreme-angular-ui-button.js");
-/* harmony import */ var devextreme_angular_ui_check_box__WEBPACK_IMPORTED_MODULE_9__ = __webpack_require__(/*! devextreme-angular/ui/check-box */ "./node_modules/devextreme-angular/__ivy_ngcc__/fesm2015/devextreme-angular-ui-check-box.js");
-/* harmony import */ var _loading_loading_component__WEBPACK_IMPORTED_MODULE_10__ = __webpack_require__(/*! ../loading/loading.component */ "./src/app/pages/loading/loading.component.ts");
-/* harmony import */ var devextreme_angular_ui_nested__WEBPACK_IMPORTED_MODULE_11__ = __webpack_require__(/*! devextreme-angular/ui/nested */ "./node_modules/devextreme-angular/__ivy_ngcc__/fesm2015/devextreme-angular-ui-nested.js");
-/* harmony import */ var devextreme_angular_ui_scroll_view__WEBPACK_IMPORTED_MODULE_12__ = __webpack_require__(/*! devextreme-angular/ui/scroll-view */ "./node_modules/devextreme-angular/__ivy_ngcc__/fesm2015/devextreme-angular-ui-scroll-view.js");
+/* harmony import */ var tslib__WEBPACK_IMPORTED_MODULE_0__ = __webpack_require__(/*! tslib */ "./node_modules/tslib/tslib.es6.js");
+/* harmony import */ var _angular_core__WEBPACK_IMPORTED_MODULE_1__ = __webpack_require__(/*! @angular/core */ "./node_modules/@angular/core/__ivy_ngcc__/fesm2015/core.js");
+/* harmony import */ var sweetalert2__WEBPACK_IMPORTED_MODULE_2__ = __webpack_require__(/*! sweetalert2 */ "./node_modules/sweetalert2/dist/sweetalert2.all.js");
+/* harmony import */ var sweetalert2__WEBPACK_IMPORTED_MODULE_2___default = /*#__PURE__*/__webpack_require__.n(sweetalert2__WEBPACK_IMPORTED_MODULE_2__);
+/* harmony import */ var src_app_servicios_entregas_bodega_service__WEBPACK_IMPORTED_MODULE_3__ = __webpack_require__(/*! src/app/servicios/entregas-bodega.service */ "./src/app/servicios/entregas-bodega.service.ts");
+/* harmony import */ var src_app_shared_services__WEBPACK_IMPORTED_MODULE_4__ = __webpack_require__(/*! src/app/shared/services */ "./src/app/shared/services/index.ts");
+/* harmony import */ var devextreme_angular__WEBPACK_IMPORTED_MODULE_5__ = __webpack_require__(/*! devextreme-angular */ "./node_modules/devextreme-angular/__ivy_ngcc__/fesm2015/devextreme-angular.js");
+/* harmony import */ var _angular_common__WEBPACK_IMPORTED_MODULE_6__ = __webpack_require__(/*! @angular/common */ "./node_modules/@angular/common/__ivy_ngcc__/fesm2015/common.js");
+/* harmony import */ var devextreme_angular_core__WEBPACK_IMPORTED_MODULE_7__ = __webpack_require__(/*! devextreme-angular/core */ "./node_modules/devextreme-angular/__ivy_ngcc__/fesm2015/devextreme-angular-core.js");
+/* harmony import */ var devextreme_angular_ui_text_box__WEBPACK_IMPORTED_MODULE_8__ = __webpack_require__(/*! devextreme-angular/ui/text-box */ "./node_modules/devextreme-angular/__ivy_ngcc__/fesm2015/devextreme-angular-ui-text-box.js");
+/* harmony import */ var devextreme_angular_ui_button__WEBPACK_IMPORTED_MODULE_9__ = __webpack_require__(/*! devextreme-angular/ui/button */ "./node_modules/devextreme-angular/__ivy_ngcc__/fesm2015/devextreme-angular-ui-button.js");
+/* harmony import */ var devextreme_angular_ui_check_box__WEBPACK_IMPORTED_MODULE_10__ = __webpack_require__(/*! devextreme-angular/ui/check-box */ "./node_modules/devextreme-angular/__ivy_ngcc__/fesm2015/devextreme-angular-ui-check-box.js");
+/* harmony import */ var _loading_loading_component__WEBPACK_IMPORTED_MODULE_11__ = __webpack_require__(/*! ../loading/loading.component */ "./src/app/pages/loading/loading.component.ts");
+/* harmony import */ var devextreme_angular_ui_nested__WEBPACK_IMPORTED_MODULE_12__ = __webpack_require__(/*! devextreme-angular/ui/nested */ "./node_modules/devextreme-angular/__ivy_ngcc__/fesm2015/devextreme-angular-ui-nested.js");
+/* harmony import */ var devextreme_angular_ui_scroll_view__WEBPACK_IMPORTED_MODULE_13__ = __webpack_require__(/*! devextreme-angular/ui/scroll-view */ "./node_modules/devextreme-angular/__ivy_ngcc__/fesm2015/devextreme-angular-ui-scroll-view.js");
+
 
 
 
@@ -51197,881 +51259,1192 @@ __webpack_require__.r(__webpack_exports__);
 
 
 function GestionEntregasBodegaComponent_div_3_div_28_Template(rf, ctx) { if (rf & 1) {
-    const _r7 = _angular_core__WEBPACK_IMPORTED_MODULE_0__["ɵɵgetCurrentView"]();
-    _angular_core__WEBPACK_IMPORTED_MODULE_0__["ɵɵelementStart"](0, "div", 22);
-    _angular_core__WEBPACK_IMPORTED_MODULE_0__["ɵɵelementStart"](1, "div", 23);
-    _angular_core__WEBPACK_IMPORTED_MODULE_0__["ɵɵelementStart"](2, "dx-check-box", 24);
-    _angular_core__WEBPACK_IMPORTED_MODULE_0__["ɵɵlistener"]("valueChange", function GestionEntregasBodegaComponent_div_3_div_28_Template_dx_check_box_valueChange_2_listener($event) { _angular_core__WEBPACK_IMPORTED_MODULE_0__["ɵɵrestoreView"](_r7); const ctx_r6 = _angular_core__WEBPACK_IMPORTED_MODULE_0__["ɵɵnextContext"](2); return ctx_r6.incluirCerradas = $event; });
-    _angular_core__WEBPACK_IMPORTED_MODULE_0__["ɵɵelementEnd"]();
-    _angular_core__WEBPACK_IMPORTED_MODULE_0__["ɵɵelementStart"](3, "span", 25);
-    _angular_core__WEBPACK_IMPORTED_MODULE_0__["ɵɵtext"](4, " Incluir cerradas (todos los estados) ");
-    _angular_core__WEBPACK_IMPORTED_MODULE_0__["ɵɵelementEnd"]();
-    _angular_core__WEBPACK_IMPORTED_MODULE_0__["ɵɵelementEnd"]();
-    _angular_core__WEBPACK_IMPORTED_MODULE_0__["ɵɵelementEnd"]();
+    const _r8 = _angular_core__WEBPACK_IMPORTED_MODULE_1__["ɵɵgetCurrentView"]();
+    _angular_core__WEBPACK_IMPORTED_MODULE_1__["ɵɵelementStart"](0, "div", 24);
+    _angular_core__WEBPACK_IMPORTED_MODULE_1__["ɵɵelementStart"](1, "div", 25);
+    _angular_core__WEBPACK_IMPORTED_MODULE_1__["ɵɵelementStart"](2, "dx-check-box", 26);
+    _angular_core__WEBPACK_IMPORTED_MODULE_1__["ɵɵlistener"]("valueChange", function GestionEntregasBodegaComponent_div_3_div_28_Template_dx_check_box_valueChange_2_listener($event) { _angular_core__WEBPACK_IMPORTED_MODULE_1__["ɵɵrestoreView"](_r8); const ctx_r7 = _angular_core__WEBPACK_IMPORTED_MODULE_1__["ɵɵnextContext"](2); return ctx_r7.incluirCerradas = $event; });
+    _angular_core__WEBPACK_IMPORTED_MODULE_1__["ɵɵelementEnd"]();
+    _angular_core__WEBPACK_IMPORTED_MODULE_1__["ɵɵelementStart"](3, "span", 27);
+    _angular_core__WEBPACK_IMPORTED_MODULE_1__["ɵɵtext"](4, " Incluir cerradas (todos los estados) ");
+    _angular_core__WEBPACK_IMPORTED_MODULE_1__["ɵɵelementEnd"]();
+    _angular_core__WEBPACK_IMPORTED_MODULE_1__["ɵɵelementEnd"]();
+    _angular_core__WEBPACK_IMPORTED_MODULE_1__["ɵɵelementEnd"]();
 } if (rf & 2) {
-    const ctx_r5 = _angular_core__WEBPACK_IMPORTED_MODULE_0__["ɵɵnextContext"](2);
-    _angular_core__WEBPACK_IMPORTED_MODULE_0__["ɵɵadvance"](2);
-    _angular_core__WEBPACK_IMPORTED_MODULE_0__["ɵɵproperty"]("value", ctx_r5.incluirCerradas)("readOnly", true);
+    const ctx_r6 = _angular_core__WEBPACK_IMPORTED_MODULE_1__["ɵɵnextContext"](2);
+    _angular_core__WEBPACK_IMPORTED_MODULE_1__["ɵɵadvance"](2);
+    _angular_core__WEBPACK_IMPORTED_MODULE_1__["ɵɵproperty"]("value", ctx_r6.incluirCerradas)("readOnly", true);
 } }
 function GestionEntregasBodegaComponent_div_3_Template(rf, ctx) { if (rf & 1) {
-    const _r9 = _angular_core__WEBPACK_IMPORTED_MODULE_0__["ɵɵgetCurrentView"]();
-    _angular_core__WEBPACK_IMPORTED_MODULE_0__["ɵɵelementStart"](0, "div", 6);
-    _angular_core__WEBPACK_IMPORTED_MODULE_0__["ɵɵelementStart"](1, "div", 7);
-    _angular_core__WEBPACK_IMPORTED_MODULE_0__["ɵɵelementStart"](2, "h5", 8);
-    _angular_core__WEBPACK_IMPORTED_MODULE_0__["ɵɵtext"](3, " Gesti\u00F3n entregas de bodega ");
-    _angular_core__WEBPACK_IMPORTED_MODULE_0__["ɵɵelementEnd"]();
-    _angular_core__WEBPACK_IMPORTED_MODULE_0__["ɵɵelementStart"](4, "div", 9);
-    _angular_core__WEBPACK_IMPORTED_MODULE_0__["ɵɵelementStart"](5, "div", 10);
-    _angular_core__WEBPACK_IMPORTED_MODULE_0__["ɵɵelementStart"](6, "div", 11);
-    _angular_core__WEBPACK_IMPORTED_MODULE_0__["ɵɵelementStart"](7, "div", 12);
-    _angular_core__WEBPACK_IMPORTED_MODULE_0__["ɵɵelementStart"](8, "div", 13);
-    _angular_core__WEBPACK_IMPORTED_MODULE_0__["ɵɵelementStart"](9, "label", 14);
-    _angular_core__WEBPACK_IMPORTED_MODULE_0__["ɵɵtext"](10, "Documento");
-    _angular_core__WEBPACK_IMPORTED_MODULE_0__["ɵɵelementEnd"]();
-    _angular_core__WEBPACK_IMPORTED_MODULE_0__["ɵɵelementStart"](11, "div", 15);
-    _angular_core__WEBPACK_IMPORTED_MODULE_0__["ɵɵelementStart"](12, "dx-number-box", 16);
-    _angular_core__WEBPACK_IMPORTED_MODULE_0__["ɵɵlistener"]("valueChange", function GestionEntregasBodegaComponent_div_3_Template_dx_number_box_valueChange_12_listener($event) { _angular_core__WEBPACK_IMPORTED_MODULE_0__["ɵɵrestoreView"](_r9); const ctx_r8 = _angular_core__WEBPACK_IMPORTED_MODULE_0__["ɵɵnextContext"](); return ctx_r8.filtroDocumento = $event; });
-    _angular_core__WEBPACK_IMPORTED_MODULE_0__["ɵɵelementEnd"]();
-    _angular_core__WEBPACK_IMPORTED_MODULE_0__["ɵɵelementEnd"]();
-    _angular_core__WEBPACK_IMPORTED_MODULE_0__["ɵɵelementEnd"]();
-    _angular_core__WEBPACK_IMPORTED_MODULE_0__["ɵɵelementStart"](13, "div", 13);
-    _angular_core__WEBPACK_IMPORTED_MODULE_0__["ɵɵelementStart"](14, "label", 14);
-    _angular_core__WEBPACK_IMPORTED_MODULE_0__["ɵɵtext"](15, "Cliente");
-    _angular_core__WEBPACK_IMPORTED_MODULE_0__["ɵɵelementEnd"]();
-    _angular_core__WEBPACK_IMPORTED_MODULE_0__["ɵɵelementStart"](16, "div", 15);
-    _angular_core__WEBPACK_IMPORTED_MODULE_0__["ɵɵelementStart"](17, "dx-text-box", 16);
-    _angular_core__WEBPACK_IMPORTED_MODULE_0__["ɵɵlistener"]("valueChange", function GestionEntregasBodegaComponent_div_3_Template_dx_text_box_valueChange_17_listener($event) { _angular_core__WEBPACK_IMPORTED_MODULE_0__["ɵɵrestoreView"](_r9); const ctx_r10 = _angular_core__WEBPACK_IMPORTED_MODULE_0__["ɵɵnextContext"](); return ctx_r10.filtroCliente = $event; });
-    _angular_core__WEBPACK_IMPORTED_MODULE_0__["ɵɵelementEnd"]();
-    _angular_core__WEBPACK_IMPORTED_MODULE_0__["ɵɵelementEnd"]();
-    _angular_core__WEBPACK_IMPORTED_MODULE_0__["ɵɵelementEnd"]();
-    _angular_core__WEBPACK_IMPORTED_MODULE_0__["ɵɵelementStart"](18, "div", 13);
-    _angular_core__WEBPACK_IMPORTED_MODULE_0__["ɵɵelementStart"](19, "label", 14);
-    _angular_core__WEBPACK_IMPORTED_MODULE_0__["ɵɵtext"](20, "Desde");
-    _angular_core__WEBPACK_IMPORTED_MODULE_0__["ɵɵelementEnd"]();
-    _angular_core__WEBPACK_IMPORTED_MODULE_0__["ɵɵelementStart"](21, "div", 15);
-    _angular_core__WEBPACK_IMPORTED_MODULE_0__["ɵɵelementStart"](22, "dx-date-box", 17);
-    _angular_core__WEBPACK_IMPORTED_MODULE_0__["ɵɵlistener"]("valueChange", function GestionEntregasBodegaComponent_div_3_Template_dx_date_box_valueChange_22_listener($event) { _angular_core__WEBPACK_IMPORTED_MODULE_0__["ɵɵrestoreView"](_r9); const ctx_r11 = _angular_core__WEBPACK_IMPORTED_MODULE_0__["ɵɵnextContext"](); return ctx_r11.fechaDesde = $event; });
-    _angular_core__WEBPACK_IMPORTED_MODULE_0__["ɵɵelementEnd"]();
-    _angular_core__WEBPACK_IMPORTED_MODULE_0__["ɵɵelementEnd"]();
-    _angular_core__WEBPACK_IMPORTED_MODULE_0__["ɵɵelementEnd"]();
-    _angular_core__WEBPACK_IMPORTED_MODULE_0__["ɵɵelementStart"](23, "div", 13);
-    _angular_core__WEBPACK_IMPORTED_MODULE_0__["ɵɵelementStart"](24, "label", 14);
-    _angular_core__WEBPACK_IMPORTED_MODULE_0__["ɵɵtext"](25, "Hasta");
-    _angular_core__WEBPACK_IMPORTED_MODULE_0__["ɵɵelementEnd"]();
-    _angular_core__WEBPACK_IMPORTED_MODULE_0__["ɵɵelementStart"](26, "div", 15);
-    _angular_core__WEBPACK_IMPORTED_MODULE_0__["ɵɵelementStart"](27, "dx-date-box", 17);
-    _angular_core__WEBPACK_IMPORTED_MODULE_0__["ɵɵlistener"]("valueChange", function GestionEntregasBodegaComponent_div_3_Template_dx_date_box_valueChange_27_listener($event) { _angular_core__WEBPACK_IMPORTED_MODULE_0__["ɵɵrestoreView"](_r9); const ctx_r12 = _angular_core__WEBPACK_IMPORTED_MODULE_0__["ɵɵnextContext"](); return ctx_r12.fechaHasta = $event; });
-    _angular_core__WEBPACK_IMPORTED_MODULE_0__["ɵɵelementEnd"]();
-    _angular_core__WEBPACK_IMPORTED_MODULE_0__["ɵɵelementEnd"]();
-    _angular_core__WEBPACK_IMPORTED_MODULE_0__["ɵɵelementEnd"]();
-    _angular_core__WEBPACK_IMPORTED_MODULE_0__["ɵɵtemplate"](28, GestionEntregasBodegaComponent_div_3_div_28_Template, 5, 2, "div", 18);
-    _angular_core__WEBPACK_IMPORTED_MODULE_0__["ɵɵelementStart"](29, "div", 19);
-    _angular_core__WEBPACK_IMPORTED_MODULE_0__["ɵɵelementStart"](30, "dx-button", 20);
-    _angular_core__WEBPACK_IMPORTED_MODULE_0__["ɵɵlistener"]("onClick", function GestionEntregasBodegaComponent_div_3_Template_dx_button_onClick_30_listener() { _angular_core__WEBPACK_IMPORTED_MODULE_0__["ɵɵrestoreView"](_r9); const ctx_r13 = _angular_core__WEBPACK_IMPORTED_MODULE_0__["ɵɵnextContext"](); return ctx_r13.buscar(); });
-    _angular_core__WEBPACK_IMPORTED_MODULE_0__["ɵɵelementEnd"]();
-    _angular_core__WEBPACK_IMPORTED_MODULE_0__["ɵɵelementStart"](31, "dx-button", 21);
-    _angular_core__WEBPACK_IMPORTED_MODULE_0__["ɵɵlistener"]("onClick", function GestionEntregasBodegaComponent_div_3_Template_dx_button_onClick_31_listener() { _angular_core__WEBPACK_IMPORTED_MODULE_0__["ɵɵrestoreView"](_r9); const ctx_r14 = _angular_core__WEBPACK_IMPORTED_MODULE_0__["ɵɵnextContext"](); return ctx_r14.limpiarFiltros(); });
-    _angular_core__WEBPACK_IMPORTED_MODULE_0__["ɵɵelementEnd"]();
-    _angular_core__WEBPACK_IMPORTED_MODULE_0__["ɵɵelementEnd"]();
-    _angular_core__WEBPACK_IMPORTED_MODULE_0__["ɵɵelementEnd"]();
-    _angular_core__WEBPACK_IMPORTED_MODULE_0__["ɵɵelementEnd"]();
-    _angular_core__WEBPACK_IMPORTED_MODULE_0__["ɵɵelementEnd"]();
-    _angular_core__WEBPACK_IMPORTED_MODULE_0__["ɵɵelementEnd"]();
-    _angular_core__WEBPACK_IMPORTED_MODULE_0__["ɵɵelementEnd"]();
-    _angular_core__WEBPACK_IMPORTED_MODULE_0__["ɵɵelementEnd"]();
+    const _r10 = _angular_core__WEBPACK_IMPORTED_MODULE_1__["ɵɵgetCurrentView"]();
+    _angular_core__WEBPACK_IMPORTED_MODULE_1__["ɵɵelementStart"](0, "div", 8);
+    _angular_core__WEBPACK_IMPORTED_MODULE_1__["ɵɵelementStart"](1, "div", 9);
+    _angular_core__WEBPACK_IMPORTED_MODULE_1__["ɵɵelementStart"](2, "h5", 10);
+    _angular_core__WEBPACK_IMPORTED_MODULE_1__["ɵɵtext"](3, " Gesti\u00F3n entregas de bodega ");
+    _angular_core__WEBPACK_IMPORTED_MODULE_1__["ɵɵelementEnd"]();
+    _angular_core__WEBPACK_IMPORTED_MODULE_1__["ɵɵelementStart"](4, "div", 11);
+    _angular_core__WEBPACK_IMPORTED_MODULE_1__["ɵɵelementStart"](5, "div", 12);
+    _angular_core__WEBPACK_IMPORTED_MODULE_1__["ɵɵelementStart"](6, "div", 13);
+    _angular_core__WEBPACK_IMPORTED_MODULE_1__["ɵɵelementStart"](7, "div", 14);
+    _angular_core__WEBPACK_IMPORTED_MODULE_1__["ɵɵelementStart"](8, "div", 15);
+    _angular_core__WEBPACK_IMPORTED_MODULE_1__["ɵɵelementStart"](9, "label", 16);
+    _angular_core__WEBPACK_IMPORTED_MODULE_1__["ɵɵtext"](10, "Documento");
+    _angular_core__WEBPACK_IMPORTED_MODULE_1__["ɵɵelementEnd"]();
+    _angular_core__WEBPACK_IMPORTED_MODULE_1__["ɵɵelementStart"](11, "div", 17);
+    _angular_core__WEBPACK_IMPORTED_MODULE_1__["ɵɵelementStart"](12, "dx-number-box", 18);
+    _angular_core__WEBPACK_IMPORTED_MODULE_1__["ɵɵlistener"]("valueChange", function GestionEntregasBodegaComponent_div_3_Template_dx_number_box_valueChange_12_listener($event) { _angular_core__WEBPACK_IMPORTED_MODULE_1__["ɵɵrestoreView"](_r10); const ctx_r9 = _angular_core__WEBPACK_IMPORTED_MODULE_1__["ɵɵnextContext"](); return ctx_r9.filtroDocumento = $event; });
+    _angular_core__WEBPACK_IMPORTED_MODULE_1__["ɵɵelementEnd"]();
+    _angular_core__WEBPACK_IMPORTED_MODULE_1__["ɵɵelementEnd"]();
+    _angular_core__WEBPACK_IMPORTED_MODULE_1__["ɵɵelementEnd"]();
+    _angular_core__WEBPACK_IMPORTED_MODULE_1__["ɵɵelementStart"](13, "div", 15);
+    _angular_core__WEBPACK_IMPORTED_MODULE_1__["ɵɵelementStart"](14, "label", 16);
+    _angular_core__WEBPACK_IMPORTED_MODULE_1__["ɵɵtext"](15, "Cliente");
+    _angular_core__WEBPACK_IMPORTED_MODULE_1__["ɵɵelementEnd"]();
+    _angular_core__WEBPACK_IMPORTED_MODULE_1__["ɵɵelementStart"](16, "div", 17);
+    _angular_core__WEBPACK_IMPORTED_MODULE_1__["ɵɵelementStart"](17, "dx-text-box", 18);
+    _angular_core__WEBPACK_IMPORTED_MODULE_1__["ɵɵlistener"]("valueChange", function GestionEntregasBodegaComponent_div_3_Template_dx_text_box_valueChange_17_listener($event) { _angular_core__WEBPACK_IMPORTED_MODULE_1__["ɵɵrestoreView"](_r10); const ctx_r11 = _angular_core__WEBPACK_IMPORTED_MODULE_1__["ɵɵnextContext"](); return ctx_r11.filtroCliente = $event; });
+    _angular_core__WEBPACK_IMPORTED_MODULE_1__["ɵɵelementEnd"]();
+    _angular_core__WEBPACK_IMPORTED_MODULE_1__["ɵɵelementEnd"]();
+    _angular_core__WEBPACK_IMPORTED_MODULE_1__["ɵɵelementEnd"]();
+    _angular_core__WEBPACK_IMPORTED_MODULE_1__["ɵɵelementStart"](18, "div", 15);
+    _angular_core__WEBPACK_IMPORTED_MODULE_1__["ɵɵelementStart"](19, "label", 16);
+    _angular_core__WEBPACK_IMPORTED_MODULE_1__["ɵɵtext"](20, "Desde");
+    _angular_core__WEBPACK_IMPORTED_MODULE_1__["ɵɵelementEnd"]();
+    _angular_core__WEBPACK_IMPORTED_MODULE_1__["ɵɵelementStart"](21, "div", 17);
+    _angular_core__WEBPACK_IMPORTED_MODULE_1__["ɵɵelementStart"](22, "dx-date-box", 19);
+    _angular_core__WEBPACK_IMPORTED_MODULE_1__["ɵɵlistener"]("valueChange", function GestionEntregasBodegaComponent_div_3_Template_dx_date_box_valueChange_22_listener($event) { _angular_core__WEBPACK_IMPORTED_MODULE_1__["ɵɵrestoreView"](_r10); const ctx_r12 = _angular_core__WEBPACK_IMPORTED_MODULE_1__["ɵɵnextContext"](); return ctx_r12.fechaDesde = $event; });
+    _angular_core__WEBPACK_IMPORTED_MODULE_1__["ɵɵelementEnd"]();
+    _angular_core__WEBPACK_IMPORTED_MODULE_1__["ɵɵelementEnd"]();
+    _angular_core__WEBPACK_IMPORTED_MODULE_1__["ɵɵelementEnd"]();
+    _angular_core__WEBPACK_IMPORTED_MODULE_1__["ɵɵelementStart"](23, "div", 15);
+    _angular_core__WEBPACK_IMPORTED_MODULE_1__["ɵɵelementStart"](24, "label", 16);
+    _angular_core__WEBPACK_IMPORTED_MODULE_1__["ɵɵtext"](25, "Hasta");
+    _angular_core__WEBPACK_IMPORTED_MODULE_1__["ɵɵelementEnd"]();
+    _angular_core__WEBPACK_IMPORTED_MODULE_1__["ɵɵelementStart"](26, "div", 17);
+    _angular_core__WEBPACK_IMPORTED_MODULE_1__["ɵɵelementStart"](27, "dx-date-box", 19);
+    _angular_core__WEBPACK_IMPORTED_MODULE_1__["ɵɵlistener"]("valueChange", function GestionEntregasBodegaComponent_div_3_Template_dx_date_box_valueChange_27_listener($event) { _angular_core__WEBPACK_IMPORTED_MODULE_1__["ɵɵrestoreView"](_r10); const ctx_r13 = _angular_core__WEBPACK_IMPORTED_MODULE_1__["ɵɵnextContext"](); return ctx_r13.fechaHasta = $event; });
+    _angular_core__WEBPACK_IMPORTED_MODULE_1__["ɵɵelementEnd"]();
+    _angular_core__WEBPACK_IMPORTED_MODULE_1__["ɵɵelementEnd"]();
+    _angular_core__WEBPACK_IMPORTED_MODULE_1__["ɵɵelementEnd"]();
+    _angular_core__WEBPACK_IMPORTED_MODULE_1__["ɵɵtemplate"](28, GestionEntregasBodegaComponent_div_3_div_28_Template, 5, 2, "div", 20);
+    _angular_core__WEBPACK_IMPORTED_MODULE_1__["ɵɵelementStart"](29, "div", 21);
+    _angular_core__WEBPACK_IMPORTED_MODULE_1__["ɵɵelementStart"](30, "dx-button", 22);
+    _angular_core__WEBPACK_IMPORTED_MODULE_1__["ɵɵlistener"]("onClick", function GestionEntregasBodegaComponent_div_3_Template_dx_button_onClick_30_listener() { _angular_core__WEBPACK_IMPORTED_MODULE_1__["ɵɵrestoreView"](_r10); const ctx_r14 = _angular_core__WEBPACK_IMPORTED_MODULE_1__["ɵɵnextContext"](); return ctx_r14.buscar(); });
+    _angular_core__WEBPACK_IMPORTED_MODULE_1__["ɵɵelementEnd"]();
+    _angular_core__WEBPACK_IMPORTED_MODULE_1__["ɵɵelementStart"](31, "dx-button", 23);
+    _angular_core__WEBPACK_IMPORTED_MODULE_1__["ɵɵlistener"]("onClick", function GestionEntregasBodegaComponent_div_3_Template_dx_button_onClick_31_listener() { _angular_core__WEBPACK_IMPORTED_MODULE_1__["ɵɵrestoreView"](_r10); const ctx_r15 = _angular_core__WEBPACK_IMPORTED_MODULE_1__["ɵɵnextContext"](); return ctx_r15.limpiarFiltros(); });
+    _angular_core__WEBPACK_IMPORTED_MODULE_1__["ɵɵelementEnd"]();
+    _angular_core__WEBPACK_IMPORTED_MODULE_1__["ɵɵelementEnd"]();
+    _angular_core__WEBPACK_IMPORTED_MODULE_1__["ɵɵelementEnd"]();
+    _angular_core__WEBPACK_IMPORTED_MODULE_1__["ɵɵelementEnd"]();
+    _angular_core__WEBPACK_IMPORTED_MODULE_1__["ɵɵelementEnd"]();
+    _angular_core__WEBPACK_IMPORTED_MODULE_1__["ɵɵelementEnd"]();
+    _angular_core__WEBPACK_IMPORTED_MODULE_1__["ɵɵelementEnd"]();
+    _angular_core__WEBPACK_IMPORTED_MODULE_1__["ɵɵelementEnd"]();
 } if (rf & 2) {
-    const ctx_r0 = _angular_core__WEBPACK_IMPORTED_MODULE_0__["ɵɵnextContext"]();
-    _angular_core__WEBPACK_IMPORTED_MODULE_0__["ɵɵadvance"](12);
-    _angular_core__WEBPACK_IMPORTED_MODULE_0__["ɵɵproperty"]("value", ctx_r0.filtroDocumento);
-    _angular_core__WEBPACK_IMPORTED_MODULE_0__["ɵɵadvance"](5);
-    _angular_core__WEBPACK_IMPORTED_MODULE_0__["ɵɵproperty"]("value", ctx_r0.filtroCliente);
-    _angular_core__WEBPACK_IMPORTED_MODULE_0__["ɵɵadvance"](5);
-    _angular_core__WEBPACK_IMPORTED_MODULE_0__["ɵɵproperty"]("value", ctx_r0.fechaDesde);
-    _angular_core__WEBPACK_IMPORTED_MODULE_0__["ɵɵadvance"](5);
-    _angular_core__WEBPACK_IMPORTED_MODULE_0__["ɵɵproperty"]("value", ctx_r0.fechaHasta);
-    _angular_core__WEBPACK_IMPORTED_MODULE_0__["ɵɵadvance"](1);
-    _angular_core__WEBPACK_IMPORTED_MODULE_0__["ɵɵproperty"]("ngIf", ctx_r0.mostrarListado);
+    const ctx_r0 = _angular_core__WEBPACK_IMPORTED_MODULE_1__["ɵɵnextContext"]();
+    _angular_core__WEBPACK_IMPORTED_MODULE_1__["ɵɵadvance"](12);
+    _angular_core__WEBPACK_IMPORTED_MODULE_1__["ɵɵproperty"]("value", ctx_r0.filtroDocumento);
+    _angular_core__WEBPACK_IMPORTED_MODULE_1__["ɵɵadvance"](5);
+    _angular_core__WEBPACK_IMPORTED_MODULE_1__["ɵɵproperty"]("value", ctx_r0.filtroCliente);
+    _angular_core__WEBPACK_IMPORTED_MODULE_1__["ɵɵadvance"](5);
+    _angular_core__WEBPACK_IMPORTED_MODULE_1__["ɵɵproperty"]("value", ctx_r0.fechaDesde);
+    _angular_core__WEBPACK_IMPORTED_MODULE_1__["ɵɵadvance"](5);
+    _angular_core__WEBPACK_IMPORTED_MODULE_1__["ɵɵproperty"]("value", ctx_r0.fechaHasta);
+    _angular_core__WEBPACK_IMPORTED_MODULE_1__["ɵɵadvance"](1);
+    _angular_core__WEBPACK_IMPORTED_MODULE_1__["ɵɵproperty"]("ngIf", ctx_r0.mostrarListado);
 } }
 function GestionEntregasBodegaComponent_div_4_Template(rf, ctx) { if (rf & 1) {
-    _angular_core__WEBPACK_IMPORTED_MODULE_0__["ɵɵelementStart"](0, "div", 6);
-    _angular_core__WEBPACK_IMPORTED_MODULE_0__["ɵɵelement"](1, "app-loading");
-    _angular_core__WEBPACK_IMPORTED_MODULE_0__["ɵɵelementEnd"]();
+    _angular_core__WEBPACK_IMPORTED_MODULE_1__["ɵɵelementStart"](0, "div", 8);
+    _angular_core__WEBPACK_IMPORTED_MODULE_1__["ɵɵelement"](1, "app-loading");
+    _angular_core__WEBPACK_IMPORTED_MODULE_1__["ɵɵelementEnd"]();
 } }
 function GestionEntregasBodegaComponent_div_5_span_3_Template(rf, ctx) { if (rf & 1) {
-    _angular_core__WEBPACK_IMPORTED_MODULE_0__["ɵɵelementStart"](0, "span");
-    _angular_core__WEBPACK_IMPORTED_MODULE_0__["ɵɵtext"](1, "\u00D3rdenes de entrega");
-    _angular_core__WEBPACK_IMPORTED_MODULE_0__["ɵɵelementEnd"]();
+    _angular_core__WEBPACK_IMPORTED_MODULE_1__["ɵɵelementStart"](0, "span");
+    _angular_core__WEBPACK_IMPORTED_MODULE_1__["ɵɵtext"](1, "\u00D3rdenes de entrega");
+    _angular_core__WEBPACK_IMPORTED_MODULE_1__["ɵɵelementEnd"]();
 } }
 function GestionEntregasBodegaComponent_div_5_span_4_Template(rf, ctx) { if (rf & 1) {
-    _angular_core__WEBPACK_IMPORTED_MODULE_0__["ɵɵelementStart"](0, "span");
-    _angular_core__WEBPACK_IMPORTED_MODULE_0__["ɵɵtext"](1, "Listado entregas de bodega");
-    _angular_core__WEBPACK_IMPORTED_MODULE_0__["ɵɵelementEnd"]();
+    _angular_core__WEBPACK_IMPORTED_MODULE_1__["ɵɵelementStart"](0, "span");
+    _angular_core__WEBPACK_IMPORTED_MODULE_1__["ɵɵtext"](1, "Listado entregas de bodega");
+    _angular_core__WEBPACK_IMPORTED_MODULE_1__["ɵɵelementEnd"]();
 } }
 function GestionEntregasBodegaComponent_div_5_span_5_Template(rf, ctx) { if (rf & 1) {
-    _angular_core__WEBPACK_IMPORTED_MODULE_0__["ɵɵelementStart"](0, "span");
-    _angular_core__WEBPACK_IMPORTED_MODULE_0__["ɵɵtext"](1, "Productos pendientes");
-    _angular_core__WEBPACK_IMPORTED_MODULE_0__["ɵɵelementEnd"]();
+    _angular_core__WEBPACK_IMPORTED_MODULE_1__["ɵɵelementStart"](0, "span");
+    _angular_core__WEBPACK_IMPORTED_MODULE_1__["ɵɵtext"](1, "Productos pendientes");
+    _angular_core__WEBPACK_IMPORTED_MODULE_1__["ɵɵelementEnd"]();
 } }
 function GestionEntregasBodegaComponent_div_5_p_7_Template(rf, ctx) { if (rf & 1) {
-    _angular_core__WEBPACK_IMPORTED_MODULE_0__["ɵɵelementStart"](0, "p", 32);
-    _angular_core__WEBPACK_IMPORTED_MODULE_0__["ɵɵtext"](1, " \u00D3rdenes en estado ABIERTA, NOVEDAD o COMPLETO (sin cerradas). ");
-    _angular_core__WEBPACK_IMPORTED_MODULE_0__["ɵɵelementEnd"]();
+    _angular_core__WEBPACK_IMPORTED_MODULE_1__["ɵɵelementStart"](0, "p", 35);
+    _angular_core__WEBPACK_IMPORTED_MODULE_1__["ɵɵtext"](1, " \u00D3rdenes en estado ABIERTA, NOVEDAD o COMPLETO (sin cerradas). ");
+    _angular_core__WEBPACK_IMPORTED_MODULE_1__["ɵɵelementEnd"]();
 } }
 function GestionEntregasBodegaComponent_div_5_p_8_Template(rf, ctx) { if (rf & 1) {
-    _angular_core__WEBPACK_IMPORTED_MODULE_0__["ɵɵelementStart"](0, "p", 32);
-    _angular_core__WEBPACK_IMPORTED_MODULE_0__["ɵɵtext"](1, " Todas las \u00F3rdenes en cualquier estado. Haga clic en una fila para ver la trazabilidad. ");
-    _angular_core__WEBPACK_IMPORTED_MODULE_0__["ɵɵelementEnd"]();
+    _angular_core__WEBPACK_IMPORTED_MODULE_1__["ɵɵelementStart"](0, "p", 35);
+    _angular_core__WEBPACK_IMPORTED_MODULE_1__["ɵɵtext"](1, " Todas las \u00F3rdenes en cualquier estado. Haga clic en una fila para ver la trazabilidad. ");
+    _angular_core__WEBPACK_IMPORTED_MODULE_1__["ɵɵelementEnd"]();
 } }
 function GestionEntregasBodegaComponent_div_5_div_9_div_16_Template(rf, ctx) { if (rf & 1) {
-    _angular_core__WEBPACK_IMPORTED_MODULE_0__["ɵɵelementStart"](0, "div", 43);
-    _angular_core__WEBPACK_IMPORTED_MODULE_0__["ɵɵtext"](1, " No hay \u00F3rdenes activas con los filtros actuales. ");
-    _angular_core__WEBPACK_IMPORTED_MODULE_0__["ɵɵelementEnd"]();
+    _angular_core__WEBPACK_IMPORTED_MODULE_1__["ɵɵelementStart"](0, "div", 46);
+    _angular_core__WEBPACK_IMPORTED_MODULE_1__["ɵɵtext"](1, " No hay \u00F3rdenes activas con los filtros actuales. ");
+    _angular_core__WEBPACK_IMPORTED_MODULE_1__["ɵɵelementEnd"]();
 } }
 function GestionEntregasBodegaComponent_div_5_div_9_div_17_div_11_div_1_i_6_Template(rf, ctx) { if (rf & 1) {
-    _angular_core__WEBPACK_IMPORTED_MODULE_0__["ɵɵelement"](0, "i", 65);
+    _angular_core__WEBPACK_IMPORTED_MODULE_1__["ɵɵelement"](0, "i", 68);
 } }
 function GestionEntregasBodegaComponent_div_5_div_9_div_17_div_11_div_1_div_8_div_21_Template(rf, ctx) { if (rf & 1) {
-    const _r39 = _angular_core__WEBPACK_IMPORTED_MODULE_0__["ɵɵgetCurrentView"]();
-    _angular_core__WEBPACK_IMPORTED_MODULE_0__["ɵɵelementStart"](0, "div", 78);
-    _angular_core__WEBPACK_IMPORTED_MODULE_0__["ɵɵelementStart"](1, "span", 79);
-    _angular_core__WEBPACK_IMPORTED_MODULE_0__["ɵɵtext"](2, "Cajas");
-    _angular_core__WEBPACK_IMPORTED_MODULE_0__["ɵɵelementEnd"]();
-    _angular_core__WEBPACK_IMPORTED_MODULE_0__["ɵɵelementStart"](3, "dx-number-box", 80);
-    _angular_core__WEBPACK_IMPORTED_MODULE_0__["ɵɵlistener"]("valueChange", function GestionEntregasBodegaComponent_div_5_div_9_div_17_div_11_div_1_div_8_div_21_Template_dx_number_box_valueChange_3_listener($event) { _angular_core__WEBPACK_IMPORTED_MODULE_0__["ɵɵrestoreView"](_r39); const item_r28 = _angular_core__WEBPACK_IMPORTED_MODULE_0__["ɵɵnextContext"](2).$implicit; return item_r28.entregaCajasInput = $event; });
-    _angular_core__WEBPACK_IMPORTED_MODULE_0__["ɵɵelementEnd"]();
-    _angular_core__WEBPACK_IMPORTED_MODULE_0__["ɵɵelementStart"](4, "span", 81);
-    _angular_core__WEBPACK_IMPORTED_MODULE_0__["ɵɵtext"](5, "Piezas");
-    _angular_core__WEBPACK_IMPORTED_MODULE_0__["ɵɵelementEnd"]();
-    _angular_core__WEBPACK_IMPORTED_MODULE_0__["ɵɵelementStart"](6, "dx-number-box", 80);
-    _angular_core__WEBPACK_IMPORTED_MODULE_0__["ɵɵlistener"]("valueChange", function GestionEntregasBodegaComponent_div_5_div_9_div_17_div_11_div_1_div_8_div_21_Template_dx_number_box_valueChange_6_listener($event) { _angular_core__WEBPACK_IMPORTED_MODULE_0__["ɵɵrestoreView"](_r39); const item_r28 = _angular_core__WEBPACK_IMPORTED_MODULE_0__["ɵɵnextContext"](2).$implicit; return item_r28.entregaPiezasInput = $event; });
-    _angular_core__WEBPACK_IMPORTED_MODULE_0__["ɵɵelementEnd"]();
-    _angular_core__WEBPACK_IMPORTED_MODULE_0__["ɵɵelementEnd"]();
+    const _r41 = _angular_core__WEBPACK_IMPORTED_MODULE_1__["ɵɵgetCurrentView"]();
+    _angular_core__WEBPACK_IMPORTED_MODULE_1__["ɵɵelementStart"](0, "div", 81);
+    _angular_core__WEBPACK_IMPORTED_MODULE_1__["ɵɵelementStart"](1, "span", 82);
+    _angular_core__WEBPACK_IMPORTED_MODULE_1__["ɵɵtext"](2, "Cajas");
+    _angular_core__WEBPACK_IMPORTED_MODULE_1__["ɵɵelementEnd"]();
+    _angular_core__WEBPACK_IMPORTED_MODULE_1__["ɵɵelementStart"](3, "dx-number-box", 83);
+    _angular_core__WEBPACK_IMPORTED_MODULE_1__["ɵɵlistener"]("valueChange", function GestionEntregasBodegaComponent_div_5_div_9_div_17_div_11_div_1_div_8_div_21_Template_dx_number_box_valueChange_3_listener($event) { _angular_core__WEBPACK_IMPORTED_MODULE_1__["ɵɵrestoreView"](_r41); const item_r30 = _angular_core__WEBPACK_IMPORTED_MODULE_1__["ɵɵnextContext"](2).$implicit; return item_r30.entregaCajasInput = $event; });
+    _angular_core__WEBPACK_IMPORTED_MODULE_1__["ɵɵelementEnd"]();
+    _angular_core__WEBPACK_IMPORTED_MODULE_1__["ɵɵelementStart"](4, "span", 84);
+    _angular_core__WEBPACK_IMPORTED_MODULE_1__["ɵɵtext"](5, "Piezas");
+    _angular_core__WEBPACK_IMPORTED_MODULE_1__["ɵɵelementEnd"]();
+    _angular_core__WEBPACK_IMPORTED_MODULE_1__["ɵɵelementStart"](6, "dx-number-box", 83);
+    _angular_core__WEBPACK_IMPORTED_MODULE_1__["ɵɵlistener"]("valueChange", function GestionEntregasBodegaComponent_div_5_div_9_div_17_div_11_div_1_div_8_div_21_Template_dx_number_box_valueChange_6_listener($event) { _angular_core__WEBPACK_IMPORTED_MODULE_1__["ɵɵrestoreView"](_r41); const item_r30 = _angular_core__WEBPACK_IMPORTED_MODULE_1__["ɵɵnextContext"](2).$implicit; return item_r30.entregaPiezasInput = $event; });
+    _angular_core__WEBPACK_IMPORTED_MODULE_1__["ɵɵelementEnd"]();
+    _angular_core__WEBPACK_IMPORTED_MODULE_1__["ɵɵelementEnd"]();
 } if (rf & 2) {
-    const item_r28 = _angular_core__WEBPACK_IMPORTED_MODULE_0__["ɵɵnextContext"](2).$implicit;
-    _angular_core__WEBPACK_IMPORTED_MODULE_0__["ɵɵadvance"](3);
-    _angular_core__WEBPACK_IMPORTED_MODULE_0__["ɵɵproperty"]("width", 100)("value", item_r28.entregaCajasInput)("min", 0)("showSpinButtons", true);
-    _angular_core__WEBPACK_IMPORTED_MODULE_0__["ɵɵadvance"](3);
-    _angular_core__WEBPACK_IMPORTED_MODULE_0__["ɵɵproperty"]("width", 100)("value", item_r28.entregaPiezasInput)("min", 0)("showSpinButtons", true);
+    const item_r30 = _angular_core__WEBPACK_IMPORTED_MODULE_1__["ɵɵnextContext"](2).$implicit;
+    _angular_core__WEBPACK_IMPORTED_MODULE_1__["ɵɵadvance"](3);
+    _angular_core__WEBPACK_IMPORTED_MODULE_1__["ɵɵproperty"]("width", 100)("value", item_r30.entregaCajasInput)("min", 0)("showSpinButtons", true);
+    _angular_core__WEBPACK_IMPORTED_MODULE_1__["ɵɵadvance"](3);
+    _angular_core__WEBPACK_IMPORTED_MODULE_1__["ɵɵproperty"]("width", 100)("value", item_r30.entregaPiezasInput)("min", 0)("showSpinButtons", true);
 } }
 function GestionEntregasBodegaComponent_div_5_div_9_div_17_div_11_div_1_div_8_dx_number_box_22_Template(rf, ctx) { if (rf & 1) {
-    const _r45 = _angular_core__WEBPACK_IMPORTED_MODULE_0__["ɵɵgetCurrentView"]();
-    _angular_core__WEBPACK_IMPORTED_MODULE_0__["ɵɵelementStart"](0, "dx-number-box", 82);
-    _angular_core__WEBPACK_IMPORTED_MODULE_0__["ɵɵlistener"]("valueChange", function GestionEntregasBodegaComponent_div_5_div_9_div_17_div_11_div_1_div_8_dx_number_box_22_Template_dx_number_box_valueChange_0_listener($event) { _angular_core__WEBPACK_IMPORTED_MODULE_0__["ɵɵrestoreView"](_r45); const item_r28 = _angular_core__WEBPACK_IMPORTED_MODULE_0__["ɵɵnextContext"](2).$implicit; return item_r28.cantidadEntregadaInput = $event; });
-    _angular_core__WEBPACK_IMPORTED_MODULE_0__["ɵɵelementEnd"]();
+    const _r47 = _angular_core__WEBPACK_IMPORTED_MODULE_1__["ɵɵgetCurrentView"]();
+    _angular_core__WEBPACK_IMPORTED_MODULE_1__["ɵɵelementStart"](0, "dx-number-box", 85);
+    _angular_core__WEBPACK_IMPORTED_MODULE_1__["ɵɵlistener"]("valueChange", function GestionEntregasBodegaComponent_div_5_div_9_div_17_div_11_div_1_div_8_dx_number_box_22_Template_dx_number_box_valueChange_0_listener($event) { _angular_core__WEBPACK_IMPORTED_MODULE_1__["ɵɵrestoreView"](_r47); const item_r30 = _angular_core__WEBPACK_IMPORTED_MODULE_1__["ɵɵnextContext"](2).$implicit; return item_r30.cantidadEntregadaInput = $event; });
+    _angular_core__WEBPACK_IMPORTED_MODULE_1__["ɵɵelementEnd"]();
 } if (rf & 2) {
-    const item_r28 = _angular_core__WEBPACK_IMPORTED_MODULE_0__["ɵɵnextContext"](2).$implicit;
-    _angular_core__WEBPACK_IMPORTED_MODULE_0__["ɵɵproperty"]("value", item_r28.cantidadEntregadaInput)("min", 0)("showSpinButtons", true);
+    const item_r30 = _angular_core__WEBPACK_IMPORTED_MODULE_1__["ɵɵnextContext"](2).$implicit;
+    _angular_core__WEBPACK_IMPORTED_MODULE_1__["ɵɵproperty"]("value", item_r30.cantidadEntregadaInput)("min", 0)("showSpinButtons", true);
 } }
 function GestionEntregasBodegaComponent_div_5_div_9_div_17_div_11_div_1_div_8_ng_container_32_Template(rf, ctx) { if (rf & 1) {
-    const _r49 = _angular_core__WEBPACK_IMPORTED_MODULE_0__["ɵɵgetCurrentView"]();
-    _angular_core__WEBPACK_IMPORTED_MODULE_0__["ɵɵelementContainerStart"](0);
-    _angular_core__WEBPACK_IMPORTED_MODULE_0__["ɵɵelementStart"](1, "dx-button", 83);
-    _angular_core__WEBPACK_IMPORTED_MODULE_0__["ɵɵlistener"]("onClick", function GestionEntregasBodegaComponent_div_5_div_9_div_17_div_11_div_1_div_8_ng_container_32_Template_dx_button_onClick_1_listener() { _angular_core__WEBPACK_IMPORTED_MODULE_0__["ɵɵrestoreView"](_r49); const i_r29 = _angular_core__WEBPACK_IMPORTED_MODULE_0__["ɵɵnextContext"](2).index; const ctx_r47 = _angular_core__WEBPACK_IMPORTED_MODULE_0__["ɵɵnextContext"](5); return ctx_r47.guardarItem(i_r29); });
-    _angular_core__WEBPACK_IMPORTED_MODULE_0__["ɵɵelementEnd"]();
-    _angular_core__WEBPACK_IMPORTED_MODULE_0__["ɵɵelementContainerEnd"]();
+    const _r51 = _angular_core__WEBPACK_IMPORTED_MODULE_1__["ɵɵgetCurrentView"]();
+    _angular_core__WEBPACK_IMPORTED_MODULE_1__["ɵɵelementContainerStart"](0);
+    _angular_core__WEBPACK_IMPORTED_MODULE_1__["ɵɵelementStart"](1, "dx-button", 86);
+    _angular_core__WEBPACK_IMPORTED_MODULE_1__["ɵɵlistener"]("onClick", function GestionEntregasBodegaComponent_div_5_div_9_div_17_div_11_div_1_div_8_ng_container_32_Template_dx_button_onClick_1_listener() { _angular_core__WEBPACK_IMPORTED_MODULE_1__["ɵɵrestoreView"](_r51); const i_r31 = _angular_core__WEBPACK_IMPORTED_MODULE_1__["ɵɵnextContext"](2).index; const ctx_r49 = _angular_core__WEBPACK_IMPORTED_MODULE_1__["ɵɵnextContext"](5); return ctx_r49.guardarItem(i_r31); });
+    _angular_core__WEBPACK_IMPORTED_MODULE_1__["ɵɵelementEnd"]();
+    _angular_core__WEBPACK_IMPORTED_MODULE_1__["ɵɵelementContainerEnd"]();
 } }
 function GestionEntregasBodegaComponent_div_5_div_9_div_17_div_11_div_1_div_8_ng_container_33_Template(rf, ctx) { if (rf & 1) {
-    _angular_core__WEBPACK_IMPORTED_MODULE_0__["ɵɵelementContainerStart"](0);
-    _angular_core__WEBPACK_IMPORTED_MODULE_0__["ɵɵelement"](1, "dx-button", 84);
-    _angular_core__WEBPACK_IMPORTED_MODULE_0__["ɵɵelementContainerEnd"]();
+    _angular_core__WEBPACK_IMPORTED_MODULE_1__["ɵɵelementContainerStart"](0);
+    _angular_core__WEBPACK_IMPORTED_MODULE_1__["ɵɵelement"](1, "dx-button", 87);
+    _angular_core__WEBPACK_IMPORTED_MODULE_1__["ɵɵelementContainerEnd"]();
 } if (rf & 2) {
-    _angular_core__WEBPACK_IMPORTED_MODULE_0__["ɵɵadvance"](1);
-    _angular_core__WEBPACK_IMPORTED_MODULE_0__["ɵɵproperty"]("disabled", true);
+    _angular_core__WEBPACK_IMPORTED_MODULE_1__["ɵɵadvance"](1);
+    _angular_core__WEBPACK_IMPORTED_MODULE_1__["ɵɵproperty"]("disabled", true);
 } }
 function GestionEntregasBodegaComponent_div_5_div_9_div_17_div_11_div_1_div_8_span_34_Template(rf, ctx) { if (rf & 1) {
-    _angular_core__WEBPACK_IMPORTED_MODULE_0__["ɵɵelementStart"](0, "span", 85);
-    _angular_core__WEBPACK_IMPORTED_MODULE_0__["ɵɵelement"](1, "i", 86);
-    _angular_core__WEBPACK_IMPORTED_MODULE_0__["ɵɵtext"](2, " Guardado ");
-    _angular_core__WEBPACK_IMPORTED_MODULE_0__["ɵɵelementEnd"]();
+    _angular_core__WEBPACK_IMPORTED_MODULE_1__["ɵɵelementStart"](0, "span", 88);
+    _angular_core__WEBPACK_IMPORTED_MODULE_1__["ɵɵelement"](1, "i", 89);
+    _angular_core__WEBPACK_IMPORTED_MODULE_1__["ɵɵtext"](2, " Guardado ");
+    _angular_core__WEBPACK_IMPORTED_MODULE_1__["ɵɵelementEnd"]();
 } }
 function GestionEntregasBodegaComponent_div_5_div_9_div_17_div_11_div_1_div_8_Template(rf, ctx) { if (rf & 1) {
-    const _r52 = _angular_core__WEBPACK_IMPORTED_MODULE_0__["ɵɵgetCurrentView"]();
-    _angular_core__WEBPACK_IMPORTED_MODULE_0__["ɵɵelementStart"](0, "div", 66);
-    _angular_core__WEBPACK_IMPORTED_MODULE_0__["ɵɵelementStart"](1, "div", 67);
-    _angular_core__WEBPACK_IMPORTED_MODULE_0__["ɵɵelementStart"](2, "div", 68);
-    _angular_core__WEBPACK_IMPORTED_MODULE_0__["ɵɵtext"](3, "Facturado");
-    _angular_core__WEBPACK_IMPORTED_MODULE_0__["ɵɵelementEnd"]();
-    _angular_core__WEBPACK_IMPORTED_MODULE_0__["ɵɵelementStart"](4, "div");
-    _angular_core__WEBPACK_IMPORTED_MODULE_0__["ɵɵtext"](5);
-    _angular_core__WEBPACK_IMPORTED_MODULE_0__["ɵɵelementEnd"]();
-    _angular_core__WEBPACK_IMPORTED_MODULE_0__["ɵɵelementStart"](6, "div", 68);
-    _angular_core__WEBPACK_IMPORTED_MODULE_0__["ɵɵtext"](7, "Entregado");
-    _angular_core__WEBPACK_IMPORTED_MODULE_0__["ɵɵelementEnd"]();
-    _angular_core__WEBPACK_IMPORTED_MODULE_0__["ɵɵelementStart"](8, "div");
-    _angular_core__WEBPACK_IMPORTED_MODULE_0__["ɵɵtext"](9);
-    _angular_core__WEBPACK_IMPORTED_MODULE_0__["ɵɵelementEnd"]();
-    _angular_core__WEBPACK_IMPORTED_MODULE_0__["ɵɵelementStart"](10, "div", 68);
-    _angular_core__WEBPACK_IMPORTED_MODULE_0__["ɵɵtext"](11, "Devuelto");
-    _angular_core__WEBPACK_IMPORTED_MODULE_0__["ɵɵelementEnd"]();
-    _angular_core__WEBPACK_IMPORTED_MODULE_0__["ɵɵelementStart"](12, "div");
-    _angular_core__WEBPACK_IMPORTED_MODULE_0__["ɵɵtext"](13);
-    _angular_core__WEBPACK_IMPORTED_MODULE_0__["ɵɵelementEnd"]();
-    _angular_core__WEBPACK_IMPORTED_MODULE_0__["ɵɵelementStart"](14, "div", 68);
-    _angular_core__WEBPACK_IMPORTED_MODULE_0__["ɵɵtext"](15, "Pendiente");
-    _angular_core__WEBPACK_IMPORTED_MODULE_0__["ɵɵelementEnd"]();
-    _angular_core__WEBPACK_IMPORTED_MODULE_0__["ɵɵelementStart"](16, "div", 69);
-    _angular_core__WEBPACK_IMPORTED_MODULE_0__["ɵɵtext"](17);
-    _angular_core__WEBPACK_IMPORTED_MODULE_0__["ɵɵelementEnd"]();
-    _angular_core__WEBPACK_IMPORTED_MODULE_0__["ɵɵelementEnd"]();
-    _angular_core__WEBPACK_IMPORTED_MODULE_0__["ɵɵelementStart"](18, "div", 70);
-    _angular_core__WEBPACK_IMPORTED_MODULE_0__["ɵɵelementStart"](19, "label", 71);
-    _angular_core__WEBPACK_IMPORTED_MODULE_0__["ɵɵtext"](20, "Despacho");
-    _angular_core__WEBPACK_IMPORTED_MODULE_0__["ɵɵelementEnd"]();
-    _angular_core__WEBPACK_IMPORTED_MODULE_0__["ɵɵtemplate"](21, GestionEntregasBodegaComponent_div_5_div_9_div_17_div_11_div_1_div_8_div_21_Template, 7, 8, "div", 72);
-    _angular_core__WEBPACK_IMPORTED_MODULE_0__["ɵɵtemplate"](22, GestionEntregasBodegaComponent_div_5_div_9_div_17_div_11_div_1_div_8_dx_number_box_22_Template, 1, 3, "dx-number-box", 73);
-    _angular_core__WEBPACK_IMPORTED_MODULE_0__["ɵɵelementEnd"]();
-    _angular_core__WEBPACK_IMPORTED_MODULE_0__["ɵɵelementStart"](23, "div", 70);
-    _angular_core__WEBPACK_IMPORTED_MODULE_0__["ɵɵelementStart"](24, "label", 71);
-    _angular_core__WEBPACK_IMPORTED_MODULE_0__["ɵɵtext"](25, "F. compromiso");
-    _angular_core__WEBPACK_IMPORTED_MODULE_0__["ɵɵelementEnd"]();
-    _angular_core__WEBPACK_IMPORTED_MODULE_0__["ɵɵelementStart"](26, "dx-date-box", 74);
-    _angular_core__WEBPACK_IMPORTED_MODULE_0__["ɵɵlistener"]("valueChange", function GestionEntregasBodegaComponent_div_5_div_9_div_17_div_11_div_1_div_8_Template_dx_date_box_valueChange_26_listener($event) { _angular_core__WEBPACK_IMPORTED_MODULE_0__["ɵɵrestoreView"](_r52); const item_r28 = _angular_core__WEBPACK_IMPORTED_MODULE_0__["ɵɵnextContext"]().$implicit; return item_r28.fechaCompromisoInput = $event; });
-    _angular_core__WEBPACK_IMPORTED_MODULE_0__["ɵɵelementEnd"]();
-    _angular_core__WEBPACK_IMPORTED_MODULE_0__["ɵɵelementEnd"]();
-    _angular_core__WEBPACK_IMPORTED_MODULE_0__["ɵɵelementStart"](27, "div", 70);
-    _angular_core__WEBPACK_IMPORTED_MODULE_0__["ɵɵelementStart"](28, "label", 71);
-    _angular_core__WEBPACK_IMPORTED_MODULE_0__["ɵɵtext"](29, "Notas");
-    _angular_core__WEBPACK_IMPORTED_MODULE_0__["ɵɵelementEnd"]();
-    _angular_core__WEBPACK_IMPORTED_MODULE_0__["ɵɵelementStart"](30, "dx-text-box", 75);
-    _angular_core__WEBPACK_IMPORTED_MODULE_0__["ɵɵlistener"]("valueChange", function GestionEntregasBodegaComponent_div_5_div_9_div_17_div_11_div_1_div_8_Template_dx_text_box_valueChange_30_listener($event) { _angular_core__WEBPACK_IMPORTED_MODULE_0__["ɵɵrestoreView"](_r52); const item_r28 = _angular_core__WEBPACK_IMPORTED_MODULE_0__["ɵɵnextContext"]().$implicit; return item_r28.notasInput = $event; });
-    _angular_core__WEBPACK_IMPORTED_MODULE_0__["ɵɵelementEnd"]();
-    _angular_core__WEBPACK_IMPORTED_MODULE_0__["ɵɵelementEnd"]();
-    _angular_core__WEBPACK_IMPORTED_MODULE_0__["ɵɵelementStart"](31, "div", 76);
-    _angular_core__WEBPACK_IMPORTED_MODULE_0__["ɵɵtemplate"](32, GestionEntregasBodegaComponent_div_5_div_9_div_17_div_11_div_1_div_8_ng_container_32_Template, 2, 0, "ng-container", 26);
-    _angular_core__WEBPACK_IMPORTED_MODULE_0__["ɵɵtemplate"](33, GestionEntregasBodegaComponent_div_5_div_9_div_17_div_11_div_1_div_8_ng_container_33_Template, 2, 1, "ng-container", 26);
-    _angular_core__WEBPACK_IMPORTED_MODULE_0__["ɵɵtemplate"](34, GestionEntregasBodegaComponent_div_5_div_9_div_17_div_11_div_1_div_8_span_34_Template, 3, 0, "span", 77);
-    _angular_core__WEBPACK_IMPORTED_MODULE_0__["ɵɵelementEnd"]();
-    _angular_core__WEBPACK_IMPORTED_MODULE_0__["ɵɵelementEnd"]();
+    const _r54 = _angular_core__WEBPACK_IMPORTED_MODULE_1__["ɵɵgetCurrentView"]();
+    _angular_core__WEBPACK_IMPORTED_MODULE_1__["ɵɵelementStart"](0, "div", 69);
+    _angular_core__WEBPACK_IMPORTED_MODULE_1__["ɵɵelementStart"](1, "div", 70);
+    _angular_core__WEBPACK_IMPORTED_MODULE_1__["ɵɵelementStart"](2, "div", 71);
+    _angular_core__WEBPACK_IMPORTED_MODULE_1__["ɵɵtext"](3, "Facturado");
+    _angular_core__WEBPACK_IMPORTED_MODULE_1__["ɵɵelementEnd"]();
+    _angular_core__WEBPACK_IMPORTED_MODULE_1__["ɵɵelementStart"](4, "div");
+    _angular_core__WEBPACK_IMPORTED_MODULE_1__["ɵɵtext"](5);
+    _angular_core__WEBPACK_IMPORTED_MODULE_1__["ɵɵelementEnd"]();
+    _angular_core__WEBPACK_IMPORTED_MODULE_1__["ɵɵelementStart"](6, "div", 71);
+    _angular_core__WEBPACK_IMPORTED_MODULE_1__["ɵɵtext"](7, "Entregado");
+    _angular_core__WEBPACK_IMPORTED_MODULE_1__["ɵɵelementEnd"]();
+    _angular_core__WEBPACK_IMPORTED_MODULE_1__["ɵɵelementStart"](8, "div");
+    _angular_core__WEBPACK_IMPORTED_MODULE_1__["ɵɵtext"](9);
+    _angular_core__WEBPACK_IMPORTED_MODULE_1__["ɵɵelementEnd"]();
+    _angular_core__WEBPACK_IMPORTED_MODULE_1__["ɵɵelementStart"](10, "div", 71);
+    _angular_core__WEBPACK_IMPORTED_MODULE_1__["ɵɵtext"](11, "Devuelto");
+    _angular_core__WEBPACK_IMPORTED_MODULE_1__["ɵɵelementEnd"]();
+    _angular_core__WEBPACK_IMPORTED_MODULE_1__["ɵɵelementStart"](12, "div");
+    _angular_core__WEBPACK_IMPORTED_MODULE_1__["ɵɵtext"](13);
+    _angular_core__WEBPACK_IMPORTED_MODULE_1__["ɵɵelementEnd"]();
+    _angular_core__WEBPACK_IMPORTED_MODULE_1__["ɵɵelementStart"](14, "div", 71);
+    _angular_core__WEBPACK_IMPORTED_MODULE_1__["ɵɵtext"](15, "Pendiente");
+    _angular_core__WEBPACK_IMPORTED_MODULE_1__["ɵɵelementEnd"]();
+    _angular_core__WEBPACK_IMPORTED_MODULE_1__["ɵɵelementStart"](16, "div", 72);
+    _angular_core__WEBPACK_IMPORTED_MODULE_1__["ɵɵtext"](17);
+    _angular_core__WEBPACK_IMPORTED_MODULE_1__["ɵɵelementEnd"]();
+    _angular_core__WEBPACK_IMPORTED_MODULE_1__["ɵɵelementEnd"]();
+    _angular_core__WEBPACK_IMPORTED_MODULE_1__["ɵɵelementStart"](18, "div", 73);
+    _angular_core__WEBPACK_IMPORTED_MODULE_1__["ɵɵelementStart"](19, "label", 74);
+    _angular_core__WEBPACK_IMPORTED_MODULE_1__["ɵɵtext"](20, "Despacho");
+    _angular_core__WEBPACK_IMPORTED_MODULE_1__["ɵɵelementEnd"]();
+    _angular_core__WEBPACK_IMPORTED_MODULE_1__["ɵɵtemplate"](21, GestionEntregasBodegaComponent_div_5_div_9_div_17_div_11_div_1_div_8_div_21_Template, 7, 8, "div", 75);
+    _angular_core__WEBPACK_IMPORTED_MODULE_1__["ɵɵtemplate"](22, GestionEntregasBodegaComponent_div_5_div_9_div_17_div_11_div_1_div_8_dx_number_box_22_Template, 1, 3, "dx-number-box", 76);
+    _angular_core__WEBPACK_IMPORTED_MODULE_1__["ɵɵelementEnd"]();
+    _angular_core__WEBPACK_IMPORTED_MODULE_1__["ɵɵelementStart"](23, "div", 73);
+    _angular_core__WEBPACK_IMPORTED_MODULE_1__["ɵɵelementStart"](24, "label", 74);
+    _angular_core__WEBPACK_IMPORTED_MODULE_1__["ɵɵtext"](25, "F. compromiso");
+    _angular_core__WEBPACK_IMPORTED_MODULE_1__["ɵɵelementEnd"]();
+    _angular_core__WEBPACK_IMPORTED_MODULE_1__["ɵɵelementStart"](26, "dx-date-box", 77);
+    _angular_core__WEBPACK_IMPORTED_MODULE_1__["ɵɵlistener"]("valueChange", function GestionEntregasBodegaComponent_div_5_div_9_div_17_div_11_div_1_div_8_Template_dx_date_box_valueChange_26_listener($event) { _angular_core__WEBPACK_IMPORTED_MODULE_1__["ɵɵrestoreView"](_r54); const item_r30 = _angular_core__WEBPACK_IMPORTED_MODULE_1__["ɵɵnextContext"]().$implicit; return item_r30.fechaCompromisoInput = $event; });
+    _angular_core__WEBPACK_IMPORTED_MODULE_1__["ɵɵelementEnd"]();
+    _angular_core__WEBPACK_IMPORTED_MODULE_1__["ɵɵelementEnd"]();
+    _angular_core__WEBPACK_IMPORTED_MODULE_1__["ɵɵelementStart"](27, "div", 73);
+    _angular_core__WEBPACK_IMPORTED_MODULE_1__["ɵɵelementStart"](28, "label", 74);
+    _angular_core__WEBPACK_IMPORTED_MODULE_1__["ɵɵtext"](29, "Notas");
+    _angular_core__WEBPACK_IMPORTED_MODULE_1__["ɵɵelementEnd"]();
+    _angular_core__WEBPACK_IMPORTED_MODULE_1__["ɵɵelementStart"](30, "dx-text-box", 78);
+    _angular_core__WEBPACK_IMPORTED_MODULE_1__["ɵɵlistener"]("valueChange", function GestionEntregasBodegaComponent_div_5_div_9_div_17_div_11_div_1_div_8_Template_dx_text_box_valueChange_30_listener($event) { _angular_core__WEBPACK_IMPORTED_MODULE_1__["ɵɵrestoreView"](_r54); const item_r30 = _angular_core__WEBPACK_IMPORTED_MODULE_1__["ɵɵnextContext"]().$implicit; return item_r30.notasInput = $event; });
+    _angular_core__WEBPACK_IMPORTED_MODULE_1__["ɵɵelementEnd"]();
+    _angular_core__WEBPACK_IMPORTED_MODULE_1__["ɵɵelementEnd"]();
+    _angular_core__WEBPACK_IMPORTED_MODULE_1__["ɵɵelementStart"](31, "div", 79);
+    _angular_core__WEBPACK_IMPORTED_MODULE_1__["ɵɵtemplate"](32, GestionEntregasBodegaComponent_div_5_div_9_div_17_div_11_div_1_div_8_ng_container_32_Template, 2, 0, "ng-container", 28);
+    _angular_core__WEBPACK_IMPORTED_MODULE_1__["ɵɵtemplate"](33, GestionEntregasBodegaComponent_div_5_div_9_div_17_div_11_div_1_div_8_ng_container_33_Template, 2, 1, "ng-container", 28);
+    _angular_core__WEBPACK_IMPORTED_MODULE_1__["ɵɵtemplate"](34, GestionEntregasBodegaComponent_div_5_div_9_div_17_div_11_div_1_div_8_span_34_Template, 3, 0, "span", 80);
+    _angular_core__WEBPACK_IMPORTED_MODULE_1__["ɵɵelementEnd"]();
+    _angular_core__WEBPACK_IMPORTED_MODULE_1__["ɵɵelementEnd"]();
 } if (rf & 2) {
-    const ctx_r55 = _angular_core__WEBPACK_IMPORTED_MODULE_0__["ɵɵnextContext"]();
-    const item_r28 = ctx_r55.$implicit;
-    const i_r29 = ctx_r55.index;
-    const ctx_r31 = _angular_core__WEBPACK_IMPORTED_MODULE_0__["ɵɵnextContext"](5);
-    _angular_core__WEBPACK_IMPORTED_MODULE_0__["ɵɵadvance"](5);
-    _angular_core__WEBPACK_IMPORTED_MODULE_0__["ɵɵtextInterpolate"](ctx_r31.formatoCantidadLinea(item_r28.cantidadFacturada, item_r28));
-    _angular_core__WEBPACK_IMPORTED_MODULE_0__["ɵɵadvance"](4);
-    _angular_core__WEBPACK_IMPORTED_MODULE_0__["ɵɵtextInterpolate"](ctx_r31.formatoCantidadLinea(item_r28.cantidadEntregada, item_r28));
-    _angular_core__WEBPACK_IMPORTED_MODULE_0__["ɵɵadvance"](4);
-    _angular_core__WEBPACK_IMPORTED_MODULE_0__["ɵɵtextInterpolate"](ctx_r31.formatoCantidadLinea(item_r28.cantidadDevuelta, item_r28));
-    _angular_core__WEBPACK_IMPORTED_MODULE_0__["ɵɵadvance"](4);
-    _angular_core__WEBPACK_IMPORTED_MODULE_0__["ɵɵtextInterpolate1"](" ", ctx_r31.formatoCantidadLinea(item_r28.pendiente, item_r28), " ");
-    _angular_core__WEBPACK_IMPORTED_MODULE_0__["ɵɵadvance"](4);
-    _angular_core__WEBPACK_IMPORTED_MODULE_0__["ɵɵproperty"]("ngIf", ctx_r31.esItemMetrosCajaPieza(item_r28));
-    _angular_core__WEBPACK_IMPORTED_MODULE_0__["ɵɵadvance"](1);
-    _angular_core__WEBPACK_IMPORTED_MODULE_0__["ɵɵproperty"]("ngIf", !ctx_r31.esItemMetrosCajaPieza(item_r28));
-    _angular_core__WEBPACK_IMPORTED_MODULE_0__["ɵɵadvance"](4);
-    _angular_core__WEBPACK_IMPORTED_MODULE_0__["ɵɵproperty"]("value", item_r28.fechaCompromisoInput)("disabled", ctx_r31.esCompromisoBloqueado(item_r28));
-    _angular_core__WEBPACK_IMPORTED_MODULE_0__["ɵɵadvance"](4);
-    _angular_core__WEBPACK_IMPORTED_MODULE_0__["ɵɵproperty"]("value", item_r28.notasInput)("disabled", ctx_r31.esCompromisoBloqueado(item_r28));
-    _angular_core__WEBPACK_IMPORTED_MODULE_0__["ɵɵadvance"](2);
-    _angular_core__WEBPACK_IMPORTED_MODULE_0__["ɵɵproperty"]("ngIf", item_r28.pendiente > 0);
-    _angular_core__WEBPACK_IMPORTED_MODULE_0__["ɵɵadvance"](1);
-    _angular_core__WEBPACK_IMPORTED_MODULE_0__["ɵɵproperty"]("ngIf", item_r28.pendiente === 0);
-    _angular_core__WEBPACK_IMPORTED_MODULE_0__["ɵɵadvance"](1);
-    _angular_core__WEBPACK_IMPORTED_MODULE_0__["ɵɵproperty"]("ngIf", ctx_r31.lineaGuardadaExitosa(i_r29));
+    const ctx_r57 = _angular_core__WEBPACK_IMPORTED_MODULE_1__["ɵɵnextContext"]();
+    const item_r30 = ctx_r57.$implicit;
+    const i_r31 = ctx_r57.index;
+    const ctx_r33 = _angular_core__WEBPACK_IMPORTED_MODULE_1__["ɵɵnextContext"](5);
+    _angular_core__WEBPACK_IMPORTED_MODULE_1__["ɵɵadvance"](5);
+    _angular_core__WEBPACK_IMPORTED_MODULE_1__["ɵɵtextInterpolate"](ctx_r33.formatoCantidadLinea(item_r30.cantidadFacturada, item_r30));
+    _angular_core__WEBPACK_IMPORTED_MODULE_1__["ɵɵadvance"](4);
+    _angular_core__WEBPACK_IMPORTED_MODULE_1__["ɵɵtextInterpolate"](ctx_r33.formatoCantidadLinea(item_r30.cantidadEntregada, item_r30));
+    _angular_core__WEBPACK_IMPORTED_MODULE_1__["ɵɵadvance"](4);
+    _angular_core__WEBPACK_IMPORTED_MODULE_1__["ɵɵtextInterpolate"](ctx_r33.formatoCantidadLinea(item_r30.cantidadDevuelta, item_r30));
+    _angular_core__WEBPACK_IMPORTED_MODULE_1__["ɵɵadvance"](4);
+    _angular_core__WEBPACK_IMPORTED_MODULE_1__["ɵɵtextInterpolate1"](" ", ctx_r33.formatoCantidadLinea(item_r30.pendiente, item_r30), " ");
+    _angular_core__WEBPACK_IMPORTED_MODULE_1__["ɵɵadvance"](4);
+    _angular_core__WEBPACK_IMPORTED_MODULE_1__["ɵɵproperty"]("ngIf", ctx_r33.esItemMetrosCajaPieza(item_r30));
+    _angular_core__WEBPACK_IMPORTED_MODULE_1__["ɵɵadvance"](1);
+    _angular_core__WEBPACK_IMPORTED_MODULE_1__["ɵɵproperty"]("ngIf", !ctx_r33.esItemMetrosCajaPieza(item_r30));
+    _angular_core__WEBPACK_IMPORTED_MODULE_1__["ɵɵadvance"](4);
+    _angular_core__WEBPACK_IMPORTED_MODULE_1__["ɵɵproperty"]("value", item_r30.fechaCompromisoInput)("disabled", ctx_r33.esCompromisoBloqueado(item_r30));
+    _angular_core__WEBPACK_IMPORTED_MODULE_1__["ɵɵadvance"](4);
+    _angular_core__WEBPACK_IMPORTED_MODULE_1__["ɵɵproperty"]("value", item_r30.notasInput)("disabled", ctx_r33.esCompromisoBloqueado(item_r30));
+    _angular_core__WEBPACK_IMPORTED_MODULE_1__["ɵɵadvance"](2);
+    _angular_core__WEBPACK_IMPORTED_MODULE_1__["ɵɵproperty"]("ngIf", item_r30.pendiente > 0);
+    _angular_core__WEBPACK_IMPORTED_MODULE_1__["ɵɵadvance"](1);
+    _angular_core__WEBPACK_IMPORTED_MODULE_1__["ɵɵproperty"]("ngIf", item_r30.pendiente === 0);
+    _angular_core__WEBPACK_IMPORTED_MODULE_1__["ɵɵadvance"](1);
+    _angular_core__WEBPACK_IMPORTED_MODULE_1__["ɵɵproperty"]("ngIf", ctx_r33.lineaGuardadaExitosa(i_r31));
 } }
 const _c0 = function (a0, a1) { return [a0, a1]; };
 function GestionEntregasBodegaComponent_div_5_div_9_div_17_div_11_div_1_Template(rf, ctx) { if (rf & 1) {
-    const _r57 = _angular_core__WEBPACK_IMPORTED_MODULE_0__["ɵɵgetCurrentView"]();
-    _angular_core__WEBPACK_IMPORTED_MODULE_0__["ɵɵelementStart"](0, "div", 58);
-    _angular_core__WEBPACK_IMPORTED_MODULE_0__["ɵɵelementStart"](1, "button", 59);
-    _angular_core__WEBPACK_IMPORTED_MODULE_0__["ɵɵlistener"]("click", function GestionEntregasBodegaComponent_div_5_div_9_div_17_div_11_div_1_Template_button_click_1_listener($event) { _angular_core__WEBPACK_IMPORTED_MODULE_0__["ɵɵrestoreView"](_r57); const i_r29 = ctx.index; const ctx_r56 = _angular_core__WEBPACK_IMPORTED_MODULE_0__["ɵɵnextContext"](5); ctx_r56.toggleItemMovil(i_r29); return $event.stopPropagation(); });
-    _angular_core__WEBPACK_IMPORTED_MODULE_0__["ɵɵelementStart"](2, "span", 60);
-    _angular_core__WEBPACK_IMPORTED_MODULE_0__["ɵɵtext"](3);
-    _angular_core__WEBPACK_IMPORTED_MODULE_0__["ɵɵelementEnd"]();
-    _angular_core__WEBPACK_IMPORTED_MODULE_0__["ɵɵelementStart"](4, "span", 61);
-    _angular_core__WEBPACK_IMPORTED_MODULE_0__["ɵɵtext"](5);
-    _angular_core__WEBPACK_IMPORTED_MODULE_0__["ɵɵelementEnd"]();
-    _angular_core__WEBPACK_IMPORTED_MODULE_0__["ɵɵtemplate"](6, GestionEntregasBodegaComponent_div_5_div_9_div_17_div_11_div_1_i_6_Template, 1, 0, "i", 62);
-    _angular_core__WEBPACK_IMPORTED_MODULE_0__["ɵɵelement"](7, "i", 63);
-    _angular_core__WEBPACK_IMPORTED_MODULE_0__["ɵɵelementEnd"]();
-    _angular_core__WEBPACK_IMPORTED_MODULE_0__["ɵɵtemplate"](8, GestionEntregasBodegaComponent_div_5_div_9_div_17_div_11_div_1_div_8_Template, 35, 13, "div", 64);
-    _angular_core__WEBPACK_IMPORTED_MODULE_0__["ɵɵelementEnd"]();
+    const _r59 = _angular_core__WEBPACK_IMPORTED_MODULE_1__["ɵɵgetCurrentView"]();
+    _angular_core__WEBPACK_IMPORTED_MODULE_1__["ɵɵelementStart"](0, "div", 61);
+    _angular_core__WEBPACK_IMPORTED_MODULE_1__["ɵɵelementStart"](1, "button", 62);
+    _angular_core__WEBPACK_IMPORTED_MODULE_1__["ɵɵlistener"]("click", function GestionEntregasBodegaComponent_div_5_div_9_div_17_div_11_div_1_Template_button_click_1_listener($event) { _angular_core__WEBPACK_IMPORTED_MODULE_1__["ɵɵrestoreView"](_r59); const i_r31 = ctx.index; const ctx_r58 = _angular_core__WEBPACK_IMPORTED_MODULE_1__["ɵɵnextContext"](5); ctx_r58.toggleItemMovil(i_r31); return $event.stopPropagation(); });
+    _angular_core__WEBPACK_IMPORTED_MODULE_1__["ɵɵelementStart"](2, "span", 63);
+    _angular_core__WEBPACK_IMPORTED_MODULE_1__["ɵɵtext"](3);
+    _angular_core__WEBPACK_IMPORTED_MODULE_1__["ɵɵelementEnd"]();
+    _angular_core__WEBPACK_IMPORTED_MODULE_1__["ɵɵelementStart"](4, "span", 64);
+    _angular_core__WEBPACK_IMPORTED_MODULE_1__["ɵɵtext"](5);
+    _angular_core__WEBPACK_IMPORTED_MODULE_1__["ɵɵelementEnd"]();
+    _angular_core__WEBPACK_IMPORTED_MODULE_1__["ɵɵtemplate"](6, GestionEntregasBodegaComponent_div_5_div_9_div_17_div_11_div_1_i_6_Template, 1, 0, "i", 65);
+    _angular_core__WEBPACK_IMPORTED_MODULE_1__["ɵɵelement"](7, "i", 66);
+    _angular_core__WEBPACK_IMPORTED_MODULE_1__["ɵɵelementEnd"]();
+    _angular_core__WEBPACK_IMPORTED_MODULE_1__["ɵɵtemplate"](8, GestionEntregasBodegaComponent_div_5_div_9_div_17_div_11_div_1_div_8_Template, 35, 13, "div", 67);
+    _angular_core__WEBPACK_IMPORTED_MODULE_1__["ɵɵelementEnd"]();
 } if (rf & 2) {
-    const item_r28 = ctx.$implicit;
-    const i_r29 = ctx.index;
-    const ctx_r27 = _angular_core__WEBPACK_IMPORTED_MODULE_0__["ɵɵnextContext"](5);
-    _angular_core__WEBPACK_IMPORTED_MODULE_0__["ɵɵadvance"](2);
-    _angular_core__WEBPACK_IMPORTED_MODULE_0__["ɵɵproperty"]("ngClass", _angular_core__WEBPACK_IMPORTED_MODULE_0__["ɵɵpureFunction2"](8, _c0, ctx_r27.claseColorItem(item_r28), ctx_r27.itemIngresoExcedePendiente(item_r28) ? "sd-item-alerta" : ""));
-    _angular_core__WEBPACK_IMPORTED_MODULE_0__["ɵɵadvance"](1);
-    _angular_core__WEBPACK_IMPORTED_MODULE_0__["ɵɵtextInterpolate1"](" ", item_r28.productoNombre, " ");
-    _angular_core__WEBPACK_IMPORTED_MODULE_0__["ɵɵadvance"](2);
-    _angular_core__WEBPACK_IMPORTED_MODULE_0__["ɵɵtextInterpolate2"](" Pend: ", ctx_r27.formatoCantidadLinea(item_r28.pendiente, item_r28), " \u00B7 Est: ", ctx_r27.estadoGestionAutomatico(item_r28), " ");
-    _angular_core__WEBPACK_IMPORTED_MODULE_0__["ɵɵadvance"](1);
-    _angular_core__WEBPACK_IMPORTED_MODULE_0__["ɵɵproperty"]("ngIf", ctx_r27.lineaGuardadaExitosa(i_r29));
-    _angular_core__WEBPACK_IMPORTED_MODULE_0__["ɵɵadvance"](1);
-    _angular_core__WEBPACK_IMPORTED_MODULE_0__["ɵɵclassProp"]("sd-chevron-up", ctx_r27.itemExpandidoEs(i_r29));
-    _angular_core__WEBPACK_IMPORTED_MODULE_0__["ɵɵadvance"](1);
-    _angular_core__WEBPACK_IMPORTED_MODULE_0__["ɵɵproperty"]("ngIf", ctx_r27.itemExpandidoEs(i_r29));
+    const item_r30 = ctx.$implicit;
+    const i_r31 = ctx.index;
+    const ctx_r29 = _angular_core__WEBPACK_IMPORTED_MODULE_1__["ɵɵnextContext"](5);
+    _angular_core__WEBPACK_IMPORTED_MODULE_1__["ɵɵadvance"](2);
+    _angular_core__WEBPACK_IMPORTED_MODULE_1__["ɵɵproperty"]("ngClass", _angular_core__WEBPACK_IMPORTED_MODULE_1__["ɵɵpureFunction2"](8, _c0, ctx_r29.claseColorItem(item_r30), ctx_r29.itemIngresoExcedePendiente(item_r30) ? "sd-item-alerta" : ""));
+    _angular_core__WEBPACK_IMPORTED_MODULE_1__["ɵɵadvance"](1);
+    _angular_core__WEBPACK_IMPORTED_MODULE_1__["ɵɵtextInterpolate1"](" ", item_r30.productoNombre, " ");
+    _angular_core__WEBPACK_IMPORTED_MODULE_1__["ɵɵadvance"](2);
+    _angular_core__WEBPACK_IMPORTED_MODULE_1__["ɵɵtextInterpolate2"](" Pend: ", ctx_r29.formatoCantidadLinea(item_r30.pendiente, item_r30), " \u00B7 Est: ", ctx_r29.estadoGestionAutomatico(item_r30), " ");
+    _angular_core__WEBPACK_IMPORTED_MODULE_1__["ɵɵadvance"](1);
+    _angular_core__WEBPACK_IMPORTED_MODULE_1__["ɵɵproperty"]("ngIf", ctx_r29.lineaGuardadaExitosa(i_r31));
+    _angular_core__WEBPACK_IMPORTED_MODULE_1__["ɵɵadvance"](1);
+    _angular_core__WEBPACK_IMPORTED_MODULE_1__["ɵɵclassProp"]("sd-chevron-up", ctx_r29.itemExpandidoEs(i_r31));
+    _angular_core__WEBPACK_IMPORTED_MODULE_1__["ɵɵadvance"](1);
+    _angular_core__WEBPACK_IMPORTED_MODULE_1__["ɵɵproperty"]("ngIf", ctx_r29.itemExpandidoEs(i_r31));
 } }
 function GestionEntregasBodegaComponent_div_5_div_9_div_17_div_11_Template(rf, ctx) { if (rf & 1) {
-    const _r60 = _angular_core__WEBPACK_IMPORTED_MODULE_0__["ɵɵgetCurrentView"]();
-    _angular_core__WEBPACK_IMPORTED_MODULE_0__["ɵɵelementStart"](0, "div", 53);
-    _angular_core__WEBPACK_IMPORTED_MODULE_0__["ɵɵtemplate"](1, GestionEntregasBodegaComponent_div_5_div_9_div_17_div_11_div_1_Template, 9, 11, "div", 54);
-    _angular_core__WEBPACK_IMPORTED_MODULE_0__["ɵɵelementStart"](2, "div", 55);
-    _angular_core__WEBPACK_IMPORTED_MODULE_0__["ɵɵelementStart"](3, "dx-button", 56);
-    _angular_core__WEBPACK_IMPORTED_MODULE_0__["ɵɵlistener"]("onClick", function GestionEntregasBodegaComponent_div_5_div_9_div_17_div_11_Template_dx_button_onClick_3_listener() { _angular_core__WEBPACK_IMPORTED_MODULE_0__["ɵɵrestoreView"](_r60); const ord_r25 = _angular_core__WEBPACK_IMPORTED_MODULE_0__["ɵɵnextContext"]().$implicit; const ctx_r58 = _angular_core__WEBPACK_IMPORTED_MODULE_0__["ɵɵnextContext"](3); return ctx_r58.cerrarOrdenDesdeMovil(ord_r25); });
-    _angular_core__WEBPACK_IMPORTED_MODULE_0__["ɵɵelementEnd"]();
-    _angular_core__WEBPACK_IMPORTED_MODULE_0__["ɵɵelementStart"](4, "p", 57);
-    _angular_core__WEBPACK_IMPORTED_MODULE_0__["ɵɵtext"](5, " Solo disponible cuando la orden est\u00E1 en estado COMPLETO (todos los \u00EDtems cuadrados). ");
-    _angular_core__WEBPACK_IMPORTED_MODULE_0__["ɵɵelementEnd"]();
-    _angular_core__WEBPACK_IMPORTED_MODULE_0__["ɵɵelementEnd"]();
-    _angular_core__WEBPACK_IMPORTED_MODULE_0__["ɵɵelementEnd"]();
+    const _r62 = _angular_core__WEBPACK_IMPORTED_MODULE_1__["ɵɵgetCurrentView"]();
+    _angular_core__WEBPACK_IMPORTED_MODULE_1__["ɵɵelementStart"](0, "div", 56);
+    _angular_core__WEBPACK_IMPORTED_MODULE_1__["ɵɵtemplate"](1, GestionEntregasBodegaComponent_div_5_div_9_div_17_div_11_div_1_Template, 9, 11, "div", 57);
+    _angular_core__WEBPACK_IMPORTED_MODULE_1__["ɵɵelementStart"](2, "div", 58);
+    _angular_core__WEBPACK_IMPORTED_MODULE_1__["ɵɵelementStart"](3, "dx-button", 59);
+    _angular_core__WEBPACK_IMPORTED_MODULE_1__["ɵɵlistener"]("onClick", function GestionEntregasBodegaComponent_div_5_div_9_div_17_div_11_Template_dx_button_onClick_3_listener() { _angular_core__WEBPACK_IMPORTED_MODULE_1__["ɵɵrestoreView"](_r62); const ord_r27 = _angular_core__WEBPACK_IMPORTED_MODULE_1__["ɵɵnextContext"]().$implicit; const ctx_r60 = _angular_core__WEBPACK_IMPORTED_MODULE_1__["ɵɵnextContext"](3); return ctx_r60.cerrarOrdenDesdeMovil(ord_r27); });
+    _angular_core__WEBPACK_IMPORTED_MODULE_1__["ɵɵelementEnd"]();
+    _angular_core__WEBPACK_IMPORTED_MODULE_1__["ɵɵelementStart"](4, "p", 60);
+    _angular_core__WEBPACK_IMPORTED_MODULE_1__["ɵɵtext"](5, " Solo disponible cuando la orden est\u00E1 en estado COMPLETO (todos los \u00EDtems cuadrados). ");
+    _angular_core__WEBPACK_IMPORTED_MODULE_1__["ɵɵelementEnd"]();
+    _angular_core__WEBPACK_IMPORTED_MODULE_1__["ɵɵelementEnd"]();
+    _angular_core__WEBPACK_IMPORTED_MODULE_1__["ɵɵelementEnd"]();
 } if (rf & 2) {
-    const ord_r25 = _angular_core__WEBPACK_IMPORTED_MODULE_0__["ɵɵnextContext"]().$implicit;
-    _angular_core__WEBPACK_IMPORTED_MODULE_0__["ɵɵadvance"](1);
-    _angular_core__WEBPACK_IMPORTED_MODULE_0__["ɵɵproperty"]("ngForOf", ord_r25.items);
-    _angular_core__WEBPACK_IMPORTED_MODULE_0__["ɵɵadvance"](2);
-    _angular_core__WEBPACK_IMPORTED_MODULE_0__["ɵɵproperty"]("disabled", ord_r25.estadoProceso !== "COMPLETO");
+    const ord_r27 = _angular_core__WEBPACK_IMPORTED_MODULE_1__["ɵɵnextContext"]().$implicit;
+    _angular_core__WEBPACK_IMPORTED_MODULE_1__["ɵɵadvance"](1);
+    _angular_core__WEBPACK_IMPORTED_MODULE_1__["ɵɵproperty"]("ngForOf", ord_r27.items);
+    _angular_core__WEBPACK_IMPORTED_MODULE_1__["ɵɵadvance"](2);
+    _angular_core__WEBPACK_IMPORTED_MODULE_1__["ɵɵproperty"]("disabled", ord_r27.estadoProceso !== "COMPLETO");
 } }
 function GestionEntregasBodegaComponent_div_5_div_9_div_17_Template(rf, ctx) { if (rf & 1) {
-    const _r63 = _angular_core__WEBPACK_IMPORTED_MODULE_0__["ɵɵgetCurrentView"]();
-    _angular_core__WEBPACK_IMPORTED_MODULE_0__["ɵɵelementStart"](0, "div", 44);
-    _angular_core__WEBPACK_IMPORTED_MODULE_0__["ɵɵelementStart"](1, "button", 45);
-    _angular_core__WEBPACK_IMPORTED_MODULE_0__["ɵɵlistener"]("click", function GestionEntregasBodegaComponent_div_5_div_9_div_17_Template_button_click_1_listener() { _angular_core__WEBPACK_IMPORTED_MODULE_0__["ɵɵrestoreView"](_r63); const ord_r25 = ctx.$implicit; const ctx_r62 = _angular_core__WEBPACK_IMPORTED_MODULE_0__["ɵɵnextContext"](3); return ctx_r62.toggleOrdenMovil(ord_r25); });
-    _angular_core__WEBPACK_IMPORTED_MODULE_0__["ɵɵelement"](2, "i", 46);
-    _angular_core__WEBPACK_IMPORTED_MODULE_0__["ɵɵelementStart"](3, "div", 47);
-    _angular_core__WEBPACK_IMPORTED_MODULE_0__["ɵɵelementStart"](4, "span", 48);
-    _angular_core__WEBPACK_IMPORTED_MODULE_0__["ɵɵtext"](5);
-    _angular_core__WEBPACK_IMPORTED_MODULE_0__["ɵɵelementEnd"]();
-    _angular_core__WEBPACK_IMPORTED_MODULE_0__["ɵɵelementStart"](6, "span", 49);
-    _angular_core__WEBPACK_IMPORTED_MODULE_0__["ɵɵtext"](7);
-    _angular_core__WEBPACK_IMPORTED_MODULE_0__["ɵɵelementEnd"]();
-    _angular_core__WEBPACK_IMPORTED_MODULE_0__["ɵɵelementStart"](8, "span", 50);
-    _angular_core__WEBPACK_IMPORTED_MODULE_0__["ɵɵtext"](9);
-    _angular_core__WEBPACK_IMPORTED_MODULE_0__["ɵɵelementEnd"]();
-    _angular_core__WEBPACK_IMPORTED_MODULE_0__["ɵɵelementEnd"]();
-    _angular_core__WEBPACK_IMPORTED_MODULE_0__["ɵɵelement"](10, "i", 51);
-    _angular_core__WEBPACK_IMPORTED_MODULE_0__["ɵɵelementEnd"]();
-    _angular_core__WEBPACK_IMPORTED_MODULE_0__["ɵɵtemplate"](11, GestionEntregasBodegaComponent_div_5_div_9_div_17_div_11_Template, 6, 2, "div", 52);
-    _angular_core__WEBPACK_IMPORTED_MODULE_0__["ɵɵelementEnd"]();
+    const _r65 = _angular_core__WEBPACK_IMPORTED_MODULE_1__["ɵɵgetCurrentView"]();
+    _angular_core__WEBPACK_IMPORTED_MODULE_1__["ɵɵelementStart"](0, "div", 47);
+    _angular_core__WEBPACK_IMPORTED_MODULE_1__["ɵɵelementStart"](1, "button", 48);
+    _angular_core__WEBPACK_IMPORTED_MODULE_1__["ɵɵlistener"]("click", function GestionEntregasBodegaComponent_div_5_div_9_div_17_Template_button_click_1_listener() { _angular_core__WEBPACK_IMPORTED_MODULE_1__["ɵɵrestoreView"](_r65); const ord_r27 = ctx.$implicit; const ctx_r64 = _angular_core__WEBPACK_IMPORTED_MODULE_1__["ɵɵnextContext"](3); return ctx_r64.toggleOrdenMovil(ord_r27); });
+    _angular_core__WEBPACK_IMPORTED_MODULE_1__["ɵɵelement"](2, "i", 49);
+    _angular_core__WEBPACK_IMPORTED_MODULE_1__["ɵɵelementStart"](3, "div", 50);
+    _angular_core__WEBPACK_IMPORTED_MODULE_1__["ɵɵelementStart"](4, "span", 51);
+    _angular_core__WEBPACK_IMPORTED_MODULE_1__["ɵɵtext"](5);
+    _angular_core__WEBPACK_IMPORTED_MODULE_1__["ɵɵelementEnd"]();
+    _angular_core__WEBPACK_IMPORTED_MODULE_1__["ɵɵelementStart"](6, "span", 52);
+    _angular_core__WEBPACK_IMPORTED_MODULE_1__["ɵɵtext"](7);
+    _angular_core__WEBPACK_IMPORTED_MODULE_1__["ɵɵelementEnd"]();
+    _angular_core__WEBPACK_IMPORTED_MODULE_1__["ɵɵelementStart"](8, "span", 53);
+    _angular_core__WEBPACK_IMPORTED_MODULE_1__["ɵɵtext"](9);
+    _angular_core__WEBPACK_IMPORTED_MODULE_1__["ɵɵelementEnd"]();
+    _angular_core__WEBPACK_IMPORTED_MODULE_1__["ɵɵelementEnd"]();
+    _angular_core__WEBPACK_IMPORTED_MODULE_1__["ɵɵelement"](10, "i", 54);
+    _angular_core__WEBPACK_IMPORTED_MODULE_1__["ɵɵelementEnd"]();
+    _angular_core__WEBPACK_IMPORTED_MODULE_1__["ɵɵtemplate"](11, GestionEntregasBodegaComponent_div_5_div_9_div_17_div_11_Template, 6, 2, "div", 55);
+    _angular_core__WEBPACK_IMPORTED_MODULE_1__["ɵɵelementEnd"]();
 } if (rf & 2) {
-    const ord_r25 = ctx.$implicit;
-    const ctx_r24 = _angular_core__WEBPACK_IMPORTED_MODULE_0__["ɵɵnextContext"](3);
-    _angular_core__WEBPACK_IMPORTED_MODULE_0__["ɵɵadvance"](2);
-    _angular_core__WEBPACK_IMPORTED_MODULE_0__["ɵɵproperty"]("ngClass", ctx_r24.claseColorOrden(ord_r25));
-    _angular_core__WEBPACK_IMPORTED_MODULE_0__["ɵɵadvance"](3);
-    _angular_core__WEBPACK_IMPORTED_MODULE_0__["ɵɵtextInterpolate2"]("", ord_r25.tipoDocumento, " #", ord_r25.documentoNumero, "");
-    _angular_core__WEBPACK_IMPORTED_MODULE_0__["ɵɵadvance"](2);
-    _angular_core__WEBPACK_IMPORTED_MODULE_0__["ɵɵtextInterpolate"](ord_r25.clienteNombre);
-    _angular_core__WEBPACK_IMPORTED_MODULE_0__["ɵɵadvance"](2);
-    _angular_core__WEBPACK_IMPORTED_MODULE_0__["ɵɵtextInterpolate2"]("Orden ", ord_r25.consecutivoEntrega, " \u00B7 ", ord_r25.estadoProceso, "");
-    _angular_core__WEBPACK_IMPORTED_MODULE_0__["ɵɵadvance"](1);
-    _angular_core__WEBPACK_IMPORTED_MODULE_0__["ɵɵclassProp"]("sd-chevron-up", ctx_r24.ordenExpandidaEs(ord_r25));
-    _angular_core__WEBPACK_IMPORTED_MODULE_0__["ɵɵadvance"](1);
-    _angular_core__WEBPACK_IMPORTED_MODULE_0__["ɵɵproperty"]("ngIf", ctx_r24.ordenExpandidaEs(ord_r25));
+    const ord_r27 = ctx.$implicit;
+    const ctx_r26 = _angular_core__WEBPACK_IMPORTED_MODULE_1__["ɵɵnextContext"](3);
+    _angular_core__WEBPACK_IMPORTED_MODULE_1__["ɵɵadvance"](2);
+    _angular_core__WEBPACK_IMPORTED_MODULE_1__["ɵɵproperty"]("ngClass", ctx_r26.claseColorOrden(ord_r27));
+    _angular_core__WEBPACK_IMPORTED_MODULE_1__["ɵɵadvance"](3);
+    _angular_core__WEBPACK_IMPORTED_MODULE_1__["ɵɵtextInterpolate2"]("", ord_r27.tipoDocumento, " #", ord_r27.documentoNumero, "");
+    _angular_core__WEBPACK_IMPORTED_MODULE_1__["ɵɵadvance"](2);
+    _angular_core__WEBPACK_IMPORTED_MODULE_1__["ɵɵtextInterpolate"](ord_r27.clienteNombre);
+    _angular_core__WEBPACK_IMPORTED_MODULE_1__["ɵɵadvance"](2);
+    _angular_core__WEBPACK_IMPORTED_MODULE_1__["ɵɵtextInterpolate2"]("Orden ", ord_r27.consecutivoEntrega, " \u00B7 ", ord_r27.estadoProceso, "");
+    _angular_core__WEBPACK_IMPORTED_MODULE_1__["ɵɵadvance"](1);
+    _angular_core__WEBPACK_IMPORTED_MODULE_1__["ɵɵclassProp"]("sd-chevron-up", ctx_r26.ordenExpandidaEs(ord_r27));
+    _angular_core__WEBPACK_IMPORTED_MODULE_1__["ɵɵadvance"](1);
+    _angular_core__WEBPACK_IMPORTED_MODULE_1__["ɵɵproperty"]("ngIf", ctx_r26.ordenExpandidaEs(ord_r27));
 } }
 function GestionEntregasBodegaComponent_div_5_div_9_Template(rf, ctx) { if (rf & 1) {
-    _angular_core__WEBPACK_IMPORTED_MODULE_0__["ɵɵelementStart"](0, "div", 33);
-    _angular_core__WEBPACK_IMPORTED_MODULE_0__["ɵɵelementStart"](1, "p", 34);
-    _angular_core__WEBPACK_IMPORTED_MODULE_0__["ɵɵtext"](2, " Toque una factura para ver los materiales; luego un material para registrar el despacho. ");
-    _angular_core__WEBPACK_IMPORTED_MODULE_0__["ɵɵelementEnd"]();
-    _angular_core__WEBPACK_IMPORTED_MODULE_0__["ɵɵelementStart"](3, "div", 35);
-    _angular_core__WEBPACK_IMPORTED_MODULE_0__["ɵɵelementStart"](4, "span", 36);
-    _angular_core__WEBPACK_IMPORTED_MODULE_0__["ɵɵelement"](5, "i", 37);
-    _angular_core__WEBPACK_IMPORTED_MODULE_0__["ɵɵtext"](6, " Abierto");
-    _angular_core__WEBPACK_IMPORTED_MODULE_0__["ɵɵelementEnd"]();
-    _angular_core__WEBPACK_IMPORTED_MODULE_0__["ɵɵelementStart"](7, "span", 36);
-    _angular_core__WEBPACK_IMPORTED_MODULE_0__["ɵɵelement"](8, "i", 38);
-    _angular_core__WEBPACK_IMPORTED_MODULE_0__["ɵɵtext"](9, " Novedad");
-    _angular_core__WEBPACK_IMPORTED_MODULE_0__["ɵɵelementEnd"]();
-    _angular_core__WEBPACK_IMPORTED_MODULE_0__["ɵɵelementStart"](10, "span", 36);
-    _angular_core__WEBPACK_IMPORTED_MODULE_0__["ɵɵelement"](11, "i", 39);
-    _angular_core__WEBPACK_IMPORTED_MODULE_0__["ɵɵtext"](12, " Completado");
-    _angular_core__WEBPACK_IMPORTED_MODULE_0__["ɵɵelementEnd"]();
-    _angular_core__WEBPACK_IMPORTED_MODULE_0__["ɵɵelementStart"](13, "span", 36);
-    _angular_core__WEBPACK_IMPORTED_MODULE_0__["ɵɵelement"](14, "i", 40);
-    _angular_core__WEBPACK_IMPORTED_MODULE_0__["ɵɵtext"](15, " Cerrado");
-    _angular_core__WEBPACK_IMPORTED_MODULE_0__["ɵɵelementEnd"]();
-    _angular_core__WEBPACK_IMPORTED_MODULE_0__["ɵɵelementEnd"]();
-    _angular_core__WEBPACK_IMPORTED_MODULE_0__["ɵɵtemplate"](16, GestionEntregasBodegaComponent_div_5_div_9_div_16_Template, 2, 0, "div", 41);
-    _angular_core__WEBPACK_IMPORTED_MODULE_0__["ɵɵtemplate"](17, GestionEntregasBodegaComponent_div_5_div_9_div_17_Template, 12, 9, "div", 42);
-    _angular_core__WEBPACK_IMPORTED_MODULE_0__["ɵɵelementEnd"]();
+    _angular_core__WEBPACK_IMPORTED_MODULE_1__["ɵɵelementStart"](0, "div", 36);
+    _angular_core__WEBPACK_IMPORTED_MODULE_1__["ɵɵelementStart"](1, "p", 37);
+    _angular_core__WEBPACK_IMPORTED_MODULE_1__["ɵɵtext"](2, " Toque una factura para ver los materiales; luego un material para registrar el despacho. ");
+    _angular_core__WEBPACK_IMPORTED_MODULE_1__["ɵɵelementEnd"]();
+    _angular_core__WEBPACK_IMPORTED_MODULE_1__["ɵɵelementStart"](3, "div", 38);
+    _angular_core__WEBPACK_IMPORTED_MODULE_1__["ɵɵelementStart"](4, "span", 39);
+    _angular_core__WEBPACK_IMPORTED_MODULE_1__["ɵɵelement"](5, "i", 40);
+    _angular_core__WEBPACK_IMPORTED_MODULE_1__["ɵɵtext"](6, " Abierto");
+    _angular_core__WEBPACK_IMPORTED_MODULE_1__["ɵɵelementEnd"]();
+    _angular_core__WEBPACK_IMPORTED_MODULE_1__["ɵɵelementStart"](7, "span", 39);
+    _angular_core__WEBPACK_IMPORTED_MODULE_1__["ɵɵelement"](8, "i", 41);
+    _angular_core__WEBPACK_IMPORTED_MODULE_1__["ɵɵtext"](9, " Novedad");
+    _angular_core__WEBPACK_IMPORTED_MODULE_1__["ɵɵelementEnd"]();
+    _angular_core__WEBPACK_IMPORTED_MODULE_1__["ɵɵelementStart"](10, "span", 39);
+    _angular_core__WEBPACK_IMPORTED_MODULE_1__["ɵɵelement"](11, "i", 42);
+    _angular_core__WEBPACK_IMPORTED_MODULE_1__["ɵɵtext"](12, " Completado");
+    _angular_core__WEBPACK_IMPORTED_MODULE_1__["ɵɵelementEnd"]();
+    _angular_core__WEBPACK_IMPORTED_MODULE_1__["ɵɵelementStart"](13, "span", 39);
+    _angular_core__WEBPACK_IMPORTED_MODULE_1__["ɵɵelement"](14, "i", 43);
+    _angular_core__WEBPACK_IMPORTED_MODULE_1__["ɵɵtext"](15, " Cerrado");
+    _angular_core__WEBPACK_IMPORTED_MODULE_1__["ɵɵelementEnd"]();
+    _angular_core__WEBPACK_IMPORTED_MODULE_1__["ɵɵelementEnd"]();
+    _angular_core__WEBPACK_IMPORTED_MODULE_1__["ɵɵtemplate"](16, GestionEntregasBodegaComponent_div_5_div_9_div_16_Template, 2, 0, "div", 44);
+    _angular_core__WEBPACK_IMPORTED_MODULE_1__["ɵɵtemplate"](17, GestionEntregasBodegaComponent_div_5_div_9_div_17_Template, 12, 9, "div", 45);
+    _angular_core__WEBPACK_IMPORTED_MODULE_1__["ɵɵelementEnd"]();
 } if (rf & 2) {
-    const ctx_r20 = _angular_core__WEBPACK_IMPORTED_MODULE_0__["ɵɵnextContext"](2);
-    _angular_core__WEBPACK_IMPORTED_MODULE_0__["ɵɵadvance"](16);
-    _angular_core__WEBPACK_IMPORTED_MODULE_0__["ɵɵproperty"]("ngIf", !(ctx_r20.ordenes == null ? null : ctx_r20.ordenes.length));
-    _angular_core__WEBPACK_IMPORTED_MODULE_0__["ɵɵadvance"](1);
-    _angular_core__WEBPACK_IMPORTED_MODULE_0__["ɵɵproperty"]("ngForOf", ctx_r20.ordenes);
+    const ctx_r21 = _angular_core__WEBPACK_IMPORTED_MODULE_1__["ɵɵnextContext"](2);
+    _angular_core__WEBPACK_IMPORTED_MODULE_1__["ɵɵadvance"](16);
+    _angular_core__WEBPACK_IMPORTED_MODULE_1__["ɵɵproperty"]("ngIf", !(ctx_r21.ordenes == null ? null : ctx_r21.ordenes.length));
+    _angular_core__WEBPACK_IMPORTED_MODULE_1__["ɵɵadvance"](1);
+    _angular_core__WEBPACK_IMPORTED_MODULE_1__["ɵɵproperty"]("ngForOf", ctx_r21.ordenes);
 } }
-function GestionEntregasBodegaComponent_div_5_dx_data_grid_10_Template(rf, ctx) { if (rf & 1) {
-    const _r65 = _angular_core__WEBPACK_IMPORTED_MODULE_0__["ɵɵgetCurrentView"]();
-    _angular_core__WEBPACK_IMPORTED_MODULE_0__["ɵɵelementStart"](0, "dx-data-grid", 87);
-    _angular_core__WEBPACK_IMPORTED_MODULE_0__["ɵɵlistener"]("onRowClick", function GestionEntregasBodegaComponent_div_5_dx_data_grid_10_Template_dx_data_grid_onRowClick_0_listener($event) { _angular_core__WEBPACK_IMPORTED_MODULE_0__["ɵɵrestoreView"](_r65); const ctx_r64 = _angular_core__WEBPACK_IMPORTED_MODULE_0__["ɵɵnextContext"](2); return ctx_r64.onRowClickGrid($event); });
-    _angular_core__WEBPACK_IMPORTED_MODULE_0__["ɵɵelement"](1, "dxo-filter-row", 88);
-    _angular_core__WEBPACK_IMPORTED_MODULE_0__["ɵɵelement"](2, "dxo-search-panel", 89);
-    _angular_core__WEBPACK_IMPORTED_MODULE_0__["ɵɵelement"](3, "dxi-column", 90);
-    _angular_core__WEBPACK_IMPORTED_MODULE_0__["ɵɵelement"](4, "dxi-column", 91);
-    _angular_core__WEBPACK_IMPORTED_MODULE_0__["ɵɵelement"](5, "dxi-column", 92);
-    _angular_core__WEBPACK_IMPORTED_MODULE_0__["ɵɵelement"](6, "dxi-column", 93);
-    _angular_core__WEBPACK_IMPORTED_MODULE_0__["ɵɵelement"](7, "dxi-column", 94);
-    _angular_core__WEBPACK_IMPORTED_MODULE_0__["ɵɵelement"](8, "dxi-column", 95);
-    _angular_core__WEBPACK_IMPORTED_MODULE_0__["ɵɵelementStart"](9, "dxi-column", 96);
-    _angular_core__WEBPACK_IMPORTED_MODULE_0__["ɵɵelement"](10, "dxi-button", 97);
-    _angular_core__WEBPACK_IMPORTED_MODULE_0__["ɵɵelementEnd"]();
-    _angular_core__WEBPACK_IMPORTED_MODULE_0__["ɵɵelementEnd"]();
+function GestionEntregasBodegaComponent_div_5_div_10_div_16_Template(rf, ctx) { if (rf & 1) {
+    _angular_core__WEBPACK_IMPORTED_MODULE_1__["ɵɵelementStart"](0, "div", 46);
+    _angular_core__WEBPACK_IMPORTED_MODULE_1__["ɵɵtext"](1, " No hay \u00F3rdenes con los filtros actuales. ");
+    _angular_core__WEBPACK_IMPORTED_MODULE_1__["ɵɵelementEnd"]();
+} }
+function GestionEntregasBodegaComponent_div_5_div_10_button_17_Template(rf, ctx) { if (rf & 1) {
+    const _r70 = _angular_core__WEBPACK_IMPORTED_MODULE_1__["ɵɵgetCurrentView"]();
+    _angular_core__WEBPACK_IMPORTED_MODULE_1__["ɵɵelementStart"](0, "button", 92);
+    _angular_core__WEBPACK_IMPORTED_MODULE_1__["ɵɵlistener"]("click", function GestionEntregasBodegaComponent_div_5_div_10_button_17_Template_button_click_0_listener() { _angular_core__WEBPACK_IMPORTED_MODULE_1__["ɵɵrestoreView"](_r70); const ord_r68 = ctx.$implicit; const ctx_r69 = _angular_core__WEBPACK_IMPORTED_MODULE_1__["ɵɵnextContext"](3); return ctx_r69.abrirPopupTrazabilidad(ord_r68); });
+    _angular_core__WEBPACK_IMPORTED_MODULE_1__["ɵɵelementStart"](1, "div", 93);
+    _angular_core__WEBPACK_IMPORTED_MODULE_1__["ɵɵelement"](2, "i", 49);
+    _angular_core__WEBPACK_IMPORTED_MODULE_1__["ɵɵelementStart"](3, "div", 94);
+    _angular_core__WEBPACK_IMPORTED_MODULE_1__["ɵɵelementStart"](4, "span", 95);
+    _angular_core__WEBPACK_IMPORTED_MODULE_1__["ɵɵtext"](5);
+    _angular_core__WEBPACK_IMPORTED_MODULE_1__["ɵɵelementEnd"]();
+    _angular_core__WEBPACK_IMPORTED_MODULE_1__["ɵɵelementStart"](6, "span", 96);
+    _angular_core__WEBPACK_IMPORTED_MODULE_1__["ɵɵtext"](7);
+    _angular_core__WEBPACK_IMPORTED_MODULE_1__["ɵɵelementEnd"]();
+    _angular_core__WEBPACK_IMPORTED_MODULE_1__["ɵɵelementEnd"]();
+    _angular_core__WEBPACK_IMPORTED_MODULE_1__["ɵɵelementEnd"]();
+    _angular_core__WEBPACK_IMPORTED_MODULE_1__["ɵɵelementStart"](8, "div", 97);
+    _angular_core__WEBPACK_IMPORTED_MODULE_1__["ɵɵelementStart"](9, "div", 98);
+    _angular_core__WEBPACK_IMPORTED_MODULE_1__["ɵɵelementStart"](10, "span", 99);
+    _angular_core__WEBPACK_IMPORTED_MODULE_1__["ɵɵtext"](11, "Cliente");
+    _angular_core__WEBPACK_IMPORTED_MODULE_1__["ɵɵelementEnd"]();
+    _angular_core__WEBPACK_IMPORTED_MODULE_1__["ɵɵelementStart"](12, "span", 100);
+    _angular_core__WEBPACK_IMPORTED_MODULE_1__["ɵɵtext"](13);
+    _angular_core__WEBPACK_IMPORTED_MODULE_1__["ɵɵelementEnd"]();
+    _angular_core__WEBPACK_IMPORTED_MODULE_1__["ɵɵelementStart"](14, "span", 99);
+    _angular_core__WEBPACK_IMPORTED_MODULE_1__["ɵɵtext"](15, "Fecha documento");
+    _angular_core__WEBPACK_IMPORTED_MODULE_1__["ɵɵelementEnd"]();
+    _angular_core__WEBPACK_IMPORTED_MODULE_1__["ɵɵelementStart"](16, "span", 100);
+    _angular_core__WEBPACK_IMPORTED_MODULE_1__["ɵɵtext"](17);
+    _angular_core__WEBPACK_IMPORTED_MODULE_1__["ɵɵelementEnd"]();
+    _angular_core__WEBPACK_IMPORTED_MODULE_1__["ɵɵelementEnd"]();
+    _angular_core__WEBPACK_IMPORTED_MODULE_1__["ɵɵelementEnd"]();
+    _angular_core__WEBPACK_IMPORTED_MODULE_1__["ɵɵelementEnd"]();
 } if (rf & 2) {
-    const ctx_r21 = _angular_core__WEBPACK_IMPORTED_MODULE_0__["ɵɵnextContext"](2);
-    _angular_core__WEBPACK_IMPORTED_MODULE_0__["ɵɵproperty"]("dataSource", ctx_r21.ordenes)("showBorders", true)("hoverStateEnabled", true);
-    _angular_core__WEBPACK_IMPORTED_MODULE_0__["ɵɵadvance"](1);
-    _angular_core__WEBPACK_IMPORTED_MODULE_0__["ɵɵproperty"]("visible", true);
-    _angular_core__WEBPACK_IMPORTED_MODULE_0__["ɵɵadvance"](1);
-    _angular_core__WEBPACK_IMPORTED_MODULE_0__["ɵɵproperty"]("visible", true)("width", 260);
-    _angular_core__WEBPACK_IMPORTED_MODULE_0__["ɵɵadvance"](7);
-    _angular_core__WEBPACK_IMPORTED_MODULE_0__["ɵɵproperty"]("visible", ctx_r21.mostrarGestion);
-    _angular_core__WEBPACK_IMPORTED_MODULE_0__["ɵɵadvance"](1);
-    _angular_core__WEBPACK_IMPORTED_MODULE_0__["ɵɵproperty"]("onClick", ctx_r21.seleccionarOrden);
+    const ord_r68 = ctx.$implicit;
+    const ctx_r67 = _angular_core__WEBPACK_IMPORTED_MODULE_1__["ɵɵnextContext"](3);
+    _angular_core__WEBPACK_IMPORTED_MODULE_1__["ɵɵadvance"](2);
+    _angular_core__WEBPACK_IMPORTED_MODULE_1__["ɵɵproperty"]("ngClass", ctx_r67.claseColorOrden(ord_r68));
+    _angular_core__WEBPACK_IMPORTED_MODULE_1__["ɵɵadvance"](3);
+    _angular_core__WEBPACK_IMPORTED_MODULE_1__["ɵɵtextInterpolate2"]("", ord_r68.tipoDocumento, " #", ord_r68.documentoNumero, "");
+    _angular_core__WEBPACK_IMPORTED_MODULE_1__["ɵɵadvance"](2);
+    _angular_core__WEBPACK_IMPORTED_MODULE_1__["ɵɵtextInterpolate2"]("Orden ", ord_r68.consecutivoEntrega, " \u00B7 ", ord_r68.estadoProceso, "");
+    _angular_core__WEBPACK_IMPORTED_MODULE_1__["ɵɵadvance"](6);
+    _angular_core__WEBPACK_IMPORTED_MODULE_1__["ɵɵtextInterpolate"](ord_r68.clienteNombre);
+    _angular_core__WEBPACK_IMPORTED_MODULE_1__["ɵɵadvance"](4);
+    _angular_core__WEBPACK_IMPORTED_MODULE_1__["ɵɵtextInterpolate"](ctx_r67.formatearFechaDocumentoListado(ord_r68));
+} }
+function GestionEntregasBodegaComponent_div_5_div_10_Template(rf, ctx) { if (rf & 1) {
+    _angular_core__WEBPACK_IMPORTED_MODULE_1__["ɵɵelementStart"](0, "div", 90);
+    _angular_core__WEBPACK_IMPORTED_MODULE_1__["ɵɵelementStart"](1, "p", 37);
+    _angular_core__WEBPACK_IMPORTED_MODULE_1__["ɵɵtext"](2, " Toque una orden para ver la trazabilidad. Los datos de cada fila se muestran a continuaci\u00F3n. ");
+    _angular_core__WEBPACK_IMPORTED_MODULE_1__["ɵɵelementEnd"]();
+    _angular_core__WEBPACK_IMPORTED_MODULE_1__["ɵɵelementStart"](3, "div", 38);
+    _angular_core__WEBPACK_IMPORTED_MODULE_1__["ɵɵelementStart"](4, "span", 39);
+    _angular_core__WEBPACK_IMPORTED_MODULE_1__["ɵɵelement"](5, "i", 40);
+    _angular_core__WEBPACK_IMPORTED_MODULE_1__["ɵɵtext"](6, " Abierto");
+    _angular_core__WEBPACK_IMPORTED_MODULE_1__["ɵɵelementEnd"]();
+    _angular_core__WEBPACK_IMPORTED_MODULE_1__["ɵɵelementStart"](7, "span", 39);
+    _angular_core__WEBPACK_IMPORTED_MODULE_1__["ɵɵelement"](8, "i", 41);
+    _angular_core__WEBPACK_IMPORTED_MODULE_1__["ɵɵtext"](9, " Novedad");
+    _angular_core__WEBPACK_IMPORTED_MODULE_1__["ɵɵelementEnd"]();
+    _angular_core__WEBPACK_IMPORTED_MODULE_1__["ɵɵelementStart"](10, "span", 39);
+    _angular_core__WEBPACK_IMPORTED_MODULE_1__["ɵɵelement"](11, "i", 42);
+    _angular_core__WEBPACK_IMPORTED_MODULE_1__["ɵɵtext"](12, " Completado");
+    _angular_core__WEBPACK_IMPORTED_MODULE_1__["ɵɵelementEnd"]();
+    _angular_core__WEBPACK_IMPORTED_MODULE_1__["ɵɵelementStart"](13, "span", 39);
+    _angular_core__WEBPACK_IMPORTED_MODULE_1__["ɵɵelement"](14, "i", 43);
+    _angular_core__WEBPACK_IMPORTED_MODULE_1__["ɵɵtext"](15, " Cerrado");
+    _angular_core__WEBPACK_IMPORTED_MODULE_1__["ɵɵelementEnd"]();
+    _angular_core__WEBPACK_IMPORTED_MODULE_1__["ɵɵelementEnd"]();
+    _angular_core__WEBPACK_IMPORTED_MODULE_1__["ɵɵtemplate"](16, GestionEntregasBodegaComponent_div_5_div_10_div_16_Template, 2, 0, "div", 44);
+    _angular_core__WEBPACK_IMPORTED_MODULE_1__["ɵɵtemplate"](17, GestionEntregasBodegaComponent_div_5_div_10_button_17_Template, 18, 7, "button", 91);
+    _angular_core__WEBPACK_IMPORTED_MODULE_1__["ɵɵelementEnd"]();
+} if (rf & 2) {
+    const ctx_r22 = _angular_core__WEBPACK_IMPORTED_MODULE_1__["ɵɵnextContext"](2);
+    _angular_core__WEBPACK_IMPORTED_MODULE_1__["ɵɵadvance"](16);
+    _angular_core__WEBPACK_IMPORTED_MODULE_1__["ɵɵproperty"]("ngIf", !(ctx_r22.ordenes == null ? null : ctx_r22.ordenes.length));
+    _angular_core__WEBPACK_IMPORTED_MODULE_1__["ɵɵadvance"](1);
+    _angular_core__WEBPACK_IMPORTED_MODULE_1__["ɵɵproperty"]("ngForOf", ctx_r22.ordenes);
 } }
 function GestionEntregasBodegaComponent_div_5_dx_data_grid_11_Template(rf, ctx) { if (rf & 1) {
-    _angular_core__WEBPACK_IMPORTED_MODULE_0__["ɵɵelementStart"](0, "dx-data-grid", 98);
-    _angular_core__WEBPACK_IMPORTED_MODULE_0__["ɵɵelement"](1, "dxo-filter-row", 88);
-    _angular_core__WEBPACK_IMPORTED_MODULE_0__["ɵɵelement"](2, "dxo-export", 99);
-    _angular_core__WEBPACK_IMPORTED_MODULE_0__["ɵɵelement"](3, "dxo-search-panel", 100);
-    _angular_core__WEBPACK_IMPORTED_MODULE_0__["ɵɵelement"](4, "dxi-column", 101);
-    _angular_core__WEBPACK_IMPORTED_MODULE_0__["ɵɵelement"](5, "dxi-column", 102);
-    _angular_core__WEBPACK_IMPORTED_MODULE_0__["ɵɵelement"](6, "dxi-column", 103);
-    _angular_core__WEBPACK_IMPORTED_MODULE_0__["ɵɵelement"](7, "dxi-column", 104);
-    _angular_core__WEBPACK_IMPORTED_MODULE_0__["ɵɵelement"](8, "dxi-column", 105);
-    _angular_core__WEBPACK_IMPORTED_MODULE_0__["ɵɵelement"](9, "dxi-column", 106);
-    _angular_core__WEBPACK_IMPORTED_MODULE_0__["ɵɵelementEnd"]();
+    const _r72 = _angular_core__WEBPACK_IMPORTED_MODULE_1__["ɵɵgetCurrentView"]();
+    _angular_core__WEBPACK_IMPORTED_MODULE_1__["ɵɵelementStart"](0, "dx-data-grid", 101);
+    _angular_core__WEBPACK_IMPORTED_MODULE_1__["ɵɵlistener"]("onRowClick", function GestionEntregasBodegaComponent_div_5_dx_data_grid_11_Template_dx_data_grid_onRowClick_0_listener($event) { _angular_core__WEBPACK_IMPORTED_MODULE_1__["ɵɵrestoreView"](_r72); const ctx_r71 = _angular_core__WEBPACK_IMPORTED_MODULE_1__["ɵɵnextContext"](2); return ctx_r71.onRowClickGrid($event); });
+    _angular_core__WEBPACK_IMPORTED_MODULE_1__["ɵɵelement"](1, "dxo-filter-row", 102);
+    _angular_core__WEBPACK_IMPORTED_MODULE_1__["ɵɵelement"](2, "dxo-search-panel", 103);
+    _angular_core__WEBPACK_IMPORTED_MODULE_1__["ɵɵelement"](3, "dxi-column", 104);
+    _angular_core__WEBPACK_IMPORTED_MODULE_1__["ɵɵelement"](4, "dxi-column", 105);
+    _angular_core__WEBPACK_IMPORTED_MODULE_1__["ɵɵelement"](5, "dxi-column", 106);
+    _angular_core__WEBPACK_IMPORTED_MODULE_1__["ɵɵelement"](6, "dxi-column", 107);
+    _angular_core__WEBPACK_IMPORTED_MODULE_1__["ɵɵelement"](7, "dxi-column", 108);
+    _angular_core__WEBPACK_IMPORTED_MODULE_1__["ɵɵelement"](8, "dxi-column", 109);
+    _angular_core__WEBPACK_IMPORTED_MODULE_1__["ɵɵelementStart"](9, "dxi-column", 110);
+    _angular_core__WEBPACK_IMPORTED_MODULE_1__["ɵɵelement"](10, "dxi-button", 111);
+    _angular_core__WEBPACK_IMPORTED_MODULE_1__["ɵɵelementEnd"]();
+    _angular_core__WEBPACK_IMPORTED_MODULE_1__["ɵɵelementEnd"]();
 } if (rf & 2) {
-    const ctx_r22 = _angular_core__WEBPACK_IMPORTED_MODULE_0__["ɵɵnextContext"](2);
-    _angular_core__WEBPACK_IMPORTED_MODULE_0__["ɵɵproperty"]("dataSource", ctx_r22.productosPendientes)("showBorders", true)("hoverStateEnabled", true);
-    _angular_core__WEBPACK_IMPORTED_MODULE_0__["ɵɵadvance"](1);
-    _angular_core__WEBPACK_IMPORTED_MODULE_0__["ɵɵproperty"]("visible", true);
-    _angular_core__WEBPACK_IMPORTED_MODULE_0__["ɵɵadvance"](1);
-    _angular_core__WEBPACK_IMPORTED_MODULE_0__["ɵɵproperty"]("enabled", true)("allowExportSelectedData", true);
-    _angular_core__WEBPACK_IMPORTED_MODULE_0__["ɵɵadvance"](1);
-    _angular_core__WEBPACK_IMPORTED_MODULE_0__["ɵɵproperty"]("visible", true)("width", 260);
+    const ctx_r23 = _angular_core__WEBPACK_IMPORTED_MODULE_1__["ɵɵnextContext"](2);
+    _angular_core__WEBPACK_IMPORTED_MODULE_1__["ɵɵproperty"]("dataSource", ctx_r23.ordenes)("showBorders", true)("hoverStateEnabled", true);
+    _angular_core__WEBPACK_IMPORTED_MODULE_1__["ɵɵadvance"](1);
+    _angular_core__WEBPACK_IMPORTED_MODULE_1__["ɵɵproperty"]("visible", true);
+    _angular_core__WEBPACK_IMPORTED_MODULE_1__["ɵɵadvance"](1);
+    _angular_core__WEBPACK_IMPORTED_MODULE_1__["ɵɵproperty"]("visible", true)("width", 260);
+    _angular_core__WEBPACK_IMPORTED_MODULE_1__["ɵɵadvance"](7);
+    _angular_core__WEBPACK_IMPORTED_MODULE_1__["ɵɵproperty"]("visible", ctx_r23.mostrarGestion);
+    _angular_core__WEBPACK_IMPORTED_MODULE_1__["ɵɵadvance"](1);
+    _angular_core__WEBPACK_IMPORTED_MODULE_1__["ɵɵproperty"]("onClick", ctx_r23.seleccionarOrden);
+} }
+function GestionEntregasBodegaComponent_div_5_div_12_Template(rf, ctx) { if (rf & 1) {
+    _angular_core__WEBPACK_IMPORTED_MODULE_1__["ɵɵelementStart"](0, "div", 112);
+    _angular_core__WEBPACK_IMPORTED_MODULE_1__["ɵɵelementStart"](1, "dx-data-grid", 113);
+    _angular_core__WEBPACK_IMPORTED_MODULE_1__["ɵɵelement"](2, "dxo-filter-row", 102);
+    _angular_core__WEBPACK_IMPORTED_MODULE_1__["ɵɵelement"](3, "dxo-export", 114);
+    _angular_core__WEBPACK_IMPORTED_MODULE_1__["ɵɵelement"](4, "dxo-search-panel", 115);
+    _angular_core__WEBPACK_IMPORTED_MODULE_1__["ɵɵelement"](5, "dxi-column", 116);
+    _angular_core__WEBPACK_IMPORTED_MODULE_1__["ɵɵelement"](6, "dxi-column", 117);
+    _angular_core__WEBPACK_IMPORTED_MODULE_1__["ɵɵelement"](7, "dxi-column", 118);
+    _angular_core__WEBPACK_IMPORTED_MODULE_1__["ɵɵelement"](8, "dxi-column", 119);
+    _angular_core__WEBPACK_IMPORTED_MODULE_1__["ɵɵelement"](9, "dxi-column", 120);
+    _angular_core__WEBPACK_IMPORTED_MODULE_1__["ɵɵelement"](10, "dxi-column", 121);
+    _angular_core__WEBPACK_IMPORTED_MODULE_1__["ɵɵelement"](11, "dxi-column", 122);
+    _angular_core__WEBPACK_IMPORTED_MODULE_1__["ɵɵelementEnd"]();
+    _angular_core__WEBPACK_IMPORTED_MODULE_1__["ɵɵelementEnd"]();
+} if (rf & 2) {
+    const ctx_r24 = _angular_core__WEBPACK_IMPORTED_MODULE_1__["ɵɵnextContext"](2);
+    _angular_core__WEBPACK_IMPORTED_MODULE_1__["ɵɵadvance"](1);
+    _angular_core__WEBPACK_IMPORTED_MODULE_1__["ɵɵproperty"]("dataSource", ctx_r24.productosPendientes)("showBorders", true)("hoverStateEnabled", true);
+    _angular_core__WEBPACK_IMPORTED_MODULE_1__["ɵɵadvance"](1);
+    _angular_core__WEBPACK_IMPORTED_MODULE_1__["ɵɵproperty"]("visible", true);
+    _angular_core__WEBPACK_IMPORTED_MODULE_1__["ɵɵadvance"](1);
+    _angular_core__WEBPACK_IMPORTED_MODULE_1__["ɵɵproperty"]("enabled", true)("allowExportSelectedData", true);
+    _angular_core__WEBPACK_IMPORTED_MODULE_1__["ɵɵadvance"](1);
+    _angular_core__WEBPACK_IMPORTED_MODULE_1__["ɵɵproperty"]("visible", true)("width", 260);
 } }
 function GestionEntregasBodegaComponent_div_5_Template(rf, ctx) { if (rf & 1) {
-    _angular_core__WEBPACK_IMPORTED_MODULE_0__["ɵɵelementStart"](0, "div", 6);
-    _angular_core__WEBPACK_IMPORTED_MODULE_0__["ɵɵelementStart"](1, "div", 7);
-    _angular_core__WEBPACK_IMPORTED_MODULE_0__["ɵɵelementStart"](2, "h5", 8);
-    _angular_core__WEBPACK_IMPORTED_MODULE_0__["ɵɵtemplate"](3, GestionEntregasBodegaComponent_div_5_span_3_Template, 2, 0, "span", 26);
-    _angular_core__WEBPACK_IMPORTED_MODULE_0__["ɵɵtemplate"](4, GestionEntregasBodegaComponent_div_5_span_4_Template, 2, 0, "span", 26);
-    _angular_core__WEBPACK_IMPORTED_MODULE_0__["ɵɵtemplate"](5, GestionEntregasBodegaComponent_div_5_span_5_Template, 2, 0, "span", 26);
-    _angular_core__WEBPACK_IMPORTED_MODULE_0__["ɵɵelementEnd"]();
-    _angular_core__WEBPACK_IMPORTED_MODULE_0__["ɵɵelementStart"](6, "div", 27);
-    _angular_core__WEBPACK_IMPORTED_MODULE_0__["ɵɵtemplate"](7, GestionEntregasBodegaComponent_div_5_p_7_Template, 2, 0, "p", 28);
-    _angular_core__WEBPACK_IMPORTED_MODULE_0__["ɵɵtemplate"](8, GestionEntregasBodegaComponent_div_5_p_8_Template, 2, 0, "p", 28);
-    _angular_core__WEBPACK_IMPORTED_MODULE_0__["ɵɵtemplate"](9, GestionEntregasBodegaComponent_div_5_div_9_Template, 18, 2, "div", 29);
-    _angular_core__WEBPACK_IMPORTED_MODULE_0__["ɵɵtemplate"](10, GestionEntregasBodegaComponent_div_5_dx_data_grid_10_Template, 11, 8, "dx-data-grid", 30);
-    _angular_core__WEBPACK_IMPORTED_MODULE_0__["ɵɵtemplate"](11, GestionEntregasBodegaComponent_div_5_dx_data_grid_11_Template, 10, 8, "dx-data-grid", 31);
-    _angular_core__WEBPACK_IMPORTED_MODULE_0__["ɵɵelementEnd"]();
-    _angular_core__WEBPACK_IMPORTED_MODULE_0__["ɵɵelementEnd"]();
-    _angular_core__WEBPACK_IMPORTED_MODULE_0__["ɵɵelementEnd"]();
+    _angular_core__WEBPACK_IMPORTED_MODULE_1__["ɵɵelementStart"](0, "div", 8);
+    _angular_core__WEBPACK_IMPORTED_MODULE_1__["ɵɵelementStart"](1, "div", 9);
+    _angular_core__WEBPACK_IMPORTED_MODULE_1__["ɵɵelementStart"](2, "h5", 10);
+    _angular_core__WEBPACK_IMPORTED_MODULE_1__["ɵɵtemplate"](3, GestionEntregasBodegaComponent_div_5_span_3_Template, 2, 0, "span", 28);
+    _angular_core__WEBPACK_IMPORTED_MODULE_1__["ɵɵtemplate"](4, GestionEntregasBodegaComponent_div_5_span_4_Template, 2, 0, "span", 28);
+    _angular_core__WEBPACK_IMPORTED_MODULE_1__["ɵɵtemplate"](5, GestionEntregasBodegaComponent_div_5_span_5_Template, 2, 0, "span", 28);
+    _angular_core__WEBPACK_IMPORTED_MODULE_1__["ɵɵelementEnd"]();
+    _angular_core__WEBPACK_IMPORTED_MODULE_1__["ɵɵelementStart"](6, "div", 29);
+    _angular_core__WEBPACK_IMPORTED_MODULE_1__["ɵɵtemplate"](7, GestionEntregasBodegaComponent_div_5_p_7_Template, 2, 0, "p", 30);
+    _angular_core__WEBPACK_IMPORTED_MODULE_1__["ɵɵtemplate"](8, GestionEntregasBodegaComponent_div_5_p_8_Template, 2, 0, "p", 30);
+    _angular_core__WEBPACK_IMPORTED_MODULE_1__["ɵɵtemplate"](9, GestionEntregasBodegaComponent_div_5_div_9_Template, 18, 2, "div", 31);
+    _angular_core__WEBPACK_IMPORTED_MODULE_1__["ɵɵtemplate"](10, GestionEntregasBodegaComponent_div_5_div_10_Template, 18, 2, "div", 32);
+    _angular_core__WEBPACK_IMPORTED_MODULE_1__["ɵɵtemplate"](11, GestionEntregasBodegaComponent_div_5_dx_data_grid_11_Template, 11, 8, "dx-data-grid", 33);
+    _angular_core__WEBPACK_IMPORTED_MODULE_1__["ɵɵtemplate"](12, GestionEntregasBodegaComponent_div_5_div_12_Template, 12, 8, "div", 34);
+    _angular_core__WEBPACK_IMPORTED_MODULE_1__["ɵɵelementEnd"]();
+    _angular_core__WEBPACK_IMPORTED_MODULE_1__["ɵɵelementEnd"]();
+    _angular_core__WEBPACK_IMPORTED_MODULE_1__["ɵɵelementEnd"]();
 } if (rf & 2) {
-    const ctx_r2 = _angular_core__WEBPACK_IMPORTED_MODULE_0__["ɵɵnextContext"]();
-    _angular_core__WEBPACK_IMPORTED_MODULE_0__["ɵɵadvance"](3);
-    _angular_core__WEBPACK_IMPORTED_MODULE_0__["ɵɵproperty"]("ngIf", ctx_r2.mostrarGestion);
-    _angular_core__WEBPACK_IMPORTED_MODULE_0__["ɵɵadvance"](1);
-    _angular_core__WEBPACK_IMPORTED_MODULE_0__["ɵɵproperty"]("ngIf", ctx_r2.mostrarListado);
-    _angular_core__WEBPACK_IMPORTED_MODULE_0__["ɵɵadvance"](1);
-    _angular_core__WEBPACK_IMPORTED_MODULE_0__["ɵɵproperty"]("ngIf", ctx_r2.mostrarProductosPendientes);
-    _angular_core__WEBPACK_IMPORTED_MODULE_0__["ɵɵadvance"](2);
-    _angular_core__WEBPACK_IMPORTED_MODULE_0__["ɵɵproperty"]("ngIf", ctx_r2.mostrarGestion);
-    _angular_core__WEBPACK_IMPORTED_MODULE_0__["ɵɵadvance"](1);
-    _angular_core__WEBPACK_IMPORTED_MODULE_0__["ɵɵproperty"]("ngIf", ctx_r2.mostrarListado);
-    _angular_core__WEBPACK_IMPORTED_MODULE_0__["ɵɵadvance"](1);
-    _angular_core__WEBPACK_IMPORTED_MODULE_0__["ɵɵproperty"]("ngIf", ctx_r2.mostrarGestion && ctx_r2.vistaMovil && !ctx_r2.mostrarProductosPendientes);
-    _angular_core__WEBPACK_IMPORTED_MODULE_0__["ɵɵadvance"](1);
-    _angular_core__WEBPACK_IMPORTED_MODULE_0__["ɵɵproperty"]("ngIf", !ctx_r2.mostrarProductosPendientes && !(ctx_r2.mostrarGestion && ctx_r2.vistaMovil));
-    _angular_core__WEBPACK_IMPORTED_MODULE_0__["ɵɵadvance"](1);
-    _angular_core__WEBPACK_IMPORTED_MODULE_0__["ɵɵproperty"]("ngIf", ctx_r2.mostrarProductosPendientes);
+    const ctx_r2 = _angular_core__WEBPACK_IMPORTED_MODULE_1__["ɵɵnextContext"]();
+    _angular_core__WEBPACK_IMPORTED_MODULE_1__["ɵɵadvance"](3);
+    _angular_core__WEBPACK_IMPORTED_MODULE_1__["ɵɵproperty"]("ngIf", ctx_r2.mostrarGestion);
+    _angular_core__WEBPACK_IMPORTED_MODULE_1__["ɵɵadvance"](1);
+    _angular_core__WEBPACK_IMPORTED_MODULE_1__["ɵɵproperty"]("ngIf", ctx_r2.mostrarListado);
+    _angular_core__WEBPACK_IMPORTED_MODULE_1__["ɵɵadvance"](1);
+    _angular_core__WEBPACK_IMPORTED_MODULE_1__["ɵɵproperty"]("ngIf", ctx_r2.mostrarProductosPendientes);
+    _angular_core__WEBPACK_IMPORTED_MODULE_1__["ɵɵadvance"](2);
+    _angular_core__WEBPACK_IMPORTED_MODULE_1__["ɵɵproperty"]("ngIf", ctx_r2.mostrarGestion);
+    _angular_core__WEBPACK_IMPORTED_MODULE_1__["ɵɵadvance"](1);
+    _angular_core__WEBPACK_IMPORTED_MODULE_1__["ɵɵproperty"]("ngIf", ctx_r2.mostrarListado);
+    _angular_core__WEBPACK_IMPORTED_MODULE_1__["ɵɵadvance"](1);
+    _angular_core__WEBPACK_IMPORTED_MODULE_1__["ɵɵproperty"]("ngIf", ctx_r2.mostrarGestion && ctx_r2.vistaMovil && !ctx_r2.mostrarProductosPendientes);
+    _angular_core__WEBPACK_IMPORTED_MODULE_1__["ɵɵadvance"](1);
+    _angular_core__WEBPACK_IMPORTED_MODULE_1__["ɵɵproperty"]("ngIf", ctx_r2.mostrarListado && ctx_r2.vistaMovil && !ctx_r2.mostrarProductosPendientes);
+    _angular_core__WEBPACK_IMPORTED_MODULE_1__["ɵɵadvance"](1);
+    _angular_core__WEBPACK_IMPORTED_MODULE_1__["ɵɵproperty"]("ngIf", !ctx_r2.mostrarProductosPendientes && !(ctx_r2.vistaMovil && (ctx_r2.mostrarGestion || ctx_r2.mostrarListado)));
+    _angular_core__WEBPACK_IMPORTED_MODULE_1__["ɵɵadvance"](1);
+    _angular_core__WEBPACK_IMPORTED_MODULE_1__["ɵɵproperty"]("ngIf", ctx_r2.mostrarProductosPendientes);
 } }
 function GestionEntregasBodegaComponent_div_6_tr_32_div_12_Template(rf, ctx) { if (rf & 1) {
-    const _r76 = _angular_core__WEBPACK_IMPORTED_MODULE_0__["ɵɵgetCurrentView"]();
-    _angular_core__WEBPACK_IMPORTED_MODULE_0__["ɵɵelementStart"](0, "div", 78);
-    _angular_core__WEBPACK_IMPORTED_MODULE_0__["ɵɵelementStart"](1, "span", 79);
-    _angular_core__WEBPACK_IMPORTED_MODULE_0__["ɵɵtext"](2, "C");
-    _angular_core__WEBPACK_IMPORTED_MODULE_0__["ɵɵelementEnd"]();
-    _angular_core__WEBPACK_IMPORTED_MODULE_0__["ɵɵelementStart"](3, "dx-number-box", 80);
-    _angular_core__WEBPACK_IMPORTED_MODULE_0__["ɵɵlistener"]("valueChange", function GestionEntregasBodegaComponent_div_6_tr_32_div_12_Template_dx_number_box_valueChange_3_listener($event) { _angular_core__WEBPACK_IMPORTED_MODULE_0__["ɵɵrestoreView"](_r76); const item_r67 = _angular_core__WEBPACK_IMPORTED_MODULE_0__["ɵɵnextContext"]().$implicit; return item_r67.entregaCajasInput = $event; });
-    _angular_core__WEBPACK_IMPORTED_MODULE_0__["ɵɵelementEnd"]();
-    _angular_core__WEBPACK_IMPORTED_MODULE_0__["ɵɵelementStart"](4, "span", 81);
-    _angular_core__WEBPACK_IMPORTED_MODULE_0__["ɵɵtext"](5, "P");
-    _angular_core__WEBPACK_IMPORTED_MODULE_0__["ɵɵelementEnd"]();
-    _angular_core__WEBPACK_IMPORTED_MODULE_0__["ɵɵelementStart"](6, "dx-number-box", 80);
-    _angular_core__WEBPACK_IMPORTED_MODULE_0__["ɵɵlistener"]("valueChange", function GestionEntregasBodegaComponent_div_6_tr_32_div_12_Template_dx_number_box_valueChange_6_listener($event) { _angular_core__WEBPACK_IMPORTED_MODULE_0__["ɵɵrestoreView"](_r76); const item_r67 = _angular_core__WEBPACK_IMPORTED_MODULE_0__["ɵɵnextContext"]().$implicit; return item_r67.entregaPiezasInput = $event; });
-    _angular_core__WEBPACK_IMPORTED_MODULE_0__["ɵɵelementEnd"]();
-    _angular_core__WEBPACK_IMPORTED_MODULE_0__["ɵɵelementEnd"]();
+    const _r83 = _angular_core__WEBPACK_IMPORTED_MODULE_1__["ɵɵgetCurrentView"]();
+    _angular_core__WEBPACK_IMPORTED_MODULE_1__["ɵɵelementStart"](0, "div", 81);
+    _angular_core__WEBPACK_IMPORTED_MODULE_1__["ɵɵelementStart"](1, "span", 82);
+    _angular_core__WEBPACK_IMPORTED_MODULE_1__["ɵɵtext"](2, "C");
+    _angular_core__WEBPACK_IMPORTED_MODULE_1__["ɵɵelementEnd"]();
+    _angular_core__WEBPACK_IMPORTED_MODULE_1__["ɵɵelementStart"](3, "dx-number-box", 83);
+    _angular_core__WEBPACK_IMPORTED_MODULE_1__["ɵɵlistener"]("valueChange", function GestionEntregasBodegaComponent_div_6_tr_32_div_12_Template_dx_number_box_valueChange_3_listener($event) { _angular_core__WEBPACK_IMPORTED_MODULE_1__["ɵɵrestoreView"](_r83); const item_r74 = _angular_core__WEBPACK_IMPORTED_MODULE_1__["ɵɵnextContext"]().$implicit; return item_r74.entregaCajasInput = $event; });
+    _angular_core__WEBPACK_IMPORTED_MODULE_1__["ɵɵelementEnd"]();
+    _angular_core__WEBPACK_IMPORTED_MODULE_1__["ɵɵelementStart"](4, "span", 84);
+    _angular_core__WEBPACK_IMPORTED_MODULE_1__["ɵɵtext"](5, "P");
+    _angular_core__WEBPACK_IMPORTED_MODULE_1__["ɵɵelementEnd"]();
+    _angular_core__WEBPACK_IMPORTED_MODULE_1__["ɵɵelementStart"](6, "dx-number-box", 83);
+    _angular_core__WEBPACK_IMPORTED_MODULE_1__["ɵɵlistener"]("valueChange", function GestionEntregasBodegaComponent_div_6_tr_32_div_12_Template_dx_number_box_valueChange_6_listener($event) { _angular_core__WEBPACK_IMPORTED_MODULE_1__["ɵɵrestoreView"](_r83); const item_r74 = _angular_core__WEBPACK_IMPORTED_MODULE_1__["ɵɵnextContext"]().$implicit; return item_r74.entregaPiezasInput = $event; });
+    _angular_core__WEBPACK_IMPORTED_MODULE_1__["ɵɵelementEnd"]();
+    _angular_core__WEBPACK_IMPORTED_MODULE_1__["ɵɵelementEnd"]();
 } if (rf & 2) {
-    const item_r67 = _angular_core__WEBPACK_IMPORTED_MODULE_0__["ɵɵnextContext"]().$implicit;
-    _angular_core__WEBPACK_IMPORTED_MODULE_0__["ɵɵadvance"](3);
-    _angular_core__WEBPACK_IMPORTED_MODULE_0__["ɵɵproperty"]("width", 72)("value", item_r67.entregaCajasInput)("min", 0)("showSpinButtons", true);
-    _angular_core__WEBPACK_IMPORTED_MODULE_0__["ɵɵadvance"](3);
-    _angular_core__WEBPACK_IMPORTED_MODULE_0__["ɵɵproperty"]("width", 72)("value", item_r67.entregaPiezasInput)("min", 0)("showSpinButtons", true);
+    const item_r74 = _angular_core__WEBPACK_IMPORTED_MODULE_1__["ɵɵnextContext"]().$implicit;
+    _angular_core__WEBPACK_IMPORTED_MODULE_1__["ɵɵadvance"](3);
+    _angular_core__WEBPACK_IMPORTED_MODULE_1__["ɵɵproperty"]("width", 72)("value", item_r74.entregaCajasInput)("min", 0)("showSpinButtons", true);
+    _angular_core__WEBPACK_IMPORTED_MODULE_1__["ɵɵadvance"](3);
+    _angular_core__WEBPACK_IMPORTED_MODULE_1__["ɵɵproperty"]("width", 72)("value", item_r74.entregaPiezasInput)("min", 0)("showSpinButtons", true);
 } }
 function GestionEntregasBodegaComponent_div_6_tr_32_dx_number_box_13_Template(rf, ctx) { if (rf & 1) {
-    const _r82 = _angular_core__WEBPACK_IMPORTED_MODULE_0__["ɵɵgetCurrentView"]();
-    _angular_core__WEBPACK_IMPORTED_MODULE_0__["ɵɵelementStart"](0, "dx-number-box", 82);
-    _angular_core__WEBPACK_IMPORTED_MODULE_0__["ɵɵlistener"]("valueChange", function GestionEntregasBodegaComponent_div_6_tr_32_dx_number_box_13_Template_dx_number_box_valueChange_0_listener($event) { _angular_core__WEBPACK_IMPORTED_MODULE_0__["ɵɵrestoreView"](_r82); const item_r67 = _angular_core__WEBPACK_IMPORTED_MODULE_0__["ɵɵnextContext"]().$implicit; return item_r67.cantidadEntregadaInput = $event; });
-    _angular_core__WEBPACK_IMPORTED_MODULE_0__["ɵɵelementEnd"]();
+    const _r89 = _angular_core__WEBPACK_IMPORTED_MODULE_1__["ɵɵgetCurrentView"]();
+    _angular_core__WEBPACK_IMPORTED_MODULE_1__["ɵɵelementStart"](0, "dx-number-box", 85);
+    _angular_core__WEBPACK_IMPORTED_MODULE_1__["ɵɵlistener"]("valueChange", function GestionEntregasBodegaComponent_div_6_tr_32_dx_number_box_13_Template_dx_number_box_valueChange_0_listener($event) { _angular_core__WEBPACK_IMPORTED_MODULE_1__["ɵɵrestoreView"](_r89); const item_r74 = _angular_core__WEBPACK_IMPORTED_MODULE_1__["ɵɵnextContext"]().$implicit; return item_r74.cantidadEntregadaInput = $event; });
+    _angular_core__WEBPACK_IMPORTED_MODULE_1__["ɵɵelementEnd"]();
 } if (rf & 2) {
-    const item_r67 = _angular_core__WEBPACK_IMPORTED_MODULE_0__["ɵɵnextContext"]().$implicit;
-    _angular_core__WEBPACK_IMPORTED_MODULE_0__["ɵɵproperty"]("value", item_r67.cantidadEntregadaInput)("min", 0)("showSpinButtons", true);
+    const item_r74 = _angular_core__WEBPACK_IMPORTED_MODULE_1__["ɵɵnextContext"]().$implicit;
+    _angular_core__WEBPACK_IMPORTED_MODULE_1__["ɵɵproperty"]("value", item_r74.cantidadEntregadaInput)("min", 0)("showSpinButtons", true);
 } }
 function GestionEntregasBodegaComponent_div_6_tr_32_ng_container_22_Template(rf, ctx) { if (rf & 1) {
-    const _r86 = _angular_core__WEBPACK_IMPORTED_MODULE_0__["ɵɵgetCurrentView"]();
-    _angular_core__WEBPACK_IMPORTED_MODULE_0__["ɵɵelementContainerStart"](0);
-    _angular_core__WEBPACK_IMPORTED_MODULE_0__["ɵɵelementStart"](1, "dx-button", 125);
-    _angular_core__WEBPACK_IMPORTED_MODULE_0__["ɵɵlistener"]("onClick", function GestionEntregasBodegaComponent_div_6_tr_32_ng_container_22_Template_dx_button_onClick_1_listener() { _angular_core__WEBPACK_IMPORTED_MODULE_0__["ɵɵrestoreView"](_r86); const i_r68 = _angular_core__WEBPACK_IMPORTED_MODULE_0__["ɵɵnextContext"]().index; const ctx_r84 = _angular_core__WEBPACK_IMPORTED_MODULE_0__["ɵɵnextContext"](2); return ctx_r84.guardarItem(i_r68); });
-    _angular_core__WEBPACK_IMPORTED_MODULE_0__["ɵɵelementEnd"]();
-    _angular_core__WEBPACK_IMPORTED_MODULE_0__["ɵɵelementContainerEnd"]();
+    const _r93 = _angular_core__WEBPACK_IMPORTED_MODULE_1__["ɵɵgetCurrentView"]();
+    _angular_core__WEBPACK_IMPORTED_MODULE_1__["ɵɵelementContainerStart"](0);
+    _angular_core__WEBPACK_IMPORTED_MODULE_1__["ɵɵelementStart"](1, "dx-button", 141);
+    _angular_core__WEBPACK_IMPORTED_MODULE_1__["ɵɵlistener"]("onClick", function GestionEntregasBodegaComponent_div_6_tr_32_ng_container_22_Template_dx_button_onClick_1_listener() { _angular_core__WEBPACK_IMPORTED_MODULE_1__["ɵɵrestoreView"](_r93); const i_r75 = _angular_core__WEBPACK_IMPORTED_MODULE_1__["ɵɵnextContext"]().index; const ctx_r91 = _angular_core__WEBPACK_IMPORTED_MODULE_1__["ɵɵnextContext"](2); return ctx_r91.guardarItem(i_r75); });
+    _angular_core__WEBPACK_IMPORTED_MODULE_1__["ɵɵelementEnd"]();
+    _angular_core__WEBPACK_IMPORTED_MODULE_1__["ɵɵelementContainerEnd"]();
 } }
 function GestionEntregasBodegaComponent_div_6_tr_32_ng_container_23_Template(rf, ctx) { if (rf & 1) {
-    _angular_core__WEBPACK_IMPORTED_MODULE_0__["ɵɵelementContainerStart"](0);
-    _angular_core__WEBPACK_IMPORTED_MODULE_0__["ɵɵelement"](1, "dx-button", 126);
-    _angular_core__WEBPACK_IMPORTED_MODULE_0__["ɵɵelementContainerEnd"]();
+    _angular_core__WEBPACK_IMPORTED_MODULE_1__["ɵɵelementContainerStart"](0);
+    _angular_core__WEBPACK_IMPORTED_MODULE_1__["ɵɵelement"](1, "dx-button", 142);
+    _angular_core__WEBPACK_IMPORTED_MODULE_1__["ɵɵelementContainerEnd"]();
 } if (rf & 2) {
-    _angular_core__WEBPACK_IMPORTED_MODULE_0__["ɵɵadvance"](1);
-    _angular_core__WEBPACK_IMPORTED_MODULE_0__["ɵɵproperty"]("disabled", true);
+    _angular_core__WEBPACK_IMPORTED_MODULE_1__["ɵɵadvance"](1);
+    _angular_core__WEBPACK_IMPORTED_MODULE_1__["ɵɵproperty"]("disabled", true);
 } }
 function GestionEntregasBodegaComponent_div_6_tr_32_span_24_Template(rf, ctx) { if (rf & 1) {
-    _angular_core__WEBPACK_IMPORTED_MODULE_0__["ɵɵelementStart"](0, "span", 127);
-    _angular_core__WEBPACK_IMPORTED_MODULE_0__["ɵɵelement"](1, "i", 86);
-    _angular_core__WEBPACK_IMPORTED_MODULE_0__["ɵɵelementEnd"]();
+    _angular_core__WEBPACK_IMPORTED_MODULE_1__["ɵɵelementStart"](0, "span", 143);
+    _angular_core__WEBPACK_IMPORTED_MODULE_1__["ɵɵelement"](1, "i", 89);
+    _angular_core__WEBPACK_IMPORTED_MODULE_1__["ɵɵelementEnd"]();
 } }
 function GestionEntregasBodegaComponent_div_6_tr_32_Template(rf, ctx) { if (rf & 1) {
-    const _r88 = _angular_core__WEBPACK_IMPORTED_MODULE_0__["ɵɵgetCurrentView"]();
-    _angular_core__WEBPACK_IMPORTED_MODULE_0__["ɵɵelementStart"](0, "tr");
-    _angular_core__WEBPACK_IMPORTED_MODULE_0__["ɵɵelementStart"](1, "td");
-    _angular_core__WEBPACK_IMPORTED_MODULE_0__["ɵɵtext"](2);
-    _angular_core__WEBPACK_IMPORTED_MODULE_0__["ɵɵelementEnd"]();
-    _angular_core__WEBPACK_IMPORTED_MODULE_0__["ɵɵelementStart"](3, "td");
-    _angular_core__WEBPACK_IMPORTED_MODULE_0__["ɵɵtext"](4);
-    _angular_core__WEBPACK_IMPORTED_MODULE_0__["ɵɵelementEnd"]();
-    _angular_core__WEBPACK_IMPORTED_MODULE_0__["ɵɵelementStart"](5, "td");
-    _angular_core__WEBPACK_IMPORTED_MODULE_0__["ɵɵtext"](6);
-    _angular_core__WEBPACK_IMPORTED_MODULE_0__["ɵɵelementEnd"]();
-    _angular_core__WEBPACK_IMPORTED_MODULE_0__["ɵɵelementStart"](7, "td");
-    _angular_core__WEBPACK_IMPORTED_MODULE_0__["ɵɵtext"](8);
-    _angular_core__WEBPACK_IMPORTED_MODULE_0__["ɵɵelementEnd"]();
-    _angular_core__WEBPACK_IMPORTED_MODULE_0__["ɵɵelementStart"](9, "td");
-    _angular_core__WEBPACK_IMPORTED_MODULE_0__["ɵɵtext"](10);
-    _angular_core__WEBPACK_IMPORTED_MODULE_0__["ɵɵelementEnd"]();
-    _angular_core__WEBPACK_IMPORTED_MODULE_0__["ɵɵelementStart"](11, "td");
-    _angular_core__WEBPACK_IMPORTED_MODULE_0__["ɵɵtemplate"](12, GestionEntregasBodegaComponent_div_6_tr_32_div_12_Template, 7, 8, "div", 72);
-    _angular_core__WEBPACK_IMPORTED_MODULE_0__["ɵɵtemplate"](13, GestionEntregasBodegaComponent_div_6_tr_32_dx_number_box_13_Template, 1, 3, "dx-number-box", 73);
-    _angular_core__WEBPACK_IMPORTED_MODULE_0__["ɵɵelementEnd"]();
-    _angular_core__WEBPACK_IMPORTED_MODULE_0__["ɵɵelementStart"](14, "td");
-    _angular_core__WEBPACK_IMPORTED_MODULE_0__["ɵɵelementStart"](15, "span", 69);
-    _angular_core__WEBPACK_IMPORTED_MODULE_0__["ɵɵtext"](16);
-    _angular_core__WEBPACK_IMPORTED_MODULE_0__["ɵɵelementEnd"]();
-    _angular_core__WEBPACK_IMPORTED_MODULE_0__["ɵɵelementEnd"]();
-    _angular_core__WEBPACK_IMPORTED_MODULE_0__["ɵɵelementStart"](17, "td");
-    _angular_core__WEBPACK_IMPORTED_MODULE_0__["ɵɵelementStart"](18, "dx-date-box", 74);
-    _angular_core__WEBPACK_IMPORTED_MODULE_0__["ɵɵlistener"]("valueChange", function GestionEntregasBodegaComponent_div_6_tr_32_Template_dx_date_box_valueChange_18_listener($event) { _angular_core__WEBPACK_IMPORTED_MODULE_0__["ɵɵrestoreView"](_r88); const item_r67 = ctx.$implicit; return item_r67.fechaCompromisoInput = $event; });
-    _angular_core__WEBPACK_IMPORTED_MODULE_0__["ɵɵelementEnd"]();
-    _angular_core__WEBPACK_IMPORTED_MODULE_0__["ɵɵelementEnd"]();
-    _angular_core__WEBPACK_IMPORTED_MODULE_0__["ɵɵelementStart"](19, "td");
-    _angular_core__WEBPACK_IMPORTED_MODULE_0__["ɵɵelementStart"](20, "dx-text-box", 75);
-    _angular_core__WEBPACK_IMPORTED_MODULE_0__["ɵɵlistener"]("valueChange", function GestionEntregasBodegaComponent_div_6_tr_32_Template_dx_text_box_valueChange_20_listener($event) { _angular_core__WEBPACK_IMPORTED_MODULE_0__["ɵɵrestoreView"](_r88); const item_r67 = ctx.$implicit; return item_r67.notasInput = $event; });
-    _angular_core__WEBPACK_IMPORTED_MODULE_0__["ɵɵelementEnd"]();
-    _angular_core__WEBPACK_IMPORTED_MODULE_0__["ɵɵelementEnd"]();
-    _angular_core__WEBPACK_IMPORTED_MODULE_0__["ɵɵelementStart"](21, "td", 123);
-    _angular_core__WEBPACK_IMPORTED_MODULE_0__["ɵɵtemplate"](22, GestionEntregasBodegaComponent_div_6_tr_32_ng_container_22_Template, 2, 0, "ng-container", 26);
-    _angular_core__WEBPACK_IMPORTED_MODULE_0__["ɵɵtemplate"](23, GestionEntregasBodegaComponent_div_6_tr_32_ng_container_23_Template, 2, 1, "ng-container", 26);
-    _angular_core__WEBPACK_IMPORTED_MODULE_0__["ɵɵtemplate"](24, GestionEntregasBodegaComponent_div_6_tr_32_span_24_Template, 2, 0, "span", 124);
-    _angular_core__WEBPACK_IMPORTED_MODULE_0__["ɵɵelementEnd"]();
-    _angular_core__WEBPACK_IMPORTED_MODULE_0__["ɵɵelementEnd"]();
+    const _r95 = _angular_core__WEBPACK_IMPORTED_MODULE_1__["ɵɵgetCurrentView"]();
+    _angular_core__WEBPACK_IMPORTED_MODULE_1__["ɵɵelementStart"](0, "tr");
+    _angular_core__WEBPACK_IMPORTED_MODULE_1__["ɵɵelementStart"](1, "td");
+    _angular_core__WEBPACK_IMPORTED_MODULE_1__["ɵɵtext"](2);
+    _angular_core__WEBPACK_IMPORTED_MODULE_1__["ɵɵelementEnd"]();
+    _angular_core__WEBPACK_IMPORTED_MODULE_1__["ɵɵelementStart"](3, "td");
+    _angular_core__WEBPACK_IMPORTED_MODULE_1__["ɵɵtext"](4);
+    _angular_core__WEBPACK_IMPORTED_MODULE_1__["ɵɵelementEnd"]();
+    _angular_core__WEBPACK_IMPORTED_MODULE_1__["ɵɵelementStart"](5, "td");
+    _angular_core__WEBPACK_IMPORTED_MODULE_1__["ɵɵtext"](6);
+    _angular_core__WEBPACK_IMPORTED_MODULE_1__["ɵɵelementEnd"]();
+    _angular_core__WEBPACK_IMPORTED_MODULE_1__["ɵɵelementStart"](7, "td");
+    _angular_core__WEBPACK_IMPORTED_MODULE_1__["ɵɵtext"](8);
+    _angular_core__WEBPACK_IMPORTED_MODULE_1__["ɵɵelementEnd"]();
+    _angular_core__WEBPACK_IMPORTED_MODULE_1__["ɵɵelementStart"](9, "td");
+    _angular_core__WEBPACK_IMPORTED_MODULE_1__["ɵɵtext"](10);
+    _angular_core__WEBPACK_IMPORTED_MODULE_1__["ɵɵelementEnd"]();
+    _angular_core__WEBPACK_IMPORTED_MODULE_1__["ɵɵelementStart"](11, "td");
+    _angular_core__WEBPACK_IMPORTED_MODULE_1__["ɵɵtemplate"](12, GestionEntregasBodegaComponent_div_6_tr_32_div_12_Template, 7, 8, "div", 75);
+    _angular_core__WEBPACK_IMPORTED_MODULE_1__["ɵɵtemplate"](13, GestionEntregasBodegaComponent_div_6_tr_32_dx_number_box_13_Template, 1, 3, "dx-number-box", 76);
+    _angular_core__WEBPACK_IMPORTED_MODULE_1__["ɵɵelementEnd"]();
+    _angular_core__WEBPACK_IMPORTED_MODULE_1__["ɵɵelementStart"](14, "td");
+    _angular_core__WEBPACK_IMPORTED_MODULE_1__["ɵɵelementStart"](15, "span", 72);
+    _angular_core__WEBPACK_IMPORTED_MODULE_1__["ɵɵtext"](16);
+    _angular_core__WEBPACK_IMPORTED_MODULE_1__["ɵɵelementEnd"]();
+    _angular_core__WEBPACK_IMPORTED_MODULE_1__["ɵɵelementEnd"]();
+    _angular_core__WEBPACK_IMPORTED_MODULE_1__["ɵɵelementStart"](17, "td");
+    _angular_core__WEBPACK_IMPORTED_MODULE_1__["ɵɵelementStart"](18, "dx-date-box", 77);
+    _angular_core__WEBPACK_IMPORTED_MODULE_1__["ɵɵlistener"]("valueChange", function GestionEntregasBodegaComponent_div_6_tr_32_Template_dx_date_box_valueChange_18_listener($event) { _angular_core__WEBPACK_IMPORTED_MODULE_1__["ɵɵrestoreView"](_r95); const item_r74 = ctx.$implicit; return item_r74.fechaCompromisoInput = $event; });
+    _angular_core__WEBPACK_IMPORTED_MODULE_1__["ɵɵelementEnd"]();
+    _angular_core__WEBPACK_IMPORTED_MODULE_1__["ɵɵelementEnd"]();
+    _angular_core__WEBPACK_IMPORTED_MODULE_1__["ɵɵelementStart"](19, "td");
+    _angular_core__WEBPACK_IMPORTED_MODULE_1__["ɵɵelementStart"](20, "dx-text-box", 78);
+    _angular_core__WEBPACK_IMPORTED_MODULE_1__["ɵɵlistener"]("valueChange", function GestionEntregasBodegaComponent_div_6_tr_32_Template_dx_text_box_valueChange_20_listener($event) { _angular_core__WEBPACK_IMPORTED_MODULE_1__["ɵɵrestoreView"](_r95); const item_r74 = ctx.$implicit; return item_r74.notasInput = $event; });
+    _angular_core__WEBPACK_IMPORTED_MODULE_1__["ɵɵelementEnd"]();
+    _angular_core__WEBPACK_IMPORTED_MODULE_1__["ɵɵelementEnd"]();
+    _angular_core__WEBPACK_IMPORTED_MODULE_1__["ɵɵelementStart"](21, "td", 139);
+    _angular_core__WEBPACK_IMPORTED_MODULE_1__["ɵɵtemplate"](22, GestionEntregasBodegaComponent_div_6_tr_32_ng_container_22_Template, 2, 0, "ng-container", 28);
+    _angular_core__WEBPACK_IMPORTED_MODULE_1__["ɵɵtemplate"](23, GestionEntregasBodegaComponent_div_6_tr_32_ng_container_23_Template, 2, 1, "ng-container", 28);
+    _angular_core__WEBPACK_IMPORTED_MODULE_1__["ɵɵtemplate"](24, GestionEntregasBodegaComponent_div_6_tr_32_span_24_Template, 2, 0, "span", 140);
+    _angular_core__WEBPACK_IMPORTED_MODULE_1__["ɵɵelementEnd"]();
+    _angular_core__WEBPACK_IMPORTED_MODULE_1__["ɵɵelementEnd"]();
 } if (rf & 2) {
-    const item_r67 = ctx.$implicit;
-    const i_r68 = ctx.index;
-    const ctx_r66 = _angular_core__WEBPACK_IMPORTED_MODULE_0__["ɵɵnextContext"](2);
-    _angular_core__WEBPACK_IMPORTED_MODULE_0__["ɵɵadvance"](2);
-    _angular_core__WEBPACK_IMPORTED_MODULE_0__["ɵɵtextInterpolate"](item_r67.productoNombre);
-    _angular_core__WEBPACK_IMPORTED_MODULE_0__["ɵɵadvance"](2);
-    _angular_core__WEBPACK_IMPORTED_MODULE_0__["ɵɵtextInterpolate"](ctx_r66.formatoCantidadLinea(item_r67.cantidadFacturada, item_r67));
-    _angular_core__WEBPACK_IMPORTED_MODULE_0__["ɵɵadvance"](2);
-    _angular_core__WEBPACK_IMPORTED_MODULE_0__["ɵɵtextInterpolate"](ctx_r66.formatoCantidadLinea(item_r67.cantidadEntregada, item_r67));
-    _angular_core__WEBPACK_IMPORTED_MODULE_0__["ɵɵadvance"](2);
-    _angular_core__WEBPACK_IMPORTED_MODULE_0__["ɵɵtextInterpolate"](ctx_r66.formatoCantidadLinea(item_r67.cantidadDevuelta, item_r67));
-    _angular_core__WEBPACK_IMPORTED_MODULE_0__["ɵɵadvance"](2);
-    _angular_core__WEBPACK_IMPORTED_MODULE_0__["ɵɵtextInterpolate"](ctx_r66.formatoCantidadLinea(item_r67.pendiente, item_r67));
-    _angular_core__WEBPACK_IMPORTED_MODULE_0__["ɵɵadvance"](2);
-    _angular_core__WEBPACK_IMPORTED_MODULE_0__["ɵɵproperty"]("ngIf", ctx_r66.esItemMetrosCajaPieza(item_r67));
-    _angular_core__WEBPACK_IMPORTED_MODULE_0__["ɵɵadvance"](1);
-    _angular_core__WEBPACK_IMPORTED_MODULE_0__["ɵɵproperty"]("ngIf", !ctx_r66.esItemMetrosCajaPieza(item_r67));
-    _angular_core__WEBPACK_IMPORTED_MODULE_0__["ɵɵadvance"](3);
-    _angular_core__WEBPACK_IMPORTED_MODULE_0__["ɵɵtextInterpolate1"](" ", ctx_r66.estadoGestionAutomatico(item_r67), " ");
-    _angular_core__WEBPACK_IMPORTED_MODULE_0__["ɵɵadvance"](2);
-    _angular_core__WEBPACK_IMPORTED_MODULE_0__["ɵɵproperty"]("value", item_r67.fechaCompromisoInput)("disabled", ctx_r66.esCompromisoBloqueado(item_r67));
-    _angular_core__WEBPACK_IMPORTED_MODULE_0__["ɵɵadvance"](2);
-    _angular_core__WEBPACK_IMPORTED_MODULE_0__["ɵɵproperty"]("value", item_r67.notasInput)("disabled", ctx_r66.esCompromisoBloqueado(item_r67));
-    _angular_core__WEBPACK_IMPORTED_MODULE_0__["ɵɵadvance"](2);
-    _angular_core__WEBPACK_IMPORTED_MODULE_0__["ɵɵproperty"]("ngIf", item_r67.pendiente > 0);
-    _angular_core__WEBPACK_IMPORTED_MODULE_0__["ɵɵadvance"](1);
-    _angular_core__WEBPACK_IMPORTED_MODULE_0__["ɵɵproperty"]("ngIf", item_r67.pendiente === 0);
-    _angular_core__WEBPACK_IMPORTED_MODULE_0__["ɵɵadvance"](1);
-    _angular_core__WEBPACK_IMPORTED_MODULE_0__["ɵɵproperty"]("ngIf", ctx_r66.lineaGuardadaExitosa(i_r68));
+    const item_r74 = ctx.$implicit;
+    const i_r75 = ctx.index;
+    const ctx_r73 = _angular_core__WEBPACK_IMPORTED_MODULE_1__["ɵɵnextContext"](2);
+    _angular_core__WEBPACK_IMPORTED_MODULE_1__["ɵɵadvance"](2);
+    _angular_core__WEBPACK_IMPORTED_MODULE_1__["ɵɵtextInterpolate"](item_r74.productoNombre);
+    _angular_core__WEBPACK_IMPORTED_MODULE_1__["ɵɵadvance"](2);
+    _angular_core__WEBPACK_IMPORTED_MODULE_1__["ɵɵtextInterpolate"](ctx_r73.formatoCantidadLinea(item_r74.cantidadFacturada, item_r74));
+    _angular_core__WEBPACK_IMPORTED_MODULE_1__["ɵɵadvance"](2);
+    _angular_core__WEBPACK_IMPORTED_MODULE_1__["ɵɵtextInterpolate"](ctx_r73.formatoCantidadLinea(item_r74.cantidadEntregada, item_r74));
+    _angular_core__WEBPACK_IMPORTED_MODULE_1__["ɵɵadvance"](2);
+    _angular_core__WEBPACK_IMPORTED_MODULE_1__["ɵɵtextInterpolate"](ctx_r73.formatoCantidadLinea(item_r74.cantidadDevuelta, item_r74));
+    _angular_core__WEBPACK_IMPORTED_MODULE_1__["ɵɵadvance"](2);
+    _angular_core__WEBPACK_IMPORTED_MODULE_1__["ɵɵtextInterpolate"](ctx_r73.formatoCantidadLinea(item_r74.pendiente, item_r74));
+    _angular_core__WEBPACK_IMPORTED_MODULE_1__["ɵɵadvance"](2);
+    _angular_core__WEBPACK_IMPORTED_MODULE_1__["ɵɵproperty"]("ngIf", ctx_r73.esItemMetrosCajaPieza(item_r74));
+    _angular_core__WEBPACK_IMPORTED_MODULE_1__["ɵɵadvance"](1);
+    _angular_core__WEBPACK_IMPORTED_MODULE_1__["ɵɵproperty"]("ngIf", !ctx_r73.esItemMetrosCajaPieza(item_r74));
+    _angular_core__WEBPACK_IMPORTED_MODULE_1__["ɵɵadvance"](3);
+    _angular_core__WEBPACK_IMPORTED_MODULE_1__["ɵɵtextInterpolate1"](" ", ctx_r73.estadoGestionAutomatico(item_r74), " ");
+    _angular_core__WEBPACK_IMPORTED_MODULE_1__["ɵɵadvance"](2);
+    _angular_core__WEBPACK_IMPORTED_MODULE_1__["ɵɵproperty"]("value", item_r74.fechaCompromisoInput)("disabled", ctx_r73.esCompromisoBloqueado(item_r74));
+    _angular_core__WEBPACK_IMPORTED_MODULE_1__["ɵɵadvance"](2);
+    _angular_core__WEBPACK_IMPORTED_MODULE_1__["ɵɵproperty"]("value", item_r74.notasInput)("disabled", ctx_r73.esCompromisoBloqueado(item_r74));
+    _angular_core__WEBPACK_IMPORTED_MODULE_1__["ɵɵadvance"](2);
+    _angular_core__WEBPACK_IMPORTED_MODULE_1__["ɵɵproperty"]("ngIf", item_r74.pendiente > 0);
+    _angular_core__WEBPACK_IMPORTED_MODULE_1__["ɵɵadvance"](1);
+    _angular_core__WEBPACK_IMPORTED_MODULE_1__["ɵɵproperty"]("ngIf", item_r74.pendiente === 0);
+    _angular_core__WEBPACK_IMPORTED_MODULE_1__["ɵɵadvance"](1);
+    _angular_core__WEBPACK_IMPORTED_MODULE_1__["ɵɵproperty"]("ngIf", ctx_r73.lineaGuardadaExitosa(i_r75));
 } }
 function GestionEntregasBodegaComponent_div_6_Template(rf, ctx) { if (rf & 1) {
-    const _r91 = _angular_core__WEBPACK_IMPORTED_MODULE_0__["ɵɵgetCurrentView"]();
-    _angular_core__WEBPACK_IMPORTED_MODULE_0__["ɵɵelementStart"](0, "div", 6);
-    _angular_core__WEBPACK_IMPORTED_MODULE_0__["ɵɵelementStart"](1, "div", 7);
-    _angular_core__WEBPACK_IMPORTED_MODULE_0__["ɵɵelementStart"](2, "h5", 8);
-    _angular_core__WEBPACK_IMPORTED_MODULE_0__["ɵɵtext"](3);
-    _angular_core__WEBPACK_IMPORTED_MODULE_0__["ɵɵelementEnd"]();
-    _angular_core__WEBPACK_IMPORTED_MODULE_0__["ɵɵelementStart"](4, "div", 107);
-    _angular_core__WEBPACK_IMPORTED_MODULE_0__["ɵɵelementStart"](5, "table", 108);
-    _angular_core__WEBPACK_IMPORTED_MODULE_0__["ɵɵelementStart"](6, "thead");
-    _angular_core__WEBPACK_IMPORTED_MODULE_0__["ɵɵelementStart"](7, "tr");
-    _angular_core__WEBPACK_IMPORTED_MODULE_0__["ɵɵelementStart"](8, "th", 109);
-    _angular_core__WEBPACK_IMPORTED_MODULE_0__["ɵɵtext"](9, " Producto ");
-    _angular_core__WEBPACK_IMPORTED_MODULE_0__["ɵɵelementEnd"]();
-    _angular_core__WEBPACK_IMPORTED_MODULE_0__["ɵɵelementStart"](10, "th", 110);
-    _angular_core__WEBPACK_IMPORTED_MODULE_0__["ɵɵtext"](11, "Fact");
-    _angular_core__WEBPACK_IMPORTED_MODULE_0__["ɵɵelementEnd"]();
-    _angular_core__WEBPACK_IMPORTED_MODULE_0__["ɵɵelementStart"](12, "th", 111);
-    _angular_core__WEBPACK_IMPORTED_MODULE_0__["ɵɵtext"](13, "Ent");
-    _angular_core__WEBPACK_IMPORTED_MODULE_0__["ɵɵelementEnd"]();
-    _angular_core__WEBPACK_IMPORTED_MODULE_0__["ɵɵelementStart"](14, "th", 112);
-    _angular_core__WEBPACK_IMPORTED_MODULE_0__["ɵɵtext"](15, "Dev");
-    _angular_core__WEBPACK_IMPORTED_MODULE_0__["ɵɵelementEnd"]();
-    _angular_core__WEBPACK_IMPORTED_MODULE_0__["ɵɵelementStart"](16, "th", 113);
-    _angular_core__WEBPACK_IMPORTED_MODULE_0__["ɵɵtext"](17, "Pend");
-    _angular_core__WEBPACK_IMPORTED_MODULE_0__["ɵɵelementEnd"]();
-    _angular_core__WEBPACK_IMPORTED_MODULE_0__["ɵɵelementStart"](18, "th", 114);
-    _angular_core__WEBPACK_IMPORTED_MODULE_0__["ɵɵtext"](19, " Despacho ");
-    _angular_core__WEBPACK_IMPORTED_MODULE_0__["ɵɵelement"](20, "br");
-    _angular_core__WEBPACK_IMPORTED_MODULE_0__["ɵɵelementStart"](21, "small", 115);
-    _angular_core__WEBPACK_IMPORTED_MODULE_0__["ɵɵtext"](22, "(cajas \u00B7 piezas si aplica)");
-    _angular_core__WEBPACK_IMPORTED_MODULE_0__["ɵɵelementEnd"]();
-    _angular_core__WEBPACK_IMPORTED_MODULE_0__["ɵɵelementEnd"]();
-    _angular_core__WEBPACK_IMPORTED_MODULE_0__["ɵɵelementStart"](23, "th", 116);
-    _angular_core__WEBPACK_IMPORTED_MODULE_0__["ɵɵtext"](24, "Est");
-    _angular_core__WEBPACK_IMPORTED_MODULE_0__["ɵɵelementEnd"]();
-    _angular_core__WEBPACK_IMPORTED_MODULE_0__["ɵɵelementStart"](25, "th", 117);
-    _angular_core__WEBPACK_IMPORTED_MODULE_0__["ɵɵtext"](26, "F.Comp");
-    _angular_core__WEBPACK_IMPORTED_MODULE_0__["ɵɵelementEnd"]();
-    _angular_core__WEBPACK_IMPORTED_MODULE_0__["ɵɵelementStart"](27, "th", 118);
-    _angular_core__WEBPACK_IMPORTED_MODULE_0__["ɵɵtext"](28, "Notas");
-    _angular_core__WEBPACK_IMPORTED_MODULE_0__["ɵɵelementEnd"]();
-    _angular_core__WEBPACK_IMPORTED_MODULE_0__["ɵɵelementStart"](29, "th", 119);
-    _angular_core__WEBPACK_IMPORTED_MODULE_0__["ɵɵtext"](30, "Guardar");
-    _angular_core__WEBPACK_IMPORTED_MODULE_0__["ɵɵelementEnd"]();
-    _angular_core__WEBPACK_IMPORTED_MODULE_0__["ɵɵelementEnd"]();
-    _angular_core__WEBPACK_IMPORTED_MODULE_0__["ɵɵelementEnd"]();
-    _angular_core__WEBPACK_IMPORTED_MODULE_0__["ɵɵelementStart"](31, "tbody");
-    _angular_core__WEBPACK_IMPORTED_MODULE_0__["ɵɵtemplate"](32, GestionEntregasBodegaComponent_div_6_tr_32_Template, 25, 15, "tr", 120);
-    _angular_core__WEBPACK_IMPORTED_MODULE_0__["ɵɵelementEnd"]();
-    _angular_core__WEBPACK_IMPORTED_MODULE_0__["ɵɵelementEnd"]();
-    _angular_core__WEBPACK_IMPORTED_MODULE_0__["ɵɵelementStart"](33, "div", 121);
-    _angular_core__WEBPACK_IMPORTED_MODULE_0__["ɵɵelementStart"](34, "dx-button", 122);
-    _angular_core__WEBPACK_IMPORTED_MODULE_0__["ɵɵlistener"]("onClick", function GestionEntregasBodegaComponent_div_6_Template_dx_button_onClick_34_listener() { _angular_core__WEBPACK_IMPORTED_MODULE_0__["ɵɵrestoreView"](_r91); const ctx_r90 = _angular_core__WEBPACK_IMPORTED_MODULE_0__["ɵɵnextContext"](); return ctx_r90.cerrarOrden(); });
-    _angular_core__WEBPACK_IMPORTED_MODULE_0__["ɵɵelementEnd"]();
-    _angular_core__WEBPACK_IMPORTED_MODULE_0__["ɵɵelementEnd"]();
-    _angular_core__WEBPACK_IMPORTED_MODULE_0__["ɵɵelementEnd"]();
-    _angular_core__WEBPACK_IMPORTED_MODULE_0__["ɵɵelementEnd"]();
-    _angular_core__WEBPACK_IMPORTED_MODULE_0__["ɵɵelementEnd"]();
+    const _r98 = _angular_core__WEBPACK_IMPORTED_MODULE_1__["ɵɵgetCurrentView"]();
+    _angular_core__WEBPACK_IMPORTED_MODULE_1__["ɵɵelementStart"](0, "div", 8);
+    _angular_core__WEBPACK_IMPORTED_MODULE_1__["ɵɵelementStart"](1, "div", 9);
+    _angular_core__WEBPACK_IMPORTED_MODULE_1__["ɵɵelementStart"](2, "h5", 10);
+    _angular_core__WEBPACK_IMPORTED_MODULE_1__["ɵɵtext"](3);
+    _angular_core__WEBPACK_IMPORTED_MODULE_1__["ɵɵelementEnd"]();
+    _angular_core__WEBPACK_IMPORTED_MODULE_1__["ɵɵelementStart"](4, "div", 123);
+    _angular_core__WEBPACK_IMPORTED_MODULE_1__["ɵɵelementStart"](5, "table", 124);
+    _angular_core__WEBPACK_IMPORTED_MODULE_1__["ɵɵelementStart"](6, "thead");
+    _angular_core__WEBPACK_IMPORTED_MODULE_1__["ɵɵelementStart"](7, "tr");
+    _angular_core__WEBPACK_IMPORTED_MODULE_1__["ɵɵelementStart"](8, "th", 125);
+    _angular_core__WEBPACK_IMPORTED_MODULE_1__["ɵɵtext"](9, " Producto ");
+    _angular_core__WEBPACK_IMPORTED_MODULE_1__["ɵɵelementEnd"]();
+    _angular_core__WEBPACK_IMPORTED_MODULE_1__["ɵɵelementStart"](10, "th", 126);
+    _angular_core__WEBPACK_IMPORTED_MODULE_1__["ɵɵtext"](11, "Fact");
+    _angular_core__WEBPACK_IMPORTED_MODULE_1__["ɵɵelementEnd"]();
+    _angular_core__WEBPACK_IMPORTED_MODULE_1__["ɵɵelementStart"](12, "th", 127);
+    _angular_core__WEBPACK_IMPORTED_MODULE_1__["ɵɵtext"](13, "Ent");
+    _angular_core__WEBPACK_IMPORTED_MODULE_1__["ɵɵelementEnd"]();
+    _angular_core__WEBPACK_IMPORTED_MODULE_1__["ɵɵelementStart"](14, "th", 128);
+    _angular_core__WEBPACK_IMPORTED_MODULE_1__["ɵɵtext"](15, "Dev");
+    _angular_core__WEBPACK_IMPORTED_MODULE_1__["ɵɵelementEnd"]();
+    _angular_core__WEBPACK_IMPORTED_MODULE_1__["ɵɵelementStart"](16, "th", 129);
+    _angular_core__WEBPACK_IMPORTED_MODULE_1__["ɵɵtext"](17, "Pend");
+    _angular_core__WEBPACK_IMPORTED_MODULE_1__["ɵɵelementEnd"]();
+    _angular_core__WEBPACK_IMPORTED_MODULE_1__["ɵɵelementStart"](18, "th", 130);
+    _angular_core__WEBPACK_IMPORTED_MODULE_1__["ɵɵtext"](19, " Despacho ");
+    _angular_core__WEBPACK_IMPORTED_MODULE_1__["ɵɵelement"](20, "br");
+    _angular_core__WEBPACK_IMPORTED_MODULE_1__["ɵɵelementStart"](21, "small", 131);
+    _angular_core__WEBPACK_IMPORTED_MODULE_1__["ɵɵtext"](22, "(cajas \u00B7 piezas si aplica)");
+    _angular_core__WEBPACK_IMPORTED_MODULE_1__["ɵɵelementEnd"]();
+    _angular_core__WEBPACK_IMPORTED_MODULE_1__["ɵɵelementEnd"]();
+    _angular_core__WEBPACK_IMPORTED_MODULE_1__["ɵɵelementStart"](23, "th", 132);
+    _angular_core__WEBPACK_IMPORTED_MODULE_1__["ɵɵtext"](24, "Est");
+    _angular_core__WEBPACK_IMPORTED_MODULE_1__["ɵɵelementEnd"]();
+    _angular_core__WEBPACK_IMPORTED_MODULE_1__["ɵɵelementStart"](25, "th", 133);
+    _angular_core__WEBPACK_IMPORTED_MODULE_1__["ɵɵtext"](26, "F.Comp");
+    _angular_core__WEBPACK_IMPORTED_MODULE_1__["ɵɵelementEnd"]();
+    _angular_core__WEBPACK_IMPORTED_MODULE_1__["ɵɵelementStart"](27, "th", 134);
+    _angular_core__WEBPACK_IMPORTED_MODULE_1__["ɵɵtext"](28, "Notas");
+    _angular_core__WEBPACK_IMPORTED_MODULE_1__["ɵɵelementEnd"]();
+    _angular_core__WEBPACK_IMPORTED_MODULE_1__["ɵɵelementStart"](29, "th", 135);
+    _angular_core__WEBPACK_IMPORTED_MODULE_1__["ɵɵtext"](30, "Guardar");
+    _angular_core__WEBPACK_IMPORTED_MODULE_1__["ɵɵelementEnd"]();
+    _angular_core__WEBPACK_IMPORTED_MODULE_1__["ɵɵelementEnd"]();
+    _angular_core__WEBPACK_IMPORTED_MODULE_1__["ɵɵelementEnd"]();
+    _angular_core__WEBPACK_IMPORTED_MODULE_1__["ɵɵelementStart"](31, "tbody");
+    _angular_core__WEBPACK_IMPORTED_MODULE_1__["ɵɵtemplate"](32, GestionEntregasBodegaComponent_div_6_tr_32_Template, 25, 15, "tr", 136);
+    _angular_core__WEBPACK_IMPORTED_MODULE_1__["ɵɵelementEnd"]();
+    _angular_core__WEBPACK_IMPORTED_MODULE_1__["ɵɵelementEnd"]();
+    _angular_core__WEBPACK_IMPORTED_MODULE_1__["ɵɵelementStart"](33, "div", 137);
+    _angular_core__WEBPACK_IMPORTED_MODULE_1__["ɵɵelementStart"](34, "dx-button", 138);
+    _angular_core__WEBPACK_IMPORTED_MODULE_1__["ɵɵlistener"]("onClick", function GestionEntregasBodegaComponent_div_6_Template_dx_button_onClick_34_listener() { _angular_core__WEBPACK_IMPORTED_MODULE_1__["ɵɵrestoreView"](_r98); const ctx_r97 = _angular_core__WEBPACK_IMPORTED_MODULE_1__["ɵɵnextContext"](); return ctx_r97.cerrarOrden(); });
+    _angular_core__WEBPACK_IMPORTED_MODULE_1__["ɵɵelementEnd"]();
+    _angular_core__WEBPACK_IMPORTED_MODULE_1__["ɵɵelementEnd"]();
+    _angular_core__WEBPACK_IMPORTED_MODULE_1__["ɵɵelementEnd"]();
+    _angular_core__WEBPACK_IMPORTED_MODULE_1__["ɵɵelementEnd"]();
+    _angular_core__WEBPACK_IMPORTED_MODULE_1__["ɵɵelementEnd"]();
 } if (rf & 2) {
-    const ctx_r3 = _angular_core__WEBPACK_IMPORTED_MODULE_0__["ɵɵnextContext"]();
-    _angular_core__WEBPACK_IMPORTED_MODULE_0__["ɵɵadvance"](3);
-    _angular_core__WEBPACK_IMPORTED_MODULE_0__["ɵɵtextInterpolate3"](" ", ctx_r3.ordenSeleccionada.tipoDocumento, " #", ctx_r3.ordenSeleccionada.documentoNumero, " - ", ctx_r3.ordenSeleccionada.clienteNombre, " ");
-    _angular_core__WEBPACK_IMPORTED_MODULE_0__["ɵɵadvance"](29);
-    _angular_core__WEBPACK_IMPORTED_MODULE_0__["ɵɵproperty"]("ngForOf", ctx_r3.ordenSeleccionada.items);
-    _angular_core__WEBPACK_IMPORTED_MODULE_0__["ɵɵadvance"](2);
-    _angular_core__WEBPACK_IMPORTED_MODULE_0__["ɵɵproperty"]("disabled", ctx_r3.ordenSeleccionada.estadoProceso !== "COMPLETO");
+    const ctx_r3 = _angular_core__WEBPACK_IMPORTED_MODULE_1__["ɵɵnextContext"]();
+    _angular_core__WEBPACK_IMPORTED_MODULE_1__["ɵɵadvance"](3);
+    _angular_core__WEBPACK_IMPORTED_MODULE_1__["ɵɵtextInterpolate3"](" ", ctx_r3.ordenSeleccionada.tipoDocumento, " #", ctx_r3.ordenSeleccionada.documentoNumero, " - ", ctx_r3.ordenSeleccionada.clienteNombre, " ");
+    _angular_core__WEBPACK_IMPORTED_MODULE_1__["ɵɵadvance"](29);
+    _angular_core__WEBPACK_IMPORTED_MODULE_1__["ɵɵproperty"]("ngForOf", ctx_r3.ordenSeleccionada.items);
+    _angular_core__WEBPACK_IMPORTED_MODULE_1__["ɵɵadvance"](2);
+    _angular_core__WEBPACK_IMPORTED_MODULE_1__["ɵɵproperty"]("disabled", ctx_r3.ordenSeleccionada.estadoProceso !== "COMPLETO");
 } }
 function GestionEntregasBodegaComponent_div_8_div_2_tr_40_Template(rf, ctx) { if (rf & 1) {
-    _angular_core__WEBPACK_IMPORTED_MODULE_0__["ɵɵelementStart"](0, "tr");
-    _angular_core__WEBPACK_IMPORTED_MODULE_0__["ɵɵelementStart"](1, "th");
-    _angular_core__WEBPACK_IMPORTED_MODULE_0__["ɵɵtext"](2, "Creada en sistema");
-    _angular_core__WEBPACK_IMPORTED_MODULE_0__["ɵɵelementEnd"]();
-    _angular_core__WEBPACK_IMPORTED_MODULE_0__["ɵɵelementStart"](3, "td");
-    _angular_core__WEBPACK_IMPORTED_MODULE_0__["ɵɵtext"](4);
-    _angular_core__WEBPACK_IMPORTED_MODULE_0__["ɵɵelementEnd"]();
-    _angular_core__WEBPACK_IMPORTED_MODULE_0__["ɵɵelementEnd"]();
+    _angular_core__WEBPACK_IMPORTED_MODULE_1__["ɵɵelementStart"](0, "tr");
+    _angular_core__WEBPACK_IMPORTED_MODULE_1__["ɵɵelementStart"](1, "th");
+    _angular_core__WEBPACK_IMPORTED_MODULE_1__["ɵɵtext"](2, "Creada en sistema");
+    _angular_core__WEBPACK_IMPORTED_MODULE_1__["ɵɵelementEnd"]();
+    _angular_core__WEBPACK_IMPORTED_MODULE_1__["ɵɵelementStart"](3, "td");
+    _angular_core__WEBPACK_IMPORTED_MODULE_1__["ɵɵtext"](4);
+    _angular_core__WEBPACK_IMPORTED_MODULE_1__["ɵɵelementEnd"]();
+    _angular_core__WEBPACK_IMPORTED_MODULE_1__["ɵɵelementEnd"]();
 } if (rf & 2) {
-    const ctx_r94 = _angular_core__WEBPACK_IMPORTED_MODULE_0__["ɵɵnextContext"](3);
-    _angular_core__WEBPACK_IMPORTED_MODULE_0__["ɵɵadvance"](4);
-    _angular_core__WEBPACK_IMPORTED_MODULE_0__["ɵɵtextInterpolate"](ctx_r94.formatearFechaIso(ctx_r94.ordenTrazabilidad.createdAt));
+    const ctx_r101 = _angular_core__WEBPACK_IMPORTED_MODULE_1__["ɵɵnextContext"](3);
+    _angular_core__WEBPACK_IMPORTED_MODULE_1__["ɵɵadvance"](4);
+    _angular_core__WEBPACK_IMPORTED_MODULE_1__["ɵɵtextInterpolate"](ctx_r101.formatearFechaIso(ctx_r101.ordenTrazabilidad.createdAt));
 } }
 function GestionEntregasBodegaComponent_div_8_div_2_tr_41_Template(rf, ctx) { if (rf & 1) {
-    _angular_core__WEBPACK_IMPORTED_MODULE_0__["ɵɵelementStart"](0, "tr");
-    _angular_core__WEBPACK_IMPORTED_MODULE_0__["ɵɵelementStart"](1, "th");
-    _angular_core__WEBPACK_IMPORTED_MODULE_0__["ɵɵtext"](2, "\u00DAltima actualizaci\u00F3n");
-    _angular_core__WEBPACK_IMPORTED_MODULE_0__["ɵɵelementEnd"]();
-    _angular_core__WEBPACK_IMPORTED_MODULE_0__["ɵɵelementStart"](3, "td");
-    _angular_core__WEBPACK_IMPORTED_MODULE_0__["ɵɵtext"](4);
-    _angular_core__WEBPACK_IMPORTED_MODULE_0__["ɵɵelementEnd"]();
-    _angular_core__WEBPACK_IMPORTED_MODULE_0__["ɵɵelementEnd"]();
+    _angular_core__WEBPACK_IMPORTED_MODULE_1__["ɵɵelementStart"](0, "tr");
+    _angular_core__WEBPACK_IMPORTED_MODULE_1__["ɵɵelementStart"](1, "th");
+    _angular_core__WEBPACK_IMPORTED_MODULE_1__["ɵɵtext"](2, "\u00DAltima actualizaci\u00F3n");
+    _angular_core__WEBPACK_IMPORTED_MODULE_1__["ɵɵelementEnd"]();
+    _angular_core__WEBPACK_IMPORTED_MODULE_1__["ɵɵelementStart"](3, "td");
+    _angular_core__WEBPACK_IMPORTED_MODULE_1__["ɵɵtext"](4);
+    _angular_core__WEBPACK_IMPORTED_MODULE_1__["ɵɵelementEnd"]();
+    _angular_core__WEBPACK_IMPORTED_MODULE_1__["ɵɵelementEnd"]();
 } if (rf & 2) {
-    const ctx_r95 = _angular_core__WEBPACK_IMPORTED_MODULE_0__["ɵɵnextContext"](3);
-    _angular_core__WEBPACK_IMPORTED_MODULE_0__["ɵɵadvance"](4);
-    _angular_core__WEBPACK_IMPORTED_MODULE_0__["ɵɵtextInterpolate"](ctx_r95.formatearFechaIso(ctx_r95.ordenTrazabilidad.updatedAt));
+    const ctx_r102 = _angular_core__WEBPACK_IMPORTED_MODULE_1__["ɵɵnextContext"](3);
+    _angular_core__WEBPACK_IMPORTED_MODULE_1__["ɵɵadvance"](4);
+    _angular_core__WEBPACK_IMPORTED_MODULE_1__["ɵɵtextInterpolate"](ctx_r102.formatearFechaIso(ctx_r102.ordenTrazabilidad.updatedAt));
+} }
+function GestionEntregasBodegaComponent_div_8_div_2_p_51_Template(rf, ctx) { if (rf & 1) {
+    _angular_core__WEBPACK_IMPORTED_MODULE_1__["ɵɵelementStart"](0, "p", 158);
+    _angular_core__WEBPACK_IMPORTED_MODULE_1__["ɵɵtext"](1);
+    _angular_core__WEBPACK_IMPORTED_MODULE_1__["ɵɵelementEnd"]();
+} if (rf & 2) {
+    const ctx_r103 = _angular_core__WEBPACK_IMPORTED_MODULE_1__["ɵɵnextContext"](3);
+    _angular_core__WEBPACK_IMPORTED_MODULE_1__["ɵɵadvance"](1);
+    _angular_core__WEBPACK_IMPORTED_MODULE_1__["ɵɵtextInterpolate1"](" ", ctx_r103.textoAyudaEdicionHistorial(), " ");
+} }
+function GestionEntregasBodegaComponent_div_8_div_2_div_52_div_5_th_4_Template(rf, ctx) { if (rf & 1) {
+    _angular_core__WEBPACK_IMPORTED_MODULE_1__["ɵɵelementStart"](0, "th", 166);
+    _angular_core__WEBPACK_IMPORTED_MODULE_1__["ɵɵelementStart"](1, "span", 167);
+    _angular_core__WEBPACK_IMPORTED_MODULE_1__["ɵɵtext"](2, "Corregir");
+    _angular_core__WEBPACK_IMPORTED_MODULE_1__["ɵɵelementEnd"]();
+    _angular_core__WEBPACK_IMPORTED_MODULE_1__["ɵɵelementEnd"]();
+} }
+function GestionEntregasBodegaComponent_div_8_div_2_div_52_div_5_tr_26_td_1_Template(rf, ctx) { if (rf & 1) {
+    const _r115 = _angular_core__WEBPACK_IMPORTED_MODULE_1__["ɵɵgetCurrentView"]();
+    _angular_core__WEBPACK_IMPORTED_MODULE_1__["ɵɵelementStart"](0, "td", 171);
+    _angular_core__WEBPACK_IMPORTED_MODULE_1__["ɵɵelementStart"](1, "button", 172);
+    _angular_core__WEBPACK_IMPORTED_MODULE_1__["ɵɵlistener"]("click", function GestionEntregasBodegaComponent_div_8_div_2_div_52_div_5_tr_26_td_1_Template_button_click_1_listener() { _angular_core__WEBPACK_IMPORTED_MODULE_1__["ɵɵrestoreView"](_r115); const h_r111 = _angular_core__WEBPACK_IMPORTED_MODULE_1__["ɵɵnextContext"]().$implicit; const ctx_r114 = _angular_core__WEBPACK_IMPORTED_MODULE_1__["ɵɵnextContext"](2); const it_r105 = ctx_r114.$implicit; const itemIdx_r106 = ctx_r114.index; const ctx_r113 = _angular_core__WEBPACK_IMPORTED_MODULE_1__["ɵɵnextContext"](3); return ctx_r113.abrirPopupEditarHistorial(it_r105, h_r111, itemIdx_r106); });
+    _angular_core__WEBPACK_IMPORTED_MODULE_1__["ɵɵelement"](2, "i", 173);
+    _angular_core__WEBPACK_IMPORTED_MODULE_1__["ɵɵelementStart"](3, "span", 174);
+    _angular_core__WEBPACK_IMPORTED_MODULE_1__["ɵɵtext"](4, "Editar");
+    _angular_core__WEBPACK_IMPORTED_MODULE_1__["ɵɵelementEnd"]();
+    _angular_core__WEBPACK_IMPORTED_MODULE_1__["ɵɵelementEnd"]();
+    _angular_core__WEBPACK_IMPORTED_MODULE_1__["ɵɵelementEnd"]();
+} }
+function GestionEntregasBodegaComponent_div_8_div_2_div_52_div_5_tr_26_Template(rf, ctx) { if (rf & 1) {
+    _angular_core__WEBPACK_IMPORTED_MODULE_1__["ɵɵelementStart"](0, "tr");
+    _angular_core__WEBPACK_IMPORTED_MODULE_1__["ɵɵtemplate"](1, GestionEntregasBodegaComponent_div_8_div_2_div_52_div_5_tr_26_td_1_Template, 5, 0, "td", 168);
+    _angular_core__WEBPACK_IMPORTED_MODULE_1__["ɵɵelementStart"](2, "td", 169);
+    _angular_core__WEBPACK_IMPORTED_MODULE_1__["ɵɵtext"](3);
+    _angular_core__WEBPACK_IMPORTED_MODULE_1__["ɵɵelementEnd"]();
+    _angular_core__WEBPACK_IMPORTED_MODULE_1__["ɵɵelementStart"](4, "td");
+    _angular_core__WEBPACK_IMPORTED_MODULE_1__["ɵɵtext"](5);
+    _angular_core__WEBPACK_IMPORTED_MODULE_1__["ɵɵelementEnd"]();
+    _angular_core__WEBPACK_IMPORTED_MODULE_1__["ɵɵelementStart"](6, "td");
+    _angular_core__WEBPACK_IMPORTED_MODULE_1__["ɵɵtext"](7);
+    _angular_core__WEBPACK_IMPORTED_MODULE_1__["ɵɵelementEnd"]();
+    _angular_core__WEBPACK_IMPORTED_MODULE_1__["ɵɵelementStart"](8, "td");
+    _angular_core__WEBPACK_IMPORTED_MODULE_1__["ɵɵtext"](9);
+    _angular_core__WEBPACK_IMPORTED_MODULE_1__["ɵɵelementEnd"]();
+    _angular_core__WEBPACK_IMPORTED_MODULE_1__["ɵɵelementStart"](10, "td", 137);
+    _angular_core__WEBPACK_IMPORTED_MODULE_1__["ɵɵtext"](11);
+    _angular_core__WEBPACK_IMPORTED_MODULE_1__["ɵɵpipe"](12, "number");
+    _angular_core__WEBPACK_IMPORTED_MODULE_1__["ɵɵelementEnd"]();
+    _angular_core__WEBPACK_IMPORTED_MODULE_1__["ɵɵelementStart"](13, "td", 137);
+    _angular_core__WEBPACK_IMPORTED_MODULE_1__["ɵɵtext"](14);
+    _angular_core__WEBPACK_IMPORTED_MODULE_1__["ɵɵpipe"](15, "number");
+    _angular_core__WEBPACK_IMPORTED_MODULE_1__["ɵɵelementEnd"]();
+    _angular_core__WEBPACK_IMPORTED_MODULE_1__["ɵɵelementStart"](16, "td", 137);
+    _angular_core__WEBPACK_IMPORTED_MODULE_1__["ɵɵtext"](17);
+    _angular_core__WEBPACK_IMPORTED_MODULE_1__["ɵɵpipe"](18, "number");
+    _angular_core__WEBPACK_IMPORTED_MODULE_1__["ɵɵelementEnd"]();
+    _angular_core__WEBPACK_IMPORTED_MODULE_1__["ɵɵelementStart"](19, "td", 137);
+    _angular_core__WEBPACK_IMPORTED_MODULE_1__["ɵɵtext"](20);
+    _angular_core__WEBPACK_IMPORTED_MODULE_1__["ɵɵelementEnd"]();
+    _angular_core__WEBPACK_IMPORTED_MODULE_1__["ɵɵelementStart"](21, "td", 137);
+    _angular_core__WEBPACK_IMPORTED_MODULE_1__["ɵɵtext"](22);
+    _angular_core__WEBPACK_IMPORTED_MODULE_1__["ɵɵelementEnd"]();
+    _angular_core__WEBPACK_IMPORTED_MODULE_1__["ɵɵelementStart"](23, "td", 170);
+    _angular_core__WEBPACK_IMPORTED_MODULE_1__["ɵɵtext"](24);
+    _angular_core__WEBPACK_IMPORTED_MODULE_1__["ɵɵelementEnd"]();
+    _angular_core__WEBPACK_IMPORTED_MODULE_1__["ɵɵelementEnd"]();
+} if (rf & 2) {
+    const h_r111 = ctx.$implicit;
+    const ctx_r110 = _angular_core__WEBPACK_IMPORTED_MODULE_1__["ɵɵnextContext"](5);
+    _angular_core__WEBPACK_IMPORTED_MODULE_1__["ɵɵadvance"](1);
+    _angular_core__WEBPACK_IMPORTED_MODULE_1__["ɵɵproperty"]("ngIf", ctx_r110.puedeEditarHistorialTrazabilidad(ctx_r110.ordenTrazabilidad));
+    _angular_core__WEBPACK_IMPORTED_MODULE_1__["ɵɵadvance"](2);
+    _angular_core__WEBPACK_IMPORTED_MODULE_1__["ɵɵtextInterpolate"](h_r111.fechaFmt);
+    _angular_core__WEBPACK_IMPORTED_MODULE_1__["ɵɵadvance"](2);
+    _angular_core__WEBPACK_IMPORTED_MODULE_1__["ɵɵtextInterpolate"](h_r111.usuario);
+    _angular_core__WEBPACK_IMPORTED_MODULE_1__["ɵɵadvance"](2);
+    _angular_core__WEBPACK_IMPORTED_MODULE_1__["ɵɵtextInterpolate"](h_r111.accion);
+    _angular_core__WEBPACK_IMPORTED_MODULE_1__["ɵɵadvance"](2);
+    _angular_core__WEBPACK_IMPORTED_MODULE_1__["ɵɵtextInterpolate"](h_r111.estadoSeleccionado);
+    _angular_core__WEBPACK_IMPORTED_MODULE_1__["ɵɵadvance"](2);
+    _angular_core__WEBPACK_IMPORTED_MODULE_1__["ɵɵtextInterpolate1"](" ", _angular_core__WEBPACK_IMPORTED_MODULE_1__["ɵɵpipeBind2"](12, 11, h_r111.cantidadEntregada, "1.2-2"), " ");
+    _angular_core__WEBPACK_IMPORTED_MODULE_1__["ɵɵadvance"](3);
+    _angular_core__WEBPACK_IMPORTED_MODULE_1__["ɵɵtextInterpolate1"](" ", _angular_core__WEBPACK_IMPORTED_MODULE_1__["ɵɵpipeBind2"](15, 14, h_r111.cantidadDevuelta, "1.2-2"), " ");
+    _angular_core__WEBPACK_IMPORTED_MODULE_1__["ɵɵadvance"](3);
+    _angular_core__WEBPACK_IMPORTED_MODULE_1__["ɵɵtextInterpolate1"](" ", _angular_core__WEBPACK_IMPORTED_MODULE_1__["ɵɵpipeBind2"](18, 17, h_r111.m2EntregadoEnEstaOperacion, "1.2-2"), " ");
+    _angular_core__WEBPACK_IMPORTED_MODULE_1__["ɵɵadvance"](3);
+    _angular_core__WEBPACK_IMPORTED_MODULE_1__["ɵɵtextInterpolate"](h_r111.entregaCajas);
+    _angular_core__WEBPACK_IMPORTED_MODULE_1__["ɵɵadvance"](2);
+    _angular_core__WEBPACK_IMPORTED_MODULE_1__["ɵɵtextInterpolate"](h_r111.entregaPiezas);
+    _angular_core__WEBPACK_IMPORTED_MODULE_1__["ɵɵadvance"](2);
+    _angular_core__WEBPACK_IMPORTED_MODULE_1__["ɵɵtextInterpolate"](h_r111.notas);
+} }
+function GestionEntregasBodegaComponent_div_8_div_2_div_52_div_5_Template(rf, ctx) { if (rf & 1) {
+    _angular_core__WEBPACK_IMPORTED_MODULE_1__["ɵɵelementStart"](0, "div", 162);
+    _angular_core__WEBPACK_IMPORTED_MODULE_1__["ɵɵelementStart"](1, "table", 163);
+    _angular_core__WEBPACK_IMPORTED_MODULE_1__["ɵɵelementStart"](2, "thead", 164);
+    _angular_core__WEBPACK_IMPORTED_MODULE_1__["ɵɵelementStart"](3, "tr");
+    _angular_core__WEBPACK_IMPORTED_MODULE_1__["ɵɵtemplate"](4, GestionEntregasBodegaComponent_div_8_div_2_div_52_div_5_th_4_Template, 3, 0, "th", 165);
+    _angular_core__WEBPACK_IMPORTED_MODULE_1__["ɵɵelementStart"](5, "th");
+    _angular_core__WEBPACK_IMPORTED_MODULE_1__["ɵɵtext"](6, "Fecha / hora");
+    _angular_core__WEBPACK_IMPORTED_MODULE_1__["ɵɵelementEnd"]();
+    _angular_core__WEBPACK_IMPORTED_MODULE_1__["ɵɵelementStart"](7, "th");
+    _angular_core__WEBPACK_IMPORTED_MODULE_1__["ɵɵtext"](8, "Usuario");
+    _angular_core__WEBPACK_IMPORTED_MODULE_1__["ɵɵelementEnd"]();
+    _angular_core__WEBPACK_IMPORTED_MODULE_1__["ɵɵelementStart"](9, "th");
+    _angular_core__WEBPACK_IMPORTED_MODULE_1__["ɵɵtext"](10, "Acci\u00F3n");
+    _angular_core__WEBPACK_IMPORTED_MODULE_1__["ɵɵelementEnd"]();
+    _angular_core__WEBPACK_IMPORTED_MODULE_1__["ɵɵelementStart"](11, "th");
+    _angular_core__WEBPACK_IMPORTED_MODULE_1__["ɵɵtext"](12, "Estado sel.");
+    _angular_core__WEBPACK_IMPORTED_MODULE_1__["ɵɵelementEnd"]();
+    _angular_core__WEBPACK_IMPORTED_MODULE_1__["ɵɵelementStart"](13, "th", 137);
+    _angular_core__WEBPACK_IMPORTED_MODULE_1__["ɵɵtext"](14, "Entr. acum.");
+    _angular_core__WEBPACK_IMPORTED_MODULE_1__["ɵɵelementEnd"]();
+    _angular_core__WEBPACK_IMPORTED_MODULE_1__["ɵɵelementStart"](15, "th", 137);
+    _angular_core__WEBPACK_IMPORTED_MODULE_1__["ɵɵtext"](16, "Dev. acum.");
+    _angular_core__WEBPACK_IMPORTED_MODULE_1__["ɵɵelementEnd"]();
+    _angular_core__WEBPACK_IMPORTED_MODULE_1__["ɵɵelementStart"](17, "th", 137);
+    _angular_core__WEBPACK_IMPORTED_MODULE_1__["ɵɵtext"](18, "m\u00B2 op.");
+    _angular_core__WEBPACK_IMPORTED_MODULE_1__["ɵɵelementEnd"]();
+    _angular_core__WEBPACK_IMPORTED_MODULE_1__["ɵɵelementStart"](19, "th", 137);
+    _angular_core__WEBPACK_IMPORTED_MODULE_1__["ɵɵtext"](20, "Cajas");
+    _angular_core__WEBPACK_IMPORTED_MODULE_1__["ɵɵelementEnd"]();
+    _angular_core__WEBPACK_IMPORTED_MODULE_1__["ɵɵelementStart"](21, "th", 137);
+    _angular_core__WEBPACK_IMPORTED_MODULE_1__["ɵɵtext"](22, "Piezas");
+    _angular_core__WEBPACK_IMPORTED_MODULE_1__["ɵɵelementEnd"]();
+    _angular_core__WEBPACK_IMPORTED_MODULE_1__["ɵɵelementStart"](23, "th");
+    _angular_core__WEBPACK_IMPORTED_MODULE_1__["ɵɵtext"](24, "Notas");
+    _angular_core__WEBPACK_IMPORTED_MODULE_1__["ɵɵelementEnd"]();
+    _angular_core__WEBPACK_IMPORTED_MODULE_1__["ɵɵelementEnd"]();
+    _angular_core__WEBPACK_IMPORTED_MODULE_1__["ɵɵelementEnd"]();
+    _angular_core__WEBPACK_IMPORTED_MODULE_1__["ɵɵelementStart"](25, "tbody");
+    _angular_core__WEBPACK_IMPORTED_MODULE_1__["ɵɵtemplate"](26, GestionEntregasBodegaComponent_div_8_div_2_div_52_div_5_tr_26_Template, 25, 20, "tr", 136);
+    _angular_core__WEBPACK_IMPORTED_MODULE_1__["ɵɵelementEnd"]();
+    _angular_core__WEBPACK_IMPORTED_MODULE_1__["ɵɵelementEnd"]();
+    _angular_core__WEBPACK_IMPORTED_MODULE_1__["ɵɵelementEnd"]();
+} if (rf & 2) {
+    const it_r105 = _angular_core__WEBPACK_IMPORTED_MODULE_1__["ɵɵnextContext"]().$implicit;
+    const ctx_r107 = _angular_core__WEBPACK_IMPORTED_MODULE_1__["ɵɵnextContext"](3);
+    _angular_core__WEBPACK_IMPORTED_MODULE_1__["ɵɵadvance"](4);
+    _angular_core__WEBPACK_IMPORTED_MODULE_1__["ɵɵproperty"]("ngIf", ctx_r107.puedeEditarHistorialTrazabilidad(ctx_r107.ordenTrazabilidad));
+    _angular_core__WEBPACK_IMPORTED_MODULE_1__["ɵɵadvance"](22);
+    _angular_core__WEBPACK_IMPORTED_MODULE_1__["ɵɵproperty"]("ngForOf", it_r105.historialOrdenado);
+} }
+function GestionEntregasBodegaComponent_div_8_div_2_div_52_p_6_Template(rf, ctx) { if (rf & 1) {
+    _angular_core__WEBPACK_IMPORTED_MODULE_1__["ɵɵelementStart"](0, "p", 175);
+    _angular_core__WEBPACK_IMPORTED_MODULE_1__["ɵɵtext"](1, " Sin movimientos registrados en este \u00EDtem. ");
+    _angular_core__WEBPACK_IMPORTED_MODULE_1__["ɵɵelementEnd"]();
 } }
 const _c1 = function () { return []; };
-const _c2 = function () { return { type: "fixedPoint", precision: 2 }; };
-function GestionEntregasBodegaComponent_div_8_div_2_div_51_dx_data_grid_5_Template(rf, ctx) { if (rf & 1) {
-    _angular_core__WEBPACK_IMPORTED_MODULE_0__["ɵɵelementStart"](0, "dx-data-grid", 135);
-    _angular_core__WEBPACK_IMPORTED_MODULE_0__["ɵɵelement"](1, "dxi-column", 136);
-    _angular_core__WEBPACK_IMPORTED_MODULE_0__["ɵɵelement"](2, "dxi-column", 137);
-    _angular_core__WEBPACK_IMPORTED_MODULE_0__["ɵɵelement"](3, "dxi-column", 138);
-    _angular_core__WEBPACK_IMPORTED_MODULE_0__["ɵɵelement"](4, "dxi-column", 144);
-    _angular_core__WEBPACK_IMPORTED_MODULE_0__["ɵɵelement"](5, "dxi-column", 145);
-    _angular_core__WEBPACK_IMPORTED_MODULE_0__["ɵɵelement"](6, "dxi-column", 146);
-    _angular_core__WEBPACK_IMPORTED_MODULE_0__["ɵɵelement"](7, "dxi-column", 147);
-    _angular_core__WEBPACK_IMPORTED_MODULE_0__["ɵɵelement"](8, "dxi-column", 148);
-    _angular_core__WEBPACK_IMPORTED_MODULE_0__["ɵɵelement"](9, "dxi-column", 149);
-    _angular_core__WEBPACK_IMPORTED_MODULE_0__["ɵɵelement"](10, "dxi-column", 150);
-    _angular_core__WEBPACK_IMPORTED_MODULE_0__["ɵɵelementEnd"]();
+function GestionEntregasBodegaComponent_div_8_div_2_div_52_Template(rf, ctx) { if (rf & 1) {
+    _angular_core__WEBPACK_IMPORTED_MODULE_1__["ɵɵelementStart"](0, "div", 159);
+    _angular_core__WEBPACK_IMPORTED_MODULE_1__["ɵɵelementStart"](1, "div", 72);
+    _angular_core__WEBPACK_IMPORTED_MODULE_1__["ɵɵtext"](2);
+    _angular_core__WEBPACK_IMPORTED_MODULE_1__["ɵɵelementStart"](3, "p");
+    _angular_core__WEBPACK_IMPORTED_MODULE_1__["ɵɵtext"](4);
+    _angular_core__WEBPACK_IMPORTED_MODULE_1__["ɵɵelementEnd"]();
+    _angular_core__WEBPACK_IMPORTED_MODULE_1__["ɵɵelementEnd"]();
+    _angular_core__WEBPACK_IMPORTED_MODULE_1__["ɵɵtemplate"](5, GestionEntregasBodegaComponent_div_8_div_2_div_52_div_5_Template, 27, 2, "div", 160);
+    _angular_core__WEBPACK_IMPORTED_MODULE_1__["ɵɵtemplate"](6, GestionEntregasBodegaComponent_div_8_div_2_div_52_p_6_Template, 2, 0, "p", 161);
+    _angular_core__WEBPACK_IMPORTED_MODULE_1__["ɵɵelementEnd"]();
 } if (rf & 2) {
-    const it_r97 = _angular_core__WEBPACK_IMPORTED_MODULE_0__["ɵɵnextContext"]().$implicit;
-    _angular_core__WEBPACK_IMPORTED_MODULE_0__["ɵɵproperty"]("dataSource", it_r97.historialOrdenado || _angular_core__WEBPACK_IMPORTED_MODULE_0__["ɵɵpureFunction0"](6, _c1))("showBorders", true)("columnAutoWidth", true)("height", 160);
-    _angular_core__WEBPACK_IMPORTED_MODULE_0__["ɵɵadvance"](5);
-    _angular_core__WEBPACK_IMPORTED_MODULE_0__["ɵɵproperty"]("format", _angular_core__WEBPACK_IMPORTED_MODULE_0__["ɵɵpureFunction0"](7, _c2));
-    _angular_core__WEBPACK_IMPORTED_MODULE_0__["ɵɵadvance"](2);
-    _angular_core__WEBPACK_IMPORTED_MODULE_0__["ɵɵproperty"]("format", _angular_core__WEBPACK_IMPORTED_MODULE_0__["ɵɵpureFunction0"](8, _c2));
-} }
-function GestionEntregasBodegaComponent_div_8_div_2_div_51_p_6_Template(rf, ctx) { if (rf & 1) {
-    _angular_core__WEBPACK_IMPORTED_MODULE_0__["ɵɵelementStart"](0, "p", 151);
-    _angular_core__WEBPACK_IMPORTED_MODULE_0__["ɵɵtext"](1, " Sin movimientos registrados en este \u00EDtem. ");
-    _angular_core__WEBPACK_IMPORTED_MODULE_0__["ɵɵelementEnd"]();
-} }
-function GestionEntregasBodegaComponent_div_8_div_2_div_51_Template(rf, ctx) { if (rf & 1) {
-    _angular_core__WEBPACK_IMPORTED_MODULE_0__["ɵɵelementStart"](0, "div", 141);
-    _angular_core__WEBPACK_IMPORTED_MODULE_0__["ɵɵelementStart"](1, "div", 69);
-    _angular_core__WEBPACK_IMPORTED_MODULE_0__["ɵɵtext"](2);
-    _angular_core__WEBPACK_IMPORTED_MODULE_0__["ɵɵelementStart"](3, "p");
-    _angular_core__WEBPACK_IMPORTED_MODULE_0__["ɵɵtext"](4);
-    _angular_core__WEBPACK_IMPORTED_MODULE_0__["ɵɵelementEnd"]();
-    _angular_core__WEBPACK_IMPORTED_MODULE_0__["ɵɵelementEnd"]();
-    _angular_core__WEBPACK_IMPORTED_MODULE_0__["ɵɵtemplate"](5, GestionEntregasBodegaComponent_div_8_div_2_div_51_dx_data_grid_5_Template, 11, 9, "dx-data-grid", 142);
-    _angular_core__WEBPACK_IMPORTED_MODULE_0__["ɵɵtemplate"](6, GestionEntregasBodegaComponent_div_8_div_2_div_51_p_6_Template, 2, 0, "p", 143);
-    _angular_core__WEBPACK_IMPORTED_MODULE_0__["ɵɵelementEnd"]();
-} if (rf & 2) {
-    const it_r97 = ctx.$implicit;
-    const ctx_r96 = _angular_core__WEBPACK_IMPORTED_MODULE_0__["ɵɵnextContext"](3);
-    _angular_core__WEBPACK_IMPORTED_MODULE_0__["ɵɵadvance"](2);
-    _angular_core__WEBPACK_IMPORTED_MODULE_0__["ɵɵtextInterpolate1"](" ", it_r97.productoNombre, " ");
-    _angular_core__WEBPACK_IMPORTED_MODULE_0__["ɵɵadvance"](2);
-    _angular_core__WEBPACK_IMPORTED_MODULE_0__["ɵɵtextInterpolate4"](" Facturado: ", ctx_r96.formatoCantidadLinea(it_r97.cantidadFacturada, it_r97), " \u00B7 Entregado: ", ctx_r96.formatoCantidadLinea(it_r97.cantidadEntregada, it_r97), " \u00B7 Devuelto: ", ctx_r96.formatoCantidadLinea(it_r97.cantidadDevuelta, it_r97), " \u00B7 Estado \u00EDtem: ", it_r97.estadoItem, " ");
-    _angular_core__WEBPACK_IMPORTED_MODULE_0__["ɵɵadvance"](1);
-    _angular_core__WEBPACK_IMPORTED_MODULE_0__["ɵɵproperty"]("ngIf", (it_r97.historialOrdenado || _angular_core__WEBPACK_IMPORTED_MODULE_0__["ɵɵpureFunction0"](7, _c1)).length > 0);
-    _angular_core__WEBPACK_IMPORTED_MODULE_0__["ɵɵadvance"](1);
-    _angular_core__WEBPACK_IMPORTED_MODULE_0__["ɵɵproperty"]("ngIf", !(it_r97.historialOrdenado || _angular_core__WEBPACK_IMPORTED_MODULE_0__["ɵɵpureFunction0"](8, _c1)).length);
+    const it_r105 = ctx.$implicit;
+    const ctx_r104 = _angular_core__WEBPACK_IMPORTED_MODULE_1__["ɵɵnextContext"](3);
+    _angular_core__WEBPACK_IMPORTED_MODULE_1__["ɵɵadvance"](2);
+    _angular_core__WEBPACK_IMPORTED_MODULE_1__["ɵɵtextInterpolate1"](" ", it_r105.productoNombre, " ");
+    _angular_core__WEBPACK_IMPORTED_MODULE_1__["ɵɵadvance"](2);
+    _angular_core__WEBPACK_IMPORTED_MODULE_1__["ɵɵtextInterpolate4"](" Facturado: ", ctx_r104.formatoCantidadLinea(it_r105.cantidadFacturada, it_r105), " \u00B7 Entregado: ", ctx_r104.formatoCantidadLinea(it_r105.cantidadEntregada, it_r105), " \u00B7 Devuelto: ", ctx_r104.formatoCantidadLinea(it_r105.cantidadDevuelta, it_r105), " \u00B7 Estado \u00EDtem: ", it_r105.estadoItem, " ");
+    _angular_core__WEBPACK_IMPORTED_MODULE_1__["ɵɵadvance"](1);
+    _angular_core__WEBPACK_IMPORTED_MODULE_1__["ɵɵproperty"]("ngIf", (it_r105.historialOrdenado || _angular_core__WEBPACK_IMPORTED_MODULE_1__["ɵɵpureFunction0"](7, _c1)).length > 0);
+    _angular_core__WEBPACK_IMPORTED_MODULE_1__["ɵɵadvance"](1);
+    _angular_core__WEBPACK_IMPORTED_MODULE_1__["ɵɵproperty"]("ngIf", !(it_r105.historialOrdenado || _angular_core__WEBPACK_IMPORTED_MODULE_1__["ɵɵpureFunction0"](8, _c1)).length);
 } }
 function GestionEntregasBodegaComponent_div_8_div_2_Template(rf, ctx) { if (rf & 1) {
-    _angular_core__WEBPACK_IMPORTED_MODULE_0__["ɵɵelementStart"](0, "div", 130);
-    _angular_core__WEBPACK_IMPORTED_MODULE_0__["ɵɵelementStart"](1, "h6", 69);
-    _angular_core__WEBPACK_IMPORTED_MODULE_0__["ɵɵtext"](2, "Resumen de la orden");
-    _angular_core__WEBPACK_IMPORTED_MODULE_0__["ɵɵelementEnd"]();
-    _angular_core__WEBPACK_IMPORTED_MODULE_0__["ɵɵelementStart"](3, "div", 12);
-    _angular_core__WEBPACK_IMPORTED_MODULE_0__["ɵɵelementStart"](4, "div", 131);
-    _angular_core__WEBPACK_IMPORTED_MODULE_0__["ɵɵelementStart"](5, "table", 132);
-    _angular_core__WEBPACK_IMPORTED_MODULE_0__["ɵɵelementStart"](6, "tbody");
-    _angular_core__WEBPACK_IMPORTED_MODULE_0__["ɵɵelementStart"](7, "tr");
-    _angular_core__WEBPACK_IMPORTED_MODULE_0__["ɵɵelementStart"](8, "th", 133);
-    _angular_core__WEBPACK_IMPORTED_MODULE_0__["ɵɵtext"](9, "Consecutivo");
-    _angular_core__WEBPACK_IMPORTED_MODULE_0__["ɵɵelementEnd"]();
-    _angular_core__WEBPACK_IMPORTED_MODULE_0__["ɵɵelementStart"](10, "td");
-    _angular_core__WEBPACK_IMPORTED_MODULE_0__["ɵɵtext"](11);
-    _angular_core__WEBPACK_IMPORTED_MODULE_0__["ɵɵelementEnd"]();
-    _angular_core__WEBPACK_IMPORTED_MODULE_0__["ɵɵelementEnd"]();
-    _angular_core__WEBPACK_IMPORTED_MODULE_0__["ɵɵelementStart"](12, "tr");
-    _angular_core__WEBPACK_IMPORTED_MODULE_0__["ɵɵelementStart"](13, "th");
-    _angular_core__WEBPACK_IMPORTED_MODULE_0__["ɵɵtext"](14, "Tipo documento");
-    _angular_core__WEBPACK_IMPORTED_MODULE_0__["ɵɵelementEnd"]();
-    _angular_core__WEBPACK_IMPORTED_MODULE_0__["ɵɵelementStart"](15, "td");
-    _angular_core__WEBPACK_IMPORTED_MODULE_0__["ɵɵtext"](16);
-    _angular_core__WEBPACK_IMPORTED_MODULE_0__["ɵɵelementEnd"]();
-    _angular_core__WEBPACK_IMPORTED_MODULE_0__["ɵɵelementEnd"]();
-    _angular_core__WEBPACK_IMPORTED_MODULE_0__["ɵɵelementStart"](17, "tr");
-    _angular_core__WEBPACK_IMPORTED_MODULE_0__["ɵɵelementStart"](18, "th");
-    _angular_core__WEBPACK_IMPORTED_MODULE_0__["ɵɵtext"](19, "N.\u00BA documento venta");
-    _angular_core__WEBPACK_IMPORTED_MODULE_0__["ɵɵelementEnd"]();
-    _angular_core__WEBPACK_IMPORTED_MODULE_0__["ɵɵelementStart"](20, "td");
-    _angular_core__WEBPACK_IMPORTED_MODULE_0__["ɵɵtext"](21);
-    _angular_core__WEBPACK_IMPORTED_MODULE_0__["ɵɵelementEnd"]();
-    _angular_core__WEBPACK_IMPORTED_MODULE_0__["ɵɵelementEnd"]();
-    _angular_core__WEBPACK_IMPORTED_MODULE_0__["ɵɵelementStart"](22, "tr");
-    _angular_core__WEBPACK_IMPORTED_MODULE_0__["ɵɵelementStart"](23, "th");
-    _angular_core__WEBPACK_IMPORTED_MODULE_0__["ɵɵtext"](24, "Cliente");
-    _angular_core__WEBPACK_IMPORTED_MODULE_0__["ɵɵelementEnd"]();
-    _angular_core__WEBPACK_IMPORTED_MODULE_0__["ɵɵelementStart"](25, "td");
-    _angular_core__WEBPACK_IMPORTED_MODULE_0__["ɵɵtext"](26);
-    _angular_core__WEBPACK_IMPORTED_MODULE_0__["ɵɵelementEnd"]();
-    _angular_core__WEBPACK_IMPORTED_MODULE_0__["ɵɵelementEnd"]();
-    _angular_core__WEBPACK_IMPORTED_MODULE_0__["ɵɵelementEnd"]();
-    _angular_core__WEBPACK_IMPORTED_MODULE_0__["ɵɵelementEnd"]();
-    _angular_core__WEBPACK_IMPORTED_MODULE_0__["ɵɵelementEnd"]();
-    _angular_core__WEBPACK_IMPORTED_MODULE_0__["ɵɵelementStart"](27, "div", 131);
-    _angular_core__WEBPACK_IMPORTED_MODULE_0__["ɵɵelementStart"](28, "table", 132);
-    _angular_core__WEBPACK_IMPORTED_MODULE_0__["ɵɵelementStart"](29, "tbody");
-    _angular_core__WEBPACK_IMPORTED_MODULE_0__["ɵɵelementStart"](30, "tr");
-    _angular_core__WEBPACK_IMPORTED_MODULE_0__["ɵɵelementStart"](31, "th");
-    _angular_core__WEBPACK_IMPORTED_MODULE_0__["ɵɵtext"](32, "Estado proceso");
-    _angular_core__WEBPACK_IMPORTED_MODULE_0__["ɵɵelementEnd"]();
-    _angular_core__WEBPACK_IMPORTED_MODULE_0__["ɵɵelementStart"](33, "td");
-    _angular_core__WEBPACK_IMPORTED_MODULE_0__["ɵɵtext"](34);
-    _angular_core__WEBPACK_IMPORTED_MODULE_0__["ɵɵelementEnd"]();
-    _angular_core__WEBPACK_IMPORTED_MODULE_0__["ɵɵelementEnd"]();
-    _angular_core__WEBPACK_IMPORTED_MODULE_0__["ɵɵelementStart"](35, "tr");
-    _angular_core__WEBPACK_IMPORTED_MODULE_0__["ɵɵelementStart"](36, "th");
-    _angular_core__WEBPACK_IMPORTED_MODULE_0__["ɵɵtext"](37, "Fecha documento");
-    _angular_core__WEBPACK_IMPORTED_MODULE_0__["ɵɵelementEnd"]();
-    _angular_core__WEBPACK_IMPORTED_MODULE_0__["ɵɵelementStart"](38, "td");
-    _angular_core__WEBPACK_IMPORTED_MODULE_0__["ɵɵtext"](39);
-    _angular_core__WEBPACK_IMPORTED_MODULE_0__["ɵɵelementEnd"]();
-    _angular_core__WEBPACK_IMPORTED_MODULE_0__["ɵɵelementEnd"]();
-    _angular_core__WEBPACK_IMPORTED_MODULE_0__["ɵɵtemplate"](40, GestionEntregasBodegaComponent_div_8_div_2_tr_40_Template, 5, 1, "tr", 26);
-    _angular_core__WEBPACK_IMPORTED_MODULE_0__["ɵɵtemplate"](41, GestionEntregasBodegaComponent_div_8_div_2_tr_41_Template, 5, 1, "tr", 26);
-    _angular_core__WEBPACK_IMPORTED_MODULE_0__["ɵɵelementEnd"]();
-    _angular_core__WEBPACK_IMPORTED_MODULE_0__["ɵɵelementEnd"]();
-    _angular_core__WEBPACK_IMPORTED_MODULE_0__["ɵɵelementEnd"]();
-    _angular_core__WEBPACK_IMPORTED_MODULE_0__["ɵɵelementEnd"]();
-    _angular_core__WEBPACK_IMPORTED_MODULE_0__["ɵɵelementStart"](42, "h6", 134);
-    _angular_core__WEBPACK_IMPORTED_MODULE_0__["ɵɵtext"](43, "Bit\u00E1cora del proceso (orden)");
-    _angular_core__WEBPACK_IMPORTED_MODULE_0__["ɵɵelementEnd"]();
-    _angular_core__WEBPACK_IMPORTED_MODULE_0__["ɵɵelementStart"](44, "dx-data-grid", 135);
-    _angular_core__WEBPACK_IMPORTED_MODULE_0__["ɵɵelement"](45, "dxi-column", 136);
-    _angular_core__WEBPACK_IMPORTED_MODULE_0__["ɵɵelement"](46, "dxi-column", 137);
-    _angular_core__WEBPACK_IMPORTED_MODULE_0__["ɵɵelement"](47, "dxi-column", 138);
-    _angular_core__WEBPACK_IMPORTED_MODULE_0__["ɵɵelement"](48, "dxi-column", 139);
-    _angular_core__WEBPACK_IMPORTED_MODULE_0__["ɵɵelementEnd"]();
-    _angular_core__WEBPACK_IMPORTED_MODULE_0__["ɵɵelementStart"](49, "h6", 134);
-    _angular_core__WEBPACK_IMPORTED_MODULE_0__["ɵɵtext"](50, "\u00CDtems y movimientos por l\u00EDnea");
-    _angular_core__WEBPACK_IMPORTED_MODULE_0__["ɵɵelementEnd"]();
-    _angular_core__WEBPACK_IMPORTED_MODULE_0__["ɵɵtemplate"](51, GestionEntregasBodegaComponent_div_8_div_2_div_51_Template, 7, 9, "div", 140);
-    _angular_core__WEBPACK_IMPORTED_MODULE_0__["ɵɵelementEnd"]();
+    _angular_core__WEBPACK_IMPORTED_MODULE_1__["ɵɵelementStart"](0, "div", 146);
+    _angular_core__WEBPACK_IMPORTED_MODULE_1__["ɵɵelementStart"](1, "h6", 72);
+    _angular_core__WEBPACK_IMPORTED_MODULE_1__["ɵɵtext"](2, "Resumen de la orden");
+    _angular_core__WEBPACK_IMPORTED_MODULE_1__["ɵɵelementEnd"]();
+    _angular_core__WEBPACK_IMPORTED_MODULE_1__["ɵɵelementStart"](3, "div", 14);
+    _angular_core__WEBPACK_IMPORTED_MODULE_1__["ɵɵelementStart"](4, "div", 147);
+    _angular_core__WEBPACK_IMPORTED_MODULE_1__["ɵɵelementStart"](5, "table", 148);
+    _angular_core__WEBPACK_IMPORTED_MODULE_1__["ɵɵelementStart"](6, "tbody");
+    _angular_core__WEBPACK_IMPORTED_MODULE_1__["ɵɵelementStart"](7, "tr");
+    _angular_core__WEBPACK_IMPORTED_MODULE_1__["ɵɵelementStart"](8, "th", 149);
+    _angular_core__WEBPACK_IMPORTED_MODULE_1__["ɵɵtext"](9, "Consecutivo");
+    _angular_core__WEBPACK_IMPORTED_MODULE_1__["ɵɵelementEnd"]();
+    _angular_core__WEBPACK_IMPORTED_MODULE_1__["ɵɵelementStart"](10, "td");
+    _angular_core__WEBPACK_IMPORTED_MODULE_1__["ɵɵtext"](11);
+    _angular_core__WEBPACK_IMPORTED_MODULE_1__["ɵɵelementEnd"]();
+    _angular_core__WEBPACK_IMPORTED_MODULE_1__["ɵɵelementEnd"]();
+    _angular_core__WEBPACK_IMPORTED_MODULE_1__["ɵɵelementStart"](12, "tr");
+    _angular_core__WEBPACK_IMPORTED_MODULE_1__["ɵɵelementStart"](13, "th");
+    _angular_core__WEBPACK_IMPORTED_MODULE_1__["ɵɵtext"](14, "Tipo documento");
+    _angular_core__WEBPACK_IMPORTED_MODULE_1__["ɵɵelementEnd"]();
+    _angular_core__WEBPACK_IMPORTED_MODULE_1__["ɵɵelementStart"](15, "td");
+    _angular_core__WEBPACK_IMPORTED_MODULE_1__["ɵɵtext"](16);
+    _angular_core__WEBPACK_IMPORTED_MODULE_1__["ɵɵelementEnd"]();
+    _angular_core__WEBPACK_IMPORTED_MODULE_1__["ɵɵelementEnd"]();
+    _angular_core__WEBPACK_IMPORTED_MODULE_1__["ɵɵelementStart"](17, "tr");
+    _angular_core__WEBPACK_IMPORTED_MODULE_1__["ɵɵelementStart"](18, "th");
+    _angular_core__WEBPACK_IMPORTED_MODULE_1__["ɵɵtext"](19, "N.\u00BA documento venta");
+    _angular_core__WEBPACK_IMPORTED_MODULE_1__["ɵɵelementEnd"]();
+    _angular_core__WEBPACK_IMPORTED_MODULE_1__["ɵɵelementStart"](20, "td");
+    _angular_core__WEBPACK_IMPORTED_MODULE_1__["ɵɵtext"](21);
+    _angular_core__WEBPACK_IMPORTED_MODULE_1__["ɵɵelementEnd"]();
+    _angular_core__WEBPACK_IMPORTED_MODULE_1__["ɵɵelementEnd"]();
+    _angular_core__WEBPACK_IMPORTED_MODULE_1__["ɵɵelementStart"](22, "tr");
+    _angular_core__WEBPACK_IMPORTED_MODULE_1__["ɵɵelementStart"](23, "th");
+    _angular_core__WEBPACK_IMPORTED_MODULE_1__["ɵɵtext"](24, "Cliente");
+    _angular_core__WEBPACK_IMPORTED_MODULE_1__["ɵɵelementEnd"]();
+    _angular_core__WEBPACK_IMPORTED_MODULE_1__["ɵɵelementStart"](25, "td");
+    _angular_core__WEBPACK_IMPORTED_MODULE_1__["ɵɵtext"](26);
+    _angular_core__WEBPACK_IMPORTED_MODULE_1__["ɵɵelementEnd"]();
+    _angular_core__WEBPACK_IMPORTED_MODULE_1__["ɵɵelementEnd"]();
+    _angular_core__WEBPACK_IMPORTED_MODULE_1__["ɵɵelementEnd"]();
+    _angular_core__WEBPACK_IMPORTED_MODULE_1__["ɵɵelementEnd"]();
+    _angular_core__WEBPACK_IMPORTED_MODULE_1__["ɵɵelementEnd"]();
+    _angular_core__WEBPACK_IMPORTED_MODULE_1__["ɵɵelementStart"](27, "div", 147);
+    _angular_core__WEBPACK_IMPORTED_MODULE_1__["ɵɵelementStart"](28, "table", 148);
+    _angular_core__WEBPACK_IMPORTED_MODULE_1__["ɵɵelementStart"](29, "tbody");
+    _angular_core__WEBPACK_IMPORTED_MODULE_1__["ɵɵelementStart"](30, "tr");
+    _angular_core__WEBPACK_IMPORTED_MODULE_1__["ɵɵelementStart"](31, "th");
+    _angular_core__WEBPACK_IMPORTED_MODULE_1__["ɵɵtext"](32, "Estado proceso");
+    _angular_core__WEBPACK_IMPORTED_MODULE_1__["ɵɵelementEnd"]();
+    _angular_core__WEBPACK_IMPORTED_MODULE_1__["ɵɵelementStart"](33, "td");
+    _angular_core__WEBPACK_IMPORTED_MODULE_1__["ɵɵtext"](34);
+    _angular_core__WEBPACK_IMPORTED_MODULE_1__["ɵɵelementEnd"]();
+    _angular_core__WEBPACK_IMPORTED_MODULE_1__["ɵɵelementEnd"]();
+    _angular_core__WEBPACK_IMPORTED_MODULE_1__["ɵɵelementStart"](35, "tr");
+    _angular_core__WEBPACK_IMPORTED_MODULE_1__["ɵɵelementStart"](36, "th");
+    _angular_core__WEBPACK_IMPORTED_MODULE_1__["ɵɵtext"](37, "Fecha documento");
+    _angular_core__WEBPACK_IMPORTED_MODULE_1__["ɵɵelementEnd"]();
+    _angular_core__WEBPACK_IMPORTED_MODULE_1__["ɵɵelementStart"](38, "td");
+    _angular_core__WEBPACK_IMPORTED_MODULE_1__["ɵɵtext"](39);
+    _angular_core__WEBPACK_IMPORTED_MODULE_1__["ɵɵelementEnd"]();
+    _angular_core__WEBPACK_IMPORTED_MODULE_1__["ɵɵelementEnd"]();
+    _angular_core__WEBPACK_IMPORTED_MODULE_1__["ɵɵtemplate"](40, GestionEntregasBodegaComponent_div_8_div_2_tr_40_Template, 5, 1, "tr", 28);
+    _angular_core__WEBPACK_IMPORTED_MODULE_1__["ɵɵtemplate"](41, GestionEntregasBodegaComponent_div_8_div_2_tr_41_Template, 5, 1, "tr", 28);
+    _angular_core__WEBPACK_IMPORTED_MODULE_1__["ɵɵelementEnd"]();
+    _angular_core__WEBPACK_IMPORTED_MODULE_1__["ɵɵelementEnd"]();
+    _angular_core__WEBPACK_IMPORTED_MODULE_1__["ɵɵelementEnd"]();
+    _angular_core__WEBPACK_IMPORTED_MODULE_1__["ɵɵelementEnd"]();
+    _angular_core__WEBPACK_IMPORTED_MODULE_1__["ɵɵelementStart"](42, "h6", 150);
+    _angular_core__WEBPACK_IMPORTED_MODULE_1__["ɵɵtext"](43, "Bit\u00E1cora del proceso (orden)");
+    _angular_core__WEBPACK_IMPORTED_MODULE_1__["ɵɵelementEnd"]();
+    _angular_core__WEBPACK_IMPORTED_MODULE_1__["ɵɵelementStart"](44, "dx-data-grid", 151);
+    _angular_core__WEBPACK_IMPORTED_MODULE_1__["ɵɵelement"](45, "dxi-column", 152);
+    _angular_core__WEBPACK_IMPORTED_MODULE_1__["ɵɵelement"](46, "dxi-column", 153);
+    _angular_core__WEBPACK_IMPORTED_MODULE_1__["ɵɵelement"](47, "dxi-column", 154);
+    _angular_core__WEBPACK_IMPORTED_MODULE_1__["ɵɵelement"](48, "dxi-column", 155);
+    _angular_core__WEBPACK_IMPORTED_MODULE_1__["ɵɵelementEnd"]();
+    _angular_core__WEBPACK_IMPORTED_MODULE_1__["ɵɵelementStart"](49, "h6", 150);
+    _angular_core__WEBPACK_IMPORTED_MODULE_1__["ɵɵtext"](50, "\u00CDtems y movimientos por l\u00EDnea");
+    _angular_core__WEBPACK_IMPORTED_MODULE_1__["ɵɵelementEnd"]();
+    _angular_core__WEBPACK_IMPORTED_MODULE_1__["ɵɵtemplate"](51, GestionEntregasBodegaComponent_div_8_div_2_p_51_Template, 2, 1, "p", 156);
+    _angular_core__WEBPACK_IMPORTED_MODULE_1__["ɵɵtemplate"](52, GestionEntregasBodegaComponent_div_8_div_2_div_52_Template, 7, 9, "div", 157);
+    _angular_core__WEBPACK_IMPORTED_MODULE_1__["ɵɵelementEnd"]();
 } if (rf & 2) {
-    const ctx_r93 = _angular_core__WEBPACK_IMPORTED_MODULE_0__["ɵɵnextContext"](2);
-    _angular_core__WEBPACK_IMPORTED_MODULE_0__["ɵɵadvance"](11);
-    _angular_core__WEBPACK_IMPORTED_MODULE_0__["ɵɵtextInterpolate"](ctx_r93.ordenTrazabilidad.consecutivoEntrega);
-    _angular_core__WEBPACK_IMPORTED_MODULE_0__["ɵɵadvance"](5);
-    _angular_core__WEBPACK_IMPORTED_MODULE_0__["ɵɵtextInterpolate"](ctx_r93.ordenTrazabilidad.tipoDocumento);
-    _angular_core__WEBPACK_IMPORTED_MODULE_0__["ɵɵadvance"](5);
-    _angular_core__WEBPACK_IMPORTED_MODULE_0__["ɵɵtextInterpolate"](ctx_r93.ordenTrazabilidad.documentoNumero);
-    _angular_core__WEBPACK_IMPORTED_MODULE_0__["ɵɵadvance"](5);
-    _angular_core__WEBPACK_IMPORTED_MODULE_0__["ɵɵtextInterpolate"](ctx_r93.ordenTrazabilidad.clienteNombre);
-    _angular_core__WEBPACK_IMPORTED_MODULE_0__["ɵɵadvance"](8);
-    _angular_core__WEBPACK_IMPORTED_MODULE_0__["ɵɵtextInterpolate"](ctx_r93.ordenTrazabilidad.estadoProceso);
-    _angular_core__WEBPACK_IMPORTED_MODULE_0__["ɵɵadvance"](5);
-    _angular_core__WEBPACK_IMPORTED_MODULE_0__["ɵɵtextInterpolate"](ctx_r93.ordenTrazabilidad.fechaDocumento);
-    _angular_core__WEBPACK_IMPORTED_MODULE_0__["ɵɵadvance"](1);
-    _angular_core__WEBPACK_IMPORTED_MODULE_0__["ɵɵproperty"]("ngIf", ctx_r93.ordenTrazabilidad.createdAt);
-    _angular_core__WEBPACK_IMPORTED_MODULE_0__["ɵɵadvance"](1);
-    _angular_core__WEBPACK_IMPORTED_MODULE_0__["ɵɵproperty"]("ngIf", ctx_r93.ordenTrazabilidad.updatedAt);
-    _angular_core__WEBPACK_IMPORTED_MODULE_0__["ɵɵadvance"](3);
-    _angular_core__WEBPACK_IMPORTED_MODULE_0__["ɵɵproperty"]("dataSource", ctx_r93.ordenTrazabilidad.trazabilidad || _angular_core__WEBPACK_IMPORTED_MODULE_0__["ɵɵpureFunction0"](13, _c1))("showBorders", true)("columnAutoWidth", true)("height", 200);
-    _angular_core__WEBPACK_IMPORTED_MODULE_0__["ɵɵadvance"](7);
-    _angular_core__WEBPACK_IMPORTED_MODULE_0__["ɵɵproperty"]("ngForOf", ctx_r93.ordenTrazabilidad.items);
+    const ctx_r100 = _angular_core__WEBPACK_IMPORTED_MODULE_1__["ɵɵnextContext"](2);
+    _angular_core__WEBPACK_IMPORTED_MODULE_1__["ɵɵadvance"](11);
+    _angular_core__WEBPACK_IMPORTED_MODULE_1__["ɵɵtextInterpolate"](ctx_r100.ordenTrazabilidad.consecutivoEntrega);
+    _angular_core__WEBPACK_IMPORTED_MODULE_1__["ɵɵadvance"](5);
+    _angular_core__WEBPACK_IMPORTED_MODULE_1__["ɵɵtextInterpolate"](ctx_r100.ordenTrazabilidad.tipoDocumento);
+    _angular_core__WEBPACK_IMPORTED_MODULE_1__["ɵɵadvance"](5);
+    _angular_core__WEBPACK_IMPORTED_MODULE_1__["ɵɵtextInterpolate"](ctx_r100.ordenTrazabilidad.documentoNumero);
+    _angular_core__WEBPACK_IMPORTED_MODULE_1__["ɵɵadvance"](5);
+    _angular_core__WEBPACK_IMPORTED_MODULE_1__["ɵɵtextInterpolate"](ctx_r100.ordenTrazabilidad.clienteNombre);
+    _angular_core__WEBPACK_IMPORTED_MODULE_1__["ɵɵadvance"](8);
+    _angular_core__WEBPACK_IMPORTED_MODULE_1__["ɵɵtextInterpolate"](ctx_r100.ordenTrazabilidad.estadoProceso);
+    _angular_core__WEBPACK_IMPORTED_MODULE_1__["ɵɵadvance"](5);
+    _angular_core__WEBPACK_IMPORTED_MODULE_1__["ɵɵtextInterpolate"](ctx_r100.ordenTrazabilidad.fechaDocumento);
+    _angular_core__WEBPACK_IMPORTED_MODULE_1__["ɵɵadvance"](1);
+    _angular_core__WEBPACK_IMPORTED_MODULE_1__["ɵɵproperty"]("ngIf", ctx_r100.ordenTrazabilidad.createdAt);
+    _angular_core__WEBPACK_IMPORTED_MODULE_1__["ɵɵadvance"](1);
+    _angular_core__WEBPACK_IMPORTED_MODULE_1__["ɵɵproperty"]("ngIf", ctx_r100.ordenTrazabilidad.updatedAt);
+    _angular_core__WEBPACK_IMPORTED_MODULE_1__["ɵɵadvance"](3);
+    _angular_core__WEBPACK_IMPORTED_MODULE_1__["ɵɵproperty"]("dataSource", ctx_r100.ordenTrazabilidad.trazabilidad || _angular_core__WEBPACK_IMPORTED_MODULE_1__["ɵɵpureFunction0"](14, _c1))("showBorders", true)("columnAutoWidth", true)("height", 200);
+    _angular_core__WEBPACK_IMPORTED_MODULE_1__["ɵɵadvance"](7);
+    _angular_core__WEBPACK_IMPORTED_MODULE_1__["ɵɵproperty"]("ngIf", ctx_r100.ordenTrazabilidad);
+    _angular_core__WEBPACK_IMPORTED_MODULE_1__["ɵɵadvance"](1);
+    _angular_core__WEBPACK_IMPORTED_MODULE_1__["ɵɵproperty"]("ngForOf", ctx_r100.ordenTrazabilidad.items);
 } }
 function GestionEntregasBodegaComponent_div_8_Template(rf, ctx) { if (rf & 1) {
-    _angular_core__WEBPACK_IMPORTED_MODULE_0__["ɵɵelementStart"](0, "div");
-    _angular_core__WEBPACK_IMPORTED_MODULE_0__["ɵɵelementStart"](1, "dx-scroll-view", 128);
-    _angular_core__WEBPACK_IMPORTED_MODULE_0__["ɵɵtemplate"](2, GestionEntregasBodegaComponent_div_8_div_2_Template, 52, 14, "div", 129);
-    _angular_core__WEBPACK_IMPORTED_MODULE_0__["ɵɵelementEnd"]();
-    _angular_core__WEBPACK_IMPORTED_MODULE_0__["ɵɵelementEnd"]();
+    _angular_core__WEBPACK_IMPORTED_MODULE_1__["ɵɵelementStart"](0, "div");
+    _angular_core__WEBPACK_IMPORTED_MODULE_1__["ɵɵelementStart"](1, "dx-scroll-view", 144);
+    _angular_core__WEBPACK_IMPORTED_MODULE_1__["ɵɵtemplate"](2, GestionEntregasBodegaComponent_div_8_div_2_Template, 53, 15, "div", 145);
+    _angular_core__WEBPACK_IMPORTED_MODULE_1__["ɵɵelementEnd"]();
+    _angular_core__WEBPACK_IMPORTED_MODULE_1__["ɵɵelementEnd"]();
 } if (rf & 2) {
-    const ctx_r4 = _angular_core__WEBPACK_IMPORTED_MODULE_0__["ɵɵnextContext"]();
-    _angular_core__WEBPACK_IMPORTED_MODULE_0__["ɵɵadvance"](2);
-    _angular_core__WEBPACK_IMPORTED_MODULE_0__["ɵɵproperty"]("ngIf", ctx_r4.ordenTrazabilidad);
+    const ctx_r4 = _angular_core__WEBPACK_IMPORTED_MODULE_1__["ɵɵnextContext"]();
+    _angular_core__WEBPACK_IMPORTED_MODULE_1__["ɵɵadvance"](2);
+    _angular_core__WEBPACK_IMPORTED_MODULE_1__["ɵɵproperty"]("ngIf", ctx_r4.ordenTrazabilidad);
 } }
-const _c3 = function () { return { style: "text-align: center;" }; };
+function GestionEntregasBodegaComponent_div_10_ng_container_7_Template(rf, ctx) { if (rf & 1) {
+    const _r121 = _angular_core__WEBPACK_IMPORTED_MODULE_1__["ɵɵgetCurrentView"]();
+    _angular_core__WEBPACK_IMPORTED_MODULE_1__["ɵɵelementContainerStart"](0);
+    _angular_core__WEBPACK_IMPORTED_MODULE_1__["ɵɵelementStart"](1, "div", 187);
+    _angular_core__WEBPACK_IMPORTED_MODULE_1__["ɵɵelementStart"](2, "div", 188);
+    _angular_core__WEBPACK_IMPORTED_MODULE_1__["ɵɵelementStart"](3, "label", 179);
+    _angular_core__WEBPACK_IMPORTED_MODULE_1__["ɵɵtext"](4, "Cajas (op.)");
+    _angular_core__WEBPACK_IMPORTED_MODULE_1__["ɵɵelementEnd"]();
+    _angular_core__WEBPACK_IMPORTED_MODULE_1__["ɵɵelementStart"](5, "dx-number-box", 189);
+    _angular_core__WEBPACK_IMPORTED_MODULE_1__["ɵɵlistener"]("valueChange", function GestionEntregasBodegaComponent_div_10_ng_container_7_Template_dx_number_box_valueChange_5_listener($event) { _angular_core__WEBPACK_IMPORTED_MODULE_1__["ɵɵrestoreView"](_r121); const ctx_r120 = _angular_core__WEBPACK_IMPORTED_MODULE_1__["ɵɵnextContext"](2); return ctx_r120.formEdicionHistorial.entregaCajas = $event; });
+    _angular_core__WEBPACK_IMPORTED_MODULE_1__["ɵɵelementEnd"]();
+    _angular_core__WEBPACK_IMPORTED_MODULE_1__["ɵɵelementEnd"]();
+    _angular_core__WEBPACK_IMPORTED_MODULE_1__["ɵɵelementStart"](6, "div", 190);
+    _angular_core__WEBPACK_IMPORTED_MODULE_1__["ɵɵelementStart"](7, "label", 179);
+    _angular_core__WEBPACK_IMPORTED_MODULE_1__["ɵɵtext"](8, "Piezas (op.)");
+    _angular_core__WEBPACK_IMPORTED_MODULE_1__["ɵɵelementEnd"]();
+    _angular_core__WEBPACK_IMPORTED_MODULE_1__["ɵɵelementStart"](9, "dx-number-box", 189);
+    _angular_core__WEBPACK_IMPORTED_MODULE_1__["ɵɵlistener"]("valueChange", function GestionEntregasBodegaComponent_div_10_ng_container_7_Template_dx_number_box_valueChange_9_listener($event) { _angular_core__WEBPACK_IMPORTED_MODULE_1__["ɵɵrestoreView"](_r121); const ctx_r122 = _angular_core__WEBPACK_IMPORTED_MODULE_1__["ɵɵnextContext"](2); return ctx_r122.formEdicionHistorial.entregaPiezas = $event; });
+    _angular_core__WEBPACK_IMPORTED_MODULE_1__["ɵɵelementEnd"]();
+    _angular_core__WEBPACK_IMPORTED_MODULE_1__["ɵɵelementEnd"]();
+    _angular_core__WEBPACK_IMPORTED_MODULE_1__["ɵɵelementEnd"]();
+    _angular_core__WEBPACK_IMPORTED_MODULE_1__["ɵɵelementContainerEnd"]();
+} if (rf & 2) {
+    const ctx_r119 = _angular_core__WEBPACK_IMPORTED_MODULE_1__["ɵɵnextContext"](2);
+    _angular_core__WEBPACK_IMPORTED_MODULE_1__["ɵɵadvance"](5);
+    _angular_core__WEBPACK_IMPORTED_MODULE_1__["ɵɵproperty"]("value", ctx_r119.formEdicionHistorial.entregaCajas)("min", 0)("showSpinButtons", true)("disabled", ctx_r119.guardandoEdicionHistorial);
+    _angular_core__WEBPACK_IMPORTED_MODULE_1__["ɵɵadvance"](4);
+    _angular_core__WEBPACK_IMPORTED_MODULE_1__["ɵɵproperty"]("value", ctx_r119.formEdicionHistorial.entregaPiezas)("min", 0)("showSpinButtons", true)("disabled", ctx_r119.guardandoEdicionHistorial);
+} }
+function GestionEntregasBodegaComponent_div_10_Template(rf, ctx) { if (rf & 1) {
+    const _r124 = _angular_core__WEBPACK_IMPORTED_MODULE_1__["ɵɵgetCurrentView"]();
+    _angular_core__WEBPACK_IMPORTED_MODULE_1__["ɵɵelementStart"](0, "div", 176);
+    _angular_core__WEBPACK_IMPORTED_MODULE_1__["ɵɵelementStart"](1, "p", 177);
+    _angular_core__WEBPACK_IMPORTED_MODULE_1__["ɵɵtext"](2, " Los cambios recalculan el \u00EDtem y queda registrada una nota de correcci\u00F3n en el movimiento y en la bit\u00E1cora de la orden. ");
+    _angular_core__WEBPACK_IMPORTED_MODULE_1__["ɵɵelementEnd"]();
+    _angular_core__WEBPACK_IMPORTED_MODULE_1__["ɵɵelementStart"](3, "div", 178);
+    _angular_core__WEBPACK_IMPORTED_MODULE_1__["ɵɵelementStart"](4, "label", 179);
+    _angular_core__WEBPACK_IMPORTED_MODULE_1__["ɵɵtext"](5, "Estado seleccionado");
+    _angular_core__WEBPACK_IMPORTED_MODULE_1__["ɵɵelementEnd"]();
+    _angular_core__WEBPACK_IMPORTED_MODULE_1__["ɵɵelementStart"](6, "dx-select-box", 180);
+    _angular_core__WEBPACK_IMPORTED_MODULE_1__["ɵɵlistener"]("valueChange", function GestionEntregasBodegaComponent_div_10_Template_dx_select_box_valueChange_6_listener($event) { _angular_core__WEBPACK_IMPORTED_MODULE_1__["ɵɵrestoreView"](_r124); const ctx_r123 = _angular_core__WEBPACK_IMPORTED_MODULE_1__["ɵɵnextContext"](); return ctx_r123.formEdicionHistorial.estadoSeleccionado = $event; });
+    _angular_core__WEBPACK_IMPORTED_MODULE_1__["ɵɵelementEnd"]();
+    _angular_core__WEBPACK_IMPORTED_MODULE_1__["ɵɵelementEnd"]();
+    _angular_core__WEBPACK_IMPORTED_MODULE_1__["ɵɵtemplate"](7, GestionEntregasBodegaComponent_div_10_ng_container_7_Template, 10, 8, "ng-container", 28);
+    _angular_core__WEBPACK_IMPORTED_MODULE_1__["ɵɵelementStart"](8, "div", 178);
+    _angular_core__WEBPACK_IMPORTED_MODULE_1__["ɵɵelementStart"](9, "label", 179);
+    _angular_core__WEBPACK_IMPORTED_MODULE_1__["ɵɵtext"](10);
+    _angular_core__WEBPACK_IMPORTED_MODULE_1__["ɵɵelementEnd"]();
+    _angular_core__WEBPACK_IMPORTED_MODULE_1__["ɵɵelementStart"](11, "dx-number-box", 181);
+    _angular_core__WEBPACK_IMPORTED_MODULE_1__["ɵɵlistener"]("valueChange", function GestionEntregasBodegaComponent_div_10_Template_dx_number_box_valueChange_11_listener($event) { _angular_core__WEBPACK_IMPORTED_MODULE_1__["ɵɵrestoreView"](_r124); const ctx_r125 = _angular_core__WEBPACK_IMPORTED_MODULE_1__["ɵɵnextContext"](); return ctx_r125.formEdicionHistorial.m2EntregadoEnEstaOperacion = $event; });
+    _angular_core__WEBPACK_IMPORTED_MODULE_1__["ɵɵelementEnd"]();
+    _angular_core__WEBPACK_IMPORTED_MODULE_1__["ɵɵelementEnd"]();
+    _angular_core__WEBPACK_IMPORTED_MODULE_1__["ɵɵelementStart"](12, "div", 178);
+    _angular_core__WEBPACK_IMPORTED_MODULE_1__["ɵɵelementStart"](13, "label", 179);
+    _angular_core__WEBPACK_IMPORTED_MODULE_1__["ɵɵtext"](14, "Notas del movimiento");
+    _angular_core__WEBPACK_IMPORTED_MODULE_1__["ɵɵelementEnd"]();
+    _angular_core__WEBPACK_IMPORTED_MODULE_1__["ɵɵelementStart"](15, "dx-text-area", 182);
+    _angular_core__WEBPACK_IMPORTED_MODULE_1__["ɵɵlistener"]("valueChange", function GestionEntregasBodegaComponent_div_10_Template_dx_text_area_valueChange_15_listener($event) { _angular_core__WEBPACK_IMPORTED_MODULE_1__["ɵɵrestoreView"](_r124); const ctx_r126 = _angular_core__WEBPACK_IMPORTED_MODULE_1__["ɵɵnextContext"](); return ctx_r126.formEdicionHistorial.notas = $event; });
+    _angular_core__WEBPACK_IMPORTED_MODULE_1__["ɵɵelementEnd"]();
+    _angular_core__WEBPACK_IMPORTED_MODULE_1__["ɵɵelementEnd"]();
+    _angular_core__WEBPACK_IMPORTED_MODULE_1__["ɵɵelementStart"](16, "div", 183);
+    _angular_core__WEBPACK_IMPORTED_MODULE_1__["ɵɵelementStart"](17, "label", 179);
+    _angular_core__WEBPACK_IMPORTED_MODULE_1__["ɵɵtext"](18, "Motivo de la correcci\u00F3n (opcional)");
+    _angular_core__WEBPACK_IMPORTED_MODULE_1__["ɵɵelementEnd"]();
+    _angular_core__WEBPACK_IMPORTED_MODULE_1__["ɵɵelementStart"](19, "dx-text-area", 182);
+    _angular_core__WEBPACK_IMPORTED_MODULE_1__["ɵɵlistener"]("valueChange", function GestionEntregasBodegaComponent_div_10_Template_dx_text_area_valueChange_19_listener($event) { _angular_core__WEBPACK_IMPORTED_MODULE_1__["ɵɵrestoreView"](_r124); const ctx_r127 = _angular_core__WEBPACK_IMPORTED_MODULE_1__["ɵɵnextContext"](); return ctx_r127.formEdicionHistorial.motivoCorreccion = $event; });
+    _angular_core__WEBPACK_IMPORTED_MODULE_1__["ɵɵelementEnd"]();
+    _angular_core__WEBPACK_IMPORTED_MODULE_1__["ɵɵelementEnd"]();
+    _angular_core__WEBPACK_IMPORTED_MODULE_1__["ɵɵelementStart"](20, "div", 184);
+    _angular_core__WEBPACK_IMPORTED_MODULE_1__["ɵɵelementStart"](21, "dx-button", 185);
+    _angular_core__WEBPACK_IMPORTED_MODULE_1__["ɵɵlistener"]("onClick", function GestionEntregasBodegaComponent_div_10_Template_dx_button_onClick_21_listener() { _angular_core__WEBPACK_IMPORTED_MODULE_1__["ɵɵrestoreView"](_r124); const ctx_r128 = _angular_core__WEBPACK_IMPORTED_MODULE_1__["ɵɵnextContext"](); return ctx_r128.cerrarPopupEditarHistorial(); });
+    _angular_core__WEBPACK_IMPORTED_MODULE_1__["ɵɵelementEnd"]();
+    _angular_core__WEBPACK_IMPORTED_MODULE_1__["ɵɵelementStart"](22, "dx-button", 186);
+    _angular_core__WEBPACK_IMPORTED_MODULE_1__["ɵɵlistener"]("onClick", function GestionEntregasBodegaComponent_div_10_Template_dx_button_onClick_22_listener() { _angular_core__WEBPACK_IMPORTED_MODULE_1__["ɵɵrestoreView"](_r124); const ctx_r129 = _angular_core__WEBPACK_IMPORTED_MODULE_1__["ɵɵnextContext"](); return ctx_r129.confirmarEdicionHistorial(); });
+    _angular_core__WEBPACK_IMPORTED_MODULE_1__["ɵɵelementEnd"]();
+    _angular_core__WEBPACK_IMPORTED_MODULE_1__["ɵɵelementEnd"]();
+    _angular_core__WEBPACK_IMPORTED_MODULE_1__["ɵɵelementEnd"]();
+} if (rf & 2) {
+    const ctx_r5 = _angular_core__WEBPACK_IMPORTED_MODULE_1__["ɵɵnextContext"]();
+    _angular_core__WEBPACK_IMPORTED_MODULE_1__["ɵɵadvance"](6);
+    _angular_core__WEBPACK_IMPORTED_MODULE_1__["ɵɵproperty"]("items", ctx_r5.estadosHistorialEdicion)("value", ctx_r5.formEdicionHistorial.estadoSeleccionado)("disabled", ctx_r5.guardandoEdicionHistorial);
+    _angular_core__WEBPACK_IMPORTED_MODULE_1__["ɵɵadvance"](1);
+    _angular_core__WEBPACK_IMPORTED_MODULE_1__["ɵɵproperty"]("ngIf", ctx_r5.edicionHistorialContext == null ? null : ctx_r5.edicionHistorialContext.esMetro);
+    _angular_core__WEBPACK_IMPORTED_MODULE_1__["ɵɵadvance"](3);
+    _angular_core__WEBPACK_IMPORTED_MODULE_1__["ɵɵtextInterpolate1"](" ", (ctx_r5.edicionHistorialContext == null ? null : ctx_r5.edicionHistorialContext.esMetro) ? "m\u00B2 esta operaci\u00F3n (opcional si usa cajas/piezas)" : "Cantidad / m\u00B2 esta operaci\u00F3n", " ");
+    _angular_core__WEBPACK_IMPORTED_MODULE_1__["ɵɵadvance"](1);
+    _angular_core__WEBPACK_IMPORTED_MODULE_1__["ɵɵproperty"]("value", ctx_r5.formEdicionHistorial.m2EntregadoEnEstaOperacion)("min", 0)("format", "#0.##")("showSpinButtons", true)("disabled", ctx_r5.guardandoEdicionHistorial);
+    _angular_core__WEBPACK_IMPORTED_MODULE_1__["ɵɵadvance"](4);
+    _angular_core__WEBPACK_IMPORTED_MODULE_1__["ɵɵproperty"]("value", ctx_r5.formEdicionHistorial.notas)("height", 72)("disabled", ctx_r5.guardandoEdicionHistorial);
+    _angular_core__WEBPACK_IMPORTED_MODULE_1__["ɵɵadvance"](4);
+    _angular_core__WEBPACK_IMPORTED_MODULE_1__["ɵɵproperty"]("value", ctx_r5.formEdicionHistorial.motivoCorreccion)("height", 56)("disabled", ctx_r5.guardandoEdicionHistorial);
+    _angular_core__WEBPACK_IMPORTED_MODULE_1__["ɵɵadvance"](2);
+    _angular_core__WEBPACK_IMPORTED_MODULE_1__["ɵɵproperty"]("disabled", ctx_r5.guardandoEdicionHistorial);
+    _angular_core__WEBPACK_IMPORTED_MODULE_1__["ɵɵadvance"](1);
+    _angular_core__WEBPACK_IMPORTED_MODULE_1__["ɵɵproperty"]("disabled", ctx_r5.guardandoEdicionHistorial);
+} }
+const _c2 = function () { return { style: "text-align: center;" }; };
+const _c3 = function () { return { class: "traz-popup-corregir-overlay" }; };
 class GestionEntregasBodegaComponent {
     constructor(entregasBodegaService, screen) {
         this.entregasBodegaService = entregasBodegaService;
@@ -52092,6 +52465,23 @@ class GestionEntregasBodegaComponent {
         this.loading = false;
         this.popupTrazabilidadVisible = false;
         this.ordenTrazabilidad = null;
+        /** Corrección de un movimiento del historial (popup secundario). */
+        this.popupEditarHistorialVisible = false;
+        this.guardandoEdicionHistorial = false;
+        this.edicionHistorialContext = null;
+        this.formEdicionHistorial = {
+            estadoSeleccionado: "ENTREGA_PARCIAL",
+            entregaCajas: 0,
+            entregaPiezas: 0,
+            m2EntregadoEnEstaOperacion: 0,
+            notas: "",
+            motivoCorreccion: "",
+        };
+        this.estadosHistorialEdicion = [
+            "ENTREGA_PARCIAL",
+            "ENTREGA_TOTAL",
+            "DEVOLUCION",
+        ];
         this.filtroDocumento = null;
         this.filtroCliente = "";
         this.fechaDesde = (() => {
@@ -52130,6 +52520,174 @@ class GestionEntregasBodegaComponent {
     }
     get usuarioVista() {
         return sessionStorage.getItem("user") || "";
+    }
+    /** Rol desde login (layout guarda en localStorage). */
+    get rolUsuarioSesion() {
+        try {
+            return (sessionStorage.getItem("rol") || "").trim();
+        }
+        catch (_a) {
+            return "";
+        }
+    }
+    /** Orden en estado final que no admite corrección de movimientos. */
+    esOrdenCerradaParaEdicionHistorial(orden) {
+        var _a;
+        const e = String(((_a = orden) === null || _a === void 0 ? void 0 : _a.estadoProceso) || "").toUpperCase();
+        return e === "CERRADO" || e === "CERRADA";
+    }
+    /** Misma fecha calendario que hoy (cliente), usando fecha documento o creación. */
+    ordenEntregaEsDelDiaActual(orden) {
+        var _a, _b;
+        const raw = ((_a = orden) === null || _a === void 0 ? void 0 : _a.fechaDocumento) != null && orden.fechaDocumento !== ""
+            ? orden.fechaDocumento
+            : (_b = orden) === null || _b === void 0 ? void 0 : _b.createdAt;
+        if (raw == null || raw === "") {
+            return false;
+        }
+        const d = raw instanceof Date ? raw : new Date(raw);
+        if (Number.isNaN(d.getTime())) {
+            return false;
+        }
+        const hoy = new Date();
+        return (d.getFullYear() === hoy.getFullYear() &&
+            d.getMonth() === hoy.getMonth() &&
+            d.getDate() === hoy.getDate());
+    }
+    /**
+     * Administrador: siempre (orden no cerrada).
+     * Bodeguero: solo órdenes del día actual.
+     */
+    puedeEditarHistorialTrazabilidad(orden) {
+        if (!orden || this.esOrdenCerradaParaEdicionHistorial(orden)) {
+            return false;
+        }
+        const rol = this.rolUsuarioSesion;
+        if (rol === "Administrador") {
+            return true;
+        }
+        if (rol === "Bodeguero") {
+            return this.ordenEntregaEsDelDiaActual(orden);
+        }
+        return false;
+    }
+    abrirPopupEditarHistorial(it, filaHistorial, itemIndex) {
+        var _a, _b;
+        if (!this.ordenTrazabilidad || !this.puedeEditarHistorialTrazabilidad(this.ordenTrazabilidad)) {
+            return;
+        }
+        const idx = (_a = filaHistorial) === null || _a === void 0 ? void 0 : _a.__historialIdx;
+        if (idx == null || idx < 0) {
+            sweetalert2__WEBPACK_IMPORTED_MODULE_2___default.a.fire("No disponible", "No se pudo identificar el registro a editar.", "warning");
+            return;
+        }
+        const metro = this.esItemMetrosCajaPieza(it);
+        this.edicionHistorialContext = {
+            itemIndex,
+            historialIndex: idx,
+            productoNombre: ((_b = it) === null || _b === void 0 ? void 0 : _b.productoNombre) || "Ítem",
+            esMetro: metro,
+        };
+        const est = String(filaHistorial.estadoSeleccionado || "ENTREGA_PARCIAL").toUpperCase();
+        this.formEdicionHistorial = {
+            estadoSeleccionado: this.estadosHistorialEdicion.includes(est)
+                ? est
+                : "ENTREGA_PARCIAL",
+            entregaCajas: this.num(filaHistorial.entregaCajas),
+            entregaPiezas: this.num(filaHistorial.entregaPiezas),
+            m2EntregadoEnEstaOperacion: this.num(filaHistorial.m2EntregadoEnEstaOperacion),
+            notas: filaHistorial.notas != null ? String(filaHistorial.notas) : "",
+            motivoCorreccion: "",
+        };
+        this.popupEditarHistorialVisible = true;
+    }
+    cerrarPopupEditarHistorial() {
+        this.popupEditarHistorialVisible = false;
+        this.edicionHistorialContext = null;
+        this.guardandoEdicionHistorial = false;
+    }
+    confirmarEdicionHistorial() {
+        var _a;
+        if (!((_a = this.ordenTrazabilidad) === null || _a === void 0 ? void 0 : _a._id) ||
+            !this.edicionHistorialContext ||
+            this.guardandoEdicionHistorial) {
+            return;
+        }
+        const ctx = this.edicionHistorialContext;
+        const f = this.formEdicionHistorial;
+        this.guardandoEdicionHistorial = true;
+        this.entregasBodegaService
+            .editarHistorialItem(this.ordenTrazabilidad._id, ctx.itemIndex, ctx.historialIndex, {
+            estadoSeleccionado: f.estadoSeleccionado,
+            entregaCajas: f.entregaCajas,
+            entregaPiezas: f.entregaPiezas,
+            m2EntregadoEnEstaOperacion: f.m2EntregadoEnEstaOperacion,
+            notas: f.notas,
+            motivoCorreccion: (f.motivoCorreccion || "").trim(),
+            usuario: sessionStorage.getItem("user") || "",
+            rolUsuario: this.rolUsuarioSesion,
+        })
+            .subscribe({
+            next: (orden) => {
+                this.guardandoEdicionHistorial = false;
+                const vista = this.prepararOrdenParaVista(orden);
+                this.sincronizarOrdenEnListado(vista);
+                this.cerrarPopupEditarHistorial();
+                this.abrirPopupTrazabilidad(orden);
+                sweetalert2__WEBPACK_IMPORTED_MODULE_2___default.a.fire({
+                    toast: true,
+                    position: "top-end",
+                    icon: "success",
+                    title: "Movimiento actualizado",
+                    showConfirmButton: false,
+                    timer: 2500,
+                });
+            },
+            error: (errors) => {
+                var _a, _b;
+                this.guardandoEdicionHistorial = false;
+                const mensaje = ((_b = (_a = errors) === null || _a === void 0 ? void 0 : _a.error) === null || _b === void 0 ? void 0 : _b.mensaje) ||
+                    "No se pudo guardar la corrección del historial.";
+                sweetalert2__WEBPACK_IMPORTED_MODULE_2___default.a.fire("Error", mensaje, "error");
+            },
+        });
+    }
+    textoAyudaEdicionHistorial() {
+        if (!this.ordenTrazabilidad) {
+            return "";
+        }
+        if (this.esOrdenCerradaParaEdicionHistorial(this.ordenTrazabilidad)) {
+            return "La orden está cerrada: no se pueden corregir movimientos.";
+        }
+        const rol = this.rolUsuarioSesion;
+        if (rol === "Administrador") {
+            return "Puede corregir movimientos en cualquier momento (orden abierta).";
+        }
+        if (rol === "Bodeguero") {
+            if (this.ordenEntregaEsDelDiaActual(this.ordenTrazabilidad)) {
+                return "Como bodeguero puede corregir movimientos en órdenes del día actual.";
+            }
+            return "Como bodeguero solo puede corregir cuando la orden corresponde al día de hoy (fecha documento o creación).";
+        }
+        return "No tiene permisos para corregir el historial.";
+    }
+    /**
+     * Título del popup de corrección: en móvil se acorta el nombre del producto
+     * para que la barra del popup no desborde el viewport.
+     */
+    get tituloPopupEditarHistorial() {
+        if (!this.edicionHistorialContext) {
+            return "Corregir movimiento";
+        }
+        const nombre = String(this.edicionHistorialContext.productoNombre || "").trim();
+        const base = "Corregir movimiento";
+        if (!nombre) {
+            return base;
+        }
+        if (this.vistaMovil && nombre.length > 26) {
+            return `${base} · ${nombre.slice(0, 24)}…`;
+        }
+        return `${base} · ${nombre}`;
     }
     ngOnInit() {
         this.actualizarVistaMovil();
@@ -52291,7 +52849,7 @@ class GestionEntregasBodegaComponent {
         }
         if (Array.isArray(o.items)) {
             o.items = o.items.map((it) => (Object.assign(Object.assign({}, it), { historialOrdenado: (it.historial || [])
-                    .slice()
+                    .map((h, origIdx) => (Object.assign(Object.assign({}, h), { __historialIdx: origIdx })))
                     .sort((a, b) => new Date(b.fecha || 0).getTime() -
                     new Date(a.fecha || 0).getTime())
                     .map((h) => (Object.assign(Object.assign({}, h), { fechaFmt: this.formatearFechaIso(h.fecha) }))) })));
@@ -52315,6 +52873,19 @@ class GestionEntregasBodegaComponent {
             return String(val);
         }
         return d.toLocaleString();
+    }
+    /** Fecha de documento para tarjetas del listado en móvil (solo fecha, más legible). */
+    formatearFechaDocumentoListado(orden) {
+        var _a;
+        const v = (_a = orden) === null || _a === void 0 ? void 0 : _a.fechaDocumento;
+        if (v == null || v === "") {
+            return "—";
+        }
+        const d = v instanceof Date ? v : new Date(v);
+        if (Number.isNaN(d.getTime())) {
+            return String(v);
+        }
+        return d.toLocaleDateString();
     }
     /** Payload que se envía al API para filtrar en base de datos. */
     filtrosConsultaApi() {
@@ -52355,7 +52926,7 @@ class GestionEntregasBodegaComponent {
             },
             error: () => {
                 this.loading = false;
-                sweetalert2__WEBPACK_IMPORTED_MODULE_1___default.a.fire("Error", "No se pudo cargar el listado de entregas.", "error");
+                sweetalert2__WEBPACK_IMPORTED_MODULE_2___default.a.fire("Error", "No se pudo cargar el listado de entregas.", "error");
             },
         });
     }
@@ -52390,7 +52961,7 @@ class GestionEntregasBodegaComponent {
         const ingreso = this.m2OperacionIngresada(item);
         const pendiente = this.num((_b = item) === null || _b === void 0 ? void 0 : _b.pendiente);
         if (ingreso > pendiente + 0.0001) {
-            sweetalert2__WEBPACK_IMPORTED_MODULE_1___default.a.fire("Cantidad inválida", "La cantidad ingresada supera el pendiente del ítem. Ajuste el valor antes de guardar.", "warning");
+            sweetalert2__WEBPACK_IMPORTED_MODULE_2___default.a.fire("Cantidad inválida", "La cantidad ingresada supera el pendiente del ítem. Ajuste el valor antes de guardar.", "warning");
             return;
         }
         const estadoCalculado = this.estadoGestionAutomatico(item);
@@ -52419,7 +52990,7 @@ class GestionEntregasBodegaComponent {
                 if (this.vistaMovil) {
                     this.expandedItemIndex = null;
                 }
-                sweetalert2__WEBPACK_IMPORTED_MODULE_1___default.a.fire({
+                sweetalert2__WEBPACK_IMPORTED_MODULE_2___default.a.fire({
                     toast: true,
                     position: "top-end",
                     icon: "success",
@@ -52432,7 +53003,7 @@ class GestionEntregasBodegaComponent {
                 var _a, _b;
                 console.log(errors);
                 const mensaje = ((_b = (_a = errors) === null || _a === void 0 ? void 0 : _a.error) === null || _b === void 0 ? void 0 : _b.mensaje) || "No se pudo guardar el ítem de entrega.La cantidad ingresada excede la cantidad pendiente por entregar";
-                sweetalert2__WEBPACK_IMPORTED_MODULE_1___default.a.fire("Error", mensaje, "error");
+                sweetalert2__WEBPACK_IMPORTED_MODULE_2___default.a.fire("Error", mensaje, "error");
             },
         });
     }
@@ -52458,12 +53029,12 @@ class GestionEntregasBodegaComponent {
                 this.expandedItemIndex = null;
                 this.limpiarIndicadoresGuardadoLinea();
                 this.cargarPendientes();
-                sweetalert2__WEBPACK_IMPORTED_MODULE_1___default.a.fire("OK", "Orden cerrada correctamente.", "success");
+                sweetalert2__WEBPACK_IMPORTED_MODULE_2___default.a.fire("OK", "Orden cerrada correctamente.", "success");
             },
             error: (error) => {
                 var _a, _b;
                 const mensaje = ((_b = (_a = error) === null || _a === void 0 ? void 0 : _a.error) === null || _b === void 0 ? void 0 : _b.mensaje) || "No se pudo cerrar la orden de entrega.";
-                sweetalert2__WEBPACK_IMPORTED_MODULE_1___default.a.fire("Error", mensaje, "error");
+                sweetalert2__WEBPACK_IMPORTED_MODULE_2___default.a.fire("Error", mensaje, "error");
             },
         });
     }
@@ -52592,7 +53163,7 @@ class GestionEntregasBodegaComponent {
         var _a;
         const pendiente = this.num((_a = item) === null || _a === void 0 ? void 0 : _a.pendiente);
         const ingreso = this.m2OperacionIngresada(item);
-        if (pendiente <= 0 || ingreso >= pendiente - 0.0001) {
+        if (pendiente <= 0 || ingreso >= pendiente + 0.0001) {
             return "ENTREGA_TOTAL";
         }
         return "ENTREGA_PARCIAL";
@@ -52691,66 +53262,92 @@ class GestionEntregasBodegaComponent {
             .filter((o) => { var _a; return ["ABIERTA", "NOVEDAD"].includes(String(((_a = o) === null || _a === void 0 ? void 0 : _a.estadoProceso) || "")); })
             .forEach((orden) => {
             (orden.items || []).forEach((item) => {
-                var _a, _b, _c, _d, _e, _f, _g;
+                var _a, _b, _c, _d, _e, _f, _g, _h, _j, _k, _l;
                 const pendiente = this.num((_a = item) === null || _a === void 0 ? void 0 : _a.pendiente);
                 if (pendiente <= 0)
                     return;
+                const rawFechaDoc = (_b = orden) === null || _b === void 0 ? void 0 : _b.fechaDocumento;
+                let fechaDoc = null;
+                if (rawFechaDoc != null && rawFechaDoc !== "") {
+                    const d = rawFechaDoc instanceof Date
+                        ? rawFechaDoc
+                        : new Date(rawFechaDoc);
+                    if (!Number.isNaN(d.getTime())) {
+                        fechaDoc = d;
+                    }
+                }
+                console.log(item);
+                const tsFechaDoc = fechaDoc ? fechaDoc.getTime() : 0;
                 filas.push({
-                    documentoNumero: (_c = (_b = orden) === null || _b === void 0 ? void 0 : _b.documentoNumero, (_c !== null && _c !== void 0 ? _c : "")),
-                    clienteNombre: ((_d = orden) === null || _d === void 0 ? void 0 : _d.clienteNombre) || "Cliente sin nombre",
-                    productoNombre: ((_e = item) === null || _e === void 0 ? void 0 : _e.productoNombre) || "Producto sin nombre",
+                    fecha: fechaDoc,
+                    fechaDocumentoOrden: tsFechaDoc,
+                    documentoNumero: (_d = (_c = orden) === null || _c === void 0 ? void 0 : _c.documentoNumero, (_d !== null && _d !== void 0 ? _d : "")),
+                    tipoDocumento: (_f = (_e = orden) === null || _e === void 0 ? void 0 : _e.tipoDocumento, (_f !== null && _f !== void 0 ? _f : "")),
+                    clienteNombre: ((_g = orden) === null || _g === void 0 ? void 0 : _g.clienteNombre) || "Cliente sin nombre",
+                    productoNombre: ((_h = item) === null || _h === void 0 ? void 0 : _h.productoNombre) || "Producto sin nombre",
+                    notas: (_k = (_j = item) === null || _j === void 0 ? void 0 : _j.notas, (_k !== null && _k !== void 0 ? _k : "")),
                     cantidadPendienteTexto: this.formatoPendienteReporte(item, pendiente),
-                    fechaCompromisoTexto: ((_f = item) === null || _f === void 0 ? void 0 : _f.fechaCompromiso) ? this.formatearFechaIso(item.fechaCompromiso)
+                    fechaCompromisoTexto: ((_l = item) === null || _l === void 0 ? void 0 : _l.fechaCompromiso) ? this.formatearFechaIso(item.fechaCompromiso)
                         : "Sin fecha",
-                    fechaCompromisoOrden: ((_g = item) === null || _g === void 0 ? void 0 : _g.fechaCompromiso) ? new Date(item.fechaCompromiso).getTime()
-                        : Number.MAX_SAFE_INTEGER,
                 });
             });
         });
-        return filas.sort((a, b) => a.fechaCompromisoOrden - b.fechaCompromisoOrden);
+        filas.sort((a, b) => (b.fechaDocumentoOrden || 0) - (a.fechaDocumentoOrden || 0));
+        return filas.map((_a) => {
+            var { fechaDocumentoOrden: _ts } = _a, rest = Object(tslib__WEBPACK_IMPORTED_MODULE_0__["__rest"])(_a, ["fechaDocumentoOrden"]);
+            return rest;
+        });
     }
 }
-GestionEntregasBodegaComponent.ɵfac = function GestionEntregasBodegaComponent_Factory(t) { return new (t || GestionEntregasBodegaComponent)(_angular_core__WEBPACK_IMPORTED_MODULE_0__["ɵɵdirectiveInject"](src_app_servicios_entregas_bodega_service__WEBPACK_IMPORTED_MODULE_2__["EntregasBodegaService"]), _angular_core__WEBPACK_IMPORTED_MODULE_0__["ɵɵdirectiveInject"](src_app_shared_services__WEBPACK_IMPORTED_MODULE_3__["ScreenService"])); };
-GestionEntregasBodegaComponent.ɵcmp = _angular_core__WEBPACK_IMPORTED_MODULE_0__["ɵɵdefineComponent"]({ type: GestionEntregasBodegaComponent, selectors: [["app-gestion-entregas-bodega"]], decls: 9, vars: 17, consts: [[1, "row", "remiPro", "titulos", "gestion-menu-superior", "justify-content-md-end"], [1, "col-12", "col-md-4", "px-gestion-menu"], [1, "form-control", "select", 3, "items", "value", "readOnly", "disabled", "inputAttr", "valueChange", "onValueChanged"], ["class", "content-block", 4, "ngIf"], [3, "width", "height", "showTitle", "title", "closeOnOutsideClick", "visible", "visibleChange"], [4, "dxTemplate", "dxTemplateOf"], [1, "content-block"], [1, "card", "gestion-entregas-card"], [1, "card-header", "text-center", "font-weight-bold", "text-uppercase"], [1, "card-body", "gestion-filtros"], [1, "row", "justify-content-center"], [1, "col-12", "col-xl-10"], [1, "row"], [1, "col-12", "col-md-6", "mb-3", "gestion-filtro-campo"], [1, "textP", "mb-1", "d-block"], [1, "dateB", "gestion-filtro-editor"], [3, "value", "valueChange"], ["type", "date", 3, "value", "valueChange"], ["class", "col-12 mb-3 gestion-filtro-cerradas", 4, "ngIf"], [1, "col-12", "gestion-entregas-acciones", "gestion-filtro-acciones", "text-center", "pt-1"], ["text", "Buscar", "type", "success", 2, "background-color", "#ff5722", "border-color", "#ff5722", 3, "onClick"], ["text", "Limpiar", "type", "normal", 3, "onClick"], [1, "col-12", "mb-3", "gestion-filtro-cerradas"], [1, "d-flex", "flex-row", "flex-wrap", "align-items-center", "gestion-filtro-cerradas-inner"], [1, "gestion-filtro-check", 3, "value", "readOnly", "valueChange"], [1, "textP", "gestion-filtro-cerradas-texto", "ml-2"], [4, "ngIf"], [1, "card-body", "p-2"], ["class", "text-muted small mb-2", 4, "ngIf"], ["class", "smart-dispatch-movil", 4, "ngIf"], [3, "dataSource", "showBorders", "hoverStateEnabled", "onRowClick", 4, "ngIf"], [3, "dataSource", "showBorders", "hoverStateEnabled", 4, "ngIf"], [1, "text-muted", "small", "mb-2"], [1, "smart-dispatch-movil"], [1, "small", "text-muted", "mb-2"], [1, "sd-leyenda", "small", "mb-3"], [1, "sd-leyenda-item"], [1, "sd-punto", "sd-est-amarillo"], [1, "sd-punto", "sd-est-rojo"], [1, "sd-punto", "sd-est-azul"], [1, "sd-punto", "sd-est-verde"], ["class", "text-muted small", 4, "ngIf"], ["class", "sd-factura-card mb-2", 4, "ngFor", "ngForOf"], [1, "text-muted", "small"], [1, "sd-factura-card", "mb-2"], ["type", "button", 1, "sd-factura-header", 3, "click"], [1, "sd-punto", 3, "ngClass"], [1, "sd-factura-texto"], [1, "sd-factura-doc"], [1, "sd-factura-cliente"], [1, "sd-factura-meta"], [1, "fa", "fa-chevron-down", "sd-chevron"], ["class", "sd-factura-cuerpo", 4, "ngIf"], [1, "sd-factura-cuerpo"], ["class", "sd-item-wrap", 4, "ngFor", "ngForOf"], [1, "sd-cerrar-proceso", "mt-3", "pt-2", "border-top"], ["text", "Cerrar proceso (factura)", "type", "success", 3, "disabled", "onClick"], [1, "small", "text-muted", "mb-0", "mt-2"], [1, "sd-item-wrap"], ["type", "button", 1, "sd-item-cab", 3, "click"], [1, "sd-item-nombre", 3, "ngClass"], [1, "sd-item-resumen", "small", "text-muted"], ["class", "fa fa-check-circle sd-guardado-ok text-success", "title", "Guardado correctamente", "aria-hidden", "true", 4, "ngIf"], [1, "fa", "fa-chevron-down", "sd-chevron", "sd-chevron-sm"], ["class", "sd-item-detalle", 4, "ngIf"], ["title", "Guardado correctamente", "aria-hidden", "true", 1, "fa", "fa-check-circle", "sd-guardado-ok", "text-success"], [1, "sd-item-detalle"], [1, "sd-kv-grid", "small"], [1, "text-muted"], [1, "font-weight-bold"], [1, "sd-campo"], [1, "small", "font-weight-bold", "mb-1", "d-block"], ["class", "d-flex flex-wrap align-items-center entrega-cp-inputs", 4, "ngIf"], [3, "value", "min", "showSpinButtons", "valueChange", 4, "ngIf"], ["type", "date", 3, "value", "disabled", "valueChange"], [3, "value", "disabled", "valueChange"], [1, "sd-campo", "pt-1", "sd-guardar-linea-wrap"], ["class", "sd-guardado-msg text-success small ml-2", 4, "ngIf"], [1, "d-flex", "flex-wrap", "align-items-center", "entrega-cp-inputs"], [1, "small", "text-muted", "mr-1"], [3, "width", "value", "min", "showSpinButtons", "valueChange"], [1, "small", "text-muted", "mx-1"], [3, "value", "min", "showSpinButtons", "valueChange"], ["text", "Guardar l\u00EDnea", "type", "default", 3, "onClick"], ["text", "L\u00EDnea completa", "type", "success", 3, "disabled"], [1, "sd-guardado-msg", "text-success", "small", "ml-2"], ["aria-hidden", "true", 1, "fa", "fa-check-circle"], [3, "dataSource", "showBorders", "hoverStateEnabled", "onRowClick"], [3, "visible"], ["placeholder", "Buscar...", 3, "visible", "width"], ["dataField", "consecutivoEntrega", "caption", "Orden #", "width", "15%", "dataType", "number"], ["dataField", "tipoDocumento", "caption", "Tipo", "width", "20%", "dataType", "string"], ["dataField", "clienteNombre", "caption", "Cliente", "width", "20%", "dataType", "string"], ["dataField", "documentoNumero", "caption", "Documento", "width", "15%", "textAlign", "left", "dataType", "number"], ["dataField", "estadoProceso", "caption", "Estado", "width", "15%", "dataType", "string"], ["dataField", "fechaDocumento", "caption", "Fecha Documento", "width", "15%", "dataType", "date"], ["type", "buttons", "caption", "Gestionar", 3, "visible"], ["icon", "fa fa-eye", 3, "onClick"], [3, "dataSource", "showBorders", "hoverStateEnabled"], ["fileName", "Productos_Pendientes", 3, "enabled", "allowExportSelectedData"], ["placeholder", "Buscar producto...", 3, "visible", "width"], ["dataField", "documentoNumero", "caption", "Documento", "width", "15%", "dataType", "number"], ["dataField", "tipoDocumento", "caption", "Tipo Documento", "width", "15%", "dataType", "string"], ["dataField", "clienteNombre", "caption", "Cliente", "width", "25%", "dataType", "string"], ["dataField", "productoNombre", "caption", "Producto", "width", "35%", "dataType", "string"], ["dataField", "cantidadPendienteTexto", "caption", "Cantidad pendiente", "width", "15%", "dataType", "string"], ["dataField", "fechaCompromisoTexto", "caption", "Fecha compromiso", "width", "10%", "dataType", "date"], [1, "card-body"], [1, "table", "table-bordered", "table-sm", "table-striped"], ["title", "Nombre del producto involucrado en la orden", 2, "cursor", "help"], ["title", "Cantidad facturada para este producto", 2, "cursor", "help"], ["title", "Cantidad ya entregada al cliente", 2, "cursor", "help"], ["title", "Cantidad devuelta por el cliente", 2, "cursor", "help"], ["title", "Cantidad pendiente por entregar al cliente", 2, "cursor", "help"], ["title", "Indica la cantidad a entregar en esta operaci\u00F3n. Si aplica, ser\u00E1 en cajas y piezas.", 2, "cursor", "help"], [1, "text-muted", "font-weight-normal"], ["title", "Estado actual del \u00EDtem en el proceso de entrega", 2, "cursor", "help"], ["title", "Fecha de compromiso para la entrega de este producto", 2, "cursor", "help"], ["title", "Notas o comentarios adicionales relevantes para este \u00EDtem", 2, "cursor", "help"], ["title", "Guardar los cambios realizados para esta l\u00EDnea", 2, "cursor", "help"], [4, "ngFor", "ngForOf"], [1, "text-right"], ["text", "Cerrar Proceso", "type", "success", 3, "disabled", "onClick"], [1, "gestion-col-guardar", "text-nowrap"], ["class", "gestion-linea-ok text-success ml-1", "title", "Guardado correctamente", 4, "ngIf"], ["text", "Guardar", "type", "default", 3, "onClick"], ["text", "Completo", "type", "success", 3, "disabled"], ["title", "Guardado correctamente", 1, "gestion-linea-ok", "text-success", "ml-1"], ["width", "100%", "height", "100%"], ["class", "trazabilidad-popup", 4, "ngIf"], [1, "trazabilidad-popup"], [1, "col-md-6"], [1, "table", "table-sm", "table-bordered"], [1, "w-25"], [1, "font-weight-bold", "mt-3"], [3, "dataSource", "showBorders", "columnAutoWidth", "height"], ["dataField", "fechaFmt", "caption", "Fecha / hora"], ["dataField", "usuario", "caption", "Usuario"], ["dataField", "accion", "caption", "Acci\u00F3n"], ["dataField", "detalle", "caption", "Detalle"], ["class", "mb-3 border rounded p-2", 4, "ngFor", "ngForOf"], [1, "mb-3", "border", "rounded", "p-2"], [3, "dataSource", "showBorders", "columnAutoWidth", "height", 4, "ngIf"], ["class", "text-muted small mb-0", 4, "ngIf"], ["dataField", "estadoSeleccionado", "caption", "Estado seleccionado"], ["dataField", "cantidadEntregada", "caption", "Entregado acum.", "dataType", "number", 3, "format"], ["dataField", "cantidadDevuelta", "caption", "Devuelto acum.", "dataType", "number"], ["dataField", "m2EntregadoEnEstaOperacion", "caption", "m\u00B2 esta op.", "dataType", "number", 3, "format"], ["dataField", "entregaCajas", "caption", "Cajas op.", "dataType", "number"], ["dataField", "entregaPiezas", "caption", "Piezas op.", "dataType", "number"], ["dataField", "notas", "caption", "Notas"], [1, "text-muted", "small", "mb-0"]], template: function GestionEntregasBodegaComponent_Template(rf, ctx) { if (rf & 1) {
-        _angular_core__WEBPACK_IMPORTED_MODULE_0__["ɵɵelementStart"](0, "div", 0);
-        _angular_core__WEBPACK_IMPORTED_MODULE_0__["ɵɵelementStart"](1, "div", 1);
-        _angular_core__WEBPACK_IMPORTED_MODULE_0__["ɵɵelementStart"](2, "dx-select-box", 2);
-        _angular_core__WEBPACK_IMPORTED_MODULE_0__["ɵɵlistener"]("valueChange", function GestionEntregasBodegaComponent_Template_dx_select_box_valueChange_2_listener($event) { return ctx.valorMenu = $event; })("onValueChanged", function GestionEntregasBodegaComponent_Template_dx_select_box_onValueChanged_2_listener($event) { return ctx.opcionMenu($event); });
-        _angular_core__WEBPACK_IMPORTED_MODULE_0__["ɵɵelementEnd"]();
-        _angular_core__WEBPACK_IMPORTED_MODULE_0__["ɵɵelementEnd"]();
-        _angular_core__WEBPACK_IMPORTED_MODULE_0__["ɵɵelementEnd"]();
-        _angular_core__WEBPACK_IMPORTED_MODULE_0__["ɵɵtemplate"](3, GestionEntregasBodegaComponent_div_3_Template, 32, 5, "div", 3);
-        _angular_core__WEBPACK_IMPORTED_MODULE_0__["ɵɵtemplate"](4, GestionEntregasBodegaComponent_div_4_Template, 2, 0, "div", 3);
-        _angular_core__WEBPACK_IMPORTED_MODULE_0__["ɵɵtemplate"](5, GestionEntregasBodegaComponent_div_5_Template, 12, 8, "div", 3);
-        _angular_core__WEBPACK_IMPORTED_MODULE_0__["ɵɵtemplate"](6, GestionEntregasBodegaComponent_div_6_Template, 35, 5, "div", 3);
-        _angular_core__WEBPACK_IMPORTED_MODULE_0__["ɵɵelementStart"](7, "dx-popup", 4);
-        _angular_core__WEBPACK_IMPORTED_MODULE_0__["ɵɵlistener"]("visibleChange", function GestionEntregasBodegaComponent_Template_dx_popup_visibleChange_7_listener($event) { return ctx.popupTrazabilidadVisible = $event; });
-        _angular_core__WEBPACK_IMPORTED_MODULE_0__["ɵɵtemplate"](8, GestionEntregasBodegaComponent_div_8_Template, 3, 1, "div", 5);
-        _angular_core__WEBPACK_IMPORTED_MODULE_0__["ɵɵelementEnd"]();
+GestionEntregasBodegaComponent.ɵfac = function GestionEntregasBodegaComponent_Factory(t) { return new (t || GestionEntregasBodegaComponent)(_angular_core__WEBPACK_IMPORTED_MODULE_1__["ɵɵdirectiveInject"](src_app_servicios_entregas_bodega_service__WEBPACK_IMPORTED_MODULE_3__["EntregasBodegaService"]), _angular_core__WEBPACK_IMPORTED_MODULE_1__["ɵɵdirectiveInject"](src_app_shared_services__WEBPACK_IMPORTED_MODULE_4__["ScreenService"])); };
+GestionEntregasBodegaComponent.ɵcmp = _angular_core__WEBPACK_IMPORTED_MODULE_1__["ɵɵdefineComponent"]({ type: GestionEntregasBodegaComponent, selectors: [["app-gestion-entregas-bodega"]], decls: 11, vars: 31, consts: [[1, "row", "remiPro", "titulos", "gestion-menu-superior", "justify-content-md-end"], [1, "col-12", "col-md-4", "px-gestion-menu"], [1, "form-control", "select", 3, "items", "value", "readOnly", "disabled", "inputAttr", "valueChange", "onValueChanged"], ["class", "content-block", 4, "ngIf"], [3, "width", "height", "showTitle", "title", "closeOnOutsideClick", "visible", "visibleChange"], [4, "dxTemplate", "dxTemplateOf"], [3, "visible", "showTitle", "title", "closeOnOutsideClick", "showCloseButton", "fullScreen", "width", "maxWidth", "maxHeight", "dragEnabled", "shading", "elementAttr", "visibleChange", "onHidden"], ["class", "traz-popup-editar-body", 4, "dxTemplate", "dxTemplateOf"], [1, "content-block"], [1, "card", "gestion-entregas-card"], [1, "card-header", "text-center", "font-weight-bold", "text-uppercase"], [1, "card-body", "gestion-filtros"], [1, "row", "justify-content-center"], [1, "col-12", "col-xl-10"], [1, "row"], [1, "col-12", "col-md-6", "mb-3", "gestion-filtro-campo"], [1, "textP", "mb-1", "d-block"], [1, "dateB", "gestion-filtro-editor"], [3, "value", "valueChange"], ["type", "date", 3, "value", "valueChange"], ["class", "col-12 mb-3 gestion-filtro-cerradas", 4, "ngIf"], [1, "col-12", "gestion-entregas-acciones", "gestion-filtro-acciones", "text-center", "pt-1"], ["text", "Buscar", "type", "success", 2, "background-color", "#ff5722", "border-color", "#ff5722", 3, "onClick"], ["text", "Limpiar", "type", "normal", 3, "onClick"], [1, "col-12", "mb-3", "gestion-filtro-cerradas"], [1, "d-flex", "flex-row", "flex-wrap", "align-items-center", "gestion-filtro-cerradas-inner"], [1, "gestion-filtro-check", 3, "value", "readOnly", "valueChange"], [1, "textP", "gestion-filtro-cerradas-texto", "ml-2"], [4, "ngIf"], [1, "card-body", "p-2"], ["class", "text-muted small mb-2", 4, "ngIf"], ["class", "smart-dispatch-movil", 4, "ngIf"], ["class", "listado-entregas-movil", 4, "ngIf"], [3, "dataSource", "showBorders", "hoverStateEnabled", "onRowClick", 4, "ngIf"], ["class", "productos-pendientes-grid-scroll", 4, "ngIf"], [1, "text-muted", "small", "mb-2"], [1, "smart-dispatch-movil"], [1, "small", "text-muted", "mb-2"], [1, "sd-leyenda", "small", "mb-3"], [1, "sd-leyenda-item"], [1, "sd-punto", "sd-est-amarillo"], [1, "sd-punto", "sd-est-rojo"], [1, "sd-punto", "sd-est-azul"], [1, "sd-punto", "sd-est-verde"], ["class", "text-muted small", 4, "ngIf"], ["class", "sd-factura-card mb-2", 4, "ngFor", "ngForOf"], [1, "text-muted", "small"], [1, "sd-factura-card", "mb-2"], ["type", "button", 1, "sd-factura-header", 3, "click"], [1, "sd-punto", 3, "ngClass"], [1, "sd-factura-texto"], [1, "sd-factura-doc"], [1, "sd-factura-cliente"], [1, "sd-factura-meta"], [1, "fa", "fa-chevron-down", "sd-chevron"], ["class", "sd-factura-cuerpo", 4, "ngIf"], [1, "sd-factura-cuerpo"], ["class", "sd-item-wrap", 4, "ngFor", "ngForOf"], [1, "sd-cerrar-proceso", "mt-3", "pt-2", "border-top"], ["text", "Cerrar proceso (factura)", "type", "success", 3, "disabled", "onClick"], [1, "small", "text-muted", "mb-0", "mt-2"], [1, "sd-item-wrap"], ["type", "button", 1, "sd-item-cab", 3, "click"], [1, "sd-item-nombre", 3, "ngClass"], [1, "sd-item-resumen", "small", "text-muted"], ["class", "fa fa-check-circle sd-guardado-ok text-success", "title", "Guardado correctamente", "aria-hidden", "true", 4, "ngIf"], [1, "fa", "fa-chevron-down", "sd-chevron", "sd-chevron-sm"], ["class", "sd-item-detalle", 4, "ngIf"], ["title", "Guardado correctamente", "aria-hidden", "true", 1, "fa", "fa-check-circle", "sd-guardado-ok", "text-success"], [1, "sd-item-detalle"], [1, "sd-kv-grid", "small"], [1, "text-muted"], [1, "font-weight-bold"], [1, "sd-campo"], [1, "small", "font-weight-bold", "mb-1", "d-block"], ["class", "d-flex flex-wrap align-items-center entrega-cp-inputs", 4, "ngIf"], [3, "value", "min", "showSpinButtons", "valueChange", 4, "ngIf"], ["type", "date", 3, "value", "disabled", "valueChange"], [3, "value", "disabled", "valueChange"], [1, "sd-campo", "pt-1", "sd-guardar-linea-wrap"], ["class", "sd-guardado-msg text-success small ml-2", 4, "ngIf"], [1, "d-flex", "flex-wrap", "align-items-center", "entrega-cp-inputs"], [1, "small", "text-muted", "mr-1"], [3, "width", "value", "min", "showSpinButtons", "valueChange"], [1, "small", "text-muted", "mx-1"], [3, "value", "min", "showSpinButtons", "valueChange"], ["text", "Guardar l\u00EDnea", "type", "default", 3, "onClick"], ["text", "L\u00EDnea completa", "type", "success", 3, "disabled"], [1, "sd-guardado-msg", "text-success", "small", "ml-2"], ["aria-hidden", "true", 1, "fa", "fa-check-circle"], [1, "listado-entregas-movil"], ["type", "button", "class", "listado-entrega-movil-card", 3, "click", 4, "ngFor", "ngForOf"], ["type", "button", 1, "listado-entrega-movil-card", 3, "click"], [1, "listado-entrega-movil-cab"], [1, "listado-entrega-movil-cab-texto"], [1, "listado-entrega-movil-doc"], [1, "listado-entrega-movil-sub"], [1, "listado-entrega-movil-cuerpo"], [1, "listado-entrega-movil-kv"], [1, "listado-entrega-movil-lbl"], [1, "listado-entrega-movil-val"], [3, "dataSource", "showBorders", "hoverStateEnabled", "onRowClick"], [3, "visible"], ["placeholder", "Buscar...", 3, "visible", "width"], ["dataField", "consecutivoEntrega", "caption", "Orden #", "width", "15%", "dataType", "number"], ["dataField", "tipoDocumento", "caption", "Tipo", "width", "20%", "dataType", "string"], ["dataField", "clienteNombre", "caption", "Cliente", "width", "20%", "dataType", "string"], ["dataField", "documentoNumero", "caption", "Documento", "width", "15%", "textAlign", "left", "dataType", "number"], ["dataField", "estadoProceso", "caption", "Estado", "width", "15%", "dataType", "string"], ["dataField", "fechaDocumento", "caption", "Fecha Documento", "width", "15%", "dataType", "date"], ["type", "buttons", "caption", "Gestionar", 3, "visible"], ["icon", "fa fa-eye", 3, "onClick"], [1, "productos-pendientes-grid-scroll"], [3, "dataSource", "showBorders", "hoverStateEnabled"], ["fileName", "Productos_Pendientes", 3, "enabled", "allowExportSelectedData"], ["placeholder", "Buscar producto...", 3, "visible", "width"], ["dataField", "fecha", "caption", "Fecha", "width", "10%", "dataType", "date"], ["dataField", "documentoNumero", "caption", "Documento", "width", "10%", "dataType", "number"], ["dataField", "clienteNombre", "caption", "Cliente", "width", "15%", "dataType", "string"], ["dataField", "productoNombre", "caption", "Producto", "width", "25%", "dataType", "string"], ["dataField", "cantidadPendienteTexto", "caption", "Cantidad pendiente", "width", "10%", "dataType", "string"], ["dataField", "fechaCompromisoTexto", "caption", "Fecha compromiso", "width", "15%", "dataType", "date"], ["dataField", "notas", "caption", "Notas", "width", "15%", "dataType", "string"], [1, "card-body"], [1, "table", "table-bordered", "table-sm", "table-striped"], ["title", "Nombre del producto involucrado en la orden", 2, "cursor", "help"], ["title", "Cantidad facturada para este producto", 2, "cursor", "help"], ["title", "Cantidad ya entregada al cliente", 2, "cursor", "help"], ["title", "Cantidad devuelta por el cliente", 2, "cursor", "help"], ["title", "Cantidad pendiente por entregar al cliente", 2, "cursor", "help"], ["title", "Indica la cantidad a entregar en esta operaci\u00F3n. Si aplica, ser\u00E1 en cajas y piezas.", 2, "cursor", "help"], [1, "text-muted", "font-weight-normal"], ["title", "Estado actual del \u00EDtem en el proceso de entrega", 2, "cursor", "help"], ["title", "Fecha de compromiso para la entrega de este producto", 2, "cursor", "help"], ["title", "Notas o comentarios adicionales relevantes para este \u00EDtem", 2, "cursor", "help"], ["title", "Guardar los cambios realizados para esta l\u00EDnea", 2, "cursor", "help"], [4, "ngFor", "ngForOf"], [1, "text-right"], ["text", "Cerrar Proceso", "type", "success", 3, "disabled", "onClick"], [1, "gestion-col-guardar", "text-nowrap"], ["class", "gestion-linea-ok text-success ml-1", "title", "Guardado correctamente", 4, "ngIf"], ["text", "Guardar", "type", "default", 3, "onClick"], ["text", "Completo", "type", "success", 3, "disabled"], ["title", "Guardado correctamente", 1, "gestion-linea-ok", "text-success", "ml-1"], ["width", "100%", "height", "100%"], ["class", "trazabilidad-popup", 4, "ngIf"], [1, "trazabilidad-popup"], [1, "col-md-6"], [1, "table", "table-sm", "table-bordered"], [1, "w-25"], [1, "font-weight-bold", "mt-3"], [3, "dataSource", "showBorders", "columnAutoWidth", "height"], ["dataField", "fechaFmt", "caption", "Fecha / hora"], ["dataField", "usuario", "caption", "Usuario"], ["dataField", "accion", "caption", "Acci\u00F3n"], ["dataField", "detalle", "caption", "Detalle"], ["class", "small text-muted mb-2 traz-ayuda-edicion", 4, "ngIf"], ["class", "mb-3 border rounded p-2 traz-item-bloque", 4, "ngFor", "ngForOf"], [1, "small", "text-muted", "mb-2", "traz-ayuda-edicion"], [1, "mb-3", "border", "rounded", "p-2", "traz-item-bloque"], ["class", "table-responsive traz-historial-scroll", 4, "ngIf"], ["class", "text-muted small mb-0", 4, "ngIf"], [1, "table-responsive", "traz-historial-scroll"], [1, "table", "table-sm", "table-bordered", "traz-historial-table", "mb-0"], [1, "thead-light"], ["class", "traz-col-accion text-center align-middle", "scope", "col", 4, "ngIf"], ["scope", "col", 1, "traz-col-accion", "text-center", "align-middle"], [1, "sr-only"], ["class", "text-center align-middle traz-td-accion", 4, "ngIf"], [1, "text-nowrap"], [1, "traz-notas-celda"], [1, "text-center", "align-middle", "traz-td-accion"], ["type", "button", "title", "Corregir este movimiento", 1, "btn", "btn-outline-secondary", "border-0", "traz-btn-edit", 3, "click"], ["aria-hidden", "true", 1, "fa", "fa-pencil"], [1, "d-inline", "d-md-none", "ml-1", "small"], [1, "text-muted", "small", "mb-0"], [1, "traz-popup-editar-body"], [1, "small", "text-muted", "mb-3"], [1, "form-group", "mb-2"], [1, "d-block", "small", "font-weight-bold", "mb-1"], [3, "items", "value", "disabled", "valueChange"], [3, "value", "min", "format", "showSpinButtons", "disabled", "valueChange"], [3, "value", "height", "disabled", "valueChange"], [1, "form-group", "mb-3"], [1, "d-flex", "flex-column", "flex-sm-row", "justify-content-stretch", "justify-content-sm-end", "traz-editar-acciones"], ["text", "Cancelar", "type", "normal", 1, "mb-2", "mb-sm-0", "mr-sm-2", 3, "disabled", "onClick"], ["text", "Guardar correcci\u00F3n", "type", "default", 3, "disabled", "onClick"], [1, "form-row", "mx-0"], [1, "form-group", "col-12", "col-sm-6", "mb-2", "pl-0", "pr-sm-2", "pr-0"], [3, "value", "min", "showSpinButtons", "disabled", "valueChange"], [1, "form-group", "col-12", "col-sm-6", "mb-2", "pr-0", "pl-sm-2", "pl-0"]], template: function GestionEntregasBodegaComponent_Template(rf, ctx) { if (rf & 1) {
+        _angular_core__WEBPACK_IMPORTED_MODULE_1__["ɵɵelementStart"](0, "div", 0);
+        _angular_core__WEBPACK_IMPORTED_MODULE_1__["ɵɵelementStart"](1, "div", 1);
+        _angular_core__WEBPACK_IMPORTED_MODULE_1__["ɵɵelementStart"](2, "dx-select-box", 2);
+        _angular_core__WEBPACK_IMPORTED_MODULE_1__["ɵɵlistener"]("valueChange", function GestionEntregasBodegaComponent_Template_dx_select_box_valueChange_2_listener($event) { return ctx.valorMenu = $event; })("onValueChanged", function GestionEntregasBodegaComponent_Template_dx_select_box_onValueChanged_2_listener($event) { return ctx.opcionMenu($event); });
+        _angular_core__WEBPACK_IMPORTED_MODULE_1__["ɵɵelementEnd"]();
+        _angular_core__WEBPACK_IMPORTED_MODULE_1__["ɵɵelementEnd"]();
+        _angular_core__WEBPACK_IMPORTED_MODULE_1__["ɵɵelementEnd"]();
+        _angular_core__WEBPACK_IMPORTED_MODULE_1__["ɵɵtemplate"](3, GestionEntregasBodegaComponent_div_3_Template, 32, 5, "div", 3);
+        _angular_core__WEBPACK_IMPORTED_MODULE_1__["ɵɵtemplate"](4, GestionEntregasBodegaComponent_div_4_Template, 2, 0, "div", 3);
+        _angular_core__WEBPACK_IMPORTED_MODULE_1__["ɵɵtemplate"](5, GestionEntregasBodegaComponent_div_5_Template, 13, 9, "div", 3);
+        _angular_core__WEBPACK_IMPORTED_MODULE_1__["ɵɵtemplate"](6, GestionEntregasBodegaComponent_div_6_Template, 35, 5, "div", 3);
+        _angular_core__WEBPACK_IMPORTED_MODULE_1__["ɵɵelementStart"](7, "dx-popup", 4);
+        _angular_core__WEBPACK_IMPORTED_MODULE_1__["ɵɵlistener"]("visibleChange", function GestionEntregasBodegaComponent_Template_dx_popup_visibleChange_7_listener($event) { return ctx.popupTrazabilidadVisible = $event; });
+        _angular_core__WEBPACK_IMPORTED_MODULE_1__["ɵɵtemplate"](8, GestionEntregasBodegaComponent_div_8_Template, 3, 1, "div", 5);
+        _angular_core__WEBPACK_IMPORTED_MODULE_1__["ɵɵelementEnd"]();
+        _angular_core__WEBPACK_IMPORTED_MODULE_1__["ɵɵelementStart"](9, "dx-popup", 6);
+        _angular_core__WEBPACK_IMPORTED_MODULE_1__["ɵɵlistener"]("visibleChange", function GestionEntregasBodegaComponent_Template_dx_popup_visibleChange_9_listener($event) { return ctx.popupEditarHistorialVisible = $event; })("onHidden", function GestionEntregasBodegaComponent_Template_dx_popup_onHidden_9_listener() { return ctx.cerrarPopupEditarHistorial(); });
+        _angular_core__WEBPACK_IMPORTED_MODULE_1__["ɵɵtemplate"](10, GestionEntregasBodegaComponent_div_10_Template, 23, 18, "div", 7);
+        _angular_core__WEBPACK_IMPORTED_MODULE_1__["ɵɵelementEnd"]();
     } if (rf & 2) {
-        _angular_core__WEBPACK_IMPORTED_MODULE_0__["ɵɵadvance"](2);
-        _angular_core__WEBPACK_IMPORTED_MODULE_0__["ɵɵproperty"]("items", ctx.menuPrincipal)("value", ctx.valorMenu)("readOnly", false)("disabled", false)("inputAttr", _angular_core__WEBPACK_IMPORTED_MODULE_0__["ɵɵpureFunction0"](16, _c3));
-        _angular_core__WEBPACK_IMPORTED_MODULE_0__["ɵɵadvance"](1);
-        _angular_core__WEBPACK_IMPORTED_MODULE_0__["ɵɵproperty"]("ngIf", !ctx.mostrarProductosPendientes);
-        _angular_core__WEBPACK_IMPORTED_MODULE_0__["ɵɵadvance"](1);
-        _angular_core__WEBPACK_IMPORTED_MODULE_0__["ɵɵproperty"]("ngIf", ctx.loading);
-        _angular_core__WEBPACK_IMPORTED_MODULE_0__["ɵɵadvance"](1);
-        _angular_core__WEBPACK_IMPORTED_MODULE_0__["ɵɵproperty"]("ngIf", ctx.mostrarGestion || ctx.mostrarListado || ctx.mostrarProductosPendientes);
-        _angular_core__WEBPACK_IMPORTED_MODULE_0__["ɵɵadvance"](1);
-        _angular_core__WEBPACK_IMPORTED_MODULE_0__["ɵɵproperty"]("ngIf", ctx.mostrarGestion && ctx.ordenSeleccionada && !ctx.vistaMovil);
-        _angular_core__WEBPACK_IMPORTED_MODULE_0__["ɵɵadvance"](1);
-        _angular_core__WEBPACK_IMPORTED_MODULE_0__["ɵɵproperty"]("width", "70%")("height", 560)("showTitle", true)("title", ctx.tituloPopupTrazabilidad)("closeOnOutsideClick", true)("visible", ctx.popupTrazabilidadVisible);
-        _angular_core__WEBPACK_IMPORTED_MODULE_0__["ɵɵadvance"](1);
-        _angular_core__WEBPACK_IMPORTED_MODULE_0__["ɵɵproperty"]("dxTemplateOf", "content");
-    } }, directives: [devextreme_angular__WEBPACK_IMPORTED_MODULE_4__["DxSelectBoxComponent"], _angular_common__WEBPACK_IMPORTED_MODULE_5__["NgIf"], devextreme_angular__WEBPACK_IMPORTED_MODULE_4__["DxPopupComponent"], devextreme_angular_core__WEBPACK_IMPORTED_MODULE_6__["DxTemplateDirective"], devextreme_angular__WEBPACK_IMPORTED_MODULE_4__["DxNumberBoxComponent"], devextreme_angular_ui_text_box__WEBPACK_IMPORTED_MODULE_7__["DxTextBoxComponent"], devextreme_angular__WEBPACK_IMPORTED_MODULE_4__["DxDateBoxComponent"], devextreme_angular_ui_button__WEBPACK_IMPORTED_MODULE_8__["DxButtonComponent"], devextreme_angular_ui_check_box__WEBPACK_IMPORTED_MODULE_9__["DxCheckBoxComponent"], _loading_loading_component__WEBPACK_IMPORTED_MODULE_10__["LoadingComponent"], _angular_common__WEBPACK_IMPORTED_MODULE_5__["NgForOf"], _angular_common__WEBPACK_IMPORTED_MODULE_5__["NgClass"], devextreme_angular__WEBPACK_IMPORTED_MODULE_4__["DxDataGridComponent"], devextreme_angular_ui_nested__WEBPACK_IMPORTED_MODULE_11__["DxoFilterRowComponent"], devextreme_angular_ui_nested__WEBPACK_IMPORTED_MODULE_11__["DxoSearchPanelComponent"], devextreme_angular_ui_nested__WEBPACK_IMPORTED_MODULE_11__["DxiColumnComponent"], devextreme_angular_ui_nested__WEBPACK_IMPORTED_MODULE_11__["DxiButtonComponent"], devextreme_angular_ui_nested__WEBPACK_IMPORTED_MODULE_11__["DxoExportComponent"], devextreme_angular_ui_scroll_view__WEBPACK_IMPORTED_MODULE_12__["DxScrollViewComponent"]], styles: ["@charset \"UTF-8\";\n\n.remiPro[_ngcontent-%COMP%] {\n  padding: 1.5em 2em 0;\n  margin-top: 0.5em;\n  text-align: center;\n}\n.gestion-menu-superior[_ngcontent-%COMP%] {\n  margin-left: 0;\n  margin-right: 0;\n}\n.px-gestion-menu[_ngcontent-%COMP%] {\n  padding-left: 0.75rem;\n  padding-right: 0.75rem;\n}\n\n.gestion-filtros[_ngcontent-%COMP%] {\n  overflow-x: hidden;\n}\n.gestion-filtro-campo[_ngcontent-%COMP%]   .textP[_ngcontent-%COMP%] {\n  padding-left: 0;\n}\n.gestion-filtro-editor[_ngcontent-%COMP%] {\n  width: 100%;\n  max-width: 100%;\n}\n.gestion-filtro-editor.dateB[_ngcontent-%COMP%]   dx-date-box[_ngcontent-%COMP%], .gestion-filtro-editor.dateB[_ngcontent-%COMP%]   dx-number-box[_ngcontent-%COMP%], .gestion-filtro-editor.dateB[_ngcontent-%COMP%]   dx-text-box[_ngcontent-%COMP%] {\n  margin-top: 0;\n  display: block;\n  width: 100%;\n  max-width: 100%;\n}\n  .gestion-filtro-editor .dx-texteditor {\n  width: 100% !important;\n  max-width: 100%;\n}\n.gestion-filtro-cerradas-inner[_ngcontent-%COMP%] {\n  min-width: 0;\n}\n.gestion-filtro-cerradas-texto[_ngcontent-%COMP%] {\n  -webkit-box-flex: 1;\n          flex: 1 1 12rem;\n  min-width: 0;\n  line-height: 1.35;\n  text-align: left;\n}\n@media (max-width: 767.98px) {\n  .gestion-filtro-acciones[_ngcontent-%COMP%] {\n    display: -webkit-box;\n    display: flex;\n    -webkit-box-orient: vertical;\n    -webkit-box-direction: normal;\n            flex-direction: column;\n    -webkit-box-align: stretch;\n            align-items: stretch;\n    gap: 0.5rem;\n  }\n\n  .gestion-filtro-acciones[_ngcontent-%COMP%]     .dx-button {\n    width: 100%;\n    max-width: 100%;\n  }\n\n  .gestion-filtro-acciones[_ngcontent-%COMP%]   dx-button[_ngcontent-%COMP%]    + dx-button[_ngcontent-%COMP%] {\n    margin-left: 0;\n  }\n}\n.remiPro.titulos[_ngcontent-%COMP%]   .select[_ngcontent-%COMP%] {\n  text-align: center;\n  background-color: white;\n}\n.select[_ngcontent-%COMP%] {\n  text-align: center;\n  background-color: white;\n}\n.titulos[_ngcontent-%COMP%] {\n  text-align: center;\n  font-weight: bold;\n}\n\n.textP[_ngcontent-%COMP%] {\n  font-weight: bold;\n  font-size: 11pt;\n}\n.textP2[_ngcontent-%COMP%] {\n  margin-top: 0.3em;\n}\n.dateB[_ngcontent-%COMP%]   dx-date-box[_ngcontent-%COMP%], .dateB[_ngcontent-%COMP%]   dx-number-box[_ngcontent-%COMP%], .dateB[_ngcontent-%COMP%]   dx-text-box[_ngcontent-%COMP%] {\n  margin-top: -0.8em;\n}\n.centrar[_ngcontent-%COMP%] {\n  text-align: center;\n}\n.gestion-entregas-card[_ngcontent-%COMP%] {\n  border-radius: 0.25rem;\n}\n.gestion-entregas-card[_ngcontent-%COMP%]   .card-header[_ngcontent-%COMP%] {\n  background-color: #f8f9fa;\n}\n.cons-label[_ngcontent-%COMP%] {\n  font-size: inherit;\n}\n.cons-valor[_ngcontent-%COMP%] {\n  font-size: 4rem;\n  font-weight: bold;\n  margin-top: -1rem;\n  line-height: 1.1;\n}\n.gestion-entregas-acciones[_ngcontent-%COMP%]   dx-button[_ngcontent-%COMP%]    + dx-button[_ngcontent-%COMP%] {\n  margin-left: 0.5rem;\n}\n  .gestion-entregas-card .dateB .dx-texteditor-input {\n  text-align: center;\n}\ntable[_ngcontent-%COMP%]   td[_ngcontent-%COMP%], table[_ngcontent-%COMP%]   th[_ngcontent-%COMP%] {\n  vertical-align: middle;\n}\n.trazabilidad-popup[_ngcontent-%COMP%]   h6[_ngcontent-%COMP%] {\n  color: #333;\n}\n.trazabilidad-popup[_ngcontent-%COMP%]   .w-25[_ngcontent-%COMP%] {\n  width: 25%;\n}\n.entrega-cp-inputs[_ngcontent-%COMP%] {\n  gap: 4px;\n}\n\n.smart-dispatch-movil[_ngcontent-%COMP%] {\n  margin-bottom: 0.25rem;\n}\n.sd-leyenda[_ngcontent-%COMP%] {\n  display: -webkit-box;\n  display: flex;\n  flex-wrap: wrap;\n  gap: 0.5rem 0.85rem;\n  -webkit-box-align: center;\n          align-items: center;\n}\n.sd-leyenda-item[_ngcontent-%COMP%] {\n  display: -webkit-inline-box;\n  display: inline-flex;\n  -webkit-box-align: center;\n          align-items: center;\n  gap: 0.35rem;\n}\n.sd-punto[_ngcontent-%COMP%] {\n  display: inline-block;\n  width: 10px;\n  height: 10px;\n  border-radius: 50%;\n  flex-shrink: 0;\n}\n.sd-factura-card[_ngcontent-%COMP%] {\n  border: 1px solid #dee2e6;\n  border-radius: 6px;\n  overflow: hidden;\n  background: #fff;\n}\n.sd-factura-header[_ngcontent-%COMP%] {\n  width: 100%;\n  display: -webkit-box;\n  display: flex;\n  -webkit-box-align: start;\n          align-items: flex-start;\n  gap: 0.5rem;\n  padding: 0.65rem 0.75rem;\n  border: none;\n  background: #f8f9fa;\n  text-align: left;\n  cursor: pointer;\n}\n.sd-factura-header[_ngcontent-%COMP%]:focus {\n  outline: 2px solid rgba(0, 97, 169, 0.35);\n  outline-offset: 1px;\n}\n.sd-factura-texto[_ngcontent-%COMP%] {\n  -webkit-box-flex: 1;\n          flex: 1;\n  min-width: 0;\n  display: -webkit-box;\n  display: flex;\n  -webkit-box-orient: vertical;\n  -webkit-box-direction: normal;\n          flex-direction: column;\n  gap: 0.15rem;\n}\n.sd-factura-doc[_ngcontent-%COMP%] {\n  font-weight: 700;\n  font-size: 0.95rem;\n}\n.sd-factura-cliente[_ngcontent-%COMP%] {\n  font-size: 0.88rem;\n  line-height: 1.25;\n  word-break: break-word;\n}\n.sd-factura-meta[_ngcontent-%COMP%] {\n  font-size: 0.75rem;\n  color: #6c757d;\n}\n.sd-chevron[_ngcontent-%COMP%] {\n  -webkit-transition: -webkit-transform 0.2s ease;\n  transition: -webkit-transform 0.2s ease;\n  transition: transform 0.2s ease;\n  transition: transform 0.2s ease, -webkit-transform 0.2s ease;\n  align-self: center;\n  color: #6c757d;\n  flex-shrink: 0;\n}\n.sd-chevron-up[_ngcontent-%COMP%] {\n  -webkit-transform: rotate(-180deg);\n          transform: rotate(-180deg);\n}\n.sd-chevron-sm[_ngcontent-%COMP%] {\n  font-size: 0.72rem;\n}\n.sd-factura-cuerpo[_ngcontent-%COMP%] {\n  padding: 0.5rem 0.65rem 0.75rem;\n  background: #fff;\n  border-top: 1px solid #e9ecef;\n}\n.sd-item-wrap[_ngcontent-%COMP%] {\n  border: 1px solid #e9ecef;\n  border-radius: 6px;\n  margin-bottom: 0.45rem;\n  overflow: hidden;\n  background: #fafafa;\n}\n.sd-item-cab[_ngcontent-%COMP%] {\n  width: 100%;\n  display: -webkit-box;\n  display: flex;\n  flex-wrap: wrap;\n  -webkit-box-align: center;\n          align-items: center;\n  gap: 0.35rem 0.5rem;\n  padding: 0.55rem 0.6rem;\n  border: none;\n  background: transparent;\n  text-align: left;\n  cursor: pointer;\n}\n.sd-guardado-ok[_ngcontent-%COMP%] {\n  font-size: 1.15rem;\n  flex-shrink: 0;\n}\n.sd-guardar-linea-wrap[_ngcontent-%COMP%] {\n  display: -webkit-box;\n  display: flex;\n  flex-wrap: wrap;\n  -webkit-box-align: center;\n          align-items: center;\n}\n.gestion-linea-ok[_ngcontent-%COMP%] {\n  display: inline-block;\n  vertical-align: middle;\n  font-size: 1.1rem;\n}\n.sd-item-cab[_ngcontent-%COMP%]:focus {\n  outline: 2px solid rgba(0, 97, 169, 0.35);\n  outline-offset: 1px;\n}\n.sd-item-nombre[_ngcontent-%COMP%] {\n  -webkit-box-flex: 1;\n          flex: 1 1 100%;\n  font-weight: 600;\n  font-size: 0.9rem;\n  line-height: 1.3;\n  word-break: break-word;\n}\n.sd-item-resumen[_ngcontent-%COMP%] {\n  -webkit-box-flex: 1;\n          flex: 1 1 auto;\n  min-width: 0;\n}\n.sd-item-detalle[_ngcontent-%COMP%] {\n  padding: 0.65rem 0.75rem 0.85rem;\n  background: #fff;\n  border-top: 1px dashed #dee2e6;\n}\n.sd-kv-grid[_ngcontent-%COMP%] {\n  display: grid;\n  grid-template-columns: auto 1fr;\n  gap: 0.25rem 0.75rem;\n  margin-bottom: 0.75rem;\n}\n.sd-campo[_ngcontent-%COMP%] {\n  margin-bottom: 0.65rem;\n}\n.sd-cerrar-proceso[_ngcontent-%COMP%]     .dx-button {\n  width: 100%;\n}\n.sd-campo[_ngcontent-%COMP%]     .dx-texteditor {\n  width: 100% !important;\n  max-width: 100%;\n}\n\n.sd-est-verde[_ngcontent-%COMP%] {\n  color: #1e7e34 !important;\n}\n.sd-punto.sd-est-verde[_ngcontent-%COMP%] {\n  background-color: #28a745 !important;\n}\n.sd-est-azul[_ngcontent-%COMP%] {\n  color: #004085 !important;\n}\n.sd-punto.sd-est-azul[_ngcontent-%COMP%] {\n  background-color: #007bff !important;\n}\n.sd-est-rojo[_ngcontent-%COMP%] {\n  color: #c82333 !important;\n}\n.sd-punto.sd-est-rojo[_ngcontent-%COMP%] {\n  background-color: #dc3545 !important;\n}\n.sd-est-amarillo[_ngcontent-%COMP%] {\n  color: #856404 !important;\n}\n.sd-punto.sd-est-amarillo[_ngcontent-%COMP%] {\n  background-color: #ffc107 !important;\n}\n.sd-item-nombre.sd-item-alerta[_ngcontent-%COMP%] {\n  color: #b00020 !important;\n  font-weight: 700;\n}\n@media (max-width: 767.98px) {\n  .remiPro[_ngcontent-%COMP%] {\n    padding-left: 0.75rem;\n    padding-right: 0.75rem;\n    padding-top: 1rem;\n  }\n\n  .gestion-entregas-card[_ngcontent-%COMP%]   .card-body[_ngcontent-%COMP%] {\n    padding-left: 0.75rem;\n    padding-right: 0.75rem;\n  }\n\n  .gestion-filtros[_ngcontent-%COMP%] {\n    padding-left: 0;\n    padding-right: 0;\n  }\n}\n/*# sourceMappingURL=data:application/json;base64,eyJ2ZXJzaW9uIjozLCJzb3VyY2VzIjpbInNyYy9hcHAvcGFnZXMvZ2VzdGlvbi1lbnRyZWdhcy1ib2RlZ2EvZ2VzdGlvbi1lbnRyZWdhcy1ib2RlZ2EuY29tcG9uZW50LnNjc3MiLCJzcmMvYXBwL3BhZ2VzL2dlc3Rpb24tZW50cmVnYXMtYm9kZWdhL0M6XFxGSURFTlNcXGFsb2phYmFzZXMyMDI1L3NyY1xcYXBwXFxwYWdlc1xcZ2VzdGlvbi1lbnRyZWdhcy1ib2RlZ2FcXGdlc3Rpb24tZW50cmVnYXMtYm9kZWdhLmNvbXBvbmVudC5zY3NzIl0sIm5hbWVzIjpbXSwibWFwcGluZ3MiOiJBQUFBLGdCQUFnQjtBQ0FoQixzREFBQTtBQUNBO0VBQ0Usb0JBQUE7RUFDQSxpQkFBQTtFQUNBLGtCQUFBO0FERUY7QUNDQTtFQUNFLGNBQUE7RUFDQSxlQUFBO0FERUY7QUNDQTtFQUNFLHFCQUFBO0VBQ0Esc0JBQUE7QURFRjtBQ0NBLGtGQUFBO0FBQ0E7RUFDRSxrQkFBQTtBREVGO0FDQ0E7RUFDRSxlQUFBO0FERUY7QUNDQTtFQUNFLFdBQUE7RUFDQSxlQUFBO0FERUY7QUNDQTs7O0VBR0UsYUFBQTtFQUNBLGNBQUE7RUFDQSxXQUFBO0VBQ0EsZUFBQTtBREVGO0FDQ0E7RUFDRSxzQkFBQTtFQUNBLGVBQUE7QURFRjtBQ0NBO0VBQ0UsWUFBQTtBREVGO0FDQ0E7RUFDRSxtQkFBQTtVQUFBLGVBQUE7RUFDQSxZQUFBO0VBQ0EsaUJBQUE7RUFDQSxnQkFBQTtBREVGO0FDQ0E7RUFDRTtJQUNFLG9CQUFBO0lBQUEsYUFBQTtJQUNBLDRCQUFBO0lBQUEsNkJBQUE7WUFBQSxzQkFBQTtJQUNBLDBCQUFBO1lBQUEsb0JBQUE7SUFDQSxXQUFBO0VERUY7O0VDQ0E7SUFDRSxXQUFBO0lBQ0EsZUFBQTtFREVGOztFQ0NBO0lBQ0UsY0FBQTtFREVGO0FBQ0Y7QUNDQTtFQUNFLGtCQUFBO0VBQ0EsdUJBQUE7QURDRjtBQ0VBO0VBQ0Usa0JBQUE7RUFDQSx1QkFBQTtBRENGO0FDRUE7RUFDRSxrQkFBQTtFQUNBLGlCQUFBO0FEQ0Y7QUNFQSxrRUFBQTtBQUNBO0VBQ0UsaUJBQUE7RUFDQSxlQUFBO0FEQ0Y7QUNFQTtFQUNFLGlCQUFBO0FEQ0Y7QUNFQTs7O0VBR0Usa0JBQUE7QURDRjtBQ0VBO0VBQ0Usa0JBQUE7QURDRjtBQ0VBO0VBQ0Usc0JBQUE7QURDRjtBQ0VBO0VBQ0UseUJBQUE7QURDRjtBQ0VBO0VBQ0Usa0JBQUE7QURDRjtBQ0VBO0VBQ0UsZUFBQTtFQUNBLGlCQUFBO0VBQ0EsaUJBQUE7RUFDQSxnQkFBQTtBRENGO0FDRUE7RUFDRSxtQkFBQTtBRENGO0FDRUE7RUFDRSxrQkFBQTtBRENGO0FDRUE7O0VBRUUsc0JBQUE7QURDRjtBQ0VBO0VBQ0UsV0FBQTtBRENGO0FDRUE7RUFDRSxVQUFBO0FEQ0Y7QUNFQTtFQUNFLFFBQUE7QURDRjtBQ0VBLHVFQUFBO0FBQ0E7RUFDRSxzQkFBQTtBRENGO0FDRUE7RUFDRSxvQkFBQTtFQUFBLGFBQUE7RUFDQSxlQUFBO0VBQ0EsbUJBQUE7RUFDQSx5QkFBQTtVQUFBLG1CQUFBO0FEQ0Y7QUNFQTtFQUNFLDJCQUFBO0VBQUEsb0JBQUE7RUFDQSx5QkFBQTtVQUFBLG1CQUFBO0VBQ0EsWUFBQTtBRENGO0FDRUE7RUFDRSxxQkFBQTtFQUNBLFdBQUE7RUFDQSxZQUFBO0VBQ0Esa0JBQUE7RUFDQSxjQUFBO0FEQ0Y7QUNFQTtFQUNFLHlCQUFBO0VBQ0Esa0JBQUE7RUFDQSxnQkFBQTtFQUNBLGdCQUFBO0FEQ0Y7QUNFQTtFQUNFLFdBQUE7RUFDQSxvQkFBQTtFQUFBLGFBQUE7RUFDQSx3QkFBQTtVQUFBLHVCQUFBO0VBQ0EsV0FBQTtFQUNBLHdCQUFBO0VBQ0EsWUFBQTtFQUNBLG1CQUFBO0VBQ0EsZ0JBQUE7RUFDQSxlQUFBO0FEQ0Y7QUNFQTtFQUNFLHlDQUFBO0VBQ0EsbUJBQUE7QURDRjtBQ0VBO0VBQ0UsbUJBQUE7VUFBQSxPQUFBO0VBQ0EsWUFBQTtFQUNBLG9CQUFBO0VBQUEsYUFBQTtFQUNBLDRCQUFBO0VBQUEsNkJBQUE7VUFBQSxzQkFBQTtFQUNBLFlBQUE7QURDRjtBQ0VBO0VBQ0UsZ0JBQUE7RUFDQSxrQkFBQTtBRENGO0FDRUE7RUFDRSxrQkFBQTtFQUNBLGlCQUFBO0VBQ0Esc0JBQUE7QURDRjtBQ0VBO0VBQ0Usa0JBQUE7RUFDQSxjQUFBO0FEQ0Y7QUNFQTtFQUNFLCtDQUFBO0VBQUEsdUNBQUE7RUFBQSwrQkFBQTtFQUFBLDREQUFBO0VBQ0Esa0JBQUE7RUFDQSxjQUFBO0VBQ0EsY0FBQTtBRENGO0FDRUE7RUFDRSxrQ0FBQTtVQUFBLDBCQUFBO0FEQ0Y7QUNFQTtFQUNFLGtCQUFBO0FEQ0Y7QUNFQTtFQUNFLCtCQUFBO0VBQ0EsZ0JBQUE7RUFDQSw2QkFBQTtBRENGO0FDRUE7RUFDRSx5QkFBQTtFQUNBLGtCQUFBO0VBQ0Esc0JBQUE7RUFDQSxnQkFBQTtFQUNBLG1CQUFBO0FEQ0Y7QUNFQTtFQUNFLFdBQUE7RUFDQSxvQkFBQTtFQUFBLGFBQUE7RUFDQSxlQUFBO0VBQ0EseUJBQUE7VUFBQSxtQkFBQTtFQUNBLG1CQUFBO0VBQ0EsdUJBQUE7RUFDQSxZQUFBO0VBQ0EsdUJBQUE7RUFDQSxnQkFBQTtFQUNBLGVBQUE7QURDRjtBQ0VBO0VBQ0Usa0JBQUE7RUFDQSxjQUFBO0FEQ0Y7QUNFQTtFQUNFLG9CQUFBO0VBQUEsYUFBQTtFQUNBLGVBQUE7RUFDQSx5QkFBQTtVQUFBLG1CQUFBO0FEQ0Y7QUNFQTtFQUNFLHFCQUFBO0VBQ0Esc0JBQUE7RUFDQSxpQkFBQTtBRENGO0FDRUE7RUFDRSx5Q0FBQTtFQUNBLG1CQUFBO0FEQ0Y7QUNFQTtFQUNFLG1CQUFBO1VBQUEsY0FBQTtFQUNBLGdCQUFBO0VBQ0EsaUJBQUE7RUFDQSxnQkFBQTtFQUNBLHNCQUFBO0FEQ0Y7QUNFQTtFQUNFLG1CQUFBO1VBQUEsY0FBQTtFQUNBLFlBQUE7QURDRjtBQ0VBO0VBQ0UsZ0NBQUE7RUFDQSxnQkFBQTtFQUNBLDhCQUFBO0FEQ0Y7QUNFQTtFQUNFLGFBQUE7RUFDQSwrQkFBQTtFQUNBLG9CQUFBO0VBQ0Esc0JBQUE7QURDRjtBQ0VBO0VBQ0Usc0JBQUE7QURDRjtBQ0VBO0VBQ0UsV0FBQTtBRENGO0FDRUE7RUFDRSxzQkFBQTtFQUNBLGVBQUE7QURDRjtBQ0VBLHVEQUFBO0FBQ0E7RUFDRSx5QkFBQTtBRENGO0FDRUE7RUFDRSxvQ0FBQTtBRENGO0FDRUE7RUFDRSx5QkFBQTtBRENGO0FDRUE7RUFDRSxvQ0FBQTtBRENGO0FDRUE7RUFDRSx5QkFBQTtBRENGO0FDRUE7RUFDRSxvQ0FBQTtBRENGO0FDRUE7RUFDRSx5QkFBQTtBRENGO0FDRUE7RUFDRSxvQ0FBQTtBRENGO0FDRUE7RUFDRSx5QkFBQTtFQUNBLGdCQUFBO0FEQ0Y7QUNFQTtFQUNFO0lBQ0UscUJBQUE7SUFDQSxzQkFBQTtJQUNBLGlCQUFBO0VEQ0Y7O0VDRUE7SUFDRSxxQkFBQTtJQUNBLHNCQUFBO0VEQ0Y7O0VDRUE7SUFDRSxlQUFBO0lBQ0EsZ0JBQUE7RURDRjtBQUNGIiwiZmlsZSI6InNyYy9hcHAvcGFnZXMvZ2VzdGlvbi1lbnRyZWdhcy1ib2RlZ2EvZ2VzdGlvbi1lbnRyZWdhcy1ib2RlZ2EuY29tcG9uZW50LnNjc3MiLCJzb3VyY2VzQ29udGVudCI6WyJAY2hhcnNldCBcIlVURi04XCI7XG4vKiBGaWxhIGRlbCBjb21ibyAobWlzbW8gY3JpdGVyaW8gcXVlIGRldm9sdWNpb25lcykuICovXG4ucmVtaVBybyB7XG4gIHBhZGRpbmc6IDEuNWVtIDJlbSAwO1xuICBtYXJnaW4tdG9wOiAwLjVlbTtcbiAgdGV4dC1hbGlnbjogY2VudGVyO1xufVxuXG4uZ2VzdGlvbi1tZW51LXN1cGVyaW9yIHtcbiAgbWFyZ2luLWxlZnQ6IDA7XG4gIG1hcmdpbi1yaWdodDogMDtcbn1cblxuLnB4LWdlc3Rpb24tbWVudSB7XG4gIHBhZGRpbmctbGVmdDogMC43NXJlbTtcbiAgcGFkZGluZy1yaWdodDogMC43NXJlbTtcbn1cblxuLyogRmlsdHJvczogZXRpcXVldGEgYXJyaWJhLCBjb250cm9sIGEgYW5jaG8gY29tcGxldG8gKGV2aXRhIHJlY29ydGVzIGVuIG3Ds3ZpbCkuICovXG4uZ2VzdGlvbi1maWx0cm9zIHtcbiAgb3ZlcmZsb3cteDogaGlkZGVuO1xufVxuXG4uZ2VzdGlvbi1maWx0cm8tY2FtcG8gLnRleHRQIHtcbiAgcGFkZGluZy1sZWZ0OiAwO1xufVxuXG4uZ2VzdGlvbi1maWx0cm8tZWRpdG9yIHtcbiAgd2lkdGg6IDEwMCU7XG4gIG1heC13aWR0aDogMTAwJTtcbn1cblxuLmdlc3Rpb24tZmlsdHJvLWVkaXRvci5kYXRlQiBkeC1kYXRlLWJveCxcbi5nZXN0aW9uLWZpbHRyby1lZGl0b3IuZGF0ZUIgZHgtbnVtYmVyLWJveCxcbi5nZXN0aW9uLWZpbHRyby1lZGl0b3IuZGF0ZUIgZHgtdGV4dC1ib3gge1xuICBtYXJnaW4tdG9wOiAwO1xuICBkaXNwbGF5OiBibG9jaztcbiAgd2lkdGg6IDEwMCU7XG4gIG1heC13aWR0aDogMTAwJTtcbn1cblxuOjpuZy1kZWVwIC5nZXN0aW9uLWZpbHRyby1lZGl0b3IgLmR4LXRleHRlZGl0b3Ige1xuICB3aWR0aDogMTAwJSAhaW1wb3J0YW50O1xuICBtYXgtd2lkdGg6IDEwMCU7XG59XG5cbi5nZXN0aW9uLWZpbHRyby1jZXJyYWRhcy1pbm5lciB7XG4gIG1pbi13aWR0aDogMDtcbn1cblxuLmdlc3Rpb24tZmlsdHJvLWNlcnJhZGFzLXRleHRvIHtcbiAgZmxleDogMSAxIDEycmVtO1xuICBtaW4td2lkdGg6IDA7XG4gIGxpbmUtaGVpZ2h0OiAxLjM1O1xuICB0ZXh0LWFsaWduOiBsZWZ0O1xufVxuXG5AbWVkaWEgKG1heC13aWR0aDogNzY3Ljk4cHgpIHtcbiAgLmdlc3Rpb24tZmlsdHJvLWFjY2lvbmVzIHtcbiAgICBkaXNwbGF5OiBmbGV4O1xuICAgIGZsZXgtZGlyZWN0aW9uOiBjb2x1bW47XG4gICAgYWxpZ24taXRlbXM6IHN0cmV0Y2g7XG4gICAgZ2FwOiAwLjVyZW07XG4gIH1cblxuICAuZ2VzdGlvbi1maWx0cm8tYWNjaW9uZXMgOjpuZy1kZWVwIC5keC1idXR0b24ge1xuICAgIHdpZHRoOiAxMDAlO1xuICAgIG1heC13aWR0aDogMTAwJTtcbiAgfVxuXG4gIC5nZXN0aW9uLWZpbHRyby1hY2Npb25lcyBkeC1idXR0b24gKyBkeC1idXR0b24ge1xuICAgIG1hcmdpbi1sZWZ0OiAwO1xuICB9XG59XG4ucmVtaVByby50aXR1bG9zIC5zZWxlY3Qge1xuICB0ZXh0LWFsaWduOiBjZW50ZXI7XG4gIGJhY2tncm91bmQtY29sb3I6IHdoaXRlO1xufVxuXG4uc2VsZWN0IHtcbiAgdGV4dC1hbGlnbjogY2VudGVyO1xuICBiYWNrZ3JvdW5kLWNvbG9yOiB3aGl0ZTtcbn1cblxuLnRpdHVsb3Mge1xuICB0ZXh0LWFsaWduOiBjZW50ZXI7XG4gIGZvbnQtd2VpZ2h0OiBib2xkO1xufVxuXG4vKiBNaXNtbyBjcml0ZXJpbyB2aXN1YWwgcXVlIGNhamEtbWVub3IgKHRleHRQLCBkYXRlQiwgY2VudHJhcikuICovXG4udGV4dFAge1xuICBmb250LXdlaWdodDogYm9sZDtcbiAgZm9udC1zaXplOiAxMXB0O1xufVxuXG4udGV4dFAyIHtcbiAgbWFyZ2luLXRvcDogMC4zZW07XG59XG5cbi5kYXRlQiBkeC1kYXRlLWJveCxcbi5kYXRlQiBkeC1udW1iZXItYm94LFxuLmRhdGVCIGR4LXRleHQtYm94IHtcbiAgbWFyZ2luLXRvcDogLTAuOGVtO1xufVxuXG4uY2VudHJhciB7XG4gIHRleHQtYWxpZ246IGNlbnRlcjtcbn1cblxuLmdlc3Rpb24tZW50cmVnYXMtY2FyZCB7XG4gIGJvcmRlci1yYWRpdXM6IDAuMjVyZW07XG59XG5cbi5nZXN0aW9uLWVudHJlZ2FzLWNhcmQgLmNhcmQtaGVhZGVyIHtcbiAgYmFja2dyb3VuZC1jb2xvcjogI2Y4ZjlmYTtcbn1cblxuLmNvbnMtbGFiZWwge1xuICBmb250LXNpemU6IGluaGVyaXQ7XG59XG5cbi5jb25zLXZhbG9yIHtcbiAgZm9udC1zaXplOiA0cmVtO1xuICBmb250LXdlaWdodDogYm9sZDtcbiAgbWFyZ2luLXRvcDogLTFyZW07XG4gIGxpbmUtaGVpZ2h0OiAxLjE7XG59XG5cbi5nZXN0aW9uLWVudHJlZ2FzLWFjY2lvbmVzIGR4LWJ1dHRvbiArIGR4LWJ1dHRvbiB7XG4gIG1hcmdpbi1sZWZ0OiAwLjVyZW07XG59XG5cbjo6bmctZGVlcCAuZ2VzdGlvbi1lbnRyZWdhcy1jYXJkIC5kYXRlQiAuZHgtdGV4dGVkaXRvci1pbnB1dCB7XG4gIHRleHQtYWxpZ246IGNlbnRlcjtcbn1cblxudGFibGUgdGQsXG50YWJsZSB0aCB7XG4gIHZlcnRpY2FsLWFsaWduOiBtaWRkbGU7XG59XG5cbi50cmF6YWJpbGlkYWQtcG9wdXAgaDYge1xuICBjb2xvcjogIzMzMztcbn1cblxuLnRyYXphYmlsaWRhZC1wb3B1cCAudy0yNSB7XG4gIHdpZHRoOiAyNSU7XG59XG5cbi5lbnRyZWdhLWNwLWlucHV0cyB7XG4gIGdhcDogNHB4O1xufVxuXG4vKiDigJTigJQgU01BUlQtRElTUEFUQ0ggKG3Ds3ZpbCk6IGFjb3JkZcOzbiBmYWN0dXJhIOKGkiDDrXRlbSDihpIgZm9ybXVsYXJpbyDigJTigJQgKi9cbi5zbWFydC1kaXNwYXRjaC1tb3ZpbCB7XG4gIG1hcmdpbi1ib3R0b206IDAuMjVyZW07XG59XG5cbi5zZC1sZXllbmRhIHtcbiAgZGlzcGxheTogZmxleDtcbiAgZmxleC13cmFwOiB3cmFwO1xuICBnYXA6IDAuNXJlbSAwLjg1cmVtO1xuICBhbGlnbi1pdGVtczogY2VudGVyO1xufVxuXG4uc2QtbGV5ZW5kYS1pdGVtIHtcbiAgZGlzcGxheTogaW5saW5lLWZsZXg7XG4gIGFsaWduLWl0ZW1zOiBjZW50ZXI7XG4gIGdhcDogMC4zNXJlbTtcbn1cblxuLnNkLXB1bnRvIHtcbiAgZGlzcGxheTogaW5saW5lLWJsb2NrO1xuICB3aWR0aDogMTBweDtcbiAgaGVpZ2h0OiAxMHB4O1xuICBib3JkZXItcmFkaXVzOiA1MCU7XG4gIGZsZXgtc2hyaW5rOiAwO1xufVxuXG4uc2QtZmFjdHVyYS1jYXJkIHtcbiAgYm9yZGVyOiAxcHggc29saWQgI2RlZTJlNjtcbiAgYm9yZGVyLXJhZGl1czogNnB4O1xuICBvdmVyZmxvdzogaGlkZGVuO1xuICBiYWNrZ3JvdW5kOiAjZmZmO1xufVxuXG4uc2QtZmFjdHVyYS1oZWFkZXIge1xuICB3aWR0aDogMTAwJTtcbiAgZGlzcGxheTogZmxleDtcbiAgYWxpZ24taXRlbXM6IGZsZXgtc3RhcnQ7XG4gIGdhcDogMC41cmVtO1xuICBwYWRkaW5nOiAwLjY1cmVtIDAuNzVyZW07XG4gIGJvcmRlcjogbm9uZTtcbiAgYmFja2dyb3VuZDogI2Y4ZjlmYTtcbiAgdGV4dC1hbGlnbjogbGVmdDtcbiAgY3Vyc29yOiBwb2ludGVyO1xufVxuXG4uc2QtZmFjdHVyYS1oZWFkZXI6Zm9jdXMge1xuICBvdXRsaW5lOiAycHggc29saWQgcmdiYSgwLCA5NywgMTY5LCAwLjM1KTtcbiAgb3V0bGluZS1vZmZzZXQ6IDFweDtcbn1cblxuLnNkLWZhY3R1cmEtdGV4dG8ge1xuICBmbGV4OiAxO1xuICBtaW4td2lkdGg6IDA7XG4gIGRpc3BsYXk6IGZsZXg7XG4gIGZsZXgtZGlyZWN0aW9uOiBjb2x1bW47XG4gIGdhcDogMC4xNXJlbTtcbn1cblxuLnNkLWZhY3R1cmEtZG9jIHtcbiAgZm9udC13ZWlnaHQ6IDcwMDtcbiAgZm9udC1zaXplOiAwLjk1cmVtO1xufVxuXG4uc2QtZmFjdHVyYS1jbGllbnRlIHtcbiAgZm9udC1zaXplOiAwLjg4cmVtO1xuICBsaW5lLWhlaWdodDogMS4yNTtcbiAgd29yZC1icmVhazogYnJlYWstd29yZDtcbn1cblxuLnNkLWZhY3R1cmEtbWV0YSB7XG4gIGZvbnQtc2l6ZTogMC43NXJlbTtcbiAgY29sb3I6ICM2Yzc1N2Q7XG59XG5cbi5zZC1jaGV2cm9uIHtcbiAgdHJhbnNpdGlvbjogdHJhbnNmb3JtIDAuMnMgZWFzZTtcbiAgYWxpZ24tc2VsZjogY2VudGVyO1xuICBjb2xvcjogIzZjNzU3ZDtcbiAgZmxleC1zaHJpbms6IDA7XG59XG5cbi5zZC1jaGV2cm9uLXVwIHtcbiAgdHJhbnNmb3JtOiByb3RhdGUoLTE4MGRlZyk7XG59XG5cbi5zZC1jaGV2cm9uLXNtIHtcbiAgZm9udC1zaXplOiAwLjcycmVtO1xufVxuXG4uc2QtZmFjdHVyYS1jdWVycG8ge1xuICBwYWRkaW5nOiAwLjVyZW0gMC42NXJlbSAwLjc1cmVtO1xuICBiYWNrZ3JvdW5kOiAjZmZmO1xuICBib3JkZXItdG9wOiAxcHggc29saWQgI2U5ZWNlZjtcbn1cblxuLnNkLWl0ZW0td3JhcCB7XG4gIGJvcmRlcjogMXB4IHNvbGlkICNlOWVjZWY7XG4gIGJvcmRlci1yYWRpdXM6IDZweDtcbiAgbWFyZ2luLWJvdHRvbTogMC40NXJlbTtcbiAgb3ZlcmZsb3c6IGhpZGRlbjtcbiAgYmFja2dyb3VuZDogI2ZhZmFmYTtcbn1cblxuLnNkLWl0ZW0tY2FiIHtcbiAgd2lkdGg6IDEwMCU7XG4gIGRpc3BsYXk6IGZsZXg7XG4gIGZsZXgtd3JhcDogd3JhcDtcbiAgYWxpZ24taXRlbXM6IGNlbnRlcjtcbiAgZ2FwOiAwLjM1cmVtIDAuNXJlbTtcbiAgcGFkZGluZzogMC41NXJlbSAwLjZyZW07XG4gIGJvcmRlcjogbm9uZTtcbiAgYmFja2dyb3VuZDogdHJhbnNwYXJlbnQ7XG4gIHRleHQtYWxpZ246IGxlZnQ7XG4gIGN1cnNvcjogcG9pbnRlcjtcbn1cblxuLnNkLWd1YXJkYWRvLW9rIHtcbiAgZm9udC1zaXplOiAxLjE1cmVtO1xuICBmbGV4LXNocmluazogMDtcbn1cblxuLnNkLWd1YXJkYXItbGluZWEtd3JhcCB7XG4gIGRpc3BsYXk6IGZsZXg7XG4gIGZsZXgtd3JhcDogd3JhcDtcbiAgYWxpZ24taXRlbXM6IGNlbnRlcjtcbn1cblxuLmdlc3Rpb24tbGluZWEtb2sge1xuICBkaXNwbGF5OiBpbmxpbmUtYmxvY2s7XG4gIHZlcnRpY2FsLWFsaWduOiBtaWRkbGU7XG4gIGZvbnQtc2l6ZTogMS4xcmVtO1xufVxuXG4uc2QtaXRlbS1jYWI6Zm9jdXMge1xuICBvdXRsaW5lOiAycHggc29saWQgcmdiYSgwLCA5NywgMTY5LCAwLjM1KTtcbiAgb3V0bGluZS1vZmZzZXQ6IDFweDtcbn1cblxuLnNkLWl0ZW0tbm9tYnJlIHtcbiAgZmxleDogMSAxIDEwMCU7XG4gIGZvbnQtd2VpZ2h0OiA2MDA7XG4gIGZvbnQtc2l6ZTogMC45cmVtO1xuICBsaW5lLWhlaWdodDogMS4zO1xuICB3b3JkLWJyZWFrOiBicmVhay13b3JkO1xufVxuXG4uc2QtaXRlbS1yZXN1bWVuIHtcbiAgZmxleDogMSAxIGF1dG87XG4gIG1pbi13aWR0aDogMDtcbn1cblxuLnNkLWl0ZW0tZGV0YWxsZSB7XG4gIHBhZGRpbmc6IDAuNjVyZW0gMC43NXJlbSAwLjg1cmVtO1xuICBiYWNrZ3JvdW5kOiAjZmZmO1xuICBib3JkZXItdG9wOiAxcHggZGFzaGVkICNkZWUyZTY7XG59XG5cbi5zZC1rdi1ncmlkIHtcbiAgZGlzcGxheTogZ3JpZDtcbiAgZ3JpZC10ZW1wbGF0ZS1jb2x1bW5zOiBhdXRvIDFmcjtcbiAgZ2FwOiAwLjI1cmVtIDAuNzVyZW07XG4gIG1hcmdpbi1ib3R0b206IDAuNzVyZW07XG59XG5cbi5zZC1jYW1wbyB7XG4gIG1hcmdpbi1ib3R0b206IDAuNjVyZW07XG59XG5cbi5zZC1jZXJyYXItcHJvY2VzbyA6Om5nLWRlZXAgLmR4LWJ1dHRvbiB7XG4gIHdpZHRoOiAxMDAlO1xufVxuXG4uc2QtY2FtcG8gOjpuZy1kZWVwIC5keC10ZXh0ZWRpdG9yIHtcbiAgd2lkdGg6IDEwMCUgIWltcG9ydGFudDtcbiAgbWF4LXdpZHRoOiAxMDAlO1xufVxuXG4vKiBDw7NkaWdvIGRlIGNvbG9yZXMgKHRleHRvIG1hdGVyaWFsICsgcHVudG8gZmFjdHVyYSkgKi9cbi5zZC1lc3QtdmVyZGUge1xuICBjb2xvcjogIzFlN2UzNCAhaW1wb3J0YW50O1xufVxuXG4uc2QtcHVudG8uc2QtZXN0LXZlcmRlIHtcbiAgYmFja2dyb3VuZC1jb2xvcjogIzI4YTc0NSAhaW1wb3J0YW50O1xufVxuXG4uc2QtZXN0LWF6dWwge1xuICBjb2xvcjogIzAwNDA4NSAhaW1wb3J0YW50O1xufVxuXG4uc2QtcHVudG8uc2QtZXN0LWF6dWwge1xuICBiYWNrZ3JvdW5kLWNvbG9yOiAjMDA3YmZmICFpbXBvcnRhbnQ7XG59XG5cbi5zZC1lc3Qtcm9qbyB7XG4gIGNvbG9yOiAjYzgyMzMzICFpbXBvcnRhbnQ7XG59XG5cbi5zZC1wdW50by5zZC1lc3Qtcm9qbyB7XG4gIGJhY2tncm91bmQtY29sb3I6ICNkYzM1NDUgIWltcG9ydGFudDtcbn1cblxuLnNkLWVzdC1hbWFyaWxsbyB7XG4gIGNvbG9yOiAjODU2NDA0ICFpbXBvcnRhbnQ7XG59XG5cbi5zZC1wdW50by5zZC1lc3QtYW1hcmlsbG8ge1xuICBiYWNrZ3JvdW5kLWNvbG9yOiAjZmZjMTA3ICFpbXBvcnRhbnQ7XG59XG5cbi5zZC1pdGVtLW5vbWJyZS5zZC1pdGVtLWFsZXJ0YSB7XG4gIGNvbG9yOiAjYjAwMDIwICFpbXBvcnRhbnQ7XG4gIGZvbnQtd2VpZ2h0OiA3MDA7XG59XG5cbkBtZWRpYSAobWF4LXdpZHRoOiA3NjcuOThweCkge1xuICAucmVtaVBybyB7XG4gICAgcGFkZGluZy1sZWZ0OiAwLjc1cmVtO1xuICAgIHBhZGRpbmctcmlnaHQ6IDAuNzVyZW07XG4gICAgcGFkZGluZy10b3A6IDFyZW07XG4gIH1cblxuICAuZ2VzdGlvbi1lbnRyZWdhcy1jYXJkIC5jYXJkLWJvZHkge1xuICAgIHBhZGRpbmctbGVmdDogMC43NXJlbTtcbiAgICBwYWRkaW5nLXJpZ2h0OiAwLjc1cmVtO1xuICB9XG5cbiAgLmdlc3Rpb24tZmlsdHJvcyB7XG4gICAgcGFkZGluZy1sZWZ0OiAwO1xuICAgIHBhZGRpbmctcmlnaHQ6IDA7XG4gIH1cbn0iLCIvKiBGaWxhIGRlbCBjb21ibyAobWlzbW8gY3JpdGVyaW8gcXVlIGRldm9sdWNpb25lcykuICovXHJcbi5yZW1pUHJvIHtcclxuICBwYWRkaW5nOiAxLjVlbSAyZW0gMDtcclxuICBtYXJnaW4tdG9wOiAwLjVlbTtcclxuICB0ZXh0LWFsaWduOiBjZW50ZXI7XHJcbn1cclxuXHJcbi5nZXN0aW9uLW1lbnUtc3VwZXJpb3Ige1xyXG4gIG1hcmdpbi1sZWZ0OiAwO1xyXG4gIG1hcmdpbi1yaWdodDogMDtcclxufVxyXG5cclxuLnB4LWdlc3Rpb24tbWVudSB7XHJcbiAgcGFkZGluZy1sZWZ0OiAwLjc1cmVtO1xyXG4gIHBhZGRpbmctcmlnaHQ6IDAuNzVyZW07XHJcbn1cclxuXHJcbi8qIEZpbHRyb3M6IGV0aXF1ZXRhIGFycmliYSwgY29udHJvbCBhIGFuY2hvIGNvbXBsZXRvIChldml0YSByZWNvcnRlcyBlbiBtw7N2aWwpLiAqL1xyXG4uZ2VzdGlvbi1maWx0cm9zIHtcclxuICBvdmVyZmxvdy14OiBoaWRkZW47XHJcbn1cclxuXHJcbi5nZXN0aW9uLWZpbHRyby1jYW1wbyAudGV4dFAge1xyXG4gIHBhZGRpbmctbGVmdDogMDtcclxufVxyXG5cclxuLmdlc3Rpb24tZmlsdHJvLWVkaXRvciB7XHJcbiAgd2lkdGg6IDEwMCU7XHJcbiAgbWF4LXdpZHRoOiAxMDAlO1xyXG59XHJcblxyXG4uZ2VzdGlvbi1maWx0cm8tZWRpdG9yLmRhdGVCIGR4LWRhdGUtYm94LFxyXG4uZ2VzdGlvbi1maWx0cm8tZWRpdG9yLmRhdGVCIGR4LW51bWJlci1ib3gsXHJcbi5nZXN0aW9uLWZpbHRyby1lZGl0b3IuZGF0ZUIgZHgtdGV4dC1ib3gge1xyXG4gIG1hcmdpbi10b3A6IDA7XHJcbiAgZGlzcGxheTogYmxvY2s7XHJcbiAgd2lkdGg6IDEwMCU7XHJcbiAgbWF4LXdpZHRoOiAxMDAlO1xyXG59XHJcblxyXG46Om5nLWRlZXAgLmdlc3Rpb24tZmlsdHJvLWVkaXRvciAuZHgtdGV4dGVkaXRvciB7XHJcbiAgd2lkdGg6IDEwMCUgIWltcG9ydGFudDtcclxuICBtYXgtd2lkdGg6IDEwMCU7XHJcbn1cclxuXHJcbi5nZXN0aW9uLWZpbHRyby1jZXJyYWRhcy1pbm5lciB7XHJcbiAgbWluLXdpZHRoOiAwO1xyXG59XHJcblxyXG4uZ2VzdGlvbi1maWx0cm8tY2VycmFkYXMtdGV4dG8ge1xyXG4gIGZsZXg6IDEgMSAxMnJlbTtcclxuICBtaW4td2lkdGg6IDA7XHJcbiAgbGluZS1oZWlnaHQ6IDEuMzU7XHJcbiAgdGV4dC1hbGlnbjogbGVmdDtcclxufVxyXG5cclxuQG1lZGlhIChtYXgtd2lkdGg6IDc2Ny45OHB4KSB7XHJcbiAgLmdlc3Rpb24tZmlsdHJvLWFjY2lvbmVzIHtcclxuICAgIGRpc3BsYXk6IGZsZXg7XHJcbiAgICBmbGV4LWRpcmVjdGlvbjogY29sdW1uO1xyXG4gICAgYWxpZ24taXRlbXM6IHN0cmV0Y2g7XHJcbiAgICBnYXA6IDAuNXJlbTtcclxuICB9XHJcblxyXG4gIC5nZXN0aW9uLWZpbHRyby1hY2Npb25lcyA6Om5nLWRlZXAgLmR4LWJ1dHRvbiB7XHJcbiAgICB3aWR0aDogMTAwJTtcclxuICAgIG1heC13aWR0aDogMTAwJTtcclxuICB9XHJcblxyXG4gIC5nZXN0aW9uLWZpbHRyby1hY2Npb25lcyBkeC1idXR0b24gKyBkeC1idXR0b24ge1xyXG4gICAgbWFyZ2luLWxlZnQ6IDA7XHJcbiAgfVxyXG59XHJcblxyXG4ucmVtaVByby50aXR1bG9zIC5zZWxlY3Qge1xyXG4gIHRleHQtYWxpZ246IGNlbnRlcjtcclxuICBiYWNrZ3JvdW5kLWNvbG9yOiB3aGl0ZTtcclxufVxyXG5cclxuLnNlbGVjdHtcclxuICB0ZXh0LWFsaWduOiBjZW50ZXI7XHJcbiAgYmFja2dyb3VuZC1jb2xvcjogd2hpdGU7XHJcbn1cclxuXHJcbi50aXR1bG9ze1xyXG4gIHRleHQtYWxpZ246IGNlbnRlcjtcclxuICBmb250LXdlaWdodDogYm9sZDtcclxufVxyXG5cclxuLyogTWlzbW8gY3JpdGVyaW8gdmlzdWFsIHF1ZSBjYWphLW1lbm9yICh0ZXh0UCwgZGF0ZUIsIGNlbnRyYXIpLiAqL1xyXG4udGV4dFAge1xyXG4gIGZvbnQtd2VpZ2h0OiBib2xkO1xyXG4gIGZvbnQtc2l6ZTogMTFwdDtcclxufVxyXG5cclxuLnRleHRQMiB7XHJcbiAgbWFyZ2luLXRvcDogMC4zZW07XHJcbn1cclxuXHJcbi5kYXRlQiBkeC1kYXRlLWJveCxcclxuLmRhdGVCIGR4LW51bWJlci1ib3gsXHJcbi5kYXRlQiBkeC10ZXh0LWJveCB7XHJcbiAgbWFyZ2luLXRvcDogLTAuOGVtO1xyXG59XHJcblxyXG4uY2VudHJhciB7XHJcbiAgdGV4dC1hbGlnbjogY2VudGVyO1xyXG59XHJcblxyXG4uZ2VzdGlvbi1lbnRyZWdhcy1jYXJkIHtcclxuICBib3JkZXItcmFkaXVzOiAwLjI1cmVtO1xyXG59XHJcblxyXG4uZ2VzdGlvbi1lbnRyZWdhcy1jYXJkIC5jYXJkLWhlYWRlciB7XHJcbiAgYmFja2dyb3VuZC1jb2xvcjogI2Y4ZjlmYTtcclxufVxyXG5cclxuLmNvbnMtbGFiZWwge1xyXG4gIGZvbnQtc2l6ZTogaW5oZXJpdDtcclxufVxyXG5cclxuLmNvbnMtdmFsb3Ige1xyXG4gIGZvbnQtc2l6ZTogNHJlbTtcclxuICBmb250LXdlaWdodDogYm9sZDtcclxuICBtYXJnaW4tdG9wOiAtMXJlbTtcclxuICBsaW5lLWhlaWdodDogMS4xO1xyXG59XHJcblxyXG4uZ2VzdGlvbi1lbnRyZWdhcy1hY2Npb25lcyBkeC1idXR0b24gKyBkeC1idXR0b24ge1xyXG4gIG1hcmdpbi1sZWZ0OiAwLjVyZW07XHJcbn1cclxuXHJcbjo6bmctZGVlcCAuZ2VzdGlvbi1lbnRyZWdhcy1jYXJkIC5kYXRlQiAuZHgtdGV4dGVkaXRvci1pbnB1dCB7XHJcbiAgdGV4dC1hbGlnbjogY2VudGVyO1xyXG59XHJcblxyXG50YWJsZSB0ZCxcclxudGFibGUgdGgge1xyXG4gIHZlcnRpY2FsLWFsaWduOiBtaWRkbGU7XHJcbn1cclxuXHJcbi50cmF6YWJpbGlkYWQtcG9wdXAgaDYge1xyXG4gIGNvbG9yOiAjMzMzO1xyXG59XHJcblxyXG4udHJhemFiaWxpZGFkLXBvcHVwIC53LTI1IHtcclxuICB3aWR0aDogMjUlO1xyXG59XHJcblxyXG4uZW50cmVnYS1jcC1pbnB1dHMge1xyXG4gIGdhcDogNHB4O1xyXG59XHJcblxyXG4vKiDigJTigJQgU01BUlQtRElTUEFUQ0ggKG3Ds3ZpbCk6IGFjb3JkZcOzbiBmYWN0dXJhIOKGkiDDrXRlbSDihpIgZm9ybXVsYXJpbyDigJTigJQgKi9cclxuLnNtYXJ0LWRpc3BhdGNoLW1vdmlsIHtcclxuICBtYXJnaW4tYm90dG9tOiAwLjI1cmVtO1xyXG59XHJcblxyXG4uc2QtbGV5ZW5kYSB7XHJcbiAgZGlzcGxheTogZmxleDtcclxuICBmbGV4LXdyYXA6IHdyYXA7XHJcbiAgZ2FwOiAwLjVyZW0gICAgICAgMC44NXJlbTtcclxuICBhbGlnbi1pdGVtczogY2VudGVyO1xyXG59XHJcblxyXG4uc2QtbGV5ZW5kYS1pdGVtIHtcclxuICBkaXNwbGF5OiBpbmxpbmUtZmxleDtcclxuICBhbGlnbi1pdGVtczogY2VudGVyO1xyXG4gIGdhcDogMC4zNXJlbTtcclxufVxyXG5cclxuLnNkLXB1bnRvIHtcclxuICBkaXNwbGF5OiBpbmxpbmUtYmxvY2s7XHJcbiAgd2lkdGg6IDEwcHg7XHJcbiAgaGVpZ2h0OiAxMHB4O1xyXG4gIGJvcmRlci1yYWRpdXM6IDUwJTtcclxuICBmbGV4LXNocmluazogMDtcclxufVxyXG5cclxuLnNkLWZhY3R1cmEtY2FyZCB7XHJcbiAgYm9yZGVyOiAxcHggc29saWQgI2RlZTJlNjtcclxuICBib3JkZXItcmFkaXVzOiA2cHg7XHJcbiAgb3ZlcmZsb3c6IGhpZGRlbjtcclxuICBiYWNrZ3JvdW5kOiAjZmZmO1xyXG59XHJcblxyXG4uc2QtZmFjdHVyYS1oZWFkZXIge1xyXG4gIHdpZHRoOiAxMDAlO1xyXG4gIGRpc3BsYXk6IGZsZXg7XHJcbiAgYWxpZ24taXRlbXM6IGZsZXgtc3RhcnQ7XHJcbiAgZ2FwOiAwLjVyZW07XHJcbiAgcGFkZGluZzogMC42NXJlbSAwLjc1cmVtO1xyXG4gIGJvcmRlcjogbm9uZTtcclxuICBiYWNrZ3JvdW5kOiAjZjhmOWZhO1xyXG4gIHRleHQtYWxpZ246IGxlZnQ7XHJcbiAgY3Vyc29yOiBwb2ludGVyO1xyXG59XHJcblxyXG4uc2QtZmFjdHVyYS1oZWFkZXI6Zm9jdXMge1xyXG4gIG91dGxpbmU6IDJweCBzb2xpZCByZ2JhKDAsIDk3LCAxNjksIDAuMzUpO1xyXG4gIG91dGxpbmUtb2Zmc2V0OiAxcHg7XHJcbn1cclxuXHJcbi5zZC1mYWN0dXJhLXRleHRvIHtcclxuICBmbGV4OiAxO1xyXG4gIG1pbi13aWR0aDogMDtcclxuICBkaXNwbGF5OiBmbGV4O1xyXG4gIGZsZXgtZGlyZWN0aW9uOiBjb2x1bW47XHJcbiAgZ2FwOiAwLjE1cmVtO1xyXG59XHJcblxyXG4uc2QtZmFjdHVyYS1kb2Mge1xyXG4gIGZvbnQtd2VpZ2h0OiA3MDA7XHJcbiAgZm9udC1zaXplOiAwLjk1cmVtO1xyXG59XHJcblxyXG4uc2QtZmFjdHVyYS1jbGllbnRlIHtcclxuICBmb250LXNpemU6IDAuODhyZW07XHJcbiAgbGluZS1oZWlnaHQ6IDEuMjU7XHJcbiAgd29yZC1icmVhazogYnJlYWstd29yZDtcclxufVxyXG5cclxuLnNkLWZhY3R1cmEtbWV0YSB7XHJcbiAgZm9udC1zaXplOiAwLjc1cmVtO1xyXG4gIGNvbG9yOiAjNmM3NTdkO1xyXG59XHJcblxyXG4uc2QtY2hldnJvbiB7XHJcbiAgdHJhbnNpdGlvbjogdHJhbnNmb3JtIDAuMnMgZWFzZTtcclxuICBhbGlnbi1zZWxmOiBjZW50ZXI7XHJcbiAgY29sb3I6ICM2Yzc1N2Q7XHJcbiAgZmxleC1zaHJpbms6IDA7XHJcbn1cclxuXHJcbi5zZC1jaGV2cm9uLXVwIHtcclxuICB0cmFuc2Zvcm06IHJvdGF0ZSgtMTgwZGVnKTtcclxufVxyXG5cclxuLnNkLWNoZXZyb24tc20ge1xyXG4gIGZvbnQtc2l6ZTogMC43MnJlbTtcclxufVxyXG5cclxuLnNkLWZhY3R1cmEtY3VlcnBvIHtcclxuICBwYWRkaW5nOiAwLjVyZW0gMC42NXJlbSAwLjc1cmVtO1xyXG4gIGJhY2tncm91bmQ6ICNmZmY7XHJcbiAgYm9yZGVyLXRvcDogMXB4IHNvbGlkICNlOWVjZWY7XHJcbn1cclxuXHJcbi5zZC1pdGVtLXdyYXAge1xyXG4gIGJvcmRlcjogMXB4IHNvbGlkICNlOWVjZWY7XHJcbiAgYm9yZGVyLXJhZGl1czogNnB4O1xyXG4gIG1hcmdpbi1ib3R0b206IDAuNDVyZW07XHJcbiAgb3ZlcmZsb3c6IGhpZGRlbjtcclxuICBiYWNrZ3JvdW5kOiAjZmFmYWZhO1xyXG59XHJcblxyXG4uc2QtaXRlbS1jYWIge1xyXG4gIHdpZHRoOiAxMDAlO1xyXG4gIGRpc3BsYXk6IGZsZXg7XHJcbiAgZmxleC13cmFwOiB3cmFwO1xyXG4gIGFsaWduLWl0ZW1zOiBjZW50ZXI7XHJcbiAgZ2FwOiAwLjM1cmVtIDAuNXJlbTtcclxuICBwYWRkaW5nOiAwLjU1cmVtIDAuNnJlbTtcclxuICBib3JkZXI6IG5vbmU7XHJcbiAgYmFja2dyb3VuZDogdHJhbnNwYXJlbnQ7XHJcbiAgdGV4dC1hbGlnbjogbGVmdDtcclxuICBjdXJzb3I6IHBvaW50ZXI7XHJcbn1cclxuXHJcbi5zZC1ndWFyZGFkby1vayB7XHJcbiAgZm9udC1zaXplOiAxLjE1cmVtO1xyXG4gIGZsZXgtc2hyaW5rOiAwO1xyXG59XHJcblxyXG4uc2QtZ3VhcmRhci1saW5lYS13cmFwIHtcclxuICBkaXNwbGF5OiBmbGV4O1xyXG4gIGZsZXgtd3JhcDogd3JhcDtcclxuICBhbGlnbi1pdGVtczogY2VudGVyO1xyXG59XHJcblxyXG4uZ2VzdGlvbi1saW5lYS1vayB7XHJcbiAgZGlzcGxheTogaW5saW5lLWJsb2NrO1xyXG4gIHZlcnRpY2FsLWFsaWduOiBtaWRkbGU7XHJcbiAgZm9udC1zaXplOiAxLjFyZW07XHJcbn1cclxuXHJcbi5zZC1pdGVtLWNhYjpmb2N1cyB7XHJcbiAgb3V0bGluZTogMnB4IHNvbGlkIHJnYmEoMCwgOTcsIDE2OSwgMC4zNSk7XHJcbiAgb3V0bGluZS1vZmZzZXQ6IDFweDtcclxufVxyXG5cclxuLnNkLWl0ZW0tbm9tYnJlIHtcclxuICBmbGV4OiAxIDEgMTAwJTtcclxuICBmb250LXdlaWdodDogNjAwO1xyXG4gIGZvbnQtc2l6ZTogMC45cmVtO1xyXG4gIGxpbmUtaGVpZ2h0OiAxLjM7XHJcbiAgd29yZC1icmVhazogYnJlYWstd29yZDtcclxufVxyXG5cclxuLnNkLWl0ZW0tcmVzdW1lbiB7XHJcbiAgZmxleDogMSAxIGF1dG87XHJcbiAgbWluLXdpZHRoOiAwO1xyXG59XHJcblxyXG4uc2QtaXRlbS1kZXRhbGxlIHtcclxuICBwYWRkaW5nOiAwLjY1cmVtIDAuNzVyZW0gMC44NXJlbTtcclxuICBiYWNrZ3JvdW5kOiAjZmZmO1xyXG4gIGJvcmRlci10b3A6IDFweCBkYXNoZWQgI2RlZTJlNjtcclxufVxyXG5cclxuLnNkLWt2LWdyaWQge1xyXG4gIGRpc3BsYXk6IGdyaWQ7XHJcbiAgZ3JpZC10ZW1wbGF0ZS1jb2x1bW5zOiBhdXRvIDFmcjtcclxuICBnYXA6IDAuMjVyZW0gMC43NXJlbTtcclxuICBtYXJnaW4tYm90dG9tOiAwLjc1cmVtO1xyXG59XHJcblxyXG4uc2QtY2FtcG8ge1xyXG4gIG1hcmdpbi1ib3R0b206IDAuNjVyZW07XHJcbn1cclxuXHJcbi5zZC1jZXJyYXItcHJvY2VzbyA6Om5nLWRlZXAgLmR4LWJ1dHRvbiB7XHJcbiAgd2lkdGg6IDEwMCU7XHJcbn1cclxuXHJcbi5zZC1jYW1wbyA6Om5nLWRlZXAgLmR4LXRleHRlZGl0b3Ige1xyXG4gIHdpZHRoOiAxMDAlICFpbXBvcnRhbnQ7XHJcbiAgbWF4LXdpZHRoOiAxMDAlO1xyXG59XHJcblxyXG4vKiBDw7NkaWdvIGRlIGNvbG9yZXMgKHRleHRvIG1hdGVyaWFsICsgcHVudG8gZmFjdHVyYSkgKi9cclxuLnNkLWVzdC12ZXJkZSB7XHJcbiAgY29sb3I6ICMxZTdlMzQgIWltcG9ydGFudDtcclxufVxyXG5cclxuLnNkLXB1bnRvLnNkLWVzdC12ZXJkZSB7XHJcbiAgYmFja2dyb3VuZC1jb2xvcjogIzI4YTc0NSAhaW1wb3J0YW50O1xyXG59XHJcblxyXG4uc2QtZXN0LWF6dWwge1xyXG4gIGNvbG9yOiAjMDA0MDg1ICFpbXBvcnRhbnQ7XHJcbn1cclxuXHJcbi5zZC1wdW50by5zZC1lc3QtYXp1bCB7XHJcbiAgYmFja2dyb3VuZC1jb2xvcjogIzAwN2JmZiAhaW1wb3J0YW50O1xyXG59XHJcblxyXG4uc2QtZXN0LXJvam8ge1xyXG4gIGNvbG9yOiAjYzgyMzMzICFpbXBvcnRhbnQ7XHJcbn1cclxuXHJcbi5zZC1wdW50by5zZC1lc3Qtcm9qbyB7XHJcbiAgYmFja2dyb3VuZC1jb2xvcjogI2RjMzU0NSAhaW1wb3J0YW50O1xyXG59XHJcblxyXG4uc2QtZXN0LWFtYXJpbGxvIHtcclxuICBjb2xvcjogIzg1NjQwNCAhaW1wb3J0YW50O1xyXG59XHJcblxyXG4uc2QtcHVudG8uc2QtZXN0LWFtYXJpbGxvIHtcclxuICBiYWNrZ3JvdW5kLWNvbG9yOiAjZmZjMTA3ICFpbXBvcnRhbnQ7XHJcbn1cclxuXHJcbi5zZC1pdGVtLW5vbWJyZS5zZC1pdGVtLWFsZXJ0YSB7XHJcbiAgY29sb3I6ICNiMDAwMjAgIWltcG9ydGFudDtcclxuICBmb250LXdlaWdodDogNzAwO1xyXG59XHJcblxyXG5AbWVkaWEgKG1heC13aWR0aDogNzY3Ljk4cHgpIHtcclxuICAucmVtaVBybyB7XHJcbiAgICBwYWRkaW5nLWxlZnQ6IDAuNzVyZW07XHJcbiAgICBwYWRkaW5nLXJpZ2h0OiAwLjc1cmVtO1xyXG4gICAgcGFkZGluZy10b3A6IDFyZW07XHJcbiAgfVxyXG5cclxuICAuZ2VzdGlvbi1lbnRyZWdhcy1jYXJkIC5jYXJkLWJvZHkge1xyXG4gICAgcGFkZGluZy1sZWZ0OiAwLjc1cmVtO1xyXG4gICAgcGFkZGluZy1yaWdodDogMC43NXJlbTtcclxuICB9XHJcblxyXG4gIC5nZXN0aW9uLWZpbHRyb3Mge1xyXG4gICAgcGFkZGluZy1sZWZ0OiAwO1xyXG4gICAgcGFkZGluZy1yaWdodDogMDtcclxuICB9XHJcbn1cclxuIl19 */"] });
-/*@__PURE__*/ (function () { _angular_core__WEBPACK_IMPORTED_MODULE_0__["ɵsetClassMetadata"](GestionEntregasBodegaComponent, [{
-        type: _angular_core__WEBPACK_IMPORTED_MODULE_0__["Component"],
+        _angular_core__WEBPACK_IMPORTED_MODULE_1__["ɵɵadvance"](2);
+        _angular_core__WEBPACK_IMPORTED_MODULE_1__["ɵɵproperty"]("items", ctx.menuPrincipal)("value", ctx.valorMenu)("readOnly", false)("disabled", false)("inputAttr", _angular_core__WEBPACK_IMPORTED_MODULE_1__["ɵɵpureFunction0"](29, _c2));
+        _angular_core__WEBPACK_IMPORTED_MODULE_1__["ɵɵadvance"](1);
+        _angular_core__WEBPACK_IMPORTED_MODULE_1__["ɵɵproperty"]("ngIf", !ctx.mostrarProductosPendientes);
+        _angular_core__WEBPACK_IMPORTED_MODULE_1__["ɵɵadvance"](1);
+        _angular_core__WEBPACK_IMPORTED_MODULE_1__["ɵɵproperty"]("ngIf", ctx.loading);
+        _angular_core__WEBPACK_IMPORTED_MODULE_1__["ɵɵadvance"](1);
+        _angular_core__WEBPACK_IMPORTED_MODULE_1__["ɵɵproperty"]("ngIf", ctx.mostrarGestion || ctx.mostrarListado || ctx.mostrarProductosPendientes);
+        _angular_core__WEBPACK_IMPORTED_MODULE_1__["ɵɵadvance"](1);
+        _angular_core__WEBPACK_IMPORTED_MODULE_1__["ɵɵproperty"]("ngIf", ctx.mostrarGestion && ctx.ordenSeleccionada && !ctx.vistaMovil);
+        _angular_core__WEBPACK_IMPORTED_MODULE_1__["ɵɵadvance"](1);
+        _angular_core__WEBPACK_IMPORTED_MODULE_1__["ɵɵproperty"]("width", "70%")("height", 560)("showTitle", true)("title", ctx.tituloPopupTrazabilidad)("closeOnOutsideClick", true)("visible", ctx.popupTrazabilidadVisible);
+        _angular_core__WEBPACK_IMPORTED_MODULE_1__["ɵɵadvance"](1);
+        _angular_core__WEBPACK_IMPORTED_MODULE_1__["ɵɵproperty"]("dxTemplateOf", "content");
+        _angular_core__WEBPACK_IMPORTED_MODULE_1__["ɵɵadvance"](1);
+        _angular_core__WEBPACK_IMPORTED_MODULE_1__["ɵɵproperty"]("visible", ctx.popupEditarHistorialVisible)("showTitle", true)("title", ctx.tituloPopupEditarHistorial)("closeOnOutsideClick", false)("showCloseButton", true)("fullScreen", ctx.vistaMovil)("width", ctx.vistaMovil ? "100%" : 480)("maxWidth", ctx.vistaMovil ? "100vw" : null)("maxHeight", ctx.vistaMovil ? "100%" : "90vh")("dragEnabled", !ctx.vistaMovil)("shading", true)("elementAttr", _angular_core__WEBPACK_IMPORTED_MODULE_1__["ɵɵpureFunction0"](30, _c3));
+        _angular_core__WEBPACK_IMPORTED_MODULE_1__["ɵɵadvance"](1);
+        _angular_core__WEBPACK_IMPORTED_MODULE_1__["ɵɵproperty"]("dxTemplateOf", "content");
+    } }, directives: [devextreme_angular__WEBPACK_IMPORTED_MODULE_5__["DxSelectBoxComponent"], _angular_common__WEBPACK_IMPORTED_MODULE_6__["NgIf"], devextreme_angular__WEBPACK_IMPORTED_MODULE_5__["DxPopupComponent"], devextreme_angular_core__WEBPACK_IMPORTED_MODULE_7__["DxTemplateDirective"], devextreme_angular__WEBPACK_IMPORTED_MODULE_5__["DxNumberBoxComponent"], devextreme_angular_ui_text_box__WEBPACK_IMPORTED_MODULE_8__["DxTextBoxComponent"], devextreme_angular__WEBPACK_IMPORTED_MODULE_5__["DxDateBoxComponent"], devextreme_angular_ui_button__WEBPACK_IMPORTED_MODULE_9__["DxButtonComponent"], devextreme_angular_ui_check_box__WEBPACK_IMPORTED_MODULE_10__["DxCheckBoxComponent"], _loading_loading_component__WEBPACK_IMPORTED_MODULE_11__["LoadingComponent"], _angular_common__WEBPACK_IMPORTED_MODULE_6__["NgForOf"], _angular_common__WEBPACK_IMPORTED_MODULE_6__["NgClass"], devextreme_angular__WEBPACK_IMPORTED_MODULE_5__["DxDataGridComponent"], devextreme_angular_ui_nested__WEBPACK_IMPORTED_MODULE_12__["DxoFilterRowComponent"], devextreme_angular_ui_nested__WEBPACK_IMPORTED_MODULE_12__["DxoSearchPanelComponent"], devextreme_angular_ui_nested__WEBPACK_IMPORTED_MODULE_12__["DxiColumnComponent"], devextreme_angular_ui_nested__WEBPACK_IMPORTED_MODULE_12__["DxiButtonComponent"], devextreme_angular_ui_nested__WEBPACK_IMPORTED_MODULE_12__["DxoExportComponent"], devextreme_angular_ui_scroll_view__WEBPACK_IMPORTED_MODULE_13__["DxScrollViewComponent"], devextreme_angular__WEBPACK_IMPORTED_MODULE_5__["DxTextAreaComponent"]], pipes: [_angular_common__WEBPACK_IMPORTED_MODULE_6__["DecimalPipe"]], styles: ["@charset \"UTF-8\";\n\n.remiPro[_ngcontent-%COMP%] {\n  padding: 1.5em 2em 0;\n  margin-top: 0.5em;\n  text-align: center;\n}\n.gestion-menu-superior[_ngcontent-%COMP%] {\n  margin-left: 0;\n  margin-right: 0;\n}\n.px-gestion-menu[_ngcontent-%COMP%] {\n  padding-left: 0.75rem;\n  padding-right: 0.75rem;\n}\n\n.gestion-filtros[_ngcontent-%COMP%] {\n  overflow-x: hidden;\n}\n.gestion-filtro-campo[_ngcontent-%COMP%]   .textP[_ngcontent-%COMP%] {\n  padding-left: 0;\n}\n.gestion-filtro-editor[_ngcontent-%COMP%] {\n  width: 100%;\n  max-width: 100%;\n}\n.gestion-filtro-editor.dateB[_ngcontent-%COMP%]   dx-date-box[_ngcontent-%COMP%], .gestion-filtro-editor.dateB[_ngcontent-%COMP%]   dx-number-box[_ngcontent-%COMP%], .gestion-filtro-editor.dateB[_ngcontent-%COMP%]   dx-text-box[_ngcontent-%COMP%] {\n  margin-top: 0;\n  display: block;\n  width: 100%;\n  max-width: 100%;\n}\n  .gestion-filtro-editor .dx-texteditor {\n  width: 100% !important;\n  max-width: 100%;\n}\n.gestion-filtro-cerradas-inner[_ngcontent-%COMP%] {\n  min-width: 0;\n}\n.gestion-filtro-cerradas-texto[_ngcontent-%COMP%] {\n  -webkit-box-flex: 1;\n          flex: 1 1 12rem;\n  min-width: 0;\n  line-height: 1.35;\n  text-align: left;\n}\n@media (max-width: 767.98px) {\n  .gestion-filtro-acciones[_ngcontent-%COMP%] {\n    display: -webkit-box;\n    display: flex;\n    -webkit-box-orient: vertical;\n    -webkit-box-direction: normal;\n            flex-direction: column;\n    -webkit-box-align: stretch;\n            align-items: stretch;\n    gap: 0.5rem;\n  }\n\n  .gestion-filtro-acciones[_ngcontent-%COMP%]     .dx-button {\n    width: 100%;\n    max-width: 100%;\n  }\n\n  .gestion-filtro-acciones[_ngcontent-%COMP%]   dx-button[_ngcontent-%COMP%]    + dx-button[_ngcontent-%COMP%] {\n    margin-left: 0;\n  }\n}\n.remiPro.titulos[_ngcontent-%COMP%]   .select[_ngcontent-%COMP%] {\n  text-align: center;\n  background-color: white;\n}\n.select[_ngcontent-%COMP%] {\n  text-align: center;\n  background-color: white;\n}\n.titulos[_ngcontent-%COMP%] {\n  text-align: center;\n  font-weight: bold;\n}\n\n.textP[_ngcontent-%COMP%] {\n  font-weight: bold;\n  font-size: 11pt;\n}\n.textP2[_ngcontent-%COMP%] {\n  margin-top: 0.3em;\n}\n.dateB[_ngcontent-%COMP%]   dx-date-box[_ngcontent-%COMP%], .dateB[_ngcontent-%COMP%]   dx-number-box[_ngcontent-%COMP%], .dateB[_ngcontent-%COMP%]   dx-text-box[_ngcontent-%COMP%] {\n  margin-top: -0.8em;\n}\n.centrar[_ngcontent-%COMP%] {\n  text-align: center;\n}\n.gestion-entregas-card[_ngcontent-%COMP%] {\n  border-radius: 0.25rem;\n}\n.gestion-entregas-card[_ngcontent-%COMP%]   .card-header[_ngcontent-%COMP%] {\n  background-color: #f8f9fa;\n}\n.cons-label[_ngcontent-%COMP%] {\n  font-size: inherit;\n}\n.cons-valor[_ngcontent-%COMP%] {\n  font-size: 4rem;\n  font-weight: bold;\n  margin-top: -1rem;\n  line-height: 1.1;\n}\n.gestion-entregas-acciones[_ngcontent-%COMP%]   dx-button[_ngcontent-%COMP%]    + dx-button[_ngcontent-%COMP%] {\n  margin-left: 0.5rem;\n}\n  .gestion-entregas-card .dateB .dx-texteditor-input {\n  text-align: center;\n}\ntable[_ngcontent-%COMP%]   td[_ngcontent-%COMP%], table[_ngcontent-%COMP%]   th[_ngcontent-%COMP%] {\n  vertical-align: middle;\n}\n.trazabilidad-popup[_ngcontent-%COMP%]   h6[_ngcontent-%COMP%] {\n  color: #333;\n}\n.trazabilidad-popup[_ngcontent-%COMP%]   .w-25[_ngcontent-%COMP%] {\n  width: 25%;\n}\n.entrega-cp-inputs[_ngcontent-%COMP%] {\n  gap: 4px;\n}\n\n.smart-dispatch-movil[_ngcontent-%COMP%] {\n  margin-bottom: 0.25rem;\n}\n.sd-leyenda[_ngcontent-%COMP%] {\n  display: -webkit-box;\n  display: flex;\n  flex-wrap: wrap;\n  gap: 0.5rem 0.85rem;\n  -webkit-box-align: center;\n          align-items: center;\n}\n.sd-leyenda-item[_ngcontent-%COMP%] {\n  display: -webkit-inline-box;\n  display: inline-flex;\n  -webkit-box-align: center;\n          align-items: center;\n  gap: 0.35rem;\n}\n.sd-punto[_ngcontent-%COMP%] {\n  display: inline-block;\n  width: 10px;\n  height: 10px;\n  border-radius: 50%;\n  flex-shrink: 0;\n}\n.sd-factura-card[_ngcontent-%COMP%] {\n  border: 1px solid #dee2e6;\n  border-radius: 6px;\n  overflow: hidden;\n  background: #fff;\n}\n.sd-factura-header[_ngcontent-%COMP%] {\n  width: 100%;\n  display: -webkit-box;\n  display: flex;\n  -webkit-box-align: start;\n          align-items: flex-start;\n  gap: 0.5rem;\n  padding: 0.65rem 0.75rem;\n  border: none;\n  background: #f8f9fa;\n  text-align: left;\n  cursor: pointer;\n}\n.sd-factura-header[_ngcontent-%COMP%]:focus {\n  outline: 2px solid rgba(0, 97, 169, 0.35);\n  outline-offset: 1px;\n}\n.sd-factura-texto[_ngcontent-%COMP%] {\n  -webkit-box-flex: 1;\n          flex: 1;\n  min-width: 0;\n  display: -webkit-box;\n  display: flex;\n  -webkit-box-orient: vertical;\n  -webkit-box-direction: normal;\n          flex-direction: column;\n  gap: 0.15rem;\n}\n.sd-factura-doc[_ngcontent-%COMP%] {\n  font-weight: 700;\n  font-size: 0.95rem;\n}\n.sd-factura-cliente[_ngcontent-%COMP%] {\n  font-size: 0.88rem;\n  line-height: 1.25;\n  word-break: break-word;\n}\n.sd-factura-meta[_ngcontent-%COMP%] {\n  font-size: 0.75rem;\n  color: #6c757d;\n}\n.sd-chevron[_ngcontent-%COMP%] {\n  -webkit-transition: -webkit-transform 0.2s ease;\n  transition: -webkit-transform 0.2s ease;\n  transition: transform 0.2s ease;\n  transition: transform 0.2s ease, -webkit-transform 0.2s ease;\n  align-self: center;\n  color: #6c757d;\n  flex-shrink: 0;\n}\n.sd-chevron-up[_ngcontent-%COMP%] {\n  -webkit-transform: rotate(-180deg);\n          transform: rotate(-180deg);\n}\n.sd-chevron-sm[_ngcontent-%COMP%] {\n  font-size: 0.72rem;\n}\n.sd-factura-cuerpo[_ngcontent-%COMP%] {\n  padding: 0.5rem 0.65rem 0.75rem;\n  background: #fff;\n  border-top: 1px solid #e9ecef;\n}\n.sd-item-wrap[_ngcontent-%COMP%] {\n  border: 1px solid #e9ecef;\n  border-radius: 6px;\n  margin-bottom: 0.45rem;\n  overflow: hidden;\n  background: #fafafa;\n}\n.sd-item-cab[_ngcontent-%COMP%] {\n  width: 100%;\n  display: -webkit-box;\n  display: flex;\n  flex-wrap: wrap;\n  -webkit-box-align: center;\n          align-items: center;\n  gap: 0.35rem 0.5rem;\n  padding: 0.55rem 0.6rem;\n  border: none;\n  background: transparent;\n  text-align: left;\n  cursor: pointer;\n}\n.sd-guardado-ok[_ngcontent-%COMP%] {\n  font-size: 1.15rem;\n  flex-shrink: 0;\n}\n.sd-guardar-linea-wrap[_ngcontent-%COMP%] {\n  display: -webkit-box;\n  display: flex;\n  flex-wrap: wrap;\n  -webkit-box-align: center;\n          align-items: center;\n}\n.gestion-linea-ok[_ngcontent-%COMP%] {\n  display: inline-block;\n  vertical-align: middle;\n  font-size: 1.1rem;\n}\n.sd-item-cab[_ngcontent-%COMP%]:focus {\n  outline: 2px solid rgba(0, 97, 169, 0.35);\n  outline-offset: 1px;\n}\n.sd-item-nombre[_ngcontent-%COMP%] {\n  -webkit-box-flex: 1;\n          flex: 1 1 100%;\n  font-weight: 600;\n  font-size: 0.9rem;\n  line-height: 1.3;\n  word-break: break-word;\n}\n.sd-item-resumen[_ngcontent-%COMP%] {\n  -webkit-box-flex: 1;\n          flex: 1 1 auto;\n  min-width: 0;\n}\n.sd-item-detalle[_ngcontent-%COMP%] {\n  padding: 0.65rem 0.75rem 0.85rem;\n  background: #fff;\n  border-top: 1px dashed #dee2e6;\n}\n.sd-kv-grid[_ngcontent-%COMP%] {\n  display: grid;\n  grid-template-columns: auto 1fr;\n  gap: 0.25rem 0.75rem;\n  margin-bottom: 0.75rem;\n}\n.sd-campo[_ngcontent-%COMP%] {\n  margin-bottom: 0.65rem;\n}\n.sd-cerrar-proceso[_ngcontent-%COMP%]     .dx-button {\n  width: 100%;\n}\n.sd-campo[_ngcontent-%COMP%]     .dx-texteditor {\n  width: 100% !important;\n  max-width: 100%;\n}\n\n.sd-est-verde[_ngcontent-%COMP%] {\n  color: #1e7e34 !important;\n}\n.sd-punto.sd-est-verde[_ngcontent-%COMP%] {\n  background-color: #28a745 !important;\n}\n.sd-est-azul[_ngcontent-%COMP%] {\n  color: #004085 !important;\n}\n.sd-punto.sd-est-azul[_ngcontent-%COMP%] {\n  background-color: #007bff !important;\n}\n.sd-est-rojo[_ngcontent-%COMP%] {\n  color: #c82333 !important;\n}\n.sd-punto.sd-est-rojo[_ngcontent-%COMP%] {\n  background-color: #dc3545 !important;\n}\n.sd-est-amarillo[_ngcontent-%COMP%] {\n  color: #856404 !important;\n}\n.sd-punto.sd-est-amarillo[_ngcontent-%COMP%] {\n  background-color: #ffc107 !important;\n}\n.sd-item-nombre.sd-item-alerta[_ngcontent-%COMP%] {\n  color: #b00020 !important;\n  font-weight: 700;\n}\n\n.listado-entregas-movil[_ngcontent-%COMP%] {\n  margin-bottom: 0.25rem;\n}\n.listado-entrega-movil-card[_ngcontent-%COMP%] {\n  display: block;\n  width: 100%;\n  margin-bottom: 0.65rem;\n  padding: 0;\n  border: 1px solid #dee2e6;\n  border-radius: 6px;\n  background: #fff;\n  text-align: left;\n  cursor: pointer;\n  overflow: hidden;\n  -webkit-transition: box-shadow 0.15s ease, border-color 0.15s ease;\n  transition: box-shadow 0.15s ease, border-color 0.15s ease;\n}\n.listado-entrega-movil-card[_ngcontent-%COMP%]:hover, .listado-entrega-movil-card[_ngcontent-%COMP%]:focus {\n  border-color: rgba(0, 97, 169, 0.45);\n  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.06);\n  outline: none;\n}\n.listado-entrega-movil-card[_ngcontent-%COMP%]:focus-visible {\n  outline: 2px solid rgba(0, 97, 169, 0.35);\n  outline-offset: 2px;\n}\n.listado-entrega-movil-cab[_ngcontent-%COMP%] {\n  display: -webkit-box;\n  display: flex;\n  -webkit-box-align: start;\n          align-items: flex-start;\n  gap: 0.5rem;\n  padding: 0.65rem 0.75rem;\n  background: #f8f9fa;\n  border-bottom: 1px solid #e9ecef;\n}\n.listado-entrega-movil-cab-texto[_ngcontent-%COMP%] {\n  -webkit-box-flex: 1;\n          flex: 1;\n  min-width: 0;\n  display: -webkit-box;\n  display: flex;\n  -webkit-box-orient: vertical;\n  -webkit-box-direction: normal;\n          flex-direction: column;\n  gap: 0.2rem;\n}\n.listado-entrega-movil-doc[_ngcontent-%COMP%] {\n  font-weight: 700;\n  font-size: 0.95rem;\n  word-break: break-word;\n}\n.listado-entrega-movil-sub[_ngcontent-%COMP%] {\n  font-size: 0.78rem;\n  color: #6c757d;\n  line-height: 1.25;\n}\n.listado-entrega-movil-cuerpo[_ngcontent-%COMP%] {\n  padding: 0.65rem 0.75rem 0.75rem;\n}\n.listado-entrega-movil-kv[_ngcontent-%COMP%] {\n  display: grid;\n  grid-template-columns: minmax(0, 38%) 1fr;\n  gap: 0.35rem 0.65rem;\n  font-size: 0.88rem;\n  -webkit-box-align: start;\n          align-items: start;\n}\n.listado-entrega-movil-lbl[_ngcontent-%COMP%] {\n  color: #6c757d;\n  font-size: 0.8rem;\n}\n.listado-entrega-movil-val[_ngcontent-%COMP%] {\n  word-break: break-word;\n  min-width: 0;\n}\n@media (max-width: 767.98px) {\n  \n  .productos-pendientes-grid-scroll[_ngcontent-%COMP%] {\n    overflow-x: auto;\n    -webkit-overflow-scrolling: touch;\n    overscroll-behavior-x: contain;\n    padding-bottom: 0.35rem;\n  }\n\n  .productos-pendientes-grid-scroll[_ngcontent-%COMP%]     .dx-datagrid {\n    min-width: 52rem;\n  }\n\n  .remiPro[_ngcontent-%COMP%] {\n    padding-left: 0.75rem;\n    padding-right: 0.75rem;\n    padding-top: 1rem;\n  }\n\n  .gestion-entregas-card[_ngcontent-%COMP%]   .card-body[_ngcontent-%COMP%] {\n    padding-left: 0.75rem;\n    padding-right: 0.75rem;\n  }\n\n  .gestion-filtros[_ngcontent-%COMP%] {\n    padding-left: 0;\n    padding-right: 0;\n  }\n}\n\n.traz-historial-scroll[_ngcontent-%COMP%] {\n  -webkit-overflow-scrolling: touch;\n  overscroll-behavior-x: contain;\n}\n.traz-historial-table[_ngcontent-%COMP%] {\n  font-size: 0.85rem;\n}\n.traz-btn-edit[_ngcontent-%COMP%] {\n  min-height: 44px;\n  min-width: 44px;\n  touch-action: manipulation;\n  line-height: 1.2;\n}\n.traz-notas-celda[_ngcontent-%COMP%] {\n  max-width: 14rem;\n  word-break: break-word;\n}\n.traz-editar-acciones[_ngcontent-%COMP%]     .dx-button {\n  min-height: 44px;\n}\n\n  .traz-popup-corregir-overlay {\n  box-sizing: border-box;\n}\n  .traz-popup-corregir-overlay .dx-popup-content {\n  overflow-x: hidden;\n  max-width: 100%;\n  box-sizing: border-box;\n}\n  .traz-popup-corregir-overlay .dx-popup-title {\n  white-space: normal !important;\n  word-break: break-word;\n  overflow-wrap: anywhere;\n  line-height: 1.3;\n  padding-right: 2.75rem;\n  font-size: 0.95rem;\n  max-width: 100%;\n}\n@media (max-width: 767.98px) {\n    .traz-popup-corregir-overlay {\n    max-width: 100vw !important;\n    width: calc(100vw - env(safe-area-inset-left) - env(safe-area-inset-right)) !important;\n  }\n}\n.traz-popup-editar-body[_ngcontent-%COMP%] {\n  width: 100%;\n  max-width: 100%;\n  min-width: 0;\n  box-sizing: border-box;\n  overflow-x: hidden;\n  padding: 0.75rem 0.75rem max(0.75rem, env(safe-area-inset-bottom));\n}\n@media (min-width: 576px) {\n  .traz-popup-editar-body[_ngcontent-%COMP%] {\n    padding: 1rem 1.25rem 1rem;\n  }\n}\n.traz-popup-editar-body[_ngcontent-%COMP%]     .dx-texteditor, .traz-popup-editar-body[_ngcontent-%COMP%]     .dx-dropdowneditor, .traz-popup-editar-body[_ngcontent-%COMP%]     .dx-numberbox {\n  width: 100% !important;\n  max-width: 100% !important;\n}\n.traz-popup-editar-body[_ngcontent-%COMP%]     .dx-texteditor.dx-editor-outlined, .traz-popup-editar-body[_ngcontent-%COMP%]     .dx-dropdowneditor.dx-editor-outlined {\n  display: block;\n}\n.traz-editar-acciones[_ngcontent-%COMP%] {\n  width: 100%;\n  max-width: 100%;\n  padding-top: 0.25rem;\n}\n@media (max-width: 575.98px) {\n  .traz-editar-acciones[_ngcontent-%COMP%] {\n    -webkit-box-orient: vertical !important;\n    -webkit-box-direction: normal !important;\n            flex-direction: column !important;\n    -webkit-box-align: stretch !important;\n            align-items: stretch !important;\n  }\n\n  .traz-editar-acciones[_ngcontent-%COMP%]     .dx-button {\n    width: 100%;\n    max-width: 100%;\n  }\n}\n/*# sourceMappingURL=data:application/json;base64,eyJ2ZXJzaW9uIjozLCJzb3VyY2VzIjpbInNyYy9hcHAvcGFnZXMvZ2VzdGlvbi1lbnRyZWdhcy1ib2RlZ2EvZ2VzdGlvbi1lbnRyZWdhcy1ib2RlZ2EuY29tcG9uZW50LnNjc3MiLCJzcmMvYXBwL3BhZ2VzL2dlc3Rpb24tZW50cmVnYXMtYm9kZWdhL0M6XFxGSURFTlNcXGFsb2phYmFzZXMyMDI1L3NyY1xcYXBwXFxwYWdlc1xcZ2VzdGlvbi1lbnRyZWdhcy1ib2RlZ2FcXGdlc3Rpb24tZW50cmVnYXMtYm9kZWdhLmNvbXBvbmVudC5zY3NzIl0sIm5hbWVzIjpbXSwibWFwcGluZ3MiOiJBQUFBLGdCQUFnQjtBQ0FoQixzREFBQTtBQUNBO0VBQ0Usb0JBQUE7RUFDQSxpQkFBQTtFQUNBLGtCQUFBO0FERUY7QUNDQTtFQUNFLGNBQUE7RUFDQSxlQUFBO0FERUY7QUNDQTtFQUNFLHFCQUFBO0VBQ0Esc0JBQUE7QURFRjtBQ0NBLGtGQUFBO0FBQ0E7RUFDRSxrQkFBQTtBREVGO0FDQ0E7RUFDRSxlQUFBO0FERUY7QUNDQTtFQUNFLFdBQUE7RUFDQSxlQUFBO0FERUY7QUNDQTs7O0VBR0UsYUFBQTtFQUNBLGNBQUE7RUFDQSxXQUFBO0VBQ0EsZUFBQTtBREVGO0FDQ0E7RUFDRSxzQkFBQTtFQUNBLGVBQUE7QURFRjtBQ0NBO0VBQ0UsWUFBQTtBREVGO0FDQ0E7RUFDRSxtQkFBQTtVQUFBLGVBQUE7RUFDQSxZQUFBO0VBQ0EsaUJBQUE7RUFDQSxnQkFBQTtBREVGO0FDQ0E7RUFDRTtJQUNFLG9CQUFBO0lBQUEsYUFBQTtJQUNBLDRCQUFBO0lBQUEsNkJBQUE7WUFBQSxzQkFBQTtJQUNBLDBCQUFBO1lBQUEsb0JBQUE7SUFDQSxXQUFBO0VERUY7O0VDQ0E7SUFDRSxXQUFBO0lBQ0EsZUFBQTtFREVGOztFQ0NBO0lBQ0UsY0FBQTtFREVGO0FBQ0Y7QUNDQTtFQUNFLGtCQUFBO0VBQ0EsdUJBQUE7QURDRjtBQ0VBO0VBQ0Usa0JBQUE7RUFDQSx1QkFBQTtBRENGO0FDRUE7RUFDRSxrQkFBQTtFQUNBLGlCQUFBO0FEQ0Y7QUNFQSxrRUFBQTtBQUNBO0VBQ0UsaUJBQUE7RUFDQSxlQUFBO0FEQ0Y7QUNFQTtFQUNFLGlCQUFBO0FEQ0Y7QUNFQTs7O0VBR0Usa0JBQUE7QURDRjtBQ0VBO0VBQ0Usa0JBQUE7QURDRjtBQ0VBO0VBQ0Usc0JBQUE7QURDRjtBQ0VBO0VBQ0UseUJBQUE7QURDRjtBQ0VBO0VBQ0Usa0JBQUE7QURDRjtBQ0VBO0VBQ0UsZUFBQTtFQUNBLGlCQUFBO0VBQ0EsaUJBQUE7RUFDQSxnQkFBQTtBRENGO0FDRUE7RUFDRSxtQkFBQTtBRENGO0FDRUE7RUFDRSxrQkFBQTtBRENGO0FDRUE7O0VBRUUsc0JBQUE7QURDRjtBQ0VBO0VBQ0UsV0FBQTtBRENGO0FDRUE7RUFDRSxVQUFBO0FEQ0Y7QUNFQTtFQUNFLFFBQUE7QURDRjtBQ0VBLHVFQUFBO0FBQ0E7RUFDRSxzQkFBQTtBRENGO0FDRUE7RUFDRSxvQkFBQTtFQUFBLGFBQUE7RUFDQSxlQUFBO0VBQ0EsbUJBQUE7RUFDQSx5QkFBQTtVQUFBLG1CQUFBO0FEQ0Y7QUNFQTtFQUNFLDJCQUFBO0VBQUEsb0JBQUE7RUFDQSx5QkFBQTtVQUFBLG1CQUFBO0VBQ0EsWUFBQTtBRENGO0FDRUE7RUFDRSxxQkFBQTtFQUNBLFdBQUE7RUFDQSxZQUFBO0VBQ0Esa0JBQUE7RUFDQSxjQUFBO0FEQ0Y7QUNFQTtFQUNFLHlCQUFBO0VBQ0Esa0JBQUE7RUFDQSxnQkFBQTtFQUNBLGdCQUFBO0FEQ0Y7QUNFQTtFQUNFLFdBQUE7RUFDQSxvQkFBQTtFQUFBLGFBQUE7RUFDQSx3QkFBQTtVQUFBLHVCQUFBO0VBQ0EsV0FBQTtFQUNBLHdCQUFBO0VBQ0EsWUFBQTtFQUNBLG1CQUFBO0VBQ0EsZ0JBQUE7RUFDQSxlQUFBO0FEQ0Y7QUNFQTtFQUNFLHlDQUFBO0VBQ0EsbUJBQUE7QURDRjtBQ0VBO0VBQ0UsbUJBQUE7VUFBQSxPQUFBO0VBQ0EsWUFBQTtFQUNBLG9CQUFBO0VBQUEsYUFBQTtFQUNBLDRCQUFBO0VBQUEsNkJBQUE7VUFBQSxzQkFBQTtFQUNBLFlBQUE7QURDRjtBQ0VBO0VBQ0UsZ0JBQUE7RUFDQSxrQkFBQTtBRENGO0FDRUE7RUFDRSxrQkFBQTtFQUNBLGlCQUFBO0VBQ0Esc0JBQUE7QURDRjtBQ0VBO0VBQ0Usa0JBQUE7RUFDQSxjQUFBO0FEQ0Y7QUNFQTtFQUNFLCtDQUFBO0VBQUEsdUNBQUE7RUFBQSwrQkFBQTtFQUFBLDREQUFBO0VBQ0Esa0JBQUE7RUFDQSxjQUFBO0VBQ0EsY0FBQTtBRENGO0FDRUE7RUFDRSxrQ0FBQTtVQUFBLDBCQUFBO0FEQ0Y7QUNFQTtFQUNFLGtCQUFBO0FEQ0Y7QUNFQTtFQUNFLCtCQUFBO0VBQ0EsZ0JBQUE7RUFDQSw2QkFBQTtBRENGO0FDRUE7RUFDRSx5QkFBQTtFQUNBLGtCQUFBO0VBQ0Esc0JBQUE7RUFDQSxnQkFBQTtFQUNBLG1CQUFBO0FEQ0Y7QUNFQTtFQUNFLFdBQUE7RUFDQSxvQkFBQTtFQUFBLGFBQUE7RUFDQSxlQUFBO0VBQ0EseUJBQUE7VUFBQSxtQkFBQTtFQUNBLG1CQUFBO0VBQ0EsdUJBQUE7RUFDQSxZQUFBO0VBQ0EsdUJBQUE7RUFDQSxnQkFBQTtFQUNBLGVBQUE7QURDRjtBQ0VBO0VBQ0Usa0JBQUE7RUFDQSxjQUFBO0FEQ0Y7QUNFQTtFQUNFLG9CQUFBO0VBQUEsYUFBQTtFQUNBLGVBQUE7RUFDQSx5QkFBQTtVQUFBLG1CQUFBO0FEQ0Y7QUNFQTtFQUNFLHFCQUFBO0VBQ0Esc0JBQUE7RUFDQSxpQkFBQTtBRENGO0FDRUE7RUFDRSx5Q0FBQTtFQUNBLG1CQUFBO0FEQ0Y7QUNFQTtFQUNFLG1CQUFBO1VBQUEsY0FBQTtFQUNBLGdCQUFBO0VBQ0EsaUJBQUE7RUFDQSxnQkFBQTtFQUNBLHNCQUFBO0FEQ0Y7QUNFQTtFQUNFLG1CQUFBO1VBQUEsY0FBQTtFQUNBLFlBQUE7QURDRjtBQ0VBO0VBQ0UsZ0NBQUE7RUFDQSxnQkFBQTtFQUNBLDhCQUFBO0FEQ0Y7QUNFQTtFQUNFLGFBQUE7RUFDQSwrQkFBQTtFQUNBLG9CQUFBO0VBQ0Esc0JBQUE7QURDRjtBQ0VBO0VBQ0Usc0JBQUE7QURDRjtBQ0VBO0VBQ0UsV0FBQTtBRENGO0FDRUE7RUFDRSxzQkFBQTtFQUNBLGVBQUE7QURDRjtBQ0VBLHVEQUFBO0FBQ0E7RUFDRSx5QkFBQTtBRENGO0FDRUE7RUFDRSxvQ0FBQTtBRENGO0FDRUE7RUFDRSx5QkFBQTtBRENGO0FDRUE7RUFDRSxvQ0FBQTtBRENGO0FDRUE7RUFDRSx5QkFBQTtBRENGO0FDRUE7RUFDRSxvQ0FBQTtBRENGO0FDRUE7RUFDRSx5QkFBQTtBRENGO0FDRUE7RUFDRSxvQ0FBQTtBRENGO0FDRUE7RUFDRSx5QkFBQTtFQUNBLGdCQUFBO0FEQ0Y7QUNFQSwwRUFBQTtBQUNBO0VBQ0Usc0JBQUE7QURDRjtBQ0VBO0VBQ0UsY0FBQTtFQUNBLFdBQUE7RUFDQSxzQkFBQTtFQUNBLFVBQUE7RUFDQSx5QkFBQTtFQUNBLGtCQUFBO0VBQ0EsZ0JBQUE7RUFDQSxnQkFBQTtFQUNBLGVBQUE7RUFDQSxnQkFBQTtFQUNBLGtFQUFBO0VBQUEsMERBQUE7QURDRjtBQ0VBOztFQUVFLG9DQUFBO0VBQ0EseUNBQUE7RUFDQSxhQUFBO0FEQ0Y7QUNFQTtFQUNFLHlDQUFBO0VBQ0EsbUJBQUE7QURDRjtBQ0VBO0VBQ0Usb0JBQUE7RUFBQSxhQUFBO0VBQ0Esd0JBQUE7VUFBQSx1QkFBQTtFQUNBLFdBQUE7RUFDQSx3QkFBQTtFQUNBLG1CQUFBO0VBQ0EsZ0NBQUE7QURDRjtBQ0VBO0VBQ0UsbUJBQUE7VUFBQSxPQUFBO0VBQ0EsWUFBQTtFQUNBLG9CQUFBO0VBQUEsYUFBQTtFQUNBLDRCQUFBO0VBQUEsNkJBQUE7VUFBQSxzQkFBQTtFQUNBLFdBQUE7QURDRjtBQ0VBO0VBQ0UsZ0JBQUE7RUFDQSxrQkFBQTtFQUNBLHNCQUFBO0FEQ0Y7QUNFQTtFQUNFLGtCQUFBO0VBQ0EsY0FBQTtFQUNBLGlCQUFBO0FEQ0Y7QUNFQTtFQUNFLGdDQUFBO0FEQ0Y7QUNFQTtFQUNFLGFBQUE7RUFDQSx5Q0FBQTtFQUNBLG9CQUFBO0VBQ0Esa0JBQUE7RUFDQSx3QkFBQTtVQUFBLGtCQUFBO0FEQ0Y7QUNFQTtFQUNFLGNBQUE7RUFDQSxpQkFBQTtBRENGO0FDRUE7RUFDRSxzQkFBQTtFQUNBLFlBQUE7QURDRjtBQ0VBO0VBQ0UsNEVBQUE7RUFDQTtJQUNFLGdCQUFBO0lBQ0EsaUNBQUE7SUFDQSw4QkFBQTtJQUNBLHVCQUFBO0VEQ0Y7O0VDRUE7SUFDRSxnQkFBQTtFRENGOztFQ0VBO0lBQ0UscUJBQUE7SUFDQSxzQkFBQTtJQUNBLGlCQUFBO0VEQ0Y7O0VDRUE7SUFDRSxxQkFBQTtJQUNBLHNCQUFBO0VEQ0Y7O0VDRUE7SUFDRSxlQUFBO0lBQ0EsZ0JBQUE7RURDRjtBQUNGO0FDRUEsbUZBQUE7QUFDQTtFQUNFLGlDQUFBO0VBQ0EsOEJBQUE7QURBRjtBQ0dBO0VBQ0Usa0JBQUE7QURBRjtBQ0dBO0VBQ0UsZ0JBQUE7RUFDQSxlQUFBO0VBQ0EsMEJBQUE7RUFDQSxnQkFBQTtBREFGO0FDR0E7RUFDRSxnQkFBQTtFQUNBLHNCQUFBO0FEQUY7QUNHQTtFQUNFLGdCQUFBO0FEQUY7QUNHQSwyRUFBQTtBQUNBO0VBQ0Usc0JBQUE7QURBRjtBQ0VFO0VBQ0Usa0JBQUE7RUFDQSxlQUFBO0VBQ0Esc0JBQUE7QURBSjtBQ0dFO0VBQ0UsOEJBQUE7RUFDQSxzQkFBQTtFQUNBLHVCQUFBO0VBQ0EsZ0JBQUE7RUFDQSxzQkFBQTtFQUNBLGtCQUFBO0VBQ0EsZUFBQTtBRERKO0FDS0E7RUFDRTtJQUNFLDJCQUFBO0lBQ0Esc0ZBQUE7RURGRjtBQUNGO0FDS0E7RUFDRSxXQUFBO0VBQ0EsZUFBQTtFQUNBLFlBQUE7RUFDQSxzQkFBQTtFQUNBLGtCQUFBO0VBQ0Esa0VBQUE7QURIRjtBQ0tFO0VBUkY7SUFTSSwwQkFBQTtFREZGO0FBQ0Y7QUNLQTs7O0VBR0Usc0JBQUE7RUFDQSwwQkFBQTtBREZGO0FDS0E7O0VBRUUsY0FBQTtBREZGO0FDS0E7RUFDRSxXQUFBO0VBQ0EsZUFBQTtFQUNBLG9CQUFBO0FERkY7QUNLQTtFQUNFO0lBQ0UsdUNBQUE7SUFBQSx3Q0FBQTtZQUFBLGlDQUFBO0lBQ0EscUNBQUE7WUFBQSwrQkFBQTtFREZGOztFQ0tBO0lBQ0UsV0FBQTtJQUNBLGVBQUE7RURGRjtBQUNGIiwiZmlsZSI6InNyYy9hcHAvcGFnZXMvZ2VzdGlvbi1lbnRyZWdhcy1ib2RlZ2EvZ2VzdGlvbi1lbnRyZWdhcy1ib2RlZ2EuY29tcG9uZW50LnNjc3MiLCJzb3VyY2VzQ29udGVudCI6WyJAY2hhcnNldCBcIlVURi04XCI7XG4vKiBGaWxhIGRlbCBjb21ibyAobWlzbW8gY3JpdGVyaW8gcXVlIGRldm9sdWNpb25lcykuICovXG4ucmVtaVBybyB7XG4gIHBhZGRpbmc6IDEuNWVtIDJlbSAwO1xuICBtYXJnaW4tdG9wOiAwLjVlbTtcbiAgdGV4dC1hbGlnbjogY2VudGVyO1xufVxuXG4uZ2VzdGlvbi1tZW51LXN1cGVyaW9yIHtcbiAgbWFyZ2luLWxlZnQ6IDA7XG4gIG1hcmdpbi1yaWdodDogMDtcbn1cblxuLnB4LWdlc3Rpb24tbWVudSB7XG4gIHBhZGRpbmctbGVmdDogMC43NXJlbTtcbiAgcGFkZGluZy1yaWdodDogMC43NXJlbTtcbn1cblxuLyogRmlsdHJvczogZXRpcXVldGEgYXJyaWJhLCBjb250cm9sIGEgYW5jaG8gY29tcGxldG8gKGV2aXRhIHJlY29ydGVzIGVuIG3Ds3ZpbCkuICovXG4uZ2VzdGlvbi1maWx0cm9zIHtcbiAgb3ZlcmZsb3cteDogaGlkZGVuO1xufVxuXG4uZ2VzdGlvbi1maWx0cm8tY2FtcG8gLnRleHRQIHtcbiAgcGFkZGluZy1sZWZ0OiAwO1xufVxuXG4uZ2VzdGlvbi1maWx0cm8tZWRpdG9yIHtcbiAgd2lkdGg6IDEwMCU7XG4gIG1heC13aWR0aDogMTAwJTtcbn1cblxuLmdlc3Rpb24tZmlsdHJvLWVkaXRvci5kYXRlQiBkeC1kYXRlLWJveCxcbi5nZXN0aW9uLWZpbHRyby1lZGl0b3IuZGF0ZUIgZHgtbnVtYmVyLWJveCxcbi5nZXN0aW9uLWZpbHRyby1lZGl0b3IuZGF0ZUIgZHgtdGV4dC1ib3gge1xuICBtYXJnaW4tdG9wOiAwO1xuICBkaXNwbGF5OiBibG9jaztcbiAgd2lkdGg6IDEwMCU7XG4gIG1heC13aWR0aDogMTAwJTtcbn1cblxuOjpuZy1kZWVwIC5nZXN0aW9uLWZpbHRyby1lZGl0b3IgLmR4LXRleHRlZGl0b3Ige1xuICB3aWR0aDogMTAwJSAhaW1wb3J0YW50O1xuICBtYXgtd2lkdGg6IDEwMCU7XG59XG5cbi5nZXN0aW9uLWZpbHRyby1jZXJyYWRhcy1pbm5lciB7XG4gIG1pbi13aWR0aDogMDtcbn1cblxuLmdlc3Rpb24tZmlsdHJvLWNlcnJhZGFzLXRleHRvIHtcbiAgZmxleDogMSAxIDEycmVtO1xuICBtaW4td2lkdGg6IDA7XG4gIGxpbmUtaGVpZ2h0OiAxLjM1O1xuICB0ZXh0LWFsaWduOiBsZWZ0O1xufVxuXG5AbWVkaWEgKG1heC13aWR0aDogNzY3Ljk4cHgpIHtcbiAgLmdlc3Rpb24tZmlsdHJvLWFjY2lvbmVzIHtcbiAgICBkaXNwbGF5OiBmbGV4O1xuICAgIGZsZXgtZGlyZWN0aW9uOiBjb2x1bW47XG4gICAgYWxpZ24taXRlbXM6IHN0cmV0Y2g7XG4gICAgZ2FwOiAwLjVyZW07XG4gIH1cblxuICAuZ2VzdGlvbi1maWx0cm8tYWNjaW9uZXMgOjpuZy1kZWVwIC5keC1idXR0b24ge1xuICAgIHdpZHRoOiAxMDAlO1xuICAgIG1heC13aWR0aDogMTAwJTtcbiAgfVxuXG4gIC5nZXN0aW9uLWZpbHRyby1hY2Npb25lcyBkeC1idXR0b24gKyBkeC1idXR0b24ge1xuICAgIG1hcmdpbi1sZWZ0OiAwO1xuICB9XG59XG4ucmVtaVByby50aXR1bG9zIC5zZWxlY3Qge1xuICB0ZXh0LWFsaWduOiBjZW50ZXI7XG4gIGJhY2tncm91bmQtY29sb3I6IHdoaXRlO1xufVxuXG4uc2VsZWN0IHtcbiAgdGV4dC1hbGlnbjogY2VudGVyO1xuICBiYWNrZ3JvdW5kLWNvbG9yOiB3aGl0ZTtcbn1cblxuLnRpdHVsb3Mge1xuICB0ZXh0LWFsaWduOiBjZW50ZXI7XG4gIGZvbnQtd2VpZ2h0OiBib2xkO1xufVxuXG4vKiBNaXNtbyBjcml0ZXJpbyB2aXN1YWwgcXVlIGNhamEtbWVub3IgKHRleHRQLCBkYXRlQiwgY2VudHJhcikuICovXG4udGV4dFAge1xuICBmb250LXdlaWdodDogYm9sZDtcbiAgZm9udC1zaXplOiAxMXB0O1xufVxuXG4udGV4dFAyIHtcbiAgbWFyZ2luLXRvcDogMC4zZW07XG59XG5cbi5kYXRlQiBkeC1kYXRlLWJveCxcbi5kYXRlQiBkeC1udW1iZXItYm94LFxuLmRhdGVCIGR4LXRleHQtYm94IHtcbiAgbWFyZ2luLXRvcDogLTAuOGVtO1xufVxuXG4uY2VudHJhciB7XG4gIHRleHQtYWxpZ246IGNlbnRlcjtcbn1cblxuLmdlc3Rpb24tZW50cmVnYXMtY2FyZCB7XG4gIGJvcmRlci1yYWRpdXM6IDAuMjVyZW07XG59XG5cbi5nZXN0aW9uLWVudHJlZ2FzLWNhcmQgLmNhcmQtaGVhZGVyIHtcbiAgYmFja2dyb3VuZC1jb2xvcjogI2Y4ZjlmYTtcbn1cblxuLmNvbnMtbGFiZWwge1xuICBmb250LXNpemU6IGluaGVyaXQ7XG59XG5cbi5jb25zLXZhbG9yIHtcbiAgZm9udC1zaXplOiA0cmVtO1xuICBmb250LXdlaWdodDogYm9sZDtcbiAgbWFyZ2luLXRvcDogLTFyZW07XG4gIGxpbmUtaGVpZ2h0OiAxLjE7XG59XG5cbi5nZXN0aW9uLWVudHJlZ2FzLWFjY2lvbmVzIGR4LWJ1dHRvbiArIGR4LWJ1dHRvbiB7XG4gIG1hcmdpbi1sZWZ0OiAwLjVyZW07XG59XG5cbjo6bmctZGVlcCAuZ2VzdGlvbi1lbnRyZWdhcy1jYXJkIC5kYXRlQiAuZHgtdGV4dGVkaXRvci1pbnB1dCB7XG4gIHRleHQtYWxpZ246IGNlbnRlcjtcbn1cblxudGFibGUgdGQsXG50YWJsZSB0aCB7XG4gIHZlcnRpY2FsLWFsaWduOiBtaWRkbGU7XG59XG5cbi50cmF6YWJpbGlkYWQtcG9wdXAgaDYge1xuICBjb2xvcjogIzMzMztcbn1cblxuLnRyYXphYmlsaWRhZC1wb3B1cCAudy0yNSB7XG4gIHdpZHRoOiAyNSU7XG59XG5cbi5lbnRyZWdhLWNwLWlucHV0cyB7XG4gIGdhcDogNHB4O1xufVxuXG4vKiDigJTigJQgU01BUlQtRElTUEFUQ0ggKG3Ds3ZpbCk6IGFjb3JkZcOzbiBmYWN0dXJhIOKGkiDDrXRlbSDihpIgZm9ybXVsYXJpbyDigJTigJQgKi9cbi5zbWFydC1kaXNwYXRjaC1tb3ZpbCB7XG4gIG1hcmdpbi1ib3R0b206IDAuMjVyZW07XG59XG5cbi5zZC1sZXllbmRhIHtcbiAgZGlzcGxheTogZmxleDtcbiAgZmxleC13cmFwOiB3cmFwO1xuICBnYXA6IDAuNXJlbSAwLjg1cmVtO1xuICBhbGlnbi1pdGVtczogY2VudGVyO1xufVxuXG4uc2QtbGV5ZW5kYS1pdGVtIHtcbiAgZGlzcGxheTogaW5saW5lLWZsZXg7XG4gIGFsaWduLWl0ZW1zOiBjZW50ZXI7XG4gIGdhcDogMC4zNXJlbTtcbn1cblxuLnNkLXB1bnRvIHtcbiAgZGlzcGxheTogaW5saW5lLWJsb2NrO1xuICB3aWR0aDogMTBweDtcbiAgaGVpZ2h0OiAxMHB4O1xuICBib3JkZXItcmFkaXVzOiA1MCU7XG4gIGZsZXgtc2hyaW5rOiAwO1xufVxuXG4uc2QtZmFjdHVyYS1jYXJkIHtcbiAgYm9yZGVyOiAxcHggc29saWQgI2RlZTJlNjtcbiAgYm9yZGVyLXJhZGl1czogNnB4O1xuICBvdmVyZmxvdzogaGlkZGVuO1xuICBiYWNrZ3JvdW5kOiAjZmZmO1xufVxuXG4uc2QtZmFjdHVyYS1oZWFkZXIge1xuICB3aWR0aDogMTAwJTtcbiAgZGlzcGxheTogZmxleDtcbiAgYWxpZ24taXRlbXM6IGZsZXgtc3RhcnQ7XG4gIGdhcDogMC41cmVtO1xuICBwYWRkaW5nOiAwLjY1cmVtIDAuNzVyZW07XG4gIGJvcmRlcjogbm9uZTtcbiAgYmFja2dyb3VuZDogI2Y4ZjlmYTtcbiAgdGV4dC1hbGlnbjogbGVmdDtcbiAgY3Vyc29yOiBwb2ludGVyO1xufVxuXG4uc2QtZmFjdHVyYS1oZWFkZXI6Zm9jdXMge1xuICBvdXRsaW5lOiAycHggc29saWQgcmdiYSgwLCA5NywgMTY5LCAwLjM1KTtcbiAgb3V0bGluZS1vZmZzZXQ6IDFweDtcbn1cblxuLnNkLWZhY3R1cmEtdGV4dG8ge1xuICBmbGV4OiAxO1xuICBtaW4td2lkdGg6IDA7XG4gIGRpc3BsYXk6IGZsZXg7XG4gIGZsZXgtZGlyZWN0aW9uOiBjb2x1bW47XG4gIGdhcDogMC4xNXJlbTtcbn1cblxuLnNkLWZhY3R1cmEtZG9jIHtcbiAgZm9udC13ZWlnaHQ6IDcwMDtcbiAgZm9udC1zaXplOiAwLjk1cmVtO1xufVxuXG4uc2QtZmFjdHVyYS1jbGllbnRlIHtcbiAgZm9udC1zaXplOiAwLjg4cmVtO1xuICBsaW5lLWhlaWdodDogMS4yNTtcbiAgd29yZC1icmVhazogYnJlYWstd29yZDtcbn1cblxuLnNkLWZhY3R1cmEtbWV0YSB7XG4gIGZvbnQtc2l6ZTogMC43NXJlbTtcbiAgY29sb3I6ICM2Yzc1N2Q7XG59XG5cbi5zZC1jaGV2cm9uIHtcbiAgdHJhbnNpdGlvbjogdHJhbnNmb3JtIDAuMnMgZWFzZTtcbiAgYWxpZ24tc2VsZjogY2VudGVyO1xuICBjb2xvcjogIzZjNzU3ZDtcbiAgZmxleC1zaHJpbms6IDA7XG59XG5cbi5zZC1jaGV2cm9uLXVwIHtcbiAgdHJhbnNmb3JtOiByb3RhdGUoLTE4MGRlZyk7XG59XG5cbi5zZC1jaGV2cm9uLXNtIHtcbiAgZm9udC1zaXplOiAwLjcycmVtO1xufVxuXG4uc2QtZmFjdHVyYS1jdWVycG8ge1xuICBwYWRkaW5nOiAwLjVyZW0gMC42NXJlbSAwLjc1cmVtO1xuICBiYWNrZ3JvdW5kOiAjZmZmO1xuICBib3JkZXItdG9wOiAxcHggc29saWQgI2U5ZWNlZjtcbn1cblxuLnNkLWl0ZW0td3JhcCB7XG4gIGJvcmRlcjogMXB4IHNvbGlkICNlOWVjZWY7XG4gIGJvcmRlci1yYWRpdXM6IDZweDtcbiAgbWFyZ2luLWJvdHRvbTogMC40NXJlbTtcbiAgb3ZlcmZsb3c6IGhpZGRlbjtcbiAgYmFja2dyb3VuZDogI2ZhZmFmYTtcbn1cblxuLnNkLWl0ZW0tY2FiIHtcbiAgd2lkdGg6IDEwMCU7XG4gIGRpc3BsYXk6IGZsZXg7XG4gIGZsZXgtd3JhcDogd3JhcDtcbiAgYWxpZ24taXRlbXM6IGNlbnRlcjtcbiAgZ2FwOiAwLjM1cmVtIDAuNXJlbTtcbiAgcGFkZGluZzogMC41NXJlbSAwLjZyZW07XG4gIGJvcmRlcjogbm9uZTtcbiAgYmFja2dyb3VuZDogdHJhbnNwYXJlbnQ7XG4gIHRleHQtYWxpZ246IGxlZnQ7XG4gIGN1cnNvcjogcG9pbnRlcjtcbn1cblxuLnNkLWd1YXJkYWRvLW9rIHtcbiAgZm9udC1zaXplOiAxLjE1cmVtO1xuICBmbGV4LXNocmluazogMDtcbn1cblxuLnNkLWd1YXJkYXItbGluZWEtd3JhcCB7XG4gIGRpc3BsYXk6IGZsZXg7XG4gIGZsZXgtd3JhcDogd3JhcDtcbiAgYWxpZ24taXRlbXM6IGNlbnRlcjtcbn1cblxuLmdlc3Rpb24tbGluZWEtb2sge1xuICBkaXNwbGF5OiBpbmxpbmUtYmxvY2s7XG4gIHZlcnRpY2FsLWFsaWduOiBtaWRkbGU7XG4gIGZvbnQtc2l6ZTogMS4xcmVtO1xufVxuXG4uc2QtaXRlbS1jYWI6Zm9jdXMge1xuICBvdXRsaW5lOiAycHggc29saWQgcmdiYSgwLCA5NywgMTY5LCAwLjM1KTtcbiAgb3V0bGluZS1vZmZzZXQ6IDFweDtcbn1cblxuLnNkLWl0ZW0tbm9tYnJlIHtcbiAgZmxleDogMSAxIDEwMCU7XG4gIGZvbnQtd2VpZ2h0OiA2MDA7XG4gIGZvbnQtc2l6ZTogMC45cmVtO1xuICBsaW5lLWhlaWdodDogMS4zO1xuICB3b3JkLWJyZWFrOiBicmVhay13b3JkO1xufVxuXG4uc2QtaXRlbS1yZXN1bWVuIHtcbiAgZmxleDogMSAxIGF1dG87XG4gIG1pbi13aWR0aDogMDtcbn1cblxuLnNkLWl0ZW0tZGV0YWxsZSB7XG4gIHBhZGRpbmc6IDAuNjVyZW0gMC43NXJlbSAwLjg1cmVtO1xuICBiYWNrZ3JvdW5kOiAjZmZmO1xuICBib3JkZXItdG9wOiAxcHggZGFzaGVkICNkZWUyZTY7XG59XG5cbi5zZC1rdi1ncmlkIHtcbiAgZGlzcGxheTogZ3JpZDtcbiAgZ3JpZC10ZW1wbGF0ZS1jb2x1bW5zOiBhdXRvIDFmcjtcbiAgZ2FwOiAwLjI1cmVtIDAuNzVyZW07XG4gIG1hcmdpbi1ib3R0b206IDAuNzVyZW07XG59XG5cbi5zZC1jYW1wbyB7XG4gIG1hcmdpbi1ib3R0b206IDAuNjVyZW07XG59XG5cbi5zZC1jZXJyYXItcHJvY2VzbyA6Om5nLWRlZXAgLmR4LWJ1dHRvbiB7XG4gIHdpZHRoOiAxMDAlO1xufVxuXG4uc2QtY2FtcG8gOjpuZy1kZWVwIC5keC10ZXh0ZWRpdG9yIHtcbiAgd2lkdGg6IDEwMCUgIWltcG9ydGFudDtcbiAgbWF4LXdpZHRoOiAxMDAlO1xufVxuXG4vKiBDw7NkaWdvIGRlIGNvbG9yZXMgKHRleHRvIG1hdGVyaWFsICsgcHVudG8gZmFjdHVyYSkgKi9cbi5zZC1lc3QtdmVyZGUge1xuICBjb2xvcjogIzFlN2UzNCAhaW1wb3J0YW50O1xufVxuXG4uc2QtcHVudG8uc2QtZXN0LXZlcmRlIHtcbiAgYmFja2dyb3VuZC1jb2xvcjogIzI4YTc0NSAhaW1wb3J0YW50O1xufVxuXG4uc2QtZXN0LWF6dWwge1xuICBjb2xvcjogIzAwNDA4NSAhaW1wb3J0YW50O1xufVxuXG4uc2QtcHVudG8uc2QtZXN0LWF6dWwge1xuICBiYWNrZ3JvdW5kLWNvbG9yOiAjMDA3YmZmICFpbXBvcnRhbnQ7XG59XG5cbi5zZC1lc3Qtcm9qbyB7XG4gIGNvbG9yOiAjYzgyMzMzICFpbXBvcnRhbnQ7XG59XG5cbi5zZC1wdW50by5zZC1lc3Qtcm9qbyB7XG4gIGJhY2tncm91bmQtY29sb3I6ICNkYzM1NDUgIWltcG9ydGFudDtcbn1cblxuLnNkLWVzdC1hbWFyaWxsbyB7XG4gIGNvbG9yOiAjODU2NDA0ICFpbXBvcnRhbnQ7XG59XG5cbi5zZC1wdW50by5zZC1lc3QtYW1hcmlsbG8ge1xuICBiYWNrZ3JvdW5kLWNvbG9yOiAjZmZjMTA3ICFpbXBvcnRhbnQ7XG59XG5cbi5zZC1pdGVtLW5vbWJyZS5zZC1pdGVtLWFsZXJ0YSB7XG4gIGNvbG9yOiAjYjAwMDIwICFpbXBvcnRhbnQ7XG4gIGZvbnQtd2VpZ2h0OiA3MDA7XG59XG5cbi8qIExpc3RhZG8gZW50cmVnYXMgKG3Ds3ZpbCk6IHRhcmpldGFzIHBsYW5hcywgaW5mb3JtYXRpdmFzLCBzaW4gYWNvcmRlw7NuICovXG4ubGlzdGFkby1lbnRyZWdhcy1tb3ZpbCB7XG4gIG1hcmdpbi1ib3R0b206IDAuMjVyZW07XG59XG5cbi5saXN0YWRvLWVudHJlZ2EtbW92aWwtY2FyZCB7XG4gIGRpc3BsYXk6IGJsb2NrO1xuICB3aWR0aDogMTAwJTtcbiAgbWFyZ2luLWJvdHRvbTogMC42NXJlbTtcbiAgcGFkZGluZzogMDtcbiAgYm9yZGVyOiAxcHggc29saWQgI2RlZTJlNjtcbiAgYm9yZGVyLXJhZGl1czogNnB4O1xuICBiYWNrZ3JvdW5kOiAjZmZmO1xuICB0ZXh0LWFsaWduOiBsZWZ0O1xuICBjdXJzb3I6IHBvaW50ZXI7XG4gIG92ZXJmbG93OiBoaWRkZW47XG4gIHRyYW5zaXRpb246IGJveC1zaGFkb3cgMC4xNXMgZWFzZSwgYm9yZGVyLWNvbG9yIDAuMTVzIGVhc2U7XG59XG5cbi5saXN0YWRvLWVudHJlZ2EtbW92aWwtY2FyZDpob3Zlcixcbi5saXN0YWRvLWVudHJlZ2EtbW92aWwtY2FyZDpmb2N1cyB7XG4gIGJvcmRlci1jb2xvcjogcmdiYSgwLCA5NywgMTY5LCAwLjQ1KTtcbiAgYm94LXNoYWRvdzogMCAycHggOHB4IHJnYmEoMCwgMCwgMCwgMC4wNik7XG4gIG91dGxpbmU6IG5vbmU7XG59XG5cbi5saXN0YWRvLWVudHJlZ2EtbW92aWwtY2FyZDpmb2N1cy12aXNpYmxlIHtcbiAgb3V0bGluZTogMnB4IHNvbGlkIHJnYmEoMCwgOTcsIDE2OSwgMC4zNSk7XG4gIG91dGxpbmUtb2Zmc2V0OiAycHg7XG59XG5cbi5saXN0YWRvLWVudHJlZ2EtbW92aWwtY2FiIHtcbiAgZGlzcGxheTogZmxleDtcbiAgYWxpZ24taXRlbXM6IGZsZXgtc3RhcnQ7XG4gIGdhcDogMC41cmVtO1xuICBwYWRkaW5nOiAwLjY1cmVtIDAuNzVyZW07XG4gIGJhY2tncm91bmQ6ICNmOGY5ZmE7XG4gIGJvcmRlci1ib3R0b206IDFweCBzb2xpZCAjZTllY2VmO1xufVxuXG4ubGlzdGFkby1lbnRyZWdhLW1vdmlsLWNhYi10ZXh0byB7XG4gIGZsZXg6IDE7XG4gIG1pbi13aWR0aDogMDtcbiAgZGlzcGxheTogZmxleDtcbiAgZmxleC1kaXJlY3Rpb246IGNvbHVtbjtcbiAgZ2FwOiAwLjJyZW07XG59XG5cbi5saXN0YWRvLWVudHJlZ2EtbW92aWwtZG9jIHtcbiAgZm9udC13ZWlnaHQ6IDcwMDtcbiAgZm9udC1zaXplOiAwLjk1cmVtO1xuICB3b3JkLWJyZWFrOiBicmVhay13b3JkO1xufVxuXG4ubGlzdGFkby1lbnRyZWdhLW1vdmlsLXN1YiB7XG4gIGZvbnQtc2l6ZTogMC43OHJlbTtcbiAgY29sb3I6ICM2Yzc1N2Q7XG4gIGxpbmUtaGVpZ2h0OiAxLjI1O1xufVxuXG4ubGlzdGFkby1lbnRyZWdhLW1vdmlsLWN1ZXJwbyB7XG4gIHBhZGRpbmc6IDAuNjVyZW0gMC43NXJlbSAwLjc1cmVtO1xufVxuXG4ubGlzdGFkby1lbnRyZWdhLW1vdmlsLWt2IHtcbiAgZGlzcGxheTogZ3JpZDtcbiAgZ3JpZC10ZW1wbGF0ZS1jb2x1bW5zOiBtaW5tYXgoMCwgMzglKSAxZnI7XG4gIGdhcDogMC4zNXJlbSAwLjY1cmVtO1xuICBmb250LXNpemU6IDAuODhyZW07XG4gIGFsaWduLWl0ZW1zOiBzdGFydDtcbn1cblxuLmxpc3RhZG8tZW50cmVnYS1tb3ZpbC1sYmwge1xuICBjb2xvcjogIzZjNzU3ZDtcbiAgZm9udC1zaXplOiAwLjhyZW07XG59XG5cbi5saXN0YWRvLWVudHJlZ2EtbW92aWwtdmFsIHtcbiAgd29yZC1icmVhazogYnJlYWstd29yZDtcbiAgbWluLXdpZHRoOiAwO1xufVxuXG5AbWVkaWEgKG1heC13aWR0aDogNzY3Ljk4cHgpIHtcbiAgLyogUHJvZHVjdG9zIHBlbmRpZW50ZXM6IHNjcm9sbCBob3Jpem9udGFsIGVuIHBhbnRhbGxhcyBlc3RyZWNoYXMgKG3Ds3ZpbCkuICovXG4gIC5wcm9kdWN0b3MtcGVuZGllbnRlcy1ncmlkLXNjcm9sbCB7XG4gICAgb3ZlcmZsb3cteDogYXV0bztcbiAgICAtd2Via2l0LW92ZXJmbG93LXNjcm9sbGluZzogdG91Y2g7XG4gICAgb3ZlcnNjcm9sbC1iZWhhdmlvci14OiBjb250YWluO1xuICAgIHBhZGRpbmctYm90dG9tOiAwLjM1cmVtO1xuICB9XG5cbiAgLnByb2R1Y3Rvcy1wZW5kaWVudGVzLWdyaWQtc2Nyb2xsIDo6bmctZGVlcCAuZHgtZGF0YWdyaWQge1xuICAgIG1pbi13aWR0aDogNTJyZW07XG4gIH1cblxuICAucmVtaVBybyB7XG4gICAgcGFkZGluZy1sZWZ0OiAwLjc1cmVtO1xuICAgIHBhZGRpbmctcmlnaHQ6IDAuNzVyZW07XG4gICAgcGFkZGluZy10b3A6IDFyZW07XG4gIH1cblxuICAuZ2VzdGlvbi1lbnRyZWdhcy1jYXJkIC5jYXJkLWJvZHkge1xuICAgIHBhZGRpbmctbGVmdDogMC43NXJlbTtcbiAgICBwYWRkaW5nLXJpZ2h0OiAwLjc1cmVtO1xuICB9XG5cbiAgLmdlc3Rpb24tZmlsdHJvcyB7XG4gICAgcGFkZGluZy1sZWZ0OiAwO1xuICAgIHBhZGRpbmctcmlnaHQ6IDA7XG4gIH1cbn1cbi8qIFRyYXphYmlsaWRhZDogdGFibGEgY29uIHNjcm9sbCB0w6FjdGlsIHkgYm90w7NuIGRlIGNvcnJlY2Npw7NuIGFjY2VzaWJsZSBlbiBtw7N2aWwgKi9cbi50cmF6LWhpc3RvcmlhbC1zY3JvbGwge1xuICAtd2Via2l0LW92ZXJmbG93LXNjcm9sbGluZzogdG91Y2g7XG4gIG92ZXJzY3JvbGwtYmVoYXZpb3IteDogY29udGFpbjtcbn1cblxuLnRyYXotaGlzdG9yaWFsLXRhYmxlIHtcbiAgZm9udC1zaXplOiAwLjg1cmVtO1xufVxuXG4udHJhei1idG4tZWRpdCB7XG4gIG1pbi1oZWlnaHQ6IDQ0cHg7XG4gIG1pbi13aWR0aDogNDRweDtcbiAgdG91Y2gtYWN0aW9uOiBtYW5pcHVsYXRpb247XG4gIGxpbmUtaGVpZ2h0OiAxLjI7XG59XG5cbi50cmF6LW5vdGFzLWNlbGRhIHtcbiAgbWF4LXdpZHRoOiAxNHJlbTtcbiAgd29yZC1icmVhazogYnJlYWstd29yZDtcbn1cblxuLnRyYXotZWRpdGFyLWFjY2lvbmVzIDo6bmctZGVlcCAuZHgtYnV0dG9uIHtcbiAgbWluLWhlaWdodDogNDRweDtcbn1cblxuLyogUG9wdXAgXCJDb3JyZWdpciBtb3ZpbWllbnRvOiB0w610dWxvIG11bHRpbMOtbmVhIHkgY29udGVuaWRvIHNpbiBvdmVyZmxvdyAqL1xuOjpuZy1kZWVwIC50cmF6LXBvcHVwLWNvcnJlZ2lyLW92ZXJsYXkge1xuICBib3gtc2l6aW5nOiBib3JkZXItYm94O1xufVxuOjpuZy1kZWVwIC50cmF6LXBvcHVwLWNvcnJlZ2lyLW92ZXJsYXkgLmR4LXBvcHVwLWNvbnRlbnQge1xuICBvdmVyZmxvdy14OiBoaWRkZW47XG4gIG1heC13aWR0aDogMTAwJTtcbiAgYm94LXNpemluZzogYm9yZGVyLWJveDtcbn1cbjo6bmctZGVlcCAudHJhei1wb3B1cC1jb3JyZWdpci1vdmVybGF5IC5keC1wb3B1cC10aXRsZSB7XG4gIHdoaXRlLXNwYWNlOiBub3JtYWwgIWltcG9ydGFudDtcbiAgd29yZC1icmVhazogYnJlYWstd29yZDtcbiAgb3ZlcmZsb3ctd3JhcDogYW55d2hlcmU7XG4gIGxpbmUtaGVpZ2h0OiAxLjM7XG4gIHBhZGRpbmctcmlnaHQ6IDIuNzVyZW07XG4gIGZvbnQtc2l6ZTogMC45NXJlbTtcbiAgbWF4LXdpZHRoOiAxMDAlO1xufVxuXG5AbWVkaWEgKG1heC13aWR0aDogNzY3Ljk4cHgpIHtcbiAgOjpuZy1kZWVwIC50cmF6LXBvcHVwLWNvcnJlZ2lyLW92ZXJsYXkge1xuICAgIG1heC13aWR0aDogMTAwdncgIWltcG9ydGFudDtcbiAgICB3aWR0aDogY2FsYygxMDB2dyAtIGVudihzYWZlLWFyZWEtaW5zZXQtbGVmdCkgLSBlbnYoc2FmZS1hcmVhLWluc2V0LXJpZ2h0KSkgIWltcG9ydGFudDtcbiAgfVxufVxuLnRyYXotcG9wdXAtZWRpdGFyLWJvZHkge1xuICB3aWR0aDogMTAwJTtcbiAgbWF4LXdpZHRoOiAxMDAlO1xuICBtaW4td2lkdGg6IDA7XG4gIGJveC1zaXppbmc6IGJvcmRlci1ib3g7XG4gIG92ZXJmbG93LXg6IGhpZGRlbjtcbiAgcGFkZGluZzogMC43NXJlbSAwLjc1cmVtIG1heCgwLjc1cmVtLCBlbnYoc2FmZS1hcmVhLWluc2V0LWJvdHRvbSkpO1xufVxuQG1lZGlhIChtaW4td2lkdGg6IDU3NnB4KSB7XG4gIC50cmF6LXBvcHVwLWVkaXRhci1ib2R5IHtcbiAgICBwYWRkaW5nOiAxcmVtIDEuMjVyZW0gMXJlbTtcbiAgfVxufVxuXG4udHJhei1wb3B1cC1lZGl0YXItYm9keSA6Om5nLWRlZXAgLmR4LXRleHRlZGl0b3IsXG4udHJhei1wb3B1cC1lZGl0YXItYm9keSA6Om5nLWRlZXAgLmR4LWRyb3Bkb3duZWRpdG9yLFxuLnRyYXotcG9wdXAtZWRpdGFyLWJvZHkgOjpuZy1kZWVwIC5keC1udW1iZXJib3gge1xuICB3aWR0aDogMTAwJSAhaW1wb3J0YW50O1xuICBtYXgtd2lkdGg6IDEwMCUgIWltcG9ydGFudDtcbn1cblxuLnRyYXotcG9wdXAtZWRpdGFyLWJvZHkgOjpuZy1kZWVwIC5keC10ZXh0ZWRpdG9yLmR4LWVkaXRvci1vdXRsaW5lZCxcbi50cmF6LXBvcHVwLWVkaXRhci1ib2R5IDo6bmctZGVlcCAuZHgtZHJvcGRvd25lZGl0b3IuZHgtZWRpdG9yLW91dGxpbmVkIHtcbiAgZGlzcGxheTogYmxvY2s7XG59XG5cbi50cmF6LWVkaXRhci1hY2Npb25lcyB7XG4gIHdpZHRoOiAxMDAlO1xuICBtYXgtd2lkdGg6IDEwMCU7XG4gIHBhZGRpbmctdG9wOiAwLjI1cmVtO1xufVxuXG5AbWVkaWEgKG1heC13aWR0aDogNTc1Ljk4cHgpIHtcbiAgLnRyYXotZWRpdGFyLWFjY2lvbmVzIHtcbiAgICBmbGV4LWRpcmVjdGlvbjogY29sdW1uICFpbXBvcnRhbnQ7XG4gICAgYWxpZ24taXRlbXM6IHN0cmV0Y2ggIWltcG9ydGFudDtcbiAgfVxuXG4gIC50cmF6LWVkaXRhci1hY2Npb25lcyA6Om5nLWRlZXAgLmR4LWJ1dHRvbiB7XG4gICAgd2lkdGg6IDEwMCU7XG4gICAgbWF4LXdpZHRoOiAxMDAlO1xuICB9XG59IiwiLyogRmlsYSBkZWwgY29tYm8gKG1pc21vIGNyaXRlcmlvIHF1ZSBkZXZvbHVjaW9uZXMpLiAqL1xyXG4ucmVtaVBybyB7XHJcbiAgcGFkZGluZzogMS41ZW0gMmVtIDA7XHJcbiAgbWFyZ2luLXRvcDogMC41ZW07XHJcbiAgdGV4dC1hbGlnbjogY2VudGVyO1xyXG59XHJcblxyXG4uZ2VzdGlvbi1tZW51LXN1cGVyaW9yIHtcclxuICBtYXJnaW4tbGVmdDogMDtcclxuICBtYXJnaW4tcmlnaHQ6IDA7XHJcbn1cclxuXHJcbi5weC1nZXN0aW9uLW1lbnUge1xyXG4gIHBhZGRpbmctbGVmdDogMC43NXJlbTtcclxuICBwYWRkaW5nLXJpZ2h0OiAwLjc1cmVtO1xyXG59XHJcblxyXG4vKiBGaWx0cm9zOiBldGlxdWV0YSBhcnJpYmEsIGNvbnRyb2wgYSBhbmNobyBjb21wbGV0byAoZXZpdGEgcmVjb3J0ZXMgZW4gbcOzdmlsKS4gKi9cclxuLmdlc3Rpb24tZmlsdHJvcyB7XHJcbiAgb3ZlcmZsb3cteDogaGlkZGVuO1xyXG59XHJcblxyXG4uZ2VzdGlvbi1maWx0cm8tY2FtcG8gLnRleHRQIHtcclxuICBwYWRkaW5nLWxlZnQ6IDA7XHJcbn1cclxuXHJcbi5nZXN0aW9uLWZpbHRyby1lZGl0b3Ige1xyXG4gIHdpZHRoOiAxMDAlO1xyXG4gIG1heC13aWR0aDogMTAwJTtcclxufVxyXG5cclxuLmdlc3Rpb24tZmlsdHJvLWVkaXRvci5kYXRlQiBkeC1kYXRlLWJveCxcclxuLmdlc3Rpb24tZmlsdHJvLWVkaXRvci5kYXRlQiBkeC1udW1iZXItYm94LFxyXG4uZ2VzdGlvbi1maWx0cm8tZWRpdG9yLmRhdGVCIGR4LXRleHQtYm94IHtcclxuICBtYXJnaW4tdG9wOiAwO1xyXG4gIGRpc3BsYXk6IGJsb2NrO1xyXG4gIHdpZHRoOiAxMDAlO1xyXG4gIG1heC13aWR0aDogMTAwJTtcclxufVxyXG5cclxuOjpuZy1kZWVwIC5nZXN0aW9uLWZpbHRyby1lZGl0b3IgLmR4LXRleHRlZGl0b3Ige1xyXG4gIHdpZHRoOiAxMDAlICFpbXBvcnRhbnQ7XHJcbiAgbWF4LXdpZHRoOiAxMDAlO1xyXG59XHJcblxyXG4uZ2VzdGlvbi1maWx0cm8tY2VycmFkYXMtaW5uZXIge1xyXG4gIG1pbi13aWR0aDogMDtcclxufVxyXG5cclxuLmdlc3Rpb24tZmlsdHJvLWNlcnJhZGFzLXRleHRvIHtcclxuICBmbGV4OiAxIDEgMTJyZW07XHJcbiAgbWluLXdpZHRoOiAwO1xyXG4gIGxpbmUtaGVpZ2h0OiAxLjM1O1xyXG4gIHRleHQtYWxpZ246IGxlZnQ7XHJcbn1cclxuXHJcbkBtZWRpYSAobWF4LXdpZHRoOiA3NjcuOThweCkge1xyXG4gIC5nZXN0aW9uLWZpbHRyby1hY2Npb25lcyB7XHJcbiAgICBkaXNwbGF5OiBmbGV4O1xyXG4gICAgZmxleC1kaXJlY3Rpb246IGNvbHVtbjtcclxuICAgIGFsaWduLWl0ZW1zOiBzdHJldGNoO1xyXG4gICAgZ2FwOiAwLjVyZW07XHJcbiAgfVxyXG5cclxuICAuZ2VzdGlvbi1maWx0cm8tYWNjaW9uZXMgOjpuZy1kZWVwIC5keC1idXR0b24ge1xyXG4gICAgd2lkdGg6IDEwMCU7XHJcbiAgICBtYXgtd2lkdGg6IDEwMCU7XHJcbiAgfVxyXG5cclxuICAuZ2VzdGlvbi1maWx0cm8tYWNjaW9uZXMgZHgtYnV0dG9uICsgZHgtYnV0dG9uIHtcclxuICAgIG1hcmdpbi1sZWZ0OiAwO1xyXG4gIH1cclxufVxyXG5cclxuLnJlbWlQcm8udGl0dWxvcyAuc2VsZWN0IHtcclxuICB0ZXh0LWFsaWduOiBjZW50ZXI7XHJcbiAgYmFja2dyb3VuZC1jb2xvcjogd2hpdGU7XHJcbn1cclxuXHJcbi5zZWxlY3R7XHJcbiAgdGV4dC1hbGlnbjogY2VudGVyO1xyXG4gIGJhY2tncm91bmQtY29sb3I6IHdoaXRlO1xyXG59XHJcblxyXG4udGl0dWxvc3tcclxuICB0ZXh0LWFsaWduOiBjZW50ZXI7XHJcbiAgZm9udC13ZWlnaHQ6IGJvbGQ7XHJcbn1cclxuXHJcbi8qIE1pc21vIGNyaXRlcmlvIHZpc3VhbCBxdWUgY2FqYS1tZW5vciAodGV4dFAsIGRhdGVCLCBjZW50cmFyKS4gKi9cclxuLnRleHRQIHtcclxuICBmb250LXdlaWdodDogYm9sZDtcclxuICBmb250LXNpemU6IDExcHQ7XHJcbn1cclxuXHJcbi50ZXh0UDIge1xyXG4gIG1hcmdpbi10b3A6IDAuM2VtO1xyXG59XHJcblxyXG4uZGF0ZUIgZHgtZGF0ZS1ib3gsXHJcbi5kYXRlQiBkeC1udW1iZXItYm94LFxyXG4uZGF0ZUIgZHgtdGV4dC1ib3gge1xyXG4gIG1hcmdpbi10b3A6IC0wLjhlbTtcclxufVxyXG5cclxuLmNlbnRyYXIge1xyXG4gIHRleHQtYWxpZ246IGNlbnRlcjtcclxufVxyXG5cclxuLmdlc3Rpb24tZW50cmVnYXMtY2FyZCB7XHJcbiAgYm9yZGVyLXJhZGl1czogMC4yNXJlbTtcclxufVxyXG5cclxuLmdlc3Rpb24tZW50cmVnYXMtY2FyZCAuY2FyZC1oZWFkZXIge1xyXG4gIGJhY2tncm91bmQtY29sb3I6ICNmOGY5ZmE7XHJcbn1cclxuXHJcbi5jb25zLWxhYmVsIHtcclxuICBmb250LXNpemU6IGluaGVyaXQ7XHJcbn1cclxuXHJcbi5jb25zLXZhbG9yIHtcclxuICBmb250LXNpemU6IDRyZW07XHJcbiAgZm9udC13ZWlnaHQ6IGJvbGQ7XHJcbiAgbWFyZ2luLXRvcDogLTFyZW07XHJcbiAgbGluZS1oZWlnaHQ6IDEuMTtcclxufVxyXG5cclxuLmdlc3Rpb24tZW50cmVnYXMtYWNjaW9uZXMgZHgtYnV0dG9uICsgZHgtYnV0dG9uIHtcclxuICBtYXJnaW4tbGVmdDogMC41cmVtO1xyXG59XHJcblxyXG46Om5nLWRlZXAgLmdlc3Rpb24tZW50cmVnYXMtY2FyZCAuZGF0ZUIgLmR4LXRleHRlZGl0b3ItaW5wdXQge1xyXG4gIHRleHQtYWxpZ246IGNlbnRlcjtcclxufVxyXG5cclxudGFibGUgdGQsXHJcbnRhYmxlIHRoIHtcclxuICB2ZXJ0aWNhbC1hbGlnbjogbWlkZGxlO1xyXG59XHJcblxyXG4udHJhemFiaWxpZGFkLXBvcHVwIGg2IHtcclxuICBjb2xvcjogIzMzMztcclxufVxyXG5cclxuLnRyYXphYmlsaWRhZC1wb3B1cCAudy0yNSB7XHJcbiAgd2lkdGg6IDI1JTtcclxufVxyXG5cclxuLmVudHJlZ2EtY3AtaW5wdXRzIHtcclxuICBnYXA6IDRweDtcclxufVxyXG5cclxuLyog4oCU4oCUIFNNQVJULURJU1BBVENIIChtw7N2aWwpOiBhY29yZGXDs24gZmFjdHVyYSDihpIgw610ZW0g4oaSIGZvcm11bGFyaW8g4oCU4oCUICovXHJcbi5zbWFydC1kaXNwYXRjaC1tb3ZpbCB7XHJcbiAgbWFyZ2luLWJvdHRvbTogMC4yNXJlbTtcclxufVxyXG5cclxuLnNkLWxleWVuZGEge1xyXG4gIGRpc3BsYXk6IGZsZXg7XHJcbiAgZmxleC13cmFwOiB3cmFwO1xyXG4gIGdhcDogMC41cmVtICAgICAgIDAuODVyZW07XHJcbiAgYWxpZ24taXRlbXM6IGNlbnRlcjtcclxufVxyXG5cclxuLnNkLWxleWVuZGEtaXRlbSB7XHJcbiAgZGlzcGxheTogaW5saW5lLWZsZXg7XHJcbiAgYWxpZ24taXRlbXM6IGNlbnRlcjtcclxuICBnYXA6IDAuMzVyZW07XHJcbn1cclxuXHJcbi5zZC1wdW50byB7XHJcbiAgZGlzcGxheTogaW5saW5lLWJsb2NrO1xyXG4gIHdpZHRoOiAxMHB4O1xyXG4gIGhlaWdodDogMTBweDtcclxuICBib3JkZXItcmFkaXVzOiA1MCU7XHJcbiAgZmxleC1zaHJpbms6IDA7XHJcbn1cclxuXHJcbi5zZC1mYWN0dXJhLWNhcmQge1xyXG4gIGJvcmRlcjogMXB4IHNvbGlkICNkZWUyZTY7XHJcbiAgYm9yZGVyLXJhZGl1czogNnB4O1xyXG4gIG92ZXJmbG93OiBoaWRkZW47XHJcbiAgYmFja2dyb3VuZDogI2ZmZjtcclxufVxyXG5cclxuLnNkLWZhY3R1cmEtaGVhZGVyIHtcclxuICB3aWR0aDogMTAwJTtcclxuICBkaXNwbGF5OiBmbGV4O1xyXG4gIGFsaWduLWl0ZW1zOiBmbGV4LXN0YXJ0O1xyXG4gIGdhcDogMC41cmVtO1xyXG4gIHBhZGRpbmc6IDAuNjVyZW0gMC43NXJlbTtcclxuICBib3JkZXI6IG5vbmU7XHJcbiAgYmFja2dyb3VuZDogI2Y4ZjlmYTtcclxuICB0ZXh0LWFsaWduOiBsZWZ0O1xyXG4gIGN1cnNvcjogcG9pbnRlcjtcclxufVxyXG5cclxuLnNkLWZhY3R1cmEtaGVhZGVyOmZvY3VzIHtcclxuICBvdXRsaW5lOiAycHggc29saWQgcmdiYSgwLCA5NywgMTY5LCAwLjM1KTtcclxuICBvdXRsaW5lLW9mZnNldDogMXB4O1xyXG59XHJcblxyXG4uc2QtZmFjdHVyYS10ZXh0byB7XHJcbiAgZmxleDogMTtcclxuICBtaW4td2lkdGg6IDA7XHJcbiAgZGlzcGxheTogZmxleDtcclxuICBmbGV4LWRpcmVjdGlvbjogY29sdW1uO1xyXG4gIGdhcDogMC4xNXJlbTtcclxufVxyXG5cclxuLnNkLWZhY3R1cmEtZG9jIHtcclxuICBmb250LXdlaWdodDogNzAwO1xyXG4gIGZvbnQtc2l6ZTogMC45NXJlbTtcclxufVxyXG5cclxuLnNkLWZhY3R1cmEtY2xpZW50ZSB7XHJcbiAgZm9udC1zaXplOiAwLjg4cmVtO1xyXG4gIGxpbmUtaGVpZ2h0OiAxLjI1O1xyXG4gIHdvcmQtYnJlYWs6IGJyZWFrLXdvcmQ7XHJcbn1cclxuXHJcbi5zZC1mYWN0dXJhLW1ldGEge1xyXG4gIGZvbnQtc2l6ZTogMC43NXJlbTtcclxuICBjb2xvcjogIzZjNzU3ZDtcclxufVxyXG5cclxuLnNkLWNoZXZyb24ge1xyXG4gIHRyYW5zaXRpb246IHRyYW5zZm9ybSAwLjJzIGVhc2U7XHJcbiAgYWxpZ24tc2VsZjogY2VudGVyO1xyXG4gIGNvbG9yOiAjNmM3NTdkO1xyXG4gIGZsZXgtc2hyaW5rOiAwO1xyXG59XHJcblxyXG4uc2QtY2hldnJvbi11cCB7XHJcbiAgdHJhbnNmb3JtOiByb3RhdGUoLTE4MGRlZyk7XHJcbn1cclxuXHJcbi5zZC1jaGV2cm9uLXNtIHtcclxuICBmb250LXNpemU6IDAuNzJyZW07XHJcbn1cclxuXHJcbi5zZC1mYWN0dXJhLWN1ZXJwbyB7XHJcbiAgcGFkZGluZzogMC41cmVtIDAuNjVyZW0gMC43NXJlbTtcclxuICBiYWNrZ3JvdW5kOiAjZmZmO1xyXG4gIGJvcmRlci10b3A6IDFweCBzb2xpZCAjZTllY2VmO1xyXG59XHJcblxyXG4uc2QtaXRlbS13cmFwIHtcclxuICBib3JkZXI6IDFweCBzb2xpZCAjZTllY2VmO1xyXG4gIGJvcmRlci1yYWRpdXM6IDZweDtcclxuICBtYXJnaW4tYm90dG9tOiAwLjQ1cmVtO1xyXG4gIG92ZXJmbG93OiBoaWRkZW47XHJcbiAgYmFja2dyb3VuZDogI2ZhZmFmYTtcclxufVxyXG5cclxuLnNkLWl0ZW0tY2FiIHtcclxuICB3aWR0aDogMTAwJTtcclxuICBkaXNwbGF5OiBmbGV4O1xyXG4gIGZsZXgtd3JhcDogd3JhcDtcclxuICBhbGlnbi1pdGVtczogY2VudGVyO1xyXG4gIGdhcDogMC4zNXJlbSAwLjVyZW07XHJcbiAgcGFkZGluZzogMC41NXJlbSAwLjZyZW07XHJcbiAgYm9yZGVyOiBub25lO1xyXG4gIGJhY2tncm91bmQ6IHRyYW5zcGFyZW50O1xyXG4gIHRleHQtYWxpZ246IGxlZnQ7XHJcbiAgY3Vyc29yOiBwb2ludGVyO1xyXG59XHJcblxyXG4uc2QtZ3VhcmRhZG8tb2sge1xyXG4gIGZvbnQtc2l6ZTogMS4xNXJlbTtcclxuICBmbGV4LXNocmluazogMDtcclxufVxyXG5cclxuLnNkLWd1YXJkYXItbGluZWEtd3JhcCB7XHJcbiAgZGlzcGxheTogZmxleDtcclxuICBmbGV4LXdyYXA6IHdyYXA7XHJcbiAgYWxpZ24taXRlbXM6IGNlbnRlcjtcclxufVxyXG5cclxuLmdlc3Rpb24tbGluZWEtb2sge1xyXG4gIGRpc3BsYXk6IGlubGluZS1ibG9jaztcclxuICB2ZXJ0aWNhbC1hbGlnbjogbWlkZGxlO1xyXG4gIGZvbnQtc2l6ZTogMS4xcmVtO1xyXG59XHJcblxyXG4uc2QtaXRlbS1jYWI6Zm9jdXMge1xyXG4gIG91dGxpbmU6IDJweCBzb2xpZCByZ2JhKDAsIDk3LCAxNjksIDAuMzUpO1xyXG4gIG91dGxpbmUtb2Zmc2V0OiAxcHg7XHJcbn1cclxuXHJcbi5zZC1pdGVtLW5vbWJyZSB7XHJcbiAgZmxleDogMSAxIDEwMCU7XHJcbiAgZm9udC13ZWlnaHQ6IDYwMDtcclxuICBmb250LXNpemU6IDAuOXJlbTtcclxuICBsaW5lLWhlaWdodDogMS4zO1xyXG4gIHdvcmQtYnJlYWs6IGJyZWFrLXdvcmQ7XHJcbn1cclxuXHJcbi5zZC1pdGVtLXJlc3VtZW4ge1xyXG4gIGZsZXg6IDEgMSBhdXRvO1xyXG4gIG1pbi13aWR0aDogMDtcclxufVxyXG5cclxuLnNkLWl0ZW0tZGV0YWxsZSB7XHJcbiAgcGFkZGluZzogMC42NXJlbSAwLjc1cmVtIDAuODVyZW07XHJcbiAgYmFja2dyb3VuZDogI2ZmZjtcclxuICBib3JkZXItdG9wOiAxcHggZGFzaGVkICNkZWUyZTY7XHJcbn1cclxuXHJcbi5zZC1rdi1ncmlkIHtcclxuICBkaXNwbGF5OiBncmlkO1xyXG4gIGdyaWQtdGVtcGxhdGUtY29sdW1uczogYXV0byAxZnI7XHJcbiAgZ2FwOiAwLjI1cmVtIDAuNzVyZW07XHJcbiAgbWFyZ2luLWJvdHRvbTogMC43NXJlbTtcclxufVxyXG5cclxuLnNkLWNhbXBvIHtcclxuICBtYXJnaW4tYm90dG9tOiAwLjY1cmVtO1xyXG59XHJcblxyXG4uc2QtY2VycmFyLXByb2Nlc28gOjpuZy1kZWVwIC5keC1idXR0b24ge1xyXG4gIHdpZHRoOiAxMDAlO1xyXG59XHJcblxyXG4uc2QtY2FtcG8gOjpuZy1kZWVwIC5keC10ZXh0ZWRpdG9yIHtcclxuICB3aWR0aDogMTAwJSAhaW1wb3J0YW50O1xyXG4gIG1heC13aWR0aDogMTAwJTtcclxufVxyXG5cclxuLyogQ8OzZGlnbyBkZSBjb2xvcmVzICh0ZXh0byBtYXRlcmlhbCArIHB1bnRvIGZhY3R1cmEpICovXHJcbi5zZC1lc3QtdmVyZGUge1xyXG4gIGNvbG9yOiAjMWU3ZTM0ICFpbXBvcnRhbnQ7XHJcbn1cclxuXHJcbi5zZC1wdW50by5zZC1lc3QtdmVyZGUge1xyXG4gIGJhY2tncm91bmQtY29sb3I6ICMyOGE3NDUgIWltcG9ydGFudDtcclxufVxyXG5cclxuLnNkLWVzdC1henVsIHtcclxuICBjb2xvcjogIzAwNDA4NSAhaW1wb3J0YW50O1xyXG59XHJcblxyXG4uc2QtcHVudG8uc2QtZXN0LWF6dWwge1xyXG4gIGJhY2tncm91bmQtY29sb3I6ICMwMDdiZmYgIWltcG9ydGFudDtcclxufVxyXG5cclxuLnNkLWVzdC1yb2pvIHtcclxuICBjb2xvcjogI2M4MjMzMyAhaW1wb3J0YW50O1xyXG59XHJcblxyXG4uc2QtcHVudG8uc2QtZXN0LXJvam8ge1xyXG4gIGJhY2tncm91bmQtY29sb3I6ICNkYzM1NDUgIWltcG9ydGFudDtcclxufVxyXG5cclxuLnNkLWVzdC1hbWFyaWxsbyB7XHJcbiAgY29sb3I6ICM4NTY0MDQgIWltcG9ydGFudDtcclxufVxyXG5cclxuLnNkLXB1bnRvLnNkLWVzdC1hbWFyaWxsbyB7XHJcbiAgYmFja2dyb3VuZC1jb2xvcjogI2ZmYzEwNyAhaW1wb3J0YW50O1xyXG59XHJcblxyXG4uc2QtaXRlbS1ub21icmUuc2QtaXRlbS1hbGVydGEge1xyXG4gIGNvbG9yOiAjYjAwMDIwICFpbXBvcnRhbnQ7XHJcbiAgZm9udC13ZWlnaHQ6IDcwMDtcclxufVxyXG5cclxuLyogTGlzdGFkbyBlbnRyZWdhcyAobcOzdmlsKTogdGFyamV0YXMgcGxhbmFzLCBpbmZvcm1hdGl2YXMsIHNpbiBhY29yZGXDs24gKi9cclxuLmxpc3RhZG8tZW50cmVnYXMtbW92aWwge1xyXG4gIG1hcmdpbi1ib3R0b206IDAuMjVyZW07XHJcbn1cclxuXHJcbi5saXN0YWRvLWVudHJlZ2EtbW92aWwtY2FyZCB7XHJcbiAgZGlzcGxheTogYmxvY2s7XHJcbiAgd2lkdGg6IDEwMCU7XHJcbiAgbWFyZ2luLWJvdHRvbTogMC42NXJlbTtcclxuICBwYWRkaW5nOiAwO1xyXG4gIGJvcmRlcjogMXB4IHNvbGlkICNkZWUyZTY7XHJcbiAgYm9yZGVyLXJhZGl1czogNnB4O1xyXG4gIGJhY2tncm91bmQ6ICNmZmY7XHJcbiAgdGV4dC1hbGlnbjogbGVmdDtcclxuICBjdXJzb3I6IHBvaW50ZXI7XHJcbiAgb3ZlcmZsb3c6IGhpZGRlbjtcclxuICB0cmFuc2l0aW9uOiBib3gtc2hhZG93IDAuMTVzIGVhc2UsIGJvcmRlci1jb2xvciAwLjE1cyBlYXNlO1xyXG59XHJcblxyXG4ubGlzdGFkby1lbnRyZWdhLW1vdmlsLWNhcmQ6aG92ZXIsXHJcbi5saXN0YWRvLWVudHJlZ2EtbW92aWwtY2FyZDpmb2N1cyB7XHJcbiAgYm9yZGVyLWNvbG9yOiByZ2JhKDAsIDk3LCAxNjksIDAuNDUpO1xyXG4gIGJveC1zaGFkb3c6IDAgMnB4IDhweCByZ2JhKDAsIDAsIDAsIDAuMDYpO1xyXG4gIG91dGxpbmU6IG5vbmU7XHJcbn1cclxuXHJcbi5saXN0YWRvLWVudHJlZ2EtbW92aWwtY2FyZDpmb2N1cy12aXNpYmxlIHtcclxuICBvdXRsaW5lOiAycHggc29saWQgcmdiYSgwLCA5NywgMTY5LCAwLjM1KTtcclxuICBvdXRsaW5lLW9mZnNldDogMnB4O1xyXG59XHJcblxyXG4ubGlzdGFkby1lbnRyZWdhLW1vdmlsLWNhYiB7XHJcbiAgZGlzcGxheTogZmxleDtcclxuICBhbGlnbi1pdGVtczogZmxleC1zdGFydDtcclxuICBnYXA6IDAuNXJlbTtcclxuICBwYWRkaW5nOiAwLjY1cmVtIDAuNzVyZW07XHJcbiAgYmFja2dyb3VuZDogI2Y4ZjlmYTtcclxuICBib3JkZXItYm90dG9tOiAxcHggc29saWQgI2U5ZWNlZjtcclxufVxyXG5cclxuLmxpc3RhZG8tZW50cmVnYS1tb3ZpbC1jYWItdGV4dG8ge1xyXG4gIGZsZXg6IDE7XHJcbiAgbWluLXdpZHRoOiAwO1xyXG4gIGRpc3BsYXk6IGZsZXg7XHJcbiAgZmxleC1kaXJlY3Rpb246IGNvbHVtbjtcclxuICBnYXA6IDAuMnJlbTtcclxufVxyXG5cclxuLmxpc3RhZG8tZW50cmVnYS1tb3ZpbC1kb2Mge1xyXG4gIGZvbnQtd2VpZ2h0OiA3MDA7XHJcbiAgZm9udC1zaXplOiAwLjk1cmVtO1xyXG4gIHdvcmQtYnJlYWs6IGJyZWFrLXdvcmQ7XHJcbn1cclxuXHJcbi5saXN0YWRvLWVudHJlZ2EtbW92aWwtc3ViIHtcclxuICBmb250LXNpemU6IDAuNzhyZW07XHJcbiAgY29sb3I6ICM2Yzc1N2Q7XHJcbiAgbGluZS1oZWlnaHQ6IDEuMjU7XHJcbn1cclxuXHJcbi5saXN0YWRvLWVudHJlZ2EtbW92aWwtY3VlcnBvIHtcclxuICBwYWRkaW5nOiAwLjY1cmVtIDAuNzVyZW0gMC43NXJlbTtcclxufVxyXG5cclxuLmxpc3RhZG8tZW50cmVnYS1tb3ZpbC1rdiB7XHJcbiAgZGlzcGxheTogZ3JpZDtcclxuICBncmlkLXRlbXBsYXRlLWNvbHVtbnM6IG1pbm1heCgwLCAzOCUpIDFmcjtcclxuICBnYXA6IDAuMzVyZW0gMC42NXJlbTtcclxuICBmb250LXNpemU6IDAuODhyZW07XHJcbiAgYWxpZ24taXRlbXM6IHN0YXJ0O1xyXG59XHJcblxyXG4ubGlzdGFkby1lbnRyZWdhLW1vdmlsLWxibCB7XHJcbiAgY29sb3I6ICM2Yzc1N2Q7XHJcbiAgZm9udC1zaXplOiAwLjhyZW07XHJcbn1cclxuXHJcbi5saXN0YWRvLWVudHJlZ2EtbW92aWwtdmFsIHtcclxuICB3b3JkLWJyZWFrOiBicmVhay13b3JkO1xyXG4gIG1pbi13aWR0aDogMDtcclxufVxyXG5cclxuQG1lZGlhIChtYXgtd2lkdGg6IDc2Ny45OHB4KSB7XHJcbiAgLyogUHJvZHVjdG9zIHBlbmRpZW50ZXM6IHNjcm9sbCBob3Jpem9udGFsIGVuIHBhbnRhbGxhcyBlc3RyZWNoYXMgKG3Ds3ZpbCkuICovXHJcbiAgLnByb2R1Y3Rvcy1wZW5kaWVudGVzLWdyaWQtc2Nyb2xsIHtcclxuICAgIG92ZXJmbG93LXg6IGF1dG87XHJcbiAgICAtd2Via2l0LW92ZXJmbG93LXNjcm9sbGluZzogdG91Y2g7XHJcbiAgICBvdmVyc2Nyb2xsLWJlaGF2aW9yLXg6IGNvbnRhaW47XHJcbiAgICBwYWRkaW5nLWJvdHRvbTogMC4zNXJlbTtcclxuICB9XHJcblxyXG4gIC5wcm9kdWN0b3MtcGVuZGllbnRlcy1ncmlkLXNjcm9sbCA6Om5nLWRlZXAgLmR4LWRhdGFncmlkIHtcclxuICAgIG1pbi13aWR0aDogNTJyZW07XHJcbiAgfVxyXG5cclxuICAucmVtaVBybyB7XHJcbiAgICBwYWRkaW5nLWxlZnQ6IDAuNzVyZW07XHJcbiAgICBwYWRkaW5nLXJpZ2h0OiAwLjc1cmVtO1xyXG4gICAgcGFkZGluZy10b3A6IDFyZW07XHJcbiAgfVxyXG5cclxuICAuZ2VzdGlvbi1lbnRyZWdhcy1jYXJkIC5jYXJkLWJvZHkge1xyXG4gICAgcGFkZGluZy1sZWZ0OiAwLjc1cmVtO1xyXG4gICAgcGFkZGluZy1yaWdodDogMC43NXJlbTtcclxuICB9XHJcblxyXG4gIC5nZXN0aW9uLWZpbHRyb3Mge1xyXG4gICAgcGFkZGluZy1sZWZ0OiAwO1xyXG4gICAgcGFkZGluZy1yaWdodDogMDtcclxuICB9XHJcbn1cclxuXHJcbi8qIFRyYXphYmlsaWRhZDogdGFibGEgY29uIHNjcm9sbCB0w6FjdGlsIHkgYm90w7NuIGRlIGNvcnJlY2Npw7NuIGFjY2VzaWJsZSBlbiBtw7N2aWwgKi9cclxuLnRyYXotaGlzdG9yaWFsLXNjcm9sbCB7XHJcbiAgLXdlYmtpdC1vdmVyZmxvdy1zY3JvbGxpbmc6IHRvdWNoO1xyXG4gIG92ZXJzY3JvbGwtYmVoYXZpb3IteDogY29udGFpbjtcclxufVxyXG5cclxuLnRyYXotaGlzdG9yaWFsLXRhYmxlIHtcclxuICBmb250LXNpemU6IDAuODVyZW07XHJcbn1cclxuXHJcbi50cmF6LWJ0bi1lZGl0IHtcclxuICBtaW4taGVpZ2h0OiA0NHB4O1xyXG4gIG1pbi13aWR0aDogNDRweDtcclxuICB0b3VjaC1hY3Rpb246IG1hbmlwdWxhdGlvbjtcclxuICBsaW5lLWhlaWdodDogMS4yO1xyXG59XHJcblxyXG4udHJhei1ub3Rhcy1jZWxkYSB7XHJcbiAgbWF4LXdpZHRoOiAxNHJlbTtcclxuICB3b3JkLWJyZWFrOiBicmVhay13b3JkO1xyXG59XHJcblxyXG4udHJhei1lZGl0YXItYWNjaW9uZXMgOjpuZy1kZWVwIC5keC1idXR0b24ge1xyXG4gIG1pbi1oZWlnaHQ6IDQ0cHg7XHJcbn1cclxuXHJcbi8qIFBvcHVwIFwiQ29ycmVnaXIgbW92aW1pZW50bzogdMOtdHVsbyBtdWx0aWzDrW5lYSB5IGNvbnRlbmlkbyBzaW4gb3ZlcmZsb3cgKi9cclxuOjpuZy1kZWVwIC50cmF6LXBvcHVwLWNvcnJlZ2lyLW92ZXJsYXkge1xyXG4gIGJveC1zaXppbmc6IGJvcmRlci1ib3g7XHJcblxyXG4gIC5keC1wb3B1cC1jb250ZW50IHtcclxuICAgIG92ZXJmbG93LXg6IGhpZGRlbjtcclxuICAgIG1heC13aWR0aDogMTAwJTtcclxuICAgIGJveC1zaXppbmc6IGJvcmRlci1ib3g7XHJcbiAgfVxyXG5cclxuICAuZHgtcG9wdXAtdGl0bGUge1xyXG4gICAgd2hpdGUtc3BhY2U6IG5vcm1hbCAhaW1wb3J0YW50O1xyXG4gICAgd29yZC1icmVhazogYnJlYWstd29yZDtcclxuICAgIG92ZXJmbG93LXdyYXA6IGFueXdoZXJlO1xyXG4gICAgbGluZS1oZWlnaHQ6IDEuMztcclxuICAgIHBhZGRpbmctcmlnaHQ6IDIuNzVyZW07XHJcbiAgICBmb250LXNpemU6IDAuOTVyZW07XHJcbiAgICBtYXgtd2lkdGg6IDEwMCU7XHJcbiAgfVxyXG59XHJcblxyXG5AbWVkaWEgKG1heC13aWR0aDogNzY3Ljk4cHgpIHtcclxuICA6Om5nLWRlZXAgLnRyYXotcG9wdXAtY29ycmVnaXItb3ZlcmxheSB7XHJcbiAgICBtYXgtd2lkdGg6IDEwMHZ3ICFpbXBvcnRhbnQ7XHJcbiAgICB3aWR0aDogY2FsYygxMDB2dyAtIGVudihzYWZlLWFyZWEtaW5zZXQtbGVmdCkgLSBlbnYoc2FmZS1hcmVhLWluc2V0LXJpZ2h0KSkgIWltcG9ydGFudDtcclxuICB9XHJcbn1cclxuXHJcbi50cmF6LXBvcHVwLWVkaXRhci1ib2R5IHtcclxuICB3aWR0aDogMTAwJTtcclxuICBtYXgtd2lkdGg6IDEwMCU7XHJcbiAgbWluLXdpZHRoOiAwO1xyXG4gIGJveC1zaXppbmc6IGJvcmRlci1ib3g7XHJcbiAgb3ZlcmZsb3cteDogaGlkZGVuO1xyXG4gIHBhZGRpbmc6IDAuNzVyZW0gMC43NXJlbSBtYXgoMC43NXJlbSwgZW52KHNhZmUtYXJlYS1pbnNldC1ib3R0b20pKTtcclxuXHJcbiAgQG1lZGlhIChtaW4td2lkdGg6IDU3NnB4KSB7XHJcbiAgICBwYWRkaW5nOiAxcmVtIDEuMjVyZW0gMXJlbTtcclxuICB9XHJcbn1cclxuXHJcbi50cmF6LXBvcHVwLWVkaXRhci1ib2R5IDo6bmctZGVlcCAuZHgtdGV4dGVkaXRvcixcclxuLnRyYXotcG9wdXAtZWRpdGFyLWJvZHkgOjpuZy1kZWVwIC5keC1kcm9wZG93bmVkaXRvcixcclxuLnRyYXotcG9wdXAtZWRpdGFyLWJvZHkgOjpuZy1kZWVwIC5keC1udW1iZXJib3gge1xyXG4gIHdpZHRoOiAxMDAlICFpbXBvcnRhbnQ7XHJcbiAgbWF4LXdpZHRoOiAxMDAlICFpbXBvcnRhbnQ7XHJcbn1cclxuXHJcbi50cmF6LXBvcHVwLWVkaXRhci1ib2R5IDo6bmctZGVlcCAuZHgtdGV4dGVkaXRvci5keC1lZGl0b3Itb3V0bGluZWQsXHJcbi50cmF6LXBvcHVwLWVkaXRhci1ib2R5IDo6bmctZGVlcCAuZHgtZHJvcGRvd25lZGl0b3IuZHgtZWRpdG9yLW91dGxpbmVkIHtcclxuICBkaXNwbGF5OiBibG9jaztcclxufVxyXG5cclxuLnRyYXotZWRpdGFyLWFjY2lvbmVzIHtcclxuICB3aWR0aDogMTAwJTtcclxuICBtYXgtd2lkdGg6IDEwMCU7XHJcbiAgcGFkZGluZy10b3A6IDAuMjVyZW07XHJcbn1cclxuXHJcbkBtZWRpYSAobWF4LXdpZHRoOiA1NzUuOThweCkge1xyXG4gIC50cmF6LWVkaXRhci1hY2Npb25lcyB7XHJcbiAgICBmbGV4LWRpcmVjdGlvbjogY29sdW1uICFpbXBvcnRhbnQ7XHJcbiAgICBhbGlnbi1pdGVtczogc3RyZXRjaCAhaW1wb3J0YW50O1xyXG4gIH1cclxuXHJcbiAgLnRyYXotZWRpdGFyLWFjY2lvbmVzIDo6bmctZGVlcCAuZHgtYnV0dG9uIHtcclxuICAgIHdpZHRoOiAxMDAlO1xyXG4gICAgbWF4LXdpZHRoOiAxMDAlO1xyXG4gIH1cclxufVxyXG4iXX0= */"] });
+/*@__PURE__*/ (function () { _angular_core__WEBPACK_IMPORTED_MODULE_1__["ɵsetClassMetadata"](GestionEntregasBodegaComponent, [{
+        type: _angular_core__WEBPACK_IMPORTED_MODULE_1__["Component"],
         args: [{
                 selector: "app-gestion-entregas-bodega",
                 templateUrl: "./gestion-entregas-bodega.component.html",
                 styleUrls: ["./gestion-entregas-bodega.component.scss"],
             }]
-    }], function () { return [{ type: src_app_servicios_entregas_bodega_service__WEBPACK_IMPORTED_MODULE_2__["EntregasBodegaService"] }, { type: src_app_shared_services__WEBPACK_IMPORTED_MODULE_3__["ScreenService"] }]; }, null); })();
+    }], function () { return [{ type: src_app_servicios_entregas_bodega_service__WEBPACK_IMPORTED_MODULE_3__["EntregasBodegaService"] }, { type: src_app_shared_services__WEBPACK_IMPORTED_MODULE_4__["ScreenService"] }]; }, null); })();
 
 
 /***/ }),
@@ -54054,10 +54651,33 @@ class HomeComponent {
         this.detalleIndicadores = [];
         this.cargandoDetalleIndicadores = false;
         this.errorDetalleIndicadores = false;
+        /** Dimensiones del popup de indicadores (se ajustan en vista móvil). */
+        this.anchoPopupIndicadores = 720;
+        this.altoPopupIndicadores = 520;
     }
     ngOnInit() {
+        this.actualizarTamanoPopupIndicadores();
         this.cargarProductosBajoMinimo();
         this.cargarIndicadoresEntregas();
+    }
+    onVentanaRedimensionada() {
+        this.actualizarTamanoPopupIndicadores();
+    }
+    actualizarTamanoPopupIndicadores() {
+        if (typeof window === 'undefined') {
+            return;
+        }
+        const vw = window.innerWidth;
+        const vh = window.innerHeight;
+        if (vw < HomeComponent.umbralVistaMovilPx) {
+            const margen = 16;
+            this.anchoPopupIndicadores = Math.max(280, vw - margen);
+            this.altoPopupIndicadores = Math.round(Math.min(vh * 0.92, vh - margen));
+        }
+        else {
+            this.anchoPopupIndicadores = 720;
+            this.altoPopupIndicadores = 520;
+        }
     }
     cargarProductosBajoMinimo() {
         this.loading = true;
@@ -54093,6 +54713,7 @@ class HomeComponent {
         });
     }
     abrirDetalleIndicador(tipo) {
+        this.actualizarTamanoPopupIndicadores();
         const titulos = {
             abiertas: "Entregas abiertas (solo información)",
             novedad: "Entregas con novedad (solo información)",
@@ -54133,8 +54754,11 @@ class HomeComponent {
         return d.toLocaleDateString();
     }
 }
+HomeComponent.umbralVistaMovilPx = 768;
 HomeComponent.ɵfac = function HomeComponent_Factory(t) { return new (t || HomeComponent)(_angular_core__WEBPACK_IMPORTED_MODULE_0__["ɵɵdirectiveInject"](src_app_servicios_stock_minimo_data_service__WEBPACK_IMPORTED_MODULE_1__["StockMinimoDataService"]), _angular_core__WEBPACK_IMPORTED_MODULE_0__["ɵɵdirectiveInject"](src_app_servicios_entregas_bodega_service__WEBPACK_IMPORTED_MODULE_2__["EntregasBodegaService"])); };
-HomeComponent.ɵcmp = _angular_core__WEBPACK_IMPORTED_MODULE_0__["ɵɵdefineComponent"]({ type: HomeComponent, selectors: [["ng-component"]], decls: 77, vars: 21, consts: [[1, "content-block"], [1, "row", "align-items-center", "justify-content-center", "py-4", 2, "background", "#f7f9fa", "border-radius", "12px", "box-shadow", "0 2px 16px rgba(0,0,0,0.06)"], [1, "col-md-3", "d-flex", "justify-content-center", "align-items-center"], [1, "logos-container", "p-2", "bg-white", "rounded", "shadow-sm"], ["src", "./../../../assets/Logo 01.png", "alt", "Logo Comercial Blanquita", 1, "img-fluid", 2, "max-height", "100px"], [1, "col-md-9"], [1, "welcome-box", "px-4", "py-3", "bg-white", "rounded", "shadow-sm", "h-100", "d-flex", "flex-column", "justify-content-center", 2, "text-align", "center"], [1, "mb-2", "text-primary", "font-weight-bold", 2, "font-size", "2rem"], [1, "mb-2", "text-secondary", 2, "font-size", "1.2rem", "font-weight", "normal"], [1, "sistema-version-fecha", "mt-2", "text-muted", 2, "font-size", "1rem"], [1, "dx-icon-info-circle", "text-primary", "mr-1"], [1, "dx-icon-clock", "text-primary", "mr-1"], [1, "row", "mb-3"], [1, "col-md-12"], [1, "dx-card", "responsive-paddings"], [1, "text-muted"], [1, "row", "text-center"], [1, "col-md-3"], ["role", "button", "tabindex", "0", "title", "Ver documentos de entrega abiertas", 1, "mini-kpi", "mini-kpi-clickable", 3, "click", "keyup.enter", "keyup.space"], [1, "mini-kpi-title"], [1, "mini-kpi-value"], ["role", "button", "tabindex", "0", "title", "Ver documentos con novedad", 1, "mini-kpi", "mini-kpi-clickable", 3, "click", "keyup.enter", "keyup.space"], [1, "mini-kpi"], [1, "row", "text-center", "mt-2"], ["role", "button", "tabindex", "0", "title", "Ver l\u00EDneas con compromiso vencido", 1, "mini-kpi", "mini-kpi-alert", "mini-kpi-clickable", 3, "click", "keyup.enter", "keyup.space"], ["class", "error-wrap mt-2", 4, "ngIf"], [3, "width", "height", "showTitle", "title", "closeOnOutsideClick", "showCloseButton", "dragEnabled", "visible", "visibleChange", "onHidden"], ["class", "popup-indicadores-entregas", 4, "dxTemplate", "dxTemplateOf"], [1, "row"], [1, "dx-card", "responsive-paddings", "stock-minimo-card"], [1, "subtext"], ["class", "loading-wrap", 4, "ngIf"], ["class", "error-wrap", 4, "ngIf"], ["class", "empty-wrap", 4, "ngIf"], [4, "ngIf"], [1, "error-wrap", "mt-2"], [1, "popup-indicadores-entregas"], ["class", "popup-indicadores-estado", 4, "ngIf"], ["class", "popup-indicadores-estado popup-indicadores-error", 4, "ngIf"], ["class", "popup-indicadores-scroll", 4, "ngIf"], [1, "popup-indicadores-estado"], ["height", "40", "width", "40", 3, "visible"], [1, "popup-indicadores-estado", "popup-indicadores-error"], [1, "popup-indicadores-scroll"], [1, "text-muted", "small", "mb-2"], ["class", "text-muted", 4, "ngIf"], ["class", "detalle-orden-card", 4, "ngFor", "ngForOf"], [1, "detalle-orden-card"], [1, "detalle-orden-linea"], [1, "detalle-orden-linea", "small"], [1, "detalle-orden-linea", "small", "text-muted"], ["class", "detalle-orden-card detalle-compromiso", 4, "ngFor", "ngForOf"], [1, "detalle-orden-card", "detalle-compromiso"], [1, "detalle-compromiso-lista", "mb-0", "pl-3"], ["class", "small", 4, "ngFor", "ngForOf"], [1, "small"], [1, "loading-wrap"], [1, "error-wrap"], ["text", "Reintentar", "type", "default", 3, "onClick"], [1, "empty-wrap"], ["itemTitleTemplate", "tituloCategoria", "itemTemplate", "contenidoCategoria", 3, "dataSource", "collapsible", "multiple", "animationDuration"], [4, "dxTemplate", "dxTemplateOf"], [1, "accordion-title"], [1, "accordion-badge"], ["itemTemplate", "itemProducto", 3, "dataSource"], [1, "producto-item"], [1, "producto-nombre"], [1, "producto-detalle"], [1, "falta"]], template: function HomeComponent_Template(rf, ctx) { if (rf & 1) {
+HomeComponent.ɵcmp = _angular_core__WEBPACK_IMPORTED_MODULE_0__["ɵɵdefineComponent"]({ type: HomeComponent, selectors: [["ng-component"]], hostBindings: function HomeComponent_HostBindings(rf, ctx) { if (rf & 1) {
+        _angular_core__WEBPACK_IMPORTED_MODULE_0__["ɵɵlistener"]("resize", function HomeComponent_resize_HostBindingHandler() { return ctx.onVentanaRedimensionada(); }, false, _angular_core__WEBPACK_IMPORTED_MODULE_0__["ɵɵresolveWindow"]);
+    } }, decls: 77, vars: 21, consts: [[1, "content-block"], [1, "row", "align-items-center", "justify-content-center", "py-4", 2, "background", "#f7f9fa", "border-radius", "12px", "box-shadow", "0 2px 16px rgba(0,0,0,0.06)"], [1, "col-md-3", "d-flex", "justify-content-center", "align-items-center"], [1, "logos-container", "p-2", "bg-white", "rounded", "shadow-sm"], ["src", "./../../../assets/Logo 01.png", "alt", "Logo Comercial Blanquita", 1, "img-fluid", 2, "max-height", "100px"], [1, "col-md-9"], [1, "welcome-box", "px-4", "py-3", "bg-white", "rounded", "shadow-sm", "h-100", "d-flex", "flex-column", "justify-content-center", 2, "text-align", "center"], [1, "mb-2", "text-primary", "font-weight-bold", 2, "font-size", "2rem"], [1, "mb-2", "text-secondary", 2, "font-size", "1.2rem", "font-weight", "normal"], [1, "sistema-version-fecha", "mt-2", "text-muted", 2, "font-size", "1rem"], [1, "dx-icon-info-circle", "text-primary", "mr-1"], [1, "dx-icon-clock", "text-primary", "mr-1"], [1, "row", "mb-3"], [1, "col-md-12"], [1, "dx-card", "responsive-paddings"], [1, "text-muted"], [1, "row", "text-center"], [1, "col-md-3"], ["role", "button", "tabindex", "0", "title", "Ver documentos de entrega abiertas", 1, "mini-kpi", "mini-kpi-clickable", 3, "click", "keyup.enter", "keyup.space"], [1, "mini-kpi-title"], [1, "mini-kpi-value"], ["role", "button", "tabindex", "0", "title", "Ver documentos con novedad", 1, "mini-kpi", "mini-kpi-clickable", 3, "click", "keyup.enter", "keyup.space"], [1, "mini-kpi"], [1, "row", "text-center", "mt-2"], ["role", "button", "tabindex", "0", "title", "Ver l\u00EDneas con compromiso vencido", 1, "mini-kpi", "mini-kpi-alert", "mini-kpi-clickable", 3, "click", "keyup.enter", "keyup.space"], ["class", "error-wrap mt-2", 4, "ngIf"], [3, "width", "height", "showTitle", "title", "closeOnOutsideClick", "showCloseButton", "dragEnabled", "visible", "visibleChange", "onHidden"], ["class", "popup-indicadores-entregas", 4, "dxTemplate", "dxTemplateOf"], [1, "row"], [1, "dx-card", "responsive-paddings", "stock-minimo-card"], [1, "subtext"], ["class", "loading-wrap", 4, "ngIf"], ["class", "error-wrap", 4, "ngIf"], ["class", "empty-wrap", 4, "ngIf"], [4, "ngIf"], [1, "error-wrap", "mt-2"], [1, "popup-indicadores-entregas"], ["class", "popup-indicadores-estado", 4, "ngIf"], ["class", "popup-indicadores-estado popup-indicadores-error", 4, "ngIf"], ["class", "popup-indicadores-scroll", 4, "ngIf"], [1, "popup-indicadores-estado"], ["height", "40", "width", "40", 3, "visible"], [1, "popup-indicadores-estado", "popup-indicadores-error"], [1, "popup-indicadores-scroll"], [1, "text-muted", "small", "mb-2"], ["class", "text-muted", 4, "ngIf"], ["class", "detalle-orden-card", 4, "ngFor", "ngForOf"], [1, "detalle-orden-card"], [1, "detalle-orden-linea"], [1, "detalle-orden-linea", "small"], [1, "detalle-orden-linea", "small", "text-muted"], ["class", "detalle-orden-card detalle-compromiso", 4, "ngFor", "ngForOf"], [1, "detalle-orden-card", "detalle-compromiso"], [1, "detalle-compromiso-lista", "mb-0", "pl-3"], ["class", "small", 4, "ngFor", "ngForOf"], [1, "small"], [1, "loading-wrap"], [1, "error-wrap"], ["text", "Reintentar", "type", "default", 3, "onClick"], [1, "empty-wrap"], ["itemTitleTemplate", "tituloCategoria", "itemTemplate", "contenidoCategoria", 3, "dataSource", "collapsible", "multiple", "animationDuration"], [4, "dxTemplate", "dxTemplateOf"], [1, "accordion-title"], [1, "accordion-badge"], ["itemTemplate", "itemProducto", 3, "dataSource"], [1, "producto-item"], [1, "producto-nombre"], [1, "producto-detalle"], [1, "falta"]], template: function HomeComponent_Template(rf, ctx) { if (rf & 1) {
         _angular_core__WEBPACK_IMPORTED_MODULE_0__["ɵɵelementStart"](0, "div", 0);
         _angular_core__WEBPACK_IMPORTED_MODULE_0__["ɵɵelementStart"](1, "div", 1);
         _angular_core__WEBPACK_IMPORTED_MODULE_0__["ɵɵelementStart"](2, "div", 2);
@@ -54281,7 +54905,7 @@ HomeComponent.ɵcmp = _angular_core__WEBPACK_IMPORTED_MODULE_0__["ɵɵdefineComp
         _angular_core__WEBPACK_IMPORTED_MODULE_0__["ɵɵadvance"](1);
         _angular_core__WEBPACK_IMPORTED_MODULE_0__["ɵɵproperty"]("ngIf", ctx.errorIndicadoresEntregas);
         _angular_core__WEBPACK_IMPORTED_MODULE_0__["ɵɵadvance"](1);
-        _angular_core__WEBPACK_IMPORTED_MODULE_0__["ɵɵproperty"]("width", 720)("height", 520)("showTitle", true)("title", ctx.tituloPopupIndicadores)("closeOnOutsideClick", true)("showCloseButton", true)("dragEnabled", false)("visible", ctx.popupIndicadoresVisible);
+        _angular_core__WEBPACK_IMPORTED_MODULE_0__["ɵɵproperty"]("width", ctx.anchoPopupIndicadores)("height", ctx.altoPopupIndicadores)("showTitle", true)("title", ctx.tituloPopupIndicadores)("closeOnOutsideClick", true)("showCloseButton", true)("dragEnabled", false)("visible", ctx.popupIndicadoresVisible);
         _angular_core__WEBPACK_IMPORTED_MODULE_0__["ɵɵadvance"](1);
         _angular_core__WEBPACK_IMPORTED_MODULE_0__["ɵɵproperty"]("dxTemplateOf", "content");
         _angular_core__WEBPACK_IMPORTED_MODULE_0__["ɵɵadvance"](8);
@@ -54292,14 +54916,17 @@ HomeComponent.ɵcmp = _angular_core__WEBPACK_IMPORTED_MODULE_0__["ɵɵdefineComp
         _angular_core__WEBPACK_IMPORTED_MODULE_0__["ɵɵproperty"]("ngIf", !ctx.loading && !ctx.errorCarga && ctx.productosBajoMinimoPorCategoria.length === 0);
         _angular_core__WEBPACK_IMPORTED_MODULE_0__["ɵɵadvance"](1);
         _angular_core__WEBPACK_IMPORTED_MODULE_0__["ɵɵproperty"]("ngIf", !ctx.loading && !ctx.errorCarga && ctx.productosBajoMinimoPorCategoria.length > 0);
-    } }, directives: [_angular_common__WEBPACK_IMPORTED_MODULE_3__["NgIf"], devextreme_angular__WEBPACK_IMPORTED_MODULE_4__["DxPopupComponent"], devextreme_angular_core__WEBPACK_IMPORTED_MODULE_5__["DxTemplateDirective"], devextreme_angular__WEBPACK_IMPORTED_MODULE_4__["DxLoadIndicatorComponent"], _angular_common__WEBPACK_IMPORTED_MODULE_3__["NgForOf"], devextreme_angular_ui_button__WEBPACK_IMPORTED_MODULE_6__["DxButtonComponent"], devextreme_angular__WEBPACK_IMPORTED_MODULE_4__["DxAccordionComponent"], devextreme_angular_ui_list__WEBPACK_IMPORTED_MODULE_7__["DxListComponent"]], pipes: [_angular_common__WEBPACK_IMPORTED_MODULE_3__["DecimalPipe"]], styles: ["@charset \"UTF-8\";\n.logos-container[_ngcontent-%COMP%] {\n  margin: 20px 0 40px 0;\n  text-align: center;\n}\n.logos-container[_ngcontent-%COMP%]   svg[_ngcontent-%COMP%] {\n  display: inline-block;\n}\n.devextreme-logo[_ngcontent-%COMP%] {\n  width: 200px;\n  height: 34px;\n  margin-bottom: 13px;\n}\n.angular-logo[_ngcontent-%COMP%] {\n  width: 220px;\n  height: 62px;\n}\n.plus[_ngcontent-%COMP%] {\n  margin: 15px 10px;\n  width: 22px;\n  height: 22px;\n}\n.screen-x-small[_nghost-%COMP%]   .logos-container[_ngcontent-%COMP%]   svg[_ngcontent-%COMP%], .screen-x-small   [_nghost-%COMP%]   .logos-container[_ngcontent-%COMP%]   svg[_ngcontent-%COMP%] {\n  width: 100%;\n  display: block;\n}\n.screen-x-small[_nghost-%COMP%]   .logos-container[_ngcontent-%COMP%]   svg.plus[_ngcontent-%COMP%], .screen-x-small   [_nghost-%COMP%]   .logos-container[_ngcontent-%COMP%]   svg.plus[_ngcontent-%COMP%] {\n  margin: 0;\n}\n\n.stock-minimo-card[_ngcontent-%COMP%]   .subtext[_ngcontent-%COMP%] {\n  margin-top: -0.5rem;\n  color: #666;\n  font-size: 0.9rem;\n}\n.stock-minimo-card[_ngcontent-%COMP%]   .loading-wrap[_ngcontent-%COMP%], .stock-minimo-card[_ngcontent-%COMP%]   .error-wrap[_ngcontent-%COMP%], .stock-minimo-card[_ngcontent-%COMP%]   .empty-wrap[_ngcontent-%COMP%] {\n  display: -webkit-box;\n  display: flex;\n  -webkit-box-align: center;\n          align-items: center;\n  gap: 0.75rem;\n  padding: 1rem;\n  flex-wrap: wrap;\n}\n.stock-minimo-card[_ngcontent-%COMP%]   .error-wrap[_ngcontent-%COMP%] {\n  color: #c00;\n}\n.stock-minimo-card[_ngcontent-%COMP%]   .empty-wrap[_ngcontent-%COMP%] {\n  color: #666;\n}\n.stock-minimo-card[_ngcontent-%COMP%]   .accordion-title[_ngcontent-%COMP%] {\n  font-weight: 600;\n}\n.stock-minimo-card[_ngcontent-%COMP%]   .accordion-badge[_ngcontent-%COMP%] {\n  margin-left: 0.5rem;\n  padding: 0.15rem 0.5rem;\n  border-radius: 12px;\n  background: #ff5722;\n  color: #fff;\n  font-size: 0.8rem;\n}\n.stock-minimo-card[_ngcontent-%COMP%]   .producto-item[_ngcontent-%COMP%] {\n  padding: 0.5rem 0;\n  border-bottom: 1px solid #eee;\n}\n.stock-minimo-card[_ngcontent-%COMP%]   .producto-item[_ngcontent-%COMP%]:last-child {\n  border-bottom: none;\n}\n.stock-minimo-card[_ngcontent-%COMP%]   .producto-nombre[_ngcontent-%COMP%] {\n  font-weight: 500;\n  margin-bottom: 0.25rem;\n}\n.stock-minimo-card[_ngcontent-%COMP%]   .producto-detalle[_ngcontent-%COMP%] {\n  display: -webkit-box;\n  display: flex;\n  gap: 1rem;\n  flex-wrap: wrap;\n  font-size: 0.85rem;\n  color: #555;\n}\n.stock-minimo-card[_ngcontent-%COMP%]   .producto-detalle[_ngcontent-%COMP%]   .falta[_ngcontent-%COMP%] {\n  color: #ff5722;\n  font-weight: 500;\n}\n.mini-kpi[_ngcontent-%COMP%] {\n  border: 1px solid #ececec;\n  border-radius: 8px;\n  padding: 10px;\n  background: #fafafa;\n}\n.mini-kpi-title[_ngcontent-%COMP%] {\n  font-size: 13px;\n  color: #666;\n}\n.mini-kpi-value[_ngcontent-%COMP%] {\n  font-size: 26px;\n  font-weight: 700;\n  color: #2d3e50;\n}\n.mini-kpi-alert[_ngcontent-%COMP%] {\n  border-color: #f5c6cb;\n  background: #fff5f5;\n}\n.mini-kpi-clickable[_ngcontent-%COMP%] {\n  cursor: pointer;\n  -webkit-transition: box-shadow 0.15s ease, border-color 0.15s ease, -webkit-transform 0.1s ease;\n  transition: box-shadow 0.15s ease, border-color 0.15s ease, -webkit-transform 0.1s ease;\n  transition: box-shadow 0.15s ease, border-color 0.15s ease, transform 0.1s ease;\n  transition: box-shadow 0.15s ease, border-color 0.15s ease, transform 0.1s ease, -webkit-transform 0.1s ease;\n}\n.mini-kpi-clickable[_ngcontent-%COMP%]:hover {\n  border-color: #c5d4e8;\n  box-shadow: 0 4px 12px rgba(45, 62, 80, 0.12);\n}\n.mini-kpi-clickable[_ngcontent-%COMP%]:active {\n  -webkit-transform: scale(0.99);\n          transform: scale(0.99);\n}\n.mini-kpi-clickable[_ngcontent-%COMP%]:focus {\n  outline: 2px solid rgba(255, 87, 34, 0.45);\n  outline-offset: 2px;\n}\n.mini-kpi-alert.mini-kpi-clickable[_ngcontent-%COMP%]:hover {\n  border-color: #e8a0a8;\n  box-shadow: 0 4px 12px rgba(200, 80, 90, 0.15);\n}\n.popup-indicadores-entregas[_ngcontent-%COMP%] {\n  min-height: 200px;\n}\n.popup-indicadores-scroll[_ngcontent-%COMP%] {\n  max-height: 400px;\n  overflow-y: auto;\n  padding-right: 4px;\n}\n.popup-indicadores-estado[_ngcontent-%COMP%] {\n  display: -webkit-box;\n  display: flex;\n  -webkit-box-align: center;\n          align-items: center;\n  gap: 0.75rem;\n  padding: 1rem;\n  -webkit-box-pack: center;\n          justify-content: center;\n}\n.popup-indicadores-error[_ngcontent-%COMP%] {\n  color: #b00020;\n  flex-wrap: wrap;\n  text-align: center;\n}\n.detalle-orden-card[_ngcontent-%COMP%] {\n  border: 1px solid #e8e8e8;\n  border-radius: 8px;\n  padding: 0.65rem 0.85rem;\n  margin-bottom: 0.6rem;\n  background: #fafbfc;\n}\n.detalle-compromiso[_ngcontent-%COMP%] {\n  background: #fff8f8;\n  border-color: #f0d0d4;\n}\n.detalle-orden-linea[_ngcontent-%COMP%] {\n  line-height: 1.35;\n}\n.detalle-compromiso-lista[_ngcontent-%COMP%]   li[_ngcontent-%COMP%] {\n  margin-bottom: 0.2rem;\n}\n/*# sourceMappingURL=data:application/json;base64,eyJ2ZXJzaW9uIjozLCJzb3VyY2VzIjpbInNyYy9hcHAvcGFnZXMvaG9tZS9ob21lLmNvbXBvbmVudC5zY3NzIiwic3JjL2FwcC9wYWdlcy9ob21lL0M6XFxGSURFTlNcXGFsb2phYmFzZXMyMDI1L3NyY1xcYXBwXFxwYWdlc1xcaG9tZVxcaG9tZS5jb21wb25lbnQuc2NzcyJdLCJuYW1lcyI6W10sIm1hcHBpbmdzIjoiQUFBQSxnQkFBZ0I7QUNBaEI7RUFDRSxxQkFBQTtFQUNBLGtCQUFBO0FERUY7QUNERTtFQUNFLHFCQUFBO0FER0o7QUNDQTtFQUNFLFlBQUE7RUFDQSxZQUFBO0VBQ0EsbUJBQUE7QURFRjtBQ0NBO0VBQ0UsWUFBQTtFQUNBLFlBQUE7QURFRjtBQ0NBO0VBQ0UsaUJBQUE7RUFDQSxXQUFBO0VBQ0EsWUFBQTtBREVGO0FDRUU7RUFDRSxXQUFBO0VBQ0EsY0FBQTtBRENKO0FDQUk7RUFDRSxTQUFBO0FERU47QUNHQSxnQ0FBQTtBQUVFO0VBQ0UsbUJBQUE7RUFDQSxXQUFBO0VBQ0EsaUJBQUE7QURESjtBQ0lFOzs7RUFHRSxvQkFBQTtFQUFBLGFBQUE7RUFDQSx5QkFBQTtVQUFBLG1CQUFBO0VBQ0EsWUFBQTtFQUNBLGFBQUE7RUFDQSxlQUFBO0FERko7QUNLRTtFQUNFLFdBQUE7QURISjtBQ01FO0VBQ0UsV0FBQTtBREpKO0FDT0U7RUFDRSxnQkFBQTtBRExKO0FDUUU7RUFDRSxtQkFBQTtFQUNBLHVCQUFBO0VBQ0EsbUJBQUE7RUFDQSxtQkFBQTtFQUNBLFdBQUE7RUFDQSxpQkFBQTtBRE5KO0FDU0U7RUFDRSxpQkFBQTtFQUNBLDZCQUFBO0FEUEo7QUNTSTtFQUNFLG1CQUFBO0FEUE47QUNXRTtFQUNFLGdCQUFBO0VBQ0Esc0JBQUE7QURUSjtBQ1lFO0VBQ0Usb0JBQUE7RUFBQSxhQUFBO0VBQ0EsU0FBQTtFQUNBLGVBQUE7RUFDQSxrQkFBQTtFQUNBLFdBQUE7QURWSjtBQ1lJO0VBQ0UsY0FBQTtFQUNBLGdCQUFBO0FEVk47QUNlQTtFQUNFLHlCQUFBO0VBQ0Esa0JBQUE7RUFDQSxhQUFBO0VBQ0EsbUJBQUE7QURaRjtBQ2VBO0VBQ0UsZUFBQTtFQUNBLFdBQUE7QURaRjtBQ2VBO0VBQ0UsZUFBQTtFQUNBLGdCQUFBO0VBQ0EsY0FBQTtBRFpGO0FDZUE7RUFDRSxxQkFBQTtFQUNBLG1CQUFBO0FEWkY7QUNlQTtFQUNFLGVBQUE7RUFDQSwrRkFBQTtFQUFBLHVGQUFBO0VBQUEsK0VBQUE7RUFBQSw0R0FBQTtBRFpGO0FDY0U7RUFDRSxxQkFBQTtFQUNBLDZDQUFBO0FEWko7QUNlRTtFQUNFLDhCQUFBO1VBQUEsc0JBQUE7QURiSjtBQ2dCRTtFQUNFLDBDQUFBO0VBQ0EsbUJBQUE7QURkSjtBQ2tCQTtFQUNFLHFCQUFBO0VBQ0EsOENBQUE7QURmRjtBQ2tCQTtFQUNFLGlCQUFBO0FEZkY7QUNrQkE7RUFDRSxpQkFBQTtFQUNBLGdCQUFBO0VBQ0Esa0JBQUE7QURmRjtBQ2tCQTtFQUNFLG9CQUFBO0VBQUEsYUFBQTtFQUNBLHlCQUFBO1VBQUEsbUJBQUE7RUFDQSxZQUFBO0VBQ0EsYUFBQTtFQUNBLHdCQUFBO1VBQUEsdUJBQUE7QURmRjtBQ2tCQTtFQUNFLGNBQUE7RUFDQSxlQUFBO0VBQ0Esa0JBQUE7QURmRjtBQ2tCQTtFQUNFLHlCQUFBO0VBQ0Esa0JBQUE7RUFDQSx3QkFBQTtFQUNBLHFCQUFBO0VBQ0EsbUJBQUE7QURmRjtBQ2tCQTtFQUNFLG1CQUFBO0VBQ0EscUJBQUE7QURmRjtBQ2tCQTtFQUNFLGlCQUFBO0FEZkY7QUNrQkE7RUFDRSxxQkFBQTtBRGZGIiwiZmlsZSI6InNyYy9hcHAvcGFnZXMvaG9tZS9ob21lLmNvbXBvbmVudC5zY3NzIiwic291cmNlc0NvbnRlbnQiOlsiQGNoYXJzZXQgXCJVVEYtOFwiO1xuLmxvZ29zLWNvbnRhaW5lciB7XG4gIG1hcmdpbjogMjBweCAwIDQwcHggMDtcbiAgdGV4dC1hbGlnbjogY2VudGVyO1xufVxuLmxvZ29zLWNvbnRhaW5lciBzdmcge1xuICBkaXNwbGF5OiBpbmxpbmUtYmxvY2s7XG59XG5cbi5kZXZleHRyZW1lLWxvZ28ge1xuICB3aWR0aDogMjAwcHg7XG4gIGhlaWdodDogMzRweDtcbiAgbWFyZ2luLWJvdHRvbTogMTNweDtcbn1cblxuLmFuZ3VsYXItbG9nbyB7XG4gIHdpZHRoOiAyMjBweDtcbiAgaGVpZ2h0OiA2MnB4O1xufVxuXG4ucGx1cyB7XG4gIG1hcmdpbjogMTVweCAxMHB4O1xuICB3aWR0aDogMjJweDtcbiAgaGVpZ2h0OiAyMnB4O1xufVxuXG46aG9zdC1jb250ZXh0KC5zY3JlZW4teC1zbWFsbCkgLmxvZ29zLWNvbnRhaW5lciBzdmcge1xuICB3aWR0aDogMTAwJTtcbiAgZGlzcGxheTogYmxvY2s7XG59XG46aG9zdC1jb250ZXh0KC5zY3JlZW4teC1zbWFsbCkgLmxvZ29zLWNvbnRhaW5lciBzdmcucGx1cyB7XG4gIG1hcmdpbjogMDtcbn1cblxuLyogUHJvZHVjdG9zIGJham8gc3RvY2sgbcOtbmltbyAqL1xuLnN0b2NrLW1pbmltby1jYXJkIC5zdWJ0ZXh0IHtcbiAgbWFyZ2luLXRvcDogLTAuNXJlbTtcbiAgY29sb3I6ICM2NjY7XG4gIGZvbnQtc2l6ZTogMC45cmVtO1xufVxuLnN0b2NrLW1pbmltby1jYXJkIC5sb2FkaW5nLXdyYXAsXG4uc3RvY2stbWluaW1vLWNhcmQgLmVycm9yLXdyYXAsXG4uc3RvY2stbWluaW1vLWNhcmQgLmVtcHR5LXdyYXAge1xuICBkaXNwbGF5OiBmbGV4O1xuICBhbGlnbi1pdGVtczogY2VudGVyO1xuICBnYXA6IDAuNzVyZW07XG4gIHBhZGRpbmc6IDFyZW07XG4gIGZsZXgtd3JhcDogd3JhcDtcbn1cbi5zdG9jay1taW5pbW8tY2FyZCAuZXJyb3Itd3JhcCB7XG4gIGNvbG9yOiAjYzAwO1xufVxuLnN0b2NrLW1pbmltby1jYXJkIC5lbXB0eS13cmFwIHtcbiAgY29sb3I6ICM2NjY7XG59XG4uc3RvY2stbWluaW1vLWNhcmQgLmFjY29yZGlvbi10aXRsZSB7XG4gIGZvbnQtd2VpZ2h0OiA2MDA7XG59XG4uc3RvY2stbWluaW1vLWNhcmQgLmFjY29yZGlvbi1iYWRnZSB7XG4gIG1hcmdpbi1sZWZ0OiAwLjVyZW07XG4gIHBhZGRpbmc6IDAuMTVyZW0gMC41cmVtO1xuICBib3JkZXItcmFkaXVzOiAxMnB4O1xuICBiYWNrZ3JvdW5kOiAjZmY1NzIyO1xuICBjb2xvcjogI2ZmZjtcbiAgZm9udC1zaXplOiAwLjhyZW07XG59XG4uc3RvY2stbWluaW1vLWNhcmQgLnByb2R1Y3RvLWl0ZW0ge1xuICBwYWRkaW5nOiAwLjVyZW0gMDtcbiAgYm9yZGVyLWJvdHRvbTogMXB4IHNvbGlkICNlZWU7XG59XG4uc3RvY2stbWluaW1vLWNhcmQgLnByb2R1Y3RvLWl0ZW06bGFzdC1jaGlsZCB7XG4gIGJvcmRlci1ib3R0b206IG5vbmU7XG59XG4uc3RvY2stbWluaW1vLWNhcmQgLnByb2R1Y3RvLW5vbWJyZSB7XG4gIGZvbnQtd2VpZ2h0OiA1MDA7XG4gIG1hcmdpbi1ib3R0b206IDAuMjVyZW07XG59XG4uc3RvY2stbWluaW1vLWNhcmQgLnByb2R1Y3RvLWRldGFsbGUge1xuICBkaXNwbGF5OiBmbGV4O1xuICBnYXA6IDFyZW07XG4gIGZsZXgtd3JhcDogd3JhcDtcbiAgZm9udC1zaXplOiAwLjg1cmVtO1xuICBjb2xvcjogIzU1NTtcbn1cbi5zdG9jay1taW5pbW8tY2FyZCAucHJvZHVjdG8tZGV0YWxsZSAuZmFsdGEge1xuICBjb2xvcjogI2ZmNTcyMjtcbiAgZm9udC13ZWlnaHQ6IDUwMDtcbn1cblxuLm1pbmkta3BpIHtcbiAgYm9yZGVyOiAxcHggc29saWQgI2VjZWNlYztcbiAgYm9yZGVyLXJhZGl1czogOHB4O1xuICBwYWRkaW5nOiAxMHB4O1xuICBiYWNrZ3JvdW5kOiAjZmFmYWZhO1xufVxuXG4ubWluaS1rcGktdGl0bGUge1xuICBmb250LXNpemU6IDEzcHg7XG4gIGNvbG9yOiAjNjY2O1xufVxuXG4ubWluaS1rcGktdmFsdWUge1xuICBmb250LXNpemU6IDI2cHg7XG4gIGZvbnQtd2VpZ2h0OiA3MDA7XG4gIGNvbG9yOiAjMmQzZTUwO1xufVxuXG4ubWluaS1rcGktYWxlcnQge1xuICBib3JkZXItY29sb3I6ICNmNWM2Y2I7XG4gIGJhY2tncm91bmQ6ICNmZmY1ZjU7XG59XG5cbi5taW5pLWtwaS1jbGlja2FibGUge1xuICBjdXJzb3I6IHBvaW50ZXI7XG4gIHRyYW5zaXRpb246IGJveC1zaGFkb3cgMC4xNXMgZWFzZSwgYm9yZGVyLWNvbG9yIDAuMTVzIGVhc2UsIHRyYW5zZm9ybSAwLjFzIGVhc2U7XG59XG4ubWluaS1rcGktY2xpY2thYmxlOmhvdmVyIHtcbiAgYm9yZGVyLWNvbG9yOiAjYzVkNGU4O1xuICBib3gtc2hhZG93OiAwIDRweCAxMnB4IHJnYmEoNDUsIDYyLCA4MCwgMC4xMik7XG59XG4ubWluaS1rcGktY2xpY2thYmxlOmFjdGl2ZSB7XG4gIHRyYW5zZm9ybTogc2NhbGUoMC45OSk7XG59XG4ubWluaS1rcGktY2xpY2thYmxlOmZvY3VzIHtcbiAgb3V0bGluZTogMnB4IHNvbGlkIHJnYmEoMjU1LCA4NywgMzQsIDAuNDUpO1xuICBvdXRsaW5lLW9mZnNldDogMnB4O1xufVxuXG4ubWluaS1rcGktYWxlcnQubWluaS1rcGktY2xpY2thYmxlOmhvdmVyIHtcbiAgYm9yZGVyLWNvbG9yOiAjZThhMGE4O1xuICBib3gtc2hhZG93OiAwIDRweCAxMnB4IHJnYmEoMjAwLCA4MCwgOTAsIDAuMTUpO1xufVxuXG4ucG9wdXAtaW5kaWNhZG9yZXMtZW50cmVnYXMge1xuICBtaW4taGVpZ2h0OiAyMDBweDtcbn1cblxuLnBvcHVwLWluZGljYWRvcmVzLXNjcm9sbCB7XG4gIG1heC1oZWlnaHQ6IDQwMHB4O1xuICBvdmVyZmxvdy15OiBhdXRvO1xuICBwYWRkaW5nLXJpZ2h0OiA0cHg7XG59XG5cbi5wb3B1cC1pbmRpY2Fkb3Jlcy1lc3RhZG8ge1xuICBkaXNwbGF5OiBmbGV4O1xuICBhbGlnbi1pdGVtczogY2VudGVyO1xuICBnYXA6IDAuNzVyZW07XG4gIHBhZGRpbmc6IDFyZW07XG4gIGp1c3RpZnktY29udGVudDogY2VudGVyO1xufVxuXG4ucG9wdXAtaW5kaWNhZG9yZXMtZXJyb3Ige1xuICBjb2xvcjogI2IwMDAyMDtcbiAgZmxleC13cmFwOiB3cmFwO1xuICB0ZXh0LWFsaWduOiBjZW50ZXI7XG59XG5cbi5kZXRhbGxlLW9yZGVuLWNhcmQge1xuICBib3JkZXI6IDFweCBzb2xpZCAjZThlOGU4O1xuICBib3JkZXItcmFkaXVzOiA4cHg7XG4gIHBhZGRpbmc6IDAuNjVyZW0gMC44NXJlbTtcbiAgbWFyZ2luLWJvdHRvbTogMC42cmVtO1xuICBiYWNrZ3JvdW5kOiAjZmFmYmZjO1xufVxuXG4uZGV0YWxsZS1jb21wcm9taXNvIHtcbiAgYmFja2dyb3VuZDogI2ZmZjhmODtcbiAgYm9yZGVyLWNvbG9yOiAjZjBkMGQ0O1xufVxuXG4uZGV0YWxsZS1vcmRlbi1saW5lYSB7XG4gIGxpbmUtaGVpZ2h0OiAxLjM1O1xufVxuXG4uZGV0YWxsZS1jb21wcm9taXNvLWxpc3RhIGxpIHtcbiAgbWFyZ2luLWJvdHRvbTogMC4ycmVtO1xufSIsIi5sb2dvcy1jb250YWluZXIge1xuICBtYXJnaW46IDIwcHggMCA0MHB4IDA7XG4gIHRleHQtYWxpZ246IGNlbnRlcjtcbiAgc3ZnIHtcbiAgICBkaXNwbGF5OiBpbmxpbmUtYmxvY2s7XG4gIH1cbn1cblxuLmRldmV4dHJlbWUtbG9nbyB7XG4gIHdpZHRoOiAyMDBweDtcbiAgaGVpZ2h0OiAzNHB4O1xuICBtYXJnaW4tYm90dG9tOiAxM3B4O1xufVxuXG4uYW5ndWxhci1sb2dvIHtcbiAgd2lkdGg6IDIyMHB4O1xuICBoZWlnaHQ6IDYycHg7XG59XG5cbi5wbHVzIHtcbiAgbWFyZ2luOiAxNXB4IDEwcHg7XG4gIHdpZHRoOiAyMnB4O1xuICBoZWlnaHQ6IDIycHg7XG59XG5cbjpob3N0LWNvbnRleHQoLnNjcmVlbi14LXNtYWxsKSAubG9nb3MtY29udGFpbmVyIHtcbiAgc3ZnIHtcbiAgICB3aWR0aDogMTAwJTtcbiAgICBkaXNwbGF5OiBibG9jaztcbiAgICAmLnBsdXMge1xuICAgICAgbWFyZ2luOiAwO1xuICAgIH1cbiAgfVxufVxuXG4vKiBQcm9kdWN0b3MgYmFqbyBzdG9jayBtw61uaW1vICovXG4uc3RvY2stbWluaW1vLWNhcmQge1xuICAuc3VidGV4dCB7XG4gICAgbWFyZ2luLXRvcDogLTAuNXJlbTtcbiAgICBjb2xvcjogIzY2NjtcbiAgICBmb250LXNpemU6IDAuOXJlbTtcbiAgfVxuXG4gIC5sb2FkaW5nLXdyYXAsXG4gIC5lcnJvci13cmFwLFxuICAuZW1wdHktd3JhcCB7XG4gICAgZGlzcGxheTogZmxleDtcbiAgICBhbGlnbi1pdGVtczogY2VudGVyO1xuICAgIGdhcDogMC43NXJlbTtcbiAgICBwYWRkaW5nOiAxcmVtO1xuICAgIGZsZXgtd3JhcDogd3JhcDtcbiAgfVxuXG4gIC5lcnJvci13cmFwIHtcbiAgICBjb2xvcjogI2MwMDtcbiAgfVxuXG4gIC5lbXB0eS13cmFwIHtcbiAgICBjb2xvcjogIzY2NjtcbiAgfVxuXG4gIC5hY2NvcmRpb24tdGl0bGUge1xuICAgIGZvbnQtd2VpZ2h0OiA2MDA7XG4gIH1cblxuICAuYWNjb3JkaW9uLWJhZGdlIHtcbiAgICBtYXJnaW4tbGVmdDogMC41cmVtO1xuICAgIHBhZGRpbmc6IDAuMTVyZW0gMC41cmVtO1xuICAgIGJvcmRlci1yYWRpdXM6IDEycHg7XG4gICAgYmFja2dyb3VuZDogI2ZmNTcyMjtcbiAgICBjb2xvcjogI2ZmZjtcbiAgICBmb250LXNpemU6IDAuOHJlbTtcbiAgfVxuXG4gIC5wcm9kdWN0by1pdGVtIHtcbiAgICBwYWRkaW5nOiAwLjVyZW0gMDtcbiAgICBib3JkZXItYm90dG9tOiAxcHggc29saWQgI2VlZTtcblxuICAgICY6bGFzdC1jaGlsZCB7XG4gICAgICBib3JkZXItYm90dG9tOiBub25lO1xuICAgIH1cbiAgfVxuXG4gIC5wcm9kdWN0by1ub21icmUge1xuICAgIGZvbnQtd2VpZ2h0OiA1MDA7XG4gICAgbWFyZ2luLWJvdHRvbTogMC4yNXJlbTtcbiAgfVxuXG4gIC5wcm9kdWN0by1kZXRhbGxlIHtcbiAgICBkaXNwbGF5OiBmbGV4O1xuICAgIGdhcDogMXJlbTtcbiAgICBmbGV4LXdyYXA6IHdyYXA7XG4gICAgZm9udC1zaXplOiAwLjg1cmVtO1xuICAgIGNvbG9yOiAjNTU1O1xuXG4gICAgLmZhbHRhIHtcbiAgICAgIGNvbG9yOiAjZmY1NzIyO1xuICAgICAgZm9udC13ZWlnaHQ6IDUwMDtcbiAgICB9XG4gIH1cbn1cblxuLm1pbmkta3BpIHtcbiAgYm9yZGVyOiAxcHggc29saWQgI2VjZWNlYztcbiAgYm9yZGVyLXJhZGl1czogOHB4O1xuICBwYWRkaW5nOiAxMHB4O1xuICBiYWNrZ3JvdW5kOiAjZmFmYWZhO1xufVxuXG4ubWluaS1rcGktdGl0bGUge1xuICBmb250LXNpemU6IDEzcHg7XG4gIGNvbG9yOiAjNjY2O1xufVxuXG4ubWluaS1rcGktdmFsdWUge1xuICBmb250LXNpemU6IDI2cHg7XG4gIGZvbnQtd2VpZ2h0OiA3MDA7XG4gIGNvbG9yOiAjMmQzZTUwO1xufVxuXG4ubWluaS1rcGktYWxlcnQge1xuICBib3JkZXItY29sb3I6ICNmNWM2Y2I7XG4gIGJhY2tncm91bmQ6ICNmZmY1ZjU7XG59XG5cbi5taW5pLWtwaS1jbGlja2FibGUge1xuICBjdXJzb3I6IHBvaW50ZXI7XG4gIHRyYW5zaXRpb246IGJveC1zaGFkb3cgMC4xNXMgZWFzZSwgYm9yZGVyLWNvbG9yIDAuMTVzIGVhc2UsIHRyYW5zZm9ybSAwLjFzIGVhc2U7XG5cbiAgJjpob3ZlciB7XG4gICAgYm9yZGVyLWNvbG9yOiAjYzVkNGU4O1xuICAgIGJveC1zaGFkb3c6IDAgNHB4IDEycHggcmdiYSg0NSwgNjIsIDgwLCAwLjEyKTtcbiAgfVxuXG4gICY6YWN0aXZlIHtcbiAgICB0cmFuc2Zvcm06IHNjYWxlKDAuOTkpO1xuICB9XG5cbiAgJjpmb2N1cyB7XG4gICAgb3V0bGluZTogMnB4IHNvbGlkIHJnYmEoMjU1LCA4NywgMzQsIDAuNDUpO1xuICAgIG91dGxpbmUtb2Zmc2V0OiAycHg7XG4gIH1cbn1cblxuLm1pbmkta3BpLWFsZXJ0Lm1pbmkta3BpLWNsaWNrYWJsZTpob3ZlciB7XG4gIGJvcmRlci1jb2xvcjogI2U4YTBhODtcbiAgYm94LXNoYWRvdzogMCA0cHggMTJweCByZ2JhKDIwMCwgODAsIDkwLCAwLjE1KTtcbn1cblxuLnBvcHVwLWluZGljYWRvcmVzLWVudHJlZ2FzIHtcbiAgbWluLWhlaWdodDogMjAwcHg7XG59XG5cbi5wb3B1cC1pbmRpY2Fkb3Jlcy1zY3JvbGwge1xuICBtYXgtaGVpZ2h0OiA0MDBweDtcbiAgb3ZlcmZsb3cteTogYXV0bztcbiAgcGFkZGluZy1yaWdodDogNHB4O1xufVxuXG4ucG9wdXAtaW5kaWNhZG9yZXMtZXN0YWRvIHtcbiAgZGlzcGxheTogZmxleDtcbiAgYWxpZ24taXRlbXM6IGNlbnRlcjtcbiAgZ2FwOiAwLjc1cmVtO1xuICBwYWRkaW5nOiAxcmVtO1xuICBqdXN0aWZ5LWNvbnRlbnQ6IGNlbnRlcjtcbn1cblxuLnBvcHVwLWluZGljYWRvcmVzLWVycm9yIHtcbiAgY29sb3I6ICNiMDAwMjA7XG4gIGZsZXgtd3JhcDogd3JhcDtcbiAgdGV4dC1hbGlnbjogY2VudGVyO1xufVxuXG4uZGV0YWxsZS1vcmRlbi1jYXJkIHtcbiAgYm9yZGVyOiAxcHggc29saWQgI2U4ZThlODtcbiAgYm9yZGVyLXJhZGl1czogOHB4O1xuICBwYWRkaW5nOiAwLjY1cmVtIDAuODVyZW07XG4gIG1hcmdpbi1ib3R0b206IDAuNnJlbTtcbiAgYmFja2dyb3VuZDogI2ZhZmJmYztcbn1cblxuLmRldGFsbGUtY29tcHJvbWlzbyB7XG4gIGJhY2tncm91bmQ6ICNmZmY4Zjg7XG4gIGJvcmRlci1jb2xvcjogI2YwZDBkNDtcbn1cblxuLmRldGFsbGUtb3JkZW4tbGluZWEge1xuICBsaW5lLWhlaWdodDogMS4zNTtcbn1cblxuLmRldGFsbGUtY29tcHJvbWlzby1saXN0YSBsaSB7XG4gIG1hcmdpbi1ib3R0b206IDAuMnJlbTtcbn1cbiJdfQ== */"] });
+    } }, directives: [_angular_common__WEBPACK_IMPORTED_MODULE_3__["NgIf"], devextreme_angular__WEBPACK_IMPORTED_MODULE_4__["DxPopupComponent"], devextreme_angular_core__WEBPACK_IMPORTED_MODULE_5__["DxTemplateDirective"], devextreme_angular__WEBPACK_IMPORTED_MODULE_4__["DxLoadIndicatorComponent"], _angular_common__WEBPACK_IMPORTED_MODULE_3__["NgForOf"], devextreme_angular_ui_button__WEBPACK_IMPORTED_MODULE_6__["DxButtonComponent"], devextreme_angular__WEBPACK_IMPORTED_MODULE_4__["DxAccordionComponent"], devextreme_angular_ui_list__WEBPACK_IMPORTED_MODULE_7__["DxListComponent"]], pipes: [_angular_common__WEBPACK_IMPORTED_MODULE_3__["DecimalPipe"]], styles: ["@charset \"UTF-8\";\n.logos-container[_ngcontent-%COMP%] {\n  margin: 20px 0 40px 0;\n  text-align: center;\n}\n.logos-container[_ngcontent-%COMP%]   svg[_ngcontent-%COMP%] {\n  display: inline-block;\n}\n.devextreme-logo[_ngcontent-%COMP%] {\n  width: 200px;\n  height: 34px;\n  margin-bottom: 13px;\n}\n.angular-logo[_ngcontent-%COMP%] {\n  width: 220px;\n  height: 62px;\n}\n.plus[_ngcontent-%COMP%] {\n  margin: 15px 10px;\n  width: 22px;\n  height: 22px;\n}\n.screen-x-small[_nghost-%COMP%]   .logos-container[_ngcontent-%COMP%]   svg[_ngcontent-%COMP%], .screen-x-small   [_nghost-%COMP%]   .logos-container[_ngcontent-%COMP%]   svg[_ngcontent-%COMP%] {\n  width: 100%;\n  display: block;\n}\n.screen-x-small[_nghost-%COMP%]   .logos-container[_ngcontent-%COMP%]   svg.plus[_ngcontent-%COMP%], .screen-x-small   [_nghost-%COMP%]   .logos-container[_ngcontent-%COMP%]   svg.plus[_ngcontent-%COMP%] {\n  margin: 0;\n}\n\n.stock-minimo-card[_ngcontent-%COMP%]   .subtext[_ngcontent-%COMP%] {\n  margin-top: -0.5rem;\n  color: #666;\n  font-size: 0.9rem;\n}\n.stock-minimo-card[_ngcontent-%COMP%]   .loading-wrap[_ngcontent-%COMP%], .stock-minimo-card[_ngcontent-%COMP%]   .error-wrap[_ngcontent-%COMP%], .stock-minimo-card[_ngcontent-%COMP%]   .empty-wrap[_ngcontent-%COMP%] {\n  display: -webkit-box;\n  display: flex;\n  -webkit-box-align: center;\n          align-items: center;\n  gap: 0.75rem;\n  padding: 1rem;\n  flex-wrap: wrap;\n}\n.stock-minimo-card[_ngcontent-%COMP%]   .error-wrap[_ngcontent-%COMP%] {\n  color: #c00;\n}\n.stock-minimo-card[_ngcontent-%COMP%]   .empty-wrap[_ngcontent-%COMP%] {\n  color: #666;\n}\n.stock-minimo-card[_ngcontent-%COMP%]   .accordion-title[_ngcontent-%COMP%] {\n  font-weight: 600;\n}\n.stock-minimo-card[_ngcontent-%COMP%]   .accordion-badge[_ngcontent-%COMP%] {\n  margin-left: 0.5rem;\n  padding: 0.15rem 0.5rem;\n  border-radius: 12px;\n  background: #ff5722;\n  color: #fff;\n  font-size: 0.8rem;\n}\n.stock-minimo-card[_ngcontent-%COMP%]   .producto-item[_ngcontent-%COMP%] {\n  padding: 0.5rem 0;\n  border-bottom: 1px solid #eee;\n}\n.stock-minimo-card[_ngcontent-%COMP%]   .producto-item[_ngcontent-%COMP%]:last-child {\n  border-bottom: none;\n}\n.stock-minimo-card[_ngcontent-%COMP%]   .producto-nombre[_ngcontent-%COMP%] {\n  font-weight: 500;\n  margin-bottom: 0.25rem;\n}\n.stock-minimo-card[_ngcontent-%COMP%]   .producto-detalle[_ngcontent-%COMP%] {\n  display: -webkit-box;\n  display: flex;\n  gap: 1rem;\n  flex-wrap: wrap;\n  font-size: 0.85rem;\n  color: #555;\n}\n.stock-minimo-card[_ngcontent-%COMP%]   .producto-detalle[_ngcontent-%COMP%]   .falta[_ngcontent-%COMP%] {\n  color: #ff5722;\n  font-weight: 500;\n}\n.mini-kpi[_ngcontent-%COMP%] {\n  border: 1px solid #ececec;\n  border-radius: 8px;\n  padding: 10px;\n  background: #fafafa;\n}\n.mini-kpi-title[_ngcontent-%COMP%] {\n  font-size: 13px;\n  color: #666;\n}\n.mini-kpi-value[_ngcontent-%COMP%] {\n  font-size: 26px;\n  font-weight: 700;\n  color: #2d3e50;\n}\n.mini-kpi-alert[_ngcontent-%COMP%] {\n  border-color: #f5c6cb;\n  background: #fff5f5;\n}\n.mini-kpi-clickable[_ngcontent-%COMP%] {\n  cursor: pointer;\n  -webkit-transition: box-shadow 0.15s ease, border-color 0.15s ease, -webkit-transform 0.1s ease;\n  transition: box-shadow 0.15s ease, border-color 0.15s ease, -webkit-transform 0.1s ease;\n  transition: box-shadow 0.15s ease, border-color 0.15s ease, transform 0.1s ease;\n  transition: box-shadow 0.15s ease, border-color 0.15s ease, transform 0.1s ease, -webkit-transform 0.1s ease;\n}\n.mini-kpi-clickable[_ngcontent-%COMP%]:hover {\n  border-color: #c5d4e8;\n  box-shadow: 0 4px 12px rgba(45, 62, 80, 0.12);\n}\n.mini-kpi-clickable[_ngcontent-%COMP%]:active {\n  -webkit-transform: scale(0.99);\n          transform: scale(0.99);\n}\n.mini-kpi-clickable[_ngcontent-%COMP%]:focus {\n  outline: 2px solid rgba(255, 87, 34, 0.45);\n  outline-offset: 2px;\n}\n.mini-kpi-alert.mini-kpi-clickable[_ngcontent-%COMP%]:hover {\n  border-color: #e8a0a8;\n  box-shadow: 0 4px 12px rgba(200, 80, 90, 0.15);\n}\n.popup-indicadores-entregas[_ngcontent-%COMP%] {\n  min-height: 200px;\n  box-sizing: border-box;\n}\n.popup-indicadores-scroll[_ngcontent-%COMP%] {\n  max-height: 400px;\n  overflow-y: auto;\n  padding-right: 4px;\n  -webkit-overflow-scrolling: touch;\n}\n@media (max-width: 767px) {\n  .popup-indicadores-entregas[_ngcontent-%COMP%] {\n    min-height: 120px;\n    padding: 0 2px;\n  }\n\n  .popup-indicadores-scroll[_ngcontent-%COMP%] {\n    max-height: min(400px, calc(100dvh - 220px));\n    max-height: min(400px, calc(100vh - 220px));\n    padding-right: 2px;\n  }\n\n  .popup-indicadores-estado[_ngcontent-%COMP%] {\n    padding: 0.75rem 0.5rem;\n    text-align: center;\n  }\n\n  .detalle-orden-card[_ngcontent-%COMP%] {\n    padding: 0.5rem 0.6rem;\n    margin-bottom: 0.5rem;\n  }\n\n  .detalle-orden-linea[_ngcontent-%COMP%] {\n    word-break: break-word;\n    overflow-wrap: anywhere;\n  }\n\n  .detalle-compromiso-lista[_ngcontent-%COMP%] {\n    padding-left: 1.1rem;\n  }\n}\n.popup-indicadores-estado[_ngcontent-%COMP%] {\n  display: -webkit-box;\n  display: flex;\n  -webkit-box-align: center;\n          align-items: center;\n  gap: 0.75rem;\n  padding: 1rem;\n  -webkit-box-pack: center;\n          justify-content: center;\n}\n.popup-indicadores-error[_ngcontent-%COMP%] {\n  color: #b00020;\n  flex-wrap: wrap;\n  text-align: center;\n}\n.detalle-orden-card[_ngcontent-%COMP%] {\n  border: 1px solid #e8e8e8;\n  border-radius: 8px;\n  padding: 0.65rem 0.85rem;\n  margin-bottom: 0.6rem;\n  background: #fafbfc;\n}\n.detalle-compromiso[_ngcontent-%COMP%] {\n  background: #fff8f8;\n  border-color: #f0d0d4;\n}\n.detalle-orden-linea[_ngcontent-%COMP%] {\n  line-height: 1.35;\n}\n.detalle-compromiso-lista[_ngcontent-%COMP%]   li[_ngcontent-%COMP%] {\n  margin-bottom: 0.2rem;\n}\n/*# sourceMappingURL=data:application/json;base64,eyJ2ZXJzaW9uIjozLCJzb3VyY2VzIjpbInNyYy9hcHAvcGFnZXMvaG9tZS9ob21lLmNvbXBvbmVudC5zY3NzIiwic3JjL2FwcC9wYWdlcy9ob21lL0M6XFxGSURFTlNcXGFsb2phYmFzZXMyMDI1L3NyY1xcYXBwXFxwYWdlc1xcaG9tZVxcaG9tZS5jb21wb25lbnQuc2NzcyJdLCJuYW1lcyI6W10sIm1hcHBpbmdzIjoiQUFBQSxnQkFBZ0I7QUNBaEI7RUFDRSxxQkFBQTtFQUNBLGtCQUFBO0FERUY7QUNERTtFQUNFLHFCQUFBO0FER0o7QUNDQTtFQUNFLFlBQUE7RUFDQSxZQUFBO0VBQ0EsbUJBQUE7QURFRjtBQ0NBO0VBQ0UsWUFBQTtFQUNBLFlBQUE7QURFRjtBQ0NBO0VBQ0UsaUJBQUE7RUFDQSxXQUFBO0VBQ0EsWUFBQTtBREVGO0FDRUU7RUFDRSxXQUFBO0VBQ0EsY0FBQTtBRENKO0FDQUk7RUFDRSxTQUFBO0FERU47QUNHQSxnQ0FBQTtBQUVFO0VBQ0UsbUJBQUE7RUFDQSxXQUFBO0VBQ0EsaUJBQUE7QURESjtBQ0lFOzs7RUFHRSxvQkFBQTtFQUFBLGFBQUE7RUFDQSx5QkFBQTtVQUFBLG1CQUFBO0VBQ0EsWUFBQTtFQUNBLGFBQUE7RUFDQSxlQUFBO0FERko7QUNLRTtFQUNFLFdBQUE7QURISjtBQ01FO0VBQ0UsV0FBQTtBREpKO0FDT0U7RUFDRSxnQkFBQTtBRExKO0FDUUU7RUFDRSxtQkFBQTtFQUNBLHVCQUFBO0VBQ0EsbUJBQUE7RUFDQSxtQkFBQTtFQUNBLFdBQUE7RUFDQSxpQkFBQTtBRE5KO0FDU0U7RUFDRSxpQkFBQTtFQUNBLDZCQUFBO0FEUEo7QUNTSTtFQUNFLG1CQUFBO0FEUE47QUNXRTtFQUNFLGdCQUFBO0VBQ0Esc0JBQUE7QURUSjtBQ1lFO0VBQ0Usb0JBQUE7RUFBQSxhQUFBO0VBQ0EsU0FBQTtFQUNBLGVBQUE7RUFDQSxrQkFBQTtFQUNBLFdBQUE7QURWSjtBQ1lJO0VBQ0UsY0FBQTtFQUNBLGdCQUFBO0FEVk47QUNlQTtFQUNFLHlCQUFBO0VBQ0Esa0JBQUE7RUFDQSxhQUFBO0VBQ0EsbUJBQUE7QURaRjtBQ2VBO0VBQ0UsZUFBQTtFQUNBLFdBQUE7QURaRjtBQ2VBO0VBQ0UsZUFBQTtFQUNBLGdCQUFBO0VBQ0EsY0FBQTtBRFpGO0FDZUE7RUFDRSxxQkFBQTtFQUNBLG1CQUFBO0FEWkY7QUNlQTtFQUNFLGVBQUE7RUFDQSwrRkFBQTtFQUFBLHVGQUFBO0VBQUEsK0VBQUE7RUFBQSw0R0FBQTtBRFpGO0FDY0U7RUFDRSxxQkFBQTtFQUNBLDZDQUFBO0FEWko7QUNlRTtFQUNFLDhCQUFBO1VBQUEsc0JBQUE7QURiSjtBQ2dCRTtFQUNFLDBDQUFBO0VBQ0EsbUJBQUE7QURkSjtBQ2tCQTtFQUNFLHFCQUFBO0VBQ0EsOENBQUE7QURmRjtBQ2tCQTtFQUNFLGlCQUFBO0VBQ0Esc0JBQUE7QURmRjtBQ2tCQTtFQUNFLGlCQUFBO0VBQ0EsZ0JBQUE7RUFDQSxrQkFBQTtFQUNBLGlDQUFBO0FEZkY7QUNrQkE7RUFDRTtJQUNFLGlCQUFBO0lBQ0EsY0FBQTtFRGZGOztFQ2tCQTtJQUNFLDRDQUFBO0lBQ0EsMkNBQUE7SUFDQSxrQkFBQTtFRGZGOztFQ2tCQTtJQUNFLHVCQUFBO0lBQ0Esa0JBQUE7RURmRjs7RUNrQkE7SUFDRSxzQkFBQTtJQUNBLHFCQUFBO0VEZkY7O0VDa0JBO0lBQ0Usc0JBQUE7SUFDQSx1QkFBQTtFRGZGOztFQ2tCQTtJQUNFLG9CQUFBO0VEZkY7QUFDRjtBQ2tCQTtFQUNFLG9CQUFBO0VBQUEsYUFBQTtFQUNBLHlCQUFBO1VBQUEsbUJBQUE7RUFDQSxZQUFBO0VBQ0EsYUFBQTtFQUNBLHdCQUFBO1VBQUEsdUJBQUE7QURoQkY7QUNtQkE7RUFDRSxjQUFBO0VBQ0EsZUFBQTtFQUNBLGtCQUFBO0FEaEJGO0FDbUJBO0VBQ0UseUJBQUE7RUFDQSxrQkFBQTtFQUNBLHdCQUFBO0VBQ0EscUJBQUE7RUFDQSxtQkFBQTtBRGhCRjtBQ21CQTtFQUNFLG1CQUFBO0VBQ0EscUJBQUE7QURoQkY7QUNtQkE7RUFDRSxpQkFBQTtBRGhCRjtBQ21CQTtFQUNFLHFCQUFBO0FEaEJGIiwiZmlsZSI6InNyYy9hcHAvcGFnZXMvaG9tZS9ob21lLmNvbXBvbmVudC5zY3NzIiwic291cmNlc0NvbnRlbnQiOlsiQGNoYXJzZXQgXCJVVEYtOFwiO1xuLmxvZ29zLWNvbnRhaW5lciB7XG4gIG1hcmdpbjogMjBweCAwIDQwcHggMDtcbiAgdGV4dC1hbGlnbjogY2VudGVyO1xufVxuLmxvZ29zLWNvbnRhaW5lciBzdmcge1xuICBkaXNwbGF5OiBpbmxpbmUtYmxvY2s7XG59XG5cbi5kZXZleHRyZW1lLWxvZ28ge1xuICB3aWR0aDogMjAwcHg7XG4gIGhlaWdodDogMzRweDtcbiAgbWFyZ2luLWJvdHRvbTogMTNweDtcbn1cblxuLmFuZ3VsYXItbG9nbyB7XG4gIHdpZHRoOiAyMjBweDtcbiAgaGVpZ2h0OiA2MnB4O1xufVxuXG4ucGx1cyB7XG4gIG1hcmdpbjogMTVweCAxMHB4O1xuICB3aWR0aDogMjJweDtcbiAgaGVpZ2h0OiAyMnB4O1xufVxuXG46aG9zdC1jb250ZXh0KC5zY3JlZW4teC1zbWFsbCkgLmxvZ29zLWNvbnRhaW5lciBzdmcge1xuICB3aWR0aDogMTAwJTtcbiAgZGlzcGxheTogYmxvY2s7XG59XG46aG9zdC1jb250ZXh0KC5zY3JlZW4teC1zbWFsbCkgLmxvZ29zLWNvbnRhaW5lciBzdmcucGx1cyB7XG4gIG1hcmdpbjogMDtcbn1cblxuLyogUHJvZHVjdG9zIGJham8gc3RvY2sgbcOtbmltbyAqL1xuLnN0b2NrLW1pbmltby1jYXJkIC5zdWJ0ZXh0IHtcbiAgbWFyZ2luLXRvcDogLTAuNXJlbTtcbiAgY29sb3I6ICM2NjY7XG4gIGZvbnQtc2l6ZTogMC45cmVtO1xufVxuLnN0b2NrLW1pbmltby1jYXJkIC5sb2FkaW5nLXdyYXAsXG4uc3RvY2stbWluaW1vLWNhcmQgLmVycm9yLXdyYXAsXG4uc3RvY2stbWluaW1vLWNhcmQgLmVtcHR5LXdyYXAge1xuICBkaXNwbGF5OiBmbGV4O1xuICBhbGlnbi1pdGVtczogY2VudGVyO1xuICBnYXA6IDAuNzVyZW07XG4gIHBhZGRpbmc6IDFyZW07XG4gIGZsZXgtd3JhcDogd3JhcDtcbn1cbi5zdG9jay1taW5pbW8tY2FyZCAuZXJyb3Itd3JhcCB7XG4gIGNvbG9yOiAjYzAwO1xufVxuLnN0b2NrLW1pbmltby1jYXJkIC5lbXB0eS13cmFwIHtcbiAgY29sb3I6ICM2NjY7XG59XG4uc3RvY2stbWluaW1vLWNhcmQgLmFjY29yZGlvbi10aXRsZSB7XG4gIGZvbnQtd2VpZ2h0OiA2MDA7XG59XG4uc3RvY2stbWluaW1vLWNhcmQgLmFjY29yZGlvbi1iYWRnZSB7XG4gIG1hcmdpbi1sZWZ0OiAwLjVyZW07XG4gIHBhZGRpbmc6IDAuMTVyZW0gMC41cmVtO1xuICBib3JkZXItcmFkaXVzOiAxMnB4O1xuICBiYWNrZ3JvdW5kOiAjZmY1NzIyO1xuICBjb2xvcjogI2ZmZjtcbiAgZm9udC1zaXplOiAwLjhyZW07XG59XG4uc3RvY2stbWluaW1vLWNhcmQgLnByb2R1Y3RvLWl0ZW0ge1xuICBwYWRkaW5nOiAwLjVyZW0gMDtcbiAgYm9yZGVyLWJvdHRvbTogMXB4IHNvbGlkICNlZWU7XG59XG4uc3RvY2stbWluaW1vLWNhcmQgLnByb2R1Y3RvLWl0ZW06bGFzdC1jaGlsZCB7XG4gIGJvcmRlci1ib3R0b206IG5vbmU7XG59XG4uc3RvY2stbWluaW1vLWNhcmQgLnByb2R1Y3RvLW5vbWJyZSB7XG4gIGZvbnQtd2VpZ2h0OiA1MDA7XG4gIG1hcmdpbi1ib3R0b206IDAuMjVyZW07XG59XG4uc3RvY2stbWluaW1vLWNhcmQgLnByb2R1Y3RvLWRldGFsbGUge1xuICBkaXNwbGF5OiBmbGV4O1xuICBnYXA6IDFyZW07XG4gIGZsZXgtd3JhcDogd3JhcDtcbiAgZm9udC1zaXplOiAwLjg1cmVtO1xuICBjb2xvcjogIzU1NTtcbn1cbi5zdG9jay1taW5pbW8tY2FyZCAucHJvZHVjdG8tZGV0YWxsZSAuZmFsdGEge1xuICBjb2xvcjogI2ZmNTcyMjtcbiAgZm9udC13ZWlnaHQ6IDUwMDtcbn1cblxuLm1pbmkta3BpIHtcbiAgYm9yZGVyOiAxcHggc29saWQgI2VjZWNlYztcbiAgYm9yZGVyLXJhZGl1czogOHB4O1xuICBwYWRkaW5nOiAxMHB4O1xuICBiYWNrZ3JvdW5kOiAjZmFmYWZhO1xufVxuXG4ubWluaS1rcGktdGl0bGUge1xuICBmb250LXNpemU6IDEzcHg7XG4gIGNvbG9yOiAjNjY2O1xufVxuXG4ubWluaS1rcGktdmFsdWUge1xuICBmb250LXNpemU6IDI2cHg7XG4gIGZvbnQtd2VpZ2h0OiA3MDA7XG4gIGNvbG9yOiAjMmQzZTUwO1xufVxuXG4ubWluaS1rcGktYWxlcnQge1xuICBib3JkZXItY29sb3I6ICNmNWM2Y2I7XG4gIGJhY2tncm91bmQ6ICNmZmY1ZjU7XG59XG5cbi5taW5pLWtwaS1jbGlja2FibGUge1xuICBjdXJzb3I6IHBvaW50ZXI7XG4gIHRyYW5zaXRpb246IGJveC1zaGFkb3cgMC4xNXMgZWFzZSwgYm9yZGVyLWNvbG9yIDAuMTVzIGVhc2UsIHRyYW5zZm9ybSAwLjFzIGVhc2U7XG59XG4ubWluaS1rcGktY2xpY2thYmxlOmhvdmVyIHtcbiAgYm9yZGVyLWNvbG9yOiAjYzVkNGU4O1xuICBib3gtc2hhZG93OiAwIDRweCAxMnB4IHJnYmEoNDUsIDYyLCA4MCwgMC4xMik7XG59XG4ubWluaS1rcGktY2xpY2thYmxlOmFjdGl2ZSB7XG4gIHRyYW5zZm9ybTogc2NhbGUoMC45OSk7XG59XG4ubWluaS1rcGktY2xpY2thYmxlOmZvY3VzIHtcbiAgb3V0bGluZTogMnB4IHNvbGlkIHJnYmEoMjU1LCA4NywgMzQsIDAuNDUpO1xuICBvdXRsaW5lLW9mZnNldDogMnB4O1xufVxuXG4ubWluaS1rcGktYWxlcnQubWluaS1rcGktY2xpY2thYmxlOmhvdmVyIHtcbiAgYm9yZGVyLWNvbG9yOiAjZThhMGE4O1xuICBib3gtc2hhZG93OiAwIDRweCAxMnB4IHJnYmEoMjAwLCA4MCwgOTAsIDAuMTUpO1xufVxuXG4ucG9wdXAtaW5kaWNhZG9yZXMtZW50cmVnYXMge1xuICBtaW4taGVpZ2h0OiAyMDBweDtcbiAgYm94LXNpemluZzogYm9yZGVyLWJveDtcbn1cblxuLnBvcHVwLWluZGljYWRvcmVzLXNjcm9sbCB7XG4gIG1heC1oZWlnaHQ6IDQwMHB4O1xuICBvdmVyZmxvdy15OiBhdXRvO1xuICBwYWRkaW5nLXJpZ2h0OiA0cHg7XG4gIC13ZWJraXQtb3ZlcmZsb3ctc2Nyb2xsaW5nOiB0b3VjaDtcbn1cblxuQG1lZGlhIChtYXgtd2lkdGg6IDc2N3B4KSB7XG4gIC5wb3B1cC1pbmRpY2Fkb3Jlcy1lbnRyZWdhcyB7XG4gICAgbWluLWhlaWdodDogMTIwcHg7XG4gICAgcGFkZGluZzogMCAycHg7XG4gIH1cblxuICAucG9wdXAtaW5kaWNhZG9yZXMtc2Nyb2xsIHtcbiAgICBtYXgtaGVpZ2h0OiBtaW4oNDAwcHgsIGNhbGMoMTAwZHZoIC0gMjIwcHgpKTtcbiAgICBtYXgtaGVpZ2h0OiBtaW4oNDAwcHgsIGNhbGMoMTAwdmggLSAyMjBweCkpO1xuICAgIHBhZGRpbmctcmlnaHQ6IDJweDtcbiAgfVxuXG4gIC5wb3B1cC1pbmRpY2Fkb3Jlcy1lc3RhZG8ge1xuICAgIHBhZGRpbmc6IDAuNzVyZW0gMC41cmVtO1xuICAgIHRleHQtYWxpZ246IGNlbnRlcjtcbiAgfVxuXG4gIC5kZXRhbGxlLW9yZGVuLWNhcmQge1xuICAgIHBhZGRpbmc6IDAuNXJlbSAwLjZyZW07XG4gICAgbWFyZ2luLWJvdHRvbTogMC41cmVtO1xuICB9XG5cbiAgLmRldGFsbGUtb3JkZW4tbGluZWEge1xuICAgIHdvcmQtYnJlYWs6IGJyZWFrLXdvcmQ7XG4gICAgb3ZlcmZsb3ctd3JhcDogYW55d2hlcmU7XG4gIH1cblxuICAuZGV0YWxsZS1jb21wcm9taXNvLWxpc3RhIHtcbiAgICBwYWRkaW5nLWxlZnQ6IDEuMXJlbTtcbiAgfVxufVxuLnBvcHVwLWluZGljYWRvcmVzLWVzdGFkbyB7XG4gIGRpc3BsYXk6IGZsZXg7XG4gIGFsaWduLWl0ZW1zOiBjZW50ZXI7XG4gIGdhcDogMC43NXJlbTtcbiAgcGFkZGluZzogMXJlbTtcbiAganVzdGlmeS1jb250ZW50OiBjZW50ZXI7XG59XG5cbi5wb3B1cC1pbmRpY2Fkb3Jlcy1lcnJvciB7XG4gIGNvbG9yOiAjYjAwMDIwO1xuICBmbGV4LXdyYXA6IHdyYXA7XG4gIHRleHQtYWxpZ246IGNlbnRlcjtcbn1cblxuLmRldGFsbGUtb3JkZW4tY2FyZCB7XG4gIGJvcmRlcjogMXB4IHNvbGlkICNlOGU4ZTg7XG4gIGJvcmRlci1yYWRpdXM6IDhweDtcbiAgcGFkZGluZzogMC42NXJlbSAwLjg1cmVtO1xuICBtYXJnaW4tYm90dG9tOiAwLjZyZW07XG4gIGJhY2tncm91bmQ6ICNmYWZiZmM7XG59XG5cbi5kZXRhbGxlLWNvbXByb21pc28ge1xuICBiYWNrZ3JvdW5kOiAjZmZmOGY4O1xuICBib3JkZXItY29sb3I6ICNmMGQwZDQ7XG59XG5cbi5kZXRhbGxlLW9yZGVuLWxpbmVhIHtcbiAgbGluZS1oZWlnaHQ6IDEuMzU7XG59XG5cbi5kZXRhbGxlLWNvbXByb21pc28tbGlzdGEgbGkge1xuICBtYXJnaW4tYm90dG9tOiAwLjJyZW07XG59IiwiLmxvZ29zLWNvbnRhaW5lciB7XG4gIG1hcmdpbjogMjBweCAwIDQwcHggMDtcbiAgdGV4dC1hbGlnbjogY2VudGVyO1xuICBzdmcge1xuICAgIGRpc3BsYXk6IGlubGluZS1ibG9jaztcbiAgfVxufVxuXG4uZGV2ZXh0cmVtZS1sb2dvIHtcbiAgd2lkdGg6IDIwMHB4O1xuICBoZWlnaHQ6IDM0cHg7XG4gIG1hcmdpbi1ib3R0b206IDEzcHg7XG59XG5cbi5hbmd1bGFyLWxvZ28ge1xuICB3aWR0aDogMjIwcHg7XG4gIGhlaWdodDogNjJweDtcbn1cblxuLnBsdXMge1xuICBtYXJnaW46IDE1cHggMTBweDtcbiAgd2lkdGg6IDIycHg7XG4gIGhlaWdodDogMjJweDtcbn1cblxuOmhvc3QtY29udGV4dCguc2NyZWVuLXgtc21hbGwpIC5sb2dvcy1jb250YWluZXIge1xuICBzdmcge1xuICAgIHdpZHRoOiAxMDAlO1xuICAgIGRpc3BsYXk6IGJsb2NrO1xuICAgICYucGx1cyB7XG4gICAgICBtYXJnaW46IDA7XG4gICAgfVxuICB9XG59XG5cbi8qIFByb2R1Y3RvcyBiYWpvIHN0b2NrIG3DrW5pbW8gKi9cbi5zdG9jay1taW5pbW8tY2FyZCB7XG4gIC5zdWJ0ZXh0IHtcbiAgICBtYXJnaW4tdG9wOiAtMC41cmVtO1xuICAgIGNvbG9yOiAjNjY2O1xuICAgIGZvbnQtc2l6ZTogMC45cmVtO1xuICB9XG5cbiAgLmxvYWRpbmctd3JhcCxcbiAgLmVycm9yLXdyYXAsXG4gIC5lbXB0eS13cmFwIHtcbiAgICBkaXNwbGF5OiBmbGV4O1xuICAgIGFsaWduLWl0ZW1zOiBjZW50ZXI7XG4gICAgZ2FwOiAwLjc1cmVtO1xuICAgIHBhZGRpbmc6IDFyZW07XG4gICAgZmxleC13cmFwOiB3cmFwO1xuICB9XG5cbiAgLmVycm9yLXdyYXAge1xuICAgIGNvbG9yOiAjYzAwO1xuICB9XG5cbiAgLmVtcHR5LXdyYXAge1xuICAgIGNvbG9yOiAjNjY2O1xuICB9XG5cbiAgLmFjY29yZGlvbi10aXRsZSB7XG4gICAgZm9udC13ZWlnaHQ6IDYwMDtcbiAgfVxuXG4gIC5hY2NvcmRpb24tYmFkZ2Uge1xuICAgIG1hcmdpbi1sZWZ0OiAwLjVyZW07XG4gICAgcGFkZGluZzogMC4xNXJlbSAwLjVyZW07XG4gICAgYm9yZGVyLXJhZGl1czogMTJweDtcbiAgICBiYWNrZ3JvdW5kOiAjZmY1NzIyO1xuICAgIGNvbG9yOiAjZmZmO1xuICAgIGZvbnQtc2l6ZTogMC44cmVtO1xuICB9XG5cbiAgLnByb2R1Y3RvLWl0ZW0ge1xuICAgIHBhZGRpbmc6IDAuNXJlbSAwO1xuICAgIGJvcmRlci1ib3R0b206IDFweCBzb2xpZCAjZWVlO1xuXG4gICAgJjpsYXN0LWNoaWxkIHtcbiAgICAgIGJvcmRlci1ib3R0b206IG5vbmU7XG4gICAgfVxuICB9XG5cbiAgLnByb2R1Y3RvLW5vbWJyZSB7XG4gICAgZm9udC13ZWlnaHQ6IDUwMDtcbiAgICBtYXJnaW4tYm90dG9tOiAwLjI1cmVtO1xuICB9XG5cbiAgLnByb2R1Y3RvLWRldGFsbGUge1xuICAgIGRpc3BsYXk6IGZsZXg7XG4gICAgZ2FwOiAxcmVtO1xuICAgIGZsZXgtd3JhcDogd3JhcDtcbiAgICBmb250LXNpemU6IDAuODVyZW07XG4gICAgY29sb3I6ICM1NTU7XG5cbiAgICAuZmFsdGEge1xuICAgICAgY29sb3I6ICNmZjU3MjI7XG4gICAgICBmb250LXdlaWdodDogNTAwO1xuICAgIH1cbiAgfVxufVxuXG4ubWluaS1rcGkge1xuICBib3JkZXI6IDFweCBzb2xpZCAjZWNlY2VjO1xuICBib3JkZXItcmFkaXVzOiA4cHg7XG4gIHBhZGRpbmc6IDEwcHg7XG4gIGJhY2tncm91bmQ6ICNmYWZhZmE7XG59XG5cbi5taW5pLWtwaS10aXRsZSB7XG4gIGZvbnQtc2l6ZTogMTNweDtcbiAgY29sb3I6ICM2NjY7XG59XG5cbi5taW5pLWtwaS12YWx1ZSB7XG4gIGZvbnQtc2l6ZTogMjZweDtcbiAgZm9udC13ZWlnaHQ6IDcwMDtcbiAgY29sb3I6ICMyZDNlNTA7XG59XG5cbi5taW5pLWtwaS1hbGVydCB7XG4gIGJvcmRlci1jb2xvcjogI2Y1YzZjYjtcbiAgYmFja2dyb3VuZDogI2ZmZjVmNTtcbn1cblxuLm1pbmkta3BpLWNsaWNrYWJsZSB7XG4gIGN1cnNvcjogcG9pbnRlcjtcbiAgdHJhbnNpdGlvbjogYm94LXNoYWRvdyAwLjE1cyBlYXNlLCBib3JkZXItY29sb3IgMC4xNXMgZWFzZSwgdHJhbnNmb3JtIDAuMXMgZWFzZTtcblxuICAmOmhvdmVyIHtcbiAgICBib3JkZXItY29sb3I6ICNjNWQ0ZTg7XG4gICAgYm94LXNoYWRvdzogMCA0cHggMTJweCByZ2JhKDQ1LCA2MiwgODAsIDAuMTIpO1xuICB9XG5cbiAgJjphY3RpdmUge1xuICAgIHRyYW5zZm9ybTogc2NhbGUoMC45OSk7XG4gIH1cblxuICAmOmZvY3VzIHtcbiAgICBvdXRsaW5lOiAycHggc29saWQgcmdiYSgyNTUsIDg3LCAzNCwgMC40NSk7XG4gICAgb3V0bGluZS1vZmZzZXQ6IDJweDtcbiAgfVxufVxuXG4ubWluaS1rcGktYWxlcnQubWluaS1rcGktY2xpY2thYmxlOmhvdmVyIHtcbiAgYm9yZGVyLWNvbG9yOiAjZThhMGE4O1xuICBib3gtc2hhZG93OiAwIDRweCAxMnB4IHJnYmEoMjAwLCA4MCwgOTAsIDAuMTUpO1xufVxuXG4ucG9wdXAtaW5kaWNhZG9yZXMtZW50cmVnYXMge1xuICBtaW4taGVpZ2h0OiAyMDBweDtcbiAgYm94LXNpemluZzogYm9yZGVyLWJveDtcbn1cblxuLnBvcHVwLWluZGljYWRvcmVzLXNjcm9sbCB7XG4gIG1heC1oZWlnaHQ6IDQwMHB4O1xuICBvdmVyZmxvdy15OiBhdXRvO1xuICBwYWRkaW5nLXJpZ2h0OiA0cHg7XG4gIC13ZWJraXQtb3ZlcmZsb3ctc2Nyb2xsaW5nOiB0b3VjaDtcbn1cblxuQG1lZGlhIChtYXgtd2lkdGg6IDc2N3B4KSB7XG4gIC5wb3B1cC1pbmRpY2Fkb3Jlcy1lbnRyZWdhcyB7XG4gICAgbWluLWhlaWdodDogMTIwcHg7XG4gICAgcGFkZGluZzogMCAycHg7XG4gIH1cblxuICAucG9wdXAtaW5kaWNhZG9yZXMtc2Nyb2xsIHtcbiAgICBtYXgtaGVpZ2h0OiBtaW4oNDAwcHgsIGNhbGMoMTAwZHZoIC0gMjIwcHgpKTtcbiAgICBtYXgtaGVpZ2h0OiBtaW4oNDAwcHgsIGNhbGMoMTAwdmggLSAyMjBweCkpO1xuICAgIHBhZGRpbmctcmlnaHQ6IDJweDtcbiAgfVxuXG4gIC5wb3B1cC1pbmRpY2Fkb3Jlcy1lc3RhZG8ge1xuICAgIHBhZGRpbmc6IDAuNzVyZW0gMC41cmVtO1xuICAgIHRleHQtYWxpZ246IGNlbnRlcjtcbiAgfVxuXG4gIC5kZXRhbGxlLW9yZGVuLWNhcmQge1xuICAgIHBhZGRpbmc6IDAuNXJlbSAwLjZyZW07XG4gICAgbWFyZ2luLWJvdHRvbTogMC41cmVtO1xuICB9XG5cbiAgLmRldGFsbGUtb3JkZW4tbGluZWEge1xuICAgIHdvcmQtYnJlYWs6IGJyZWFrLXdvcmQ7XG4gICAgb3ZlcmZsb3ctd3JhcDogYW55d2hlcmU7XG4gIH1cblxuICAuZGV0YWxsZS1jb21wcm9taXNvLWxpc3RhIHtcbiAgICBwYWRkaW5nLWxlZnQ6IDEuMXJlbTtcbiAgfVxufVxuXG4ucG9wdXAtaW5kaWNhZG9yZXMtZXN0YWRvIHtcbiAgZGlzcGxheTogZmxleDtcbiAgYWxpZ24taXRlbXM6IGNlbnRlcjtcbiAgZ2FwOiAwLjc1cmVtO1xuICBwYWRkaW5nOiAxcmVtO1xuICBqdXN0aWZ5LWNvbnRlbnQ6IGNlbnRlcjtcbn1cblxuLnBvcHVwLWluZGljYWRvcmVzLWVycm9yIHtcbiAgY29sb3I6ICNiMDAwMjA7XG4gIGZsZXgtd3JhcDogd3JhcDtcbiAgdGV4dC1hbGlnbjogY2VudGVyO1xufVxuXG4uZGV0YWxsZS1vcmRlbi1jYXJkIHtcbiAgYm9yZGVyOiAxcHggc29saWQgI2U4ZThlODtcbiAgYm9yZGVyLXJhZGl1czogOHB4O1xuICBwYWRkaW5nOiAwLjY1cmVtIDAuODVyZW07XG4gIG1hcmdpbi1ib3R0b206IDAuNnJlbTtcbiAgYmFja2dyb3VuZDogI2ZhZmJmYztcbn1cblxuLmRldGFsbGUtY29tcHJvbWlzbyB7XG4gIGJhY2tncm91bmQ6ICNmZmY4Zjg7XG4gIGJvcmRlci1jb2xvcjogI2YwZDBkNDtcbn1cblxuLmRldGFsbGUtb3JkZW4tbGluZWEge1xuICBsaW5lLWhlaWdodDogMS4zNTtcbn1cblxuLmRldGFsbGUtY29tcHJvbWlzby1saXN0YSBsaSB7XG4gIG1hcmdpbi1ib3R0b206IDAuMnJlbTtcbn1cbiJdfQ== */"] });
 /*@__PURE__*/ (function () { _angular_core__WEBPACK_IMPORTED_MODULE_0__["ɵsetClassMetadata"](HomeComponent, [{
         type: _angular_core__WEBPACK_IMPORTED_MODULE_0__["Component"],
         args: [{
                 templateUrl: 'home.component.html',
                 styleUrls: ['./home.component.scss']
             }]
-    }], function () { return [{ type: src_app_servicios_stock_minimo_data_service__WEBPACK_IMPORTED_MODULE_1__["StockMinimoDataService"] }, { type: src_app_servicios_entregas_bodega_service__WEBPACK_IMPORTED_MODULE_2__["EntregasBodegaService"] }]; }, null); })();
+    }], function () { return [{ type: src_app_servicios_stock_minimo_data_service__WEBPACK_IMPORTED_MODULE_1__["StockMinimoDataService"] }, { type: src_app_servicios_entregas_bodega_service__WEBPACK_IMPORTED_MODULE_2__["EntregasBodegaService"] }]; }, { onVentanaRedimensionada: [{
+            type: _angular_core__WEBPACK_IMPORTED_MODULE_0__["HostListener"],
+            args: ['window:resize']
+        }] }); })();
 
 
 /***/ }),
@@ -99327,6 +99954,13 @@ class EntregasBodegaService {
     cerrar(ordenId, payload) {
         return this.http.put(`${this.URL}/cerrar/${ordenId}`, payload);
     }
+    /**
+     * Corrige un registro del historial de un ítem (trazabilidad).
+     * El servidor valida rol (Administrador vs Bodeguero mismo día) y orden no cerrada.
+     */
+    editarHistorialItem(ordenId, itemIndex, historialIndex, payload) {
+        return this.http.put(`${this.URL}/editarHistorialItem/${ordenId}/${itemIndex}/${historialIndex}`, payload);
+    }
     getIndicadores() {
         return this.http.get(`${this.URL}/indicadores`);
     }
@@ -102994,6 +103628,7 @@ class UserPanelComponent {
                 else {
                     this.user = this.usuarioLogueado[0].username;
                     sessionStorage.setItem("user", this.usuarioLogueado[0].username);
+                    sessionStorage.setItem("rol", this.usuarioLogueado[0].rol);
                 }
             }, err => { });
         });

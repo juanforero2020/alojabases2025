@@ -366,7 +366,101 @@ table th {
   font-weight: 700;
 }
 
+/* Listado entregas (móvil): tarjetas planas, informativas, sin acordeón */
+.listado-entregas-movil {
+  margin-bottom: 0.25rem;
+}
+
+.listado-entrega-movil-card {
+  display: block;
+  width: 100%;
+  margin-bottom: 0.65rem;
+  padding: 0;
+  border: 1px solid #dee2e6;
+  border-radius: 6px;
+  background: #fff;
+  text-align: left;
+  cursor: pointer;
+  overflow: hidden;
+  transition: box-shadow 0.15s ease, border-color 0.15s ease;
+}
+
+.listado-entrega-movil-card:hover,
+.listado-entrega-movil-card:focus {
+  border-color: rgba(0, 97, 169, 0.45);
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.06);
+  outline: none;
+}
+
+.listado-entrega-movil-card:focus-visible {
+  outline: 2px solid rgba(0, 97, 169, 0.35);
+  outline-offset: 2px;
+}
+
+.listado-entrega-movil-cab {
+  display: flex;
+  align-items: flex-start;
+  gap: 0.5rem;
+  padding: 0.65rem 0.75rem;
+  background: #f8f9fa;
+  border-bottom: 1px solid #e9ecef;
+}
+
+.listado-entrega-movil-cab-texto {
+  flex: 1;
+  min-width: 0;
+  display: flex;
+  flex-direction: column;
+  gap: 0.2rem;
+}
+
+.listado-entrega-movil-doc {
+  font-weight: 700;
+  font-size: 0.95rem;
+  word-break: break-word;
+}
+
+.listado-entrega-movil-sub {
+  font-size: 0.78rem;
+  color: #6c757d;
+  line-height: 1.25;
+}
+
+.listado-entrega-movil-cuerpo {
+  padding: 0.65rem 0.75rem 0.75rem;
+}
+
+.listado-entrega-movil-kv {
+  display: grid;
+  grid-template-columns: minmax(0, 38%) 1fr;
+  gap: 0.35rem 0.65rem;
+  font-size: 0.88rem;
+  align-items: start;
+}
+
+.listado-entrega-movil-lbl {
+  color: #6c757d;
+  font-size: 0.8rem;
+}
+
+.listado-entrega-movil-val {
+  word-break: break-word;
+  min-width: 0;
+}
+
 @media (max-width: 767.98px) {
+  /* Productos pendientes: scroll horizontal en pantallas estrechas (móvil). */
+  .productos-pendientes-grid-scroll {
+    overflow-x: auto;
+    -webkit-overflow-scrolling: touch;
+    overscroll-behavior-x: contain;
+    padding-bottom: 0.35rem;
+  }
+
+  .productos-pendientes-grid-scroll ::ng-deep .dx-datagrid {
+    min-width: 52rem;
+  }
+
   .remiPro {
     padding-left: 0.75rem;
     padding-right: 0.75rem;
@@ -381,5 +475,102 @@ table th {
   .gestion-filtros {
     padding-left: 0;
     padding-right: 0;
+  }
+}
+
+/* Trazabilidad: tabla con scroll táctil y botón de corrección accesible en móvil */
+.traz-historial-scroll {
+  -webkit-overflow-scrolling: touch;
+  overscroll-behavior-x: contain;
+}
+
+.traz-historial-table {
+  font-size: 0.85rem;
+}
+
+.traz-btn-edit {
+  min-height: 44px;
+  min-width: 44px;
+  touch-action: manipulation;
+  line-height: 1.2;
+}
+
+.traz-notas-celda {
+  max-width: 14rem;
+  word-break: break-word;
+}
+
+.traz-editar-acciones ::ng-deep .dx-button {
+  min-height: 44px;
+}
+
+/* Popup "Corregir movimiento: título multilínea y contenido sin overflow */
+::ng-deep .traz-popup-corregir-overlay {
+  box-sizing: border-box;
+
+  .dx-popup-content {
+    overflow-x: hidden;
+    max-width: 100%;
+    box-sizing: border-box;
+  }
+
+  .dx-popup-title {
+    white-space: normal !important;
+    word-break: break-word;
+    overflow-wrap: anywhere;
+    line-height: 1.3;
+    padding-right: 2.75rem;
+    font-size: 0.95rem;
+    max-width: 100%;
+  }
+}
+
+@media (max-width: 767.98px) {
+  ::ng-deep .traz-popup-corregir-overlay {
+    max-width: 100vw !important;
+    width: calc(100vw - env(safe-area-inset-left) - env(safe-area-inset-right)) !important;
+  }
+}
+
+.traz-popup-editar-body {
+  width: 100%;
+  max-width: 100%;
+  min-width: 0;
+  box-sizing: border-box;
+  overflow-x: hidden;
+  padding: 0.75rem 0.75rem max(0.75rem, env(safe-area-inset-bottom));
+
+  @media (min-width: 576px) {
+    padding: 1rem 1.25rem 1rem;
+  }
+}
+
+.traz-popup-editar-body ::ng-deep .dx-texteditor,
+.traz-popup-editar-body ::ng-deep .dx-dropdowneditor,
+.traz-popup-editar-body ::ng-deep .dx-numberbox {
+  width: 100% !important;
+  max-width: 100% !important;
+}
+
+.traz-popup-editar-body ::ng-deep .dx-texteditor.dx-editor-outlined,
+.traz-popup-editar-body ::ng-deep .dx-dropdowneditor.dx-editor-outlined {
+  display: block;
+}
+
+.traz-editar-acciones {
+  width: 100%;
+  max-width: 100%;
+  padding-top: 0.25rem;
+}
+
+@media (max-width: 575.98px) {
+  .traz-editar-acciones {
+    flex-direction: column !important;
+    align-items: stretch !important;
+  }
+
+  .traz-editar-acciones ::ng-deep .dx-button {
+    width: 100%;
+    max-width: 100%;
   }
 }

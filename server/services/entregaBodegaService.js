@@ -313,6 +313,115 @@ function recalcularEstadoYItems(orden) {
   }
 }
 
+/**
+ * Reproduce la secuencia de movimientos del historial (orden cronológico) para
+ * recalcular cantidades del ítem y los acumulados guardados en cada fila.
+ * Usado al corregir una entrada del historial ya persistida.
+ */
+function reconstruirItemDesdeHistorial(item) {
+  const cantidadFacturada = normalizarNumero(item.cantidadFacturada);
+  const usarMetro = itemUsaMetrosCajaPieza(item);
+  const m2Caja = m2PorCajaDeLinea(item);
+  const piezasCaja = piezasPorCajaDeLinea(item);
+
+  const historial = (item.historial || []).map((h) => {
+    const copy =
+      h && typeof h.toObject === "function" ? h.toObject() : { ...h };
+    delete copy.__historialIdx;
+    delete copy.fechaFmt;
+    return copy;
+  });
+
+  historial.sort((a, b) => {
+    const ta = new Date(a.fecha || 0).getTime();
+    const tb = new Date(b.fecha || 0).getTime();
+    return ta - tb;
+  });
+
+  let entAntes = 0;
+  let devAntes = 0;
+
+  for (let i = 0; i < historial.length; i++) {
+    const h = historial[i];
+    const estado = String(h.estadoSeleccionado || "").toUpperCase();
+
+    let m2Op = 0;
+    let ent = entAntes;
+    let dev = devAntes;
+
+    if (estado === "ENTREGA_TOTAL") {
+      ent = cantidadFacturada - devAntes;
+      m2Op = Math.max(0, ent - entAntes);
+      dev = devAntes;
+      if (usarMetro) {
+        const { cajas, piezas } = cajasPiezasDesdeM2(m2Op, m2Caja, piezasCaja);
+        h.entregaCajas = cajas;
+        h.entregaPiezas = piezas;
+      }
+    } else {
+      if (usarMetro) {
+        const cajas = normalizarNumero(h.entregaCajas);
+        const piezas = normalizarNumero(h.entregaPiezas);
+        m2Op = m2DesdeCajasPiezas(cajas, piezas, m2Caja, piezasCaja);
+        const m2Directo = normalizarNumero(h.m2EntregadoEnEstaOperacion);
+        if (m2Op <= 0 && m2Directo > 0) {
+          m2Op = m2Directo;
+        }
+      } else {
+        m2Op = normalizarNumero(h.m2EntregadoEnEstaOperacion);
+      }
+      ent = entAntes + m2Op;
+      dev = devAntes;
+      if (estado === "DEVOLUCION") {
+        if (ent > cantidadFacturada + 1e-9) {
+          throw new Error(
+            "La corrección deja una entrega mayor a lo facturado en el historial."
+          );
+        }
+        dev = Math.max(0, cantidadFacturada - ent);
+      }
+    }
+
+    if (ent + dev > cantidadFacturada + 1e-6) {
+      throw new Error(
+        "La corrección produce entrega más devolución mayor a lo facturado."
+      );
+    }
+
+    h.cantidadEntregada = ent;
+    h.cantidadDevuelta = dev;
+    h.m2EntregadoEnEstaOperacion = m2Op;
+
+    entAntes = ent;
+    devAntes = dev;
+  }
+
+  item.historial = historial;
+  item.cantidadEntregada = entAntes;
+  item.cantidadDevuelta = devAntes;
+  normalizarEntregaMetroPorPiezas(item);
+}
+
+/** Misma fecha calendario (hora local del servidor) que la de hoy. */
+function ordenEsMismoDiaCalendarioQueHoy(orden) {
+  const raw = orden && (orden.fechaDocumento != null && orden.fechaDocumento !== ""
+    ? orden.fechaDocumento
+    : orden.createdAt);
+  if (raw == null || raw === "") {
+    return false;
+  }
+  const d = raw instanceof Date ? raw : new Date(raw);
+  if (Number.isNaN(d.getTime())) {
+    return false;
+  }
+  const hoy = new Date();
+  return (
+    d.getFullYear() === hoy.getFullYear() &&
+    d.getMonth() === hoy.getMonth() &&
+    d.getDate() === hoy.getDate()
+  );
+}
+
 module.exports = {
   crearOrdenDesdeDocumento,
   intentarAnularPorDocumento,
@@ -325,4 +434,6 @@ module.exports = {
   cajasPiezasDesdeM2,
   normalizarEntregaMetroPorPiezas,
   pendienteVisualItem,
+  reconstruirItemDesdeHistorial,
+  ordenEsMismoDiaCalendarioQueHoy,
 };

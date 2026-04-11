@@ -149,12 +149,46 @@
 
 .popup-indicadores-entregas {
   min-height: 200px;
+  box-sizing: border-box;
 }
 
 .popup-indicadores-scroll {
   max-height: 400px;
   overflow-y: auto;
   padding-right: 4px;
+  -webkit-overflow-scrolling: touch;
+}
+
+@media (max-width: 767px) {
+  .popup-indicadores-entregas {
+    min-height: 120px;
+    padding: 0 2px;
+  }
+
+  .popup-indicadores-scroll {
+    max-height: min(400px, calc(100dvh - 220px));
+    max-height: min(400px, calc(100vh - 220px));
+    padding-right: 2px;
+  }
+
+  .popup-indicadores-estado {
+    padding: 0.75rem 0.5rem;
+    text-align: center;
+  }
+
+  .detalle-orden-card {
+    padding: 0.5rem 0.6rem;
+    margin-bottom: 0.5rem;
+  }
+
+  .detalle-orden-linea {
+    word-break: break-word;
+    overflow-wrap: anywhere;
+  }
+
+  .detalle-compromiso-lista {
+    padding-left: 1.1rem;
+  }
 }
 
 .popup-indicadores-estado {

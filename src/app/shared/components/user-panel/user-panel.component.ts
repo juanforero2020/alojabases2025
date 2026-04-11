@@ -45,6 +45,7 @@ export class UserPanelComponent implements OnInit {
             else{
               this.user=this.usuarioLogueado[0].username
               sessionStorage.setItem("user", this.usuarioLogueado[0].username)
+              sessionStorage.setItem("rol", this.usuarioLogueado[0].rol)
             }
           },
           err => {}

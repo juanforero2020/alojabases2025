@@ -842,6 +842,16 @@ export const navigationDistribuidor = [
 
 export const navigationBodeguero = [
   {
+    text: "Inventarios",
+    icon: "contentlayout",
+    items: [
+      {
+        text: "Revisiones",
+        path: "/revision-inventario/0",
+      },
+    ],
+  },
+  {
     text: "Operaciones",
     icon: "fa fa-spinner",
     items: [

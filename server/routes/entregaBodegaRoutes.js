@@ -10,6 +10,8 @@ const {
   m2PorCajaDeLinea,
   piezasPorCajaDeLinea,
   m2DesdeCajasPiezas,
+  reconstruirItemDesdeHistorial,
+  ordenEsMismoDiaCalendarioQueHoy,
 } = require("../services/entregaBodegaService");
 
 async function marcarPendienteComoEntregadoDesdeBodega(orden, item, usuario) {
@@ -400,6 +402,147 @@ router.put("/actualizarItem/:id/:itemIndex", async (req, res) => {
   await orden.save();
   res.json(orden);
 });
+
+/**
+ * Corrige un movimiento ya guardado en el historial de un ítem (trazabilidad).
+ * Administrador: en cualquier momento (orden no cerrada/anulada).
+ * Bodeguero: solo si la orden es del mismo día calendario que hoy.
+ */
+router.put(
+  "/editarHistorialItem/:id/:itemIndex/:historialIndex",
+  async (req, res) => {
+    try {
+      const { id, itemIndex, historialIndex } = req.params;
+      const idxItem = Number(itemIndex);
+      const idxHist = Number(historialIndex);
+      const orden = await EntregaBodega.findById(id);
+      if (!orden) {
+        return res.status(404).json({ mensaje: "Orden no encontrada" });
+      }
+      const ep = String(orden.estadoProceso || "").toUpperCase();
+      if (ep === "CERRADO" || ep === "ANULADO") {
+        return res.status(409).json({
+          mensaje: "La orden está cerrada o anulada y no permite edición.",
+        });
+      }
+
+      const rol = String((req.body && req.body.rolUsuario) || "").trim();
+      if (rol === "Bodeguero") {
+        if (!ordenEsMismoDiaCalendarioQueHoy(orden)) {
+          return res.status(403).json({
+            mensaje:
+              "Como bodeguero solo puede corregir movimientos de órdenes del día actual.",
+          });
+        }
+      } else if (rol !== "Administrador") {
+        return res.status(403).json({
+          mensaje: "No tiene permisos para corregir el historial de entregas.",
+        });
+      }
+
+      if (!orden.items[idxItem]) {
+        return res.status(400).json({ mensaje: "Ítem inválido" });
+      }
+      const item = orden.items[idxItem];
+      item.historial = item.historial || [];
+      if (!item.historial[idxHist]) {
+        return res.status(400).json({ mensaje: "Registro de historial inválido" });
+      }
+
+      const usuario = (req.body && req.body.usuario) || "";
+      const motivo = (req.body && req.body.motivoCorreccion) || "";
+      const estadoSel = String(
+        (req.body && req.body.estadoSeleccionado) || ""
+      ).toUpperCase();
+      if (
+        !["ENTREGA_TOTAL", "ENTREGA_PARCIAL", "DEVOLUCION"].includes(estadoSel)
+      ) {
+        return res.status(400).json({ mensaje: "Estado seleccionado no válido" });
+      }
+
+      const h = item.historial[idxHist];
+      h.estadoSeleccionado = estadoSel;
+      h.notas = req.body.notas != null ? String(req.body.notas) : h.notas || "";
+
+      const usarMetro = itemUsaMetrosCajaPieza(item);
+      if (usarMetro) {
+        h.entregaCajas = normalizarNumero(req.body.entregaCajas);
+        h.entregaPiezas = normalizarNumero(req.body.entregaPiezas);
+        const m2Caja = m2PorCajaDeLinea(item);
+        const piezasCaja = piezasPorCajaDeLinea(item);
+        let m2Inc = m2DesdeCajasPiezas(
+          h.entregaCajas,
+          h.entregaPiezas,
+          m2Caja,
+          piezasCaja
+        );
+        const m2Body = normalizarNumero(req.body.m2EntregadoEnEstaOperacion);
+        if (m2Inc <= 0 && m2Body > 0) {
+          m2Inc = m2Body;
+        }
+        h.m2EntregadoEnEstaOperacion = m2Inc;
+      } else {
+        h.m2EntregadoEnEstaOperacion = normalizarNumero(
+          req.body.m2EntregadoEnEstaOperacion
+        );
+      }
+
+      const ahora = new Date().toISOString();
+      const notaControl = `[Ítem editado y ajustado ${new Date().toLocaleString()} por ${usuario || "—"}${
+        motivo ? ". Motivo: " + motivo : ""
+      }]`;
+      h.notas = (h.notas || "").trim();
+      h.notas = h.notas ? `${h.notas} ${notaControl}` : notaControl;
+      h.accion = "ACTUALIZACION_ITEM_EDITADA";
+      h.fechaUltimaEdicion = ahora;
+      h.usuarioUltimaEdicion = usuario;
+
+      reconstruirItemDesdeHistorial(item);
+
+      orden.trazabilidad = orden.trazabilidad || [];
+      orden.trazabilidad.push({
+        fecha: ahora,
+        usuario,
+        accion: "EDICION_HISTORIAL_ITEM",
+        detalle: `Corrección historial ítem #${idxItem + 1}, movimiento #${
+          idxHist + 1
+        }`,
+      });
+
+      recalcularEstadoYItems(orden);
+      const itemActualizado = orden.items[idxItem];
+      const entregaTotalItem =
+        !!itemActualizado &&
+        (normalizarNumero(itemActualizado.cantidadFacturada) ===
+          normalizarNumero(itemActualizado.cantidadEntregada) +
+            normalizarNumero(itemActualizado.cantidadDevuelta) ||
+          pendienteVisualItem(itemActualizado) === 0);
+      if (entregaTotalItem) {
+        try {
+          await marcarPendienteComoEntregadoDesdeBodega(
+            orden,
+            itemActualizado,
+            usuario
+          );
+        } catch (errorPendiente) {
+          console.log(
+            "No se pudo sincronizar estado en productos pendientes:",
+            errorPendiente?.message || errorPendiente
+          );
+        }
+      }
+
+      await orden.save();
+      return res.json(orden);
+    } catch (err) {
+      const msg =
+        err && err.message
+          ? err.message
+          : "No se pudo aplicar la corrección al historial";
+      return res.status(400).json({ mensaje: msg });
+    }
+  }
+);
 
 router.put("/cerrar/:id", async (req, res) => {
   const { id } = req.params;

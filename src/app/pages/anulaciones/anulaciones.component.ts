@@ -29,6 +29,7 @@ import { TransaccionesFinancieras } from '../transaccionesFinancieras/transaccio
 import { CajaMenorService } from 'src/app/servicios/cajaMenor.service';
 import { CajaMenor } from '../cajaMenor/caja-menor';
 import { ReciboCajaService } from 'src/app/servicios/reciboCaja.service';
+import { EntregasBodegaService } from 'src/app/servicios/entregas-bodega.service';
 
 @Component({
   selector: 'app-anulaciones',
@@ -177,7 +178,8 @@ subtotal:number=0
     public _cuentaPorCobrarService : CuentasPorCobrarService,
     public _transaccionesFinancierasService : TransaccionesFinancierasService,
     public _reciboCajaService : ReciboCajaService,
-    public _cajaMenorService : CajaMenorService) 
+    public _cajaMenorService : CajaMenorService,
+    private entregasBodegaService: EntregasBodegaService)
     {
       this.anulacion= new anulaciones()
   }
@@ -663,12 +665,16 @@ subtotal:number=0
 
   anularFactura= (e) => {  
     //this.validarEliminacionFactura(e.row.data) 
-    this.actualizarFact(e.row.data) 
+    this.validarEntregasBodegaAntesAnular(e.row.data, "FACTURA", () =>
+      this.actualizarFact(e.row.data)
+    );
   }
 
   anularNotaVenta= (e) => { 
     //this.validarEliminacionNotaVenta(e.row.data) 
-    this.actualizarNotV(e.row.data) 
+    this.validarEntregasBodegaAntesAnular(e.row.data, "NOTA_VENTA", () =>
+      this.actualizarNotV(e.row.data)
+    );
   }
 
   getCourseFile = (e) => {
@@ -1889,6 +1895,62 @@ subtotal:number=0
         ]
       }
     };
+  }
+
+  /**
+   * Si existe orden de entrega de bodega para el documento y su estado no es ABIERTA
+   * (p. ej. NOVEDAD, COMPLETO, CERRADO), no se permite solicitar anulación.
+   * ANULADO no bloquea (orden ya cancelada en bodega).
+   */
+  private validarEntregasBodegaAntesAnular(
+    doc: factura,
+    tipoEntregaBodega: "FACTURA" | "NOTA_VENTA",
+    continuar: () => void
+  ): void {
+    const num = Number(doc?.documento_n);
+    if (!num || Number.isNaN(num)) {
+      continuar();
+      return;
+    }
+    this.mostrarLoading = true;
+    this.entregasBodegaService
+      .getPendientes({
+        documentoNumero: num,
+        modoConsulta: "listado",
+      })
+      .subscribe({
+        next: (ordenes: any[]) => {
+          this.mostrarLoading = false;
+          const relevantes = (ordenes || []).filter(
+            (o) => String(o?.tipoDocumento) === tipoEntregaBodega
+          );
+          const bloquea = relevantes.some((o) => {
+            const st = String(o?.estadoProceso || "").toUpperCase();
+            return st !== "ABIERTA" && st !== "ANULADO";
+          });
+          if (bloquea) {
+            const esFactura = tipoEntregaBodega === "FACTURA";
+            Swal.fire({
+              title: "No se puede anular",
+              text: esFactura
+                ? "No se puede anular la factura porque tiene órdenes de entrega de bodega ya en curso o completadas. Revise el módulo Gestión de entregas de bodega."
+                : "No se puede anular la nota de venta porque tiene órdenes de entrega de bodega ya en curso o completadas. Revise el módulo Gestión de entregas de bodega.",
+              icon: "warning",
+              confirmButtonText: "Entendido",
+            });
+            return;
+          }
+          continuar();
+        },
+        error: () => {
+          this.mostrarLoading = false;
+          Swal.fire(
+            "Error",
+            "No se pudo verificar el estado de entregas de bodega. Intente de nuevo.",
+            "error"
+          );
+        },
+      });
   }
 
   validarEliminacionNotaVenta(e){

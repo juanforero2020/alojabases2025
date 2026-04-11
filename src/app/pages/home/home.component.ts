@@ -1,4 +1,4 @@
-import { Component, OnInit } from '@angular/core';
+import { Component, HostListener, OnInit } from '@angular/core';
 import { StockMinimoDataService, ProductosBajoMinimoPorCategoria } from 'src/app/servicios/stock-minimo-data.service';
 import { EntregasBodegaService } from "src/app/servicios/entregas-bodega.service";
 
@@ -34,14 +34,41 @@ export class HomeComponent implements OnInit {
   cargandoDetalleIndicadores = false;
   errorDetalleIndicadores = false;
 
+  /** Dimensiones del popup de indicadores (se ajustan en vista móvil). */
+  anchoPopupIndicadores = 720;
+  altoPopupIndicadores = 520;
+  private static readonly umbralVistaMovilPx = 768;
+
   constructor(
     private stockMinimoData: StockMinimoDataService,
     private entregasBodegaService: EntregasBodegaService
   ) {}
 
   ngOnInit(): void {
+    this.actualizarTamanoPopupIndicadores();
     this.cargarProductosBajoMinimo();
     this.cargarIndicadoresEntregas();
+  }
+
+  @HostListener('window:resize')
+  onVentanaRedimensionada(): void {
+    this.actualizarTamanoPopupIndicadores();
+  }
+
+  private actualizarTamanoPopupIndicadores(): void {
+    if (typeof window === 'undefined') {
+      return;
+    }
+    const vw = window.innerWidth;
+    const vh = window.innerHeight;
+    if (vw < HomeComponent.umbralVistaMovilPx) {
+      const margen = 16;
+      this.anchoPopupIndicadores = Math.max(280, vw - margen);
+      this.altoPopupIndicadores = Math.round(Math.min(vh * 0.92, vh - margen));
+    } else {
+      this.anchoPopupIndicadores = 720;
+      this.altoPopupIndicadores = 520;
+    }
   }
 
   cargarProductosBajoMinimo(): void {
@@ -79,6 +106,7 @@ export class HomeComponent implements OnInit {
   }
 
   abrirDetalleIndicador(tipo: TipoDetalleIndicadorEntrega): void {
+    this.actualizarTamanoPopupIndicadores();
     const titulos: Record<TipoDetalleIndicadorEntrega, string> = {
       abiertas: "Entregas abiertas (solo información)",
       novedad: "Entregas con novedad (solo información)",

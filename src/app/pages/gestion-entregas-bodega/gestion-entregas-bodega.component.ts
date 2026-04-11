@@ -38,6 +38,29 @@ export class GestionEntregasBodegaComponent implements OnInit, OnDestroy {
   popupTrazabilidadVisible = false;
   ordenTrazabilidad: any = null;
 
+  /** Corrección de un movimiento del historial (popup secundario). */
+  popupEditarHistorialVisible = false;
+  guardandoEdicionHistorial = false;
+  edicionHistorialContext: {
+    itemIndex: number;
+    historialIndex: number;
+    productoNombre: string;
+    esMetro: boolean;
+  } | null = null;
+  formEdicionHistorial = {
+    estadoSeleccionado: "ENTREGA_PARCIAL",
+    entregaCajas: 0,
+    entregaPiezas: 0,
+    m2EntregadoEnEstaOperacion: 0,
+    notas: "",
+    motivoCorreccion: "",
+  };
+  readonly estadosHistorialEdicion = [
+    "ENTREGA_PARCIAL",
+    "ENTREGA_TOTAL",
+    "DEVOLUCION",
+  ];
+
   filtroDocumento: number = null;
   filtroCliente = "";
   fechaDesde: Date = (() => {
@@ -75,6 +98,193 @@ export class GestionEntregasBodegaComponent implements OnInit, OnDestroy {
 
   get usuarioVista(): string {
     return sessionStorage.getItem("user") || "";
+  }
+
+  /** Rol desde login (layout guarda en localStorage). */
+  get rolUsuarioSesion(): string {
+    try {
+      return (sessionStorage.getItem("rol") || "").trim();
+    } catch {
+      return "";
+    }
+  }
+
+  /** Orden en estado final que no admite corrección de movimientos. */
+  esOrdenCerradaParaEdicionHistorial(orden: any): boolean {
+    const e = String(orden?.estadoProceso || "").toUpperCase();
+    return e === "CERRADO" || e === "CERRADA";
+  }
+
+  /** Misma fecha calendario que hoy (cliente), usando fecha documento o creación. */
+  ordenEntregaEsDelDiaActual(orden: any): boolean {
+    const raw =
+      orden?.fechaDocumento != null && orden.fechaDocumento !== ""
+        ? orden.fechaDocumento
+        : orden?.createdAt;
+    if (raw == null || raw === "") {
+      return false;
+    }
+    const d = raw instanceof Date ? raw : new Date(raw);
+    if (Number.isNaN(d.getTime())) {
+      return false;
+    }
+    const hoy = new Date();
+    return (
+      d.getFullYear() === hoy.getFullYear() &&
+      d.getMonth() === hoy.getMonth() &&
+      d.getDate() === hoy.getDate()
+    );
+  }
+
+  /**
+   * Administrador: siempre (orden no cerrada).
+   * Bodeguero: solo órdenes del día actual.
+   */
+  puedeEditarHistorialTrazabilidad(orden: any): boolean {
+    if (!orden || this.esOrdenCerradaParaEdicionHistorial(orden)) {
+      return false;
+    }
+    const rol = this.rolUsuarioSesion;
+    if (rol === "Administrador") {
+      return true;
+    }
+    if (rol === "Bodeguero") {
+      return this.ordenEntregaEsDelDiaActual(orden);
+    }
+    return false;
+  }
+
+  abrirPopupEditarHistorial(
+    it: any,
+    filaHistorial: any,
+    itemIndex: number
+  ): void {
+    if (!this.ordenTrazabilidad || !this.puedeEditarHistorialTrazabilidad(this.ordenTrazabilidad)) {
+      return;
+    }
+    const idx = filaHistorial?.__historialIdx;
+    if (idx == null || idx < 0) {
+      Swal.fire(
+        "No disponible",
+        "No se pudo identificar el registro a editar.",
+        "warning"
+      );
+      return;
+    }
+    const metro = this.esItemMetrosCajaPieza(it);
+    this.edicionHistorialContext = {
+      itemIndex,
+      historialIndex: idx,
+      productoNombre: it?.productoNombre || "Ítem",
+      esMetro: metro,
+    };
+    const est = String(filaHistorial.estadoSeleccionado || "ENTREGA_PARCIAL").toUpperCase();
+    this.formEdicionHistorial = {
+      estadoSeleccionado: this.estadosHistorialEdicion.includes(est)
+        ? est
+        : "ENTREGA_PARCIAL",
+      entregaCajas: this.num(filaHistorial.entregaCajas),
+      entregaPiezas: this.num(filaHistorial.entregaPiezas),
+      m2EntregadoEnEstaOperacion: this.num(filaHistorial.m2EntregadoEnEstaOperacion),
+      notas: filaHistorial.notas != null ? String(filaHistorial.notas) : "",
+      motivoCorreccion: "",
+    };
+    this.popupEditarHistorialVisible = true;
+  }
+
+  cerrarPopupEditarHistorial(): void {
+    this.popupEditarHistorialVisible = false;
+    this.edicionHistorialContext = null;
+    this.guardandoEdicionHistorial = false;
+  }
+
+  confirmarEdicionHistorial(): void {
+    if (
+      !this.ordenTrazabilidad?._id ||
+      !this.edicionHistorialContext ||
+      this.guardandoEdicionHistorial
+    ) {
+      return;
+    }
+    const ctx = this.edicionHistorialContext;
+    const f = this.formEdicionHistorial;
+    this.guardandoEdicionHistorial = true;
+    this.entregasBodegaService
+      .editarHistorialItem(this.ordenTrazabilidad._id, ctx.itemIndex, ctx.historialIndex, {
+        estadoSeleccionado: f.estadoSeleccionado,
+        entregaCajas: f.entregaCajas,
+        entregaPiezas: f.entregaPiezas,
+        m2EntregadoEnEstaOperacion: f.m2EntregadoEnEstaOperacion,
+        notas: f.notas,
+        motivoCorreccion: (f.motivoCorreccion || "").trim(),
+        usuario: sessionStorage.getItem("user") || "",
+        rolUsuario: this.rolUsuarioSesion,
+      })
+      .subscribe({
+        next: (orden: any) => {
+          this.guardandoEdicionHistorial = false;
+          const vista = this.prepararOrdenParaVista(orden);
+          this.sincronizarOrdenEnListado(vista);
+          this.cerrarPopupEditarHistorial();
+          this.abrirPopupTrazabilidad(orden);
+          Swal.fire({
+            toast: true,
+            position: "top-end",
+            icon: "success",
+            title: "Movimiento actualizado",
+            showConfirmButton: false,
+            timer: 2500,
+          });
+        },
+        error: (errors: any) => {
+          this.guardandoEdicionHistorial = false;
+          const mensaje =
+            errors?.error?.mensaje ||
+            "No se pudo guardar la corrección del historial.";
+          Swal.fire("Error", mensaje, "error");
+        },
+      });
+  }
+
+  textoAyudaEdicionHistorial(): string {
+    if (!this.ordenTrazabilidad) {
+      return "";
+    }
+    if (this.esOrdenCerradaParaEdicionHistorial(this.ordenTrazabilidad)) {
+      return "La orden está cerrada: no se pueden corregir movimientos.";
+    }
+    const rol = this.rolUsuarioSesion;
+    if (rol === "Administrador") {
+      return "Puede corregir movimientos en cualquier momento (orden abierta).";
+    }
+    if (rol === "Bodeguero") {
+      if (this.ordenEntregaEsDelDiaActual(this.ordenTrazabilidad)) {
+        return "Como bodeguero puede corregir movimientos en órdenes del día actual.";
+      }
+      return "Como bodeguero solo puede corregir cuando la orden corresponde al día de hoy (fecha documento o creación).";
+    }
+    return "No tiene permisos para corregir el historial.";
+  }
+
+  /**
+   * Título del popup de corrección: en móvil se acorta el nombre del producto
+   * para que la barra del popup no desborde el viewport.
+   */
+  get tituloPopupEditarHistorial(): string {
+    if (!this.edicionHistorialContext) {
+      return "Corregir movimiento";
+    }
+    const nombre = String(
+      this.edicionHistorialContext.productoNombre || ""
+    ).trim();
+    const base = "Corregir movimiento";
+    if (!nombre) {
+      return base;
+    }
+    if (this.vistaMovil && nombre.length > 26) {
+      return `${base} · ${nombre.slice(0, 24)}…`;
+    }
+    return `${base} · ${nombre}`;
   }
 
   constructor(
@@ -259,7 +469,7 @@ export class GestionEntregasBodegaComponent implements OnInit, OnDestroy {
       o.items = o.items.map((it: any) => ({
         ...it,
         historialOrdenado: (it.historial || [])
-          .slice()
+          .map((h: any, origIdx: number) => ({ ...h, __historialIdx: origIdx }))
           .sort(
             (a: any, b: any) =>
               new Date(b.fecha || 0).getTime() -
@@ -294,6 +504,19 @@ export class GestionEntregasBodegaComponent implements OnInit, OnDestroy {
       return String(val);
     }
     return d.toLocaleString();
+  }
+
+  /** Fecha de documento para tarjetas del listado en móvil (solo fecha, más legible). */
+  formatearFechaDocumentoListado(orden: any): string {
+    const v = orden?.fechaDocumento;
+    if (v == null || v === "") {
+      return "—";
+    }
+    const d = v instanceof Date ? v : new Date(v);
+    if (Number.isNaN(d.getTime())) {
+      return String(v);
+    }
+    return d.toLocaleDateString();
   }
 
   /** Payload que se envía al API para filtrar en base de datos. */
@@ -602,7 +825,7 @@ export class GestionEntregasBodegaComponent implements OnInit, OnDestroy {
   estadoGestionAutomatico(item: any): "ENTREGA_TOTAL" | "ENTREGA_PARCIAL" {
     const pendiente = this.num(item?.pendiente);
     const ingreso = this.m2OperacionIngresada(item);
-    if (pendiente <= 0 || ingreso >= pendiente - 0.0001) {
+    if (pendiente <= 0 || ingreso >= pendiente + 0.0001) {
       return "ENTREGA_TOTAL";
     }
     return "ENTREGA_PARCIAL";
@@ -710,21 +933,38 @@ export class GestionEntregasBodegaComponent implements OnInit, OnDestroy {
         (orden.items || []).forEach((item: any) => {
           const pendiente = this.num(item?.pendiente);
           if (pendiente <= 0) return;
+          const rawFechaDoc = orden?.fechaDocumento;
+          let fechaDoc: Date | null = null;
+          if (rawFechaDoc != null && rawFechaDoc !== "") {
+            const d =
+              rawFechaDoc instanceof Date
+                ? rawFechaDoc
+                : new Date(rawFechaDoc);
+            if (!Number.isNaN(d.getTime())) {
+              fechaDoc = d;
+            }
+          }
+          console.log(item);
+          const tsFechaDoc = fechaDoc ? fechaDoc.getTime() : 0;
           filas.push({
+            fecha: fechaDoc,
+            fechaDocumentoOrden: tsFechaDoc,
             documentoNumero: orden?.documentoNumero ?? "",
+            tipoDocumento: orden?.tipoDocumento ?? "",
             clienteNombre: orden?.clienteNombre || "Cliente sin nombre",
             productoNombre: item?.productoNombre || "Producto sin nombre",
+            notas: item?.notas ?? "",
             cantidadPendienteTexto: this.formatoPendienteReporte(item, pendiente),
             fechaCompromisoTexto: item?.fechaCompromiso
               ? this.formatearFechaIso(item.fechaCompromiso)
               : "Sin fecha",
-            fechaCompromisoOrden: item?.fechaCompromiso
-              ? new Date(item.fechaCompromiso).getTime()
-              : Number.MAX_SAFE_INTEGER,
           });
         });
       });
 
-    return filas.sort((a, b) => a.fechaCompromisoOrden - b.fechaCompromisoOrden);
+    filas.sort(
+      (a, b) => (b.fechaDocumentoOrden || 0) - (a.fechaDocumentoOrden || 0)
+    );
+    return filas.map(({ fechaDocumentoOrden: _ts, ...rest }) => rest);
   }
 }

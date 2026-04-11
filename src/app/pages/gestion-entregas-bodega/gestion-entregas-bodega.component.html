@@ -295,8 +295,68 @@
         </div>
       </div>
 
+      <!-- Listado entregas en móvil: tarjetas informativas (todo visible, sin desplegar) -->
+      <div
+        *ngIf="mostrarListado && vistaMovil && !mostrarProductosPendientes"
+        class="listado-entregas-movil"
+      >
+        <p class="small text-muted mb-2">
+          Toque una orden para ver la trazabilidad. Los datos de cada fila se muestran a continuación.
+        </p>
+        <div class="sd-leyenda small mb-3">
+          <span class="sd-leyenda-item"
+            ><i class="sd-punto sd-est-amarillo"></i> Abierto</span
+          >
+          <span class="sd-leyenda-item"
+            ><i class="sd-punto sd-est-rojo"></i> Novedad</span
+          >
+          <span class="sd-leyenda-item"
+            ><i class="sd-punto sd-est-azul"></i> Completado</span
+          >
+          <span class="sd-leyenda-item"
+            ><i class="sd-punto sd-est-verde"></i> Cerrado</span
+          >
+        </div>
+
+        <div *ngIf="!ordenes?.length" class="text-muted small">
+          No hay órdenes con los filtros actuales.
+        </div>
+
+        <button
+          *ngFor="let ord of ordenes"
+          type="button"
+          class="listado-entrega-movil-card"
+          (click)="abrirPopupTrazabilidad(ord)"
+        >
+          <div class="listado-entrega-movil-cab">
+            <i class="sd-punto" [ngClass]="claseColorOrden(ord)"></i>
+            <div class="listado-entrega-movil-cab-texto">
+              <span class="listado-entrega-movil-doc"
+                >{{ ord.tipoDocumento }} #{{ ord.documentoNumero }}</span
+              >
+              <span class="listado-entrega-movil-sub"
+                >Orden {{ ord.consecutivoEntrega }} · {{ ord.estadoProceso }}</span
+              >
+            </div>
+          </div>
+          <div class="listado-entrega-movil-cuerpo">
+            <div class="listado-entrega-movil-kv">
+              <span class="listado-entrega-movil-lbl">Cliente</span>
+              <span class="listado-entrega-movil-val">{{ ord.clienteNombre }}</span>
+              <span class="listado-entrega-movil-lbl">Fecha documento</span>
+              <span class="listado-entrega-movil-val">{{
+                formatearFechaDocumentoListado(ord)
+              }}</span>
+            </div>
+          </div>
+        </button>
+      </div>
+
       <dx-data-grid
-        *ngIf="!mostrarProductosPendientes && !(mostrarGestion && vistaMovil)"
+        *ngIf="
+          !mostrarProductosPendientes &&
+          !(vistaMovil && (mostrarGestion || mostrarListado))
+        "
         [dataSource]="ordenes"
         [showBorders]="true"
         [hoverStateEnabled]="true"
@@ -355,56 +415,66 @@
         </dxi-column>
       </dx-data-grid>
 
-      <dx-data-grid
+      <div
         *ngIf="mostrarProductosPendientes"
-        [dataSource]="productosPendientes"
-        [showBorders]="true"
-        [hoverStateEnabled]="true"
+        class="productos-pendientes-grid-scroll"
       >
-        <dxo-filter-row [visible]="true"></dxo-filter-row>
-        <dxo-export [enabled]="true" fileName="Productos_Pendientes" [allowExportSelectedData]="true"></dxo-export>
-        <dxo-search-panel
-          [visible]="true"
-          [width]="260"
-          placeholder="Buscar producto..."
-        ></dxo-search-panel>
-        <dxi-column
-          dataField="documentoNumero"
-          caption="Documento"
-          width="15%"
-          dataType="number"
-        ></dxi-column>
-        <dxi-column
-          dataField="tipoDocumento"
-          caption="Tipo Documento"
-          width="15%"
-          dataType="string"
-        ></dxi-column>
-        <dxi-column
-          dataField="clienteNombre"
-          caption="Cliente"
-          width="25%"
-          dataType="string"
-        ></dxi-column>
-        <dxi-column
-          dataField="productoNombre"
-          caption="Producto"
-          width="35%"
-          dataType="string"
-        ></dxi-column>
-        <dxi-column
-          dataField="cantidadPendienteTexto"
-          caption="Cantidad pendiente"
-          width="15%"
-          dataType="string"
-        ></dxi-column>
-        <dxi-column
-          dataField="fechaCompromisoTexto"
-          caption="Fecha compromiso"
-          width="10%"
-          dataType="date"
-        ></dxi-column>
-      </dx-data-grid>
+        <dx-data-grid
+          [dataSource]="productosPendientes"
+          [showBorders]="true"
+          [hoverStateEnabled]="true"
+        >
+          <dxo-filter-row [visible]="true"></dxo-filter-row>
+          <dxo-export [enabled]="true" fileName="Productos_Pendientes" [allowExportSelectedData]="true"></dxo-export>
+          <dxo-search-panel
+            [visible]="true"
+            [width]="260"
+            placeholder="Buscar producto..."
+          ></dxo-search-panel>
+          <dxi-column
+            dataField="fecha"
+            caption="Fecha"
+            width="10%"
+            dataType="date"
+          ></dxi-column>
+          <dxi-column
+            dataField="documentoNumero"
+            caption="Documento"
+            width="10%"
+            dataType="number"
+          ></dxi-column>
+          <dxi-column
+            dataField="clienteNombre"
+            caption="Cliente"
+            width="15%"
+            dataType="string"
+          ></dxi-column>
+          <dxi-column
+            dataField="productoNombre"
+            caption="Producto"
+            width="25%"
+            dataType="string"
+          ></dxi-column>
+          <dxi-column
+            dataField="cantidadPendienteTexto"
+            caption="Cantidad pendiente"
+            width="10%"
+            dataType="string"
+          ></dxi-column>
+          <dxi-column
+            dataField="fechaCompromisoTexto"
+            caption="Fecha compromiso"
+            width="15%"
+            dataType="date"
+          ></dxi-column>
+          <dxi-column
+            dataField="notas"
+            caption="Notas"
+            width="15%"
+            dataType="string"
+          ></dxi-column>
+        </dx-data-grid>
+      </div>
     </div>
   </div>
 </div>
@@ -640,7 +710,13 @@
         </dx-data-grid>
 
         <h6 class="font-weight-bold mt-3">Ítems y movimientos por línea</h6>
-        <div *ngFor="let it of ordenTrazabilidad.items" class="mb-3 border rounded p-2">
+        <p class="small text-muted mb-2 traz-ayuda-edicion" *ngIf="ordenTrazabilidad">
+          {{ textoAyudaEdicionHistorial() }}
+        </p>
+        <div
+          *ngFor="let it of ordenTrazabilidad.items; let itemIdx = index"
+          class="mb-3 border rounded p-2 traz-item-bloque"
+        >
           <div class="font-weight-bold">
             {{ it.productoNombre }}
             <p>
@@ -650,52 +726,68 @@
               Estado ítem: {{ it.estadoItem }}
             </p>
           </div>
-          <dx-data-grid
+          <div
+            class="table-responsive traz-historial-scroll"
             *ngIf="(it.historialOrdenado || []).length > 0"
-            [dataSource]="it.historialOrdenado || []"
-            [showBorders]="true"
-            [columnAutoWidth]="true"
-            [height]="160"
           >
-            <dxi-column
-              dataField="fechaFmt"
-              caption="Fecha / hora"
-            ></dxi-column>
-            <dxi-column dataField="usuario" caption="Usuario"></dxi-column>
-            <dxi-column dataField="accion" caption="Acción"></dxi-column>
-            <dxi-column
-              dataField="estadoSeleccionado"
-              caption="Estado seleccionado"
-            ></dxi-column>
-            <dxi-column
-              dataField="cantidadEntregada"
-              caption="Entregado acum."
-              dataType="number"
-              [format]="{ type: 'fixedPoint', precision: 2 }"
-            ></dxi-column>
-            <dxi-column
-              dataField="cantidadDevuelta"
-              caption="Devuelto acum."
-              dataType="number"
-            ></dxi-column>
-            <dxi-column
-              dataField="m2EntregadoEnEstaOperacion"
-              caption="m² esta op."
-              dataType="number"
-              [format]="{ type: 'fixedPoint', precision: 2 }"
-            ></dxi-column>
-            <dxi-column
-              dataField="entregaCajas"
-              caption="Cajas op."
-              dataType="number"
-            ></dxi-column>
-            <dxi-column
-              dataField="entregaPiezas"
-              caption="Piezas op."
-              dataType="number"
-            ></dxi-column>
-            <dxi-column dataField="notas" caption="Notas"></dxi-column>
-          </dx-data-grid>
+            <table class="table table-sm table-bordered traz-historial-table mb-0">
+              <thead class="thead-light">
+                <tr>
+                  <th
+                    *ngIf="puedeEditarHistorialTrazabilidad(ordenTrazabilidad)"
+                    class="traz-col-accion text-center align-middle"
+                    scope="col"
+                  >
+                    <span class="sr-only">Corregir</span>
+                  </th>
+                  <th>Fecha / hora</th>
+                  <th>Usuario</th>
+                  <th>Acción</th>
+                  <th>Estado sel.</th>
+                  <th class="text-right">Entr. acum.</th>
+                  <th class="text-right">Dev. acum.</th>
+                  <th class="text-right">m² op.</th>
+                  <th class="text-right">Cajas</th>
+                  <th class="text-right">Piezas</th>
+                  <th>Notas</th>
+                </tr>
+              </thead>
+              <tbody>
+                <tr *ngFor="let h of it.historialOrdenado">
+                  <td
+                    *ngIf="puedeEditarHistorialTrazabilidad(ordenTrazabilidad)"
+                    class="text-center align-middle traz-td-accion"
+                  >
+                    <button
+                      type="button"
+                      class="btn btn-outline-secondary border-0 traz-btn-edit"
+                      (click)="abrirPopupEditarHistorial(it, h, itemIdx)"
+                      title="Corregir este movimiento"
+                    >
+                      <i class="fa fa-pencil" aria-hidden="true"></i>
+                      <span class="d-inline d-md-none ml-1 small">Editar</span>
+                    </button>
+                  </td>
+                  <td class="text-nowrap">{{ h.fechaFmt }}</td>
+                  <td>{{ h.usuario }}</td>
+                  <td>{{ h.accion }}</td>
+                  <td>{{ h.estadoSeleccionado }}</td>
+                  <td class="text-right">
+                    {{ h.cantidadEntregada | number : "1.2-2" }}
+                  </td>
+                  <td class="text-right">
+                    {{ h.cantidadDevuelta | number : "1.2-2" }}
+                  </td>
+                  <td class="text-right">
+                    {{ h.m2EntregadoEnEstaOperacion | number : "1.2-2" }}
+                  </td>
+                  <td class="text-right">{{ h.entregaCajas }}</td>
+                  <td class="text-right">{{ h.entregaPiezas }}</td>
+                  <td class="traz-notas-celda">{{ h.notas }}</td>
+                </tr>
+              </tbody>
+            </table>
+          </div>
           <p
             *ngIf="!(it.historialOrdenado || []).length"
             class="text-muted small mb-0"
@@ -705,5 +797,109 @@
         </div>
       </div>
     </dx-scroll-view>
+  </div>
+</dx-popup>
+
+<dx-popup
+  [(visible)]="popupEditarHistorialVisible"
+  [showTitle]="true"
+  [title]="tituloPopupEditarHistorial"
+  [closeOnOutsideClick]="false"
+  [showCloseButton]="true"
+  [fullScreen]="vistaMovil"
+  [width]="vistaMovil ? '100%' : 480"
+  [maxWidth]="vistaMovil ? '100vw' : null"
+  [maxHeight]="vistaMovil ? '100%' : '90vh'"
+  [dragEnabled]="!vistaMovil"
+  [shading]="true"
+  [elementAttr]="{ class: 'traz-popup-corregir-overlay' }"
+  (onHidden)="cerrarPopupEditarHistorial()"
+>
+  <div *dxTemplate="let data of 'content'" class="traz-popup-editar-body">
+    <p class="small text-muted mb-3">
+      Los cambios recalculan el ítem y queda registrada una nota de corrección en
+      el movimiento y en la bitácora de la orden.
+    </p>
+    <div class="form-group mb-2">
+      <label class="d-block small font-weight-bold mb-1">Estado seleccionado</label>
+      <dx-select-box
+        [items]="estadosHistorialEdicion"
+        [(value)]="formEdicionHistorial.estadoSeleccionado"
+        [disabled]="guardandoEdicionHistorial"
+      ></dx-select-box>
+    </div>
+    <ng-container *ngIf="edicionHistorialContext?.esMetro">
+      <div class="form-row mx-0">
+        <div class="form-group col-12 col-sm-6 mb-2 pl-0 pr-sm-2 pr-0">
+          <label class="d-block small font-weight-bold mb-1">Cajas (op.)</label>
+          <dx-number-box
+            [(value)]="formEdicionHistorial.entregaCajas"
+            [min]="0"
+            [showSpinButtons]="true"
+            [disabled]="guardandoEdicionHistorial"
+          ></dx-number-box>
+        </div>
+        <div class="form-group col-12 col-sm-6 mb-2 pr-0 pl-sm-2 pl-0">
+          <label class="d-block small font-weight-bold mb-1">Piezas (op.)</label>
+          <dx-number-box
+            [(value)]="formEdicionHistorial.entregaPiezas"
+            [min]="0"
+            [showSpinButtons]="true"
+            [disabled]="guardandoEdicionHistorial"
+          ></dx-number-box>
+        </div>
+      </div>
+    </ng-container>
+    <div class="form-group mb-2">
+      <label class="d-block small font-weight-bold mb-1">
+        {{
+          edicionHistorialContext?.esMetro
+            ? "m² esta operación (opcional si usa cajas/piezas)"
+            : "Cantidad / m² esta operación"
+        }}
+      </label>
+      <dx-number-box
+        [(value)]="formEdicionHistorial.m2EntregadoEnEstaOperacion"
+        [min]="0"
+        [format]="'#0.##'"
+        [showSpinButtons]="true"
+        [disabled]="guardandoEdicionHistorial"
+      ></dx-number-box>
+    </div>
+    <div class="form-group mb-2">
+      <label class="d-block small font-weight-bold mb-1">Notas del movimiento</label>
+      <dx-text-area
+        [(value)]="formEdicionHistorial.notas"
+        [height]="72"
+        [disabled]="guardandoEdicionHistorial"
+      ></dx-text-area>
+    </div>
+    <div class="form-group mb-3">
+      <label class="d-block small font-weight-bold mb-1"
+        >Motivo de la corrección (opcional)</label
+      >
+      <dx-text-area
+        [(value)]="formEdicionHistorial.motivoCorreccion"
+        [height]="56"
+        [disabled]="guardandoEdicionHistorial"
+      ></dx-text-area>
+    </div>
+    <div
+      class="d-flex flex-column flex-sm-row justify-content-stretch justify-content-sm-end traz-editar-acciones"
+    >
+      <dx-button
+        class="mb-2 mb-sm-0 mr-sm-2"
+        text="Cancelar"
+        type="normal"
+        [disabled]="guardandoEdicionHistorial"
+        (onClick)="cerrarPopupEditarHistorial()"
+      ></dx-button>
+      <dx-button
+        text="Guardar corrección"
+        type="default"
+        [disabled]="guardandoEdicionHistorial"
+        (onClick)="confirmarEdicionHistorial()"
+      ></dx-button>
+    </div>
   </div>
 </dx-popup>
