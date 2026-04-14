@@ -37,6 +37,14 @@ const EntregaBodegaSchema = new Schema(
     items: { type: [EntregaBodegaItemSchema], required: false, default: [] },
     notas: { type: String, required: false, default: "" },
     trazabilidad: { type: Array, required: false, default: [] },
+    /** Solicitud de devolución total (bodeguero, día distinto); solo admin ejecuta el reset. */
+    solicitudDevolucionPendiente: {
+      type: Boolean,
+      required: false,
+      default: false,
+    },
+    solicitudDevolucionUsuario: { type: String, required: false, default: "" },
+    solicitudDevolucionFecha: { type: String, required: false, default: "" },
   },
   {
     timestamps: true,

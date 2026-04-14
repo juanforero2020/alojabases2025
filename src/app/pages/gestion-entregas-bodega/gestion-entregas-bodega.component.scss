@@ -372,7 +372,9 @@ table th {
 }
 
 .listado-entrega-movil-card {
-  display: block;
+  display: flex;
+  flex-direction: row;
+  align-items: stretch;
   width: 100%;
   margin-bottom: 0.65rem;
   padding: 0;
@@ -380,19 +382,56 @@ table th {
   border-radius: 6px;
   background: #fff;
   text-align: left;
-  cursor: pointer;
   overflow: hidden;
   transition: box-shadow 0.15s ease, border-color 0.15s ease;
 }
 
+.listado-entrega-movil-main {
+  flex: 1;
+  min-width: 0;
+  display: block;
+  margin: 0;
+  padding: 0;
+  border: none;
+  background: transparent;
+  text-align: left;
+  cursor: pointer;
+}
+
+.listado-entrega-movil-acciones {
+  flex: 0 0 auto;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  border-left: 1px solid #e9ecef;
+  background: #fafbfc;
+  padding: 0 0.25rem;
+}
+
+.ge-btn-devolucion-movil {
+  font-size: 1.25rem;
+  line-height: 1;
+  padding: 0.5rem 0.35rem !important;
+}
+
+.ge-btn-devolucion-grid {
+  font-size: 1.1rem;
+  line-height: 1;
+  min-width: 2rem;
+}
+
+.sd-devolucion-movil-btn i {
+  margin-right: 0.15rem;
+}
+
 .listado-entrega-movil-card:hover,
-.listado-entrega-movil-card:focus {
+.listado-entrega-movil-card:focus-within {
   border-color: rgba(0, 97, 169, 0.45);
   box-shadow: 0 2px 8px rgba(0, 0, 0, 0.06);
   outline: none;
 }
 
-.listado-entrega-movil-card:focus-visible {
+.listado-entrega-movil-main:focus-visible {
   outline: 2px solid rgba(0, 97, 169, 0.35);
   outline-offset: 2px;
 }

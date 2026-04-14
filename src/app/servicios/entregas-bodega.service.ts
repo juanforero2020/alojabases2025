@@ -33,6 +33,14 @@ export class EntregasBodegaService {
     return this.http.put(`${this.URL}/cerrar/${ordenId}`, payload);
   }
 
+  solicitarDevolucion(ordenId: string, payload: { usuario: string; rolUsuario: string }) {
+    return this.http.put(`${this.URL}/solicitarDevolucion/${ordenId}`, payload);
+  }
+
+  ejecutarDevolucionTotal(ordenId: string, payload: { usuario: string; rolUsuario: string }) {
+    return this.http.put(`${this.URL}/ejecutarDevolucionTotal/${ordenId}`, payload);
+  }
+
   /**
    * Corrige un registro del historial de un ítem (trazabilidad).
    * El servidor valida rol (Administrador vs Bodeguero mismo día) y orden no cerrada.

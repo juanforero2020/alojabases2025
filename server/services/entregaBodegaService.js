@@ -422,6 +422,45 @@ function ordenEsMismoDiaCalendarioQueHoy(orden) {
   );
 }
 
+/** Hay cantidades entregadas o devueltas registradas en la orden. */
+function ordenTieneMovimientoEntrega(orden) {
+  return (orden.items || []).some(
+    (it) =>
+      normalizarNumero(it.cantidadEntregada) > 0 ||
+      normalizarNumero(it.cantidadDevuelta) > 0
+  );
+}
+
+/**
+ * Elimina historial por ítem, pone cantidades en cero y deja la orden como al inicio (ABIERTA).
+ * Conserva al menos el evento CREACION_AUTOMATICA en trazabilidad de orden si existía.
+ */
+function aplicarDevolucionTotalResetOrden(orden, usuario) {
+  (orden.items || []).forEach((item) => {
+    item.cantidadEntregada = 0;
+    item.cantidadDevuelta = 0;
+    item.fechaCompromiso = "";
+    item.notas = "";
+    item.historial = [];
+  });
+  const traz = orden.trazabilidad || [];
+  const creacion = traz.filter((t) => String(t.accion) === "CREACION_AUTOMATICA");
+  orden.trazabilidad = [
+    ...creacion.slice(0, 1),
+    {
+      fecha: new Date().toISOString(),
+      usuario: usuario || "",
+      accion: "DEVOLUCION_TOTAL_RESET",
+      detalle:
+        "Devolución total: se eliminó la trazabilidad de entregas y la orden volvió a estado ABIERTA.",
+    },
+  ];
+  orden.solicitudDevolucionPendiente = false;
+  orden.solicitudDevolucionUsuario = "";
+  orden.solicitudDevolucionFecha = "";
+  recalcularEstadoYItems(orden);
+}
+
 module.exports = {
   crearOrdenDesdeDocumento,
   intentarAnularPorDocumento,
@@ -436,4 +475,6 @@ module.exports = {
   pendienteVisualItem,
   reconstruirItemDesdeHistorial,
   ordenEsMismoDiaCalendarioQueHoy,
+  ordenTieneMovimientoEntrega,
+  aplicarDevolucionTotalResetOrden,
 };

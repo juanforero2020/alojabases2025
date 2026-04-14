@@ -1,7 +1,9 @@
 import { Component, OnDestroy, OnInit } from "@angular/core";
 import { Subscription } from "rxjs";
 import Swal from "sweetalert2";
+import { productoMultiple } from "src/app/pages/consolidado/consolidado";
 import { EntregasBodegaService } from "src/app/servicios/entregas-bodega.service";
+import { TransaccionesService } from "src/app/servicios/transacciones.service";
 import { ScreenService } from "src/app/shared/services";
 
 /** Valores de entrada del usuario por línea (despacho / compromiso / notas). */
@@ -19,19 +21,28 @@ interface BorradorLineaEntrega {
   styleUrls: ["./gestion-entregas-bodega.component.scss"],
 })
 export class GestionEntregasBodegaComponent implements OnInit, OnDestroy {
-  /** Misma idea que devoluciones: combo superior derecho. */
   menuPrincipal: string[] = [
     "Gestión Entregas",
     "Listado Entregas",
+    "Productos Facturados",
     "Productos Pendientes",
   ];
   valorMenu = "Gestión Entregas";
   mostrarGestion = true;
   mostrarListado = false;
-  mostrarProductosPendientes = false;
+  /**
+   * ninguno: gestión o listado de órdenes.
+   * facturados: detalle por factura/cliente (productos facturados sin entregar).
+   * pendientes: unificación por producto + transacciones (balance vs bodega matriz).
+   */
+  vistaProductosEspecial: "ninguno" | "facturados" | "pendientes" = "ninguno";
+
+  /** Resumen detallado (vista facturados). */
+  productosPendientes: any[] = [];
+  /** Agregado por producto con stock y balance (vista pendientes). */
+  productosPendientesBalance: any[] = [];
 
   ordenes: any[] = [];
-  productosPendientes: any[] = [];
   ordenSeleccionada: any = null;
   loading = false;
 
@@ -100,6 +111,10 @@ export class GestionEntregasBodegaComponent implements OnInit, OnDestroy {
     return sessionStorage.getItem("user") || "";
   }
 
+  get mostrarVistaEspecialProductos(): boolean {
+    return this.vistaProductosEspecial !== "ninguno";
+  }
+
   /** Rol desde login (layout guarda en localStorage). */
   get rolUsuarioSesion(): string {
     try {
@@ -113,6 +128,219 @@ export class GestionEntregasBodegaComponent implements OnInit, OnDestroy {
   esOrdenCerradaParaEdicionHistorial(orden: any): boolean {
     const e = String(orden?.estadoProceso || "").toUpperCase();
     return e === "CERRADO" || e === "CERRADA";
+  }
+
+  /** Columna / acciones de devolución: bodeguero o administrador en gestión o listado. */
+  get mostrarAccionesDevolucion(): boolean {
+    const r = this.rolUsuarioSesion;
+    return (
+      (r === "Bodeguero" || r === "Administrador") &&
+      (this.mostrarGestion || this.mostrarListado)
+    );
+  }
+
+  /** Hay entregas o devoluciones registradas en ítems (mismo criterio que el servidor). */
+  ordenTieneMovimientoEntregaUi(orden: any): boolean {
+    if (!orden?.items?.length) {
+      return false;
+    }
+    return orden.items.some(
+      (it: any) =>
+        this.num(it?.cantidadEntregada) > 0 || this.num(it?.cantidadDevuelta) > 0
+    );
+  }
+
+  /**
+   * Qué puede hacer el usuario con el ícono de devolución para esta orden.
+   * - ejecutar: devolución inmediata (admin o bodeguero mismo día).
+   * - solicitar: bodeguero en día distinto.
+   * - solicitud_pendiente_bodeguero: ya envió solicitud; espera admin.
+   * - ejecutar_aprobacion_admin: admin ejecuta tras solicitud.
+   */
+  tipoAccionDevolucionParaOrden(
+    orden: any
+  ): "ejecutar" | "solicitar" | "solicitud_pendiente_bodeguero" | "ejecutar_aprobacion_admin" | "nada" {
+    if (!orden || !this.mostrarAccionesDevolucion) {
+      return "nada";
+    }
+    const ep = String(orden.estadoProceso || "").toUpperCase();
+    if (ep === "CERRADO" || ep === "ANULADO") {
+      return "nada";
+    }
+    if (!this.ordenTieneMovimientoEntregaUi(orden)) {
+      return "nada";
+    }
+    const rol = this.rolUsuarioSesion;
+    const pend = !!orden.solicitudDevolucionPendiente;
+    const mismoDia = this.ordenEntregaEsDelDiaActual(orden);
+
+    if (rol === "Administrador") {
+      if (pend) {
+        return "ejecutar_aprobacion_admin";
+      }
+      return "ejecutar";
+    }
+    if (rol === "Bodeguero") {
+      if (pend) {
+        return "solicitud_pendiente_bodeguero";
+      }
+      if (mismoDia) {
+        return "ejecutar";
+      }
+      return "solicitar";
+    }
+    return "nada";
+  }
+
+  tituloAccionDevolucion(orden: any): string {
+    const t = this.tipoAccionDevolucionParaOrden(orden);
+    switch (t) {
+      case "solicitar":
+        return "Solicitar devolución total (requiere aprobación del administrador)";
+      case "ejecutar":
+        return "Devolución total: restablecer orden a ABIERTA";
+      case "ejecutar_aprobacion_admin":
+        return "Aprobar y ejecutar devolución total";
+      case "solicitud_pendiente_bodeguero":
+        return "Solicitud de devolución pendiente de aprobación";
+      default:
+        return "Devolución no disponible";
+    }
+  }
+
+  claseIconoDevolucion(orden: any): string {
+    const t = this.tipoAccionDevolucionParaOrden(orden);
+    if (t === "solicitud_pendiente_bodeguero") {
+      return "fa fa-clock-o text-warning";
+    }
+    if (t === "nada") {
+      return "fa fa-undo text-muted";
+    }
+    if (t === "solicitar") {
+      return "fa fa-paper-plane text-primary";
+    }
+    return "fa fa-undo text-secondary";
+  }
+
+  /** Texto corto para botón en vista móvil de gestión. */
+  textoCortoDevolucion(orden: any): string {
+    const t = this.tipoAccionDevolucionParaOrden(orden);
+    if (t === "solicitar") {
+      return "Solicitar devolución";
+    }
+    if (t === "ejecutar" || t === "ejecutar_aprobacion_admin") {
+      return "Devolución total";
+    }
+    if (t === "solicitud_pendiente_bodeguero") {
+      return "Solicitud pendiente";
+    }
+    return "";
+  }
+
+  accionDevolucionGrid = (e: any) => {
+    const ord = e?.row?.data;
+    this.accionDevolucionOrden(ord);
+  };
+
+  accionDevolucionOrden(orden: any): void {
+    const t = this.tipoAccionDevolucionParaOrden(orden);
+    if (t === "nada") {
+      return;
+    }
+    if (t === "solicitud_pendiente_bodeguero") {
+      Swal.fire(
+        "Solicitud pendiente",
+        "Un administrador debe aprobar y ejecutar la devolución total de esta orden.",
+        "info"
+      );
+      return;
+    }
+    if (t === "solicitar") {
+      Swal.fire({
+        title: "¿Solicitar devolución total?",
+        html:
+          "Quedará registrada una <strong>solicitud</strong>. Un administrador deberá ejecutar la devolución para eliminar la trazabilidad de entregas y dejar la orden en <strong>ABIERTA</strong>.",
+        icon: "question",
+        showCancelButton: true,
+        confirmButtonText: "Sí, solicitar",
+        cancelButtonText: "Cancelar",
+      }).then((r) => {
+        if (!r || !(r as any).value || !orden?._id) {
+          return;
+        }
+        this.enviarSolicitudDevolucion(orden);
+      });
+      return;
+    }
+    const esAprobacion = t === "ejecutar_aprobacion_admin";
+    Swal.fire({
+      title: esAprobacion ? "¿Aprobar devolución total?" : "¿Devolución total?",
+      html:
+        (esAprobacion
+          ? "<p class='mb-2'>Se aprueba la solicitud del bodeguero.</p>"
+          : "") +
+        "<p>Se eliminará la trazabilidad de entregas en los ítems y la orden volverá a estado <strong>ABIERTA</strong>, como al inicio.</p>",
+      icon: "warning",
+      showCancelButton: true,
+      confirmButtonText: "Sí, ejecutar",
+      cancelButtonText: "Cancelar",
+    }).then((r) => {
+      if (!r || !(r as any).value || !orden?._id) {
+        return;
+      }
+      this.ejecutarDevolucionTotalOrden(orden);
+    });
+  }
+
+  private enviarSolicitudDevolucion(orden: any): void {
+    this.entregasBodegaService
+      .solicitarDevolucion(orden._id, {
+        usuario: this.usuarioVista,
+        rolUsuario: this.rolUsuarioSesion,
+      })
+      .subscribe({
+        next: (actualizada: any) => {
+          const vista = this.prepararOrdenParaVista(actualizada);
+          this.sincronizarOrdenEnListado(vista);
+          if (this.ordenSeleccionada?._id === vista._id) {
+            this.ordenSeleccionada = vista;
+          }
+          if (this.popupTrazabilidadVisible && this.ordenTrazabilidad?._id === vista._id) {
+            this.abrirPopupTrazabilidad(vista);
+          }
+          Swal.fire("Solicitud registrada", "Un administrador podrá ejecutar la devolución cuando corresponda.", "success");
+        },
+        error: (err) => {
+          const msg =
+            err?.error?.mensaje || "No se pudo registrar la solicitud de devolución.";
+          Swal.fire("Error", msg, "error");
+        },
+      });
+  }
+
+  private ejecutarDevolucionTotalOrden(orden: any): void {
+    this.entregasBodegaService
+      .ejecutarDevolucionTotal(orden._id, {
+        usuario: this.usuarioVista,
+        rolUsuario: this.rolUsuarioSesion,
+      })
+      .subscribe({
+        next: (actualizada: any) => {
+          const vista = this.prepararOrdenParaVista(actualizada);
+          this.sincronizarOrdenEnListado(vista);
+          if (this.ordenSeleccionada?._id === vista._id) {
+            this.ordenSeleccionada = vista;
+          }
+          if (this.popupTrazabilidadVisible && this.ordenTrazabilidad?._id === vista._id) {
+            this.abrirPopupTrazabilidad(vista);
+          }
+          Swal.fire("Listo", "La orden se restableció a estado ABIERTA.", "success");
+        },
+        error: (err) => {
+          const msg = err?.error?.mensaje || "No se pudo ejecutar la devolución total.";
+          Swal.fire("Error", msg, "error");
+        },
+      });
   }
 
   /** Misma fecha calendario que hoy (cliente), usando fecha documento o creación. */
@@ -289,6 +517,7 @@ export class GestionEntregasBodegaComponent implements OnInit, OnDestroy {
 
   constructor(
     private entregasBodegaService: EntregasBodegaService,
+    private transaccionesService: TransaccionesService,
     private screen: ScreenService
   ) {}
 
@@ -396,7 +625,7 @@ export class GestionEntregasBodegaComponent implements OnInit, OnDestroy {
       case "Gestión Entregas":
         this.mostrarGestion = true;
         this.mostrarListado = false;
-        this.mostrarProductosPendientes = false;
+        this.vistaProductosEspecial = "ninguno";
         this.incluirCerradas = false;
         this.popupTrazabilidadVisible = false;
         this.expandedOrderId = null;
@@ -407,8 +636,20 @@ export class GestionEntregasBodegaComponent implements OnInit, OnDestroy {
       case "Listado Entregas":
         this.mostrarGestion = false;
         this.mostrarListado = true;
-        this.mostrarProductosPendientes = false;
+        this.vistaProductosEspecial = "ninguno";
         this.incluirCerradas = true;
+        this.ordenSeleccionada = null;
+        this.expandedOrderId = null;
+        this.expandedItemIndex = null;
+        this.limpiarIndicadoresGuardadoLinea();
+        this.popupTrazabilidadVisible = false;
+        this.cargarPendientes();
+        break;
+      case "Productos Facturados":
+        this.mostrarGestion = false;
+        this.mostrarListado = false;
+        this.vistaProductosEspecial = "facturados";
+        this.incluirCerradas = false;
         this.ordenSeleccionada = null;
         this.expandedOrderId = null;
         this.expandedItemIndex = null;
@@ -419,7 +660,7 @@ export class GestionEntregasBodegaComponent implements OnInit, OnDestroy {
       case "Productos Pendientes":
         this.mostrarGestion = false;
         this.mostrarListado = false;
-        this.mostrarProductosPendientes = true;
+        this.vistaProductosEspecial = "pendientes";
         this.incluirCerradas = false;
         this.ordenSeleccionada = null;
         this.expandedOrderId = null;
@@ -437,7 +678,7 @@ export class GestionEntregasBodegaComponent implements OnInit, OnDestroy {
     if (e.rowType !== "data") {
       return;
     }
-    if (this.mostrarProductosPendientes) {
+    if (this.mostrarVistaEspecialProductos) {
       return;
     }
     if (this.mostrarListado) {
@@ -521,7 +762,10 @@ export class GestionEntregasBodegaComponent implements OnInit, OnDestroy {
 
   /** Payload que se envía al API para filtrar en base de datos. */
   private filtrosConsultaApi(): object {
-    if (this.mostrarProductosPendientes) {
+    if (
+      this.vistaProductosEspecial === "facturados" ||
+      this.vistaProductosEspecial === "pendientes"
+    ) {
       return { modoConsulta: "listado" };
     }
     return {
@@ -530,7 +774,7 @@ export class GestionEntregasBodegaComponent implements OnInit, OnDestroy {
       fechaDesde: this.fechaDesde,
       fechaHasta: this.fechaHasta,
       modoConsulta:
-        this.mostrarListado || this.mostrarProductosPendientes
+        this.mostrarListado || this.mostrarVistaEspecialProductos
           ? "listado"
           : "gestion",
     };
@@ -544,22 +788,35 @@ export class GestionEntregasBodegaComponent implements OnInit, OnDestroy {
           this.prepararOrdenParaVista(orden)
         );
         this.ordenes = ordenesVista;
-        this.productosPendientes = this.mostrarProductosPendientes
-          ? this.construirResumenProductosPendientes(ordenesVista)
-          : [];
-        if (this.expandedOrderId) {
-          const o = (this.ordenes || []).find(
-            (x) => x._id === this.expandedOrderId
-          );
-          if (o) {
-            this.ordenSeleccionada = o;
-          } else {
-            this.expandedOrderId = null;
-            this.ordenSeleccionada = null;
-            this.expandedItemIndex = null;
+        this.productosPendientes = [];
+        this.productosPendientesBalance = [];
+
+        const sincronizarExpandida = () => {
+          if (this.expandedOrderId) {
+            const o = (this.ordenes || []).find(
+              (x) => x._id === this.expandedOrderId
+            );
+            if (o) {
+              this.ordenSeleccionada = o;
+            } else {
+              this.expandedOrderId = null;
+              this.ordenSeleccionada = null;
+              this.expandedItemIndex = null;
+            }
           }
+        };
+
+        if (this.vistaProductosEspecial === "facturados") {
+          this.productosPendientes =
+            this.construirResumenProductosPendientes(ordenesVista);
+          sincronizarExpandida();
+          this.loading = false;
+        } else if (this.vistaProductosEspecial === "pendientes") {
+          this.enriquecerBalanceProductosPendientes(ordenesVista, sincronizarExpandida);
+        } else {
+          sincronizarExpandida();
+          this.loading = false;
         }
-        this.loading = false;
       },
       error: () => {
         this.loading = false;
@@ -615,7 +872,10 @@ export class GestionEntregasBodegaComponent implements OnInit, OnDestroy {
       );
       return;
     }
-    const estadoCalculado = this.estadoGestionAutomatico(item);
+    const estadoUi = this.estadoGestionAutomatico(item);
+    /** El API solo usa ENTREGA_PARCIAL | ENTREGA_TOTAL | DEVOLUCION; ABIERTO es solo etiqueta de UI. */
+    const estadoCalculado =
+      estadoUi === "ABIERTO" ? "ENTREGA_PARCIAL" : estadoUi;
     const bloquearCompromiso = estadoCalculado === "ENTREGA_TOTAL";
     const payload: any = {
       estadoItem: estadoCalculado,
@@ -822,9 +1082,21 @@ export class GestionEntregasBodegaComponent implements OnInit, OnDestroy {
     return this.num(item?.cantidadEntregadaInput);
   }
 
-  estadoGestionAutomatico(item: any): "ENTREGA_TOTAL" | "ENTREGA_PARCIAL" {
+  /**
+   * ABIERTO: aún no hay entregas registradas en el ítem (servidor) ni borrador de esta operación.
+   * No basta con `ingreso === 0`: tras guardar, los inputs se resetean a 0 pero `cantidadEntregada` ya es > 0.
+   */
+  estadoGestionAutomatico(item: any): "ENTREGA_TOTAL" | "ENTREGA_PARCIAL" | "ABIERTO" {
     const pendiente = this.num(item?.pendiente);
     const ingreso = this.m2OperacionIngresada(item);
+    const entregadoAcum = this.num(item?.cantidadEntregada);
+    const devueltaAcum = this.num(item?.cantidadDevuelta);
+    const sinMovimientoEnServidor =
+      entregadoAcum <= 0.0001 && devueltaAcum <= 0.0001;
+
+    if (sinMovimientoEnServidor && ingreso === 0) {
+      return "ABIERTO";
+    }
     if (pendiente <= 0 || ingreso >= pendiente + 0.0001) {
       return "ENTREGA_TOTAL";
     }
@@ -944,7 +1216,6 @@ export class GestionEntregasBodegaComponent implements OnInit, OnDestroy {
               fechaDoc = d;
             }
           }
-          console.log(item);
           const tsFechaDoc = fechaDoc ? fechaDoc.getTime() : 0;
           filas.push({
             fecha: fechaDoc,
@@ -966,5 +1237,226 @@ export class GestionEntregasBodegaComponent implements OnInit, OnDestroy {
       (a, b) => (b.fechaDocumentoOrden || 0) - (a.fechaDocumentoOrden || 0)
     );
     return filas.map(({ fechaDocumentoOrden: _ts, ...rest }) => rest);
+  }
+
+  /**
+   * Existencias en bodega matriz a partir de transacciones (misma lógica que
+   * `cargarDatosProductoUnitario` en consolidado para sucursal "matriz").
+   */
+  private stockMatrizDesdeTransacciones(
+    nombreProducto: string,
+    transacciones: any[]
+  ): { cajas: number; piezas: number } {
+    let contCajas = 0;
+    let contPiezas = 0;
+    (transacciones || []).forEach((element) => {
+      if (
+        nombreProducto !== element.producto ||
+        element.sucursal !== "matriz"
+      ) {
+        return;
+      }
+      switch (element.tipo_transaccion) {
+        case "devolucion":
+          contCajas = Number(element.cajas) + contCajas;
+          contPiezas = Number(element.piezas) + contPiezas;
+          break;
+        case "compra-dir":
+        case "compra":
+        case "compra_obs":
+          contCajas = Number(contCajas) + Number(element.cajas);
+          contPiezas = Number(contPiezas) + Number(element.piezas);
+          break;
+        case "ajuste-faltante":
+        case "baja":
+        case "venta-fact":
+        case "venta-not":
+        case "traslado1":
+          contCajas = Number(contCajas) - Number(element.cajas);
+          contPiezas = Number(contPiezas) - Number(element.piezas);
+          break;
+        case "traslado2":
+        case "ajuste-sobrante":
+          contCajas = Number(contCajas) + Number(element.cajas);
+          contPiezas = Number(contPiezas) + Number(element.piezas);
+          break;
+        default:
+          break;
+      }
+    });
+    return { cajas: contCajas, piezas: contPiezas };
+  }
+
+  private formatoStockBodegaMatriz(
+    cajas: number,
+    piezas: number,
+    item: any
+  ): string {
+    const c = this.num(cajas);
+    const p = this.num(piezas);
+    if (this.esItemMetrosCajaPieza(item)) {
+      const pp = this.piezasPorCajaDeItem(item);
+      const mc = this.m2PorCajaDeItem(item);
+      if (pp > 0 && mc > 0) {
+        const m2 = (c * pp + p) * (mc / pp);
+        return this.formatoCantidadLinea(m2, item);
+      }
+    }
+    const pp = this.piezasPorCajaDeItem(item);
+    if (pp > 0) {
+      return `${Math.trunc(c)} C + ${Math.trunc(p)} P`;
+    }
+    return `${Math.trunc(c + p)} u`;
+  }
+
+  private agregarPendientesPorProducto(ordenes: any[]): Array<{
+    productoNombre: string;
+    itemMuestra: any;
+    pendienteM2Sum: number;
+    pendienteUnidadesSum: number;
+    esMetro: boolean;
+  }> {
+    const map = new Map<
+      string,
+      {
+        productoNombre: string;
+        itemMuestra: any;
+        pendienteM2Sum: number;
+        pendienteUnidadesSum: number;
+        esMetro: boolean;
+      }
+    >();
+
+    (ordenes || [])
+      .filter((o: any) =>
+        ["ABIERTA", "NOVEDAD"].includes(String(o?.estadoProceso || ""))
+      )
+      .forEach((orden: any) => {
+        (orden.items || []).forEach((item: any) => {
+          const pendiente = this.pendienteEfectivo(item);
+          if (pendiente <= 0) {
+            return;
+          }
+          const nombre = String(
+            item?.productoNombre || "Producto sin nombre"
+          ).trim();
+          const metro = this.esItemMetrosCajaPieza(item);
+          let fila = map.get(nombre);
+          if (!fila) {
+            fila = {
+              productoNombre: nombre,
+              itemMuestra: item,
+              pendienteM2Sum: 0,
+              pendienteUnidadesSum: 0,
+              esMetro: metro,
+            };
+            map.set(nombre, fila);
+          }
+          if (metro) {
+            fila.pendienteM2Sum += pendiente;
+            fila.esMetro = true;
+          } else {
+            fila.pendienteUnidadesSum += pendiente;
+          }
+        });
+      });
+
+    return Array.from(map.values()).sort((a, b) =>
+      a.productoNombre.localeCompare(b.productoNombre, "es")
+    );
+  }
+
+  private enriquecerBalanceProductosPendientes(
+    ordenes: any[],
+    sincronizarExpandida: () => void
+  ): void {
+    const agregados = this.agregarPendientesPorProducto(ordenes);
+    if (!agregados.length) {
+      this.productosPendientesBalance = [];
+      sincronizarExpandida();
+      this.loading = false;
+      return;
+    }
+    const unicos = [...new Set(agregados.map((a) => a.productoNombre))];
+    const productoM = new productoMultiple();
+    productoM.array = unicos;
+
+    this.transaccionesService
+      .getTransaccionesPorProductoMultiple(productoM)
+      .subscribe({
+        next: (res: any[]) => {
+          const trans = (res || []) as any[];
+          this.productosPendientesBalance = agregados
+            .map((row) => {
+              const item = row.itemMuestra;
+              const { cajas, piezas } = this.stockMatrizDesdeTransacciones(
+                row.productoNombre,
+                trans
+              );
+              const pp = this.piezasPorCajaDeItem(item);
+              const mc = this.m2PorCajaDeItem(item);
+              const stockPiezas =
+                pp > 0
+                  ? this.num(cajas) * pp + this.num(piezas)
+                  : this.num(cajas) + this.num(piezas);
+
+              /** Inventario negativo se trata como 0 en pantalla y en el balance. */
+              const stockPiezasEfectivo = Math.max(0, stockPiezas);
+              const stockBodegaTexto =
+                stockPiezas < 0
+                  ? this.formatoStockBodegaMatriz(0, 0, item)
+                  : this.formatoStockBodegaMatriz(cajas, piezas, item);
+
+              let totalPendienteTexto: string;
+              let balanceTexto: string;
+              let balanceValor: number;
+
+              if (row.esMetro && pp > 0 && mc > 0) {
+                const pendUnidM2 =
+                  row.pendienteUnidadesSum > 0
+                    ? (this.num(row.pendienteUnidadesSum) / pp) * mc
+                    : 0;
+                const pendM2Total =
+                  this.num(row.pendienteM2Sum) + pendUnidM2;
+                totalPendienteTexto = this.formatoCantidadLinea(
+                  pendM2Total,
+                  item
+                );
+                const stockM2Efectivo =
+                  (stockPiezasEfectivo / pp) * mc;
+                const balanceM2 = stockM2Efectivo - pendM2Total;
+                balanceTexto = this.formatoCantidadLinea(balanceM2, item);
+                balanceValor = balanceM2;
+              } else {
+                const pend = this.num(row.pendienteUnidadesSum);
+                totalPendienteTexto = String(Math.trunc(pend));
+                const bal = stockPiezasEfectivo - pend;
+                balanceTexto = String(Math.trunc(bal));
+                balanceValor = bal;
+              }
+
+              return {
+                productoNombre: row.productoNombre,
+                totalPendienteTexto,
+                stockBodegaTexto,
+                balanceTexto,
+                balanceValor,
+              };
+            })
+            .sort((a, b) => a.balanceValor - b.balanceValor);
+
+          sincronizarExpandida();
+          this.loading = false;
+        },
+        error: () => {
+          sincronizarExpandida();
+          this.loading = false;
+          Swal.fire(
+            "Error",
+            "No se pudieron cargar las transacciones de inventario para calcular el balance.",
+            "error"
+          );
+        },
+      });
   }
 }

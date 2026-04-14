@@ -12,7 +12,38 @@ const {
   m2DesdeCajasPiezas,
   reconstruirItemDesdeHistorial,
   ordenEsMismoDiaCalendarioQueHoy,
+  ordenTieneMovimientoEntrega,
+  aplicarDevolucionTotalResetOrden,
 } = require("../services/entregaBodegaService");
+
+async function revertirPendientesPorDevolucionTotalOrden(orden, usuario) {
+  const documento = normalizarNumero(orden && orden.documentoNumero);
+  if (documento <= 0) return;
+  try {
+    await ProductosPendientes.updateMany(
+      {
+        documento,
+        estado: "ENTREGADO",
+        mensaje: {
+          $regex: "Gestión Entregas de bodega",
+          $options: "i",
+        },
+      },
+      {
+        $set: {
+          estado: "PENDIENTE",
+          mensaje: "Reabierto por devolución total (gestión entregas bodega)",
+          usuario: usuario || "",
+        },
+      }
+    );
+  } catch (e) {
+    console.log(
+      "revertirPendientesPorDevolucionTotalOrden:",
+      e && e.message ? e.message : e
+    );
+  }
+}
 
 async function marcarPendienteComoEntregadoDesdeBodega(orden, item, usuario) {
   const documento = normalizarNumero(orden && orden.documentoNumero);
@@ -543,6 +574,126 @@ router.put(
     }
   }
 );
+
+/**
+ * Bodeguero: solicita devolución total cuando la orden no es del día actual.
+ * El reset lo ejecuta solo un administrador (endpoint ejecutarDevolucionTotal).
+ */
+router.put("/solicitarDevolucion/:id", async (req, res) => {
+  try {
+    const { id } = req.params;
+    const rol = String((req.body && req.body.rolUsuario) || "").trim();
+    const usuario = (req.body && req.body.usuario) || "";
+    if (rol !== "Bodeguero") {
+      return res.status(403).json({
+        mensaje: "Solo el rol Bodeguero puede solicitar devolución en este flujo.",
+      });
+    }
+    const orden = await EntregaBodega.findById(id);
+    if (!orden) {
+      return res.status(404).json({ mensaje: "Orden no encontrada" });
+    }
+    const ep = String(orden.estadoProceso || "").toUpperCase();
+    if (ep === "CERRADO" || ep === "ANULADO") {
+      return res.status(409).json({
+        mensaje: "La orden está cerrada o anulada; no aplica devolución total.",
+      });
+    }
+    if (!ordenTieneMovimientoEntrega(orden)) {
+      return res.status(400).json({
+        mensaje: "No hay entregas registradas para solicitar devolución.",
+      });
+    }
+    if (ordenEsMismoDiaCalendarioQueHoy(orden)) {
+      return res.status(400).json({
+        mensaje:
+          "Esta orden es del día actual: use devolución directa sin solicitud.",
+      });
+    }
+    if (orden.solicitudDevolucionPendiente) {
+      return res.status(409).json({
+        mensaje: "Ya existe una solicitud de devolución pendiente para esta orden.",
+      });
+    }
+    orden.solicitudDevolucionPendiente = true;
+    orden.solicitudDevolucionUsuario = usuario || "";
+    orden.solicitudDevolucionFecha = new Date().toISOString();
+    orden.trazabilidad = orden.trazabilidad || [];
+    orden.trazabilidad.push({
+      fecha: new Date().toISOString(),
+      usuario,
+      accion: "SOLICITUD_DEVOLUCION_TOTAL",
+      detalle: "El bodeguero solicitó devolución total (pendiente de aprobación del administrador).",
+    });
+    await orden.save();
+    return res.json(orden);
+  } catch (err) {
+    return res.status(500).json({
+      mensaje: err && err.message ? err.message : "Error al registrar la solicitud",
+    });
+  }
+});
+
+/**
+ * Devolución total: borra historial por ítem y deja la orden en ABIERTA.
+ * Administrador: siempre (orden con movimiento, no cerrada/anulada).
+ * Bodeguero: solo mismo día calendario y sin solicitud pendiente (flujo directo).
+ * Con solicitud pendiente: solo administrador.
+ */
+router.put("/ejecutarDevolucionTotal/:id", async (req, res) => {
+  try {
+    const { id } = req.params;
+    const rol = String((req.body && req.body.rolUsuario) || "").trim();
+    const usuario = (req.body && req.body.usuario) || "";
+    const orden = await EntregaBodega.findById(id);
+    if (!orden) {
+      return res.status(404).json({ mensaje: "Orden no encontrada" });
+    }
+    const ep = String(orden.estadoProceso || "").toUpperCase();
+    if (ep === "CERRADO" || ep === "ANULADO") {
+      return res.status(409).json({
+        mensaje: "La orden está cerrada o anulada; no aplica devolución total.",
+      });
+    }
+    if (!ordenTieneMovimientoEntrega(orden)) {
+      return res.status(400).json({
+        mensaje: "No hay entregas registradas para devolver.",
+      });
+    }
+
+    const pendiente = !!orden.solicitudDevolucionPendiente;
+
+    if (rol === "Administrador") {
+      // ok
+    } else if (rol === "Bodeguero") {
+      if (pendiente) {
+        return res.status(403).json({
+          mensaje:
+            "Hay una solicitud pendiente: solo un administrador puede ejecutar la devolución.",
+        });
+      }
+      if (!ordenEsMismoDiaCalendarioQueHoy(orden)) {
+        return res.status(403).json({
+          mensaje:
+            "Como bodeguero solo puede ejecutar devolución el mismo día de la orden; en otro caso debe solicitarla.",
+        });
+      }
+    } else {
+      return res.status(403).json({
+        mensaje: "No tiene permisos para ejecutar la devolución total.",
+      });
+    }
+
+    aplicarDevolucionTotalResetOrden(orden, usuario);
+    await revertirPendientesPorDevolucionTotalOrden(orden, usuario);
+    await orden.save();
+    return res.json(orden);
+  } catch (err) {
+    const msg =
+      err && err.message ? err.message : "No se pudo ejecutar la devolución total";
+    return res.status(400).json({ mensaje: msg });
+  }
+});
 
 router.put("/cerrar/:id", async (req, res) => {
   const { id } = req.params;

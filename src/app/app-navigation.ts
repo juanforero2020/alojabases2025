@@ -269,10 +269,6 @@ export const navigationAdmin = [
         text: "Devoluciones",
         path: "/devoluciones",
       },
-      {
-        text: "Entrega Productos",
-        path: "/Entrega_productos",
-      },
     ],
   },
   {
@@ -498,6 +494,10 @@ export const navigationAdmin = [
       {
         text: "Gestion Entregas Bodega",
         path: "/gestion-entregas-bodega",
+      },
+      {
+        text: "Entrega Productos",
+        path: "/Entrega_productos",
       },
       {
         text: "Tiquets",
@@ -764,6 +764,10 @@ export const navigationSupervisor = [
         path: "/gestion-entregas-bodega",
       },
       {
+        text: "Entrega Productos",
+        path: "/Entrega_productos",
+      },
+      {
         text: "Tiquets",
         path: "",
       },
@@ -842,6 +846,11 @@ export const navigationDistribuidor = [
 
 export const navigationBodeguero = [
   {
+    text: "Home",
+    path: "/home",
+    icon: "home",
+  },
+  {
     text: "Inventarios",
     icon: "contentlayout",
     items: [
@@ -858,6 +867,10 @@ export const navigationBodeguero = [
       {
         text: "Gestion Entregas Bodega",
         path: "/gestion-entregas-bodega",
+      },
+      {
+        text: "Entrega Productos",
+        path: "/Entrega_productos",
       },
     ],
   },

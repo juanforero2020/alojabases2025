@@ -12,7 +12,7 @@
   </div>
 </div>
 
-<div class="content-block" *ngIf="!mostrarProductosPendientes">
+<div class="content-block" *ngIf="!mostrarVistaEspecialProductos">
   <div class="card gestion-entregas-card">
     <h5 class="card-header text-center font-weight-bold text-uppercase">
       Gestión entregas de bodega
@@ -92,13 +92,18 @@
 
 <div
   class="content-block"
-  *ngIf="mostrarGestion || mostrarListado || mostrarProductosPendientes"
+  *ngIf="mostrarGestion || mostrarListado || mostrarVistaEspecialProductos"
 >
   <div class="card gestion-entregas-card">
     <h5 class="card-header text-center font-weight-bold text-uppercase">
       <span *ngIf="mostrarGestion">Órdenes de entrega</span>
       <span *ngIf="mostrarListado">Listado entregas de bodega</span>
-      <span *ngIf="mostrarProductosPendientes">Productos pendientes</span>
+      <span *ngIf="vistaProductosEspecial === 'facturados'"
+        >Productos facturados sin entregar</span
+      >
+      <span *ngIf="vistaProductosEspecial === 'pendientes'"
+        >Balance productos pendientes (bodega matriz)</span
+      >
     </h5>
     <div class="card-body p-2">
       <p *ngIf="mostrarGestion" class="text-muted small mb-2">
@@ -107,10 +112,16 @@
       <p *ngIf="mostrarListado" class="text-muted small mb-2">
         Todas las órdenes en cualquier estado. Haga clic en una fila para ver la trazabilidad.
       </p>
+      <p *ngIf="vistaProductosEspecial === 'pendientes'" class="text-muted small mb-2">
+        Por producto: se suma el pendiente por entregar en órdenes ABIERTA/NOVEDAD, la existencia en bodega
+        <strong>matriz</strong> según transacciones (mismo criterio que el módulo consolidado) y el
+        <strong>balance</strong> = existencia − pendiente total.
+        Si el inventario calculado es negativo, se muestra como <strong>0</strong> y el balance usa esa existencia en cero.
+      </p>
 
       <!-- SMART-DISPATCH: solo gestión en móvil/tablet pequeña -->
       <div
-        *ngIf="mostrarGestion && vistaMovil && !mostrarProductosPendientes"
+        *ngIf="mostrarGestion && vistaMovil && !mostrarVistaEspecialProductos"
         class="smart-dispatch-movil"
       >
         <p class="small text-muted mb-2">
@@ -279,6 +290,24 @@
               </div>
             </div>
 
+            <div
+              *ngIf="mostrarAccionesDevolucion && textoCortoDevolucion(ord)"
+              class="sd-devolucion-movil mt-3 pt-2 border-top"
+            >
+              <button
+                type="button"
+                class="btn btn-outline-secondary btn-sm btn-block sd-devolucion-movil-btn"
+                [disabled]="tipoAccionDevolucionParaOrden(ord) === 'nada'"
+                (click)="accionDevolucionOrden(ord)"
+              >
+                <i [ngClass]="claseIconoDevolucion(ord)" aria-hidden="true"></i>
+                <span class="ml-2">{{ textoCortoDevolucion(ord) }}</span>
+              </button>
+              <p class="small text-muted mb-0 mt-1">
+                {{ tituloAccionDevolucion(ord) }}
+              </p>
+            </div>
+
             <div class="sd-cerrar-proceso mt-3 pt-2 border-top">
               <dx-button
                 text="Cerrar proceso (factura)"
@@ -297,7 +326,7 @@
 
       <!-- Listado entregas en móvil: tarjetas informativas (todo visible, sin desplegar) -->
       <div
-        *ngIf="mostrarListado && vistaMovil && !mostrarProductosPendientes"
+        *ngIf="mostrarListado && vistaMovil && !mostrarVistaEspecialProductos"
         class="listado-entregas-movil"
       >
         <p class="small text-muted mb-2">
@@ -322,39 +351,58 @@
           No hay órdenes con los filtros actuales.
         </div>
 
-        <button
+        <div
           *ngFor="let ord of ordenes"
-          type="button"
           class="listado-entrega-movil-card"
-          (click)="abrirPopupTrazabilidad(ord)"
         >
-          <div class="listado-entrega-movil-cab">
-            <i class="sd-punto" [ngClass]="claseColorOrden(ord)"></i>
-            <div class="listado-entrega-movil-cab-texto">
-              <span class="listado-entrega-movil-doc"
-                >{{ ord.tipoDocumento }} #{{ ord.documentoNumero }}</span
-              >
-              <span class="listado-entrega-movil-sub"
-                >Orden {{ ord.consecutivoEntrega }} · {{ ord.estadoProceso }}</span
-              >
+          <button
+            type="button"
+            class="listado-entrega-movil-main"
+            (click)="abrirPopupTrazabilidad(ord)"
+          >
+            <div class="listado-entrega-movil-cab">
+              <i class="sd-punto" [ngClass]="claseColorOrden(ord)"></i>
+              <div class="listado-entrega-movil-cab-texto">
+                <span class="listado-entrega-movil-doc"
+                  >{{ ord.tipoDocumento }} #{{ ord.documentoNumero }}</span
+                >
+                <span class="listado-entrega-movil-sub"
+                  >Orden {{ ord.consecutivoEntrega }} · {{ ord.estadoProceso }}</span
+                >
+              </div>
             </div>
-          </div>
-          <div class="listado-entrega-movil-cuerpo">
-            <div class="listado-entrega-movil-kv">
-              <span class="listado-entrega-movil-lbl">Cliente</span>
-              <span class="listado-entrega-movil-val">{{ ord.clienteNombre }}</span>
-              <span class="listado-entrega-movil-lbl">Fecha documento</span>
-              <span class="listado-entrega-movil-val">{{
-                formatearFechaDocumentoListado(ord)
-              }}</span>
+            <div class="listado-entrega-movil-cuerpo">
+              <div class="listado-entrega-movil-kv">
+                <span class="listado-entrega-movil-lbl">Cliente</span>
+                <span class="listado-entrega-movil-val">{{ ord.clienteNombre }}</span>
+                <span class="listado-entrega-movil-lbl">Fecha documento</span>
+                <span class="listado-entrega-movil-val">{{
+                  formatearFechaDocumentoListado(ord)
+                }}</span>
+              </div>
             </div>
+          </button>
+          <div
+            *ngIf="mostrarAccionesDevolucion"
+            class="listado-entrega-movil-acciones"
+            (click)="$event.stopPropagation()"
+          >
+            <button
+              type="button"
+              class="btn btn-link ge-btn-devolucion-movil"
+              [disabled]="tipoAccionDevolucionParaOrden(ord) === 'nada'"
+              [title]="tituloAccionDevolucion(ord)"
+              (click)="accionDevolucionOrden(ord)"
+            >
+              <i [ngClass]="claseIconoDevolucion(ord)" aria-hidden="true"></i>
+            </button>
           </div>
-        </button>
+        </div>
       </div>
 
       <dx-data-grid
         *ngIf="
-          !mostrarProductosPendientes &&
+          !mostrarVistaEspecialProductos &&
           !(vistaMovil && (mostrarGestion || mostrarListado))
         "
         [dataSource]="ordenes"
@@ -407,16 +455,34 @@
           dataType="date"
         ></dxi-column>
         <dxi-column
+          caption="Devolución"
+          width="72"
+          alignment="center"
+          [visible]="mostrarAccionesDevolucion"
+          cellTemplate="devolucionOrdenCell"
+        ></dxi-column>
+        <dxi-column
           type="buttons"
           caption="Gestionar"
           [visible]="mostrarGestion"
         >
           <dxi-button icon="fa fa-eye" [onClick]="seleccionarOrden"></dxi-button>
         </dxi-column>
+        <div *dxTemplate="let cell of 'devolucionOrdenCell'">
+          <button
+            type="button"
+            class="btn btn-link p-1 ge-btn-devolucion-grid"
+            [disabled]="tipoAccionDevolucionParaOrden(cell.data) === 'nada'"
+            [title]="tituloAccionDevolucion(cell.data)"
+            (click)="accionDevolucionOrden(cell.data); $event.stopPropagation()"
+          >
+            <i [ngClass]="claseIconoDevolucion(cell.data)" aria-hidden="true"></i>
+          </button>
+        </div>
       </dx-data-grid>
 
       <div
-        *ngIf="mostrarProductosPendientes"
+        *ngIf="vistaProductosEspecial === 'facturados'"
         class="productos-pendientes-grid-scroll"
       >
         <dx-data-grid
@@ -425,7 +491,7 @@
           [hoverStateEnabled]="true"
         >
           <dxo-filter-row [visible]="true"></dxo-filter-row>
-          <dxo-export [enabled]="true" fileName="Productos_Pendientes" [allowExportSelectedData]="true"></dxo-export>
+          <dxo-export [enabled]="true" fileName="Productos_Facturados_Sin_Entregar" [allowExportSelectedData]="true"></dxo-export>
           <dxo-search-panel
             [visible]="true"
             [width]="260"
@@ -472,6 +538,56 @@
             caption="Notas"
             width="15%"
             dataType="string"
+          ></dxi-column>
+        </dx-data-grid>
+      </div>
+
+      <div
+        *ngIf="vistaProductosEspecial === 'pendientes'"
+        class="productos-pendientes-grid-scroll"
+      >
+        <dx-data-grid
+          [dataSource]="productosPendientesBalance"
+          [showBorders]="true"
+          [hoverStateEnabled]="true"
+        >
+          <dxo-filter-row [visible]="true"></dxo-filter-row>
+          <dxo-export [enabled]="true" fileName="Balance_Productos_Pendientes" [allowExportSelectedData]="true"></dxo-export>
+          <dxo-search-panel
+            [visible]="true"
+            [width]="260"
+            placeholder="Buscar producto..."
+          ></dxo-search-panel>
+          <dxi-column
+            dataField="productoNombre"
+            caption="Producto"
+            width="35%"
+            dataType="string"
+          ></dxi-column>
+          <dxi-column
+            dataField="totalPendienteTexto"
+            caption="Total pendiente entregar"
+            width="20%"
+            dataType="string"
+          ></dxi-column>
+          <dxi-column
+            dataField="stockBodegaTexto"
+            caption="Existencia bodega (matriz)"
+            width="22%"
+            dataType="string"
+          ></dxi-column>
+          <dxi-column
+            dataField="balanceTexto"
+            caption="Balance"
+            width="23%"
+            dataType="string"
+          ></dxi-column>
+          <dxi-column
+            dataField="balanceValor"
+            caption="Balance (ordenar)"
+            width="0"
+            [visible]="false"
+            dataType="number"
           ></dxi-column>
         </dx-data-grid>
       </div>
@@ -733,13 +849,13 @@
             <table class="table table-sm table-bordered traz-historial-table mb-0">
               <thead class="thead-light">
                 <tr>
-                  <th
+                  <!-- <th
                     *ngIf="puedeEditarHistorialTrazabilidad(ordenTrazabilidad)"
                     class="traz-col-accion text-center align-middle"
                     scope="col"
                   >
                     <span class="sr-only">Corregir</span>
-                  </th>
+                  </th> -->
                   <th>Fecha / hora</th>
                   <th>Usuario</th>
                   <th>Acción</th>
@@ -754,7 +870,7 @@
               </thead>
               <tbody>
                 <tr *ngFor="let h of it.historialOrdenado">
-                  <td
+                  <!-- <td
                     *ngIf="puedeEditarHistorialTrazabilidad(ordenTrazabilidad)"
                     class="text-center align-middle traz-td-accion"
                   >
@@ -767,7 +883,7 @@
                       <i class="fa fa-pencil" aria-hidden="true"></i>
                       <span class="d-inline d-md-none ml-1 small">Editar</span>
                     </button>
-                  </td>
+                  </td> -->
                   <td class="text-nowrap">{{ h.fechaFmt }}</td>
                   <td>{{ h.usuario }}</td>
                   <td>{{ h.accion }}</td>
