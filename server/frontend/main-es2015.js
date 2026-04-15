@@ -52699,7 +52699,6 @@ class GestionEntregasBodegaComponent {
             "Listado Entregas",
             "Productos Facturados",
             "Productos Pendientes",
-            "Productos Pendientes Entrega",
         ];
         this.valorMenu = "Gestión Entregas";
         this.mostrarGestion = true;
@@ -53274,19 +53273,19 @@ class GestionEntregasBodegaComponent {
                 this.popupTrazabilidadVisible = false;
                 this.cargarPendientes();
                 break;
+            /* case "Productos Pendientes":
+              this.mostrarGestion = false;
+              this.mostrarListado = false;
+              this.vistaProductosEspecial = "pendientes";
+              this.incluirCerradas = false;
+              this.ordenSeleccionada = null;
+              this.expandedOrderId = null;
+              this.expandedItemIndex = null;
+              this.limpiarIndicadoresGuardadoLinea();
+              this.popupTrazabilidadVisible = false;
+              this.cargarPendientes();
+              break; */
             case "Productos Pendientes":
-                this.mostrarGestion = false;
-                this.mostrarListado = false;
-                this.vistaProductosEspecial = "pendientes";
-                this.incluirCerradas = false;
-                this.ordenSeleccionada = null;
-                this.expandedOrderId = null;
-                this.expandedItemIndex = null;
-                this.limpiarIndicadoresGuardadoLinea();
-                this.popupTrazabilidadVisible = false;
-                this.cargarPendientes();
-                break;
-            case "Productos Pendientes Entrega":
                 this.mostrarGestion = false;
                 this.mostrarListado = false;
                 this.vistaProductosEspecial = "pendientesEntrega";

@@ -27,7 +27,7 @@ export class GestionEntregasBodegaComponent implements OnInit, OnDestroy {
     "Listado Entregas",
     "Productos Facturados",
     "Productos Pendientes",
-    "Productos Pendientes Entrega",
+    //"Productos Pendientes Entrega",
   ];
   valorMenu = "Gestión Entregas";
   mostrarGestion = true;
@@ -668,7 +668,7 @@ export class GestionEntregasBodegaComponent implements OnInit, OnDestroy {
         this.popupTrazabilidadVisible = false;
         this.cargarPendientes();
         break;
-      case "Productos Pendientes":
+      /* case "Productos Pendientes":
         this.mostrarGestion = false;
         this.mostrarListado = false;
         this.vistaProductosEspecial = "pendientes";
@@ -679,8 +679,8 @@ export class GestionEntregasBodegaComponent implements OnInit, OnDestroy {
         this.limpiarIndicadoresGuardadoLinea();
         this.popupTrazabilidadVisible = false;
         this.cargarPendientes();
-        break;
-      case "Productos Pendientes Entrega":
+        break; */
+      case "Productos Pendientes":
         this.mostrarGestion = false;
         this.mostrarListado = false;
         this.vistaProductosEspecial = "pendientesEntrega";

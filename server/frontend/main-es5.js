@@ -88790,7 +88790,7 @@ function _classCallCheck(instance, Constructor) { if (!(instance instanceof Cons
         this.productosPendientesService = productosPendientesService;
         this.transaccionesService = transaccionesService;
         this.screen = screen;
-        this.menuPrincipal = ["Gestión Entregas", "Listado Entregas", "Productos Facturados", "Productos Pendientes", "Productos Pendientes Entrega"];
+        this.menuPrincipal = ["Gestión Entregas", "Listado Entregas", "Productos Facturados", "Productos Pendientes"];
         this.valorMenu = "Gestión Entregas";
         this.mostrarGestion = true;
         this.mostrarListado = false;
@@ -89489,7 +89489,7 @@ function _classCallCheck(instance, Constructor) { if (!(instance instanceof Cons
               this.cargarPendientes();
               break;
 
-            case "Productos Pendientes":
+            /* case "Productos Pendientes":
               this.mostrarGestion = false;
               this.mostrarListado = false;
               this.vistaProductosEspecial = "pendientes";
@@ -89500,9 +89500,9 @@ function _classCallCheck(instance, Constructor) { if (!(instance instanceof Cons
               this.limpiarIndicadoresGuardadoLinea();
               this.popupTrazabilidadVisible = false;
               this.cargarPendientes();
-              break;
+              break; */
 
-            case "Productos Pendientes Entrega":
+            case "Productos Pendientes":
               this.mostrarGestion = false;
               this.mostrarListado = false;
               this.vistaProductosEspecial = "pendientesEntrega";
