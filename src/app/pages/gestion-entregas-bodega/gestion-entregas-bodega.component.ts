@@ -3,6 +3,7 @@ import { Subscription } from "rxjs";
 import Swal from "sweetalert2";
 import { productoMultiple } from "src/app/pages/consolidado/consolidado";
 import { EntregasBodegaService } from "src/app/servicios/entregas-bodega.service";
+import { ProductosPendientesService } from "src/app/servicios/productos-pendientes.service";
 import { TransaccionesService } from "src/app/servicios/transacciones.service";
 import { ScreenService } from "src/app/shared/services";
 
@@ -26,6 +27,7 @@ export class GestionEntregasBodegaComponent implements OnInit, OnDestroy {
     "Listado Entregas",
     "Productos Facturados",
     "Productos Pendientes",
+    "Productos Pendientes Entrega",
   ];
   valorMenu = "Gestión Entregas";
   mostrarGestion = true;
@@ -34,13 +36,20 @@ export class GestionEntregasBodegaComponent implements OnInit, OnDestroy {
    * ninguno: gestión o listado de órdenes.
    * facturados: detalle por factura/cliente (productos facturados sin entregar).
    * pendientes: unificación por producto + transacciones (balance vs bodega matriz).
+   * pendientesEntrega: listado de productos en estado PENDIENTE del módulo legacy.
    */
-  vistaProductosEspecial: "ninguno" | "facturados" | "pendientes" = "ninguno";
+  vistaProductosEspecial:
+    | "ninguno"
+    | "facturados"
+    | "pendientes"
+    | "pendientesEntrega" = "ninguno";
 
   /** Resumen detallado (vista facturados). */
   productosPendientes: any[] = [];
   /** Agregado por producto con stock y balance (vista pendientes). */
   productosPendientesBalance: any[] = [];
+  /** Listado legacy de productos pendientes por entrega (sin filtros). */
+  productosPendientesEntrega: any[] = [];
 
   ordenes: any[] = [];
   ordenSeleccionada: any = null;
@@ -70,6 +79,7 @@ export class GestionEntregasBodegaComponent implements OnInit, OnDestroy {
     "ENTREGA_PARCIAL",
     "ENTREGA_TOTAL",
     "DEVOLUCION",
+    "DEVUELTO",
   ];
 
   filtroDocumento: number = null;
@@ -517,6 +527,7 @@ export class GestionEntregasBodegaComponent implements OnInit, OnDestroy {
 
   constructor(
     private entregasBodegaService: EntregasBodegaService,
+    private productosPendientesService: ProductosPendientesService,
     private transaccionesService: TransaccionesService,
     private screen: ScreenService
   ) {}
@@ -669,6 +680,18 @@ export class GestionEntregasBodegaComponent implements OnInit, OnDestroy {
         this.popupTrazabilidadVisible = false;
         this.cargarPendientes();
         break;
+      case "Productos Pendientes Entrega":
+        this.mostrarGestion = false;
+        this.mostrarListado = false;
+        this.vistaProductosEspecial = "pendientesEntrega";
+        this.incluirCerradas = false;
+        this.ordenSeleccionada = null;
+        this.expandedOrderId = null;
+        this.expandedItemIndex = null;
+        this.limpiarIndicadoresGuardadoLinea();
+        this.popupTrazabilidadVisible = false;
+        this.cargarProductosPendientesEntrega();
+        break;
       default:
         break;
     }
@@ -790,6 +813,7 @@ export class GestionEntregasBodegaComponent implements OnInit, OnDestroy {
         this.ordenes = ordenesVista;
         this.productosPendientes = [];
         this.productosPendientesBalance = [];
+        this.productosPendientesEntrega = [];
 
         const sincronizarExpandida = () => {
           if (this.expandedOrderId) {
@@ -873,7 +897,7 @@ export class GestionEntregasBodegaComponent implements OnInit, OnDestroy {
       return;
     }
     const estadoUi = this.estadoGestionAutomatico(item);
-    /** El API solo usa ENTREGA_PARCIAL | ENTREGA_TOTAL | DEVOLUCION; ABIERTO es solo etiqueta de UI. */
+    /** El API usa ENTREGA_PARCIAL | ENTREGA_TOTAL | DEVOLUCION | DEVUELTO; ABIERTO es solo etiqueta de UI. */
     const estadoCalculado =
       estadoUi === "ABIERTO" ? "ENTREGA_PARCIAL" : estadoUi;
     const bloquearCompromiso = estadoCalculado === "ENTREGA_TOTAL";
@@ -1424,15 +1448,22 @@ export class GestionEntregasBodegaComponent implements OnInit, OnDestroy {
                 );
                 const stockM2Efectivo =
                   (stockPiezasEfectivo / pp) * mc;
-                const balanceM2 = stockM2Efectivo - pendM2Total;
+                let balanceM2 = stockM2Efectivo - pendM2Total;
+                if (balanceM2 > 0) {
+                  balanceM2 = 0;
+                }
                 balanceTexto = this.formatoCantidadLinea(balanceM2, item);
                 balanceValor = balanceM2;
               } else {
                 const pend = this.num(row.pendienteUnidadesSum);
                 totalPendienteTexto = String(Math.trunc(pend));
-                const bal = stockPiezasEfectivo - pend;
+                let bal = stockPiezasEfectivo - pend;
+                if (bal > 0) {
+                  bal = 0;
+                }
                 balanceTexto = String(Math.trunc(bal));
                 balanceValor = bal;
+           
               }
 
               return {
@@ -1458,5 +1489,39 @@ export class GestionEntregasBodegaComponent implements OnInit, OnDestroy {
           );
         },
       });
+  }
+
+  private cargarProductosPendientesEntrega(): void {
+    this.loading = true;
+    this.productosPendientesEntrega = [];
+    this.productosPendientesService.getProductoPendiente().subscribe({
+      next: (res: any) => {
+        const listado = Array.isArray(res) ? res : [];
+        const rol = (sessionStorage.getItem("rol") || "").trim();
+        const sucursalSesion = (sessionStorage.getItem("sucursal") || "")
+          .trim()
+          .toLowerCase();
+        const filtradosPorSucursal =
+          rol === "Usuario" && sucursalSesion
+            ? listado.filter(
+                (x: any) =>
+                  String(x?.sucursal || "").trim().toLowerCase() ===
+                  sucursalSesion
+              )
+            : listado;
+        this.productosPendientesEntrega = filtradosPorSucursal.filter(
+          (x: any) => String(x?.estado || "").trim().toUpperCase() === "PENDIENTE"
+        );
+        this.loading = false;
+      },
+      error: () => {
+        this.loading = false;
+        Swal.fire(
+          "Error",
+          "No se pudo cargar el listado de productos pendientes por entrega.",
+          "error"
+        );
+      },
+    });
   }
 }

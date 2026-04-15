@@ -104,6 +104,9 @@
       <span *ngIf="vistaProductosEspecial === 'pendientes'"
         >Balance productos pendientes (bodega matriz)</span
       >
+      <span *ngIf="vistaProductosEspecial === 'pendientesEntrega'"
+        >Productos pendientes entrega</span
+      >
     </h5>
     <div class="card-body p-2">
       <p *ngIf="mostrarGestion" class="text-muted small mb-2">
@@ -117,6 +120,9 @@
         <strong>matriz</strong> según transacciones (mismo criterio que el módulo consolidado) y el
         <strong>balance</strong> = existencia − pendiente total.
         Si el inventario calculado es negativo, se muestra como <strong>0</strong> y el balance usa esa existencia en cero.
+      </p>
+      <p *ngIf="vistaProductosEspecial === 'pendientesEntrega'" class="text-muted small mb-2">
+        Listado de productos con estado <strong>PENDIENTE</strong> del módulo de entregas pendientes.
       </p>
 
       <!-- SMART-DISPATCH: solo gestión en móvil/tablet pequeña -->
@@ -589,6 +595,80 @@
             [visible]="false"
             dataType="number"
           ></dxi-column>
+        </dx-data-grid>
+      </div>
+
+      <div
+        *ngIf="vistaProductosEspecial === 'pendientesEntrega'"
+        class="productos-pendientes-grid-scroll"
+      >
+        <dx-data-grid
+          [dataSource]="productosPendientesEntrega"
+          [showBorders]="true"
+          [hoverStateEnabled]="true"
+        >
+          <dxo-filter-row [visible]="true"></dxo-filter-row>
+          <dxo-export
+            [enabled]="true"
+            fileName="Productos_Pendientes_Entrega"
+            [allowExportSelectedData]="true"
+          ></dxo-export>
+          <dxo-search-panel
+            [visible]="true"
+            [width]="240"
+            placeholder="Buscar..."
+          ></dxo-search-panel>
+          <dxi-column
+            dataField="id_Pedido"
+            caption="Entrega N"
+            dataType="string"
+            sortOrder="desc"
+          ></dxi-column>
+          <dxi-column
+            dataField="fecha"
+            caption="Fecha"
+            dataType="string"
+          ></dxi-column>
+          <dxi-column
+            dataField="documento"
+            caption="Documento #"
+            dataType="string"
+          ></dxi-column>
+          <dxi-column
+            dataField="cliente"
+            caption="Cliente"
+            dataType="string"
+          ></dxi-column>
+          <dxi-column
+            dataField="producto.PRODUCTO"
+            caption="Producto"
+            dataType="string"
+          ></dxi-column>
+          <dxi-column
+            dataField="sucursal"
+            caption="Sucursal"
+            dataType="string"
+          ></dxi-column>
+          <dxi-column
+            dataField="cajas"
+            caption="Cajas"
+            dataType="number"
+          ></dxi-column>
+          <dxi-column
+            dataField="piezas"
+            caption="Piezas"
+            dataType="number"
+          ></dxi-column>
+          <dxi-column
+            dataField="estado"
+            caption="Estado"
+            dataType="string"
+          ></dxi-column>
+          <dxo-paging [pageSize]="12"></dxo-paging>
+          <dxo-pager
+            [showPageSizeSelector]="true"
+            [allowedPageSizes]="[8, 12, 20]"
+          ></dxo-pager>
         </dx-data-grid>
       </div>
     </div>

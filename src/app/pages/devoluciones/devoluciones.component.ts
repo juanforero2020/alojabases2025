@@ -1,7 +1,7 @@
 import { Component, OnInit, OnDestroy } from "@angular/core";
-import { Subject } from "rxjs";
+import { Subject, of } from "rxjs";
 import { forkJoin } from "rxjs";
-import { switchMap, retry, take, takeUntil } from "rxjs/operators";
+import { catchError, switchMap, retry, take, takeUntil } from "rxjs/operators";
 
 import {
   devolucion,
@@ -42,6 +42,7 @@ import { CajaMenorService } from "src/app/servicios/cajaMenor.service";
 import { AuthService } from "src/app/shared/services";
 import { ProductoCombo, productosCombo } from "../catalogo/catalogo";
 import { CombosService } from "src/app/servicios/combos.service";
+import { EntregasBodegaService } from "src/app/servicios/entregas-bodega.service";
 
 @Component({
   selector: "app-devoluciones",
@@ -50,6 +51,12 @@ import { CombosService } from "src/app/servicios/combos.service";
 })
 export class DevolucionesComponent implements OnInit, OnDestroy {
   private destroy$ = new Subject<void>();
+  /** Tras aprobar: mensaje secundario (trazabilidad bodega) mostrado después del Swal de éxito. */
+  private avisoTrazabilidadBodega: {
+    icon: "warning" | "info";
+    title: string;
+    html: string;
+  } | null = null;
   idDocumento: number;
   cliente: string;
   usuario: string = "";
@@ -156,7 +163,8 @@ export class DevolucionesComponent implements OnInit, OnDestroy {
     public authService: AuthService,
     public _comboService : CombosService,
     public _cajaMenorService : CajaMenorService,
-    public _configuracionService : DatosConfiguracionService
+    public _configuracionService : DatosConfiguracionService,
+    private entregasBodegaService: EntregasBodegaService
   ) {
     this.devolucion = new devolucion();
     this.productosDevueltos.push(new productosDevueltos());
@@ -1056,9 +1064,62 @@ export class DevolucionesComponent implements OnInit, OnDestroy {
     );
 
     forkJoin([...transacciones$, ...financieras$])
-      .pipe(takeUntil(this.destroy$))
+      .pipe(
+        switchMap(() =>
+          this.entregasBodegaService
+            .registrarDevolucionAprobada({
+              documentoNumero: this.devolucioLeida.num_documento,
+              tipo_documento: this.devolucioLeida.tipo_documento,
+              usuario: this.devolucioLeida.usuario,
+              id_devolucion: this.devolucioLeida.id_devolucion,
+              observaciones: this.devolucioLeida.observaciones,
+              productosDevueltos: this.productosDevueltosCarga.map((p) => ({
+                producto: p.producto,
+                cantDevueltam2: p.cantDevueltam2,
+                cantDevueltam2Flo: p.cantDevueltam2Flo,
+                cantDevueltaCajas: p.cantDevueltaCajas,
+                cantDevueltaPiezas: p.cantDevueltaPiezas,
+              })),
+            })
+            .pipe(
+              take(1),
+              catchError(() => of({ errorTrazabilidad: true }))
+            )
+        ),
+        takeUntil(this.destroy$)
+      )
       .subscribe({
-        next: () => this.actualizarProductos(),
+        next: (res: any) => {
+          this.avisoTrazabilidadBodega = null;
+          if (res && res.errorTrazabilidad) {
+            this.avisoTrazabilidadBodega = {
+              icon: "warning",
+              title: "Trazabilidad de bodega",
+              html:
+                "<p class=\"text-left mb-0\">La devolución se registró pero no se pudo sincronizar la trazabilidad de entregas de bodega. Compruebe la conexión o actualice la orden manualmente.</p>",
+            };
+          } else {
+            const avisos: string[] = [];
+            if (res?.sinOrdenEntrega && res.mensaje) {
+              avisos.push(res.mensaje);
+            }
+            if (res?.sinActualizacionTrazabilidad && res.mensaje) {
+              avisos.push(res.mensaje);
+            }
+            const det = res?.detalleAdvertencias;
+            if (Array.isArray(det) && det.length) {
+              avisos.push(...det);
+            }
+            if (avisos.length) {
+              this.avisoTrazabilidadBodega = {
+                icon: "info",
+                title: "Trazabilidad de bodega",
+                html: avisos.map((t) => `<p class="text-left mb-1">${t}</p>`).join(""),
+              };
+            }
+          }
+          this.actualizarProductos();
+        },
         error: () => {
           Swal.fire("Error", "Error al guardar transacciones. Revise la conexión.", "error");
         },
@@ -1116,7 +1177,18 @@ export class DevolucionesComponent implements OnInit, OnDestroy {
         text: "Se ha guardado con éxito",
         icon: "success",
         confirmButtonText: "Ok",
-      }).then(() => this.refrescarListado());
+      }).then(() => {
+        const aviso = this.avisoTrazabilidadBodega;
+        this.avisoTrazabilidadBodega = null;
+        if (aviso) {
+          return Swal.fire({
+            icon: aviso.icon,
+            title: aviso.title,
+            html: aviso.html,
+          }).then(() => this.refrescarListado());
+        }
+        return this.refrescarListado();
+      });
     }
   }
 

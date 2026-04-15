@@ -42,6 +42,21 @@ export class EntregasBodegaService {
   }
 
   /**
+   * Tras aprobar una devolución: actualiza cantidad devuelta e historial en la orden
+   * de entrega de bodega del mismo documento (si existe y no está cerrada/anulada).
+   */
+  registrarDevolucionAprobada(payload: {
+    documentoNumero: number;
+    tipo_documento: string;
+    usuario: string;
+    id_devolucion: number;
+    observaciones?: string;
+    productosDevueltos: unknown[];
+  }) {
+    return this.http.put(`${this.URL}/registrarDevolucionAprobada`, payload);
+  }
+
+  /**
    * Corrige un registro del historial de un ítem (trazabilidad).
    * El servidor valida rol (Administrador vs Bodeguero mismo día) y orden no cerrada.
    */

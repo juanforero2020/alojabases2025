@@ -45140,13 +45140,15 @@ __webpack_require__.r(__webpack_exports__);
 /* harmony import */ var src_app_servicios_combos_service__WEBPACK_IMPORTED_MODULE_24__ = __webpack_require__(/*! src/app/servicios/combos.service */ "./src/app/servicios/combos.service.ts");
 /* harmony import */ var src_app_servicios_cajaMenor_service__WEBPACK_IMPORTED_MODULE_25__ = __webpack_require__(/*! src/app/servicios/cajaMenor.service */ "./src/app/servicios/cajaMenor.service.ts");
 /* harmony import */ var src_app_servicios_datosConfiguracion_service__WEBPACK_IMPORTED_MODULE_26__ = __webpack_require__(/*! src/app/servicios/datosConfiguracion.service */ "./src/app/servicios/datosConfiguracion.service.ts");
-/* harmony import */ var _angular_common__WEBPACK_IMPORTED_MODULE_27__ = __webpack_require__(/*! @angular/common */ "./node_modules/@angular/common/__ivy_ngcc__/fesm2015/common.js");
-/* harmony import */ var devextreme_angular__WEBPACK_IMPORTED_MODULE_28__ = __webpack_require__(/*! devextreme-angular */ "./node_modules/devextreme-angular/__ivy_ngcc__/fesm2015/devextreme-angular.js");
-/* harmony import */ var _loading_message_loading_messagge_component__WEBPACK_IMPORTED_MODULE_29__ = __webpack_require__(/*! ../loading-message/loading-messagge.component */ "./src/app/pages/loading-message/loading-messagge.component.ts");
-/* harmony import */ var devextreme_angular_ui_text_box__WEBPACK_IMPORTED_MODULE_30__ = __webpack_require__(/*! devextreme-angular/ui/text-box */ "./node_modules/devextreme-angular/__ivy_ngcc__/fesm2015/devextreme-angular-ui-text-box.js");
-/* harmony import */ var devextreme_angular_ui_validator__WEBPACK_IMPORTED_MODULE_31__ = __webpack_require__(/*! devextreme-angular/ui/validator */ "./node_modules/devextreme-angular/__ivy_ngcc__/fesm2015/devextreme-angular-ui-validator.js");
-/* harmony import */ var devextreme_angular_ui_nested__WEBPACK_IMPORTED_MODULE_32__ = __webpack_require__(/*! devextreme-angular/ui/nested */ "./node_modules/devextreme-angular/__ivy_ngcc__/fesm2015/devextreme-angular-ui-nested.js");
-/* harmony import */ var devextreme_angular_ui_button__WEBPACK_IMPORTED_MODULE_33__ = __webpack_require__(/*! devextreme-angular/ui/button */ "./node_modules/devextreme-angular/__ivy_ngcc__/fesm2015/devextreme-angular-ui-button.js");
+/* harmony import */ var src_app_servicios_entregas_bodega_service__WEBPACK_IMPORTED_MODULE_27__ = __webpack_require__(/*! src/app/servicios/entregas-bodega.service */ "./src/app/servicios/entregas-bodega.service.ts");
+/* harmony import */ var _angular_common__WEBPACK_IMPORTED_MODULE_28__ = __webpack_require__(/*! @angular/common */ "./node_modules/@angular/common/__ivy_ngcc__/fesm2015/common.js");
+/* harmony import */ var devextreme_angular__WEBPACK_IMPORTED_MODULE_29__ = __webpack_require__(/*! devextreme-angular */ "./node_modules/devextreme-angular/__ivy_ngcc__/fesm2015/devextreme-angular.js");
+/* harmony import */ var _loading_message_loading_messagge_component__WEBPACK_IMPORTED_MODULE_30__ = __webpack_require__(/*! ../loading-message/loading-messagge.component */ "./src/app/pages/loading-message/loading-messagge.component.ts");
+/* harmony import */ var devextreme_angular_ui_text_box__WEBPACK_IMPORTED_MODULE_31__ = __webpack_require__(/*! devextreme-angular/ui/text-box */ "./node_modules/devextreme-angular/__ivy_ngcc__/fesm2015/devextreme-angular-ui-text-box.js");
+/* harmony import */ var devextreme_angular_ui_validator__WEBPACK_IMPORTED_MODULE_32__ = __webpack_require__(/*! devextreme-angular/ui/validator */ "./node_modules/devextreme-angular/__ivy_ngcc__/fesm2015/devextreme-angular-ui-validator.js");
+/* harmony import */ var devextreme_angular_ui_nested__WEBPACK_IMPORTED_MODULE_33__ = __webpack_require__(/*! devextreme-angular/ui/nested */ "./node_modules/devextreme-angular/__ivy_ngcc__/fesm2015/devextreme-angular-ui-nested.js");
+/* harmony import */ var devextreme_angular_ui_button__WEBPACK_IMPORTED_MODULE_34__ = __webpack_require__(/*! devextreme-angular/ui/button */ "./node_modules/devextreme-angular/__ivy_ngcc__/fesm2015/devextreme-angular-ui-button.js");
+
 
 
 
@@ -45723,7 +45725,7 @@ function DevolucionesComponent_div_6_Template(rf, ctx) { if (rf & 1) {
     _angular_core__WEBPACK_IMPORTED_MODULE_0__["ɵɵproperty"]("showPageSizeSelector", true)("allowedPageSizes", _angular_core__WEBPACK_IMPORTED_MODULE_0__["ɵɵpureFunction0"](20, _c0));
 } }
 class DevolucionesComponent {
-    constructor(parametrizacionService, authenService, transaccionesService, devolucionesService, contadoresService, notasVentaService, facturasService, productosPendientesService, ordenesService, sucursalesService, _transaccionFinancieraService, productoService, authService, _comboService, _cajaMenorService, _configuracionService) {
+    constructor(parametrizacionService, authenService, transaccionesService, devolucionesService, contadoresService, notasVentaService, facturasService, productosPendientesService, ordenesService, sucursalesService, _transaccionFinancieraService, productoService, authService, _comboService, _cajaMenorService, _configuracionService, entregasBodegaService) {
         this.parametrizacionService = parametrizacionService;
         this.authenService = authenService;
         this.transaccionesService = transaccionesService;
@@ -45740,7 +45742,10 @@ class DevolucionesComponent {
         this._comboService = _comboService;
         this._cajaMenorService = _cajaMenorService;
         this._configuracionService = _configuracionService;
+        this.entregasBodegaService = entregasBodegaService;
         this.destroy$ = new rxjs__WEBPACK_IMPORTED_MODULE_1__["Subject"]();
+        /** Tras aprobar: mensaje secundario (trazabilidad bodega) mostrado después del Swal de éxito. */
+        this.avisoTrazabilidadBodega = null;
         this.usuario = "";
         this.observaciones = "";
         this.locales = [];
@@ -46584,9 +46589,55 @@ class DevolucionesComponent {
         });
         const financieras$ = this.productosDevueltosCarga.map((element) => this.crearTransaccionFinancieraObs(element).pipe(Object(rxjs_operators__WEBPACK_IMPORTED_MODULE_2__["take"])(1), Object(rxjs_operators__WEBPACK_IMPORTED_MODULE_2__["retry"])(2)));
         Object(rxjs__WEBPACK_IMPORTED_MODULE_1__["forkJoin"])([...transacciones$, ...financieras$])
-            .pipe(Object(rxjs_operators__WEBPACK_IMPORTED_MODULE_2__["takeUntil"])(this.destroy$))
+            .pipe(Object(rxjs_operators__WEBPACK_IMPORTED_MODULE_2__["switchMap"])(() => this.entregasBodegaService
+            .registrarDevolucionAprobada({
+            documentoNumero: this.devolucioLeida.num_documento,
+            tipo_documento: this.devolucioLeida.tipo_documento,
+            usuario: this.devolucioLeida.usuario,
+            id_devolucion: this.devolucioLeida.id_devolucion,
+            observaciones: this.devolucioLeida.observaciones,
+            productosDevueltos: this.productosDevueltosCarga.map((p) => ({
+                producto: p.producto,
+                cantDevueltam2: p.cantDevueltam2,
+                cantDevueltam2Flo: p.cantDevueltam2Flo,
+                cantDevueltaCajas: p.cantDevueltaCajas,
+                cantDevueltaPiezas: p.cantDevueltaPiezas,
+            })),
+        })
+            .pipe(Object(rxjs_operators__WEBPACK_IMPORTED_MODULE_2__["take"])(1), Object(rxjs_operators__WEBPACK_IMPORTED_MODULE_2__["catchError"])(() => Object(rxjs__WEBPACK_IMPORTED_MODULE_1__["of"])({ errorTrazabilidad: true })))), Object(rxjs_operators__WEBPACK_IMPORTED_MODULE_2__["takeUntil"])(this.destroy$))
             .subscribe({
-            next: () => this.actualizarProductos(),
+            next: (res) => {
+                var _a, _b, _c;
+                this.avisoTrazabilidadBodega = null;
+                if (res && res.errorTrazabilidad) {
+                    this.avisoTrazabilidadBodega = {
+                        icon: "warning",
+                        title: "Trazabilidad de bodega",
+                        html: "<p class=\"text-left mb-0\">La devolución se registró pero no se pudo sincronizar la trazabilidad de entregas de bodega. Compruebe la conexión o actualice la orden manualmente.</p>",
+                    };
+                }
+                else {
+                    const avisos = [];
+                    if (((_a = res) === null || _a === void 0 ? void 0 : _a.sinOrdenEntrega) && res.mensaje) {
+                        avisos.push(res.mensaje);
+                    }
+                    if (((_b = res) === null || _b === void 0 ? void 0 : _b.sinActualizacionTrazabilidad) && res.mensaje) {
+                        avisos.push(res.mensaje);
+                    }
+                    const det = (_c = res) === null || _c === void 0 ? void 0 : _c.detalleAdvertencias;
+                    if (Array.isArray(det) && det.length) {
+                        avisos.push(...det);
+                    }
+                    if (avisos.length) {
+                        this.avisoTrazabilidadBodega = {
+                            icon: "info",
+                            title: "Trazabilidad de bodega",
+                            html: avisos.map((t) => `<p class="text-left mb-1">${t}</p>`).join(""),
+                        };
+                    }
+                }
+                this.actualizarProductos();
+            },
             error: () => {
                 sweetalert2__WEBPACK_IMPORTED_MODULE_6___default.a.fire("Error", "Error al guardar transacciones. Revise la conexión.", "error");
             },
@@ -46639,7 +46690,18 @@ class DevolucionesComponent {
                 text: "Se ha guardado con éxito",
                 icon: "success",
                 confirmButtonText: "Ok",
-            }).then(() => this.refrescarListado());
+            }).then(() => {
+                const aviso = this.avisoTrazabilidadBodega;
+                this.avisoTrazabilidadBodega = null;
+                if (aviso) {
+                    return sweetalert2__WEBPACK_IMPORTED_MODULE_6___default.a.fire({
+                        icon: aviso.icon,
+                        title: aviso.title,
+                        html: aviso.html,
+                    }).then(() => this.refrescarListado());
+                }
+                return this.refrescarListado();
+            });
         }
     }
     contadorValidacionesAnulacion(i) {
@@ -47218,7 +47280,7 @@ class DevolucionesComponent {
         this.destroy$.complete();
     }
 }
-DevolucionesComponent.ɵfac = function DevolucionesComponent_Factory(t) { return new (t || DevolucionesComponent)(_angular_core__WEBPACK_IMPORTED_MODULE_0__["ɵɵdirectiveInject"](src_app_servicios_parametrizaciones_service__WEBPACK_IMPORTED_MODULE_11__["ParametrizacionesService"]), _angular_core__WEBPACK_IMPORTED_MODULE_0__["ɵɵdirectiveInject"](src_app_servicios_authen_service__WEBPACK_IMPORTED_MODULE_12__["AuthenService"]), _angular_core__WEBPACK_IMPORTED_MODULE_0__["ɵɵdirectiveInject"](src_app_servicios_transacciones_service__WEBPACK_IMPORTED_MODULE_13__["TransaccionesService"]), _angular_core__WEBPACK_IMPORTED_MODULE_0__["ɵɵdirectiveInject"](src_app_servicios_devoluciones_service__WEBPACK_IMPORTED_MODULE_14__["DevolucionesService"]), _angular_core__WEBPACK_IMPORTED_MODULE_0__["ɵɵdirectiveInject"](src_app_servicios_contadores_documentos_service__WEBPACK_IMPORTED_MODULE_15__["ContadoresDocumentosService"]), _angular_core__WEBPACK_IMPORTED_MODULE_0__["ɵɵdirectiveInject"](src_app_servicios_notas_ventas_service__WEBPACK_IMPORTED_MODULE_16__["NotasVentasService"]), _angular_core__WEBPACK_IMPORTED_MODULE_0__["ɵɵdirectiveInject"](src_app_servicios_facturas_service__WEBPACK_IMPORTED_MODULE_17__["FacturasService"]), _angular_core__WEBPACK_IMPORTED_MODULE_0__["ɵɵdirectiveInject"](src_app_servicios_productos_pendientes_service__WEBPACK_IMPORTED_MODULE_18__["ProductosPendientesService"]), _angular_core__WEBPACK_IMPORTED_MODULE_0__["ɵɵdirectiveInject"](src_app_servicios_ordenes_compra_service__WEBPACK_IMPORTED_MODULE_19__["OrdenesCompraService"]), _angular_core__WEBPACK_IMPORTED_MODULE_0__["ɵɵdirectiveInject"](src_app_servicios_sucursales_service__WEBPACK_IMPORTED_MODULE_20__["SucursalesService"]), _angular_core__WEBPACK_IMPORTED_MODULE_0__["ɵɵdirectiveInject"](src_app_servicios_transaccionesFinancieras_service__WEBPACK_IMPORTED_MODULE_21__["TransaccionesFinancierasService"]), _angular_core__WEBPACK_IMPORTED_MODULE_0__["ɵɵdirectiveInject"](src_app_servicios_producto_service__WEBPACK_IMPORTED_MODULE_22__["ProductoService"]), _angular_core__WEBPACK_IMPORTED_MODULE_0__["ɵɵdirectiveInject"](src_app_shared_services__WEBPACK_IMPORTED_MODULE_23__["AuthService"]), _angular_core__WEBPACK_IMPORTED_MODULE_0__["ɵɵdirectiveInject"](src_app_servicios_combos_service__WEBPACK_IMPORTED_MODULE_24__["CombosService"]), _angular_core__WEBPACK_IMPORTED_MODULE_0__["ɵɵdirectiveInject"](src_app_servicios_cajaMenor_service__WEBPACK_IMPORTED_MODULE_25__["CajaMenorService"]), _angular_core__WEBPACK_IMPORTED_MODULE_0__["ɵɵdirectiveInject"](src_app_servicios_datosConfiguracion_service__WEBPACK_IMPORTED_MODULE_26__["DatosConfiguracionService"])); };
+DevolucionesComponent.ɵfac = function DevolucionesComponent_Factory(t) { return new (t || DevolucionesComponent)(_angular_core__WEBPACK_IMPORTED_MODULE_0__["ɵɵdirectiveInject"](src_app_servicios_parametrizaciones_service__WEBPACK_IMPORTED_MODULE_11__["ParametrizacionesService"]), _angular_core__WEBPACK_IMPORTED_MODULE_0__["ɵɵdirectiveInject"](src_app_servicios_authen_service__WEBPACK_IMPORTED_MODULE_12__["AuthenService"]), _angular_core__WEBPACK_IMPORTED_MODULE_0__["ɵɵdirectiveInject"](src_app_servicios_transacciones_service__WEBPACK_IMPORTED_MODULE_13__["TransaccionesService"]), _angular_core__WEBPACK_IMPORTED_MODULE_0__["ɵɵdirectiveInject"](src_app_servicios_devoluciones_service__WEBPACK_IMPORTED_MODULE_14__["DevolucionesService"]), _angular_core__WEBPACK_IMPORTED_MODULE_0__["ɵɵdirectiveInject"](src_app_servicios_contadores_documentos_service__WEBPACK_IMPORTED_MODULE_15__["ContadoresDocumentosService"]), _angular_core__WEBPACK_IMPORTED_MODULE_0__["ɵɵdirectiveInject"](src_app_servicios_notas_ventas_service__WEBPACK_IMPORTED_MODULE_16__["NotasVentasService"]), _angular_core__WEBPACK_IMPORTED_MODULE_0__["ɵɵdirectiveInject"](src_app_servicios_facturas_service__WEBPACK_IMPORTED_MODULE_17__["FacturasService"]), _angular_core__WEBPACK_IMPORTED_MODULE_0__["ɵɵdirectiveInject"](src_app_servicios_productos_pendientes_service__WEBPACK_IMPORTED_MODULE_18__["ProductosPendientesService"]), _angular_core__WEBPACK_IMPORTED_MODULE_0__["ɵɵdirectiveInject"](src_app_servicios_ordenes_compra_service__WEBPACK_IMPORTED_MODULE_19__["OrdenesCompraService"]), _angular_core__WEBPACK_IMPORTED_MODULE_0__["ɵɵdirectiveInject"](src_app_servicios_sucursales_service__WEBPACK_IMPORTED_MODULE_20__["SucursalesService"]), _angular_core__WEBPACK_IMPORTED_MODULE_0__["ɵɵdirectiveInject"](src_app_servicios_transaccionesFinancieras_service__WEBPACK_IMPORTED_MODULE_21__["TransaccionesFinancierasService"]), _angular_core__WEBPACK_IMPORTED_MODULE_0__["ɵɵdirectiveInject"](src_app_servicios_producto_service__WEBPACK_IMPORTED_MODULE_22__["ProductoService"]), _angular_core__WEBPACK_IMPORTED_MODULE_0__["ɵɵdirectiveInject"](src_app_shared_services__WEBPACK_IMPORTED_MODULE_23__["AuthService"]), _angular_core__WEBPACK_IMPORTED_MODULE_0__["ɵɵdirectiveInject"](src_app_servicios_combos_service__WEBPACK_IMPORTED_MODULE_24__["CombosService"]), _angular_core__WEBPACK_IMPORTED_MODULE_0__["ɵɵdirectiveInject"](src_app_servicios_cajaMenor_service__WEBPACK_IMPORTED_MODULE_25__["CajaMenorService"]), _angular_core__WEBPACK_IMPORTED_MODULE_0__["ɵɵdirectiveInject"](src_app_servicios_datosConfiguracion_service__WEBPACK_IMPORTED_MODULE_26__["DatosConfiguracionService"]), _angular_core__WEBPACK_IMPORTED_MODULE_0__["ɵɵdirectiveInject"](src_app_servicios_entregas_bodega_service__WEBPACK_IMPORTED_MODULE_27__["EntregasBodegaService"])); };
 DevolucionesComponent.ɵcmp = _angular_core__WEBPACK_IMPORTED_MODULE_0__["ɵɵdefineComponent"]({ type: DevolucionesComponent, selectors: [["app-devoluciones"]], decls: 7, vars: 7, consts: [[4, "ngIf"], [1, "row", "remiPro", "titulos"], [1, "col-md-8"], [1, "col-md-4"], [1, "form-control", "select", 3, "items", "value", "readOnly", "disabled", "onValueChanged"], [3, "messagge"], [1, "card"], [1, "card-header", "text-center", "font-weight-bold", "text-uppercase"], [1, "card-body"], [1, "row"], [1, "col-md-9", 2, "padding-left", "4em"], [1, "row", "espacioDivs", 2, "margin-bottom", "1em"], [1, "col-md-6"], [3, "value", "readOnly", "valueChange"], [3, "items", "value", "readOnly", "disabled", "searchEnabled", "onValueChanged"], ["selectId", ""], ["displayExpr", "textoCombo", 3, "items", "searchEnabled", "readOnly", "hint", "onValueChanged"], [3, "value", "type", "showClearButton", "valueChange"], ["type", "required", "message", "La fecha es requerida"], [3, "value", "disabled", "readOnly", "valueChange"], [1, "col-md-12"], [1, "col-md-3"], [1, "col-md-9"], [1, "col-md-3", 2, "padding-right", "1em"], [2, "text-align", "center"], [2, "text-align", "center", "font-size", "4rem", "margin-top", "-1rem"], [1, "remiPro"], [1, "detalle"], [2, "text-align", "right"], [2, "background-color", "#ff5722", 3, "text", "type", "onClick"], [1, "titcent", "row"], [1, "col-md-12", 2, "text-align", "center"], [1, "row", "titulosT"], [1, "col-3"], [1, "col-1"], [1, "col-2"], ["style", "text-align: center; margin-top: 1em", 4, "ngFor", "ngForOf"], [1, "col-md-9", "total"], [2, "background-color", "#ff5722", 3, "text", "type", "disabled", "onClick"], [3, "items", "value", "readOnly", "disabled", "valueChange", "onValueChanged"], [2, "text-align", "center", "margin-top", "1em"], [1, "row", "altura"], [1, "col-3", 2, "margin-top", "1em"], ["valueExpr", "producto.PRODUCTO", "displayExpr", "producto.PRODUCTO", 3, "items", "value", "readOnly", "disabled", "searchEnabled", "valueChange", "onValueChanged"], [3, "value", "disabled", "readOnly", "valueChange", "onValueChanged"], [1, "col-2", 2, "margin-top", "1em"], [3, "items", "value", "readOnly", "disabled", "searchEnabled", "valueChange"], ["icon", "clear", "color", "white", 1, "bt", 3, "onClick"], [1, "col-md-2"], [1, "col-md-12", 2, "text-align", "center", "font-weight", "bold"], [1, "row", "card"], [1, "col-md-3", 2, "margin-top", "0.5em"], [1, "col-md-9", "dates"], ["type", "date", 3, "value", "valueChange"], [1, "col-md-4", "btnSearch"], [1, "btn", "btn-block", "btn-success", 2, "background-color", "#ff5722", "border-color", "#ff5722", 3, "click"], [1, "col-md-4", 2, "margin-left", "1em"], [1, "col-md-6", "btnSearch"], [1, "dx-field", "radio"], [1, "dx-field-value"], ["layout", "horizontal", 3, "items", "value", "onValueChanged"], ["id", "gridContainer", 3, "dataSource", "showBorders"], ["datag2", ""], [3, "visible"], ["placeholder", "Buscar...", 3, "visible", "width"], ["aria-hidden", "true", 1, "fa", "fa-exclamation-triangle"], ["fileName", "Devoluciones", 3, "enabled", "allowExportSelectedData"], ["dataField", "_id", "caption", "Devolucion N", "dataType", "string", 3, "visible"], ["dataField", "id_devolucion", "caption", "Devolucion N", "dataType", "string", "sortOrder", "desc"], ["dataField", "fecha", "caption", "Fecha", "dataType", "date"], ["dataField", "num_documento", "caption", "Documento #", "dataType", "string"], ["dataField", "cliente", "caption", "Cliente", "dataType", "string"], ["dataField", "totalDevolucion", "caption", "Total", "dataType", "string", 3, "visible"], ["type", "buttons", "dataField", "bt1", "caption", "Ver", "width", "10%"], ["icon", "fa fa-arrow-down", 3, "onClick"], ["type", "buttons", "dataField", "bt2", "caption", "Aprobar", "width", "12%", 3, "visible", 4, "ngIf"], ["type", "buttons", "dataField", "bt2", "caption", "Rechazar", "width", "12%", 3, "visible", 4, "ngIf"], ["type", "buttons", "dataField", "bt1", "caption", "Anular", "width", "10%", 4, "ngIf"], [3, "pageSize"], [3, "showPageSizeSelector", "allowedPageSizes"], ["type", "buttons", "dataField", "bt2", "caption", "Aprobar", "width", "12%", 3, "visible"], ["text", "Aprobar", 3, "onClick"], ["type", "buttons", "dataField", "bt2", "caption", "Rechazar", "width", "12%", 3, "visible"], ["text", "Rechazar", 3, "onClick"], ["type", "buttons", "dataField", "bt1", "caption", "Anular", "width", "10%"], ["text", "Anular", 3, "onClick"]], template: function DevolucionesComponent_Template(rf, ctx) { if (rf & 1) {
         _angular_core__WEBPACK_IMPORTED_MODULE_0__["ɵɵtemplate"](0, DevolucionesComponent_div_0_Template, 2, 1, "div", 0);
         _angular_core__WEBPACK_IMPORTED_MODULE_0__["ɵɵelementStart"](1, "div", 1);
@@ -47239,7 +47301,7 @@ DevolucionesComponent.ɵcmp = _angular_core__WEBPACK_IMPORTED_MODULE_0__["ɵɵde
         _angular_core__WEBPACK_IMPORTED_MODULE_0__["ɵɵproperty"]("ngIf", ctx.mostrarNewDevolucion);
         _angular_core__WEBPACK_IMPORTED_MODULE_0__["ɵɵadvance"](1);
         _angular_core__WEBPACK_IMPORTED_MODULE_0__["ɵɵproperty"]("ngIf", ctx.mostrarListado);
-    } }, directives: [_angular_common__WEBPACK_IMPORTED_MODULE_27__["NgIf"], devextreme_angular__WEBPACK_IMPORTED_MODULE_28__["DxSelectBoxComponent"], _loading_message_loading_messagge_component__WEBPACK_IMPORTED_MODULE_29__["LoadingMessaggeComponent"], devextreme_angular_ui_text_box__WEBPACK_IMPORTED_MODULE_30__["DxTextBoxComponent"], devextreme_angular__WEBPACK_IMPORTED_MODULE_28__["DxDateBoxComponent"], devextreme_angular_ui_validator__WEBPACK_IMPORTED_MODULE_31__["DxValidatorComponent"], devextreme_angular_ui_nested__WEBPACK_IMPORTED_MODULE_32__["DxiValidationRuleComponent"], devextreme_angular_ui_button__WEBPACK_IMPORTED_MODULE_33__["DxButtonComponent"], _angular_common__WEBPACK_IMPORTED_MODULE_27__["NgForOf"], devextreme_angular__WEBPACK_IMPORTED_MODULE_28__["DxNumberBoxComponent"], devextreme_angular__WEBPACK_IMPORTED_MODULE_28__["DxRadioGroupComponent"], devextreme_angular__WEBPACK_IMPORTED_MODULE_28__["DxDataGridComponent"], devextreme_angular_ui_nested__WEBPACK_IMPORTED_MODULE_32__["DxoFilterRowComponent"], devextreme_angular_ui_nested__WEBPACK_IMPORTED_MODULE_32__["DxoSearchPanelComponent"], devextreme_angular_ui_nested__WEBPACK_IMPORTED_MODULE_32__["DxoExportComponent"], devextreme_angular_ui_nested__WEBPACK_IMPORTED_MODULE_32__["DxiColumnComponent"], devextreme_angular_ui_nested__WEBPACK_IMPORTED_MODULE_32__["DxiButtonComponent"], devextreme_angular_ui_nested__WEBPACK_IMPORTED_MODULE_32__["DxoPagingComponent"], devextreme_angular_ui_nested__WEBPACK_IMPORTED_MODULE_32__["DxoPagerComponent"]], styles: [".remiPro[_ngcontent-%COMP%] {\n  padding: 2em;\n  margin-top: 2em;\n  margin-bottom: 1.5em;\n}\n\n.remiPro[_ngcontent-%COMP%]   p[_ngcontent-%COMP%] {\n  margin-top: 1em;\n}\n\n.titulo[_ngcontent-%COMP%] {\n  margin-bottom: 1em;\n  font-weight: bold;\n  text-align: center;\n}\n\n.dates[_ngcontent-%COMP%]   dx-date-box[_ngcontent-%COMP%] {\n  margin-top: 0.05em;\n}\n\n.alinearBoton[_ngcontent-%COMP%] {\n  text-align: left;\n  margin-bottom: 2em;\n}\n\n.detalle[_ngcontent-%COMP%] {\n  padding: 3em;\n  padding-top: 0em;\n}\n\n.bt[_ngcontent-%COMP%] {\n  background-color: red;\n  color: white;\n}\n\n  .bt .dx-icon {\n  font-size: 12px;\n  color: white;\n}\n\n.bt2[_ngcontent-%COMP%] {\n  background-color: green;\n  color: white;\n}\n\n#historial[_ngcontent-%COMP%] {\n  margin: 2em;\n}\n\n.titulosT[_ngcontent-%COMP%]   h5[_ngcontent-%COMP%] {\n  text-align: center;\n  font-weight: bold;\n  font-size: 1em;\n}\n\n  .dx-texteditor-input {\n  text-align: center;\n}\n\n  .total .dx-texteditor-input {\n  text-align: center;\n  font-size: 2em;\n  font-weight: bold;\n}\n\n  .id .dx-texteditor-input {\n  text-align: center;\n  font-size: 2em;\n  font-weight: bold;\n}\n\n.mover[_ngcontent-%COMP%] {\n  text-align: right;\n}\n\n.btn-xs[_ngcontent-%COMP%] {\n  background-color: red;\n  border: red;\n  text-align: right;\n}\n\n.espacioDivs[_ngcontent-%COMP%]   dx-text-box[_ngcontent-%COMP%], dx-select-box[_ngcontent-%COMP%], dx-autocomplete[_ngcontent-%COMP%], dx-date-box[_ngcontent-%COMP%] {\n  margin-top: -1em;\n}\n\n.espacioDivs[_ngcontent-%COMP%]   dx-number-box[_ngcontent-%COMP%] {\n  text-align: right;\n}\n\n  .espacioDivs .dx-texteditor-input {\n  text-align: center;\n}\n\n.select[_ngcontent-%COMP%] {\n  text-align: center;\n  background-color: white;\n}\n\n.btnSearch[_ngcontent-%COMP%] {\n  text-align: center;\n  margin-top: 0.4em;\n  margin-bottom: 0.4em;\n}\n\n  .dx-theme-material-typography h2 {\n  font-weight: bold;\n  font-size: 40px;\n}\n/*# sourceMappingURL=data:application/json;base64,eyJ2ZXJzaW9uIjozLCJzb3VyY2VzIjpbInNyYy9hcHAvcGFnZXMvZGV2b2x1Y2lvbmVzL0M6XFxGSURFTlNcXGFsb2phYmFzZXMyMDI1L3NyY1xcYXBwXFxwYWdlc1xcZGV2b2x1Y2lvbmVzXFxkZXZvbHVjaW9uZXMuY29tcG9uZW50LnNjc3MiLCJzcmMvYXBwL3BhZ2VzL2Rldm9sdWNpb25lcy9kZXZvbHVjaW9uZXMuY29tcG9uZW50LnNjc3MiXSwibmFtZXMiOltdLCJtYXBwaW5ncyI6IkFBQUE7RUFDSSxZQUFBO0VBQ0EsZUFBQTtFQUVBLG9CQUFBO0FDQUo7O0FER0E7RUFFUSxlQUFBO0FDRFI7O0FES0E7RUFDSSxrQkFBQTtFQUNBLGlCQUFBO0VBQ0Esa0JBQUE7QUNGSjs7QURNQTtFQUNJLGtCQUFBO0FDSEo7O0FETUE7RUFDSSxnQkFBQTtFQUNBLGtCQUFBO0FDSEo7O0FETUE7RUFDSSxZQUFBO0VBQ0EsZ0JBQUE7QUNISjs7QURNQTtFQUNJLHFCQUFBO0VBQ0EsWUFBQTtBQ0hKOztBRE9BO0VBQ0ksZUFBQTtFQUNBLFlBQUE7QUNKSjs7QURRQTtFQUNJLHVCQUFBO0VBQ0EsWUFBQTtBQ0xKOztBRFFBO0VBQ0ksV0FBQTtBQ0xKOztBRFFBO0VBQ0ksa0JBQUE7RUFDQSxpQkFBQTtFQUNBLGNBQUE7QUNMSjs7QURRQTtFQUNJLGtCQUFBO0FDTEo7O0FEUUE7RUFDSSxrQkFBQTtFQUNBLGNBQUE7RUFDQSxpQkFBQTtBQ0xKOztBRFNBO0VBQ0ksa0JBQUE7RUFDQSxjQUFBO0VBQ0EsaUJBQUE7QUNOSjs7QURTQTtFQUNJLGlCQUFBO0FDTko7O0FEU0E7RUFDSSxxQkFBQTtFQUNBLFdBQUE7RUFDQSxpQkFBQTtBQ05KOztBRFVBO0VBQ0ksZ0JBQUE7QUNQSjs7QURVQTtFQUNJLGlCQUFBO0FDUEo7O0FEVUE7RUFDSSxrQkFBQTtBQ1BKOztBRFVBO0VBQ0ksa0JBQUE7RUFDQSx1QkFBQTtBQ1BKOztBRFVBO0VBQ0ksa0JBQUE7RUFDQSxpQkFBQTtFQUNBLG9CQUFBO0FDUEo7O0FEV0E7RUFDSSxpQkFBQTtFQUNBLGVBQUE7QUNSSiIsImZpbGUiOiJzcmMvYXBwL3BhZ2VzL2Rldm9sdWNpb25lcy9kZXZvbHVjaW9uZXMuY29tcG9uZW50LnNjc3MiLCJzb3VyY2VzQ29udGVudCI6WyIucmVtaVByb3tcclxuICAgIHBhZGRpbmc6IDJlbTtcclxuICAgIG1hcmdpbi10b3A6IDJlbTtcclxuIFxyXG4gICAgbWFyZ2luLWJvdHRvbTogMS41ZW07XHJcbiAgICB9XHJcblxyXG4ucmVtaVBybyBwe1xyXG4gICAgICAgXHJcbiAgICAgICAgbWFyZ2luLXRvcDogMWVtO1xyXG4gICAgICAgIFxyXG59XHJcblxyXG4udGl0dWxve1xyXG4gICAgbWFyZ2luLWJvdHRvbTogMWVtO1xyXG4gICAgZm9udC13ZWlnaHQ6IGJvbGQ7XHJcbiAgICB0ZXh0LWFsaWduOiBjZW50ZXI7XHJcbiAgICBcclxufVxyXG5cclxuLmRhdGVzIGR4LWRhdGUtYm94e1xyXG4gICAgbWFyZ2luLXRvcDogMC4wNWVtO1xyXG59XHJcblxyXG4uYWxpbmVhckJvdG9ue1xyXG4gICAgdGV4dC1hbGlnbjogbGVmdDtcclxuICAgIG1hcmdpbi1ib3R0b206IDJlbTtcclxufVxyXG5cclxuLmRldGFsbGV7XHJcbiAgICBwYWRkaW5nOiAzZW07XHJcbiAgICBwYWRkaW5nLXRvcDogMGVtO1xyXG59XHJcblxyXG4uYnR7XHJcbiAgICBiYWNrZ3JvdW5kLWNvbG9yOiByZWQ7XHJcbiAgICBjb2xvcjogd2hpdGU7XHJcbiAgIFxyXG59XHJcblxyXG46Om5nLWRlZXAgLmJ0IC5keC1pY29uIHtcclxuICAgIGZvbnQtc2l6ZTogMTJweDtcclxuICAgIGNvbG9yOiB3aGl0ZTtcclxufVxyXG5cclxuXHJcbi5idDJ7XHJcbiAgICBiYWNrZ3JvdW5kLWNvbG9yOiBncmVlbjtcclxuICAgIGNvbG9yOiB3aGl0ZTtcclxufVxyXG5cclxuI2hpc3RvcmlhbHtcclxuICAgIG1hcmdpbjogMmVtO1xyXG59XHJcblxyXG4udGl0dWxvc1QgaDV7XHJcbiAgICB0ZXh0LWFsaWduOiBjZW50ZXI7XHJcbiAgICBmb250LXdlaWdodDogYm9sZDtcclxuICAgIGZvbnQtc2l6ZTogMWVtO1xyXG59XHJcblxyXG46Om5nLWRlZXAgIC5keC10ZXh0ZWRpdG9yLWlucHV0e1xyXG4gICAgdGV4dC1hbGlnbjogY2VudGVyO1xyXG59XHJcblxyXG46Om5nLWRlZXAgLnRvdGFsIC5keC10ZXh0ZWRpdG9yLWlucHV0e1xyXG4gICAgdGV4dC1hbGlnbjogY2VudGVyO1xyXG4gICAgZm9udC1zaXplOiAyZW07XHJcbiAgICBmb250LXdlaWdodDogYm9sZDtcclxufVxyXG5cclxuXHJcbjo6bmctZGVlcCAuaWQgLmR4LXRleHRlZGl0b3ItaW5wdXR7XHJcbiAgICB0ZXh0LWFsaWduOiBjZW50ZXI7XHJcbiAgICBmb250LXNpemU6IDJlbTtcclxuICAgIGZvbnQtd2VpZ2h0OiBib2xkO1xyXG59XHJcblxyXG4ubW92ZXJ7XHJcbiAgICB0ZXh0LWFsaWduOiByaWdodDtcclxufVxyXG5cclxuLmJ0bi14c3tcclxuICAgIGJhY2tncm91bmQtY29sb3I6IHJlZDtcclxuICAgIGJvcmRlcjogcmVkO1xyXG4gICAgdGV4dC1hbGlnbjogcmlnaHQ7XHJcbn1cclxuXHJcblxyXG4uZXNwYWNpb0RpdnMgZHgtdGV4dC1ib3gsZHgtc2VsZWN0LWJveCxkeC1hdXRvY29tcGxldGUsZHgtZGF0ZS1ib3h7XHJcbiAgICBtYXJnaW4tdG9wOiAtMWVtO1xyXG59XHJcblxyXG4uZXNwYWNpb0RpdnMgZHgtbnVtYmVyLWJveHtcclxuICAgIHRleHQtYWxpZ246IHJpZ2h0O1xyXG59XHJcblxyXG46Om5nLWRlZXAgLmVzcGFjaW9EaXZzIC5keC10ZXh0ZWRpdG9yLWlucHV0e1xyXG4gICAgdGV4dC1hbGlnbjogY2VudGVyO1xyXG59XHJcblxyXG4uc2VsZWN0e1xyXG4gICAgdGV4dC1hbGlnbjogY2VudGVyO1xyXG4gICAgYmFja2dyb3VuZC1jb2xvcjogd2hpdGU7XHJcbn1cclxuXHJcbi5idG5TZWFyY2h7XHJcbiAgICB0ZXh0LWFsaWduOiBjZW50ZXI7XHJcbiAgICBtYXJnaW4tdG9wOiAwLjRlbTtcclxuICAgIG1hcmdpbi1ib3R0b206IDAuNGVtO1xyXG59XHJcblxyXG5cclxuOjpuZy1kZWVwIC5keC10aGVtZS1tYXRlcmlhbC10eXBvZ3JhcGh5IGgyIHtcclxuICAgIGZvbnQtd2VpZ2h0OiBib2xkO1xyXG4gICAgZm9udC1zaXplOiA0MHB4O1xyXG59IiwiLnJlbWlQcm8ge1xuICBwYWRkaW5nOiAyZW07XG4gIG1hcmdpbi10b3A6IDJlbTtcbiAgbWFyZ2luLWJvdHRvbTogMS41ZW07XG59XG5cbi5yZW1pUHJvIHAge1xuICBtYXJnaW4tdG9wOiAxZW07XG59XG5cbi50aXR1bG8ge1xuICBtYXJnaW4tYm90dG9tOiAxZW07XG4gIGZvbnQtd2VpZ2h0OiBib2xkO1xuICB0ZXh0LWFsaWduOiBjZW50ZXI7XG59XG5cbi5kYXRlcyBkeC1kYXRlLWJveCB7XG4gIG1hcmdpbi10b3A6IDAuMDVlbTtcbn1cblxuLmFsaW5lYXJCb3RvbiB7XG4gIHRleHQtYWxpZ246IGxlZnQ7XG4gIG1hcmdpbi1ib3R0b206IDJlbTtcbn1cblxuLmRldGFsbGUge1xuICBwYWRkaW5nOiAzZW07XG4gIHBhZGRpbmctdG9wOiAwZW07XG59XG5cbi5idCB7XG4gIGJhY2tncm91bmQtY29sb3I6IHJlZDtcbiAgY29sb3I6IHdoaXRlO1xufVxuXG46Om5nLWRlZXAgLmJ0IC5keC1pY29uIHtcbiAgZm9udC1zaXplOiAxMnB4O1xuICBjb2xvcjogd2hpdGU7XG59XG5cbi5idDIge1xuICBiYWNrZ3JvdW5kLWNvbG9yOiBncmVlbjtcbiAgY29sb3I6IHdoaXRlO1xufVxuXG4jaGlzdG9yaWFsIHtcbiAgbWFyZ2luOiAyZW07XG59XG5cbi50aXR1bG9zVCBoNSB7XG4gIHRleHQtYWxpZ246IGNlbnRlcjtcbiAgZm9udC13ZWlnaHQ6IGJvbGQ7XG4gIGZvbnQtc2l6ZTogMWVtO1xufVxuXG46Om5nLWRlZXAgLmR4LXRleHRlZGl0b3ItaW5wdXQge1xuICB0ZXh0LWFsaWduOiBjZW50ZXI7XG59XG5cbjo6bmctZGVlcCAudG90YWwgLmR4LXRleHRlZGl0b3ItaW5wdXQge1xuICB0ZXh0LWFsaWduOiBjZW50ZXI7XG4gIGZvbnQtc2l6ZTogMmVtO1xuICBmb250LXdlaWdodDogYm9sZDtcbn1cblxuOjpuZy1kZWVwIC5pZCAuZHgtdGV4dGVkaXRvci1pbnB1dCB7XG4gIHRleHQtYWxpZ246IGNlbnRlcjtcbiAgZm9udC1zaXplOiAyZW07XG4gIGZvbnQtd2VpZ2h0OiBib2xkO1xufVxuXG4ubW92ZXIge1xuICB0ZXh0LWFsaWduOiByaWdodDtcbn1cblxuLmJ0bi14cyB7XG4gIGJhY2tncm91bmQtY29sb3I6IHJlZDtcbiAgYm9yZGVyOiByZWQ7XG4gIHRleHQtYWxpZ246IHJpZ2h0O1xufVxuXG4uZXNwYWNpb0RpdnMgZHgtdGV4dC1ib3gsIGR4LXNlbGVjdC1ib3gsIGR4LWF1dG9jb21wbGV0ZSwgZHgtZGF0ZS1ib3gge1xuICBtYXJnaW4tdG9wOiAtMWVtO1xufVxuXG4uZXNwYWNpb0RpdnMgZHgtbnVtYmVyLWJveCB7XG4gIHRleHQtYWxpZ246IHJpZ2h0O1xufVxuXG46Om5nLWRlZXAgLmVzcGFjaW9EaXZzIC5keC10ZXh0ZWRpdG9yLWlucHV0IHtcbiAgdGV4dC1hbGlnbjogY2VudGVyO1xufVxuXG4uc2VsZWN0IHtcbiAgdGV4dC1hbGlnbjogY2VudGVyO1xuICBiYWNrZ3JvdW5kLWNvbG9yOiB3aGl0ZTtcbn1cblxuLmJ0blNlYXJjaCB7XG4gIHRleHQtYWxpZ246IGNlbnRlcjtcbiAgbWFyZ2luLXRvcDogMC40ZW07XG4gIG1hcmdpbi1ib3R0b206IDAuNGVtO1xufVxuXG46Om5nLWRlZXAgLmR4LXRoZW1lLW1hdGVyaWFsLXR5cG9ncmFwaHkgaDIge1xuICBmb250LXdlaWdodDogYm9sZDtcbiAgZm9udC1zaXplOiA0MHB4O1xufSJdfQ== */"] });
+    } }, directives: [_angular_common__WEBPACK_IMPORTED_MODULE_28__["NgIf"], devextreme_angular__WEBPACK_IMPORTED_MODULE_29__["DxSelectBoxComponent"], _loading_message_loading_messagge_component__WEBPACK_IMPORTED_MODULE_30__["LoadingMessaggeComponent"], devextreme_angular_ui_text_box__WEBPACK_IMPORTED_MODULE_31__["DxTextBoxComponent"], devextreme_angular__WEBPACK_IMPORTED_MODULE_29__["DxDateBoxComponent"], devextreme_angular_ui_validator__WEBPACK_IMPORTED_MODULE_32__["DxValidatorComponent"], devextreme_angular_ui_nested__WEBPACK_IMPORTED_MODULE_33__["DxiValidationRuleComponent"], devextreme_angular_ui_button__WEBPACK_IMPORTED_MODULE_34__["DxButtonComponent"], _angular_common__WEBPACK_IMPORTED_MODULE_28__["NgForOf"], devextreme_angular__WEBPACK_IMPORTED_MODULE_29__["DxNumberBoxComponent"], devextreme_angular__WEBPACK_IMPORTED_MODULE_29__["DxRadioGroupComponent"], devextreme_angular__WEBPACK_IMPORTED_MODULE_29__["DxDataGridComponent"], devextreme_angular_ui_nested__WEBPACK_IMPORTED_MODULE_33__["DxoFilterRowComponent"], devextreme_angular_ui_nested__WEBPACK_IMPORTED_MODULE_33__["DxoSearchPanelComponent"], devextreme_angular_ui_nested__WEBPACK_IMPORTED_MODULE_33__["DxoExportComponent"], devextreme_angular_ui_nested__WEBPACK_IMPORTED_MODULE_33__["DxiColumnComponent"], devextreme_angular_ui_nested__WEBPACK_IMPORTED_MODULE_33__["DxiButtonComponent"], devextreme_angular_ui_nested__WEBPACK_IMPORTED_MODULE_33__["DxoPagingComponent"], devextreme_angular_ui_nested__WEBPACK_IMPORTED_MODULE_33__["DxoPagerComponent"]], styles: [".remiPro[_ngcontent-%COMP%] {\n  padding: 2em;\n  margin-top: 2em;\n  margin-bottom: 1.5em;\n}\n\n.remiPro[_ngcontent-%COMP%]   p[_ngcontent-%COMP%] {\n  margin-top: 1em;\n}\n\n.titulo[_ngcontent-%COMP%] {\n  margin-bottom: 1em;\n  font-weight: bold;\n  text-align: center;\n}\n\n.dates[_ngcontent-%COMP%]   dx-date-box[_ngcontent-%COMP%] {\n  margin-top: 0.05em;\n}\n\n.alinearBoton[_ngcontent-%COMP%] {\n  text-align: left;\n  margin-bottom: 2em;\n}\n\n.detalle[_ngcontent-%COMP%] {\n  padding: 3em;\n  padding-top: 0em;\n}\n\n.bt[_ngcontent-%COMP%] {\n  background-color: red;\n  color: white;\n}\n\n  .bt .dx-icon {\n  font-size: 12px;\n  color: white;\n}\n\n.bt2[_ngcontent-%COMP%] {\n  background-color: green;\n  color: white;\n}\n\n#historial[_ngcontent-%COMP%] {\n  margin: 2em;\n}\n\n.titulosT[_ngcontent-%COMP%]   h5[_ngcontent-%COMP%] {\n  text-align: center;\n  font-weight: bold;\n  font-size: 1em;\n}\n\n  .dx-texteditor-input {\n  text-align: center;\n}\n\n  .total .dx-texteditor-input {\n  text-align: center;\n  font-size: 2em;\n  font-weight: bold;\n}\n\n  .id .dx-texteditor-input {\n  text-align: center;\n  font-size: 2em;\n  font-weight: bold;\n}\n\n.mover[_ngcontent-%COMP%] {\n  text-align: right;\n}\n\n.btn-xs[_ngcontent-%COMP%] {\n  background-color: red;\n  border: red;\n  text-align: right;\n}\n\n.espacioDivs[_ngcontent-%COMP%]   dx-text-box[_ngcontent-%COMP%], dx-select-box[_ngcontent-%COMP%], dx-autocomplete[_ngcontent-%COMP%], dx-date-box[_ngcontent-%COMP%] {\n  margin-top: -1em;\n}\n\n.espacioDivs[_ngcontent-%COMP%]   dx-number-box[_ngcontent-%COMP%] {\n  text-align: right;\n}\n\n  .espacioDivs .dx-texteditor-input {\n  text-align: center;\n}\n\n.select[_ngcontent-%COMP%] {\n  text-align: center;\n  background-color: white;\n}\n\n.btnSearch[_ngcontent-%COMP%] {\n  text-align: center;\n  margin-top: 0.4em;\n  margin-bottom: 0.4em;\n}\n\n  .dx-theme-material-typography h2 {\n  font-weight: bold;\n  font-size: 40px;\n}\n/*# sourceMappingURL=data:application/json;base64,eyJ2ZXJzaW9uIjozLCJzb3VyY2VzIjpbInNyYy9hcHAvcGFnZXMvZGV2b2x1Y2lvbmVzL0M6XFxGSURFTlNcXGFsb2phYmFzZXMyMDI1L3NyY1xcYXBwXFxwYWdlc1xcZGV2b2x1Y2lvbmVzXFxkZXZvbHVjaW9uZXMuY29tcG9uZW50LnNjc3MiLCJzcmMvYXBwL3BhZ2VzL2Rldm9sdWNpb25lcy9kZXZvbHVjaW9uZXMuY29tcG9uZW50LnNjc3MiXSwibmFtZXMiOltdLCJtYXBwaW5ncyI6IkFBQUE7RUFDSSxZQUFBO0VBQ0EsZUFBQTtFQUVBLG9CQUFBO0FDQUo7O0FER0E7RUFFUSxlQUFBO0FDRFI7O0FES0E7RUFDSSxrQkFBQTtFQUNBLGlCQUFBO0VBQ0Esa0JBQUE7QUNGSjs7QURNQTtFQUNJLGtCQUFBO0FDSEo7O0FETUE7RUFDSSxnQkFBQTtFQUNBLGtCQUFBO0FDSEo7O0FETUE7RUFDSSxZQUFBO0VBQ0EsZ0JBQUE7QUNISjs7QURNQTtFQUNJLHFCQUFBO0VBQ0EsWUFBQTtBQ0hKOztBRE9BO0VBQ0ksZUFBQTtFQUNBLFlBQUE7QUNKSjs7QURRQTtFQUNJLHVCQUFBO0VBQ0EsWUFBQTtBQ0xKOztBRFFBO0VBQ0ksV0FBQTtBQ0xKOztBRFFBO0VBQ0ksa0JBQUE7RUFDQSxpQkFBQTtFQUNBLGNBQUE7QUNMSjs7QURRQTtFQUNJLGtCQUFBO0FDTEo7O0FEUUE7RUFDSSxrQkFBQTtFQUNBLGNBQUE7RUFDQSxpQkFBQTtBQ0xKOztBRFNBO0VBQ0ksa0JBQUE7RUFDQSxjQUFBO0VBQ0EsaUJBQUE7QUNOSjs7QURTQTtFQUNJLGlCQUFBO0FDTko7O0FEU0E7RUFDSSxxQkFBQTtFQUNBLFdBQUE7RUFDQSxpQkFBQTtBQ05KOztBRFVBO0VBQ0ksZ0JBQUE7QUNQSjs7QURVQTtFQUNJLGlCQUFBO0FDUEo7O0FEVUE7RUFDSSxrQkFBQTtBQ1BKOztBRFVBO0VBQ0ksa0JBQUE7RUFDQSx1QkFBQTtBQ1BKOztBRFVBO0VBQ0ksa0JBQUE7RUFDQSxpQkFBQTtFQUNBLG9CQUFBO0FDUEo7O0FEV0E7RUFDSSxpQkFBQTtFQUNBLGVBQUE7QUNSSiIsImZpbGUiOiJzcmMvYXBwL3BhZ2VzL2Rldm9sdWNpb25lcy9kZXZvbHVjaW9uZXMuY29tcG9uZW50LnNjc3MiLCJzb3VyY2VzQ29udGVudCI6WyIucmVtaVByb3tcclxuICAgIHBhZGRpbmc6IDJlbTtcclxuICAgIG1hcmdpbi10b3A6IDJlbTtcclxuIFxyXG4gICAgbWFyZ2luLWJvdHRvbTogMS41ZW07XHJcbiAgICB9XHJcblxyXG4ucmVtaVBybyBwe1xyXG4gICAgICAgXHJcbiAgICAgICAgbWFyZ2luLXRvcDogMWVtO1xyXG4gICAgICAgIFxyXG59XHJcblxyXG4udGl0dWxve1xyXG4gICAgbWFyZ2luLWJvdHRvbTogMWVtO1xyXG4gICAgZm9udC13ZWlnaHQ6IGJvbGQ7XHJcbiAgICB0ZXh0LWFsaWduOiBjZW50ZXI7XHJcbiAgICBcclxufVxyXG5cclxuLmRhdGVzIGR4LWRhdGUtYm94e1xyXG4gICAgbWFyZ2luLXRvcDogMC4wNWVtO1xyXG59XHJcblxyXG4uYWxpbmVhckJvdG9ue1xyXG4gICAgdGV4dC1hbGlnbjogbGVmdDtcclxuICAgIG1hcmdpbi1ib3R0b206IDJlbTtcclxufVxyXG5cclxuLmRldGFsbGV7XHJcbiAgICBwYWRkaW5nOiAzZW07XHJcbiAgICBwYWRkaW5nLXRvcDogMGVtO1xyXG59XHJcblxyXG4uYnR7XHJcbiAgICBiYWNrZ3JvdW5kLWNvbG9yOiByZWQ7XHJcbiAgICBjb2xvcjogd2hpdGU7XHJcbiAgIFxyXG59XHJcblxyXG46Om5nLWRlZXAgLmJ0IC5keC1pY29uIHtcclxuICAgIGZvbnQtc2l6ZTogMTJweDtcclxuICAgIGNvbG9yOiB3aGl0ZTtcclxufVxyXG5cclxuXHJcbi5idDJ7XHJcbiAgICBiYWNrZ3JvdW5kLWNvbG9yOiBncmVlbjtcclxuICAgIGNvbG9yOiB3aGl0ZTtcclxufVxyXG5cclxuI2hpc3RvcmlhbHtcclxuICAgIG1hcmdpbjogMmVtO1xyXG59XHJcblxyXG4udGl0dWxvc1QgaDV7XHJcbiAgICB0ZXh0LWFsaWduOiBjZW50ZXI7XHJcbiAgICBmb250LXdlaWdodDogYm9sZDtcclxuICAgIGZvbnQtc2l6ZTogMWVtO1xyXG59XHJcblxyXG46Om5nLWRlZXAgIC5keC10ZXh0ZWRpdG9yLWlucHV0e1xyXG4gICAgdGV4dC1hbGlnbjogY2VudGVyO1xyXG59XHJcblxyXG46Om5nLWRlZXAgLnRvdGFsIC5keC10ZXh0ZWRpdG9yLWlucHV0e1xyXG4gICAgdGV4dC1hbGlnbjogY2VudGVyO1xyXG4gICAgZm9udC1zaXplOiAyZW07XHJcbiAgICBmb250LXdlaWdodDogYm9sZDtcclxufVxyXG5cclxuXHJcbjo6bmctZGVlcCAuaWQgLmR4LXRleHRlZGl0b3ItaW5wdXR7XHJcbiAgICB0ZXh0LWFsaWduOiBjZW50ZXI7XHJcbiAgICBmb250LXNpemU6IDJlbTtcclxuICAgIGZvbnQtd2VpZ2h0OiBib2xkO1xyXG59XHJcblxyXG4ubW92ZXJ7XHJcbiAgICB0ZXh0LWFsaWduOiByaWdodDtcclxufVxyXG5cclxuLmJ0bi14c3tcclxuICAgIGJhY2tncm91bmQtY29sb3I6IHJlZDtcclxuICAgIGJvcmRlcjogcmVkO1xyXG4gICAgdGV4dC1hbGlnbjogcmlnaHQ7XHJcbn1cclxuXHJcblxyXG4uZXNwYWNpb0RpdnMgZHgtdGV4dC1ib3gsZHgtc2VsZWN0LWJveCxkeC1hdXRvY29tcGxldGUsZHgtZGF0ZS1ib3h7XHJcbiAgICBtYXJnaW4tdG9wOiAtMWVtO1xyXG59XHJcblxyXG4uZXNwYWNpb0RpdnMgZHgtbnVtYmVyLWJveHtcclxuICAgIHRleHQtYWxpZ246IHJpZ2h0O1xyXG59XHJcblxyXG46Om5nLWRlZXAgLmVzcGFjaW9EaXZzIC5keC10ZXh0ZWRpdG9yLWlucHV0e1xyXG4gICAgdGV4dC1hbGlnbjogY2VudGVyO1xyXG59XHJcblxyXG4uc2VsZWN0e1xyXG4gICAgdGV4dC1hbGlnbjogY2VudGVyO1xyXG4gICAgYmFja2dyb3VuZC1jb2xvcjogd2hpdGU7XHJcbn1cclxuXHJcbi5idG5TZWFyY2h7XHJcbiAgICB0ZXh0LWFsaWduOiBjZW50ZXI7XHJcbiAgICBtYXJnaW4tdG9wOiAwLjRlbTtcclxuICAgIG1hcmdpbi1ib3R0b206IDAuNGVtO1xyXG59XHJcblxyXG5cclxuOjpuZy1kZWVwIC5keC10aGVtZS1tYXRlcmlhbC10eXBvZ3JhcGh5IGgyIHtcclxuICAgIGZvbnQtd2VpZ2h0OiBib2xkO1xyXG4gICAgZm9udC1zaXplOiA0MHB4O1xyXG59IiwiLnJlbWlQcm8ge1xuICBwYWRkaW5nOiAyZW07XG4gIG1hcmdpbi10b3A6IDJlbTtcbiAgbWFyZ2luLWJvdHRvbTogMS41ZW07XG59XG5cbi5yZW1pUHJvIHAge1xuICBtYXJnaW4tdG9wOiAxZW07XG59XG5cbi50aXR1bG8ge1xuICBtYXJnaW4tYm90dG9tOiAxZW07XG4gIGZvbnQtd2VpZ2h0OiBib2xkO1xuICB0ZXh0LWFsaWduOiBjZW50ZXI7XG59XG5cbi5kYXRlcyBkeC1kYXRlLWJveCB7XG4gIG1hcmdpbi10b3A6IDAuMDVlbTtcbn1cblxuLmFsaW5lYXJCb3RvbiB7XG4gIHRleHQtYWxpZ246IGxlZnQ7XG4gIG1hcmdpbi1ib3R0b206IDJlbTtcbn1cblxuLmRldGFsbGUge1xuICBwYWRkaW5nOiAzZW07XG4gIHBhZGRpbmctdG9wOiAwZW07XG59XG5cbi5idCB7XG4gIGJhY2tncm91bmQtY29sb3I6IHJlZDtcbiAgY29sb3I6IHdoaXRlO1xufVxuXG46Om5nLWRlZXAgLmJ0IC5keC1pY29uIHtcbiAgZm9udC1zaXplOiAxMnB4O1xuICBjb2xvcjogd2hpdGU7XG59XG5cbi5idDIge1xuICBiYWNrZ3JvdW5kLWNvbG9yOiBncmVlbjtcbiAgY29sb3I6IHdoaXRlO1xufVxuXG4jaGlzdG9yaWFsIHtcbiAgbWFyZ2luOiAyZW07XG59XG5cbi50aXR1bG9zVCBoNSB7XG4gIHRleHQtYWxpZ246IGNlbnRlcjtcbiAgZm9udC13ZWlnaHQ6IGJvbGQ7XG4gIGZvbnQtc2l6ZTogMWVtO1xufVxuXG46Om5nLWRlZXAgLmR4LXRleHRlZGl0b3ItaW5wdXQge1xuICB0ZXh0LWFsaWduOiBjZW50ZXI7XG59XG5cbjo6bmctZGVlcCAudG90YWwgLmR4LXRleHRlZGl0b3ItaW5wdXQge1xuICB0ZXh0LWFsaWduOiBjZW50ZXI7XG4gIGZvbnQtc2l6ZTogMmVtO1xuICBmb250LXdlaWdodDogYm9sZDtcbn1cblxuOjpuZy1kZWVwIC5pZCAuZHgtdGV4dGVkaXRvci1pbnB1dCB7XG4gIHRleHQtYWxpZ246IGNlbnRlcjtcbiAgZm9udC1zaXplOiAyZW07XG4gIGZvbnQtd2VpZ2h0OiBib2xkO1xufVxuXG4ubW92ZXIge1xuICB0ZXh0LWFsaWduOiByaWdodDtcbn1cblxuLmJ0bi14cyB7XG4gIGJhY2tncm91bmQtY29sb3I6IHJlZDtcbiAgYm9yZGVyOiByZWQ7XG4gIHRleHQtYWxpZ246IHJpZ2h0O1xufVxuXG4uZXNwYWNpb0RpdnMgZHgtdGV4dC1ib3gsIGR4LXNlbGVjdC1ib3gsIGR4LWF1dG9jb21wbGV0ZSwgZHgtZGF0ZS1ib3gge1xuICBtYXJnaW4tdG9wOiAtMWVtO1xufVxuXG4uZXNwYWNpb0RpdnMgZHgtbnVtYmVyLWJveCB7XG4gIHRleHQtYWxpZ246IHJpZ2h0O1xufVxuXG46Om5nLWRlZXAgLmVzcGFjaW9EaXZzIC5keC10ZXh0ZWRpdG9yLWlucHV0IHtcbiAgdGV4dC1hbGlnbjogY2VudGVyO1xufVxuXG4uc2VsZWN0IHtcbiAgdGV4dC1hbGlnbjogY2VudGVyO1xuICBiYWNrZ3JvdW5kLWNvbG9yOiB3aGl0ZTtcbn1cblxuLmJ0blNlYXJjaCB7XG4gIHRleHQtYWxpZ246IGNlbnRlcjtcbiAgbWFyZ2luLXRvcDogMC40ZW07XG4gIG1hcmdpbi1ib3R0b206IDAuNGVtO1xufVxuXG46Om5nLWRlZXAgLmR4LXRoZW1lLW1hdGVyaWFsLXR5cG9ncmFwaHkgaDIge1xuICBmb250LXdlaWdodDogYm9sZDtcbiAgZm9udC1zaXplOiA0MHB4O1xufSJdfQ== */"] });
 /*@__PURE__*/ (function () { _angular_core__WEBPACK_IMPORTED_MODULE_0__["ɵsetClassMetadata"](DevolucionesComponent, [{
         type: _angular_core__WEBPACK_IMPORTED_MODULE_0__["Component"],
         args: [{
@@ -47247,7 +47309,7 @@ DevolucionesComponent.ɵcmp = _angular_core__WEBPACK_IMPORTED_MODULE_0__["ɵɵde
                 templateUrl: "./devoluciones.component.html",
                 styleUrls: ["./devoluciones.component.scss"],
             }]
-    }], function () { return [{ type: src_app_servicios_parametrizaciones_service__WEBPACK_IMPORTED_MODULE_11__["ParametrizacionesService"] }, { type: src_app_servicios_authen_service__WEBPACK_IMPORTED_MODULE_12__["AuthenService"] }, { type: src_app_servicios_transacciones_service__WEBPACK_IMPORTED_MODULE_13__["TransaccionesService"] }, { type: src_app_servicios_devoluciones_service__WEBPACK_IMPORTED_MODULE_14__["DevolucionesService"] }, { type: src_app_servicios_contadores_documentos_service__WEBPACK_IMPORTED_MODULE_15__["ContadoresDocumentosService"] }, { type: src_app_servicios_notas_ventas_service__WEBPACK_IMPORTED_MODULE_16__["NotasVentasService"] }, { type: src_app_servicios_facturas_service__WEBPACK_IMPORTED_MODULE_17__["FacturasService"] }, { type: src_app_servicios_productos_pendientes_service__WEBPACK_IMPORTED_MODULE_18__["ProductosPendientesService"] }, { type: src_app_servicios_ordenes_compra_service__WEBPACK_IMPORTED_MODULE_19__["OrdenesCompraService"] }, { type: src_app_servicios_sucursales_service__WEBPACK_IMPORTED_MODULE_20__["SucursalesService"] }, { type: src_app_servicios_transaccionesFinancieras_service__WEBPACK_IMPORTED_MODULE_21__["TransaccionesFinancierasService"] }, { type: src_app_servicios_producto_service__WEBPACK_IMPORTED_MODULE_22__["ProductoService"] }, { type: src_app_shared_services__WEBPACK_IMPORTED_MODULE_23__["AuthService"] }, { type: src_app_servicios_combos_service__WEBPACK_IMPORTED_MODULE_24__["CombosService"] }, { type: src_app_servicios_cajaMenor_service__WEBPACK_IMPORTED_MODULE_25__["CajaMenorService"] }, { type: src_app_servicios_datosConfiguracion_service__WEBPACK_IMPORTED_MODULE_26__["DatosConfiguracionService"] }]; }, null); })();
+    }], function () { return [{ type: src_app_servicios_parametrizaciones_service__WEBPACK_IMPORTED_MODULE_11__["ParametrizacionesService"] }, { type: src_app_servicios_authen_service__WEBPACK_IMPORTED_MODULE_12__["AuthenService"] }, { type: src_app_servicios_transacciones_service__WEBPACK_IMPORTED_MODULE_13__["TransaccionesService"] }, { type: src_app_servicios_devoluciones_service__WEBPACK_IMPORTED_MODULE_14__["DevolucionesService"] }, { type: src_app_servicios_contadores_documentos_service__WEBPACK_IMPORTED_MODULE_15__["ContadoresDocumentosService"] }, { type: src_app_servicios_notas_ventas_service__WEBPACK_IMPORTED_MODULE_16__["NotasVentasService"] }, { type: src_app_servicios_facturas_service__WEBPACK_IMPORTED_MODULE_17__["FacturasService"] }, { type: src_app_servicios_productos_pendientes_service__WEBPACK_IMPORTED_MODULE_18__["ProductosPendientesService"] }, { type: src_app_servicios_ordenes_compra_service__WEBPACK_IMPORTED_MODULE_19__["OrdenesCompraService"] }, { type: src_app_servicios_sucursales_service__WEBPACK_IMPORTED_MODULE_20__["SucursalesService"] }, { type: src_app_servicios_transaccionesFinancieras_service__WEBPACK_IMPORTED_MODULE_21__["TransaccionesFinancierasService"] }, { type: src_app_servicios_producto_service__WEBPACK_IMPORTED_MODULE_22__["ProductoService"] }, { type: src_app_shared_services__WEBPACK_IMPORTED_MODULE_23__["AuthService"] }, { type: src_app_servicios_combos_service__WEBPACK_IMPORTED_MODULE_24__["CombosService"] }, { type: src_app_servicios_cajaMenor_service__WEBPACK_IMPORTED_MODULE_25__["CajaMenorService"] }, { type: src_app_servicios_datosConfiguracion_service__WEBPACK_IMPORTED_MODULE_26__["DatosConfiguracionService"] }, { type: src_app_servicios_entregas_bodega_service__WEBPACK_IMPORTED_MODULE_27__["EntregasBodegaService"] }]; }, null); })();
 
 
 /***/ }),
@@ -47537,9 +47599,9 @@ function EntregasPComponent_div_60_Template(rf, ctx) { if (rf & 1) {
     _angular_core__WEBPACK_IMPORTED_MODULE_0__["ɵɵadvance"](3);
     _angular_core__WEBPACK_IMPORTED_MODULE_0__["ɵɵproperty"]("visible", false);
     _angular_core__WEBPACK_IMPORTED_MODULE_0__["ɵɵadvance"](1);
-    _angular_core__WEBPACK_IMPORTED_MODULE_0__["ɵɵproperty"]("visible", false);
+    _angular_core__WEBPACK_IMPORTED_MODULE_0__["ɵɵproperty"]("visible", true);
     _angular_core__WEBPACK_IMPORTED_MODULE_0__["ɵɵadvance"](1);
-    _angular_core__WEBPACK_IMPORTED_MODULE_0__["ɵɵproperty"]("visible", false);
+    _angular_core__WEBPACK_IMPORTED_MODULE_0__["ɵɵproperty"]("visible", true);
     _angular_core__WEBPACK_IMPORTED_MODULE_0__["ɵɵadvance"](1);
     _angular_core__WEBPACK_IMPORTED_MODULE_0__["ɵɵproperty"]("visible", false);
     _angular_core__WEBPACK_IMPORTED_MODULE_0__["ɵɵadvance"](1);
@@ -51247,17 +51309,19 @@ __webpack_require__.r(__webpack_exports__);
 /* harmony import */ var sweetalert2__WEBPACK_IMPORTED_MODULE_2___default = /*#__PURE__*/__webpack_require__.n(sweetalert2__WEBPACK_IMPORTED_MODULE_2__);
 /* harmony import */ var src_app_pages_consolidado_consolidado__WEBPACK_IMPORTED_MODULE_3__ = __webpack_require__(/*! src/app/pages/consolidado/consolidado */ "./src/app/pages/consolidado/consolidado.ts");
 /* harmony import */ var src_app_servicios_entregas_bodega_service__WEBPACK_IMPORTED_MODULE_4__ = __webpack_require__(/*! src/app/servicios/entregas-bodega.service */ "./src/app/servicios/entregas-bodega.service.ts");
-/* harmony import */ var src_app_servicios_transacciones_service__WEBPACK_IMPORTED_MODULE_5__ = __webpack_require__(/*! src/app/servicios/transacciones.service */ "./src/app/servicios/transacciones.service.ts");
-/* harmony import */ var src_app_shared_services__WEBPACK_IMPORTED_MODULE_6__ = __webpack_require__(/*! src/app/shared/services */ "./src/app/shared/services/index.ts");
-/* harmony import */ var devextreme_angular__WEBPACK_IMPORTED_MODULE_7__ = __webpack_require__(/*! devextreme-angular */ "./node_modules/devextreme-angular/__ivy_ngcc__/fesm2015/devextreme-angular.js");
-/* harmony import */ var _angular_common__WEBPACK_IMPORTED_MODULE_8__ = __webpack_require__(/*! @angular/common */ "./node_modules/@angular/common/__ivy_ngcc__/fesm2015/common.js");
-/* harmony import */ var devextreme_angular_core__WEBPACK_IMPORTED_MODULE_9__ = __webpack_require__(/*! devextreme-angular/core */ "./node_modules/devextreme-angular/__ivy_ngcc__/fesm2015/devextreme-angular-core.js");
-/* harmony import */ var devextreme_angular_ui_text_box__WEBPACK_IMPORTED_MODULE_10__ = __webpack_require__(/*! devextreme-angular/ui/text-box */ "./node_modules/devextreme-angular/__ivy_ngcc__/fesm2015/devextreme-angular-ui-text-box.js");
-/* harmony import */ var devextreme_angular_ui_button__WEBPACK_IMPORTED_MODULE_11__ = __webpack_require__(/*! devextreme-angular/ui/button */ "./node_modules/devextreme-angular/__ivy_ngcc__/fesm2015/devextreme-angular-ui-button.js");
-/* harmony import */ var devextreme_angular_ui_check_box__WEBPACK_IMPORTED_MODULE_12__ = __webpack_require__(/*! devextreme-angular/ui/check-box */ "./node_modules/devextreme-angular/__ivy_ngcc__/fesm2015/devextreme-angular-ui-check-box.js");
-/* harmony import */ var _loading_loading_component__WEBPACK_IMPORTED_MODULE_13__ = __webpack_require__(/*! ../loading/loading.component */ "./src/app/pages/loading/loading.component.ts");
-/* harmony import */ var devextreme_angular_ui_nested__WEBPACK_IMPORTED_MODULE_14__ = __webpack_require__(/*! devextreme-angular/ui/nested */ "./node_modules/devextreme-angular/__ivy_ngcc__/fesm2015/devextreme-angular-ui-nested.js");
-/* harmony import */ var devextreme_angular_ui_scroll_view__WEBPACK_IMPORTED_MODULE_15__ = __webpack_require__(/*! devextreme-angular/ui/scroll-view */ "./node_modules/devextreme-angular/__ivy_ngcc__/fesm2015/devextreme-angular-ui-scroll-view.js");
+/* harmony import */ var src_app_servicios_productos_pendientes_service__WEBPACK_IMPORTED_MODULE_5__ = __webpack_require__(/*! src/app/servicios/productos-pendientes.service */ "./src/app/servicios/productos-pendientes.service.ts");
+/* harmony import */ var src_app_servicios_transacciones_service__WEBPACK_IMPORTED_MODULE_6__ = __webpack_require__(/*! src/app/servicios/transacciones.service */ "./src/app/servicios/transacciones.service.ts");
+/* harmony import */ var src_app_shared_services__WEBPACK_IMPORTED_MODULE_7__ = __webpack_require__(/*! src/app/shared/services */ "./src/app/shared/services/index.ts");
+/* harmony import */ var devextreme_angular__WEBPACK_IMPORTED_MODULE_8__ = __webpack_require__(/*! devextreme-angular */ "./node_modules/devextreme-angular/__ivy_ngcc__/fesm2015/devextreme-angular.js");
+/* harmony import */ var _angular_common__WEBPACK_IMPORTED_MODULE_9__ = __webpack_require__(/*! @angular/common */ "./node_modules/@angular/common/__ivy_ngcc__/fesm2015/common.js");
+/* harmony import */ var devextreme_angular_core__WEBPACK_IMPORTED_MODULE_10__ = __webpack_require__(/*! devextreme-angular/core */ "./node_modules/devextreme-angular/__ivy_ngcc__/fesm2015/devextreme-angular-core.js");
+/* harmony import */ var devextreme_angular_ui_text_box__WEBPACK_IMPORTED_MODULE_11__ = __webpack_require__(/*! devextreme-angular/ui/text-box */ "./node_modules/devextreme-angular/__ivy_ngcc__/fesm2015/devextreme-angular-ui-text-box.js");
+/* harmony import */ var devextreme_angular_ui_button__WEBPACK_IMPORTED_MODULE_12__ = __webpack_require__(/*! devextreme-angular/ui/button */ "./node_modules/devextreme-angular/__ivy_ngcc__/fesm2015/devextreme-angular-ui-button.js");
+/* harmony import */ var devextreme_angular_ui_check_box__WEBPACK_IMPORTED_MODULE_13__ = __webpack_require__(/*! devextreme-angular/ui/check-box */ "./node_modules/devextreme-angular/__ivy_ngcc__/fesm2015/devextreme-angular-ui-check-box.js");
+/* harmony import */ var _loading_loading_component__WEBPACK_IMPORTED_MODULE_14__ = __webpack_require__(/*! ../loading/loading.component */ "./src/app/pages/loading/loading.component.ts");
+/* harmony import */ var devextreme_angular_ui_nested__WEBPACK_IMPORTED_MODULE_15__ = __webpack_require__(/*! devextreme-angular/ui/nested */ "./node_modules/devextreme-angular/__ivy_ngcc__/fesm2015/devextreme-angular-ui-nested.js");
+/* harmony import */ var devextreme_angular_ui_scroll_view__WEBPACK_IMPORTED_MODULE_16__ = __webpack_require__(/*! devextreme-angular/ui/scroll-view */ "./node_modules/devextreme-angular/__ivy_ngcc__/fesm2015/devextreme-angular-ui-scroll-view.js");
+
 
 
 
@@ -51396,17 +51460,22 @@ function GestionEntregasBodegaComponent_div_5_span_6_Template(rf, ctx) { if (rf 
     _angular_core__WEBPACK_IMPORTED_MODULE_1__["ɵɵtext"](1, "Balance productos pendientes (bodega matriz)");
     _angular_core__WEBPACK_IMPORTED_MODULE_1__["ɵɵelementEnd"]();
 } }
-function GestionEntregasBodegaComponent_div_5_p_8_Template(rf, ctx) { if (rf & 1) {
-    _angular_core__WEBPACK_IMPORTED_MODULE_1__["ɵɵelementStart"](0, "p", 35);
-    _angular_core__WEBPACK_IMPORTED_MODULE_1__["ɵɵtext"](1, " \u00D3rdenes en estado ABIERTA, NOVEDAD o COMPLETO (sin cerradas). ");
+function GestionEntregasBodegaComponent_div_5_span_7_Template(rf, ctx) { if (rf & 1) {
+    _angular_core__WEBPACK_IMPORTED_MODULE_1__["ɵɵelementStart"](0, "span");
+    _angular_core__WEBPACK_IMPORTED_MODULE_1__["ɵɵtext"](1, "Productos pendientes entrega");
     _angular_core__WEBPACK_IMPORTED_MODULE_1__["ɵɵelementEnd"]();
 } }
 function GestionEntregasBodegaComponent_div_5_p_9_Template(rf, ctx) { if (rf & 1) {
     _angular_core__WEBPACK_IMPORTED_MODULE_1__["ɵɵelementStart"](0, "p", 35);
-    _angular_core__WEBPACK_IMPORTED_MODULE_1__["ɵɵtext"](1, " Todas las \u00F3rdenes en cualquier estado. Haga clic en una fila para ver la trazabilidad. ");
+    _angular_core__WEBPACK_IMPORTED_MODULE_1__["ɵɵtext"](1, " \u00D3rdenes en estado ABIERTA, NOVEDAD o COMPLETO (sin cerradas). ");
     _angular_core__WEBPACK_IMPORTED_MODULE_1__["ɵɵelementEnd"]();
 } }
 function GestionEntregasBodegaComponent_div_5_p_10_Template(rf, ctx) { if (rf & 1) {
+    _angular_core__WEBPACK_IMPORTED_MODULE_1__["ɵɵelementStart"](0, "p", 35);
+    _angular_core__WEBPACK_IMPORTED_MODULE_1__["ɵɵtext"](1, " Todas las \u00F3rdenes en cualquier estado. Haga clic en una fila para ver la trazabilidad. ");
+    _angular_core__WEBPACK_IMPORTED_MODULE_1__["ɵɵelementEnd"]();
+} }
+function GestionEntregasBodegaComponent_div_5_p_11_Template(rf, ctx) { if (rf & 1) {
     _angular_core__WEBPACK_IMPORTED_MODULE_1__["ɵɵelementStart"](0, "p", 35);
     _angular_core__WEBPACK_IMPORTED_MODULE_1__["ɵɵtext"](1, " Por producto: se suma el pendiente por entregar en \u00F3rdenes ABIERTA/NOVEDAD, la existencia en bodega ");
     _angular_core__WEBPACK_IMPORTED_MODULE_1__["ɵɵelementStart"](2, "strong");
@@ -51423,55 +51492,64 @@ function GestionEntregasBodegaComponent_div_5_p_10_Template(rf, ctx) { if (rf & 
     _angular_core__WEBPACK_IMPORTED_MODULE_1__["ɵɵtext"](10, " y el balance usa esa existencia en cero. ");
     _angular_core__WEBPACK_IMPORTED_MODULE_1__["ɵɵelementEnd"]();
 } }
-function GestionEntregasBodegaComponent_div_5_div_11_div_16_Template(rf, ctx) { if (rf & 1) {
+function GestionEntregasBodegaComponent_div_5_p_12_Template(rf, ctx) { if (rf & 1) {
+    _angular_core__WEBPACK_IMPORTED_MODULE_1__["ɵɵelementStart"](0, "p", 35);
+    _angular_core__WEBPACK_IMPORTED_MODULE_1__["ɵɵtext"](1, " Listado de productos con estado ");
+    _angular_core__WEBPACK_IMPORTED_MODULE_1__["ɵɵelementStart"](2, "strong");
+    _angular_core__WEBPACK_IMPORTED_MODULE_1__["ɵɵtext"](3, "PENDIENTE");
+    _angular_core__WEBPACK_IMPORTED_MODULE_1__["ɵɵelementEnd"]();
+    _angular_core__WEBPACK_IMPORTED_MODULE_1__["ɵɵtext"](4, " del m\u00F3dulo de entregas pendientes. ");
+    _angular_core__WEBPACK_IMPORTED_MODULE_1__["ɵɵelementEnd"]();
+} }
+function GestionEntregasBodegaComponent_div_5_div_13_div_16_Template(rf, ctx) { if (rf & 1) {
     _angular_core__WEBPACK_IMPORTED_MODULE_1__["ɵɵelementStart"](0, "div", 46);
     _angular_core__WEBPACK_IMPORTED_MODULE_1__["ɵɵtext"](1, " No hay \u00F3rdenes activas con los filtros actuales. ");
     _angular_core__WEBPACK_IMPORTED_MODULE_1__["ɵɵelementEnd"]();
 } }
-function GestionEntregasBodegaComponent_div_5_div_11_div_17_div_11_div_1_i_6_Template(rf, ctx) { if (rf & 1) {
+function GestionEntregasBodegaComponent_div_5_div_13_div_17_div_11_div_1_i_6_Template(rf, ctx) { if (rf & 1) {
     _angular_core__WEBPACK_IMPORTED_MODULE_1__["ɵɵelement"](0, "i", 69);
 } }
-function GestionEntregasBodegaComponent_div_5_div_11_div_17_div_11_div_1_div_8_div_21_Template(rf, ctx) { if (rf & 1) {
-    const _r45 = _angular_core__WEBPACK_IMPORTED_MODULE_1__["ɵɵgetCurrentView"]();
+function GestionEntregasBodegaComponent_div_5_div_13_div_17_div_11_div_1_div_8_div_21_Template(rf, ctx) { if (rf & 1) {
+    const _r48 = _angular_core__WEBPACK_IMPORTED_MODULE_1__["ɵɵgetCurrentView"]();
     _angular_core__WEBPACK_IMPORTED_MODULE_1__["ɵɵelementStart"](0, "div", 82);
     _angular_core__WEBPACK_IMPORTED_MODULE_1__["ɵɵelementStart"](1, "span", 83);
     _angular_core__WEBPACK_IMPORTED_MODULE_1__["ɵɵtext"](2, "Cajas");
     _angular_core__WEBPACK_IMPORTED_MODULE_1__["ɵɵelementEnd"]();
     _angular_core__WEBPACK_IMPORTED_MODULE_1__["ɵɵelementStart"](3, "dx-number-box", 84);
-    _angular_core__WEBPACK_IMPORTED_MODULE_1__["ɵɵlistener"]("valueChange", function GestionEntregasBodegaComponent_div_5_div_11_div_17_div_11_div_1_div_8_div_21_Template_dx_number_box_valueChange_3_listener($event) { _angular_core__WEBPACK_IMPORTED_MODULE_1__["ɵɵrestoreView"](_r45); const item_r34 = _angular_core__WEBPACK_IMPORTED_MODULE_1__["ɵɵnextContext"](2).$implicit; return item_r34.entregaCajasInput = $event; });
+    _angular_core__WEBPACK_IMPORTED_MODULE_1__["ɵɵlistener"]("valueChange", function GestionEntregasBodegaComponent_div_5_div_13_div_17_div_11_div_1_div_8_div_21_Template_dx_number_box_valueChange_3_listener($event) { _angular_core__WEBPACK_IMPORTED_MODULE_1__["ɵɵrestoreView"](_r48); const item_r37 = _angular_core__WEBPACK_IMPORTED_MODULE_1__["ɵɵnextContext"](2).$implicit; return item_r37.entregaCajasInput = $event; });
     _angular_core__WEBPACK_IMPORTED_MODULE_1__["ɵɵelementEnd"]();
     _angular_core__WEBPACK_IMPORTED_MODULE_1__["ɵɵelementStart"](4, "span", 85);
     _angular_core__WEBPACK_IMPORTED_MODULE_1__["ɵɵtext"](5, "Piezas");
     _angular_core__WEBPACK_IMPORTED_MODULE_1__["ɵɵelementEnd"]();
     _angular_core__WEBPACK_IMPORTED_MODULE_1__["ɵɵelementStart"](6, "dx-number-box", 84);
-    _angular_core__WEBPACK_IMPORTED_MODULE_1__["ɵɵlistener"]("valueChange", function GestionEntregasBodegaComponent_div_5_div_11_div_17_div_11_div_1_div_8_div_21_Template_dx_number_box_valueChange_6_listener($event) { _angular_core__WEBPACK_IMPORTED_MODULE_1__["ɵɵrestoreView"](_r45); const item_r34 = _angular_core__WEBPACK_IMPORTED_MODULE_1__["ɵɵnextContext"](2).$implicit; return item_r34.entregaPiezasInput = $event; });
+    _angular_core__WEBPACK_IMPORTED_MODULE_1__["ɵɵlistener"]("valueChange", function GestionEntregasBodegaComponent_div_5_div_13_div_17_div_11_div_1_div_8_div_21_Template_dx_number_box_valueChange_6_listener($event) { _angular_core__WEBPACK_IMPORTED_MODULE_1__["ɵɵrestoreView"](_r48); const item_r37 = _angular_core__WEBPACK_IMPORTED_MODULE_1__["ɵɵnextContext"](2).$implicit; return item_r37.entregaPiezasInput = $event; });
     _angular_core__WEBPACK_IMPORTED_MODULE_1__["ɵɵelementEnd"]();
     _angular_core__WEBPACK_IMPORTED_MODULE_1__["ɵɵelementEnd"]();
 } if (rf & 2) {
-    const item_r34 = _angular_core__WEBPACK_IMPORTED_MODULE_1__["ɵɵnextContext"](2).$implicit;
+    const item_r37 = _angular_core__WEBPACK_IMPORTED_MODULE_1__["ɵɵnextContext"](2).$implicit;
     _angular_core__WEBPACK_IMPORTED_MODULE_1__["ɵɵadvance"](3);
-    _angular_core__WEBPACK_IMPORTED_MODULE_1__["ɵɵproperty"]("width", 100)("value", item_r34.entregaCajasInput)("min", 0)("showSpinButtons", true);
+    _angular_core__WEBPACK_IMPORTED_MODULE_1__["ɵɵproperty"]("width", 100)("value", item_r37.entregaCajasInput)("min", 0)("showSpinButtons", true);
     _angular_core__WEBPACK_IMPORTED_MODULE_1__["ɵɵadvance"](3);
-    _angular_core__WEBPACK_IMPORTED_MODULE_1__["ɵɵproperty"]("width", 100)("value", item_r34.entregaPiezasInput)("min", 0)("showSpinButtons", true);
+    _angular_core__WEBPACK_IMPORTED_MODULE_1__["ɵɵproperty"]("width", 100)("value", item_r37.entregaPiezasInput)("min", 0)("showSpinButtons", true);
 } }
-function GestionEntregasBodegaComponent_div_5_div_11_div_17_div_11_div_1_div_8_dx_number_box_22_Template(rf, ctx) { if (rf & 1) {
-    const _r51 = _angular_core__WEBPACK_IMPORTED_MODULE_1__["ɵɵgetCurrentView"]();
+function GestionEntregasBodegaComponent_div_5_div_13_div_17_div_11_div_1_div_8_dx_number_box_22_Template(rf, ctx) { if (rf & 1) {
+    const _r54 = _angular_core__WEBPACK_IMPORTED_MODULE_1__["ɵɵgetCurrentView"]();
     _angular_core__WEBPACK_IMPORTED_MODULE_1__["ɵɵelementStart"](0, "dx-number-box", 86);
-    _angular_core__WEBPACK_IMPORTED_MODULE_1__["ɵɵlistener"]("valueChange", function GestionEntregasBodegaComponent_div_5_div_11_div_17_div_11_div_1_div_8_dx_number_box_22_Template_dx_number_box_valueChange_0_listener($event) { _angular_core__WEBPACK_IMPORTED_MODULE_1__["ɵɵrestoreView"](_r51); const item_r34 = _angular_core__WEBPACK_IMPORTED_MODULE_1__["ɵɵnextContext"](2).$implicit; return item_r34.cantidadEntregadaInput = $event; });
+    _angular_core__WEBPACK_IMPORTED_MODULE_1__["ɵɵlistener"]("valueChange", function GestionEntregasBodegaComponent_div_5_div_13_div_17_div_11_div_1_div_8_dx_number_box_22_Template_dx_number_box_valueChange_0_listener($event) { _angular_core__WEBPACK_IMPORTED_MODULE_1__["ɵɵrestoreView"](_r54); const item_r37 = _angular_core__WEBPACK_IMPORTED_MODULE_1__["ɵɵnextContext"](2).$implicit; return item_r37.cantidadEntregadaInput = $event; });
     _angular_core__WEBPACK_IMPORTED_MODULE_1__["ɵɵelementEnd"]();
 } if (rf & 2) {
-    const item_r34 = _angular_core__WEBPACK_IMPORTED_MODULE_1__["ɵɵnextContext"](2).$implicit;
-    _angular_core__WEBPACK_IMPORTED_MODULE_1__["ɵɵproperty"]("value", item_r34.cantidadEntregadaInput)("min", 0)("showSpinButtons", true);
+    const item_r37 = _angular_core__WEBPACK_IMPORTED_MODULE_1__["ɵɵnextContext"](2).$implicit;
+    _angular_core__WEBPACK_IMPORTED_MODULE_1__["ɵɵproperty"]("value", item_r37.cantidadEntregadaInput)("min", 0)("showSpinButtons", true);
 } }
-function GestionEntregasBodegaComponent_div_5_div_11_div_17_div_11_div_1_div_8_ng_container_32_Template(rf, ctx) { if (rf & 1) {
-    const _r55 = _angular_core__WEBPACK_IMPORTED_MODULE_1__["ɵɵgetCurrentView"]();
+function GestionEntregasBodegaComponent_div_5_div_13_div_17_div_11_div_1_div_8_ng_container_32_Template(rf, ctx) { if (rf & 1) {
+    const _r58 = _angular_core__WEBPACK_IMPORTED_MODULE_1__["ɵɵgetCurrentView"]();
     _angular_core__WEBPACK_IMPORTED_MODULE_1__["ɵɵelementContainerStart"](0);
     _angular_core__WEBPACK_IMPORTED_MODULE_1__["ɵɵelementStart"](1, "dx-button", 87);
-    _angular_core__WEBPACK_IMPORTED_MODULE_1__["ɵɵlistener"]("onClick", function GestionEntregasBodegaComponent_div_5_div_11_div_17_div_11_div_1_div_8_ng_container_32_Template_dx_button_onClick_1_listener() { _angular_core__WEBPACK_IMPORTED_MODULE_1__["ɵɵrestoreView"](_r55); const i_r35 = _angular_core__WEBPACK_IMPORTED_MODULE_1__["ɵɵnextContext"](2).index; const ctx_r53 = _angular_core__WEBPACK_IMPORTED_MODULE_1__["ɵɵnextContext"](5); return ctx_r53.guardarItem(i_r35); });
+    _angular_core__WEBPACK_IMPORTED_MODULE_1__["ɵɵlistener"]("onClick", function GestionEntregasBodegaComponent_div_5_div_13_div_17_div_11_div_1_div_8_ng_container_32_Template_dx_button_onClick_1_listener() { _angular_core__WEBPACK_IMPORTED_MODULE_1__["ɵɵrestoreView"](_r58); const i_r38 = _angular_core__WEBPACK_IMPORTED_MODULE_1__["ɵɵnextContext"](2).index; const ctx_r56 = _angular_core__WEBPACK_IMPORTED_MODULE_1__["ɵɵnextContext"](5); return ctx_r56.guardarItem(i_r38); });
     _angular_core__WEBPACK_IMPORTED_MODULE_1__["ɵɵelementEnd"]();
     _angular_core__WEBPACK_IMPORTED_MODULE_1__["ɵɵelementContainerEnd"]();
 } }
-function GestionEntregasBodegaComponent_div_5_div_11_div_17_div_11_div_1_div_8_ng_container_33_Template(rf, ctx) { if (rf & 1) {
+function GestionEntregasBodegaComponent_div_5_div_13_div_17_div_11_div_1_div_8_ng_container_33_Template(rf, ctx) { if (rf & 1) {
     _angular_core__WEBPACK_IMPORTED_MODULE_1__["ɵɵelementContainerStart"](0);
     _angular_core__WEBPACK_IMPORTED_MODULE_1__["ɵɵelement"](1, "dx-button", 88);
     _angular_core__WEBPACK_IMPORTED_MODULE_1__["ɵɵelementContainerEnd"]();
@@ -51479,14 +51557,14 @@ function GestionEntregasBodegaComponent_div_5_div_11_div_17_div_11_div_1_div_8_n
     _angular_core__WEBPACK_IMPORTED_MODULE_1__["ɵɵadvance"](1);
     _angular_core__WEBPACK_IMPORTED_MODULE_1__["ɵɵproperty"]("disabled", true);
 } }
-function GestionEntregasBodegaComponent_div_5_div_11_div_17_div_11_div_1_div_8_span_34_Template(rf, ctx) { if (rf & 1) {
+function GestionEntregasBodegaComponent_div_5_div_13_div_17_div_11_div_1_div_8_span_34_Template(rf, ctx) { if (rf & 1) {
     _angular_core__WEBPACK_IMPORTED_MODULE_1__["ɵɵelementStart"](0, "span", 89);
     _angular_core__WEBPACK_IMPORTED_MODULE_1__["ɵɵelement"](1, "i", 90);
     _angular_core__WEBPACK_IMPORTED_MODULE_1__["ɵɵtext"](2, " Guardado ");
     _angular_core__WEBPACK_IMPORTED_MODULE_1__["ɵɵelementEnd"]();
 } }
-function GestionEntregasBodegaComponent_div_5_div_11_div_17_div_11_div_1_div_8_Template(rf, ctx) { if (rf & 1) {
-    const _r58 = _angular_core__WEBPACK_IMPORTED_MODULE_1__["ɵɵgetCurrentView"]();
+function GestionEntregasBodegaComponent_div_5_div_13_div_17_div_11_div_1_div_8_Template(rf, ctx) { if (rf & 1) {
+    const _r61 = _angular_core__WEBPACK_IMPORTED_MODULE_1__["ɵɵgetCurrentView"]();
     _angular_core__WEBPACK_IMPORTED_MODULE_1__["ɵɵelementStart"](0, "div", 70);
     _angular_core__WEBPACK_IMPORTED_MODULE_1__["ɵɵelementStart"](1, "div", 71);
     _angular_core__WEBPACK_IMPORTED_MODULE_1__["ɵɵelementStart"](2, "div", 72);
@@ -51518,15 +51596,15 @@ function GestionEntregasBodegaComponent_div_5_div_11_div_17_div_11_div_1_div_8_T
     _angular_core__WEBPACK_IMPORTED_MODULE_1__["ɵɵelementStart"](19, "label", 75);
     _angular_core__WEBPACK_IMPORTED_MODULE_1__["ɵɵtext"](20, "Despacho");
     _angular_core__WEBPACK_IMPORTED_MODULE_1__["ɵɵelementEnd"]();
-    _angular_core__WEBPACK_IMPORTED_MODULE_1__["ɵɵtemplate"](21, GestionEntregasBodegaComponent_div_5_div_11_div_17_div_11_div_1_div_8_div_21_Template, 7, 8, "div", 76);
-    _angular_core__WEBPACK_IMPORTED_MODULE_1__["ɵɵtemplate"](22, GestionEntregasBodegaComponent_div_5_div_11_div_17_div_11_div_1_div_8_dx_number_box_22_Template, 1, 3, "dx-number-box", 77);
+    _angular_core__WEBPACK_IMPORTED_MODULE_1__["ɵɵtemplate"](21, GestionEntregasBodegaComponent_div_5_div_13_div_17_div_11_div_1_div_8_div_21_Template, 7, 8, "div", 76);
+    _angular_core__WEBPACK_IMPORTED_MODULE_1__["ɵɵtemplate"](22, GestionEntregasBodegaComponent_div_5_div_13_div_17_div_11_div_1_div_8_dx_number_box_22_Template, 1, 3, "dx-number-box", 77);
     _angular_core__WEBPACK_IMPORTED_MODULE_1__["ɵɵelementEnd"]();
     _angular_core__WEBPACK_IMPORTED_MODULE_1__["ɵɵelementStart"](23, "div", 74);
     _angular_core__WEBPACK_IMPORTED_MODULE_1__["ɵɵelementStart"](24, "label", 75);
     _angular_core__WEBPACK_IMPORTED_MODULE_1__["ɵɵtext"](25, "F. compromiso");
     _angular_core__WEBPACK_IMPORTED_MODULE_1__["ɵɵelementEnd"]();
     _angular_core__WEBPACK_IMPORTED_MODULE_1__["ɵɵelementStart"](26, "dx-date-box", 78);
-    _angular_core__WEBPACK_IMPORTED_MODULE_1__["ɵɵlistener"]("valueChange", function GestionEntregasBodegaComponent_div_5_div_11_div_17_div_11_div_1_div_8_Template_dx_date_box_valueChange_26_listener($event) { _angular_core__WEBPACK_IMPORTED_MODULE_1__["ɵɵrestoreView"](_r58); const item_r34 = _angular_core__WEBPACK_IMPORTED_MODULE_1__["ɵɵnextContext"]().$implicit; return item_r34.fechaCompromisoInput = $event; });
+    _angular_core__WEBPACK_IMPORTED_MODULE_1__["ɵɵlistener"]("valueChange", function GestionEntregasBodegaComponent_div_5_div_13_div_17_div_11_div_1_div_8_Template_dx_date_box_valueChange_26_listener($event) { _angular_core__WEBPACK_IMPORTED_MODULE_1__["ɵɵrestoreView"](_r61); const item_r37 = _angular_core__WEBPACK_IMPORTED_MODULE_1__["ɵɵnextContext"]().$implicit; return item_r37.fechaCompromisoInput = $event; });
     _angular_core__WEBPACK_IMPORTED_MODULE_1__["ɵɵelementEnd"]();
     _angular_core__WEBPACK_IMPORTED_MODULE_1__["ɵɵelementEnd"]();
     _angular_core__WEBPACK_IMPORTED_MODULE_1__["ɵɵelementStart"](27, "div", 74);
@@ -51534,82 +51612,82 @@ function GestionEntregasBodegaComponent_div_5_div_11_div_17_div_11_div_1_div_8_T
     _angular_core__WEBPACK_IMPORTED_MODULE_1__["ɵɵtext"](29, "Notas");
     _angular_core__WEBPACK_IMPORTED_MODULE_1__["ɵɵelementEnd"]();
     _angular_core__WEBPACK_IMPORTED_MODULE_1__["ɵɵelementStart"](30, "dx-text-box", 79);
-    _angular_core__WEBPACK_IMPORTED_MODULE_1__["ɵɵlistener"]("valueChange", function GestionEntregasBodegaComponent_div_5_div_11_div_17_div_11_div_1_div_8_Template_dx_text_box_valueChange_30_listener($event) { _angular_core__WEBPACK_IMPORTED_MODULE_1__["ɵɵrestoreView"](_r58); const item_r34 = _angular_core__WEBPACK_IMPORTED_MODULE_1__["ɵɵnextContext"]().$implicit; return item_r34.notasInput = $event; });
+    _angular_core__WEBPACK_IMPORTED_MODULE_1__["ɵɵlistener"]("valueChange", function GestionEntregasBodegaComponent_div_5_div_13_div_17_div_11_div_1_div_8_Template_dx_text_box_valueChange_30_listener($event) { _angular_core__WEBPACK_IMPORTED_MODULE_1__["ɵɵrestoreView"](_r61); const item_r37 = _angular_core__WEBPACK_IMPORTED_MODULE_1__["ɵɵnextContext"]().$implicit; return item_r37.notasInput = $event; });
     _angular_core__WEBPACK_IMPORTED_MODULE_1__["ɵɵelementEnd"]();
     _angular_core__WEBPACK_IMPORTED_MODULE_1__["ɵɵelementEnd"]();
     _angular_core__WEBPACK_IMPORTED_MODULE_1__["ɵɵelementStart"](31, "div", 80);
-    _angular_core__WEBPACK_IMPORTED_MODULE_1__["ɵɵtemplate"](32, GestionEntregasBodegaComponent_div_5_div_11_div_17_div_11_div_1_div_8_ng_container_32_Template, 2, 0, "ng-container", 28);
-    _angular_core__WEBPACK_IMPORTED_MODULE_1__["ɵɵtemplate"](33, GestionEntregasBodegaComponent_div_5_div_11_div_17_div_11_div_1_div_8_ng_container_33_Template, 2, 1, "ng-container", 28);
-    _angular_core__WEBPACK_IMPORTED_MODULE_1__["ɵɵtemplate"](34, GestionEntregasBodegaComponent_div_5_div_11_div_17_div_11_div_1_div_8_span_34_Template, 3, 0, "span", 81);
+    _angular_core__WEBPACK_IMPORTED_MODULE_1__["ɵɵtemplate"](32, GestionEntregasBodegaComponent_div_5_div_13_div_17_div_11_div_1_div_8_ng_container_32_Template, 2, 0, "ng-container", 28);
+    _angular_core__WEBPACK_IMPORTED_MODULE_1__["ɵɵtemplate"](33, GestionEntregasBodegaComponent_div_5_div_13_div_17_div_11_div_1_div_8_ng_container_33_Template, 2, 1, "ng-container", 28);
+    _angular_core__WEBPACK_IMPORTED_MODULE_1__["ɵɵtemplate"](34, GestionEntregasBodegaComponent_div_5_div_13_div_17_div_11_div_1_div_8_span_34_Template, 3, 0, "span", 81);
     _angular_core__WEBPACK_IMPORTED_MODULE_1__["ɵɵelementEnd"]();
     _angular_core__WEBPACK_IMPORTED_MODULE_1__["ɵɵelementEnd"]();
 } if (rf & 2) {
-    const ctx_r61 = _angular_core__WEBPACK_IMPORTED_MODULE_1__["ɵɵnextContext"]();
-    const item_r34 = ctx_r61.$implicit;
-    const i_r35 = ctx_r61.index;
-    const ctx_r37 = _angular_core__WEBPACK_IMPORTED_MODULE_1__["ɵɵnextContext"](5);
+    const ctx_r64 = _angular_core__WEBPACK_IMPORTED_MODULE_1__["ɵɵnextContext"]();
+    const item_r37 = ctx_r64.$implicit;
+    const i_r38 = ctx_r64.index;
+    const ctx_r40 = _angular_core__WEBPACK_IMPORTED_MODULE_1__["ɵɵnextContext"](5);
     _angular_core__WEBPACK_IMPORTED_MODULE_1__["ɵɵadvance"](5);
-    _angular_core__WEBPACK_IMPORTED_MODULE_1__["ɵɵtextInterpolate"](ctx_r37.formatoCantidadLinea(item_r34.cantidadFacturada, item_r34));
+    _angular_core__WEBPACK_IMPORTED_MODULE_1__["ɵɵtextInterpolate"](ctx_r40.formatoCantidadLinea(item_r37.cantidadFacturada, item_r37));
     _angular_core__WEBPACK_IMPORTED_MODULE_1__["ɵɵadvance"](4);
-    _angular_core__WEBPACK_IMPORTED_MODULE_1__["ɵɵtextInterpolate"](ctx_r37.formatoCantidadLinea(item_r34.cantidadEntregada, item_r34));
+    _angular_core__WEBPACK_IMPORTED_MODULE_1__["ɵɵtextInterpolate"](ctx_r40.formatoCantidadLinea(item_r37.cantidadEntregada, item_r37));
     _angular_core__WEBPACK_IMPORTED_MODULE_1__["ɵɵadvance"](4);
-    _angular_core__WEBPACK_IMPORTED_MODULE_1__["ɵɵtextInterpolate"](ctx_r37.formatoCantidadLinea(item_r34.cantidadDevuelta, item_r34));
+    _angular_core__WEBPACK_IMPORTED_MODULE_1__["ɵɵtextInterpolate"](ctx_r40.formatoCantidadLinea(item_r37.cantidadDevuelta, item_r37));
     _angular_core__WEBPACK_IMPORTED_MODULE_1__["ɵɵadvance"](4);
-    _angular_core__WEBPACK_IMPORTED_MODULE_1__["ɵɵtextInterpolate1"](" ", ctx_r37.formatoCantidadLinea(item_r34.pendiente, item_r34), " ");
+    _angular_core__WEBPACK_IMPORTED_MODULE_1__["ɵɵtextInterpolate1"](" ", ctx_r40.formatoCantidadLinea(item_r37.pendiente, item_r37), " ");
     _angular_core__WEBPACK_IMPORTED_MODULE_1__["ɵɵadvance"](4);
-    _angular_core__WEBPACK_IMPORTED_MODULE_1__["ɵɵproperty"]("ngIf", ctx_r37.esItemMetrosCajaPieza(item_r34));
+    _angular_core__WEBPACK_IMPORTED_MODULE_1__["ɵɵproperty"]("ngIf", ctx_r40.esItemMetrosCajaPieza(item_r37));
     _angular_core__WEBPACK_IMPORTED_MODULE_1__["ɵɵadvance"](1);
-    _angular_core__WEBPACK_IMPORTED_MODULE_1__["ɵɵproperty"]("ngIf", !ctx_r37.esItemMetrosCajaPieza(item_r34));
+    _angular_core__WEBPACK_IMPORTED_MODULE_1__["ɵɵproperty"]("ngIf", !ctx_r40.esItemMetrosCajaPieza(item_r37));
     _angular_core__WEBPACK_IMPORTED_MODULE_1__["ɵɵadvance"](4);
-    _angular_core__WEBPACK_IMPORTED_MODULE_1__["ɵɵproperty"]("value", item_r34.fechaCompromisoInput)("disabled", ctx_r37.esCompromisoBloqueado(item_r34));
+    _angular_core__WEBPACK_IMPORTED_MODULE_1__["ɵɵproperty"]("value", item_r37.fechaCompromisoInput)("disabled", ctx_r40.esCompromisoBloqueado(item_r37));
     _angular_core__WEBPACK_IMPORTED_MODULE_1__["ɵɵadvance"](4);
-    _angular_core__WEBPACK_IMPORTED_MODULE_1__["ɵɵproperty"]("value", item_r34.notasInput)("disabled", ctx_r37.esCompromisoBloqueado(item_r34));
+    _angular_core__WEBPACK_IMPORTED_MODULE_1__["ɵɵproperty"]("value", item_r37.notasInput)("disabled", ctx_r40.esCompromisoBloqueado(item_r37));
     _angular_core__WEBPACK_IMPORTED_MODULE_1__["ɵɵadvance"](2);
-    _angular_core__WEBPACK_IMPORTED_MODULE_1__["ɵɵproperty"]("ngIf", item_r34.pendiente > 0);
+    _angular_core__WEBPACK_IMPORTED_MODULE_1__["ɵɵproperty"]("ngIf", item_r37.pendiente > 0);
     _angular_core__WEBPACK_IMPORTED_MODULE_1__["ɵɵadvance"](1);
-    _angular_core__WEBPACK_IMPORTED_MODULE_1__["ɵɵproperty"]("ngIf", item_r34.pendiente === 0);
+    _angular_core__WEBPACK_IMPORTED_MODULE_1__["ɵɵproperty"]("ngIf", item_r37.pendiente === 0);
     _angular_core__WEBPACK_IMPORTED_MODULE_1__["ɵɵadvance"](1);
-    _angular_core__WEBPACK_IMPORTED_MODULE_1__["ɵɵproperty"]("ngIf", ctx_r37.lineaGuardadaExitosa(i_r35));
+    _angular_core__WEBPACK_IMPORTED_MODULE_1__["ɵɵproperty"]("ngIf", ctx_r40.lineaGuardadaExitosa(i_r38));
 } }
 const _c0 = function (a0, a1) { return [a0, a1]; };
-function GestionEntregasBodegaComponent_div_5_div_11_div_17_div_11_div_1_Template(rf, ctx) { if (rf & 1) {
-    const _r63 = _angular_core__WEBPACK_IMPORTED_MODULE_1__["ɵɵgetCurrentView"]();
+function GestionEntregasBodegaComponent_div_5_div_13_div_17_div_11_div_1_Template(rf, ctx) { if (rf & 1) {
+    const _r66 = _angular_core__WEBPACK_IMPORTED_MODULE_1__["ɵɵgetCurrentView"]();
     _angular_core__WEBPACK_IMPORTED_MODULE_1__["ɵɵelementStart"](0, "div", 62);
     _angular_core__WEBPACK_IMPORTED_MODULE_1__["ɵɵelementStart"](1, "button", 63);
-    _angular_core__WEBPACK_IMPORTED_MODULE_1__["ɵɵlistener"]("click", function GestionEntregasBodegaComponent_div_5_div_11_div_17_div_11_div_1_Template_button_click_1_listener($event) { _angular_core__WEBPACK_IMPORTED_MODULE_1__["ɵɵrestoreView"](_r63); const i_r35 = ctx.index; const ctx_r62 = _angular_core__WEBPACK_IMPORTED_MODULE_1__["ɵɵnextContext"](5); ctx_r62.toggleItemMovil(i_r35); return $event.stopPropagation(); });
+    _angular_core__WEBPACK_IMPORTED_MODULE_1__["ɵɵlistener"]("click", function GestionEntregasBodegaComponent_div_5_div_13_div_17_div_11_div_1_Template_button_click_1_listener($event) { _angular_core__WEBPACK_IMPORTED_MODULE_1__["ɵɵrestoreView"](_r66); const i_r38 = ctx.index; const ctx_r65 = _angular_core__WEBPACK_IMPORTED_MODULE_1__["ɵɵnextContext"](5); ctx_r65.toggleItemMovil(i_r38); return $event.stopPropagation(); });
     _angular_core__WEBPACK_IMPORTED_MODULE_1__["ɵɵelementStart"](2, "span", 64);
     _angular_core__WEBPACK_IMPORTED_MODULE_1__["ɵɵtext"](3);
     _angular_core__WEBPACK_IMPORTED_MODULE_1__["ɵɵelementEnd"]();
     _angular_core__WEBPACK_IMPORTED_MODULE_1__["ɵɵelementStart"](4, "span", 65);
     _angular_core__WEBPACK_IMPORTED_MODULE_1__["ɵɵtext"](5);
     _angular_core__WEBPACK_IMPORTED_MODULE_1__["ɵɵelementEnd"]();
-    _angular_core__WEBPACK_IMPORTED_MODULE_1__["ɵɵtemplate"](6, GestionEntregasBodegaComponent_div_5_div_11_div_17_div_11_div_1_i_6_Template, 1, 0, "i", 66);
+    _angular_core__WEBPACK_IMPORTED_MODULE_1__["ɵɵtemplate"](6, GestionEntregasBodegaComponent_div_5_div_13_div_17_div_11_div_1_i_6_Template, 1, 0, "i", 66);
     _angular_core__WEBPACK_IMPORTED_MODULE_1__["ɵɵelement"](7, "i", 67);
     _angular_core__WEBPACK_IMPORTED_MODULE_1__["ɵɵelementEnd"]();
-    _angular_core__WEBPACK_IMPORTED_MODULE_1__["ɵɵtemplate"](8, GestionEntregasBodegaComponent_div_5_div_11_div_17_div_11_div_1_div_8_Template, 35, 13, "div", 68);
+    _angular_core__WEBPACK_IMPORTED_MODULE_1__["ɵɵtemplate"](8, GestionEntregasBodegaComponent_div_5_div_13_div_17_div_11_div_1_div_8_Template, 35, 13, "div", 68);
     _angular_core__WEBPACK_IMPORTED_MODULE_1__["ɵɵelementEnd"]();
 } if (rf & 2) {
-    const item_r34 = ctx.$implicit;
-    const i_r35 = ctx.index;
-    const ctx_r32 = _angular_core__WEBPACK_IMPORTED_MODULE_1__["ɵɵnextContext"](5);
+    const item_r37 = ctx.$implicit;
+    const i_r38 = ctx.index;
+    const ctx_r35 = _angular_core__WEBPACK_IMPORTED_MODULE_1__["ɵɵnextContext"](5);
     _angular_core__WEBPACK_IMPORTED_MODULE_1__["ɵɵadvance"](2);
-    _angular_core__WEBPACK_IMPORTED_MODULE_1__["ɵɵproperty"]("ngClass", _angular_core__WEBPACK_IMPORTED_MODULE_1__["ɵɵpureFunction2"](8, _c0, ctx_r32.claseColorItem(item_r34), ctx_r32.itemIngresoExcedePendiente(item_r34) ? "sd-item-alerta" : ""));
+    _angular_core__WEBPACK_IMPORTED_MODULE_1__["ɵɵproperty"]("ngClass", _angular_core__WEBPACK_IMPORTED_MODULE_1__["ɵɵpureFunction2"](8, _c0, ctx_r35.claseColorItem(item_r37), ctx_r35.itemIngresoExcedePendiente(item_r37) ? "sd-item-alerta" : ""));
     _angular_core__WEBPACK_IMPORTED_MODULE_1__["ɵɵadvance"](1);
-    _angular_core__WEBPACK_IMPORTED_MODULE_1__["ɵɵtextInterpolate1"](" ", item_r34.productoNombre, " ");
+    _angular_core__WEBPACK_IMPORTED_MODULE_1__["ɵɵtextInterpolate1"](" ", item_r37.productoNombre, " ");
     _angular_core__WEBPACK_IMPORTED_MODULE_1__["ɵɵadvance"](2);
-    _angular_core__WEBPACK_IMPORTED_MODULE_1__["ɵɵtextInterpolate2"](" Pend: ", ctx_r32.formatoCantidadLinea(item_r34.pendiente, item_r34), " \u00B7 Est: ", ctx_r32.estadoGestionAutomatico(item_r34), " ");
+    _angular_core__WEBPACK_IMPORTED_MODULE_1__["ɵɵtextInterpolate2"](" Pend: ", ctx_r35.formatoCantidadLinea(item_r37.pendiente, item_r37), " \u00B7 Est: ", ctx_r35.estadoGestionAutomatico(item_r37), " ");
     _angular_core__WEBPACK_IMPORTED_MODULE_1__["ɵɵadvance"](1);
-    _angular_core__WEBPACK_IMPORTED_MODULE_1__["ɵɵproperty"]("ngIf", ctx_r32.lineaGuardadaExitosa(i_r35));
+    _angular_core__WEBPACK_IMPORTED_MODULE_1__["ɵɵproperty"]("ngIf", ctx_r35.lineaGuardadaExitosa(i_r38));
     _angular_core__WEBPACK_IMPORTED_MODULE_1__["ɵɵadvance"](1);
-    _angular_core__WEBPACK_IMPORTED_MODULE_1__["ɵɵclassProp"]("sd-chevron-up", ctx_r32.itemExpandidoEs(i_r35));
+    _angular_core__WEBPACK_IMPORTED_MODULE_1__["ɵɵclassProp"]("sd-chevron-up", ctx_r35.itemExpandidoEs(i_r38));
     _angular_core__WEBPACK_IMPORTED_MODULE_1__["ɵɵadvance"](1);
-    _angular_core__WEBPACK_IMPORTED_MODULE_1__["ɵɵproperty"]("ngIf", ctx_r32.itemExpandidoEs(i_r35));
+    _angular_core__WEBPACK_IMPORTED_MODULE_1__["ɵɵproperty"]("ngIf", ctx_r35.itemExpandidoEs(i_r38));
 } }
-function GestionEntregasBodegaComponent_div_5_div_11_div_17_div_11_div_2_Template(rf, ctx) { if (rf & 1) {
-    const _r66 = _angular_core__WEBPACK_IMPORTED_MODULE_1__["ɵɵgetCurrentView"]();
+function GestionEntregasBodegaComponent_div_5_div_13_div_17_div_11_div_2_Template(rf, ctx) { if (rf & 1) {
+    const _r69 = _angular_core__WEBPACK_IMPORTED_MODULE_1__["ɵɵgetCurrentView"]();
     _angular_core__WEBPACK_IMPORTED_MODULE_1__["ɵɵelementStart"](0, "div", 91);
     _angular_core__WEBPACK_IMPORTED_MODULE_1__["ɵɵelementStart"](1, "button", 92);
-    _angular_core__WEBPACK_IMPORTED_MODULE_1__["ɵɵlistener"]("click", function GestionEntregasBodegaComponent_div_5_div_11_div_17_div_11_div_2_Template_button_click_1_listener() { _angular_core__WEBPACK_IMPORTED_MODULE_1__["ɵɵrestoreView"](_r66); const ord_r30 = _angular_core__WEBPACK_IMPORTED_MODULE_1__["ɵɵnextContext"](2).$implicit; const ctx_r64 = _angular_core__WEBPACK_IMPORTED_MODULE_1__["ɵɵnextContext"](3); return ctx_r64.accionDevolucionOrden(ord_r30); });
+    _angular_core__WEBPACK_IMPORTED_MODULE_1__["ɵɵlistener"]("click", function GestionEntregasBodegaComponent_div_5_div_13_div_17_div_11_div_2_Template_button_click_1_listener() { _angular_core__WEBPACK_IMPORTED_MODULE_1__["ɵɵrestoreView"](_r69); const ord_r33 = _angular_core__WEBPACK_IMPORTED_MODULE_1__["ɵɵnextContext"](2).$implicit; const ctx_r67 = _angular_core__WEBPACK_IMPORTED_MODULE_1__["ɵɵnextContext"](3); return ctx_r67.accionDevolucionOrden(ord_r33); });
     _angular_core__WEBPACK_IMPORTED_MODULE_1__["ɵɵelement"](2, "i", 93);
     _angular_core__WEBPACK_IMPORTED_MODULE_1__["ɵɵelementStart"](3, "span", 94);
     _angular_core__WEBPACK_IMPORTED_MODULE_1__["ɵɵtext"](4);
@@ -51620,25 +51698,25 @@ function GestionEntregasBodegaComponent_div_5_div_11_div_17_div_11_div_2_Templat
     _angular_core__WEBPACK_IMPORTED_MODULE_1__["ɵɵelementEnd"]();
     _angular_core__WEBPACK_IMPORTED_MODULE_1__["ɵɵelementEnd"]();
 } if (rf & 2) {
-    const ord_r30 = _angular_core__WEBPACK_IMPORTED_MODULE_1__["ɵɵnextContext"](2).$implicit;
-    const ctx_r33 = _angular_core__WEBPACK_IMPORTED_MODULE_1__["ɵɵnextContext"](3);
+    const ord_r33 = _angular_core__WEBPACK_IMPORTED_MODULE_1__["ɵɵnextContext"](2).$implicit;
+    const ctx_r36 = _angular_core__WEBPACK_IMPORTED_MODULE_1__["ɵɵnextContext"](3);
     _angular_core__WEBPACK_IMPORTED_MODULE_1__["ɵɵadvance"](1);
-    _angular_core__WEBPACK_IMPORTED_MODULE_1__["ɵɵproperty"]("disabled", ctx_r33.tipoAccionDevolucionParaOrden(ord_r30) === "nada");
+    _angular_core__WEBPACK_IMPORTED_MODULE_1__["ɵɵproperty"]("disabled", ctx_r36.tipoAccionDevolucionParaOrden(ord_r33) === "nada");
     _angular_core__WEBPACK_IMPORTED_MODULE_1__["ɵɵadvance"](1);
-    _angular_core__WEBPACK_IMPORTED_MODULE_1__["ɵɵproperty"]("ngClass", ctx_r33.claseIconoDevolucion(ord_r30));
+    _angular_core__WEBPACK_IMPORTED_MODULE_1__["ɵɵproperty"]("ngClass", ctx_r36.claseIconoDevolucion(ord_r33));
     _angular_core__WEBPACK_IMPORTED_MODULE_1__["ɵɵadvance"](2);
-    _angular_core__WEBPACK_IMPORTED_MODULE_1__["ɵɵtextInterpolate"](ctx_r33.textoCortoDevolucion(ord_r30));
+    _angular_core__WEBPACK_IMPORTED_MODULE_1__["ɵɵtextInterpolate"](ctx_r36.textoCortoDevolucion(ord_r33));
     _angular_core__WEBPACK_IMPORTED_MODULE_1__["ɵɵadvance"](2);
-    _angular_core__WEBPACK_IMPORTED_MODULE_1__["ɵɵtextInterpolate1"](" ", ctx_r33.tituloAccionDevolucion(ord_r30), " ");
+    _angular_core__WEBPACK_IMPORTED_MODULE_1__["ɵɵtextInterpolate1"](" ", ctx_r36.tituloAccionDevolucion(ord_r33), " ");
 } }
-function GestionEntregasBodegaComponent_div_5_div_11_div_17_div_11_Template(rf, ctx) { if (rf & 1) {
-    const _r70 = _angular_core__WEBPACK_IMPORTED_MODULE_1__["ɵɵgetCurrentView"]();
+function GestionEntregasBodegaComponent_div_5_div_13_div_17_div_11_Template(rf, ctx) { if (rf & 1) {
+    const _r73 = _angular_core__WEBPACK_IMPORTED_MODULE_1__["ɵɵgetCurrentView"]();
     _angular_core__WEBPACK_IMPORTED_MODULE_1__["ɵɵelementStart"](0, "div", 56);
-    _angular_core__WEBPACK_IMPORTED_MODULE_1__["ɵɵtemplate"](1, GestionEntregasBodegaComponent_div_5_div_11_div_17_div_11_div_1_Template, 9, 11, "div", 57);
-    _angular_core__WEBPACK_IMPORTED_MODULE_1__["ɵɵtemplate"](2, GestionEntregasBodegaComponent_div_5_div_11_div_17_div_11_div_2_Template, 7, 4, "div", 58);
+    _angular_core__WEBPACK_IMPORTED_MODULE_1__["ɵɵtemplate"](1, GestionEntregasBodegaComponent_div_5_div_13_div_17_div_11_div_1_Template, 9, 11, "div", 57);
+    _angular_core__WEBPACK_IMPORTED_MODULE_1__["ɵɵtemplate"](2, GestionEntregasBodegaComponent_div_5_div_13_div_17_div_11_div_2_Template, 7, 4, "div", 58);
     _angular_core__WEBPACK_IMPORTED_MODULE_1__["ɵɵelementStart"](3, "div", 59);
     _angular_core__WEBPACK_IMPORTED_MODULE_1__["ɵɵelementStart"](4, "dx-button", 60);
-    _angular_core__WEBPACK_IMPORTED_MODULE_1__["ɵɵlistener"]("onClick", function GestionEntregasBodegaComponent_div_5_div_11_div_17_div_11_Template_dx_button_onClick_4_listener() { _angular_core__WEBPACK_IMPORTED_MODULE_1__["ɵɵrestoreView"](_r70); const ord_r30 = _angular_core__WEBPACK_IMPORTED_MODULE_1__["ɵɵnextContext"]().$implicit; const ctx_r68 = _angular_core__WEBPACK_IMPORTED_MODULE_1__["ɵɵnextContext"](3); return ctx_r68.cerrarOrdenDesdeMovil(ord_r30); });
+    _angular_core__WEBPACK_IMPORTED_MODULE_1__["ɵɵlistener"]("onClick", function GestionEntregasBodegaComponent_div_5_div_13_div_17_div_11_Template_dx_button_onClick_4_listener() { _angular_core__WEBPACK_IMPORTED_MODULE_1__["ɵɵrestoreView"](_r73); const ord_r33 = _angular_core__WEBPACK_IMPORTED_MODULE_1__["ɵɵnextContext"]().$implicit; const ctx_r71 = _angular_core__WEBPACK_IMPORTED_MODULE_1__["ɵɵnextContext"](3); return ctx_r71.cerrarOrdenDesdeMovil(ord_r33); });
     _angular_core__WEBPACK_IMPORTED_MODULE_1__["ɵɵelementEnd"]();
     _angular_core__WEBPACK_IMPORTED_MODULE_1__["ɵɵelementStart"](5, "p", 61);
     _angular_core__WEBPACK_IMPORTED_MODULE_1__["ɵɵtext"](6, " Solo disponible cuando la orden est\u00E1 en estado COMPLETO (todos los \u00EDtems cuadrados). ");
@@ -51646,20 +51724,20 @@ function GestionEntregasBodegaComponent_div_5_div_11_div_17_div_11_Template(rf, 
     _angular_core__WEBPACK_IMPORTED_MODULE_1__["ɵɵelementEnd"]();
     _angular_core__WEBPACK_IMPORTED_MODULE_1__["ɵɵelementEnd"]();
 } if (rf & 2) {
-    const ord_r30 = _angular_core__WEBPACK_IMPORTED_MODULE_1__["ɵɵnextContext"]().$implicit;
-    const ctx_r31 = _angular_core__WEBPACK_IMPORTED_MODULE_1__["ɵɵnextContext"](3);
+    const ord_r33 = _angular_core__WEBPACK_IMPORTED_MODULE_1__["ɵɵnextContext"]().$implicit;
+    const ctx_r34 = _angular_core__WEBPACK_IMPORTED_MODULE_1__["ɵɵnextContext"](3);
     _angular_core__WEBPACK_IMPORTED_MODULE_1__["ɵɵadvance"](1);
-    _angular_core__WEBPACK_IMPORTED_MODULE_1__["ɵɵproperty"]("ngForOf", ord_r30.items);
+    _angular_core__WEBPACK_IMPORTED_MODULE_1__["ɵɵproperty"]("ngForOf", ord_r33.items);
     _angular_core__WEBPACK_IMPORTED_MODULE_1__["ɵɵadvance"](1);
-    _angular_core__WEBPACK_IMPORTED_MODULE_1__["ɵɵproperty"]("ngIf", ctx_r31.mostrarAccionesDevolucion && ctx_r31.textoCortoDevolucion(ord_r30));
+    _angular_core__WEBPACK_IMPORTED_MODULE_1__["ɵɵproperty"]("ngIf", ctx_r34.mostrarAccionesDevolucion && ctx_r34.textoCortoDevolucion(ord_r33));
     _angular_core__WEBPACK_IMPORTED_MODULE_1__["ɵɵadvance"](2);
-    _angular_core__WEBPACK_IMPORTED_MODULE_1__["ɵɵproperty"]("disabled", ord_r30.estadoProceso !== "COMPLETO");
+    _angular_core__WEBPACK_IMPORTED_MODULE_1__["ɵɵproperty"]("disabled", ord_r33.estadoProceso !== "COMPLETO");
 } }
-function GestionEntregasBodegaComponent_div_5_div_11_div_17_Template(rf, ctx) { if (rf & 1) {
-    const _r73 = _angular_core__WEBPACK_IMPORTED_MODULE_1__["ɵɵgetCurrentView"]();
+function GestionEntregasBodegaComponent_div_5_div_13_div_17_Template(rf, ctx) { if (rf & 1) {
+    const _r76 = _angular_core__WEBPACK_IMPORTED_MODULE_1__["ɵɵgetCurrentView"]();
     _angular_core__WEBPACK_IMPORTED_MODULE_1__["ɵɵelementStart"](0, "div", 47);
     _angular_core__WEBPACK_IMPORTED_MODULE_1__["ɵɵelementStart"](1, "button", 48);
-    _angular_core__WEBPACK_IMPORTED_MODULE_1__["ɵɵlistener"]("click", function GestionEntregasBodegaComponent_div_5_div_11_div_17_Template_button_click_1_listener() { _angular_core__WEBPACK_IMPORTED_MODULE_1__["ɵɵrestoreView"](_r73); const ord_r30 = ctx.$implicit; const ctx_r72 = _angular_core__WEBPACK_IMPORTED_MODULE_1__["ɵɵnextContext"](3); return ctx_r72.toggleOrdenMovil(ord_r30); });
+    _angular_core__WEBPACK_IMPORTED_MODULE_1__["ɵɵlistener"]("click", function GestionEntregasBodegaComponent_div_5_div_13_div_17_Template_button_click_1_listener() { _angular_core__WEBPACK_IMPORTED_MODULE_1__["ɵɵrestoreView"](_r76); const ord_r33 = ctx.$implicit; const ctx_r75 = _angular_core__WEBPACK_IMPORTED_MODULE_1__["ɵɵnextContext"](3); return ctx_r75.toggleOrdenMovil(ord_r33); });
     _angular_core__WEBPACK_IMPORTED_MODULE_1__["ɵɵelement"](2, "i", 49);
     _angular_core__WEBPACK_IMPORTED_MODULE_1__["ɵɵelementStart"](3, "div", 50);
     _angular_core__WEBPACK_IMPORTED_MODULE_1__["ɵɵelementStart"](4, "span", 51);
@@ -51674,25 +51752,25 @@ function GestionEntregasBodegaComponent_div_5_div_11_div_17_Template(rf, ctx) { 
     _angular_core__WEBPACK_IMPORTED_MODULE_1__["ɵɵelementEnd"]();
     _angular_core__WEBPACK_IMPORTED_MODULE_1__["ɵɵelement"](10, "i", 54);
     _angular_core__WEBPACK_IMPORTED_MODULE_1__["ɵɵelementEnd"]();
-    _angular_core__WEBPACK_IMPORTED_MODULE_1__["ɵɵtemplate"](11, GestionEntregasBodegaComponent_div_5_div_11_div_17_div_11_Template, 7, 3, "div", 55);
+    _angular_core__WEBPACK_IMPORTED_MODULE_1__["ɵɵtemplate"](11, GestionEntregasBodegaComponent_div_5_div_13_div_17_div_11_Template, 7, 3, "div", 55);
     _angular_core__WEBPACK_IMPORTED_MODULE_1__["ɵɵelementEnd"]();
 } if (rf & 2) {
-    const ord_r30 = ctx.$implicit;
-    const ctx_r29 = _angular_core__WEBPACK_IMPORTED_MODULE_1__["ɵɵnextContext"](3);
+    const ord_r33 = ctx.$implicit;
+    const ctx_r32 = _angular_core__WEBPACK_IMPORTED_MODULE_1__["ɵɵnextContext"](3);
     _angular_core__WEBPACK_IMPORTED_MODULE_1__["ɵɵadvance"](2);
-    _angular_core__WEBPACK_IMPORTED_MODULE_1__["ɵɵproperty"]("ngClass", ctx_r29.claseColorOrden(ord_r30));
+    _angular_core__WEBPACK_IMPORTED_MODULE_1__["ɵɵproperty"]("ngClass", ctx_r32.claseColorOrden(ord_r33));
     _angular_core__WEBPACK_IMPORTED_MODULE_1__["ɵɵadvance"](3);
-    _angular_core__WEBPACK_IMPORTED_MODULE_1__["ɵɵtextInterpolate2"]("", ord_r30.tipoDocumento, " #", ord_r30.documentoNumero, "");
+    _angular_core__WEBPACK_IMPORTED_MODULE_1__["ɵɵtextInterpolate2"]("", ord_r33.tipoDocumento, " #", ord_r33.documentoNumero, "");
     _angular_core__WEBPACK_IMPORTED_MODULE_1__["ɵɵadvance"](2);
-    _angular_core__WEBPACK_IMPORTED_MODULE_1__["ɵɵtextInterpolate"](ord_r30.clienteNombre);
+    _angular_core__WEBPACK_IMPORTED_MODULE_1__["ɵɵtextInterpolate"](ord_r33.clienteNombre);
     _angular_core__WEBPACK_IMPORTED_MODULE_1__["ɵɵadvance"](2);
-    _angular_core__WEBPACK_IMPORTED_MODULE_1__["ɵɵtextInterpolate2"]("Orden ", ord_r30.consecutivoEntrega, " \u00B7 ", ord_r30.estadoProceso, "");
+    _angular_core__WEBPACK_IMPORTED_MODULE_1__["ɵɵtextInterpolate2"]("Orden ", ord_r33.consecutivoEntrega, " \u00B7 ", ord_r33.estadoProceso, "");
     _angular_core__WEBPACK_IMPORTED_MODULE_1__["ɵɵadvance"](1);
-    _angular_core__WEBPACK_IMPORTED_MODULE_1__["ɵɵclassProp"]("sd-chevron-up", ctx_r29.ordenExpandidaEs(ord_r30));
+    _angular_core__WEBPACK_IMPORTED_MODULE_1__["ɵɵclassProp"]("sd-chevron-up", ctx_r32.ordenExpandidaEs(ord_r33));
     _angular_core__WEBPACK_IMPORTED_MODULE_1__["ɵɵadvance"](1);
-    _angular_core__WEBPACK_IMPORTED_MODULE_1__["ɵɵproperty"]("ngIf", ctx_r29.ordenExpandidaEs(ord_r30));
+    _angular_core__WEBPACK_IMPORTED_MODULE_1__["ɵɵproperty"]("ngIf", ctx_r32.ordenExpandidaEs(ord_r33));
 } }
-function GestionEntregasBodegaComponent_div_5_div_11_Template(rf, ctx) { if (rf & 1) {
+function GestionEntregasBodegaComponent_div_5_div_13_Template(rf, ctx) { if (rf & 1) {
     _angular_core__WEBPACK_IMPORTED_MODULE_1__["ɵɵelementStart"](0, "div", 36);
     _angular_core__WEBPACK_IMPORTED_MODULE_1__["ɵɵelementStart"](1, "p", 37);
     _angular_core__WEBPACK_IMPORTED_MODULE_1__["ɵɵtext"](2, " Toque una factura para ver los materiales; luego un material para registrar el despacho. ");
@@ -51715,43 +51793,43 @@ function GestionEntregasBodegaComponent_div_5_div_11_Template(rf, ctx) { if (rf 
     _angular_core__WEBPACK_IMPORTED_MODULE_1__["ɵɵtext"](15, " Cerrado");
     _angular_core__WEBPACK_IMPORTED_MODULE_1__["ɵɵelementEnd"]();
     _angular_core__WEBPACK_IMPORTED_MODULE_1__["ɵɵelementEnd"]();
-    _angular_core__WEBPACK_IMPORTED_MODULE_1__["ɵɵtemplate"](16, GestionEntregasBodegaComponent_div_5_div_11_div_16_Template, 2, 0, "div", 44);
-    _angular_core__WEBPACK_IMPORTED_MODULE_1__["ɵɵtemplate"](17, GestionEntregasBodegaComponent_div_5_div_11_div_17_Template, 12, 9, "div", 45);
+    _angular_core__WEBPACK_IMPORTED_MODULE_1__["ɵɵtemplate"](16, GestionEntregasBodegaComponent_div_5_div_13_div_16_Template, 2, 0, "div", 44);
+    _angular_core__WEBPACK_IMPORTED_MODULE_1__["ɵɵtemplate"](17, GestionEntregasBodegaComponent_div_5_div_13_div_17_Template, 12, 9, "div", 45);
     _angular_core__WEBPACK_IMPORTED_MODULE_1__["ɵɵelementEnd"]();
 } if (rf & 2) {
-    const ctx_r23 = _angular_core__WEBPACK_IMPORTED_MODULE_1__["ɵɵnextContext"](2);
+    const ctx_r25 = _angular_core__WEBPACK_IMPORTED_MODULE_1__["ɵɵnextContext"](2);
     _angular_core__WEBPACK_IMPORTED_MODULE_1__["ɵɵadvance"](16);
-    _angular_core__WEBPACK_IMPORTED_MODULE_1__["ɵɵproperty"]("ngIf", !(ctx_r23.ordenes == null ? null : ctx_r23.ordenes.length));
+    _angular_core__WEBPACK_IMPORTED_MODULE_1__["ɵɵproperty"]("ngIf", !(ctx_r25.ordenes == null ? null : ctx_r25.ordenes.length));
     _angular_core__WEBPACK_IMPORTED_MODULE_1__["ɵɵadvance"](1);
-    _angular_core__WEBPACK_IMPORTED_MODULE_1__["ɵɵproperty"]("ngForOf", ctx_r23.ordenes);
+    _angular_core__WEBPACK_IMPORTED_MODULE_1__["ɵɵproperty"]("ngForOf", ctx_r25.ordenes);
 } }
-function GestionEntregasBodegaComponent_div_5_div_12_div_16_Template(rf, ctx) { if (rf & 1) {
+function GestionEntregasBodegaComponent_div_5_div_14_div_16_Template(rf, ctx) { if (rf & 1) {
     _angular_core__WEBPACK_IMPORTED_MODULE_1__["ɵɵelementStart"](0, "div", 46);
     _angular_core__WEBPACK_IMPORTED_MODULE_1__["ɵɵtext"](1, " No hay \u00F3rdenes con los filtros actuales. ");
     _angular_core__WEBPACK_IMPORTED_MODULE_1__["ɵɵelementEnd"]();
 } }
-function GestionEntregasBodegaComponent_div_5_div_12_div_17_div_19_Template(rf, ctx) { if (rf & 1) {
-    const _r79 = _angular_core__WEBPACK_IMPORTED_MODULE_1__["ɵɵgetCurrentView"]();
+function GestionEntregasBodegaComponent_div_5_div_14_div_17_div_19_Template(rf, ctx) { if (rf & 1) {
+    const _r82 = _angular_core__WEBPACK_IMPORTED_MODULE_1__["ɵɵgetCurrentView"]();
     _angular_core__WEBPACK_IMPORTED_MODULE_1__["ɵɵelementStart"](0, "div", 109);
-    _angular_core__WEBPACK_IMPORTED_MODULE_1__["ɵɵlistener"]("click", function GestionEntregasBodegaComponent_div_5_div_12_div_17_div_19_Template_div_click_0_listener($event) { _angular_core__WEBPACK_IMPORTED_MODULE_1__["ɵɵrestoreView"](_r79); return $event.stopPropagation(); });
+    _angular_core__WEBPACK_IMPORTED_MODULE_1__["ɵɵlistener"]("click", function GestionEntregasBodegaComponent_div_5_div_14_div_17_div_19_Template_div_click_0_listener($event) { _angular_core__WEBPACK_IMPORTED_MODULE_1__["ɵɵrestoreView"](_r82); return $event.stopPropagation(); });
     _angular_core__WEBPACK_IMPORTED_MODULE_1__["ɵɵelementStart"](1, "button", 110);
-    _angular_core__WEBPACK_IMPORTED_MODULE_1__["ɵɵlistener"]("click", function GestionEntregasBodegaComponent_div_5_div_12_div_17_div_19_Template_button_click_1_listener() { _angular_core__WEBPACK_IMPORTED_MODULE_1__["ɵɵrestoreView"](_r79); const ord_r76 = _angular_core__WEBPACK_IMPORTED_MODULE_1__["ɵɵnextContext"]().$implicit; const ctx_r80 = _angular_core__WEBPACK_IMPORTED_MODULE_1__["ɵɵnextContext"](3); return ctx_r80.accionDevolucionOrden(ord_r76); });
+    _angular_core__WEBPACK_IMPORTED_MODULE_1__["ɵɵlistener"]("click", function GestionEntregasBodegaComponent_div_5_div_14_div_17_div_19_Template_button_click_1_listener() { _angular_core__WEBPACK_IMPORTED_MODULE_1__["ɵɵrestoreView"](_r82); const ord_r79 = _angular_core__WEBPACK_IMPORTED_MODULE_1__["ɵɵnextContext"]().$implicit; const ctx_r83 = _angular_core__WEBPACK_IMPORTED_MODULE_1__["ɵɵnextContext"](3); return ctx_r83.accionDevolucionOrden(ord_r79); });
     _angular_core__WEBPACK_IMPORTED_MODULE_1__["ɵɵelement"](2, "i", 93);
     _angular_core__WEBPACK_IMPORTED_MODULE_1__["ɵɵelementEnd"]();
     _angular_core__WEBPACK_IMPORTED_MODULE_1__["ɵɵelementEnd"]();
 } if (rf & 2) {
-    const ord_r76 = _angular_core__WEBPACK_IMPORTED_MODULE_1__["ɵɵnextContext"]().$implicit;
-    const ctx_r77 = _angular_core__WEBPACK_IMPORTED_MODULE_1__["ɵɵnextContext"](3);
+    const ord_r79 = _angular_core__WEBPACK_IMPORTED_MODULE_1__["ɵɵnextContext"]().$implicit;
+    const ctx_r80 = _angular_core__WEBPACK_IMPORTED_MODULE_1__["ɵɵnextContext"](3);
     _angular_core__WEBPACK_IMPORTED_MODULE_1__["ɵɵadvance"](1);
-    _angular_core__WEBPACK_IMPORTED_MODULE_1__["ɵɵproperty"]("disabled", ctx_r77.tipoAccionDevolucionParaOrden(ord_r76) === "nada")("title", ctx_r77.tituloAccionDevolucion(ord_r76));
+    _angular_core__WEBPACK_IMPORTED_MODULE_1__["ɵɵproperty"]("disabled", ctx_r80.tipoAccionDevolucionParaOrden(ord_r79) === "nada")("title", ctx_r80.tituloAccionDevolucion(ord_r79));
     _angular_core__WEBPACK_IMPORTED_MODULE_1__["ɵɵadvance"](1);
-    _angular_core__WEBPACK_IMPORTED_MODULE_1__["ɵɵproperty"]("ngClass", ctx_r77.claseIconoDevolucion(ord_r76));
+    _angular_core__WEBPACK_IMPORTED_MODULE_1__["ɵɵproperty"]("ngClass", ctx_r80.claseIconoDevolucion(ord_r79));
 } }
-function GestionEntregasBodegaComponent_div_5_div_12_div_17_Template(rf, ctx) { if (rf & 1) {
-    const _r84 = _angular_core__WEBPACK_IMPORTED_MODULE_1__["ɵɵgetCurrentView"]();
+function GestionEntregasBodegaComponent_div_5_div_14_div_17_Template(rf, ctx) { if (rf & 1) {
+    const _r87 = _angular_core__WEBPACK_IMPORTED_MODULE_1__["ɵɵgetCurrentView"]();
     _angular_core__WEBPACK_IMPORTED_MODULE_1__["ɵɵelementStart"](0, "div", 98);
     _angular_core__WEBPACK_IMPORTED_MODULE_1__["ɵɵelementStart"](1, "button", 99);
-    _angular_core__WEBPACK_IMPORTED_MODULE_1__["ɵɵlistener"]("click", function GestionEntregasBodegaComponent_div_5_div_12_div_17_Template_button_click_1_listener() { _angular_core__WEBPACK_IMPORTED_MODULE_1__["ɵɵrestoreView"](_r84); const ord_r76 = ctx.$implicit; const ctx_r83 = _angular_core__WEBPACK_IMPORTED_MODULE_1__["ɵɵnextContext"](3); return ctx_r83.abrirPopupTrazabilidad(ord_r76); });
+    _angular_core__WEBPACK_IMPORTED_MODULE_1__["ɵɵlistener"]("click", function GestionEntregasBodegaComponent_div_5_div_14_div_17_Template_button_click_1_listener() { _angular_core__WEBPACK_IMPORTED_MODULE_1__["ɵɵrestoreView"](_r87); const ord_r79 = ctx.$implicit; const ctx_r86 = _angular_core__WEBPACK_IMPORTED_MODULE_1__["ɵɵnextContext"](3); return ctx_r86.abrirPopupTrazabilidad(ord_r79); });
     _angular_core__WEBPACK_IMPORTED_MODULE_1__["ɵɵelementStart"](2, "div", 100);
     _angular_core__WEBPACK_IMPORTED_MODULE_1__["ɵɵelement"](3, "i", 49);
     _angular_core__WEBPACK_IMPORTED_MODULE_1__["ɵɵelementStart"](4, "div", 101);
@@ -51780,25 +51858,25 @@ function GestionEntregasBodegaComponent_div_5_div_12_div_17_Template(rf, ctx) { 
     _angular_core__WEBPACK_IMPORTED_MODULE_1__["ɵɵelementEnd"]();
     _angular_core__WEBPACK_IMPORTED_MODULE_1__["ɵɵelementEnd"]();
     _angular_core__WEBPACK_IMPORTED_MODULE_1__["ɵɵelementEnd"]();
-    _angular_core__WEBPACK_IMPORTED_MODULE_1__["ɵɵtemplate"](19, GestionEntregasBodegaComponent_div_5_div_12_div_17_div_19_Template, 3, 3, "div", 108);
+    _angular_core__WEBPACK_IMPORTED_MODULE_1__["ɵɵtemplate"](19, GestionEntregasBodegaComponent_div_5_div_14_div_17_div_19_Template, 3, 3, "div", 108);
     _angular_core__WEBPACK_IMPORTED_MODULE_1__["ɵɵelementEnd"]();
 } if (rf & 2) {
-    const ord_r76 = ctx.$implicit;
-    const ctx_r75 = _angular_core__WEBPACK_IMPORTED_MODULE_1__["ɵɵnextContext"](3);
+    const ord_r79 = ctx.$implicit;
+    const ctx_r78 = _angular_core__WEBPACK_IMPORTED_MODULE_1__["ɵɵnextContext"](3);
     _angular_core__WEBPACK_IMPORTED_MODULE_1__["ɵɵadvance"](3);
-    _angular_core__WEBPACK_IMPORTED_MODULE_1__["ɵɵproperty"]("ngClass", ctx_r75.claseColorOrden(ord_r76));
+    _angular_core__WEBPACK_IMPORTED_MODULE_1__["ɵɵproperty"]("ngClass", ctx_r78.claseColorOrden(ord_r79));
     _angular_core__WEBPACK_IMPORTED_MODULE_1__["ɵɵadvance"](3);
-    _angular_core__WEBPACK_IMPORTED_MODULE_1__["ɵɵtextInterpolate2"]("", ord_r76.tipoDocumento, " #", ord_r76.documentoNumero, "");
+    _angular_core__WEBPACK_IMPORTED_MODULE_1__["ɵɵtextInterpolate2"]("", ord_r79.tipoDocumento, " #", ord_r79.documentoNumero, "");
     _angular_core__WEBPACK_IMPORTED_MODULE_1__["ɵɵadvance"](2);
-    _angular_core__WEBPACK_IMPORTED_MODULE_1__["ɵɵtextInterpolate2"]("Orden ", ord_r76.consecutivoEntrega, " \u00B7 ", ord_r76.estadoProceso, "");
+    _angular_core__WEBPACK_IMPORTED_MODULE_1__["ɵɵtextInterpolate2"]("Orden ", ord_r79.consecutivoEntrega, " \u00B7 ", ord_r79.estadoProceso, "");
     _angular_core__WEBPACK_IMPORTED_MODULE_1__["ɵɵadvance"](6);
-    _angular_core__WEBPACK_IMPORTED_MODULE_1__["ɵɵtextInterpolate"](ord_r76.clienteNombre);
+    _angular_core__WEBPACK_IMPORTED_MODULE_1__["ɵɵtextInterpolate"](ord_r79.clienteNombre);
     _angular_core__WEBPACK_IMPORTED_MODULE_1__["ɵɵadvance"](4);
-    _angular_core__WEBPACK_IMPORTED_MODULE_1__["ɵɵtextInterpolate"](ctx_r75.formatearFechaDocumentoListado(ord_r76));
+    _angular_core__WEBPACK_IMPORTED_MODULE_1__["ɵɵtextInterpolate"](ctx_r78.formatearFechaDocumentoListado(ord_r79));
     _angular_core__WEBPACK_IMPORTED_MODULE_1__["ɵɵadvance"](1);
-    _angular_core__WEBPACK_IMPORTED_MODULE_1__["ɵɵproperty"]("ngIf", ctx_r75.mostrarAccionesDevolucion);
+    _angular_core__WEBPACK_IMPORTED_MODULE_1__["ɵɵproperty"]("ngIf", ctx_r78.mostrarAccionesDevolucion);
 } }
-function GestionEntregasBodegaComponent_div_5_div_12_Template(rf, ctx) { if (rf & 1) {
+function GestionEntregasBodegaComponent_div_5_div_14_Template(rf, ctx) { if (rf & 1) {
     _angular_core__WEBPACK_IMPORTED_MODULE_1__["ɵɵelementStart"](0, "div", 96);
     _angular_core__WEBPACK_IMPORTED_MODULE_1__["ɵɵelementStart"](1, "p", 37);
     _angular_core__WEBPACK_IMPORTED_MODULE_1__["ɵɵtext"](2, " Toque una orden para ver la trazabilidad. Los datos de cada fila se muestran a continuaci\u00F3n. ");
@@ -51821,36 +51899,36 @@ function GestionEntregasBodegaComponent_div_5_div_12_Template(rf, ctx) { if (rf 
     _angular_core__WEBPACK_IMPORTED_MODULE_1__["ɵɵtext"](15, " Cerrado");
     _angular_core__WEBPACK_IMPORTED_MODULE_1__["ɵɵelementEnd"]();
     _angular_core__WEBPACK_IMPORTED_MODULE_1__["ɵɵelementEnd"]();
-    _angular_core__WEBPACK_IMPORTED_MODULE_1__["ɵɵtemplate"](16, GestionEntregasBodegaComponent_div_5_div_12_div_16_Template, 2, 0, "div", 44);
-    _angular_core__WEBPACK_IMPORTED_MODULE_1__["ɵɵtemplate"](17, GestionEntregasBodegaComponent_div_5_div_12_div_17_Template, 20, 8, "div", 97);
+    _angular_core__WEBPACK_IMPORTED_MODULE_1__["ɵɵtemplate"](16, GestionEntregasBodegaComponent_div_5_div_14_div_16_Template, 2, 0, "div", 44);
+    _angular_core__WEBPACK_IMPORTED_MODULE_1__["ɵɵtemplate"](17, GestionEntregasBodegaComponent_div_5_div_14_div_17_Template, 20, 8, "div", 97);
     _angular_core__WEBPACK_IMPORTED_MODULE_1__["ɵɵelementEnd"]();
 } if (rf & 2) {
-    const ctx_r24 = _angular_core__WEBPACK_IMPORTED_MODULE_1__["ɵɵnextContext"](2);
+    const ctx_r26 = _angular_core__WEBPACK_IMPORTED_MODULE_1__["ɵɵnextContext"](2);
     _angular_core__WEBPACK_IMPORTED_MODULE_1__["ɵɵadvance"](16);
-    _angular_core__WEBPACK_IMPORTED_MODULE_1__["ɵɵproperty"]("ngIf", !(ctx_r24.ordenes == null ? null : ctx_r24.ordenes.length));
+    _angular_core__WEBPACK_IMPORTED_MODULE_1__["ɵɵproperty"]("ngIf", !(ctx_r26.ordenes == null ? null : ctx_r26.ordenes.length));
     _angular_core__WEBPACK_IMPORTED_MODULE_1__["ɵɵadvance"](1);
-    _angular_core__WEBPACK_IMPORTED_MODULE_1__["ɵɵproperty"]("ngForOf", ctx_r24.ordenes);
+    _angular_core__WEBPACK_IMPORTED_MODULE_1__["ɵɵproperty"]("ngForOf", ctx_r26.ordenes);
 } }
-function GestionEntregasBodegaComponent_div_5_dx_data_grid_13_div_12_Template(rf, ctx) { if (rf & 1) {
-    const _r88 = _angular_core__WEBPACK_IMPORTED_MODULE_1__["ɵɵgetCurrentView"]();
+function GestionEntregasBodegaComponent_div_5_dx_data_grid_15_div_12_Template(rf, ctx) { if (rf & 1) {
+    const _r91 = _angular_core__WEBPACK_IMPORTED_MODULE_1__["ɵɵgetCurrentView"]();
     _angular_core__WEBPACK_IMPORTED_MODULE_1__["ɵɵelementStart"](0, "div");
     _angular_core__WEBPACK_IMPORTED_MODULE_1__["ɵɵelementStart"](1, "button", 123);
-    _angular_core__WEBPACK_IMPORTED_MODULE_1__["ɵɵlistener"]("click", function GestionEntregasBodegaComponent_div_5_dx_data_grid_13_div_12_Template_button_click_1_listener($event) { _angular_core__WEBPACK_IMPORTED_MODULE_1__["ɵɵrestoreView"](_r88); const cell_r86 = ctx.$implicit; const ctx_r87 = _angular_core__WEBPACK_IMPORTED_MODULE_1__["ɵɵnextContext"](3); ctx_r87.accionDevolucionOrden(cell_r86.data); return $event.stopPropagation(); });
+    _angular_core__WEBPACK_IMPORTED_MODULE_1__["ɵɵlistener"]("click", function GestionEntregasBodegaComponent_div_5_dx_data_grid_15_div_12_Template_button_click_1_listener($event) { _angular_core__WEBPACK_IMPORTED_MODULE_1__["ɵɵrestoreView"](_r91); const cell_r89 = ctx.$implicit; const ctx_r90 = _angular_core__WEBPACK_IMPORTED_MODULE_1__["ɵɵnextContext"](3); ctx_r90.accionDevolucionOrden(cell_r89.data); return $event.stopPropagation(); });
     _angular_core__WEBPACK_IMPORTED_MODULE_1__["ɵɵelement"](2, "i", 93);
     _angular_core__WEBPACK_IMPORTED_MODULE_1__["ɵɵelementEnd"]();
     _angular_core__WEBPACK_IMPORTED_MODULE_1__["ɵɵelementEnd"]();
 } if (rf & 2) {
-    const cell_r86 = ctx.$implicit;
-    const ctx_r85 = _angular_core__WEBPACK_IMPORTED_MODULE_1__["ɵɵnextContext"](3);
+    const cell_r89 = ctx.$implicit;
+    const ctx_r88 = _angular_core__WEBPACK_IMPORTED_MODULE_1__["ɵɵnextContext"](3);
     _angular_core__WEBPACK_IMPORTED_MODULE_1__["ɵɵadvance"](1);
-    _angular_core__WEBPACK_IMPORTED_MODULE_1__["ɵɵproperty"]("disabled", ctx_r85.tipoAccionDevolucionParaOrden(cell_r86.data) === "nada")("title", ctx_r85.tituloAccionDevolucion(cell_r86.data));
+    _angular_core__WEBPACK_IMPORTED_MODULE_1__["ɵɵproperty"]("disabled", ctx_r88.tipoAccionDevolucionParaOrden(cell_r89.data) === "nada")("title", ctx_r88.tituloAccionDevolucion(cell_r89.data));
     _angular_core__WEBPACK_IMPORTED_MODULE_1__["ɵɵadvance"](1);
-    _angular_core__WEBPACK_IMPORTED_MODULE_1__["ɵɵproperty"]("ngClass", ctx_r85.claseIconoDevolucion(cell_r86.data));
+    _angular_core__WEBPACK_IMPORTED_MODULE_1__["ɵɵproperty"]("ngClass", ctx_r88.claseIconoDevolucion(cell_r89.data));
 } }
-function GestionEntregasBodegaComponent_div_5_dx_data_grid_13_Template(rf, ctx) { if (rf & 1) {
-    const _r90 = _angular_core__WEBPACK_IMPORTED_MODULE_1__["ɵɵgetCurrentView"]();
+function GestionEntregasBodegaComponent_div_5_dx_data_grid_15_Template(rf, ctx) { if (rf & 1) {
+    const _r93 = _angular_core__WEBPACK_IMPORTED_MODULE_1__["ɵɵgetCurrentView"]();
     _angular_core__WEBPACK_IMPORTED_MODULE_1__["ɵɵelementStart"](0, "dx-data-grid", 111);
-    _angular_core__WEBPACK_IMPORTED_MODULE_1__["ɵɵlistener"]("onRowClick", function GestionEntregasBodegaComponent_div_5_dx_data_grid_13_Template_dx_data_grid_onRowClick_0_listener($event) { _angular_core__WEBPACK_IMPORTED_MODULE_1__["ɵɵrestoreView"](_r90); const ctx_r89 = _angular_core__WEBPACK_IMPORTED_MODULE_1__["ɵɵnextContext"](2); return ctx_r89.onRowClickGrid($event); });
+    _angular_core__WEBPACK_IMPORTED_MODULE_1__["ɵɵlistener"]("onRowClick", function GestionEntregasBodegaComponent_div_5_dx_data_grid_15_Template_dx_data_grid_onRowClick_0_listener($event) { _angular_core__WEBPACK_IMPORTED_MODULE_1__["ɵɵrestoreView"](_r93); const ctx_r92 = _angular_core__WEBPACK_IMPORTED_MODULE_1__["ɵɵnextContext"](2); return ctx_r92.onRowClickGrid($event); });
     _angular_core__WEBPACK_IMPORTED_MODULE_1__["ɵɵelement"](1, "dxo-filter-row", 112);
     _angular_core__WEBPACK_IMPORTED_MODULE_1__["ɵɵelement"](2, "dxo-search-panel", 113);
     _angular_core__WEBPACK_IMPORTED_MODULE_1__["ɵɵelement"](3, "dxi-column", 114);
@@ -51863,25 +51941,25 @@ function GestionEntregasBodegaComponent_div_5_dx_data_grid_13_Template(rf, ctx) 
     _angular_core__WEBPACK_IMPORTED_MODULE_1__["ɵɵelementStart"](10, "dxi-column", 121);
     _angular_core__WEBPACK_IMPORTED_MODULE_1__["ɵɵelement"](11, "dxi-button", 122);
     _angular_core__WEBPACK_IMPORTED_MODULE_1__["ɵɵelementEnd"]();
-    _angular_core__WEBPACK_IMPORTED_MODULE_1__["ɵɵtemplate"](12, GestionEntregasBodegaComponent_div_5_dx_data_grid_13_div_12_Template, 3, 3, "div", 5);
+    _angular_core__WEBPACK_IMPORTED_MODULE_1__["ɵɵtemplate"](12, GestionEntregasBodegaComponent_div_5_dx_data_grid_15_div_12_Template, 3, 3, "div", 5);
     _angular_core__WEBPACK_IMPORTED_MODULE_1__["ɵɵelementEnd"]();
 } if (rf & 2) {
-    const ctx_r25 = _angular_core__WEBPACK_IMPORTED_MODULE_1__["ɵɵnextContext"](2);
-    _angular_core__WEBPACK_IMPORTED_MODULE_1__["ɵɵproperty"]("dataSource", ctx_r25.ordenes)("showBorders", true)("hoverStateEnabled", true);
+    const ctx_r27 = _angular_core__WEBPACK_IMPORTED_MODULE_1__["ɵɵnextContext"](2);
+    _angular_core__WEBPACK_IMPORTED_MODULE_1__["ɵɵproperty"]("dataSource", ctx_r27.ordenes)("showBorders", true)("hoverStateEnabled", true);
     _angular_core__WEBPACK_IMPORTED_MODULE_1__["ɵɵadvance"](1);
     _angular_core__WEBPACK_IMPORTED_MODULE_1__["ɵɵproperty"]("visible", true);
     _angular_core__WEBPACK_IMPORTED_MODULE_1__["ɵɵadvance"](1);
     _angular_core__WEBPACK_IMPORTED_MODULE_1__["ɵɵproperty"]("visible", true)("width", 260);
     _angular_core__WEBPACK_IMPORTED_MODULE_1__["ɵɵadvance"](7);
-    _angular_core__WEBPACK_IMPORTED_MODULE_1__["ɵɵproperty"]("visible", ctx_r25.mostrarAccionesDevolucion);
+    _angular_core__WEBPACK_IMPORTED_MODULE_1__["ɵɵproperty"]("visible", ctx_r27.mostrarAccionesDevolucion);
     _angular_core__WEBPACK_IMPORTED_MODULE_1__["ɵɵadvance"](1);
-    _angular_core__WEBPACK_IMPORTED_MODULE_1__["ɵɵproperty"]("visible", ctx_r25.mostrarGestion);
+    _angular_core__WEBPACK_IMPORTED_MODULE_1__["ɵɵproperty"]("visible", ctx_r27.mostrarGestion);
     _angular_core__WEBPACK_IMPORTED_MODULE_1__["ɵɵadvance"](1);
-    _angular_core__WEBPACK_IMPORTED_MODULE_1__["ɵɵproperty"]("onClick", ctx_r25.seleccionarOrden);
+    _angular_core__WEBPACK_IMPORTED_MODULE_1__["ɵɵproperty"]("onClick", ctx_r27.seleccionarOrden);
     _angular_core__WEBPACK_IMPORTED_MODULE_1__["ɵɵadvance"](1);
     _angular_core__WEBPACK_IMPORTED_MODULE_1__["ɵɵproperty"]("dxTemplateOf", "devolucionOrdenCell");
 } }
-function GestionEntregasBodegaComponent_div_5_div_14_Template(rf, ctx) { if (rf & 1) {
+function GestionEntregasBodegaComponent_div_5_div_16_Template(rf, ctx) { if (rf & 1) {
     _angular_core__WEBPACK_IMPORTED_MODULE_1__["ɵɵelementStart"](0, "div", 124);
     _angular_core__WEBPACK_IMPORTED_MODULE_1__["ɵɵelementStart"](1, "dx-data-grid", 125);
     _angular_core__WEBPACK_IMPORTED_MODULE_1__["ɵɵelement"](2, "dxo-filter-row", 112);
@@ -51897,9 +51975,9 @@ function GestionEntregasBodegaComponent_div_5_div_14_Template(rf, ctx) { if (rf 
     _angular_core__WEBPACK_IMPORTED_MODULE_1__["ɵɵelementEnd"]();
     _angular_core__WEBPACK_IMPORTED_MODULE_1__["ɵɵelementEnd"]();
 } if (rf & 2) {
-    const ctx_r26 = _angular_core__WEBPACK_IMPORTED_MODULE_1__["ɵɵnextContext"](2);
+    const ctx_r28 = _angular_core__WEBPACK_IMPORTED_MODULE_1__["ɵɵnextContext"](2);
     _angular_core__WEBPACK_IMPORTED_MODULE_1__["ɵɵadvance"](1);
-    _angular_core__WEBPACK_IMPORTED_MODULE_1__["ɵɵproperty"]("dataSource", ctx_r26.productosPendientes)("showBorders", true)("hoverStateEnabled", true);
+    _angular_core__WEBPACK_IMPORTED_MODULE_1__["ɵɵproperty"]("dataSource", ctx_r28.productosPendientes)("showBorders", true)("hoverStateEnabled", true);
     _angular_core__WEBPACK_IMPORTED_MODULE_1__["ɵɵadvance"](1);
     _angular_core__WEBPACK_IMPORTED_MODULE_1__["ɵɵproperty"]("visible", true);
     _angular_core__WEBPACK_IMPORTED_MODULE_1__["ɵɵadvance"](1);
@@ -51907,7 +51985,7 @@ function GestionEntregasBodegaComponent_div_5_div_14_Template(rf, ctx) { if (rf 
     _angular_core__WEBPACK_IMPORTED_MODULE_1__["ɵɵadvance"](1);
     _angular_core__WEBPACK_IMPORTED_MODULE_1__["ɵɵproperty"]("visible", true)("width", 260);
 } }
-function GestionEntregasBodegaComponent_div_5_div_15_Template(rf, ctx) { if (rf & 1) {
+function GestionEntregasBodegaComponent_div_5_div_17_Template(rf, ctx) { if (rf & 1) {
     _angular_core__WEBPACK_IMPORTED_MODULE_1__["ɵɵelementStart"](0, "div", 124);
     _angular_core__WEBPACK_IMPORTED_MODULE_1__["ɵɵelementStart"](1, "dx-data-grid", 125);
     _angular_core__WEBPACK_IMPORTED_MODULE_1__["ɵɵelement"](2, "dxo-filter-row", 112);
@@ -51921,9 +51999,9 @@ function GestionEntregasBodegaComponent_div_5_div_15_Template(rf, ctx) { if (rf 
     _angular_core__WEBPACK_IMPORTED_MODULE_1__["ɵɵelementEnd"]();
     _angular_core__WEBPACK_IMPORTED_MODULE_1__["ɵɵelementEnd"]();
 } if (rf & 2) {
-    const ctx_r27 = _angular_core__WEBPACK_IMPORTED_MODULE_1__["ɵɵnextContext"](2);
+    const ctx_r29 = _angular_core__WEBPACK_IMPORTED_MODULE_1__["ɵɵnextContext"](2);
     _angular_core__WEBPACK_IMPORTED_MODULE_1__["ɵɵadvance"](1);
-    _angular_core__WEBPACK_IMPORTED_MODULE_1__["ɵɵproperty"]("dataSource", ctx_r27.productosPendientesBalance)("showBorders", true)("hoverStateEnabled", true);
+    _angular_core__WEBPACK_IMPORTED_MODULE_1__["ɵɵproperty"]("dataSource", ctx_r29.productosPendientesBalance)("showBorders", true)("hoverStateEnabled", true);
     _angular_core__WEBPACK_IMPORTED_MODULE_1__["ɵɵadvance"](1);
     _angular_core__WEBPACK_IMPORTED_MODULE_1__["ɵɵproperty"]("visible", true);
     _angular_core__WEBPACK_IMPORTED_MODULE_1__["ɵɵadvance"](1);
@@ -51933,6 +52011,41 @@ function GestionEntregasBodegaComponent_div_5_div_15_Template(rf, ctx) { if (rf 
     _angular_core__WEBPACK_IMPORTED_MODULE_1__["ɵɵadvance"](5);
     _angular_core__WEBPACK_IMPORTED_MODULE_1__["ɵɵproperty"]("visible", false);
 } }
+const _c1 = function () { return [8, 12, 20]; };
+function GestionEntregasBodegaComponent_div_5_div_18_Template(rf, ctx) { if (rf & 1) {
+    _angular_core__WEBPACK_IMPORTED_MODULE_1__["ɵɵelementStart"](0, "div", 124);
+    _angular_core__WEBPACK_IMPORTED_MODULE_1__["ɵɵelementStart"](1, "dx-data-grid", 125);
+    _angular_core__WEBPACK_IMPORTED_MODULE_1__["ɵɵelement"](2, "dxo-filter-row", 112);
+    _angular_core__WEBPACK_IMPORTED_MODULE_1__["ɵɵelement"](3, "dxo-export", 141);
+    _angular_core__WEBPACK_IMPORTED_MODULE_1__["ɵɵelement"](4, "dxo-search-panel", 113);
+    _angular_core__WEBPACK_IMPORTED_MODULE_1__["ɵɵelement"](5, "dxi-column", 142);
+    _angular_core__WEBPACK_IMPORTED_MODULE_1__["ɵɵelement"](6, "dxi-column", 143);
+    _angular_core__WEBPACK_IMPORTED_MODULE_1__["ɵɵelement"](7, "dxi-column", 144);
+    _angular_core__WEBPACK_IMPORTED_MODULE_1__["ɵɵelement"](8, "dxi-column", 145);
+    _angular_core__WEBPACK_IMPORTED_MODULE_1__["ɵɵelement"](9, "dxi-column", 146);
+    _angular_core__WEBPACK_IMPORTED_MODULE_1__["ɵɵelement"](10, "dxi-column", 147);
+    _angular_core__WEBPACK_IMPORTED_MODULE_1__["ɵɵelement"](11, "dxi-column", 148);
+    _angular_core__WEBPACK_IMPORTED_MODULE_1__["ɵɵelement"](12, "dxi-column", 149);
+    _angular_core__WEBPACK_IMPORTED_MODULE_1__["ɵɵelement"](13, "dxi-column", 150);
+    _angular_core__WEBPACK_IMPORTED_MODULE_1__["ɵɵelement"](14, "dxo-paging", 151);
+    _angular_core__WEBPACK_IMPORTED_MODULE_1__["ɵɵelement"](15, "dxo-pager", 152);
+    _angular_core__WEBPACK_IMPORTED_MODULE_1__["ɵɵelementEnd"]();
+    _angular_core__WEBPACK_IMPORTED_MODULE_1__["ɵɵelementEnd"]();
+} if (rf & 2) {
+    const ctx_r30 = _angular_core__WEBPACK_IMPORTED_MODULE_1__["ɵɵnextContext"](2);
+    _angular_core__WEBPACK_IMPORTED_MODULE_1__["ɵɵadvance"](1);
+    _angular_core__WEBPACK_IMPORTED_MODULE_1__["ɵɵproperty"]("dataSource", ctx_r30.productosPendientesEntrega)("showBorders", true)("hoverStateEnabled", true);
+    _angular_core__WEBPACK_IMPORTED_MODULE_1__["ɵɵadvance"](1);
+    _angular_core__WEBPACK_IMPORTED_MODULE_1__["ɵɵproperty"]("visible", true);
+    _angular_core__WEBPACK_IMPORTED_MODULE_1__["ɵɵadvance"](1);
+    _angular_core__WEBPACK_IMPORTED_MODULE_1__["ɵɵproperty"]("enabled", true)("allowExportSelectedData", true);
+    _angular_core__WEBPACK_IMPORTED_MODULE_1__["ɵɵadvance"](1);
+    _angular_core__WEBPACK_IMPORTED_MODULE_1__["ɵɵproperty"]("visible", true)("width", 240);
+    _angular_core__WEBPACK_IMPORTED_MODULE_1__["ɵɵadvance"](10);
+    _angular_core__WEBPACK_IMPORTED_MODULE_1__["ɵɵproperty"]("pageSize", 12);
+    _angular_core__WEBPACK_IMPORTED_MODULE_1__["ɵɵadvance"](1);
+    _angular_core__WEBPACK_IMPORTED_MODULE_1__["ɵɵproperty"]("showPageSizeSelector", true)("allowedPageSizes", _angular_core__WEBPACK_IMPORTED_MODULE_1__["ɵɵpureFunction0"](11, _c1));
+} }
 function GestionEntregasBodegaComponent_div_5_Template(rf, ctx) { if (rf & 1) {
     _angular_core__WEBPACK_IMPORTED_MODULE_1__["ɵɵelementStart"](0, "div", 8);
     _angular_core__WEBPACK_IMPORTED_MODULE_1__["ɵɵelementStart"](1, "div", 9);
@@ -51941,16 +52054,19 @@ function GestionEntregasBodegaComponent_div_5_Template(rf, ctx) { if (rf & 1) {
     _angular_core__WEBPACK_IMPORTED_MODULE_1__["ɵɵtemplate"](4, GestionEntregasBodegaComponent_div_5_span_4_Template, 2, 0, "span", 28);
     _angular_core__WEBPACK_IMPORTED_MODULE_1__["ɵɵtemplate"](5, GestionEntregasBodegaComponent_div_5_span_5_Template, 2, 0, "span", 28);
     _angular_core__WEBPACK_IMPORTED_MODULE_1__["ɵɵtemplate"](6, GestionEntregasBodegaComponent_div_5_span_6_Template, 2, 0, "span", 28);
+    _angular_core__WEBPACK_IMPORTED_MODULE_1__["ɵɵtemplate"](7, GestionEntregasBodegaComponent_div_5_span_7_Template, 2, 0, "span", 28);
     _angular_core__WEBPACK_IMPORTED_MODULE_1__["ɵɵelementEnd"]();
-    _angular_core__WEBPACK_IMPORTED_MODULE_1__["ɵɵelementStart"](7, "div", 29);
-    _angular_core__WEBPACK_IMPORTED_MODULE_1__["ɵɵtemplate"](8, GestionEntregasBodegaComponent_div_5_p_8_Template, 2, 0, "p", 30);
+    _angular_core__WEBPACK_IMPORTED_MODULE_1__["ɵɵelementStart"](8, "div", 29);
     _angular_core__WEBPACK_IMPORTED_MODULE_1__["ɵɵtemplate"](9, GestionEntregasBodegaComponent_div_5_p_9_Template, 2, 0, "p", 30);
-    _angular_core__WEBPACK_IMPORTED_MODULE_1__["ɵɵtemplate"](10, GestionEntregasBodegaComponent_div_5_p_10_Template, 11, 0, "p", 30);
-    _angular_core__WEBPACK_IMPORTED_MODULE_1__["ɵɵtemplate"](11, GestionEntregasBodegaComponent_div_5_div_11_Template, 18, 2, "div", 31);
-    _angular_core__WEBPACK_IMPORTED_MODULE_1__["ɵɵtemplate"](12, GestionEntregasBodegaComponent_div_5_div_12_Template, 18, 2, "div", 32);
-    _angular_core__WEBPACK_IMPORTED_MODULE_1__["ɵɵtemplate"](13, GestionEntregasBodegaComponent_div_5_dx_data_grid_13_Template, 13, 10, "dx-data-grid", 33);
-    _angular_core__WEBPACK_IMPORTED_MODULE_1__["ɵɵtemplate"](14, GestionEntregasBodegaComponent_div_5_div_14_Template, 12, 8, "div", 34);
-    _angular_core__WEBPACK_IMPORTED_MODULE_1__["ɵɵtemplate"](15, GestionEntregasBodegaComponent_div_5_div_15_Template, 10, 9, "div", 34);
+    _angular_core__WEBPACK_IMPORTED_MODULE_1__["ɵɵtemplate"](10, GestionEntregasBodegaComponent_div_5_p_10_Template, 2, 0, "p", 30);
+    _angular_core__WEBPACK_IMPORTED_MODULE_1__["ɵɵtemplate"](11, GestionEntregasBodegaComponent_div_5_p_11_Template, 11, 0, "p", 30);
+    _angular_core__WEBPACK_IMPORTED_MODULE_1__["ɵɵtemplate"](12, GestionEntregasBodegaComponent_div_5_p_12_Template, 5, 0, "p", 30);
+    _angular_core__WEBPACK_IMPORTED_MODULE_1__["ɵɵtemplate"](13, GestionEntregasBodegaComponent_div_5_div_13_Template, 18, 2, "div", 31);
+    _angular_core__WEBPACK_IMPORTED_MODULE_1__["ɵɵtemplate"](14, GestionEntregasBodegaComponent_div_5_div_14_Template, 18, 2, "div", 32);
+    _angular_core__WEBPACK_IMPORTED_MODULE_1__["ɵɵtemplate"](15, GestionEntregasBodegaComponent_div_5_dx_data_grid_15_Template, 13, 10, "dx-data-grid", 33);
+    _angular_core__WEBPACK_IMPORTED_MODULE_1__["ɵɵtemplate"](16, GestionEntregasBodegaComponent_div_5_div_16_Template, 12, 8, "div", 34);
+    _angular_core__WEBPACK_IMPORTED_MODULE_1__["ɵɵtemplate"](17, GestionEntregasBodegaComponent_div_5_div_17_Template, 10, 9, "div", 34);
+    _angular_core__WEBPACK_IMPORTED_MODULE_1__["ɵɵtemplate"](18, GestionEntregasBodegaComponent_div_5_div_18_Template, 16, 12, "div", 34);
     _angular_core__WEBPACK_IMPORTED_MODULE_1__["ɵɵelementEnd"]();
     _angular_core__WEBPACK_IMPORTED_MODULE_1__["ɵɵelementEnd"]();
     _angular_core__WEBPACK_IMPORTED_MODULE_1__["ɵɵelementEnd"]();
@@ -51964,12 +52080,16 @@ function GestionEntregasBodegaComponent_div_5_Template(rf, ctx) { if (rf & 1) {
     _angular_core__WEBPACK_IMPORTED_MODULE_1__["ɵɵproperty"]("ngIf", ctx_r2.vistaProductosEspecial === "facturados");
     _angular_core__WEBPACK_IMPORTED_MODULE_1__["ɵɵadvance"](1);
     _angular_core__WEBPACK_IMPORTED_MODULE_1__["ɵɵproperty"]("ngIf", ctx_r2.vistaProductosEspecial === "pendientes");
+    _angular_core__WEBPACK_IMPORTED_MODULE_1__["ɵɵadvance"](1);
+    _angular_core__WEBPACK_IMPORTED_MODULE_1__["ɵɵproperty"]("ngIf", ctx_r2.vistaProductosEspecial === "pendientesEntrega");
     _angular_core__WEBPACK_IMPORTED_MODULE_1__["ɵɵadvance"](2);
     _angular_core__WEBPACK_IMPORTED_MODULE_1__["ɵɵproperty"]("ngIf", ctx_r2.mostrarGestion);
     _angular_core__WEBPACK_IMPORTED_MODULE_1__["ɵɵadvance"](1);
     _angular_core__WEBPACK_IMPORTED_MODULE_1__["ɵɵproperty"]("ngIf", ctx_r2.mostrarListado);
     _angular_core__WEBPACK_IMPORTED_MODULE_1__["ɵɵadvance"](1);
     _angular_core__WEBPACK_IMPORTED_MODULE_1__["ɵɵproperty"]("ngIf", ctx_r2.vistaProductosEspecial === "pendientes");
+    _angular_core__WEBPACK_IMPORTED_MODULE_1__["ɵɵadvance"](1);
+    _angular_core__WEBPACK_IMPORTED_MODULE_1__["ɵɵproperty"]("ngIf", ctx_r2.vistaProductosEspecial === "pendientesEntrega");
     _angular_core__WEBPACK_IMPORTED_MODULE_1__["ɵɵadvance"](1);
     _angular_core__WEBPACK_IMPORTED_MODULE_1__["ɵɵproperty"]("ngIf", ctx_r2.mostrarGestion && ctx_r2.vistaMovil && !ctx_r2.mostrarVistaEspecialProductos);
     _angular_core__WEBPACK_IMPORTED_MODULE_1__["ɵɵadvance"](1);
@@ -51980,62 +52100,64 @@ function GestionEntregasBodegaComponent_div_5_Template(rf, ctx) { if (rf & 1) {
     _angular_core__WEBPACK_IMPORTED_MODULE_1__["ɵɵproperty"]("ngIf", ctx_r2.vistaProductosEspecial === "facturados");
     _angular_core__WEBPACK_IMPORTED_MODULE_1__["ɵɵadvance"](1);
     _angular_core__WEBPACK_IMPORTED_MODULE_1__["ɵɵproperty"]("ngIf", ctx_r2.vistaProductosEspecial === "pendientes");
+    _angular_core__WEBPACK_IMPORTED_MODULE_1__["ɵɵadvance"](1);
+    _angular_core__WEBPACK_IMPORTED_MODULE_1__["ɵɵproperty"]("ngIf", ctx_r2.vistaProductosEspecial === "pendientesEntrega");
 } }
 function GestionEntregasBodegaComponent_div_6_tr_32_div_12_Template(rf, ctx) { if (rf & 1) {
-    const _r101 = _angular_core__WEBPACK_IMPORTED_MODULE_1__["ɵɵgetCurrentView"]();
+    const _r104 = _angular_core__WEBPACK_IMPORTED_MODULE_1__["ɵɵgetCurrentView"]();
     _angular_core__WEBPACK_IMPORTED_MODULE_1__["ɵɵelementStart"](0, "div", 82);
     _angular_core__WEBPACK_IMPORTED_MODULE_1__["ɵɵelementStart"](1, "span", 83);
     _angular_core__WEBPACK_IMPORTED_MODULE_1__["ɵɵtext"](2, "C");
     _angular_core__WEBPACK_IMPORTED_MODULE_1__["ɵɵelementEnd"]();
     _angular_core__WEBPACK_IMPORTED_MODULE_1__["ɵɵelementStart"](3, "dx-number-box", 84);
-    _angular_core__WEBPACK_IMPORTED_MODULE_1__["ɵɵlistener"]("valueChange", function GestionEntregasBodegaComponent_div_6_tr_32_div_12_Template_dx_number_box_valueChange_3_listener($event) { _angular_core__WEBPACK_IMPORTED_MODULE_1__["ɵɵrestoreView"](_r101); const item_r92 = _angular_core__WEBPACK_IMPORTED_MODULE_1__["ɵɵnextContext"]().$implicit; return item_r92.entregaCajasInput = $event; });
+    _angular_core__WEBPACK_IMPORTED_MODULE_1__["ɵɵlistener"]("valueChange", function GestionEntregasBodegaComponent_div_6_tr_32_div_12_Template_dx_number_box_valueChange_3_listener($event) { _angular_core__WEBPACK_IMPORTED_MODULE_1__["ɵɵrestoreView"](_r104); const item_r95 = _angular_core__WEBPACK_IMPORTED_MODULE_1__["ɵɵnextContext"]().$implicit; return item_r95.entregaCajasInput = $event; });
     _angular_core__WEBPACK_IMPORTED_MODULE_1__["ɵɵelementEnd"]();
     _angular_core__WEBPACK_IMPORTED_MODULE_1__["ɵɵelementStart"](4, "span", 85);
     _angular_core__WEBPACK_IMPORTED_MODULE_1__["ɵɵtext"](5, "P");
     _angular_core__WEBPACK_IMPORTED_MODULE_1__["ɵɵelementEnd"]();
     _angular_core__WEBPACK_IMPORTED_MODULE_1__["ɵɵelementStart"](6, "dx-number-box", 84);
-    _angular_core__WEBPACK_IMPORTED_MODULE_1__["ɵɵlistener"]("valueChange", function GestionEntregasBodegaComponent_div_6_tr_32_div_12_Template_dx_number_box_valueChange_6_listener($event) { _angular_core__WEBPACK_IMPORTED_MODULE_1__["ɵɵrestoreView"](_r101); const item_r92 = _angular_core__WEBPACK_IMPORTED_MODULE_1__["ɵɵnextContext"]().$implicit; return item_r92.entregaPiezasInput = $event; });
+    _angular_core__WEBPACK_IMPORTED_MODULE_1__["ɵɵlistener"]("valueChange", function GestionEntregasBodegaComponent_div_6_tr_32_div_12_Template_dx_number_box_valueChange_6_listener($event) { _angular_core__WEBPACK_IMPORTED_MODULE_1__["ɵɵrestoreView"](_r104); const item_r95 = _angular_core__WEBPACK_IMPORTED_MODULE_1__["ɵɵnextContext"]().$implicit; return item_r95.entregaPiezasInput = $event; });
     _angular_core__WEBPACK_IMPORTED_MODULE_1__["ɵɵelementEnd"]();
     _angular_core__WEBPACK_IMPORTED_MODULE_1__["ɵɵelementEnd"]();
 } if (rf & 2) {
-    const item_r92 = _angular_core__WEBPACK_IMPORTED_MODULE_1__["ɵɵnextContext"]().$implicit;
+    const item_r95 = _angular_core__WEBPACK_IMPORTED_MODULE_1__["ɵɵnextContext"]().$implicit;
     _angular_core__WEBPACK_IMPORTED_MODULE_1__["ɵɵadvance"](3);
-    _angular_core__WEBPACK_IMPORTED_MODULE_1__["ɵɵproperty"]("width", 72)("value", item_r92.entregaCajasInput)("min", 0)("showSpinButtons", true);
+    _angular_core__WEBPACK_IMPORTED_MODULE_1__["ɵɵproperty"]("width", 72)("value", item_r95.entregaCajasInput)("min", 0)("showSpinButtons", true);
     _angular_core__WEBPACK_IMPORTED_MODULE_1__["ɵɵadvance"](3);
-    _angular_core__WEBPACK_IMPORTED_MODULE_1__["ɵɵproperty"]("width", 72)("value", item_r92.entregaPiezasInput)("min", 0)("showSpinButtons", true);
+    _angular_core__WEBPACK_IMPORTED_MODULE_1__["ɵɵproperty"]("width", 72)("value", item_r95.entregaPiezasInput)("min", 0)("showSpinButtons", true);
 } }
 function GestionEntregasBodegaComponent_div_6_tr_32_dx_number_box_13_Template(rf, ctx) { if (rf & 1) {
-    const _r107 = _angular_core__WEBPACK_IMPORTED_MODULE_1__["ɵɵgetCurrentView"]();
+    const _r110 = _angular_core__WEBPACK_IMPORTED_MODULE_1__["ɵɵgetCurrentView"]();
     _angular_core__WEBPACK_IMPORTED_MODULE_1__["ɵɵelementStart"](0, "dx-number-box", 86);
-    _angular_core__WEBPACK_IMPORTED_MODULE_1__["ɵɵlistener"]("valueChange", function GestionEntregasBodegaComponent_div_6_tr_32_dx_number_box_13_Template_dx_number_box_valueChange_0_listener($event) { _angular_core__WEBPACK_IMPORTED_MODULE_1__["ɵɵrestoreView"](_r107); const item_r92 = _angular_core__WEBPACK_IMPORTED_MODULE_1__["ɵɵnextContext"]().$implicit; return item_r92.cantidadEntregadaInput = $event; });
+    _angular_core__WEBPACK_IMPORTED_MODULE_1__["ɵɵlistener"]("valueChange", function GestionEntregasBodegaComponent_div_6_tr_32_dx_number_box_13_Template_dx_number_box_valueChange_0_listener($event) { _angular_core__WEBPACK_IMPORTED_MODULE_1__["ɵɵrestoreView"](_r110); const item_r95 = _angular_core__WEBPACK_IMPORTED_MODULE_1__["ɵɵnextContext"]().$implicit; return item_r95.cantidadEntregadaInput = $event; });
     _angular_core__WEBPACK_IMPORTED_MODULE_1__["ɵɵelementEnd"]();
 } if (rf & 2) {
-    const item_r92 = _angular_core__WEBPACK_IMPORTED_MODULE_1__["ɵɵnextContext"]().$implicit;
-    _angular_core__WEBPACK_IMPORTED_MODULE_1__["ɵɵproperty"]("value", item_r92.cantidadEntregadaInput)("min", 0)("showSpinButtons", true);
+    const item_r95 = _angular_core__WEBPACK_IMPORTED_MODULE_1__["ɵɵnextContext"]().$implicit;
+    _angular_core__WEBPACK_IMPORTED_MODULE_1__["ɵɵproperty"]("value", item_r95.cantidadEntregadaInput)("min", 0)("showSpinButtons", true);
 } }
 function GestionEntregasBodegaComponent_div_6_tr_32_ng_container_22_Template(rf, ctx) { if (rf & 1) {
-    const _r111 = _angular_core__WEBPACK_IMPORTED_MODULE_1__["ɵɵgetCurrentView"]();
+    const _r114 = _angular_core__WEBPACK_IMPORTED_MODULE_1__["ɵɵgetCurrentView"]();
     _angular_core__WEBPACK_IMPORTED_MODULE_1__["ɵɵelementContainerStart"](0);
-    _angular_core__WEBPACK_IMPORTED_MODULE_1__["ɵɵelementStart"](1, "dx-button", 159);
-    _angular_core__WEBPACK_IMPORTED_MODULE_1__["ɵɵlistener"]("onClick", function GestionEntregasBodegaComponent_div_6_tr_32_ng_container_22_Template_dx_button_onClick_1_listener() { _angular_core__WEBPACK_IMPORTED_MODULE_1__["ɵɵrestoreView"](_r111); const i_r93 = _angular_core__WEBPACK_IMPORTED_MODULE_1__["ɵɵnextContext"]().index; const ctx_r109 = _angular_core__WEBPACK_IMPORTED_MODULE_1__["ɵɵnextContext"](2); return ctx_r109.guardarItem(i_r93); });
+    _angular_core__WEBPACK_IMPORTED_MODULE_1__["ɵɵelementStart"](1, "dx-button", 171);
+    _angular_core__WEBPACK_IMPORTED_MODULE_1__["ɵɵlistener"]("onClick", function GestionEntregasBodegaComponent_div_6_tr_32_ng_container_22_Template_dx_button_onClick_1_listener() { _angular_core__WEBPACK_IMPORTED_MODULE_1__["ɵɵrestoreView"](_r114); const i_r96 = _angular_core__WEBPACK_IMPORTED_MODULE_1__["ɵɵnextContext"]().index; const ctx_r112 = _angular_core__WEBPACK_IMPORTED_MODULE_1__["ɵɵnextContext"](2); return ctx_r112.guardarItem(i_r96); });
     _angular_core__WEBPACK_IMPORTED_MODULE_1__["ɵɵelementEnd"]();
     _angular_core__WEBPACK_IMPORTED_MODULE_1__["ɵɵelementContainerEnd"]();
 } }
 function GestionEntregasBodegaComponent_div_6_tr_32_ng_container_23_Template(rf, ctx) { if (rf & 1) {
     _angular_core__WEBPACK_IMPORTED_MODULE_1__["ɵɵelementContainerStart"](0);
-    _angular_core__WEBPACK_IMPORTED_MODULE_1__["ɵɵelement"](1, "dx-button", 160);
+    _angular_core__WEBPACK_IMPORTED_MODULE_1__["ɵɵelement"](1, "dx-button", 172);
     _angular_core__WEBPACK_IMPORTED_MODULE_1__["ɵɵelementContainerEnd"]();
 } if (rf & 2) {
     _angular_core__WEBPACK_IMPORTED_MODULE_1__["ɵɵadvance"](1);
     _angular_core__WEBPACK_IMPORTED_MODULE_1__["ɵɵproperty"]("disabled", true);
 } }
 function GestionEntregasBodegaComponent_div_6_tr_32_span_24_Template(rf, ctx) { if (rf & 1) {
-    _angular_core__WEBPACK_IMPORTED_MODULE_1__["ɵɵelementStart"](0, "span", 161);
+    _angular_core__WEBPACK_IMPORTED_MODULE_1__["ɵɵelementStart"](0, "span", 173);
     _angular_core__WEBPACK_IMPORTED_MODULE_1__["ɵɵelement"](1, "i", 90);
     _angular_core__WEBPACK_IMPORTED_MODULE_1__["ɵɵelementEnd"]();
 } }
 function GestionEntregasBodegaComponent_div_6_tr_32_Template(rf, ctx) { if (rf & 1) {
-    const _r113 = _angular_core__WEBPACK_IMPORTED_MODULE_1__["ɵɵgetCurrentView"]();
+    const _r116 = _angular_core__WEBPACK_IMPORTED_MODULE_1__["ɵɵgetCurrentView"]();
     _angular_core__WEBPACK_IMPORTED_MODULE_1__["ɵɵelementStart"](0, "tr");
     _angular_core__WEBPACK_IMPORTED_MODULE_1__["ɵɵelementStart"](1, "td");
     _angular_core__WEBPACK_IMPORTED_MODULE_1__["ɵɵtext"](2);
@@ -52063,105 +52185,105 @@ function GestionEntregasBodegaComponent_div_6_tr_32_Template(rf, ctx) { if (rf &
     _angular_core__WEBPACK_IMPORTED_MODULE_1__["ɵɵelementEnd"]();
     _angular_core__WEBPACK_IMPORTED_MODULE_1__["ɵɵelementStart"](17, "td");
     _angular_core__WEBPACK_IMPORTED_MODULE_1__["ɵɵelementStart"](18, "dx-date-box", 78);
-    _angular_core__WEBPACK_IMPORTED_MODULE_1__["ɵɵlistener"]("valueChange", function GestionEntregasBodegaComponent_div_6_tr_32_Template_dx_date_box_valueChange_18_listener($event) { _angular_core__WEBPACK_IMPORTED_MODULE_1__["ɵɵrestoreView"](_r113); const item_r92 = ctx.$implicit; return item_r92.fechaCompromisoInput = $event; });
+    _angular_core__WEBPACK_IMPORTED_MODULE_1__["ɵɵlistener"]("valueChange", function GestionEntregasBodegaComponent_div_6_tr_32_Template_dx_date_box_valueChange_18_listener($event) { _angular_core__WEBPACK_IMPORTED_MODULE_1__["ɵɵrestoreView"](_r116); const item_r95 = ctx.$implicit; return item_r95.fechaCompromisoInput = $event; });
     _angular_core__WEBPACK_IMPORTED_MODULE_1__["ɵɵelementEnd"]();
     _angular_core__WEBPACK_IMPORTED_MODULE_1__["ɵɵelementEnd"]();
     _angular_core__WEBPACK_IMPORTED_MODULE_1__["ɵɵelementStart"](19, "td");
     _angular_core__WEBPACK_IMPORTED_MODULE_1__["ɵɵelementStart"](20, "dx-text-box", 79);
-    _angular_core__WEBPACK_IMPORTED_MODULE_1__["ɵɵlistener"]("valueChange", function GestionEntregasBodegaComponent_div_6_tr_32_Template_dx_text_box_valueChange_20_listener($event) { _angular_core__WEBPACK_IMPORTED_MODULE_1__["ɵɵrestoreView"](_r113); const item_r92 = ctx.$implicit; return item_r92.notasInput = $event; });
+    _angular_core__WEBPACK_IMPORTED_MODULE_1__["ɵɵlistener"]("valueChange", function GestionEntregasBodegaComponent_div_6_tr_32_Template_dx_text_box_valueChange_20_listener($event) { _angular_core__WEBPACK_IMPORTED_MODULE_1__["ɵɵrestoreView"](_r116); const item_r95 = ctx.$implicit; return item_r95.notasInput = $event; });
     _angular_core__WEBPACK_IMPORTED_MODULE_1__["ɵɵelementEnd"]();
     _angular_core__WEBPACK_IMPORTED_MODULE_1__["ɵɵelementEnd"]();
-    _angular_core__WEBPACK_IMPORTED_MODULE_1__["ɵɵelementStart"](21, "td", 157);
+    _angular_core__WEBPACK_IMPORTED_MODULE_1__["ɵɵelementStart"](21, "td", 169);
     _angular_core__WEBPACK_IMPORTED_MODULE_1__["ɵɵtemplate"](22, GestionEntregasBodegaComponent_div_6_tr_32_ng_container_22_Template, 2, 0, "ng-container", 28);
     _angular_core__WEBPACK_IMPORTED_MODULE_1__["ɵɵtemplate"](23, GestionEntregasBodegaComponent_div_6_tr_32_ng_container_23_Template, 2, 1, "ng-container", 28);
-    _angular_core__WEBPACK_IMPORTED_MODULE_1__["ɵɵtemplate"](24, GestionEntregasBodegaComponent_div_6_tr_32_span_24_Template, 2, 0, "span", 158);
+    _angular_core__WEBPACK_IMPORTED_MODULE_1__["ɵɵtemplate"](24, GestionEntregasBodegaComponent_div_6_tr_32_span_24_Template, 2, 0, "span", 170);
     _angular_core__WEBPACK_IMPORTED_MODULE_1__["ɵɵelementEnd"]();
     _angular_core__WEBPACK_IMPORTED_MODULE_1__["ɵɵelementEnd"]();
 } if (rf & 2) {
-    const item_r92 = ctx.$implicit;
-    const i_r93 = ctx.index;
-    const ctx_r91 = _angular_core__WEBPACK_IMPORTED_MODULE_1__["ɵɵnextContext"](2);
+    const item_r95 = ctx.$implicit;
+    const i_r96 = ctx.index;
+    const ctx_r94 = _angular_core__WEBPACK_IMPORTED_MODULE_1__["ɵɵnextContext"](2);
     _angular_core__WEBPACK_IMPORTED_MODULE_1__["ɵɵadvance"](2);
-    _angular_core__WEBPACK_IMPORTED_MODULE_1__["ɵɵtextInterpolate"](item_r92.productoNombre);
+    _angular_core__WEBPACK_IMPORTED_MODULE_1__["ɵɵtextInterpolate"](item_r95.productoNombre);
     _angular_core__WEBPACK_IMPORTED_MODULE_1__["ɵɵadvance"](2);
-    _angular_core__WEBPACK_IMPORTED_MODULE_1__["ɵɵtextInterpolate"](ctx_r91.formatoCantidadLinea(item_r92.cantidadFacturada, item_r92));
+    _angular_core__WEBPACK_IMPORTED_MODULE_1__["ɵɵtextInterpolate"](ctx_r94.formatoCantidadLinea(item_r95.cantidadFacturada, item_r95));
     _angular_core__WEBPACK_IMPORTED_MODULE_1__["ɵɵadvance"](2);
-    _angular_core__WEBPACK_IMPORTED_MODULE_1__["ɵɵtextInterpolate"](ctx_r91.formatoCantidadLinea(item_r92.cantidadEntregada, item_r92));
+    _angular_core__WEBPACK_IMPORTED_MODULE_1__["ɵɵtextInterpolate"](ctx_r94.formatoCantidadLinea(item_r95.cantidadEntregada, item_r95));
     _angular_core__WEBPACK_IMPORTED_MODULE_1__["ɵɵadvance"](2);
-    _angular_core__WEBPACK_IMPORTED_MODULE_1__["ɵɵtextInterpolate"](ctx_r91.formatoCantidadLinea(item_r92.cantidadDevuelta, item_r92));
+    _angular_core__WEBPACK_IMPORTED_MODULE_1__["ɵɵtextInterpolate"](ctx_r94.formatoCantidadLinea(item_r95.cantidadDevuelta, item_r95));
     _angular_core__WEBPACK_IMPORTED_MODULE_1__["ɵɵadvance"](2);
-    _angular_core__WEBPACK_IMPORTED_MODULE_1__["ɵɵtextInterpolate"](ctx_r91.formatoCantidadLinea(item_r92.pendiente, item_r92));
+    _angular_core__WEBPACK_IMPORTED_MODULE_1__["ɵɵtextInterpolate"](ctx_r94.formatoCantidadLinea(item_r95.pendiente, item_r95));
     _angular_core__WEBPACK_IMPORTED_MODULE_1__["ɵɵadvance"](2);
-    _angular_core__WEBPACK_IMPORTED_MODULE_1__["ɵɵproperty"]("ngIf", ctx_r91.esItemMetrosCajaPieza(item_r92));
+    _angular_core__WEBPACK_IMPORTED_MODULE_1__["ɵɵproperty"]("ngIf", ctx_r94.esItemMetrosCajaPieza(item_r95));
     _angular_core__WEBPACK_IMPORTED_MODULE_1__["ɵɵadvance"](1);
-    _angular_core__WEBPACK_IMPORTED_MODULE_1__["ɵɵproperty"]("ngIf", !ctx_r91.esItemMetrosCajaPieza(item_r92));
+    _angular_core__WEBPACK_IMPORTED_MODULE_1__["ɵɵproperty"]("ngIf", !ctx_r94.esItemMetrosCajaPieza(item_r95));
     _angular_core__WEBPACK_IMPORTED_MODULE_1__["ɵɵadvance"](3);
-    _angular_core__WEBPACK_IMPORTED_MODULE_1__["ɵɵtextInterpolate1"](" ", ctx_r91.estadoGestionAutomatico(item_r92), " ");
+    _angular_core__WEBPACK_IMPORTED_MODULE_1__["ɵɵtextInterpolate1"](" ", ctx_r94.estadoGestionAutomatico(item_r95), " ");
     _angular_core__WEBPACK_IMPORTED_MODULE_1__["ɵɵadvance"](2);
-    _angular_core__WEBPACK_IMPORTED_MODULE_1__["ɵɵproperty"]("value", item_r92.fechaCompromisoInput)("disabled", ctx_r91.esCompromisoBloqueado(item_r92));
+    _angular_core__WEBPACK_IMPORTED_MODULE_1__["ɵɵproperty"]("value", item_r95.fechaCompromisoInput)("disabled", ctx_r94.esCompromisoBloqueado(item_r95));
     _angular_core__WEBPACK_IMPORTED_MODULE_1__["ɵɵadvance"](2);
-    _angular_core__WEBPACK_IMPORTED_MODULE_1__["ɵɵproperty"]("value", item_r92.notasInput)("disabled", ctx_r91.esCompromisoBloqueado(item_r92));
+    _angular_core__WEBPACK_IMPORTED_MODULE_1__["ɵɵproperty"]("value", item_r95.notasInput)("disabled", ctx_r94.esCompromisoBloqueado(item_r95));
     _angular_core__WEBPACK_IMPORTED_MODULE_1__["ɵɵadvance"](2);
-    _angular_core__WEBPACK_IMPORTED_MODULE_1__["ɵɵproperty"]("ngIf", item_r92.pendiente > 0);
+    _angular_core__WEBPACK_IMPORTED_MODULE_1__["ɵɵproperty"]("ngIf", item_r95.pendiente > 0);
     _angular_core__WEBPACK_IMPORTED_MODULE_1__["ɵɵadvance"](1);
-    _angular_core__WEBPACK_IMPORTED_MODULE_1__["ɵɵproperty"]("ngIf", item_r92.pendiente === 0);
+    _angular_core__WEBPACK_IMPORTED_MODULE_1__["ɵɵproperty"]("ngIf", item_r95.pendiente === 0);
     _angular_core__WEBPACK_IMPORTED_MODULE_1__["ɵɵadvance"](1);
-    _angular_core__WEBPACK_IMPORTED_MODULE_1__["ɵɵproperty"]("ngIf", ctx_r91.lineaGuardadaExitosa(i_r93));
+    _angular_core__WEBPACK_IMPORTED_MODULE_1__["ɵɵproperty"]("ngIf", ctx_r94.lineaGuardadaExitosa(i_r96));
 } }
 function GestionEntregasBodegaComponent_div_6_Template(rf, ctx) { if (rf & 1) {
-    const _r116 = _angular_core__WEBPACK_IMPORTED_MODULE_1__["ɵɵgetCurrentView"]();
+    const _r119 = _angular_core__WEBPACK_IMPORTED_MODULE_1__["ɵɵgetCurrentView"]();
     _angular_core__WEBPACK_IMPORTED_MODULE_1__["ɵɵelementStart"](0, "div", 8);
     _angular_core__WEBPACK_IMPORTED_MODULE_1__["ɵɵelementStart"](1, "div", 9);
     _angular_core__WEBPACK_IMPORTED_MODULE_1__["ɵɵelementStart"](2, "h5", 10);
     _angular_core__WEBPACK_IMPORTED_MODULE_1__["ɵɵtext"](3);
     _angular_core__WEBPACK_IMPORTED_MODULE_1__["ɵɵelementEnd"]();
-    _angular_core__WEBPACK_IMPORTED_MODULE_1__["ɵɵelementStart"](4, "div", 141);
-    _angular_core__WEBPACK_IMPORTED_MODULE_1__["ɵɵelementStart"](5, "table", 142);
+    _angular_core__WEBPACK_IMPORTED_MODULE_1__["ɵɵelementStart"](4, "div", 153);
+    _angular_core__WEBPACK_IMPORTED_MODULE_1__["ɵɵelementStart"](5, "table", 154);
     _angular_core__WEBPACK_IMPORTED_MODULE_1__["ɵɵelementStart"](6, "thead");
     _angular_core__WEBPACK_IMPORTED_MODULE_1__["ɵɵelementStart"](7, "tr");
-    _angular_core__WEBPACK_IMPORTED_MODULE_1__["ɵɵelementStart"](8, "th", 143);
+    _angular_core__WEBPACK_IMPORTED_MODULE_1__["ɵɵelementStart"](8, "th", 155);
     _angular_core__WEBPACK_IMPORTED_MODULE_1__["ɵɵtext"](9, " Producto ");
     _angular_core__WEBPACK_IMPORTED_MODULE_1__["ɵɵelementEnd"]();
-    _angular_core__WEBPACK_IMPORTED_MODULE_1__["ɵɵelementStart"](10, "th", 144);
+    _angular_core__WEBPACK_IMPORTED_MODULE_1__["ɵɵelementStart"](10, "th", 156);
     _angular_core__WEBPACK_IMPORTED_MODULE_1__["ɵɵtext"](11, "Fact");
     _angular_core__WEBPACK_IMPORTED_MODULE_1__["ɵɵelementEnd"]();
-    _angular_core__WEBPACK_IMPORTED_MODULE_1__["ɵɵelementStart"](12, "th", 145);
+    _angular_core__WEBPACK_IMPORTED_MODULE_1__["ɵɵelementStart"](12, "th", 157);
     _angular_core__WEBPACK_IMPORTED_MODULE_1__["ɵɵtext"](13, "Ent");
     _angular_core__WEBPACK_IMPORTED_MODULE_1__["ɵɵelementEnd"]();
-    _angular_core__WEBPACK_IMPORTED_MODULE_1__["ɵɵelementStart"](14, "th", 146);
+    _angular_core__WEBPACK_IMPORTED_MODULE_1__["ɵɵelementStart"](14, "th", 158);
     _angular_core__WEBPACK_IMPORTED_MODULE_1__["ɵɵtext"](15, "Dev");
     _angular_core__WEBPACK_IMPORTED_MODULE_1__["ɵɵelementEnd"]();
-    _angular_core__WEBPACK_IMPORTED_MODULE_1__["ɵɵelementStart"](16, "th", 147);
+    _angular_core__WEBPACK_IMPORTED_MODULE_1__["ɵɵelementStart"](16, "th", 159);
     _angular_core__WEBPACK_IMPORTED_MODULE_1__["ɵɵtext"](17, "Pend");
     _angular_core__WEBPACK_IMPORTED_MODULE_1__["ɵɵelementEnd"]();
-    _angular_core__WEBPACK_IMPORTED_MODULE_1__["ɵɵelementStart"](18, "th", 148);
+    _angular_core__WEBPACK_IMPORTED_MODULE_1__["ɵɵelementStart"](18, "th", 160);
     _angular_core__WEBPACK_IMPORTED_MODULE_1__["ɵɵtext"](19, " Despacho ");
     _angular_core__WEBPACK_IMPORTED_MODULE_1__["ɵɵelement"](20, "br");
-    _angular_core__WEBPACK_IMPORTED_MODULE_1__["ɵɵelementStart"](21, "small", 149);
+    _angular_core__WEBPACK_IMPORTED_MODULE_1__["ɵɵelementStart"](21, "small", 161);
     _angular_core__WEBPACK_IMPORTED_MODULE_1__["ɵɵtext"](22, "(cajas \u00B7 piezas si aplica)");
     _angular_core__WEBPACK_IMPORTED_MODULE_1__["ɵɵelementEnd"]();
     _angular_core__WEBPACK_IMPORTED_MODULE_1__["ɵɵelementEnd"]();
-    _angular_core__WEBPACK_IMPORTED_MODULE_1__["ɵɵelementStart"](23, "th", 150);
+    _angular_core__WEBPACK_IMPORTED_MODULE_1__["ɵɵelementStart"](23, "th", 162);
     _angular_core__WEBPACK_IMPORTED_MODULE_1__["ɵɵtext"](24, "Est");
     _angular_core__WEBPACK_IMPORTED_MODULE_1__["ɵɵelementEnd"]();
-    _angular_core__WEBPACK_IMPORTED_MODULE_1__["ɵɵelementStart"](25, "th", 151);
+    _angular_core__WEBPACK_IMPORTED_MODULE_1__["ɵɵelementStart"](25, "th", 163);
     _angular_core__WEBPACK_IMPORTED_MODULE_1__["ɵɵtext"](26, "F.Comp");
     _angular_core__WEBPACK_IMPORTED_MODULE_1__["ɵɵelementEnd"]();
-    _angular_core__WEBPACK_IMPORTED_MODULE_1__["ɵɵelementStart"](27, "th", 152);
+    _angular_core__WEBPACK_IMPORTED_MODULE_1__["ɵɵelementStart"](27, "th", 164);
     _angular_core__WEBPACK_IMPORTED_MODULE_1__["ɵɵtext"](28, "Notas");
     _angular_core__WEBPACK_IMPORTED_MODULE_1__["ɵɵelementEnd"]();
-    _angular_core__WEBPACK_IMPORTED_MODULE_1__["ɵɵelementStart"](29, "th", 153);
+    _angular_core__WEBPACK_IMPORTED_MODULE_1__["ɵɵelementStart"](29, "th", 165);
     _angular_core__WEBPACK_IMPORTED_MODULE_1__["ɵɵtext"](30, "Guardar");
     _angular_core__WEBPACK_IMPORTED_MODULE_1__["ɵɵelementEnd"]();
     _angular_core__WEBPACK_IMPORTED_MODULE_1__["ɵɵelementEnd"]();
     _angular_core__WEBPACK_IMPORTED_MODULE_1__["ɵɵelementEnd"]();
     _angular_core__WEBPACK_IMPORTED_MODULE_1__["ɵɵelementStart"](31, "tbody");
-    _angular_core__WEBPACK_IMPORTED_MODULE_1__["ɵɵtemplate"](32, GestionEntregasBodegaComponent_div_6_tr_32_Template, 25, 15, "tr", 154);
+    _angular_core__WEBPACK_IMPORTED_MODULE_1__["ɵɵtemplate"](32, GestionEntregasBodegaComponent_div_6_tr_32_Template, 25, 15, "tr", 166);
     _angular_core__WEBPACK_IMPORTED_MODULE_1__["ɵɵelementEnd"]();
     _angular_core__WEBPACK_IMPORTED_MODULE_1__["ɵɵelementEnd"]();
-    _angular_core__WEBPACK_IMPORTED_MODULE_1__["ɵɵelementStart"](33, "div", 155);
-    _angular_core__WEBPACK_IMPORTED_MODULE_1__["ɵɵelementStart"](34, "dx-button", 156);
-    _angular_core__WEBPACK_IMPORTED_MODULE_1__["ɵɵlistener"]("onClick", function GestionEntregasBodegaComponent_div_6_Template_dx_button_onClick_34_listener() { _angular_core__WEBPACK_IMPORTED_MODULE_1__["ɵɵrestoreView"](_r116); const ctx_r115 = _angular_core__WEBPACK_IMPORTED_MODULE_1__["ɵɵnextContext"](); return ctx_r115.cerrarOrden(); });
+    _angular_core__WEBPACK_IMPORTED_MODULE_1__["ɵɵelementStart"](33, "div", 167);
+    _angular_core__WEBPACK_IMPORTED_MODULE_1__["ɵɵelementStart"](34, "dx-button", 168);
+    _angular_core__WEBPACK_IMPORTED_MODULE_1__["ɵɵlistener"]("onClick", function GestionEntregasBodegaComponent_div_6_Template_dx_button_onClick_34_listener() { _angular_core__WEBPACK_IMPORTED_MODULE_1__["ɵɵrestoreView"](_r119); const ctx_r118 = _angular_core__WEBPACK_IMPORTED_MODULE_1__["ɵɵnextContext"](); return ctx_r118.cerrarOrden(); });
     _angular_core__WEBPACK_IMPORTED_MODULE_1__["ɵɵelementEnd"]();
     _angular_core__WEBPACK_IMPORTED_MODULE_1__["ɵɵelementEnd"]();
     _angular_core__WEBPACK_IMPORTED_MODULE_1__["ɵɵelementEnd"]();
@@ -52186,9 +52308,9 @@ function GestionEntregasBodegaComponent_div_8_div_2_tr_40_Template(rf, ctx) { if
     _angular_core__WEBPACK_IMPORTED_MODULE_1__["ɵɵelementEnd"]();
     _angular_core__WEBPACK_IMPORTED_MODULE_1__["ɵɵelementEnd"]();
 } if (rf & 2) {
-    const ctx_r119 = _angular_core__WEBPACK_IMPORTED_MODULE_1__["ɵɵnextContext"](3);
+    const ctx_r122 = _angular_core__WEBPACK_IMPORTED_MODULE_1__["ɵɵnextContext"](3);
     _angular_core__WEBPACK_IMPORTED_MODULE_1__["ɵɵadvance"](4);
-    _angular_core__WEBPACK_IMPORTED_MODULE_1__["ɵɵtextInterpolate"](ctx_r119.formatearFechaIso(ctx_r119.ordenTrazabilidad.createdAt));
+    _angular_core__WEBPACK_IMPORTED_MODULE_1__["ɵɵtextInterpolate"](ctx_r122.formatearFechaIso(ctx_r122.ordenTrazabilidad.createdAt));
 } }
 function GestionEntregasBodegaComponent_div_8_div_2_tr_41_Template(rf, ctx) { if (rf & 1) {
     _angular_core__WEBPACK_IMPORTED_MODULE_1__["ɵɵelementStart"](0, "tr");
@@ -52200,22 +52322,22 @@ function GestionEntregasBodegaComponent_div_8_div_2_tr_41_Template(rf, ctx) { if
     _angular_core__WEBPACK_IMPORTED_MODULE_1__["ɵɵelementEnd"]();
     _angular_core__WEBPACK_IMPORTED_MODULE_1__["ɵɵelementEnd"]();
 } if (rf & 2) {
-    const ctx_r120 = _angular_core__WEBPACK_IMPORTED_MODULE_1__["ɵɵnextContext"](3);
+    const ctx_r123 = _angular_core__WEBPACK_IMPORTED_MODULE_1__["ɵɵnextContext"](3);
     _angular_core__WEBPACK_IMPORTED_MODULE_1__["ɵɵadvance"](4);
-    _angular_core__WEBPACK_IMPORTED_MODULE_1__["ɵɵtextInterpolate"](ctx_r120.formatearFechaIso(ctx_r120.ordenTrazabilidad.updatedAt));
+    _angular_core__WEBPACK_IMPORTED_MODULE_1__["ɵɵtextInterpolate"](ctx_r123.formatearFechaIso(ctx_r123.ordenTrazabilidad.updatedAt));
 } }
 function GestionEntregasBodegaComponent_div_8_div_2_p_51_Template(rf, ctx) { if (rf & 1) {
-    _angular_core__WEBPACK_IMPORTED_MODULE_1__["ɵɵelementStart"](0, "p", 176);
+    _angular_core__WEBPACK_IMPORTED_MODULE_1__["ɵɵelementStart"](0, "p", 188);
     _angular_core__WEBPACK_IMPORTED_MODULE_1__["ɵɵtext"](1);
     _angular_core__WEBPACK_IMPORTED_MODULE_1__["ɵɵelementEnd"]();
 } if (rf & 2) {
-    const ctx_r121 = _angular_core__WEBPACK_IMPORTED_MODULE_1__["ɵɵnextContext"](3);
+    const ctx_r124 = _angular_core__WEBPACK_IMPORTED_MODULE_1__["ɵɵnextContext"](3);
     _angular_core__WEBPACK_IMPORTED_MODULE_1__["ɵɵadvance"](1);
-    _angular_core__WEBPACK_IMPORTED_MODULE_1__["ɵɵtextInterpolate1"](" ", ctx_r121.textoAyudaEdicionHistorial(), " ");
+    _angular_core__WEBPACK_IMPORTED_MODULE_1__["ɵɵtextInterpolate1"](" ", ctx_r124.textoAyudaEdicionHistorial(), " ");
 } }
 function GestionEntregasBodegaComponent_div_8_div_2_div_52_div_5_tr_25_Template(rf, ctx) { if (rf & 1) {
     _angular_core__WEBPACK_IMPORTED_MODULE_1__["ɵɵelementStart"](0, "tr");
-    _angular_core__WEBPACK_IMPORTED_MODULE_1__["ɵɵelementStart"](1, "td", 183);
+    _angular_core__WEBPACK_IMPORTED_MODULE_1__["ɵɵelementStart"](1, "td", 195);
     _angular_core__WEBPACK_IMPORTED_MODULE_1__["ɵɵtext"](2);
     _angular_core__WEBPACK_IMPORTED_MODULE_1__["ɵɵelementEnd"]();
     _angular_core__WEBPACK_IMPORTED_MODULE_1__["ɵɵelementStart"](3, "td");
@@ -52227,55 +52349,55 @@ function GestionEntregasBodegaComponent_div_8_div_2_div_52_div_5_tr_25_Template(
     _angular_core__WEBPACK_IMPORTED_MODULE_1__["ɵɵelementStart"](7, "td");
     _angular_core__WEBPACK_IMPORTED_MODULE_1__["ɵɵtext"](8);
     _angular_core__WEBPACK_IMPORTED_MODULE_1__["ɵɵelementEnd"]();
-    _angular_core__WEBPACK_IMPORTED_MODULE_1__["ɵɵelementStart"](9, "td", 155);
+    _angular_core__WEBPACK_IMPORTED_MODULE_1__["ɵɵelementStart"](9, "td", 167);
     _angular_core__WEBPACK_IMPORTED_MODULE_1__["ɵɵtext"](10);
     _angular_core__WEBPACK_IMPORTED_MODULE_1__["ɵɵpipe"](11, "number");
     _angular_core__WEBPACK_IMPORTED_MODULE_1__["ɵɵelementEnd"]();
-    _angular_core__WEBPACK_IMPORTED_MODULE_1__["ɵɵelementStart"](12, "td", 155);
+    _angular_core__WEBPACK_IMPORTED_MODULE_1__["ɵɵelementStart"](12, "td", 167);
     _angular_core__WEBPACK_IMPORTED_MODULE_1__["ɵɵtext"](13);
     _angular_core__WEBPACK_IMPORTED_MODULE_1__["ɵɵpipe"](14, "number");
     _angular_core__WEBPACK_IMPORTED_MODULE_1__["ɵɵelementEnd"]();
-    _angular_core__WEBPACK_IMPORTED_MODULE_1__["ɵɵelementStart"](15, "td", 155);
+    _angular_core__WEBPACK_IMPORTED_MODULE_1__["ɵɵelementStart"](15, "td", 167);
     _angular_core__WEBPACK_IMPORTED_MODULE_1__["ɵɵtext"](16);
     _angular_core__WEBPACK_IMPORTED_MODULE_1__["ɵɵpipe"](17, "number");
     _angular_core__WEBPACK_IMPORTED_MODULE_1__["ɵɵelementEnd"]();
-    _angular_core__WEBPACK_IMPORTED_MODULE_1__["ɵɵelementStart"](18, "td", 155);
+    _angular_core__WEBPACK_IMPORTED_MODULE_1__["ɵɵelementStart"](18, "td", 167);
     _angular_core__WEBPACK_IMPORTED_MODULE_1__["ɵɵtext"](19);
     _angular_core__WEBPACK_IMPORTED_MODULE_1__["ɵɵelementEnd"]();
-    _angular_core__WEBPACK_IMPORTED_MODULE_1__["ɵɵelementStart"](20, "td", 155);
+    _angular_core__WEBPACK_IMPORTED_MODULE_1__["ɵɵelementStart"](20, "td", 167);
     _angular_core__WEBPACK_IMPORTED_MODULE_1__["ɵɵtext"](21);
     _angular_core__WEBPACK_IMPORTED_MODULE_1__["ɵɵelementEnd"]();
-    _angular_core__WEBPACK_IMPORTED_MODULE_1__["ɵɵelementStart"](22, "td", 184);
+    _angular_core__WEBPACK_IMPORTED_MODULE_1__["ɵɵelementStart"](22, "td", 196);
     _angular_core__WEBPACK_IMPORTED_MODULE_1__["ɵɵtext"](23);
     _angular_core__WEBPACK_IMPORTED_MODULE_1__["ɵɵelementEnd"]();
     _angular_core__WEBPACK_IMPORTED_MODULE_1__["ɵɵelementEnd"]();
 } if (rf & 2) {
-    const h_r128 = ctx.$implicit;
+    const h_r131 = ctx.$implicit;
     _angular_core__WEBPACK_IMPORTED_MODULE_1__["ɵɵadvance"](2);
-    _angular_core__WEBPACK_IMPORTED_MODULE_1__["ɵɵtextInterpolate"](h_r128.fechaFmt);
+    _angular_core__WEBPACK_IMPORTED_MODULE_1__["ɵɵtextInterpolate"](h_r131.fechaFmt);
     _angular_core__WEBPACK_IMPORTED_MODULE_1__["ɵɵadvance"](2);
-    _angular_core__WEBPACK_IMPORTED_MODULE_1__["ɵɵtextInterpolate"](h_r128.usuario);
+    _angular_core__WEBPACK_IMPORTED_MODULE_1__["ɵɵtextInterpolate"](h_r131.usuario);
     _angular_core__WEBPACK_IMPORTED_MODULE_1__["ɵɵadvance"](2);
-    _angular_core__WEBPACK_IMPORTED_MODULE_1__["ɵɵtextInterpolate"](h_r128.accion);
+    _angular_core__WEBPACK_IMPORTED_MODULE_1__["ɵɵtextInterpolate"](h_r131.accion);
     _angular_core__WEBPACK_IMPORTED_MODULE_1__["ɵɵadvance"](2);
-    _angular_core__WEBPACK_IMPORTED_MODULE_1__["ɵɵtextInterpolate"](h_r128.estadoSeleccionado);
+    _angular_core__WEBPACK_IMPORTED_MODULE_1__["ɵɵtextInterpolate"](h_r131.estadoSeleccionado);
     _angular_core__WEBPACK_IMPORTED_MODULE_1__["ɵɵadvance"](2);
-    _angular_core__WEBPACK_IMPORTED_MODULE_1__["ɵɵtextInterpolate1"](" ", _angular_core__WEBPACK_IMPORTED_MODULE_1__["ɵɵpipeBind2"](11, 10, h_r128.cantidadEntregada, "1.2-2"), " ");
+    _angular_core__WEBPACK_IMPORTED_MODULE_1__["ɵɵtextInterpolate1"](" ", _angular_core__WEBPACK_IMPORTED_MODULE_1__["ɵɵpipeBind2"](11, 10, h_r131.cantidadEntregada, "1.2-2"), " ");
     _angular_core__WEBPACK_IMPORTED_MODULE_1__["ɵɵadvance"](3);
-    _angular_core__WEBPACK_IMPORTED_MODULE_1__["ɵɵtextInterpolate1"](" ", _angular_core__WEBPACK_IMPORTED_MODULE_1__["ɵɵpipeBind2"](14, 13, h_r128.cantidadDevuelta, "1.2-2"), " ");
+    _angular_core__WEBPACK_IMPORTED_MODULE_1__["ɵɵtextInterpolate1"](" ", _angular_core__WEBPACK_IMPORTED_MODULE_1__["ɵɵpipeBind2"](14, 13, h_r131.cantidadDevuelta, "1.2-2"), " ");
     _angular_core__WEBPACK_IMPORTED_MODULE_1__["ɵɵadvance"](3);
-    _angular_core__WEBPACK_IMPORTED_MODULE_1__["ɵɵtextInterpolate1"](" ", _angular_core__WEBPACK_IMPORTED_MODULE_1__["ɵɵpipeBind2"](17, 16, h_r128.m2EntregadoEnEstaOperacion, "1.2-2"), " ");
+    _angular_core__WEBPACK_IMPORTED_MODULE_1__["ɵɵtextInterpolate1"](" ", _angular_core__WEBPACK_IMPORTED_MODULE_1__["ɵɵpipeBind2"](17, 16, h_r131.m2EntregadoEnEstaOperacion, "1.2-2"), " ");
     _angular_core__WEBPACK_IMPORTED_MODULE_1__["ɵɵadvance"](3);
-    _angular_core__WEBPACK_IMPORTED_MODULE_1__["ɵɵtextInterpolate"](h_r128.entregaCajas);
+    _angular_core__WEBPACK_IMPORTED_MODULE_1__["ɵɵtextInterpolate"](h_r131.entregaCajas);
     _angular_core__WEBPACK_IMPORTED_MODULE_1__["ɵɵadvance"](2);
-    _angular_core__WEBPACK_IMPORTED_MODULE_1__["ɵɵtextInterpolate"](h_r128.entregaPiezas);
+    _angular_core__WEBPACK_IMPORTED_MODULE_1__["ɵɵtextInterpolate"](h_r131.entregaPiezas);
     _angular_core__WEBPACK_IMPORTED_MODULE_1__["ɵɵadvance"](2);
-    _angular_core__WEBPACK_IMPORTED_MODULE_1__["ɵɵtextInterpolate"](h_r128.notas);
+    _angular_core__WEBPACK_IMPORTED_MODULE_1__["ɵɵtextInterpolate"](h_r131.notas);
 } }
 function GestionEntregasBodegaComponent_div_8_div_2_div_52_div_5_Template(rf, ctx) { if (rf & 1) {
-    _angular_core__WEBPACK_IMPORTED_MODULE_1__["ɵɵelementStart"](0, "div", 180);
-    _angular_core__WEBPACK_IMPORTED_MODULE_1__["ɵɵelementStart"](1, "table", 181);
-    _angular_core__WEBPACK_IMPORTED_MODULE_1__["ɵɵelementStart"](2, "thead", 182);
+    _angular_core__WEBPACK_IMPORTED_MODULE_1__["ɵɵelementStart"](0, "div", 192);
+    _angular_core__WEBPACK_IMPORTED_MODULE_1__["ɵɵelementStart"](1, "table", 193);
+    _angular_core__WEBPACK_IMPORTED_MODULE_1__["ɵɵelementStart"](2, "thead", 194);
     _angular_core__WEBPACK_IMPORTED_MODULE_1__["ɵɵelementStart"](3, "tr");
     _angular_core__WEBPACK_IMPORTED_MODULE_1__["ɵɵelementStart"](4, "th");
     _angular_core__WEBPACK_IMPORTED_MODULE_1__["ɵɵtext"](5, "Fecha / hora");
@@ -52289,19 +52411,19 @@ function GestionEntregasBodegaComponent_div_8_div_2_div_52_div_5_Template(rf, ct
     _angular_core__WEBPACK_IMPORTED_MODULE_1__["ɵɵelementStart"](10, "th");
     _angular_core__WEBPACK_IMPORTED_MODULE_1__["ɵɵtext"](11, "Estado sel.");
     _angular_core__WEBPACK_IMPORTED_MODULE_1__["ɵɵelementEnd"]();
-    _angular_core__WEBPACK_IMPORTED_MODULE_1__["ɵɵelementStart"](12, "th", 155);
+    _angular_core__WEBPACK_IMPORTED_MODULE_1__["ɵɵelementStart"](12, "th", 167);
     _angular_core__WEBPACK_IMPORTED_MODULE_1__["ɵɵtext"](13, "Entr. acum.");
     _angular_core__WEBPACK_IMPORTED_MODULE_1__["ɵɵelementEnd"]();
-    _angular_core__WEBPACK_IMPORTED_MODULE_1__["ɵɵelementStart"](14, "th", 155);
+    _angular_core__WEBPACK_IMPORTED_MODULE_1__["ɵɵelementStart"](14, "th", 167);
     _angular_core__WEBPACK_IMPORTED_MODULE_1__["ɵɵtext"](15, "Dev. acum.");
     _angular_core__WEBPACK_IMPORTED_MODULE_1__["ɵɵelementEnd"]();
-    _angular_core__WEBPACK_IMPORTED_MODULE_1__["ɵɵelementStart"](16, "th", 155);
+    _angular_core__WEBPACK_IMPORTED_MODULE_1__["ɵɵelementStart"](16, "th", 167);
     _angular_core__WEBPACK_IMPORTED_MODULE_1__["ɵɵtext"](17, "m\u00B2 op.");
     _angular_core__WEBPACK_IMPORTED_MODULE_1__["ɵɵelementEnd"]();
-    _angular_core__WEBPACK_IMPORTED_MODULE_1__["ɵɵelementStart"](18, "th", 155);
+    _angular_core__WEBPACK_IMPORTED_MODULE_1__["ɵɵelementStart"](18, "th", 167);
     _angular_core__WEBPACK_IMPORTED_MODULE_1__["ɵɵtext"](19, "Cajas");
     _angular_core__WEBPACK_IMPORTED_MODULE_1__["ɵɵelementEnd"]();
-    _angular_core__WEBPACK_IMPORTED_MODULE_1__["ɵɵelementStart"](20, "th", 155);
+    _angular_core__WEBPACK_IMPORTED_MODULE_1__["ɵɵelementStart"](20, "th", 167);
     _angular_core__WEBPACK_IMPORTED_MODULE_1__["ɵɵtext"](21, "Piezas");
     _angular_core__WEBPACK_IMPORTED_MODULE_1__["ɵɵelementEnd"]();
     _angular_core__WEBPACK_IMPORTED_MODULE_1__["ɵɵelementStart"](22, "th");
@@ -52310,55 +52432,55 @@ function GestionEntregasBodegaComponent_div_8_div_2_div_52_div_5_Template(rf, ct
     _angular_core__WEBPACK_IMPORTED_MODULE_1__["ɵɵelementEnd"]();
     _angular_core__WEBPACK_IMPORTED_MODULE_1__["ɵɵelementEnd"]();
     _angular_core__WEBPACK_IMPORTED_MODULE_1__["ɵɵelementStart"](24, "tbody");
-    _angular_core__WEBPACK_IMPORTED_MODULE_1__["ɵɵtemplate"](25, GestionEntregasBodegaComponent_div_8_div_2_div_52_div_5_tr_25_Template, 24, 19, "tr", 154);
+    _angular_core__WEBPACK_IMPORTED_MODULE_1__["ɵɵtemplate"](25, GestionEntregasBodegaComponent_div_8_div_2_div_52_div_5_tr_25_Template, 24, 19, "tr", 166);
     _angular_core__WEBPACK_IMPORTED_MODULE_1__["ɵɵelementEnd"]();
     _angular_core__WEBPACK_IMPORTED_MODULE_1__["ɵɵelementEnd"]();
     _angular_core__WEBPACK_IMPORTED_MODULE_1__["ɵɵelementEnd"]();
 } if (rf & 2) {
-    const it_r123 = _angular_core__WEBPACK_IMPORTED_MODULE_1__["ɵɵnextContext"]().$implicit;
+    const it_r126 = _angular_core__WEBPACK_IMPORTED_MODULE_1__["ɵɵnextContext"]().$implicit;
     _angular_core__WEBPACK_IMPORTED_MODULE_1__["ɵɵadvance"](25);
-    _angular_core__WEBPACK_IMPORTED_MODULE_1__["ɵɵproperty"]("ngForOf", it_r123.historialOrdenado);
+    _angular_core__WEBPACK_IMPORTED_MODULE_1__["ɵɵproperty"]("ngForOf", it_r126.historialOrdenado);
 } }
 function GestionEntregasBodegaComponent_div_8_div_2_div_52_p_6_Template(rf, ctx) { if (rf & 1) {
-    _angular_core__WEBPACK_IMPORTED_MODULE_1__["ɵɵelementStart"](0, "p", 185);
+    _angular_core__WEBPACK_IMPORTED_MODULE_1__["ɵɵelementStart"](0, "p", 197);
     _angular_core__WEBPACK_IMPORTED_MODULE_1__["ɵɵtext"](1, " Sin movimientos registrados en este \u00EDtem. ");
     _angular_core__WEBPACK_IMPORTED_MODULE_1__["ɵɵelementEnd"]();
 } }
-const _c1 = function () { return []; };
+const _c2 = function () { return []; };
 function GestionEntregasBodegaComponent_div_8_div_2_div_52_Template(rf, ctx) { if (rf & 1) {
-    _angular_core__WEBPACK_IMPORTED_MODULE_1__["ɵɵelementStart"](0, "div", 177);
+    _angular_core__WEBPACK_IMPORTED_MODULE_1__["ɵɵelementStart"](0, "div", 189);
     _angular_core__WEBPACK_IMPORTED_MODULE_1__["ɵɵelementStart"](1, "div", 73);
     _angular_core__WEBPACK_IMPORTED_MODULE_1__["ɵɵtext"](2);
     _angular_core__WEBPACK_IMPORTED_MODULE_1__["ɵɵelementStart"](3, "p");
     _angular_core__WEBPACK_IMPORTED_MODULE_1__["ɵɵtext"](4);
     _angular_core__WEBPACK_IMPORTED_MODULE_1__["ɵɵelementEnd"]();
     _angular_core__WEBPACK_IMPORTED_MODULE_1__["ɵɵelementEnd"]();
-    _angular_core__WEBPACK_IMPORTED_MODULE_1__["ɵɵtemplate"](5, GestionEntregasBodegaComponent_div_8_div_2_div_52_div_5_Template, 26, 1, "div", 178);
-    _angular_core__WEBPACK_IMPORTED_MODULE_1__["ɵɵtemplate"](6, GestionEntregasBodegaComponent_div_8_div_2_div_52_p_6_Template, 2, 0, "p", 179);
+    _angular_core__WEBPACK_IMPORTED_MODULE_1__["ɵɵtemplate"](5, GestionEntregasBodegaComponent_div_8_div_2_div_52_div_5_Template, 26, 1, "div", 190);
+    _angular_core__WEBPACK_IMPORTED_MODULE_1__["ɵɵtemplate"](6, GestionEntregasBodegaComponent_div_8_div_2_div_52_p_6_Template, 2, 0, "p", 191);
     _angular_core__WEBPACK_IMPORTED_MODULE_1__["ɵɵelementEnd"]();
 } if (rf & 2) {
-    const it_r123 = ctx.$implicit;
-    const ctx_r122 = _angular_core__WEBPACK_IMPORTED_MODULE_1__["ɵɵnextContext"](3);
+    const it_r126 = ctx.$implicit;
+    const ctx_r125 = _angular_core__WEBPACK_IMPORTED_MODULE_1__["ɵɵnextContext"](3);
     _angular_core__WEBPACK_IMPORTED_MODULE_1__["ɵɵadvance"](2);
-    _angular_core__WEBPACK_IMPORTED_MODULE_1__["ɵɵtextInterpolate1"](" ", it_r123.productoNombre, " ");
+    _angular_core__WEBPACK_IMPORTED_MODULE_1__["ɵɵtextInterpolate1"](" ", it_r126.productoNombre, " ");
     _angular_core__WEBPACK_IMPORTED_MODULE_1__["ɵɵadvance"](2);
-    _angular_core__WEBPACK_IMPORTED_MODULE_1__["ɵɵtextInterpolate4"](" Facturado: ", ctx_r122.formatoCantidadLinea(it_r123.cantidadFacturada, it_r123), " \u00B7 Entregado: ", ctx_r122.formatoCantidadLinea(it_r123.cantidadEntregada, it_r123), " \u00B7 Devuelto: ", ctx_r122.formatoCantidadLinea(it_r123.cantidadDevuelta, it_r123), " \u00B7 Estado \u00EDtem: ", it_r123.estadoItem, " ");
+    _angular_core__WEBPACK_IMPORTED_MODULE_1__["ɵɵtextInterpolate4"](" Facturado: ", ctx_r125.formatoCantidadLinea(it_r126.cantidadFacturada, it_r126), " \u00B7 Entregado: ", ctx_r125.formatoCantidadLinea(it_r126.cantidadEntregada, it_r126), " \u00B7 Devuelto: ", ctx_r125.formatoCantidadLinea(it_r126.cantidadDevuelta, it_r126), " \u00B7 Estado \u00EDtem: ", it_r126.estadoItem, " ");
     _angular_core__WEBPACK_IMPORTED_MODULE_1__["ɵɵadvance"](1);
-    _angular_core__WEBPACK_IMPORTED_MODULE_1__["ɵɵproperty"]("ngIf", (it_r123.historialOrdenado || _angular_core__WEBPACK_IMPORTED_MODULE_1__["ɵɵpureFunction0"](7, _c1)).length > 0);
+    _angular_core__WEBPACK_IMPORTED_MODULE_1__["ɵɵproperty"]("ngIf", (it_r126.historialOrdenado || _angular_core__WEBPACK_IMPORTED_MODULE_1__["ɵɵpureFunction0"](7, _c2)).length > 0);
     _angular_core__WEBPACK_IMPORTED_MODULE_1__["ɵɵadvance"](1);
-    _angular_core__WEBPACK_IMPORTED_MODULE_1__["ɵɵproperty"]("ngIf", !(it_r123.historialOrdenado || _angular_core__WEBPACK_IMPORTED_MODULE_1__["ɵɵpureFunction0"](8, _c1)).length);
+    _angular_core__WEBPACK_IMPORTED_MODULE_1__["ɵɵproperty"]("ngIf", !(it_r126.historialOrdenado || _angular_core__WEBPACK_IMPORTED_MODULE_1__["ɵɵpureFunction0"](8, _c2)).length);
 } }
 function GestionEntregasBodegaComponent_div_8_div_2_Template(rf, ctx) { if (rf & 1) {
-    _angular_core__WEBPACK_IMPORTED_MODULE_1__["ɵɵelementStart"](0, "div", 164);
+    _angular_core__WEBPACK_IMPORTED_MODULE_1__["ɵɵelementStart"](0, "div", 176);
     _angular_core__WEBPACK_IMPORTED_MODULE_1__["ɵɵelementStart"](1, "h6", 73);
     _angular_core__WEBPACK_IMPORTED_MODULE_1__["ɵɵtext"](2, "Resumen de la orden");
     _angular_core__WEBPACK_IMPORTED_MODULE_1__["ɵɵelementEnd"]();
     _angular_core__WEBPACK_IMPORTED_MODULE_1__["ɵɵelementStart"](3, "div", 14);
-    _angular_core__WEBPACK_IMPORTED_MODULE_1__["ɵɵelementStart"](4, "div", 165);
-    _angular_core__WEBPACK_IMPORTED_MODULE_1__["ɵɵelementStart"](5, "table", 166);
+    _angular_core__WEBPACK_IMPORTED_MODULE_1__["ɵɵelementStart"](4, "div", 177);
+    _angular_core__WEBPACK_IMPORTED_MODULE_1__["ɵɵelementStart"](5, "table", 178);
     _angular_core__WEBPACK_IMPORTED_MODULE_1__["ɵɵelementStart"](6, "tbody");
     _angular_core__WEBPACK_IMPORTED_MODULE_1__["ɵɵelementStart"](7, "tr");
-    _angular_core__WEBPACK_IMPORTED_MODULE_1__["ɵɵelementStart"](8, "th", 167);
+    _angular_core__WEBPACK_IMPORTED_MODULE_1__["ɵɵelementStart"](8, "th", 179);
     _angular_core__WEBPACK_IMPORTED_MODULE_1__["ɵɵtext"](9, "Consecutivo");
     _angular_core__WEBPACK_IMPORTED_MODULE_1__["ɵɵelementEnd"]();
     _angular_core__WEBPACK_IMPORTED_MODULE_1__["ɵɵelementStart"](10, "td");
@@ -52392,8 +52514,8 @@ function GestionEntregasBodegaComponent_div_8_div_2_Template(rf, ctx) { if (rf &
     _angular_core__WEBPACK_IMPORTED_MODULE_1__["ɵɵelementEnd"]();
     _angular_core__WEBPACK_IMPORTED_MODULE_1__["ɵɵelementEnd"]();
     _angular_core__WEBPACK_IMPORTED_MODULE_1__["ɵɵelementEnd"]();
-    _angular_core__WEBPACK_IMPORTED_MODULE_1__["ɵɵelementStart"](27, "div", 165);
-    _angular_core__WEBPACK_IMPORTED_MODULE_1__["ɵɵelementStart"](28, "table", 166);
+    _angular_core__WEBPACK_IMPORTED_MODULE_1__["ɵɵelementStart"](27, "div", 177);
+    _angular_core__WEBPACK_IMPORTED_MODULE_1__["ɵɵelementStart"](28, "table", 178);
     _angular_core__WEBPACK_IMPORTED_MODULE_1__["ɵɵelementStart"](29, "tbody");
     _angular_core__WEBPACK_IMPORTED_MODULE_1__["ɵɵelementStart"](30, "tr");
     _angular_core__WEBPACK_IMPORTED_MODULE_1__["ɵɵelementStart"](31, "th");
@@ -52417,50 +52539,50 @@ function GestionEntregasBodegaComponent_div_8_div_2_Template(rf, ctx) { if (rf &
     _angular_core__WEBPACK_IMPORTED_MODULE_1__["ɵɵelementEnd"]();
     _angular_core__WEBPACK_IMPORTED_MODULE_1__["ɵɵelementEnd"]();
     _angular_core__WEBPACK_IMPORTED_MODULE_1__["ɵɵelementEnd"]();
-    _angular_core__WEBPACK_IMPORTED_MODULE_1__["ɵɵelementStart"](42, "h6", 168);
+    _angular_core__WEBPACK_IMPORTED_MODULE_1__["ɵɵelementStart"](42, "h6", 180);
     _angular_core__WEBPACK_IMPORTED_MODULE_1__["ɵɵtext"](43, "Bit\u00E1cora del proceso (orden)");
     _angular_core__WEBPACK_IMPORTED_MODULE_1__["ɵɵelementEnd"]();
-    _angular_core__WEBPACK_IMPORTED_MODULE_1__["ɵɵelementStart"](44, "dx-data-grid", 169);
-    _angular_core__WEBPACK_IMPORTED_MODULE_1__["ɵɵelement"](45, "dxi-column", 170);
-    _angular_core__WEBPACK_IMPORTED_MODULE_1__["ɵɵelement"](46, "dxi-column", 171);
-    _angular_core__WEBPACK_IMPORTED_MODULE_1__["ɵɵelement"](47, "dxi-column", 172);
-    _angular_core__WEBPACK_IMPORTED_MODULE_1__["ɵɵelement"](48, "dxi-column", 173);
+    _angular_core__WEBPACK_IMPORTED_MODULE_1__["ɵɵelementStart"](44, "dx-data-grid", 181);
+    _angular_core__WEBPACK_IMPORTED_MODULE_1__["ɵɵelement"](45, "dxi-column", 182);
+    _angular_core__WEBPACK_IMPORTED_MODULE_1__["ɵɵelement"](46, "dxi-column", 183);
+    _angular_core__WEBPACK_IMPORTED_MODULE_1__["ɵɵelement"](47, "dxi-column", 184);
+    _angular_core__WEBPACK_IMPORTED_MODULE_1__["ɵɵelement"](48, "dxi-column", 185);
     _angular_core__WEBPACK_IMPORTED_MODULE_1__["ɵɵelementEnd"]();
-    _angular_core__WEBPACK_IMPORTED_MODULE_1__["ɵɵelementStart"](49, "h6", 168);
+    _angular_core__WEBPACK_IMPORTED_MODULE_1__["ɵɵelementStart"](49, "h6", 180);
     _angular_core__WEBPACK_IMPORTED_MODULE_1__["ɵɵtext"](50, "\u00CDtems y movimientos por l\u00EDnea");
     _angular_core__WEBPACK_IMPORTED_MODULE_1__["ɵɵelementEnd"]();
-    _angular_core__WEBPACK_IMPORTED_MODULE_1__["ɵɵtemplate"](51, GestionEntregasBodegaComponent_div_8_div_2_p_51_Template, 2, 1, "p", 174);
-    _angular_core__WEBPACK_IMPORTED_MODULE_1__["ɵɵtemplate"](52, GestionEntregasBodegaComponent_div_8_div_2_div_52_Template, 7, 9, "div", 175);
+    _angular_core__WEBPACK_IMPORTED_MODULE_1__["ɵɵtemplate"](51, GestionEntregasBodegaComponent_div_8_div_2_p_51_Template, 2, 1, "p", 186);
+    _angular_core__WEBPACK_IMPORTED_MODULE_1__["ɵɵtemplate"](52, GestionEntregasBodegaComponent_div_8_div_2_div_52_Template, 7, 9, "div", 187);
     _angular_core__WEBPACK_IMPORTED_MODULE_1__["ɵɵelementEnd"]();
 } if (rf & 2) {
-    const ctx_r118 = _angular_core__WEBPACK_IMPORTED_MODULE_1__["ɵɵnextContext"](2);
+    const ctx_r121 = _angular_core__WEBPACK_IMPORTED_MODULE_1__["ɵɵnextContext"](2);
     _angular_core__WEBPACK_IMPORTED_MODULE_1__["ɵɵadvance"](11);
-    _angular_core__WEBPACK_IMPORTED_MODULE_1__["ɵɵtextInterpolate"](ctx_r118.ordenTrazabilidad.consecutivoEntrega);
+    _angular_core__WEBPACK_IMPORTED_MODULE_1__["ɵɵtextInterpolate"](ctx_r121.ordenTrazabilidad.consecutivoEntrega);
     _angular_core__WEBPACK_IMPORTED_MODULE_1__["ɵɵadvance"](5);
-    _angular_core__WEBPACK_IMPORTED_MODULE_1__["ɵɵtextInterpolate"](ctx_r118.ordenTrazabilidad.tipoDocumento);
+    _angular_core__WEBPACK_IMPORTED_MODULE_1__["ɵɵtextInterpolate"](ctx_r121.ordenTrazabilidad.tipoDocumento);
     _angular_core__WEBPACK_IMPORTED_MODULE_1__["ɵɵadvance"](5);
-    _angular_core__WEBPACK_IMPORTED_MODULE_1__["ɵɵtextInterpolate"](ctx_r118.ordenTrazabilidad.documentoNumero);
+    _angular_core__WEBPACK_IMPORTED_MODULE_1__["ɵɵtextInterpolate"](ctx_r121.ordenTrazabilidad.documentoNumero);
     _angular_core__WEBPACK_IMPORTED_MODULE_1__["ɵɵadvance"](5);
-    _angular_core__WEBPACK_IMPORTED_MODULE_1__["ɵɵtextInterpolate"](ctx_r118.ordenTrazabilidad.clienteNombre);
+    _angular_core__WEBPACK_IMPORTED_MODULE_1__["ɵɵtextInterpolate"](ctx_r121.ordenTrazabilidad.clienteNombre);
     _angular_core__WEBPACK_IMPORTED_MODULE_1__["ɵɵadvance"](8);
-    _angular_core__WEBPACK_IMPORTED_MODULE_1__["ɵɵtextInterpolate"](ctx_r118.ordenTrazabilidad.estadoProceso);
+    _angular_core__WEBPACK_IMPORTED_MODULE_1__["ɵɵtextInterpolate"](ctx_r121.ordenTrazabilidad.estadoProceso);
     _angular_core__WEBPACK_IMPORTED_MODULE_1__["ɵɵadvance"](5);
-    _angular_core__WEBPACK_IMPORTED_MODULE_1__["ɵɵtextInterpolate"](ctx_r118.ordenTrazabilidad.fechaDocumento);
+    _angular_core__WEBPACK_IMPORTED_MODULE_1__["ɵɵtextInterpolate"](ctx_r121.ordenTrazabilidad.fechaDocumento);
     _angular_core__WEBPACK_IMPORTED_MODULE_1__["ɵɵadvance"](1);
-    _angular_core__WEBPACK_IMPORTED_MODULE_1__["ɵɵproperty"]("ngIf", ctx_r118.ordenTrazabilidad.createdAt);
+    _angular_core__WEBPACK_IMPORTED_MODULE_1__["ɵɵproperty"]("ngIf", ctx_r121.ordenTrazabilidad.createdAt);
     _angular_core__WEBPACK_IMPORTED_MODULE_1__["ɵɵadvance"](1);
-    _angular_core__WEBPACK_IMPORTED_MODULE_1__["ɵɵproperty"]("ngIf", ctx_r118.ordenTrazabilidad.updatedAt);
+    _angular_core__WEBPACK_IMPORTED_MODULE_1__["ɵɵproperty"]("ngIf", ctx_r121.ordenTrazabilidad.updatedAt);
     _angular_core__WEBPACK_IMPORTED_MODULE_1__["ɵɵadvance"](3);
-    _angular_core__WEBPACK_IMPORTED_MODULE_1__["ɵɵproperty"]("dataSource", ctx_r118.ordenTrazabilidad.trazabilidad || _angular_core__WEBPACK_IMPORTED_MODULE_1__["ɵɵpureFunction0"](14, _c1))("showBorders", true)("columnAutoWidth", true)("height", 200);
+    _angular_core__WEBPACK_IMPORTED_MODULE_1__["ɵɵproperty"]("dataSource", ctx_r121.ordenTrazabilidad.trazabilidad || _angular_core__WEBPACK_IMPORTED_MODULE_1__["ɵɵpureFunction0"](14, _c2))("showBorders", true)("columnAutoWidth", true)("height", 200);
     _angular_core__WEBPACK_IMPORTED_MODULE_1__["ɵɵadvance"](7);
-    _angular_core__WEBPACK_IMPORTED_MODULE_1__["ɵɵproperty"]("ngIf", ctx_r118.ordenTrazabilidad);
+    _angular_core__WEBPACK_IMPORTED_MODULE_1__["ɵɵproperty"]("ngIf", ctx_r121.ordenTrazabilidad);
     _angular_core__WEBPACK_IMPORTED_MODULE_1__["ɵɵadvance"](1);
-    _angular_core__WEBPACK_IMPORTED_MODULE_1__["ɵɵproperty"]("ngForOf", ctx_r118.ordenTrazabilidad.items);
+    _angular_core__WEBPACK_IMPORTED_MODULE_1__["ɵɵproperty"]("ngForOf", ctx_r121.ordenTrazabilidad.items);
 } }
 function GestionEntregasBodegaComponent_div_8_Template(rf, ctx) { if (rf & 1) {
     _angular_core__WEBPACK_IMPORTED_MODULE_1__["ɵɵelementStart"](0, "div");
-    _angular_core__WEBPACK_IMPORTED_MODULE_1__["ɵɵelementStart"](1, "dx-scroll-view", 162);
-    _angular_core__WEBPACK_IMPORTED_MODULE_1__["ɵɵtemplate"](2, GestionEntregasBodegaComponent_div_8_div_2_Template, 53, 15, "div", 163);
+    _angular_core__WEBPACK_IMPORTED_MODULE_1__["ɵɵelementStart"](1, "dx-scroll-view", 174);
+    _angular_core__WEBPACK_IMPORTED_MODULE_1__["ɵɵtemplate"](2, GestionEntregasBodegaComponent_div_8_div_2_Template, 53, 15, "div", 175);
     _angular_core__WEBPACK_IMPORTED_MODULE_1__["ɵɵelementEnd"]();
     _angular_core__WEBPACK_IMPORTED_MODULE_1__["ɵɵelementEnd"]();
 } if (rf & 2) {
@@ -52469,79 +52591,79 @@ function GestionEntregasBodegaComponent_div_8_Template(rf, ctx) { if (rf & 1) {
     _angular_core__WEBPACK_IMPORTED_MODULE_1__["ɵɵproperty"]("ngIf", ctx_r4.ordenTrazabilidad);
 } }
 function GestionEntregasBodegaComponent_div_10_ng_container_7_Template(rf, ctx) { if (rf & 1) {
-    const _r133 = _angular_core__WEBPACK_IMPORTED_MODULE_1__["ɵɵgetCurrentView"]();
+    const _r136 = _angular_core__WEBPACK_IMPORTED_MODULE_1__["ɵɵgetCurrentView"]();
     _angular_core__WEBPACK_IMPORTED_MODULE_1__["ɵɵelementContainerStart"](0);
-    _angular_core__WEBPACK_IMPORTED_MODULE_1__["ɵɵelementStart"](1, "div", 197);
-    _angular_core__WEBPACK_IMPORTED_MODULE_1__["ɵɵelementStart"](2, "div", 198);
-    _angular_core__WEBPACK_IMPORTED_MODULE_1__["ɵɵelementStart"](3, "label", 189);
+    _angular_core__WEBPACK_IMPORTED_MODULE_1__["ɵɵelementStart"](1, "div", 209);
+    _angular_core__WEBPACK_IMPORTED_MODULE_1__["ɵɵelementStart"](2, "div", 210);
+    _angular_core__WEBPACK_IMPORTED_MODULE_1__["ɵɵelementStart"](3, "label", 201);
     _angular_core__WEBPACK_IMPORTED_MODULE_1__["ɵɵtext"](4, "Cajas (op.)");
     _angular_core__WEBPACK_IMPORTED_MODULE_1__["ɵɵelementEnd"]();
-    _angular_core__WEBPACK_IMPORTED_MODULE_1__["ɵɵelementStart"](5, "dx-number-box", 199);
-    _angular_core__WEBPACK_IMPORTED_MODULE_1__["ɵɵlistener"]("valueChange", function GestionEntregasBodegaComponent_div_10_ng_container_7_Template_dx_number_box_valueChange_5_listener($event) { _angular_core__WEBPACK_IMPORTED_MODULE_1__["ɵɵrestoreView"](_r133); const ctx_r132 = _angular_core__WEBPACK_IMPORTED_MODULE_1__["ɵɵnextContext"](2); return ctx_r132.formEdicionHistorial.entregaCajas = $event; });
+    _angular_core__WEBPACK_IMPORTED_MODULE_1__["ɵɵelementStart"](5, "dx-number-box", 211);
+    _angular_core__WEBPACK_IMPORTED_MODULE_1__["ɵɵlistener"]("valueChange", function GestionEntregasBodegaComponent_div_10_ng_container_7_Template_dx_number_box_valueChange_5_listener($event) { _angular_core__WEBPACK_IMPORTED_MODULE_1__["ɵɵrestoreView"](_r136); const ctx_r135 = _angular_core__WEBPACK_IMPORTED_MODULE_1__["ɵɵnextContext"](2); return ctx_r135.formEdicionHistorial.entregaCajas = $event; });
     _angular_core__WEBPACK_IMPORTED_MODULE_1__["ɵɵelementEnd"]();
     _angular_core__WEBPACK_IMPORTED_MODULE_1__["ɵɵelementEnd"]();
-    _angular_core__WEBPACK_IMPORTED_MODULE_1__["ɵɵelementStart"](6, "div", 200);
-    _angular_core__WEBPACK_IMPORTED_MODULE_1__["ɵɵelementStart"](7, "label", 189);
+    _angular_core__WEBPACK_IMPORTED_MODULE_1__["ɵɵelementStart"](6, "div", 212);
+    _angular_core__WEBPACK_IMPORTED_MODULE_1__["ɵɵelementStart"](7, "label", 201);
     _angular_core__WEBPACK_IMPORTED_MODULE_1__["ɵɵtext"](8, "Piezas (op.)");
     _angular_core__WEBPACK_IMPORTED_MODULE_1__["ɵɵelementEnd"]();
-    _angular_core__WEBPACK_IMPORTED_MODULE_1__["ɵɵelementStart"](9, "dx-number-box", 199);
-    _angular_core__WEBPACK_IMPORTED_MODULE_1__["ɵɵlistener"]("valueChange", function GestionEntregasBodegaComponent_div_10_ng_container_7_Template_dx_number_box_valueChange_9_listener($event) { _angular_core__WEBPACK_IMPORTED_MODULE_1__["ɵɵrestoreView"](_r133); const ctx_r134 = _angular_core__WEBPACK_IMPORTED_MODULE_1__["ɵɵnextContext"](2); return ctx_r134.formEdicionHistorial.entregaPiezas = $event; });
+    _angular_core__WEBPACK_IMPORTED_MODULE_1__["ɵɵelementStart"](9, "dx-number-box", 211);
+    _angular_core__WEBPACK_IMPORTED_MODULE_1__["ɵɵlistener"]("valueChange", function GestionEntregasBodegaComponent_div_10_ng_container_7_Template_dx_number_box_valueChange_9_listener($event) { _angular_core__WEBPACK_IMPORTED_MODULE_1__["ɵɵrestoreView"](_r136); const ctx_r137 = _angular_core__WEBPACK_IMPORTED_MODULE_1__["ɵɵnextContext"](2); return ctx_r137.formEdicionHistorial.entregaPiezas = $event; });
     _angular_core__WEBPACK_IMPORTED_MODULE_1__["ɵɵelementEnd"]();
     _angular_core__WEBPACK_IMPORTED_MODULE_1__["ɵɵelementEnd"]();
     _angular_core__WEBPACK_IMPORTED_MODULE_1__["ɵɵelementEnd"]();
     _angular_core__WEBPACK_IMPORTED_MODULE_1__["ɵɵelementContainerEnd"]();
 } if (rf & 2) {
-    const ctx_r131 = _angular_core__WEBPACK_IMPORTED_MODULE_1__["ɵɵnextContext"](2);
+    const ctx_r134 = _angular_core__WEBPACK_IMPORTED_MODULE_1__["ɵɵnextContext"](2);
     _angular_core__WEBPACK_IMPORTED_MODULE_1__["ɵɵadvance"](5);
-    _angular_core__WEBPACK_IMPORTED_MODULE_1__["ɵɵproperty"]("value", ctx_r131.formEdicionHistorial.entregaCajas)("min", 0)("showSpinButtons", true)("disabled", ctx_r131.guardandoEdicionHistorial);
+    _angular_core__WEBPACK_IMPORTED_MODULE_1__["ɵɵproperty"]("value", ctx_r134.formEdicionHistorial.entregaCajas)("min", 0)("showSpinButtons", true)("disabled", ctx_r134.guardandoEdicionHistorial);
     _angular_core__WEBPACK_IMPORTED_MODULE_1__["ɵɵadvance"](4);
-    _angular_core__WEBPACK_IMPORTED_MODULE_1__["ɵɵproperty"]("value", ctx_r131.formEdicionHistorial.entregaPiezas)("min", 0)("showSpinButtons", true)("disabled", ctx_r131.guardandoEdicionHistorial);
+    _angular_core__WEBPACK_IMPORTED_MODULE_1__["ɵɵproperty"]("value", ctx_r134.formEdicionHistorial.entregaPiezas)("min", 0)("showSpinButtons", true)("disabled", ctx_r134.guardandoEdicionHistorial);
 } }
 function GestionEntregasBodegaComponent_div_10_Template(rf, ctx) { if (rf & 1) {
-    const _r136 = _angular_core__WEBPACK_IMPORTED_MODULE_1__["ɵɵgetCurrentView"]();
-    _angular_core__WEBPACK_IMPORTED_MODULE_1__["ɵɵelementStart"](0, "div", 186);
-    _angular_core__WEBPACK_IMPORTED_MODULE_1__["ɵɵelementStart"](1, "p", 187);
+    const _r139 = _angular_core__WEBPACK_IMPORTED_MODULE_1__["ɵɵgetCurrentView"]();
+    _angular_core__WEBPACK_IMPORTED_MODULE_1__["ɵɵelementStart"](0, "div", 198);
+    _angular_core__WEBPACK_IMPORTED_MODULE_1__["ɵɵelementStart"](1, "p", 199);
     _angular_core__WEBPACK_IMPORTED_MODULE_1__["ɵɵtext"](2, " Los cambios recalculan el \u00EDtem y queda registrada una nota de correcci\u00F3n en el movimiento y en la bit\u00E1cora de la orden. ");
     _angular_core__WEBPACK_IMPORTED_MODULE_1__["ɵɵelementEnd"]();
-    _angular_core__WEBPACK_IMPORTED_MODULE_1__["ɵɵelementStart"](3, "div", 188);
-    _angular_core__WEBPACK_IMPORTED_MODULE_1__["ɵɵelementStart"](4, "label", 189);
+    _angular_core__WEBPACK_IMPORTED_MODULE_1__["ɵɵelementStart"](3, "div", 200);
+    _angular_core__WEBPACK_IMPORTED_MODULE_1__["ɵɵelementStart"](4, "label", 201);
     _angular_core__WEBPACK_IMPORTED_MODULE_1__["ɵɵtext"](5, "Estado seleccionado");
     _angular_core__WEBPACK_IMPORTED_MODULE_1__["ɵɵelementEnd"]();
-    _angular_core__WEBPACK_IMPORTED_MODULE_1__["ɵɵelementStart"](6, "dx-select-box", 190);
-    _angular_core__WEBPACK_IMPORTED_MODULE_1__["ɵɵlistener"]("valueChange", function GestionEntregasBodegaComponent_div_10_Template_dx_select_box_valueChange_6_listener($event) { _angular_core__WEBPACK_IMPORTED_MODULE_1__["ɵɵrestoreView"](_r136); const ctx_r135 = _angular_core__WEBPACK_IMPORTED_MODULE_1__["ɵɵnextContext"](); return ctx_r135.formEdicionHistorial.estadoSeleccionado = $event; });
+    _angular_core__WEBPACK_IMPORTED_MODULE_1__["ɵɵelementStart"](6, "dx-select-box", 202);
+    _angular_core__WEBPACK_IMPORTED_MODULE_1__["ɵɵlistener"]("valueChange", function GestionEntregasBodegaComponent_div_10_Template_dx_select_box_valueChange_6_listener($event) { _angular_core__WEBPACK_IMPORTED_MODULE_1__["ɵɵrestoreView"](_r139); const ctx_r138 = _angular_core__WEBPACK_IMPORTED_MODULE_1__["ɵɵnextContext"](); return ctx_r138.formEdicionHistorial.estadoSeleccionado = $event; });
     _angular_core__WEBPACK_IMPORTED_MODULE_1__["ɵɵelementEnd"]();
     _angular_core__WEBPACK_IMPORTED_MODULE_1__["ɵɵelementEnd"]();
     _angular_core__WEBPACK_IMPORTED_MODULE_1__["ɵɵtemplate"](7, GestionEntregasBodegaComponent_div_10_ng_container_7_Template, 10, 8, "ng-container", 28);
-    _angular_core__WEBPACK_IMPORTED_MODULE_1__["ɵɵelementStart"](8, "div", 188);
-    _angular_core__WEBPACK_IMPORTED_MODULE_1__["ɵɵelementStart"](9, "label", 189);
+    _angular_core__WEBPACK_IMPORTED_MODULE_1__["ɵɵelementStart"](8, "div", 200);
+    _angular_core__WEBPACK_IMPORTED_MODULE_1__["ɵɵelementStart"](9, "label", 201);
     _angular_core__WEBPACK_IMPORTED_MODULE_1__["ɵɵtext"](10);
     _angular_core__WEBPACK_IMPORTED_MODULE_1__["ɵɵelementEnd"]();
-    _angular_core__WEBPACK_IMPORTED_MODULE_1__["ɵɵelementStart"](11, "dx-number-box", 191);
-    _angular_core__WEBPACK_IMPORTED_MODULE_1__["ɵɵlistener"]("valueChange", function GestionEntregasBodegaComponent_div_10_Template_dx_number_box_valueChange_11_listener($event) { _angular_core__WEBPACK_IMPORTED_MODULE_1__["ɵɵrestoreView"](_r136); const ctx_r137 = _angular_core__WEBPACK_IMPORTED_MODULE_1__["ɵɵnextContext"](); return ctx_r137.formEdicionHistorial.m2EntregadoEnEstaOperacion = $event; });
+    _angular_core__WEBPACK_IMPORTED_MODULE_1__["ɵɵelementStart"](11, "dx-number-box", 203);
+    _angular_core__WEBPACK_IMPORTED_MODULE_1__["ɵɵlistener"]("valueChange", function GestionEntregasBodegaComponent_div_10_Template_dx_number_box_valueChange_11_listener($event) { _angular_core__WEBPACK_IMPORTED_MODULE_1__["ɵɵrestoreView"](_r139); const ctx_r140 = _angular_core__WEBPACK_IMPORTED_MODULE_1__["ɵɵnextContext"](); return ctx_r140.formEdicionHistorial.m2EntregadoEnEstaOperacion = $event; });
     _angular_core__WEBPACK_IMPORTED_MODULE_1__["ɵɵelementEnd"]();
     _angular_core__WEBPACK_IMPORTED_MODULE_1__["ɵɵelementEnd"]();
-    _angular_core__WEBPACK_IMPORTED_MODULE_1__["ɵɵelementStart"](12, "div", 188);
-    _angular_core__WEBPACK_IMPORTED_MODULE_1__["ɵɵelementStart"](13, "label", 189);
+    _angular_core__WEBPACK_IMPORTED_MODULE_1__["ɵɵelementStart"](12, "div", 200);
+    _angular_core__WEBPACK_IMPORTED_MODULE_1__["ɵɵelementStart"](13, "label", 201);
     _angular_core__WEBPACK_IMPORTED_MODULE_1__["ɵɵtext"](14, "Notas del movimiento");
     _angular_core__WEBPACK_IMPORTED_MODULE_1__["ɵɵelementEnd"]();
-    _angular_core__WEBPACK_IMPORTED_MODULE_1__["ɵɵelementStart"](15, "dx-text-area", 192);
-    _angular_core__WEBPACK_IMPORTED_MODULE_1__["ɵɵlistener"]("valueChange", function GestionEntregasBodegaComponent_div_10_Template_dx_text_area_valueChange_15_listener($event) { _angular_core__WEBPACK_IMPORTED_MODULE_1__["ɵɵrestoreView"](_r136); const ctx_r138 = _angular_core__WEBPACK_IMPORTED_MODULE_1__["ɵɵnextContext"](); return ctx_r138.formEdicionHistorial.notas = $event; });
+    _angular_core__WEBPACK_IMPORTED_MODULE_1__["ɵɵelementStart"](15, "dx-text-area", 204);
+    _angular_core__WEBPACK_IMPORTED_MODULE_1__["ɵɵlistener"]("valueChange", function GestionEntregasBodegaComponent_div_10_Template_dx_text_area_valueChange_15_listener($event) { _angular_core__WEBPACK_IMPORTED_MODULE_1__["ɵɵrestoreView"](_r139); const ctx_r141 = _angular_core__WEBPACK_IMPORTED_MODULE_1__["ɵɵnextContext"](); return ctx_r141.formEdicionHistorial.notas = $event; });
     _angular_core__WEBPACK_IMPORTED_MODULE_1__["ɵɵelementEnd"]();
     _angular_core__WEBPACK_IMPORTED_MODULE_1__["ɵɵelementEnd"]();
-    _angular_core__WEBPACK_IMPORTED_MODULE_1__["ɵɵelementStart"](16, "div", 193);
-    _angular_core__WEBPACK_IMPORTED_MODULE_1__["ɵɵelementStart"](17, "label", 189);
+    _angular_core__WEBPACK_IMPORTED_MODULE_1__["ɵɵelementStart"](16, "div", 205);
+    _angular_core__WEBPACK_IMPORTED_MODULE_1__["ɵɵelementStart"](17, "label", 201);
     _angular_core__WEBPACK_IMPORTED_MODULE_1__["ɵɵtext"](18, "Motivo de la correcci\u00F3n (opcional)");
     _angular_core__WEBPACK_IMPORTED_MODULE_1__["ɵɵelementEnd"]();
-    _angular_core__WEBPACK_IMPORTED_MODULE_1__["ɵɵelementStart"](19, "dx-text-area", 192);
-    _angular_core__WEBPACK_IMPORTED_MODULE_1__["ɵɵlistener"]("valueChange", function GestionEntregasBodegaComponent_div_10_Template_dx_text_area_valueChange_19_listener($event) { _angular_core__WEBPACK_IMPORTED_MODULE_1__["ɵɵrestoreView"](_r136); const ctx_r139 = _angular_core__WEBPACK_IMPORTED_MODULE_1__["ɵɵnextContext"](); return ctx_r139.formEdicionHistorial.motivoCorreccion = $event; });
+    _angular_core__WEBPACK_IMPORTED_MODULE_1__["ɵɵelementStart"](19, "dx-text-area", 204);
+    _angular_core__WEBPACK_IMPORTED_MODULE_1__["ɵɵlistener"]("valueChange", function GestionEntregasBodegaComponent_div_10_Template_dx_text_area_valueChange_19_listener($event) { _angular_core__WEBPACK_IMPORTED_MODULE_1__["ɵɵrestoreView"](_r139); const ctx_r142 = _angular_core__WEBPACK_IMPORTED_MODULE_1__["ɵɵnextContext"](); return ctx_r142.formEdicionHistorial.motivoCorreccion = $event; });
     _angular_core__WEBPACK_IMPORTED_MODULE_1__["ɵɵelementEnd"]();
     _angular_core__WEBPACK_IMPORTED_MODULE_1__["ɵɵelementEnd"]();
-    _angular_core__WEBPACK_IMPORTED_MODULE_1__["ɵɵelementStart"](20, "div", 194);
-    _angular_core__WEBPACK_IMPORTED_MODULE_1__["ɵɵelementStart"](21, "dx-button", 195);
-    _angular_core__WEBPACK_IMPORTED_MODULE_1__["ɵɵlistener"]("onClick", function GestionEntregasBodegaComponent_div_10_Template_dx_button_onClick_21_listener() { _angular_core__WEBPACK_IMPORTED_MODULE_1__["ɵɵrestoreView"](_r136); const ctx_r140 = _angular_core__WEBPACK_IMPORTED_MODULE_1__["ɵɵnextContext"](); return ctx_r140.cerrarPopupEditarHistorial(); });
+    _angular_core__WEBPACK_IMPORTED_MODULE_1__["ɵɵelementStart"](20, "div", 206);
+    _angular_core__WEBPACK_IMPORTED_MODULE_1__["ɵɵelementStart"](21, "dx-button", 207);
+    _angular_core__WEBPACK_IMPORTED_MODULE_1__["ɵɵlistener"]("onClick", function GestionEntregasBodegaComponent_div_10_Template_dx_button_onClick_21_listener() { _angular_core__WEBPACK_IMPORTED_MODULE_1__["ɵɵrestoreView"](_r139); const ctx_r143 = _angular_core__WEBPACK_IMPORTED_MODULE_1__["ɵɵnextContext"](); return ctx_r143.cerrarPopupEditarHistorial(); });
     _angular_core__WEBPACK_IMPORTED_MODULE_1__["ɵɵelementEnd"]();
-    _angular_core__WEBPACK_IMPORTED_MODULE_1__["ɵɵelementStart"](22, "dx-button", 196);
-    _angular_core__WEBPACK_IMPORTED_MODULE_1__["ɵɵlistener"]("onClick", function GestionEntregasBodegaComponent_div_10_Template_dx_button_onClick_22_listener() { _angular_core__WEBPACK_IMPORTED_MODULE_1__["ɵɵrestoreView"](_r136); const ctx_r141 = _angular_core__WEBPACK_IMPORTED_MODULE_1__["ɵɵnextContext"](); return ctx_r141.confirmarEdicionHistorial(); });
+    _angular_core__WEBPACK_IMPORTED_MODULE_1__["ɵɵelementStart"](22, "dx-button", 208);
+    _angular_core__WEBPACK_IMPORTED_MODULE_1__["ɵɵlistener"]("onClick", function GestionEntregasBodegaComponent_div_10_Template_dx_button_onClick_22_listener() { _angular_core__WEBPACK_IMPORTED_MODULE_1__["ɵɵrestoreView"](_r139); const ctx_r144 = _angular_core__WEBPACK_IMPORTED_MODULE_1__["ɵɵnextContext"](); return ctx_r144.confirmarEdicionHistorial(); });
     _angular_core__WEBPACK_IMPORTED_MODULE_1__["ɵɵelementEnd"]();
     _angular_core__WEBPACK_IMPORTED_MODULE_1__["ɵɵelementEnd"]();
     _angular_core__WEBPACK_IMPORTED_MODULE_1__["ɵɵelementEnd"]();
@@ -52564,11 +52686,12 @@ function GestionEntregasBodegaComponent_div_10_Template(rf, ctx) { if (rf & 1) {
     _angular_core__WEBPACK_IMPORTED_MODULE_1__["ɵɵadvance"](1);
     _angular_core__WEBPACK_IMPORTED_MODULE_1__["ɵɵproperty"]("disabled", ctx_r5.guardandoEdicionHistorial);
 } }
-const _c2 = function () { return { style: "text-align: center;" }; };
-const _c3 = function () { return { class: "traz-popup-corregir-overlay" }; };
+const _c3 = function () { return { style: "text-align: center;" }; };
+const _c4 = function () { return { class: "traz-popup-corregir-overlay" }; };
 class GestionEntregasBodegaComponent {
-    constructor(entregasBodegaService, transaccionesService, screen) {
+    constructor(entregasBodegaService, productosPendientesService, transaccionesService, screen) {
         this.entregasBodegaService = entregasBodegaService;
+        this.productosPendientesService = productosPendientesService;
         this.transaccionesService = transaccionesService;
         this.screen = screen;
         this.menuPrincipal = [
@@ -52576,6 +52699,7 @@ class GestionEntregasBodegaComponent {
             "Listado Entregas",
             "Productos Facturados",
             "Productos Pendientes",
+            "Productos Pendientes Entrega",
         ];
         this.valorMenu = "Gestión Entregas";
         this.mostrarGestion = true;
@@ -52584,12 +52708,15 @@ class GestionEntregasBodegaComponent {
          * ninguno: gestión o listado de órdenes.
          * facturados: detalle por factura/cliente (productos facturados sin entregar).
          * pendientes: unificación por producto + transacciones (balance vs bodega matriz).
+         * pendientesEntrega: listado de productos en estado PENDIENTE del módulo legacy.
          */
         this.vistaProductosEspecial = "ninguno";
         /** Resumen detallado (vista facturados). */
         this.productosPendientes = [];
         /** Agregado por producto con stock y balance (vista pendientes). */
         this.productosPendientesBalance = [];
+        /** Listado legacy de productos pendientes por entrega (sin filtros). */
+        this.productosPendientesEntrega = [];
         this.ordenes = [];
         this.ordenSeleccionada = null;
         this.loading = false;
@@ -52611,6 +52738,7 @@ class GestionEntregasBodegaComponent {
             "ENTREGA_PARCIAL",
             "ENTREGA_TOTAL",
             "DEVOLUCION",
+            "DEVUELTO",
         ];
         this.filtroDocumento = null;
         this.filtroCliente = "";
@@ -53158,6 +53286,18 @@ class GestionEntregasBodegaComponent {
                 this.popupTrazabilidadVisible = false;
                 this.cargarPendientes();
                 break;
+            case "Productos Pendientes Entrega":
+                this.mostrarGestion = false;
+                this.mostrarListado = false;
+                this.vistaProductosEspecial = "pendientesEntrega";
+                this.incluirCerradas = false;
+                this.ordenSeleccionada = null;
+                this.expandedOrderId = null;
+                this.expandedItemIndex = null;
+                this.limpiarIndicadoresGuardadoLinea();
+                this.popupTrazabilidadVisible = false;
+                this.cargarProductosPendientesEntrega();
+                break;
             default:
                 break;
         }
@@ -53252,6 +53392,7 @@ class GestionEntregasBodegaComponent {
                 this.ordenes = ordenesVista;
                 this.productosPendientes = [];
                 this.productosPendientesBalance = [];
+                this.productosPendientesEntrega = [];
                 const sincronizarExpandida = () => {
                     if (this.expandedOrderId) {
                         const o = (this.ordenes || []).find((x) => x._id === this.expandedOrderId);
@@ -53320,7 +53461,7 @@ class GestionEntregasBodegaComponent {
             return;
         }
         const estadoUi = this.estadoGestionAutomatico(item);
-        /** El API solo usa ENTREGA_PARCIAL | ENTREGA_TOTAL | DEVOLUCION; ABIERTO es solo etiqueta de UI. */
+        /** El API usa ENTREGA_PARCIAL | ENTREGA_TOTAL | DEVOLUCION | DEVUELTO; ABIERTO es solo etiqueta de UI. */
         const estadoCalculado = estadoUi === "ABIERTO" ? "ENTREGA_PARCIAL" : estadoUi;
         const bloquearCompromiso = estadoCalculado === "ENTREGA_TOTAL";
         const payload = {
@@ -53798,14 +53939,20 @@ class GestionEntregasBodegaComponent {
                         const pendM2Total = this.num(row.pendienteM2Sum) + pendUnidM2;
                         totalPendienteTexto = this.formatoCantidadLinea(pendM2Total, item);
                         const stockM2Efectivo = (stockPiezasEfectivo / pp) * mc;
-                        const balanceM2 = stockM2Efectivo - pendM2Total;
+                        let balanceM2 = stockM2Efectivo - pendM2Total;
+                        if (balanceM2 > 0) {
+                            balanceM2 = 0;
+                        }
                         balanceTexto = this.formatoCantidadLinea(balanceM2, item);
                         balanceValor = balanceM2;
                     }
                     else {
                         const pend = this.num(row.pendienteUnidadesSum);
                         totalPendienteTexto = String(Math.trunc(pend));
-                        const bal = stockPiezasEfectivo - pend;
+                        let bal = stockPiezasEfectivo - pend;
+                        if (bal > 0) {
+                            bal = 0;
+                        }
                         balanceTexto = String(Math.trunc(bal));
                         balanceValor = bal;
                     }
@@ -53828,9 +53975,35 @@ class GestionEntregasBodegaComponent {
             },
         });
     }
+    cargarProductosPendientesEntrega() {
+        this.loading = true;
+        this.productosPendientesEntrega = [];
+        this.productosPendientesService.getProductoPendiente().subscribe({
+            next: (res) => {
+                const listado = Array.isArray(res) ? res : [];
+                const rol = (sessionStorage.getItem("rol") || "").trim();
+                const sucursalSesion = (sessionStorage.getItem("sucursal") || "")
+                    .trim()
+                    .toLowerCase();
+                const filtradosPorSucursal = rol === "Usuario" && sucursalSesion
+                    ? listado.filter((x) => {
+                        var _a;
+                        return String(((_a = x) === null || _a === void 0 ? void 0 : _a.sucursal) || "").trim().toLowerCase() ===
+                            sucursalSesion;
+                    })
+                    : listado;
+                this.productosPendientesEntrega = filtradosPorSucursal.filter((x) => { var _a; return String(((_a = x) === null || _a === void 0 ? void 0 : _a.estado) || "").trim().toUpperCase() === "PENDIENTE"; });
+                this.loading = false;
+            },
+            error: () => {
+                this.loading = false;
+                sweetalert2__WEBPACK_IMPORTED_MODULE_2___default.a.fire("Error", "No se pudo cargar el listado de productos pendientes por entrega.", "error");
+            },
+        });
+    }
 }
-GestionEntregasBodegaComponent.ɵfac = function GestionEntregasBodegaComponent_Factory(t) { return new (t || GestionEntregasBodegaComponent)(_angular_core__WEBPACK_IMPORTED_MODULE_1__["ɵɵdirectiveInject"](src_app_servicios_entregas_bodega_service__WEBPACK_IMPORTED_MODULE_4__["EntregasBodegaService"]), _angular_core__WEBPACK_IMPORTED_MODULE_1__["ɵɵdirectiveInject"](src_app_servicios_transacciones_service__WEBPACK_IMPORTED_MODULE_5__["TransaccionesService"]), _angular_core__WEBPACK_IMPORTED_MODULE_1__["ɵɵdirectiveInject"](src_app_shared_services__WEBPACK_IMPORTED_MODULE_6__["ScreenService"])); };
-GestionEntregasBodegaComponent.ɵcmp = _angular_core__WEBPACK_IMPORTED_MODULE_1__["ɵɵdefineComponent"]({ type: GestionEntregasBodegaComponent, selectors: [["app-gestion-entregas-bodega"]], decls: 11, vars: 31, consts: [[1, "row", "remiPro", "titulos", "gestion-menu-superior", "justify-content-md-end"], [1, "col-12", "col-md-4", "px-gestion-menu"], [1, "form-control", "select", 3, "items", "value", "readOnly", "disabled", "inputAttr", "valueChange", "onValueChanged"], ["class", "content-block", 4, "ngIf"], [3, "width", "height", "showTitle", "title", "closeOnOutsideClick", "visible", "visibleChange"], [4, "dxTemplate", "dxTemplateOf"], [3, "visible", "showTitle", "title", "closeOnOutsideClick", "showCloseButton", "fullScreen", "width", "maxWidth", "maxHeight", "dragEnabled", "shading", "elementAttr", "visibleChange", "onHidden"], ["class", "traz-popup-editar-body", 4, "dxTemplate", "dxTemplateOf"], [1, "content-block"], [1, "card", "gestion-entregas-card"], [1, "card-header", "text-center", "font-weight-bold", "text-uppercase"], [1, "card-body", "gestion-filtros"], [1, "row", "justify-content-center"], [1, "col-12", "col-xl-10"], [1, "row"], [1, "col-12", "col-md-6", "mb-3", "gestion-filtro-campo"], [1, "textP", "mb-1", "d-block"], [1, "dateB", "gestion-filtro-editor"], [3, "value", "valueChange"], ["type", "date", 3, "value", "valueChange"], ["class", "col-12 mb-3 gestion-filtro-cerradas", 4, "ngIf"], [1, "col-12", "gestion-entregas-acciones", "gestion-filtro-acciones", "text-center", "pt-1"], ["text", "Buscar", "type", "success", 2, "background-color", "#ff5722", "border-color", "#ff5722", 3, "onClick"], ["text", "Limpiar", "type", "normal", 3, "onClick"], [1, "col-12", "mb-3", "gestion-filtro-cerradas"], [1, "d-flex", "flex-row", "flex-wrap", "align-items-center", "gestion-filtro-cerradas-inner"], [1, "gestion-filtro-check", 3, "value", "readOnly", "valueChange"], [1, "textP", "gestion-filtro-cerradas-texto", "ml-2"], [4, "ngIf"], [1, "card-body", "p-2"], ["class", "text-muted small mb-2", 4, "ngIf"], ["class", "smart-dispatch-movil", 4, "ngIf"], ["class", "listado-entregas-movil", 4, "ngIf"], [3, "dataSource", "showBorders", "hoverStateEnabled", "onRowClick", 4, "ngIf"], ["class", "productos-pendientes-grid-scroll", 4, "ngIf"], [1, "text-muted", "small", "mb-2"], [1, "smart-dispatch-movil"], [1, "small", "text-muted", "mb-2"], [1, "sd-leyenda", "small", "mb-3"], [1, "sd-leyenda-item"], [1, "sd-punto", "sd-est-amarillo"], [1, "sd-punto", "sd-est-rojo"], [1, "sd-punto", "sd-est-azul"], [1, "sd-punto", "sd-est-verde"], ["class", "text-muted small", 4, "ngIf"], ["class", "sd-factura-card mb-2", 4, "ngFor", "ngForOf"], [1, "text-muted", "small"], [1, "sd-factura-card", "mb-2"], ["type", "button", 1, "sd-factura-header", 3, "click"], [1, "sd-punto", 3, "ngClass"], [1, "sd-factura-texto"], [1, "sd-factura-doc"], [1, "sd-factura-cliente"], [1, "sd-factura-meta"], [1, "fa", "fa-chevron-down", "sd-chevron"], ["class", "sd-factura-cuerpo", 4, "ngIf"], [1, "sd-factura-cuerpo"], ["class", "sd-item-wrap", 4, "ngFor", "ngForOf"], ["class", "sd-devolucion-movil mt-3 pt-2 border-top", 4, "ngIf"], [1, "sd-cerrar-proceso", "mt-3", "pt-2", "border-top"], ["text", "Cerrar proceso (factura)", "type", "success", 3, "disabled", "onClick"], [1, "small", "text-muted", "mb-0", "mt-2"], [1, "sd-item-wrap"], ["type", "button", 1, "sd-item-cab", 3, "click"], [1, "sd-item-nombre", 3, "ngClass"], [1, "sd-item-resumen", "small", "text-muted"], ["class", "fa fa-check-circle sd-guardado-ok text-success", "title", "Guardado correctamente", "aria-hidden", "true", 4, "ngIf"], [1, "fa", "fa-chevron-down", "sd-chevron", "sd-chevron-sm"], ["class", "sd-item-detalle", 4, "ngIf"], ["title", "Guardado correctamente", "aria-hidden", "true", 1, "fa", "fa-check-circle", "sd-guardado-ok", "text-success"], [1, "sd-item-detalle"], [1, "sd-kv-grid", "small"], [1, "text-muted"], [1, "font-weight-bold"], [1, "sd-campo"], [1, "small", "font-weight-bold", "mb-1", "d-block"], ["class", "d-flex flex-wrap align-items-center entrega-cp-inputs", 4, "ngIf"], [3, "value", "min", "showSpinButtons", "valueChange", 4, "ngIf"], ["type", "date", 3, "value", "disabled", "valueChange"], [3, "value", "disabled", "valueChange"], [1, "sd-campo", "pt-1", "sd-guardar-linea-wrap"], ["class", "sd-guardado-msg text-success small ml-2", 4, "ngIf"], [1, "d-flex", "flex-wrap", "align-items-center", "entrega-cp-inputs"], [1, "small", "text-muted", "mr-1"], [3, "width", "value", "min", "showSpinButtons", "valueChange"], [1, "small", "text-muted", "mx-1"], [3, "value", "min", "showSpinButtons", "valueChange"], ["text", "Guardar l\u00EDnea", "type", "default", 3, "onClick"], ["text", "L\u00EDnea completa", "type", "success", 3, "disabled"], [1, "sd-guardado-msg", "text-success", "small", "ml-2"], ["aria-hidden", "true", 1, "fa", "fa-check-circle"], [1, "sd-devolucion-movil", "mt-3", "pt-2", "border-top"], ["type", "button", 1, "btn", "btn-outline-secondary", "btn-sm", "btn-block", "sd-devolucion-movil-btn", 3, "disabled", "click"], ["aria-hidden", "true", 3, "ngClass"], [1, "ml-2"], [1, "small", "text-muted", "mb-0", "mt-1"], [1, "listado-entregas-movil"], ["class", "listado-entrega-movil-card", 4, "ngFor", "ngForOf"], [1, "listado-entrega-movil-card"], ["type", "button", 1, "listado-entrega-movil-main", 3, "click"], [1, "listado-entrega-movil-cab"], [1, "listado-entrega-movil-cab-texto"], [1, "listado-entrega-movil-doc"], [1, "listado-entrega-movil-sub"], [1, "listado-entrega-movil-cuerpo"], [1, "listado-entrega-movil-kv"], [1, "listado-entrega-movil-lbl"], [1, "listado-entrega-movil-val"], ["class", "listado-entrega-movil-acciones", 3, "click", 4, "ngIf"], [1, "listado-entrega-movil-acciones", 3, "click"], ["type", "button", 1, "btn", "btn-link", "ge-btn-devolucion-movil", 3, "disabled", "title", "click"], [3, "dataSource", "showBorders", "hoverStateEnabled", "onRowClick"], [3, "visible"], ["placeholder", "Buscar...", 3, "visible", "width"], ["dataField", "consecutivoEntrega", "caption", "Orden #", "width", "15%", "dataType", "number"], ["dataField", "tipoDocumento", "caption", "Tipo", "width", "20%", "dataType", "string"], ["dataField", "clienteNombre", "caption", "Cliente", "width", "20%", "dataType", "string"], ["dataField", "documentoNumero", "caption", "Documento", "width", "15%", "textAlign", "left", "dataType", "number"], ["dataField", "estadoProceso", "caption", "Estado", "width", "15%", "dataType", "string"], ["dataField", "fechaDocumento", "caption", "Fecha Documento", "width", "15%", "dataType", "date"], ["caption", "Devoluci\u00F3n", "width", "72", "alignment", "center", "cellTemplate", "devolucionOrdenCell", 3, "visible"], ["type", "buttons", "caption", "Gestionar", 3, "visible"], ["icon", "fa fa-eye", 3, "onClick"], ["type", "button", 1, "btn", "btn-link", "p-1", "ge-btn-devolucion-grid", 3, "disabled", "title", "click"], [1, "productos-pendientes-grid-scroll"], [3, "dataSource", "showBorders", "hoverStateEnabled"], ["fileName", "Productos_Facturados_Sin_Entregar", 3, "enabled", "allowExportSelectedData"], ["placeholder", "Buscar producto...", 3, "visible", "width"], ["dataField", "fecha", "caption", "Fecha", "width", "10%", "dataType", "date"], ["dataField", "documentoNumero", "caption", "Documento", "width", "10%", "dataType", "number"], ["dataField", "clienteNombre", "caption", "Cliente", "width", "15%", "dataType", "string"], ["dataField", "productoNombre", "caption", "Producto", "width", "25%", "dataType", "string"], ["dataField", "cantidadPendienteTexto", "caption", "Cantidad pendiente", "width", "10%", "dataType", "string"], ["dataField", "fechaCompromisoTexto", "caption", "Fecha compromiso", "width", "15%", "dataType", "date"], ["dataField", "notas", "caption", "Notas", "width", "15%", "dataType", "string"], ["fileName", "Balance_Productos_Pendientes", 3, "enabled", "allowExportSelectedData"], ["dataField", "productoNombre", "caption", "Producto", "width", "35%", "dataType", "string"], ["dataField", "totalPendienteTexto", "caption", "Total pendiente entregar", "width", "20%", "dataType", "string"], ["dataField", "stockBodegaTexto", "caption", "Existencia bodega (matriz)", "width", "22%", "dataType", "string"], ["dataField", "balanceTexto", "caption", "Balance", "width", "23%", "dataType", "string"], ["dataField", "balanceValor", "caption", "Balance (ordenar)", "width", "0", "dataType", "number", 3, "visible"], [1, "card-body"], [1, "table", "table-bordered", "table-sm", "table-striped"], ["title", "Nombre del producto involucrado en la orden", 2, "cursor", "help"], ["title", "Cantidad facturada para este producto", 2, "cursor", "help"], ["title", "Cantidad ya entregada al cliente", 2, "cursor", "help"], ["title", "Cantidad devuelta por el cliente", 2, "cursor", "help"], ["title", "Cantidad pendiente por entregar al cliente", 2, "cursor", "help"], ["title", "Indica la cantidad a entregar en esta operaci\u00F3n. Si aplica, ser\u00E1 en cajas y piezas.", 2, "cursor", "help"], [1, "text-muted", "font-weight-normal"], ["title", "Estado actual del \u00EDtem en el proceso de entrega", 2, "cursor", "help"], ["title", "Fecha de compromiso para la entrega de este producto", 2, "cursor", "help"], ["title", "Notas o comentarios adicionales relevantes para este \u00EDtem", 2, "cursor", "help"], ["title", "Guardar los cambios realizados para esta l\u00EDnea", 2, "cursor", "help"], [4, "ngFor", "ngForOf"], [1, "text-right"], ["text", "Cerrar Proceso", "type", "success", 3, "disabled", "onClick"], [1, "gestion-col-guardar", "text-nowrap"], ["class", "gestion-linea-ok text-success ml-1", "title", "Guardado correctamente", 4, "ngIf"], ["text", "Guardar", "type", "default", 3, "onClick"], ["text", "Completo", "type", "success", 3, "disabled"], ["title", "Guardado correctamente", 1, "gestion-linea-ok", "text-success", "ml-1"], ["width", "100%", "height", "100%"], ["class", "trazabilidad-popup", 4, "ngIf"], [1, "trazabilidad-popup"], [1, "col-md-6"], [1, "table", "table-sm", "table-bordered"], [1, "w-25"], [1, "font-weight-bold", "mt-3"], [3, "dataSource", "showBorders", "columnAutoWidth", "height"], ["dataField", "fechaFmt", "caption", "Fecha / hora"], ["dataField", "usuario", "caption", "Usuario"], ["dataField", "accion", "caption", "Acci\u00F3n"], ["dataField", "detalle", "caption", "Detalle"], ["class", "small text-muted mb-2 traz-ayuda-edicion", 4, "ngIf"], ["class", "mb-3 border rounded p-2 traz-item-bloque", 4, "ngFor", "ngForOf"], [1, "small", "text-muted", "mb-2", "traz-ayuda-edicion"], [1, "mb-3", "border", "rounded", "p-2", "traz-item-bloque"], ["class", "table-responsive traz-historial-scroll", 4, "ngIf"], ["class", "text-muted small mb-0", 4, "ngIf"], [1, "table-responsive", "traz-historial-scroll"], [1, "table", "table-sm", "table-bordered", "traz-historial-table", "mb-0"], [1, "thead-light"], [1, "text-nowrap"], [1, "traz-notas-celda"], [1, "text-muted", "small", "mb-0"], [1, "traz-popup-editar-body"], [1, "small", "text-muted", "mb-3"], [1, "form-group", "mb-2"], [1, "d-block", "small", "font-weight-bold", "mb-1"], [3, "items", "value", "disabled", "valueChange"], [3, "value", "min", "format", "showSpinButtons", "disabled", "valueChange"], [3, "value", "height", "disabled", "valueChange"], [1, "form-group", "mb-3"], [1, "d-flex", "flex-column", "flex-sm-row", "justify-content-stretch", "justify-content-sm-end", "traz-editar-acciones"], ["text", "Cancelar", "type", "normal", 1, "mb-2", "mb-sm-0", "mr-sm-2", 3, "disabled", "onClick"], ["text", "Guardar correcci\u00F3n", "type", "default", 3, "disabled", "onClick"], [1, "form-row", "mx-0"], [1, "form-group", "col-12", "col-sm-6", "mb-2", "pl-0", "pr-sm-2", "pr-0"], [3, "value", "min", "showSpinButtons", "disabled", "valueChange"], [1, "form-group", "col-12", "col-sm-6", "mb-2", "pr-0", "pl-sm-2", "pl-0"]], template: function GestionEntregasBodegaComponent_Template(rf, ctx) { if (rf & 1) {
+GestionEntregasBodegaComponent.ɵfac = function GestionEntregasBodegaComponent_Factory(t) { return new (t || GestionEntregasBodegaComponent)(_angular_core__WEBPACK_IMPORTED_MODULE_1__["ɵɵdirectiveInject"](src_app_servicios_entregas_bodega_service__WEBPACK_IMPORTED_MODULE_4__["EntregasBodegaService"]), _angular_core__WEBPACK_IMPORTED_MODULE_1__["ɵɵdirectiveInject"](src_app_servicios_productos_pendientes_service__WEBPACK_IMPORTED_MODULE_5__["ProductosPendientesService"]), _angular_core__WEBPACK_IMPORTED_MODULE_1__["ɵɵdirectiveInject"](src_app_servicios_transacciones_service__WEBPACK_IMPORTED_MODULE_6__["TransaccionesService"]), _angular_core__WEBPACK_IMPORTED_MODULE_1__["ɵɵdirectiveInject"](src_app_shared_services__WEBPACK_IMPORTED_MODULE_7__["ScreenService"])); };
+GestionEntregasBodegaComponent.ɵcmp = _angular_core__WEBPACK_IMPORTED_MODULE_1__["ɵɵdefineComponent"]({ type: GestionEntregasBodegaComponent, selectors: [["app-gestion-entregas-bodega"]], decls: 11, vars: 31, consts: [[1, "row", "remiPro", "titulos", "gestion-menu-superior", "justify-content-md-end"], [1, "col-12", "col-md-4", "px-gestion-menu"], [1, "form-control", "select", 3, "items", "value", "readOnly", "disabled", "inputAttr", "valueChange", "onValueChanged"], ["class", "content-block", 4, "ngIf"], [3, "width", "height", "showTitle", "title", "closeOnOutsideClick", "visible", "visibleChange"], [4, "dxTemplate", "dxTemplateOf"], [3, "visible", "showTitle", "title", "closeOnOutsideClick", "showCloseButton", "fullScreen", "width", "maxWidth", "maxHeight", "dragEnabled", "shading", "elementAttr", "visibleChange", "onHidden"], ["class", "traz-popup-editar-body", 4, "dxTemplate", "dxTemplateOf"], [1, "content-block"], [1, "card", "gestion-entregas-card"], [1, "card-header", "text-center", "font-weight-bold", "text-uppercase"], [1, "card-body", "gestion-filtros"], [1, "row", "justify-content-center"], [1, "col-12", "col-xl-10"], [1, "row"], [1, "col-12", "col-md-6", "mb-3", "gestion-filtro-campo"], [1, "textP", "mb-1", "d-block"], [1, "dateB", "gestion-filtro-editor"], [3, "value", "valueChange"], ["type", "date", 3, "value", "valueChange"], ["class", "col-12 mb-3 gestion-filtro-cerradas", 4, "ngIf"], [1, "col-12", "gestion-entregas-acciones", "gestion-filtro-acciones", "text-center", "pt-1"], ["text", "Buscar", "type", "success", 2, "background-color", "#ff5722", "border-color", "#ff5722", 3, "onClick"], ["text", "Limpiar", "type", "normal", 3, "onClick"], [1, "col-12", "mb-3", "gestion-filtro-cerradas"], [1, "d-flex", "flex-row", "flex-wrap", "align-items-center", "gestion-filtro-cerradas-inner"], [1, "gestion-filtro-check", 3, "value", "readOnly", "valueChange"], [1, "textP", "gestion-filtro-cerradas-texto", "ml-2"], [4, "ngIf"], [1, "card-body", "p-2"], ["class", "text-muted small mb-2", 4, "ngIf"], ["class", "smart-dispatch-movil", 4, "ngIf"], ["class", "listado-entregas-movil", 4, "ngIf"], [3, "dataSource", "showBorders", "hoverStateEnabled", "onRowClick", 4, "ngIf"], ["class", "productos-pendientes-grid-scroll", 4, "ngIf"], [1, "text-muted", "small", "mb-2"], [1, "smart-dispatch-movil"], [1, "small", "text-muted", "mb-2"], [1, "sd-leyenda", "small", "mb-3"], [1, "sd-leyenda-item"], [1, "sd-punto", "sd-est-amarillo"], [1, "sd-punto", "sd-est-rojo"], [1, "sd-punto", "sd-est-azul"], [1, "sd-punto", "sd-est-verde"], ["class", "text-muted small", 4, "ngIf"], ["class", "sd-factura-card mb-2", 4, "ngFor", "ngForOf"], [1, "text-muted", "small"], [1, "sd-factura-card", "mb-2"], ["type", "button", 1, "sd-factura-header", 3, "click"], [1, "sd-punto", 3, "ngClass"], [1, "sd-factura-texto"], [1, "sd-factura-doc"], [1, "sd-factura-cliente"], [1, "sd-factura-meta"], [1, "fa", "fa-chevron-down", "sd-chevron"], ["class", "sd-factura-cuerpo", 4, "ngIf"], [1, "sd-factura-cuerpo"], ["class", "sd-item-wrap", 4, "ngFor", "ngForOf"], ["class", "sd-devolucion-movil mt-3 pt-2 border-top", 4, "ngIf"], [1, "sd-cerrar-proceso", "mt-3", "pt-2", "border-top"], ["text", "Cerrar proceso (factura)", "type", "success", 3, "disabled", "onClick"], [1, "small", "text-muted", "mb-0", "mt-2"], [1, "sd-item-wrap"], ["type", "button", 1, "sd-item-cab", 3, "click"], [1, "sd-item-nombre", 3, "ngClass"], [1, "sd-item-resumen", "small", "text-muted"], ["class", "fa fa-check-circle sd-guardado-ok text-success", "title", "Guardado correctamente", "aria-hidden", "true", 4, "ngIf"], [1, "fa", "fa-chevron-down", "sd-chevron", "sd-chevron-sm"], ["class", "sd-item-detalle", 4, "ngIf"], ["title", "Guardado correctamente", "aria-hidden", "true", 1, "fa", "fa-check-circle", "sd-guardado-ok", "text-success"], [1, "sd-item-detalle"], [1, "sd-kv-grid", "small"], [1, "text-muted"], [1, "font-weight-bold"], [1, "sd-campo"], [1, "small", "font-weight-bold", "mb-1", "d-block"], ["class", "d-flex flex-wrap align-items-center entrega-cp-inputs", 4, "ngIf"], [3, "value", "min", "showSpinButtons", "valueChange", 4, "ngIf"], ["type", "date", 3, "value", "disabled", "valueChange"], [3, "value", "disabled", "valueChange"], [1, "sd-campo", "pt-1", "sd-guardar-linea-wrap"], ["class", "sd-guardado-msg text-success small ml-2", 4, "ngIf"], [1, "d-flex", "flex-wrap", "align-items-center", "entrega-cp-inputs"], [1, "small", "text-muted", "mr-1"], [3, "width", "value", "min", "showSpinButtons", "valueChange"], [1, "small", "text-muted", "mx-1"], [3, "value", "min", "showSpinButtons", "valueChange"], ["text", "Guardar l\u00EDnea", "type", "default", 3, "onClick"], ["text", "L\u00EDnea completa", "type", "success", 3, "disabled"], [1, "sd-guardado-msg", "text-success", "small", "ml-2"], ["aria-hidden", "true", 1, "fa", "fa-check-circle"], [1, "sd-devolucion-movil", "mt-3", "pt-2", "border-top"], ["type", "button", 1, "btn", "btn-outline-secondary", "btn-sm", "btn-block", "sd-devolucion-movil-btn", 3, "disabled", "click"], ["aria-hidden", "true", 3, "ngClass"], [1, "ml-2"], [1, "small", "text-muted", "mb-0", "mt-1"], [1, "listado-entregas-movil"], ["class", "listado-entrega-movil-card", 4, "ngFor", "ngForOf"], [1, "listado-entrega-movil-card"], ["type", "button", 1, "listado-entrega-movil-main", 3, "click"], [1, "listado-entrega-movil-cab"], [1, "listado-entrega-movil-cab-texto"], [1, "listado-entrega-movil-doc"], [1, "listado-entrega-movil-sub"], [1, "listado-entrega-movil-cuerpo"], [1, "listado-entrega-movil-kv"], [1, "listado-entrega-movil-lbl"], [1, "listado-entrega-movil-val"], ["class", "listado-entrega-movil-acciones", 3, "click", 4, "ngIf"], [1, "listado-entrega-movil-acciones", 3, "click"], ["type", "button", 1, "btn", "btn-link", "ge-btn-devolucion-movil", 3, "disabled", "title", "click"], [3, "dataSource", "showBorders", "hoverStateEnabled", "onRowClick"], [3, "visible"], ["placeholder", "Buscar...", 3, "visible", "width"], ["dataField", "consecutivoEntrega", "caption", "Orden #", "width", "15%", "dataType", "number"], ["dataField", "tipoDocumento", "caption", "Tipo", "width", "20%", "dataType", "string"], ["dataField", "clienteNombre", "caption", "Cliente", "width", "20%", "dataType", "string"], ["dataField", "documentoNumero", "caption", "Documento", "width", "15%", "textAlign", "left", "dataType", "number"], ["dataField", "estadoProceso", "caption", "Estado", "width", "15%", "dataType", "string"], ["dataField", "fechaDocumento", "caption", "Fecha Documento", "width", "15%", "dataType", "date"], ["caption", "Devoluci\u00F3n", "width", "72", "alignment", "center", "cellTemplate", "devolucionOrdenCell", 3, "visible"], ["type", "buttons", "caption", "Gestionar", 3, "visible"], ["icon", "fa fa-eye", 3, "onClick"], ["type", "button", 1, "btn", "btn-link", "p-1", "ge-btn-devolucion-grid", 3, "disabled", "title", "click"], [1, "productos-pendientes-grid-scroll"], [3, "dataSource", "showBorders", "hoverStateEnabled"], ["fileName", "Productos_Facturados_Sin_Entregar", 3, "enabled", "allowExportSelectedData"], ["placeholder", "Buscar producto...", 3, "visible", "width"], ["dataField", "fecha", "caption", "Fecha", "width", "10%", "dataType", "date"], ["dataField", "documentoNumero", "caption", "Documento", "width", "10%", "dataType", "number"], ["dataField", "clienteNombre", "caption", "Cliente", "width", "15%", "dataType", "string"], ["dataField", "productoNombre", "caption", "Producto", "width", "25%", "dataType", "string"], ["dataField", "cantidadPendienteTexto", "caption", "Cantidad pendiente", "width", "10%", "dataType", "string"], ["dataField", "fechaCompromisoTexto", "caption", "Fecha compromiso", "width", "15%", "dataType", "date"], ["dataField", "notas", "caption", "Notas", "width", "15%", "dataType", "string"], ["fileName", "Balance_Productos_Pendientes", 3, "enabled", "allowExportSelectedData"], ["dataField", "productoNombre", "caption", "Producto", "width", "35%", "dataType", "string"], ["dataField", "totalPendienteTexto", "caption", "Total pendiente entregar", "width", "20%", "dataType", "string"], ["dataField", "stockBodegaTexto", "caption", "Existencia bodega (matriz)", "width", "22%", "dataType", "string"], ["dataField", "balanceTexto", "caption", "Balance", "width", "23%", "dataType", "string"], ["dataField", "balanceValor", "caption", "Balance (ordenar)", "width", "0", "dataType", "number", 3, "visible"], ["fileName", "Productos_Pendientes_Entrega", 3, "enabled", "allowExportSelectedData"], ["dataField", "id_Pedido", "caption", "Entrega N", "dataType", "string", "sortOrder", "desc"], ["dataField", "fecha", "caption", "Fecha", "dataType", "string"], ["dataField", "documento", "caption", "Documento #", "dataType", "string"], ["dataField", "cliente", "caption", "Cliente", "dataType", "string"], ["dataField", "producto.PRODUCTO", "caption", "Producto", "dataType", "string"], ["dataField", "sucursal", "caption", "Sucursal", "dataType", "string"], ["dataField", "cajas", "caption", "Cajas", "dataType", "number"], ["dataField", "piezas", "caption", "Piezas", "dataType", "number"], ["dataField", "estado", "caption", "Estado", "dataType", "string"], [3, "pageSize"], [3, "showPageSizeSelector", "allowedPageSizes"], [1, "card-body"], [1, "table", "table-bordered", "table-sm", "table-striped"], ["title", "Nombre del producto involucrado en la orden", 2, "cursor", "help"], ["title", "Cantidad facturada para este producto", 2, "cursor", "help"], ["title", "Cantidad ya entregada al cliente", 2, "cursor", "help"], ["title", "Cantidad devuelta por el cliente", 2, "cursor", "help"], ["title", "Cantidad pendiente por entregar al cliente", 2, "cursor", "help"], ["title", "Indica la cantidad a entregar en esta operaci\u00F3n. Si aplica, ser\u00E1 en cajas y piezas.", 2, "cursor", "help"], [1, "text-muted", "font-weight-normal"], ["title", "Estado actual del \u00EDtem en el proceso de entrega", 2, "cursor", "help"], ["title", "Fecha de compromiso para la entrega de este producto", 2, "cursor", "help"], ["title", "Notas o comentarios adicionales relevantes para este \u00EDtem", 2, "cursor", "help"], ["title", "Guardar los cambios realizados para esta l\u00EDnea", 2, "cursor", "help"], [4, "ngFor", "ngForOf"], [1, "text-right"], ["text", "Cerrar Proceso", "type", "success", 3, "disabled", "onClick"], [1, "gestion-col-guardar", "text-nowrap"], ["class", "gestion-linea-ok text-success ml-1", "title", "Guardado correctamente", 4, "ngIf"], ["text", "Guardar", "type", "default", 3, "onClick"], ["text", "Completo", "type", "success", 3, "disabled"], ["title", "Guardado correctamente", 1, "gestion-linea-ok", "text-success", "ml-1"], ["width", "100%", "height", "100%"], ["class", "trazabilidad-popup", 4, "ngIf"], [1, "trazabilidad-popup"], [1, "col-md-6"], [1, "table", "table-sm", "table-bordered"], [1, "w-25"], [1, "font-weight-bold", "mt-3"], [3, "dataSource", "showBorders", "columnAutoWidth", "height"], ["dataField", "fechaFmt", "caption", "Fecha / hora"], ["dataField", "usuario", "caption", "Usuario"], ["dataField", "accion", "caption", "Acci\u00F3n"], ["dataField", "detalle", "caption", "Detalle"], ["class", "small text-muted mb-2 traz-ayuda-edicion", 4, "ngIf"], ["class", "mb-3 border rounded p-2 traz-item-bloque", 4, "ngFor", "ngForOf"], [1, "small", "text-muted", "mb-2", "traz-ayuda-edicion"], [1, "mb-3", "border", "rounded", "p-2", "traz-item-bloque"], ["class", "table-responsive traz-historial-scroll", 4, "ngIf"], ["class", "text-muted small mb-0", 4, "ngIf"], [1, "table-responsive", "traz-historial-scroll"], [1, "table", "table-sm", "table-bordered", "traz-historial-table", "mb-0"], [1, "thead-light"], [1, "text-nowrap"], [1, "traz-notas-celda"], [1, "text-muted", "small", "mb-0"], [1, "traz-popup-editar-body"], [1, "small", "text-muted", "mb-3"], [1, "form-group", "mb-2"], [1, "d-block", "small", "font-weight-bold", "mb-1"], [3, "items", "value", "disabled", "valueChange"], [3, "value", "min", "format", "showSpinButtons", "disabled", "valueChange"], [3, "value", "height", "disabled", "valueChange"], [1, "form-group", "mb-3"], [1, "d-flex", "flex-column", "flex-sm-row", "justify-content-stretch", "justify-content-sm-end", "traz-editar-acciones"], ["text", "Cancelar", "type", "normal", 1, "mb-2", "mb-sm-0", "mr-sm-2", 3, "disabled", "onClick"], ["text", "Guardar correcci\u00F3n", "type", "default", 3, "disabled", "onClick"], [1, "form-row", "mx-0"], [1, "form-group", "col-12", "col-sm-6", "mb-2", "pl-0", "pr-sm-2", "pr-0"], [3, "value", "min", "showSpinButtons", "disabled", "valueChange"], [1, "form-group", "col-12", "col-sm-6", "mb-2", "pr-0", "pl-sm-2", "pl-0"]], template: function GestionEntregasBodegaComponent_Template(rf, ctx) { if (rf & 1) {
         _angular_core__WEBPACK_IMPORTED_MODULE_1__["ɵɵelementStart"](0, "div", 0);
         _angular_core__WEBPACK_IMPORTED_MODULE_1__["ɵɵelementStart"](1, "div", 1);
         _angular_core__WEBPACK_IMPORTED_MODULE_1__["ɵɵelementStart"](2, "dx-select-box", 2);
@@ -53840,7 +54013,7 @@ GestionEntregasBodegaComponent.ɵcmp = _angular_core__WEBPACK_IMPORTED_MODULE_1_
         _angular_core__WEBPACK_IMPORTED_MODULE_1__["ɵɵelementEnd"]();
         _angular_core__WEBPACK_IMPORTED_MODULE_1__["ɵɵtemplate"](3, GestionEntregasBodegaComponent_div_3_Template, 32, 5, "div", 3);
         _angular_core__WEBPACK_IMPORTED_MODULE_1__["ɵɵtemplate"](4, GestionEntregasBodegaComponent_div_4_Template, 2, 0, "div", 3);
-        _angular_core__WEBPACK_IMPORTED_MODULE_1__["ɵɵtemplate"](5, GestionEntregasBodegaComponent_div_5_Template, 16, 12, "div", 3);
+        _angular_core__WEBPACK_IMPORTED_MODULE_1__["ɵɵtemplate"](5, GestionEntregasBodegaComponent_div_5_Template, 19, 15, "div", 3);
         _angular_core__WEBPACK_IMPORTED_MODULE_1__["ɵɵtemplate"](6, GestionEntregasBodegaComponent_div_6_Template, 35, 5, "div", 3);
         _angular_core__WEBPACK_IMPORTED_MODULE_1__["ɵɵelementStart"](7, "dx-popup", 4);
         _angular_core__WEBPACK_IMPORTED_MODULE_1__["ɵɵlistener"]("visibleChange", function GestionEntregasBodegaComponent_Template_dx_popup_visibleChange_7_listener($event) { return ctx.popupTrazabilidadVisible = $event; });
@@ -53852,7 +54025,7 @@ GestionEntregasBodegaComponent.ɵcmp = _angular_core__WEBPACK_IMPORTED_MODULE_1_
         _angular_core__WEBPACK_IMPORTED_MODULE_1__["ɵɵelementEnd"]();
     } if (rf & 2) {
         _angular_core__WEBPACK_IMPORTED_MODULE_1__["ɵɵadvance"](2);
-        _angular_core__WEBPACK_IMPORTED_MODULE_1__["ɵɵproperty"]("items", ctx.menuPrincipal)("value", ctx.valorMenu)("readOnly", false)("disabled", false)("inputAttr", _angular_core__WEBPACK_IMPORTED_MODULE_1__["ɵɵpureFunction0"](29, _c2));
+        _angular_core__WEBPACK_IMPORTED_MODULE_1__["ɵɵproperty"]("items", ctx.menuPrincipal)("value", ctx.valorMenu)("readOnly", false)("disabled", false)("inputAttr", _angular_core__WEBPACK_IMPORTED_MODULE_1__["ɵɵpureFunction0"](29, _c3));
         _angular_core__WEBPACK_IMPORTED_MODULE_1__["ɵɵadvance"](1);
         _angular_core__WEBPACK_IMPORTED_MODULE_1__["ɵɵproperty"]("ngIf", !ctx.mostrarVistaEspecialProductos);
         _angular_core__WEBPACK_IMPORTED_MODULE_1__["ɵɵadvance"](1);
@@ -53866,10 +54039,10 @@ GestionEntregasBodegaComponent.ɵcmp = _angular_core__WEBPACK_IMPORTED_MODULE_1_
         _angular_core__WEBPACK_IMPORTED_MODULE_1__["ɵɵadvance"](1);
         _angular_core__WEBPACK_IMPORTED_MODULE_1__["ɵɵproperty"]("dxTemplateOf", "content");
         _angular_core__WEBPACK_IMPORTED_MODULE_1__["ɵɵadvance"](1);
-        _angular_core__WEBPACK_IMPORTED_MODULE_1__["ɵɵproperty"]("visible", ctx.popupEditarHistorialVisible)("showTitle", true)("title", ctx.tituloPopupEditarHistorial)("closeOnOutsideClick", false)("showCloseButton", true)("fullScreen", ctx.vistaMovil)("width", ctx.vistaMovil ? "100%" : 480)("maxWidth", ctx.vistaMovil ? "100vw" : null)("maxHeight", ctx.vistaMovil ? "100%" : "90vh")("dragEnabled", !ctx.vistaMovil)("shading", true)("elementAttr", _angular_core__WEBPACK_IMPORTED_MODULE_1__["ɵɵpureFunction0"](30, _c3));
+        _angular_core__WEBPACK_IMPORTED_MODULE_1__["ɵɵproperty"]("visible", ctx.popupEditarHistorialVisible)("showTitle", true)("title", ctx.tituloPopupEditarHistorial)("closeOnOutsideClick", false)("showCloseButton", true)("fullScreen", ctx.vistaMovil)("width", ctx.vistaMovil ? "100%" : 480)("maxWidth", ctx.vistaMovil ? "100vw" : null)("maxHeight", ctx.vistaMovil ? "100%" : "90vh")("dragEnabled", !ctx.vistaMovil)("shading", true)("elementAttr", _angular_core__WEBPACK_IMPORTED_MODULE_1__["ɵɵpureFunction0"](30, _c4));
         _angular_core__WEBPACK_IMPORTED_MODULE_1__["ɵɵadvance"](1);
         _angular_core__WEBPACK_IMPORTED_MODULE_1__["ɵɵproperty"]("dxTemplateOf", "content");
-    } }, directives: [devextreme_angular__WEBPACK_IMPORTED_MODULE_7__["DxSelectBoxComponent"], _angular_common__WEBPACK_IMPORTED_MODULE_8__["NgIf"], devextreme_angular__WEBPACK_IMPORTED_MODULE_7__["DxPopupComponent"], devextreme_angular_core__WEBPACK_IMPORTED_MODULE_9__["DxTemplateDirective"], devextreme_angular__WEBPACK_IMPORTED_MODULE_7__["DxNumberBoxComponent"], devextreme_angular_ui_text_box__WEBPACK_IMPORTED_MODULE_10__["DxTextBoxComponent"], devextreme_angular__WEBPACK_IMPORTED_MODULE_7__["DxDateBoxComponent"], devextreme_angular_ui_button__WEBPACK_IMPORTED_MODULE_11__["DxButtonComponent"], devextreme_angular_ui_check_box__WEBPACK_IMPORTED_MODULE_12__["DxCheckBoxComponent"], _loading_loading_component__WEBPACK_IMPORTED_MODULE_13__["LoadingComponent"], _angular_common__WEBPACK_IMPORTED_MODULE_8__["NgForOf"], _angular_common__WEBPACK_IMPORTED_MODULE_8__["NgClass"], devextreme_angular__WEBPACK_IMPORTED_MODULE_7__["DxDataGridComponent"], devextreme_angular_ui_nested__WEBPACK_IMPORTED_MODULE_14__["DxoFilterRowComponent"], devextreme_angular_ui_nested__WEBPACK_IMPORTED_MODULE_14__["DxoSearchPanelComponent"], devextreme_angular_ui_nested__WEBPACK_IMPORTED_MODULE_14__["DxiColumnComponent"], devextreme_angular_ui_nested__WEBPACK_IMPORTED_MODULE_14__["DxiButtonComponent"], devextreme_angular_ui_nested__WEBPACK_IMPORTED_MODULE_14__["DxoExportComponent"], devextreme_angular_ui_scroll_view__WEBPACK_IMPORTED_MODULE_15__["DxScrollViewComponent"], devextreme_angular__WEBPACK_IMPORTED_MODULE_7__["DxTextAreaComponent"]], pipes: [_angular_common__WEBPACK_IMPORTED_MODULE_8__["DecimalPipe"]], styles: ["@charset \"UTF-8\";\n\n.remiPro[_ngcontent-%COMP%] {\n  padding: 1.5em 2em 0;\n  margin-top: 0.5em;\n  text-align: center;\n}\n.gestion-menu-superior[_ngcontent-%COMP%] {\n  margin-left: 0;\n  margin-right: 0;\n}\n.px-gestion-menu[_ngcontent-%COMP%] {\n  padding-left: 0.75rem;\n  padding-right: 0.75rem;\n}\n\n.gestion-filtros[_ngcontent-%COMP%] {\n  overflow-x: hidden;\n}\n.gestion-filtro-campo[_ngcontent-%COMP%]   .textP[_ngcontent-%COMP%] {\n  padding-left: 0;\n}\n.gestion-filtro-editor[_ngcontent-%COMP%] {\n  width: 100%;\n  max-width: 100%;\n}\n.gestion-filtro-editor.dateB[_ngcontent-%COMP%]   dx-date-box[_ngcontent-%COMP%], .gestion-filtro-editor.dateB[_ngcontent-%COMP%]   dx-number-box[_ngcontent-%COMP%], .gestion-filtro-editor.dateB[_ngcontent-%COMP%]   dx-text-box[_ngcontent-%COMP%] {\n  margin-top: 0;\n  display: block;\n  width: 100%;\n  max-width: 100%;\n}\n  .gestion-filtro-editor .dx-texteditor {\n  width: 100% !important;\n  max-width: 100%;\n}\n.gestion-filtro-cerradas-inner[_ngcontent-%COMP%] {\n  min-width: 0;\n}\n.gestion-filtro-cerradas-texto[_ngcontent-%COMP%] {\n  -webkit-box-flex: 1;\n          flex: 1 1 12rem;\n  min-width: 0;\n  line-height: 1.35;\n  text-align: left;\n}\n@media (max-width: 767.98px) {\n  .gestion-filtro-acciones[_ngcontent-%COMP%] {\n    display: -webkit-box;\n    display: flex;\n    -webkit-box-orient: vertical;\n    -webkit-box-direction: normal;\n            flex-direction: column;\n    -webkit-box-align: stretch;\n            align-items: stretch;\n    gap: 0.5rem;\n  }\n\n  .gestion-filtro-acciones[_ngcontent-%COMP%]     .dx-button {\n    width: 100%;\n    max-width: 100%;\n  }\n\n  .gestion-filtro-acciones[_ngcontent-%COMP%]   dx-button[_ngcontent-%COMP%]    + dx-button[_ngcontent-%COMP%] {\n    margin-left: 0;\n  }\n}\n.remiPro.titulos[_ngcontent-%COMP%]   .select[_ngcontent-%COMP%] {\n  text-align: center;\n  background-color: white;\n}\n.select[_ngcontent-%COMP%] {\n  text-align: center;\n  background-color: white;\n}\n.titulos[_ngcontent-%COMP%] {\n  text-align: center;\n  font-weight: bold;\n}\n\n.textP[_ngcontent-%COMP%] {\n  font-weight: bold;\n  font-size: 11pt;\n}\n.textP2[_ngcontent-%COMP%] {\n  margin-top: 0.3em;\n}\n.dateB[_ngcontent-%COMP%]   dx-date-box[_ngcontent-%COMP%], .dateB[_ngcontent-%COMP%]   dx-number-box[_ngcontent-%COMP%], .dateB[_ngcontent-%COMP%]   dx-text-box[_ngcontent-%COMP%] {\n  margin-top: -0.8em;\n}\n.centrar[_ngcontent-%COMP%] {\n  text-align: center;\n}\n.gestion-entregas-card[_ngcontent-%COMP%] {\n  border-radius: 0.25rem;\n}\n.gestion-entregas-card[_ngcontent-%COMP%]   .card-header[_ngcontent-%COMP%] {\n  background-color: #f8f9fa;\n}\n.cons-label[_ngcontent-%COMP%] {\n  font-size: inherit;\n}\n.cons-valor[_ngcontent-%COMP%] {\n  font-size: 4rem;\n  font-weight: bold;\n  margin-top: -1rem;\n  line-height: 1.1;\n}\n.gestion-entregas-acciones[_ngcontent-%COMP%]   dx-button[_ngcontent-%COMP%]    + dx-button[_ngcontent-%COMP%] {\n  margin-left: 0.5rem;\n}\n  .gestion-entregas-card .dateB .dx-texteditor-input {\n  text-align: center;\n}\ntable[_ngcontent-%COMP%]   td[_ngcontent-%COMP%], table[_ngcontent-%COMP%]   th[_ngcontent-%COMP%] {\n  vertical-align: middle;\n}\n.trazabilidad-popup[_ngcontent-%COMP%]   h6[_ngcontent-%COMP%] {\n  color: #333;\n}\n.trazabilidad-popup[_ngcontent-%COMP%]   .w-25[_ngcontent-%COMP%] {\n  width: 25%;\n}\n.entrega-cp-inputs[_ngcontent-%COMP%] {\n  gap: 4px;\n}\n\n.smart-dispatch-movil[_ngcontent-%COMP%] {\n  margin-bottom: 0.25rem;\n}\n.sd-leyenda[_ngcontent-%COMP%] {\n  display: -webkit-box;\n  display: flex;\n  flex-wrap: wrap;\n  gap: 0.5rem 0.85rem;\n  -webkit-box-align: center;\n          align-items: center;\n}\n.sd-leyenda-item[_ngcontent-%COMP%] {\n  display: -webkit-inline-box;\n  display: inline-flex;\n  -webkit-box-align: center;\n          align-items: center;\n  gap: 0.35rem;\n}\n.sd-punto[_ngcontent-%COMP%] {\n  display: inline-block;\n  width: 10px;\n  height: 10px;\n  border-radius: 50%;\n  flex-shrink: 0;\n}\n.sd-factura-card[_ngcontent-%COMP%] {\n  border: 1px solid #dee2e6;\n  border-radius: 6px;\n  overflow: hidden;\n  background: #fff;\n}\n.sd-factura-header[_ngcontent-%COMP%] {\n  width: 100%;\n  display: -webkit-box;\n  display: flex;\n  -webkit-box-align: start;\n          align-items: flex-start;\n  gap: 0.5rem;\n  padding: 0.65rem 0.75rem;\n  border: none;\n  background: #f8f9fa;\n  text-align: left;\n  cursor: pointer;\n}\n.sd-factura-header[_ngcontent-%COMP%]:focus {\n  outline: 2px solid rgba(0, 97, 169, 0.35);\n  outline-offset: 1px;\n}\n.sd-factura-texto[_ngcontent-%COMP%] {\n  -webkit-box-flex: 1;\n          flex: 1;\n  min-width: 0;\n  display: -webkit-box;\n  display: flex;\n  -webkit-box-orient: vertical;\n  -webkit-box-direction: normal;\n          flex-direction: column;\n  gap: 0.15rem;\n}\n.sd-factura-doc[_ngcontent-%COMP%] {\n  font-weight: 700;\n  font-size: 0.95rem;\n}\n.sd-factura-cliente[_ngcontent-%COMP%] {\n  font-size: 0.88rem;\n  line-height: 1.25;\n  word-break: break-word;\n}\n.sd-factura-meta[_ngcontent-%COMP%] {\n  font-size: 0.75rem;\n  color: #6c757d;\n}\n.sd-chevron[_ngcontent-%COMP%] {\n  -webkit-transition: -webkit-transform 0.2s ease;\n  transition: -webkit-transform 0.2s ease;\n  transition: transform 0.2s ease;\n  transition: transform 0.2s ease, -webkit-transform 0.2s ease;\n  align-self: center;\n  color: #6c757d;\n  flex-shrink: 0;\n}\n.sd-chevron-up[_ngcontent-%COMP%] {\n  -webkit-transform: rotate(-180deg);\n          transform: rotate(-180deg);\n}\n.sd-chevron-sm[_ngcontent-%COMP%] {\n  font-size: 0.72rem;\n}\n.sd-factura-cuerpo[_ngcontent-%COMP%] {\n  padding: 0.5rem 0.65rem 0.75rem;\n  background: #fff;\n  border-top: 1px solid #e9ecef;\n}\n.sd-item-wrap[_ngcontent-%COMP%] {\n  border: 1px solid #e9ecef;\n  border-radius: 6px;\n  margin-bottom: 0.45rem;\n  overflow: hidden;\n  background: #fafafa;\n}\n.sd-item-cab[_ngcontent-%COMP%] {\n  width: 100%;\n  display: -webkit-box;\n  display: flex;\n  flex-wrap: wrap;\n  -webkit-box-align: center;\n          align-items: center;\n  gap: 0.35rem 0.5rem;\n  padding: 0.55rem 0.6rem;\n  border: none;\n  background: transparent;\n  text-align: left;\n  cursor: pointer;\n}\n.sd-guardado-ok[_ngcontent-%COMP%] {\n  font-size: 1.15rem;\n  flex-shrink: 0;\n}\n.sd-guardar-linea-wrap[_ngcontent-%COMP%] {\n  display: -webkit-box;\n  display: flex;\n  flex-wrap: wrap;\n  -webkit-box-align: center;\n          align-items: center;\n}\n.gestion-linea-ok[_ngcontent-%COMP%] {\n  display: inline-block;\n  vertical-align: middle;\n  font-size: 1.1rem;\n}\n.sd-item-cab[_ngcontent-%COMP%]:focus {\n  outline: 2px solid rgba(0, 97, 169, 0.35);\n  outline-offset: 1px;\n}\n.sd-item-nombre[_ngcontent-%COMP%] {\n  -webkit-box-flex: 1;\n          flex: 1 1 100%;\n  font-weight: 600;\n  font-size: 0.9rem;\n  line-height: 1.3;\n  word-break: break-word;\n}\n.sd-item-resumen[_ngcontent-%COMP%] {\n  -webkit-box-flex: 1;\n          flex: 1 1 auto;\n  min-width: 0;\n}\n.sd-item-detalle[_ngcontent-%COMP%] {\n  padding: 0.65rem 0.75rem 0.85rem;\n  background: #fff;\n  border-top: 1px dashed #dee2e6;\n}\n.sd-kv-grid[_ngcontent-%COMP%] {\n  display: grid;\n  grid-template-columns: auto 1fr;\n  gap: 0.25rem 0.75rem;\n  margin-bottom: 0.75rem;\n}\n.sd-campo[_ngcontent-%COMP%] {\n  margin-bottom: 0.65rem;\n}\n.sd-cerrar-proceso[_ngcontent-%COMP%]     .dx-button {\n  width: 100%;\n}\n.sd-campo[_ngcontent-%COMP%]     .dx-texteditor {\n  width: 100% !important;\n  max-width: 100%;\n}\n\n.sd-est-verde[_ngcontent-%COMP%] {\n  color: #1e7e34 !important;\n}\n.sd-punto.sd-est-verde[_ngcontent-%COMP%] {\n  background-color: #28a745 !important;\n}\n.sd-est-azul[_ngcontent-%COMP%] {\n  color: #004085 !important;\n}\n.sd-punto.sd-est-azul[_ngcontent-%COMP%] {\n  background-color: #007bff !important;\n}\n.sd-est-rojo[_ngcontent-%COMP%] {\n  color: #c82333 !important;\n}\n.sd-punto.sd-est-rojo[_ngcontent-%COMP%] {\n  background-color: #dc3545 !important;\n}\n.sd-est-amarillo[_ngcontent-%COMP%] {\n  color: #856404 !important;\n}\n.sd-punto.sd-est-amarillo[_ngcontent-%COMP%] {\n  background-color: #ffc107 !important;\n}\n.sd-item-nombre.sd-item-alerta[_ngcontent-%COMP%] {\n  color: #b00020 !important;\n  font-weight: 700;\n}\n\n.listado-entregas-movil[_ngcontent-%COMP%] {\n  margin-bottom: 0.25rem;\n}\n.listado-entrega-movil-card[_ngcontent-%COMP%] {\n  display: -webkit-box;\n  display: flex;\n  -webkit-box-orient: horizontal;\n  -webkit-box-direction: normal;\n          flex-direction: row;\n  -webkit-box-align: stretch;\n          align-items: stretch;\n  width: 100%;\n  margin-bottom: 0.65rem;\n  padding: 0;\n  border: 1px solid #dee2e6;\n  border-radius: 6px;\n  background: #fff;\n  text-align: left;\n  overflow: hidden;\n  -webkit-transition: box-shadow 0.15s ease, border-color 0.15s ease;\n  transition: box-shadow 0.15s ease, border-color 0.15s ease;\n}\n.listado-entrega-movil-main[_ngcontent-%COMP%] {\n  -webkit-box-flex: 1;\n          flex: 1;\n  min-width: 0;\n  display: block;\n  margin: 0;\n  padding: 0;\n  border: none;\n  background: transparent;\n  text-align: left;\n  cursor: pointer;\n}\n.listado-entrega-movil-acciones[_ngcontent-%COMP%] {\n  -webkit-box-flex: 0;\n          flex: 0 0 auto;\n  display: -webkit-box;\n  display: flex;\n  -webkit-box-align: center;\n          align-items: center;\n  -webkit-box-pack: center;\n          justify-content: center;\n  border-left: 1px solid #e9ecef;\n  background: #fafbfc;\n  padding: 0 0.25rem;\n}\n.ge-btn-devolucion-movil[_ngcontent-%COMP%] {\n  font-size: 1.25rem;\n  line-height: 1;\n  padding: 0.5rem 0.35rem !important;\n}\n.ge-btn-devolucion-grid[_ngcontent-%COMP%] {\n  font-size: 1.1rem;\n  line-height: 1;\n  min-width: 2rem;\n}\n.sd-devolucion-movil-btn[_ngcontent-%COMP%]   i[_ngcontent-%COMP%] {\n  margin-right: 0.15rem;\n}\n.listado-entrega-movil-card[_ngcontent-%COMP%]:hover, .listado-entrega-movil-card[_ngcontent-%COMP%]:focus-within {\n  border-color: rgba(0, 97, 169, 0.45);\n  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.06);\n  outline: none;\n}\n.listado-entrega-movil-main[_ngcontent-%COMP%]:focus-visible {\n  outline: 2px solid rgba(0, 97, 169, 0.35);\n  outline-offset: 2px;\n}\n.listado-entrega-movil-cab[_ngcontent-%COMP%] {\n  display: -webkit-box;\n  display: flex;\n  -webkit-box-align: start;\n          align-items: flex-start;\n  gap: 0.5rem;\n  padding: 0.65rem 0.75rem;\n  background: #f8f9fa;\n  border-bottom: 1px solid #e9ecef;\n}\n.listado-entrega-movil-cab-texto[_ngcontent-%COMP%] {\n  -webkit-box-flex: 1;\n          flex: 1;\n  min-width: 0;\n  display: -webkit-box;\n  display: flex;\n  -webkit-box-orient: vertical;\n  -webkit-box-direction: normal;\n          flex-direction: column;\n  gap: 0.2rem;\n}\n.listado-entrega-movil-doc[_ngcontent-%COMP%] {\n  font-weight: 700;\n  font-size: 0.95rem;\n  word-break: break-word;\n}\n.listado-entrega-movil-sub[_ngcontent-%COMP%] {\n  font-size: 0.78rem;\n  color: #6c757d;\n  line-height: 1.25;\n}\n.listado-entrega-movil-cuerpo[_ngcontent-%COMP%] {\n  padding: 0.65rem 0.75rem 0.75rem;\n}\n.listado-entrega-movil-kv[_ngcontent-%COMP%] {\n  display: grid;\n  grid-template-columns: minmax(0, 38%) 1fr;\n  gap: 0.35rem 0.65rem;\n  font-size: 0.88rem;\n  -webkit-box-align: start;\n          align-items: start;\n}\n.listado-entrega-movil-lbl[_ngcontent-%COMP%] {\n  color: #6c757d;\n  font-size: 0.8rem;\n}\n.listado-entrega-movil-val[_ngcontent-%COMP%] {\n  word-break: break-word;\n  min-width: 0;\n}\n@media (max-width: 767.98px) {\n  \n  .productos-pendientes-grid-scroll[_ngcontent-%COMP%] {\n    overflow-x: auto;\n    -webkit-overflow-scrolling: touch;\n    overscroll-behavior-x: contain;\n    padding-bottom: 0.35rem;\n  }\n\n  .productos-pendientes-grid-scroll[_ngcontent-%COMP%]     .dx-datagrid {\n    min-width: 52rem;\n  }\n\n  .remiPro[_ngcontent-%COMP%] {\n    padding-left: 0.75rem;\n    padding-right: 0.75rem;\n    padding-top: 1rem;\n  }\n\n  .gestion-entregas-card[_ngcontent-%COMP%]   .card-body[_ngcontent-%COMP%] {\n    padding-left: 0.75rem;\n    padding-right: 0.75rem;\n  }\n\n  .gestion-filtros[_ngcontent-%COMP%] {\n    padding-left: 0;\n    padding-right: 0;\n  }\n}\n\n.traz-historial-scroll[_ngcontent-%COMP%] {\n  -webkit-overflow-scrolling: touch;\n  overscroll-behavior-x: contain;\n}\n.traz-historial-table[_ngcontent-%COMP%] {\n  font-size: 0.85rem;\n}\n.traz-btn-edit[_ngcontent-%COMP%] {\n  min-height: 44px;\n  min-width: 44px;\n  touch-action: manipulation;\n  line-height: 1.2;\n}\n.traz-notas-celda[_ngcontent-%COMP%] {\n  max-width: 14rem;\n  word-break: break-word;\n}\n.traz-editar-acciones[_ngcontent-%COMP%]     .dx-button {\n  min-height: 44px;\n}\n\n  .traz-popup-corregir-overlay {\n  box-sizing: border-box;\n}\n  .traz-popup-corregir-overlay .dx-popup-content {\n  overflow-x: hidden;\n  max-width: 100%;\n  box-sizing: border-box;\n}\n  .traz-popup-corregir-overlay .dx-popup-title {\n  white-space: normal !important;\n  word-break: break-word;\n  overflow-wrap: anywhere;\n  line-height: 1.3;\n  padding-right: 2.75rem;\n  font-size: 0.95rem;\n  max-width: 100%;\n}\n@media (max-width: 767.98px) {\n    .traz-popup-corregir-overlay {\n    max-width: 100vw !important;\n    width: calc(100vw - env(safe-area-inset-left) - env(safe-area-inset-right)) !important;\n  }\n}\n.traz-popup-editar-body[_ngcontent-%COMP%] {\n  width: 100%;\n  max-width: 100%;\n  min-width: 0;\n  box-sizing: border-box;\n  overflow-x: hidden;\n  padding: 0.75rem 0.75rem max(0.75rem, env(safe-area-inset-bottom));\n}\n@media (min-width: 576px) {\n  .traz-popup-editar-body[_ngcontent-%COMP%] {\n    padding: 1rem 1.25rem 1rem;\n  }\n}\n.traz-popup-editar-body[_ngcontent-%COMP%]     .dx-texteditor, .traz-popup-editar-body[_ngcontent-%COMP%]     .dx-dropdowneditor, .traz-popup-editar-body[_ngcontent-%COMP%]     .dx-numberbox {\n  width: 100% !important;\n  max-width: 100% !important;\n}\n.traz-popup-editar-body[_ngcontent-%COMP%]     .dx-texteditor.dx-editor-outlined, .traz-popup-editar-body[_ngcontent-%COMP%]     .dx-dropdowneditor.dx-editor-outlined {\n  display: block;\n}\n.traz-editar-acciones[_ngcontent-%COMP%] {\n  width: 100%;\n  max-width: 100%;\n  padding-top: 0.25rem;\n}\n@media (max-width: 575.98px) {\n  .traz-editar-acciones[_ngcontent-%COMP%] {\n    -webkit-box-orient: vertical !important;\n    -webkit-box-direction: normal !important;\n            flex-direction: column !important;\n    -webkit-box-align: stretch !important;\n            align-items: stretch !important;\n  }\n\n  .traz-editar-acciones[_ngcontent-%COMP%]     .dx-button {\n    width: 100%;\n    max-width: 100%;\n  }\n}\n/*# sourceMappingURL=data:application/json;base64,eyJ2ZXJzaW9uIjozLCJzb3VyY2VzIjpbInNyYy9hcHAvcGFnZXMvZ2VzdGlvbi1lbnRyZWdhcy1ib2RlZ2EvZ2VzdGlvbi1lbnRyZWdhcy1ib2RlZ2EuY29tcG9uZW50LnNjc3MiLCJzcmMvYXBwL3BhZ2VzL2dlc3Rpb24tZW50cmVnYXMtYm9kZWdhL0M6XFxGSURFTlNcXGFsb2phYmFzZXMyMDI1L3NyY1xcYXBwXFxwYWdlc1xcZ2VzdGlvbi1lbnRyZWdhcy1ib2RlZ2FcXGdlc3Rpb24tZW50cmVnYXMtYm9kZWdhLmNvbXBvbmVudC5zY3NzIl0sIm5hbWVzIjpbXSwibWFwcGluZ3MiOiJBQUFBLGdCQUFnQjtBQ0FoQixzREFBQTtBQUNBO0VBQ0Usb0JBQUE7RUFDQSxpQkFBQTtFQUNBLGtCQUFBO0FERUY7QUNDQTtFQUNFLGNBQUE7RUFDQSxlQUFBO0FERUY7QUNDQTtFQUNFLHFCQUFBO0VBQ0Esc0JBQUE7QURFRjtBQ0NBLGtGQUFBO0FBQ0E7RUFDRSxrQkFBQTtBREVGO0FDQ0E7RUFDRSxlQUFBO0FERUY7QUNDQTtFQUNFLFdBQUE7RUFDQSxlQUFBO0FERUY7QUNDQTs7O0VBR0UsYUFBQTtFQUNBLGNBQUE7RUFDQSxXQUFBO0VBQ0EsZUFBQTtBREVGO0FDQ0E7RUFDRSxzQkFBQTtFQUNBLGVBQUE7QURFRjtBQ0NBO0VBQ0UsWUFBQTtBREVGO0FDQ0E7RUFDRSxtQkFBQTtVQUFBLGVBQUE7RUFDQSxZQUFBO0VBQ0EsaUJBQUE7RUFDQSxnQkFBQTtBREVGO0FDQ0E7RUFDRTtJQUNFLG9CQUFBO0lBQUEsYUFBQTtJQUNBLDRCQUFBO0lBQUEsNkJBQUE7WUFBQSxzQkFBQTtJQUNBLDBCQUFBO1lBQUEsb0JBQUE7SUFDQSxXQUFBO0VERUY7O0VDQ0E7SUFDRSxXQUFBO0lBQ0EsZUFBQTtFREVGOztFQ0NBO0lBQ0UsY0FBQTtFREVGO0FBQ0Y7QUNDQTtFQUNFLGtCQUFBO0VBQ0EsdUJBQUE7QURDRjtBQ0VBO0VBQ0Usa0JBQUE7RUFDQSx1QkFBQTtBRENGO0FDRUE7RUFDRSxrQkFBQTtFQUNBLGlCQUFBO0FEQ0Y7QUNFQSxrRUFBQTtBQUNBO0VBQ0UsaUJBQUE7RUFDQSxlQUFBO0FEQ0Y7QUNFQTtFQUNFLGlCQUFBO0FEQ0Y7QUNFQTs7O0VBR0Usa0JBQUE7QURDRjtBQ0VBO0VBQ0Usa0JBQUE7QURDRjtBQ0VBO0VBQ0Usc0JBQUE7QURDRjtBQ0VBO0VBQ0UseUJBQUE7QURDRjtBQ0VBO0VBQ0Usa0JBQUE7QURDRjtBQ0VBO0VBQ0UsZUFBQTtFQUNBLGlCQUFBO0VBQ0EsaUJBQUE7RUFDQSxnQkFBQTtBRENGO0FDRUE7RUFDRSxtQkFBQTtBRENGO0FDRUE7RUFDRSxrQkFBQTtBRENGO0FDRUE7O0VBRUUsc0JBQUE7QURDRjtBQ0VBO0VBQ0UsV0FBQTtBRENGO0FDRUE7RUFDRSxVQUFBO0FEQ0Y7QUNFQTtFQUNFLFFBQUE7QURDRjtBQ0VBLHVFQUFBO0FBQ0E7RUFDRSxzQkFBQTtBRENGO0FDRUE7RUFDRSxvQkFBQTtFQUFBLGFBQUE7RUFDQSxlQUFBO0VBQ0EsbUJBQUE7RUFDQSx5QkFBQTtVQUFBLG1CQUFBO0FEQ0Y7QUNFQTtFQUNFLDJCQUFBO0VBQUEsb0JBQUE7RUFDQSx5QkFBQTtVQUFBLG1CQUFBO0VBQ0EsWUFBQTtBRENGO0FDRUE7RUFDRSxxQkFBQTtFQUNBLFdBQUE7RUFDQSxZQUFBO0VBQ0Esa0JBQUE7RUFDQSxjQUFBO0FEQ0Y7QUNFQTtFQUNFLHlCQUFBO0VBQ0Esa0JBQUE7RUFDQSxnQkFBQTtFQUNBLGdCQUFBO0FEQ0Y7QUNFQTtFQUNFLFdBQUE7RUFDQSxvQkFBQTtFQUFBLGFBQUE7RUFDQSx3QkFBQTtVQUFBLHVCQUFBO0VBQ0EsV0FBQTtFQUNBLHdCQUFBO0VBQ0EsWUFBQTtFQUNBLG1CQUFBO0VBQ0EsZ0JBQUE7RUFDQSxlQUFBO0FEQ0Y7QUNFQTtFQUNFLHlDQUFBO0VBQ0EsbUJBQUE7QURDRjtBQ0VBO0VBQ0UsbUJBQUE7VUFBQSxPQUFBO0VBQ0EsWUFBQTtFQUNBLG9CQUFBO0VBQUEsYUFBQTtFQUNBLDRCQUFBO0VBQUEsNkJBQUE7VUFBQSxzQkFBQTtFQUNBLFlBQUE7QURDRjtBQ0VBO0VBQ0UsZ0JBQUE7RUFDQSxrQkFBQTtBRENGO0FDRUE7RUFDRSxrQkFBQTtFQUNBLGlCQUFBO0VBQ0Esc0JBQUE7QURDRjtBQ0VBO0VBQ0Usa0JBQUE7RUFDQSxjQUFBO0FEQ0Y7QUNFQTtFQUNFLCtDQUFBO0VBQUEsdUNBQUE7RUFBQSwrQkFBQTtFQUFBLDREQUFBO0VBQ0Esa0JBQUE7RUFDQSxjQUFBO0VBQ0EsY0FBQTtBRENGO0FDRUE7RUFDRSxrQ0FBQTtVQUFBLDBCQUFBO0FEQ0Y7QUNFQTtFQUNFLGtCQUFBO0FEQ0Y7QUNFQTtFQUNFLCtCQUFBO0VBQ0EsZ0JBQUE7RUFDQSw2QkFBQTtBRENGO0FDRUE7RUFDRSx5QkFBQTtFQUNBLGtCQUFBO0VBQ0Esc0JBQUE7RUFDQSxnQkFBQTtFQUNBLG1CQUFBO0FEQ0Y7QUNFQTtFQUNFLFdBQUE7RUFDQSxvQkFBQTtFQUFBLGFBQUE7RUFDQSxlQUFBO0VBQ0EseUJBQUE7VUFBQSxtQkFBQTtFQUNBLG1CQUFBO0VBQ0EsdUJBQUE7RUFDQSxZQUFBO0VBQ0EsdUJBQUE7RUFDQSxnQkFBQTtFQUNBLGVBQUE7QURDRjtBQ0VBO0VBQ0Usa0JBQUE7RUFDQSxjQUFBO0FEQ0Y7QUNFQTtFQUNFLG9CQUFBO0VBQUEsYUFBQTtFQUNBLGVBQUE7RUFDQSx5QkFBQTtVQUFBLG1CQUFBO0FEQ0Y7QUNFQTtFQUNFLHFCQUFBO0VBQ0Esc0JBQUE7RUFDQSxpQkFBQTtBRENGO0FDRUE7RUFDRSx5Q0FBQTtFQUNBLG1CQUFBO0FEQ0Y7QUNFQTtFQUNFLG1CQUFBO1VBQUEsY0FBQTtFQUNBLGdCQUFBO0VBQ0EsaUJBQUE7RUFDQSxnQkFBQTtFQUNBLHNCQUFBO0FEQ0Y7QUNFQTtFQUNFLG1CQUFBO1VBQUEsY0FBQTtFQUNBLFlBQUE7QURDRjtBQ0VBO0VBQ0UsZ0NBQUE7RUFDQSxnQkFBQTtFQUNBLDhCQUFBO0FEQ0Y7QUNFQTtFQUNFLGFBQUE7RUFDQSwrQkFBQTtFQUNBLG9CQUFBO0VBQ0Esc0JBQUE7QURDRjtBQ0VBO0VBQ0Usc0JBQUE7QURDRjtBQ0VBO0VBQ0UsV0FBQTtBRENGO0FDRUE7RUFDRSxzQkFBQTtFQUNBLGVBQUE7QURDRjtBQ0VBLHVEQUFBO0FBQ0E7RUFDRSx5QkFBQTtBRENGO0FDRUE7RUFDRSxvQ0FBQTtBRENGO0FDRUE7RUFDRSx5QkFBQTtBRENGO0FDRUE7RUFDRSxvQ0FBQTtBRENGO0FDRUE7RUFDRSx5QkFBQTtBRENGO0FDRUE7RUFDRSxvQ0FBQTtBRENGO0FDRUE7RUFDRSx5QkFBQTtBRENGO0FDRUE7RUFDRSxvQ0FBQTtBRENGO0FDRUE7RUFDRSx5QkFBQTtFQUNBLGdCQUFBO0FEQ0Y7QUNFQSwwRUFBQTtBQUNBO0VBQ0Usc0JBQUE7QURDRjtBQ0VBO0VBQ0Usb0JBQUE7RUFBQSxhQUFBO0VBQ0EsOEJBQUE7RUFBQSw2QkFBQTtVQUFBLG1CQUFBO0VBQ0EsMEJBQUE7VUFBQSxvQkFBQTtFQUNBLFdBQUE7RUFDQSxzQkFBQTtFQUNBLFVBQUE7RUFDQSx5QkFBQTtFQUNBLGtCQUFBO0VBQ0EsZ0JBQUE7RUFDQSxnQkFBQTtFQUNBLGdCQUFBO0VBQ0Esa0VBQUE7RUFBQSwwREFBQTtBRENGO0FDRUE7RUFDRSxtQkFBQTtVQUFBLE9BQUE7RUFDQSxZQUFBO0VBQ0EsY0FBQTtFQUNBLFNBQUE7RUFDQSxVQUFBO0VBQ0EsWUFBQTtFQUNBLHVCQUFBO0VBQ0EsZ0JBQUE7RUFDQSxlQUFBO0FEQ0Y7QUNFQTtFQUNFLG1CQUFBO1VBQUEsY0FBQTtFQUNBLG9CQUFBO0VBQUEsYUFBQTtFQUNBLHlCQUFBO1VBQUEsbUJBQUE7RUFDQSx3QkFBQTtVQUFBLHVCQUFBO0VBQ0EsOEJBQUE7RUFDQSxtQkFBQTtFQUNBLGtCQUFBO0FEQ0Y7QUNFQTtFQUNFLGtCQUFBO0VBQ0EsY0FBQTtFQUNBLGtDQUFBO0FEQ0Y7QUNFQTtFQUNFLGlCQUFBO0VBQ0EsY0FBQTtFQUNBLGVBQUE7QURDRjtBQ0VBO0VBQ0UscUJBQUE7QURDRjtBQ0VBOztFQUVFLG9DQUFBO0VBQ0EseUNBQUE7RUFDQSxhQUFBO0FEQ0Y7QUNFQTtFQUNFLHlDQUFBO0VBQ0EsbUJBQUE7QURDRjtBQ0VBO0VBQ0Usb0JBQUE7RUFBQSxhQUFBO0VBQ0Esd0JBQUE7VUFBQSx1QkFBQTtFQUNBLFdBQUE7RUFDQSx3QkFBQTtFQUNBLG1CQUFBO0VBQ0EsZ0NBQUE7QURDRjtBQ0VBO0VBQ0UsbUJBQUE7VUFBQSxPQUFBO0VBQ0EsWUFBQTtFQUNBLG9CQUFBO0VBQUEsYUFBQTtFQUNBLDRCQUFBO0VBQUEsNkJBQUE7VUFBQSxzQkFBQTtFQUNBLFdBQUE7QURDRjtBQ0VBO0VBQ0UsZ0JBQUE7RUFDQSxrQkFBQTtFQUNBLHNCQUFBO0FEQ0Y7QUNFQTtFQUNFLGtCQUFBO0VBQ0EsY0FBQTtFQUNBLGlCQUFBO0FEQ0Y7QUNFQTtFQUNFLGdDQUFBO0FEQ0Y7QUNFQTtFQUNFLGFBQUE7RUFDQSx5Q0FBQTtFQUNBLG9CQUFBO0VBQ0Esa0JBQUE7RUFDQSx3QkFBQTtVQUFBLGtCQUFBO0FEQ0Y7QUNFQTtFQUNFLGNBQUE7RUFDQSxpQkFBQTtBRENGO0FDRUE7RUFDRSxzQkFBQTtFQUNBLFlBQUE7QURDRjtBQ0VBO0VBQ0UsNEVBQUE7RUFDQTtJQUNFLGdCQUFBO0lBQ0EsaUNBQUE7SUFDQSw4QkFBQTtJQUNBLHVCQUFBO0VEQ0Y7O0VDRUE7SUFDRSxnQkFBQTtFRENGOztFQ0VBO0lBQ0UscUJBQUE7SUFDQSxzQkFBQTtJQUNBLGlCQUFBO0VEQ0Y7O0VDRUE7SUFDRSxxQkFBQTtJQUNBLHNCQUFBO0VEQ0Y7O0VDRUE7SUFDRSxlQUFBO0lBQ0EsZ0JBQUE7RURDRjtBQUNGO0FDRUEsbUZBQUE7QUFDQTtFQUNFLGlDQUFBO0VBQ0EsOEJBQUE7QURBRjtBQ0dBO0VBQ0Usa0JBQUE7QURBRjtBQ0dBO0VBQ0UsZ0JBQUE7RUFDQSxlQUFBO0VBQ0EsMEJBQUE7RUFDQSxnQkFBQTtBREFGO0FDR0E7RUFDRSxnQkFBQTtFQUNBLHNCQUFBO0FEQUY7QUNHQTtFQUNFLGdCQUFBO0FEQUY7QUNHQSwyRUFBQTtBQUNBO0VBQ0Usc0JBQUE7QURBRjtBQ0VFO0VBQ0Usa0JBQUE7RUFDQSxlQUFBO0VBQ0Esc0JBQUE7QURBSjtBQ0dFO0VBQ0UsOEJBQUE7RUFDQSxzQkFBQTtFQUNBLHVCQUFBO0VBQ0EsZ0JBQUE7RUFDQSxzQkFBQTtFQUNBLGtCQUFBO0VBQ0EsZUFBQTtBRERKO0FDS0E7RUFDRTtJQUNFLDJCQUFBO0lBQ0Esc0ZBQUE7RURGRjtBQUNGO0FDS0E7RUFDRSxXQUFBO0VBQ0EsZUFBQTtFQUNBLFlBQUE7RUFDQSxzQkFBQTtFQUNBLGtCQUFBO0VBQ0Esa0VBQUE7QURIRjtBQ0tFO0VBUkY7SUFTSSwwQkFBQTtFREZGO0FBQ0Y7QUNLQTs7O0VBR0Usc0JBQUE7RUFDQSwwQkFBQTtBREZGO0FDS0E7O0VBRUUsY0FBQTtBREZGO0FDS0E7RUFDRSxXQUFBO0VBQ0EsZUFBQTtFQUNBLG9CQUFBO0FERkY7QUNLQTtFQUNFO0lBQ0UsdUNBQUE7SUFBQSx3Q0FBQTtZQUFBLGlDQUFBO0lBQ0EscUNBQUE7WUFBQSwrQkFBQTtFREZGOztFQ0tBO0lBQ0UsV0FBQTtJQUNBLGVBQUE7RURGRjtBQUNGIiwiZmlsZSI6InNyYy9hcHAvcGFnZXMvZ2VzdGlvbi1lbnRyZWdhcy1ib2RlZ2EvZ2VzdGlvbi1lbnRyZWdhcy1ib2RlZ2EuY29tcG9uZW50LnNjc3MiLCJzb3VyY2VzQ29udGVudCI6WyJAY2hhcnNldCBcIlVURi04XCI7XG4vKiBGaWxhIGRlbCBjb21ibyAobWlzbW8gY3JpdGVyaW8gcXVlIGRldm9sdWNpb25lcykuICovXG4ucmVtaVBybyB7XG4gIHBhZGRpbmc6IDEuNWVtIDJlbSAwO1xuICBtYXJnaW4tdG9wOiAwLjVlbTtcbiAgdGV4dC1hbGlnbjogY2VudGVyO1xufVxuXG4uZ2VzdGlvbi1tZW51LXN1cGVyaW9yIHtcbiAgbWFyZ2luLWxlZnQ6IDA7XG4gIG1hcmdpbi1yaWdodDogMDtcbn1cblxuLnB4LWdlc3Rpb24tbWVudSB7XG4gIHBhZGRpbmctbGVmdDogMC43NXJlbTtcbiAgcGFkZGluZy1yaWdodDogMC43NXJlbTtcbn1cblxuLyogRmlsdHJvczogZXRpcXVldGEgYXJyaWJhLCBjb250cm9sIGEgYW5jaG8gY29tcGxldG8gKGV2aXRhIHJlY29ydGVzIGVuIG3Ds3ZpbCkuICovXG4uZ2VzdGlvbi1maWx0cm9zIHtcbiAgb3ZlcmZsb3cteDogaGlkZGVuO1xufVxuXG4uZ2VzdGlvbi1maWx0cm8tY2FtcG8gLnRleHRQIHtcbiAgcGFkZGluZy1sZWZ0OiAwO1xufVxuXG4uZ2VzdGlvbi1maWx0cm8tZWRpdG9yIHtcbiAgd2lkdGg6IDEwMCU7XG4gIG1heC13aWR0aDogMTAwJTtcbn1cblxuLmdlc3Rpb24tZmlsdHJvLWVkaXRvci5kYXRlQiBkeC1kYXRlLWJveCxcbi5nZXN0aW9uLWZpbHRyby1lZGl0b3IuZGF0ZUIgZHgtbnVtYmVyLWJveCxcbi5nZXN0aW9uLWZpbHRyby1lZGl0b3IuZGF0ZUIgZHgtdGV4dC1ib3gge1xuICBtYXJnaW4tdG9wOiAwO1xuICBkaXNwbGF5OiBibG9jaztcbiAgd2lkdGg6IDEwMCU7XG4gIG1heC13aWR0aDogMTAwJTtcbn1cblxuOjpuZy1kZWVwIC5nZXN0aW9uLWZpbHRyby1lZGl0b3IgLmR4LXRleHRlZGl0b3Ige1xuICB3aWR0aDogMTAwJSAhaW1wb3J0YW50O1xuICBtYXgtd2lkdGg6IDEwMCU7XG59XG5cbi5nZXN0aW9uLWZpbHRyby1jZXJyYWRhcy1pbm5lciB7XG4gIG1pbi13aWR0aDogMDtcbn1cblxuLmdlc3Rpb24tZmlsdHJvLWNlcnJhZGFzLXRleHRvIHtcbiAgZmxleDogMSAxIDEycmVtO1xuICBtaW4td2lkdGg6IDA7XG4gIGxpbmUtaGVpZ2h0OiAxLjM1O1xuICB0ZXh0LWFsaWduOiBsZWZ0O1xufVxuXG5AbWVkaWEgKG1heC13aWR0aDogNzY3Ljk4cHgpIHtcbiAgLmdlc3Rpb24tZmlsdHJvLWFjY2lvbmVzIHtcbiAgICBkaXNwbGF5OiBmbGV4O1xuICAgIGZsZXgtZGlyZWN0aW9uOiBjb2x1bW47XG4gICAgYWxpZ24taXRlbXM6IHN0cmV0Y2g7XG4gICAgZ2FwOiAwLjVyZW07XG4gIH1cblxuICAuZ2VzdGlvbi1maWx0cm8tYWNjaW9uZXMgOjpuZy1kZWVwIC5keC1idXR0b24ge1xuICAgIHdpZHRoOiAxMDAlO1xuICAgIG1heC13aWR0aDogMTAwJTtcbiAgfVxuXG4gIC5nZXN0aW9uLWZpbHRyby1hY2Npb25lcyBkeC1idXR0b24gKyBkeC1idXR0b24ge1xuICAgIG1hcmdpbi1sZWZ0OiAwO1xuICB9XG59XG4ucmVtaVByby50aXR1bG9zIC5zZWxlY3Qge1xuICB0ZXh0LWFsaWduOiBjZW50ZXI7XG4gIGJhY2tncm91bmQtY29sb3I6IHdoaXRlO1xufVxuXG4uc2VsZWN0IHtcbiAgdGV4dC1hbGlnbjogY2VudGVyO1xuICBiYWNrZ3JvdW5kLWNvbG9yOiB3aGl0ZTtcbn1cblxuLnRpdHVsb3Mge1xuICB0ZXh0LWFsaWduOiBjZW50ZXI7XG4gIGZvbnQtd2VpZ2h0OiBib2xkO1xufVxuXG4vKiBNaXNtbyBjcml0ZXJpbyB2aXN1YWwgcXVlIGNhamEtbWVub3IgKHRleHRQLCBkYXRlQiwgY2VudHJhcikuICovXG4udGV4dFAge1xuICBmb250LXdlaWdodDogYm9sZDtcbiAgZm9udC1zaXplOiAxMXB0O1xufVxuXG4udGV4dFAyIHtcbiAgbWFyZ2luLXRvcDogMC4zZW07XG59XG5cbi5kYXRlQiBkeC1kYXRlLWJveCxcbi5kYXRlQiBkeC1udW1iZXItYm94LFxuLmRhdGVCIGR4LXRleHQtYm94IHtcbiAgbWFyZ2luLXRvcDogLTAuOGVtO1xufVxuXG4uY2VudHJhciB7XG4gIHRleHQtYWxpZ246IGNlbnRlcjtcbn1cblxuLmdlc3Rpb24tZW50cmVnYXMtY2FyZCB7XG4gIGJvcmRlci1yYWRpdXM6IDAuMjVyZW07XG59XG5cbi5nZXN0aW9uLWVudHJlZ2FzLWNhcmQgLmNhcmQtaGVhZGVyIHtcbiAgYmFja2dyb3VuZC1jb2xvcjogI2Y4ZjlmYTtcbn1cblxuLmNvbnMtbGFiZWwge1xuICBmb250LXNpemU6IGluaGVyaXQ7XG59XG5cbi5jb25zLXZhbG9yIHtcbiAgZm9udC1zaXplOiA0cmVtO1xuICBmb250LXdlaWdodDogYm9sZDtcbiAgbWFyZ2luLXRvcDogLTFyZW07XG4gIGxpbmUtaGVpZ2h0OiAxLjE7XG59XG5cbi5nZXN0aW9uLWVudHJlZ2FzLWFjY2lvbmVzIGR4LWJ1dHRvbiArIGR4LWJ1dHRvbiB7XG4gIG1hcmdpbi1sZWZ0OiAwLjVyZW07XG59XG5cbjo6bmctZGVlcCAuZ2VzdGlvbi1lbnRyZWdhcy1jYXJkIC5kYXRlQiAuZHgtdGV4dGVkaXRvci1pbnB1dCB7XG4gIHRleHQtYWxpZ246IGNlbnRlcjtcbn1cblxudGFibGUgdGQsXG50YWJsZSB0aCB7XG4gIHZlcnRpY2FsLWFsaWduOiBtaWRkbGU7XG59XG5cbi50cmF6YWJpbGlkYWQtcG9wdXAgaDYge1xuICBjb2xvcjogIzMzMztcbn1cblxuLnRyYXphYmlsaWRhZC1wb3B1cCAudy0yNSB7XG4gIHdpZHRoOiAyNSU7XG59XG5cbi5lbnRyZWdhLWNwLWlucHV0cyB7XG4gIGdhcDogNHB4O1xufVxuXG4vKiDigJTigJQgU01BUlQtRElTUEFUQ0ggKG3Ds3ZpbCk6IGFjb3JkZcOzbiBmYWN0dXJhIOKGkiDDrXRlbSDihpIgZm9ybXVsYXJpbyDigJTigJQgKi9cbi5zbWFydC1kaXNwYXRjaC1tb3ZpbCB7XG4gIG1hcmdpbi1ib3R0b206IDAuMjVyZW07XG59XG5cbi5zZC1sZXllbmRhIHtcbiAgZGlzcGxheTogZmxleDtcbiAgZmxleC13cmFwOiB3cmFwO1xuICBnYXA6IDAuNXJlbSAwLjg1cmVtO1xuICBhbGlnbi1pdGVtczogY2VudGVyO1xufVxuXG4uc2QtbGV5ZW5kYS1pdGVtIHtcbiAgZGlzcGxheTogaW5saW5lLWZsZXg7XG4gIGFsaWduLWl0ZW1zOiBjZW50ZXI7XG4gIGdhcDogMC4zNXJlbTtcbn1cblxuLnNkLXB1bnRvIHtcbiAgZGlzcGxheTogaW5saW5lLWJsb2NrO1xuICB3aWR0aDogMTBweDtcbiAgaGVpZ2h0OiAxMHB4O1xuICBib3JkZXItcmFkaXVzOiA1MCU7XG4gIGZsZXgtc2hyaW5rOiAwO1xufVxuXG4uc2QtZmFjdHVyYS1jYXJkIHtcbiAgYm9yZGVyOiAxcHggc29saWQgI2RlZTJlNjtcbiAgYm9yZGVyLXJhZGl1czogNnB4O1xuICBvdmVyZmxvdzogaGlkZGVuO1xuICBiYWNrZ3JvdW5kOiAjZmZmO1xufVxuXG4uc2QtZmFjdHVyYS1oZWFkZXIge1xuICB3aWR0aDogMTAwJTtcbiAgZGlzcGxheTogZmxleDtcbiAgYWxpZ24taXRlbXM6IGZsZXgtc3RhcnQ7XG4gIGdhcDogMC41cmVtO1xuICBwYWRkaW5nOiAwLjY1cmVtIDAuNzVyZW07XG4gIGJvcmRlcjogbm9uZTtcbiAgYmFja2dyb3VuZDogI2Y4ZjlmYTtcbiAgdGV4dC1hbGlnbjogbGVmdDtcbiAgY3Vyc29yOiBwb2ludGVyO1xufVxuXG4uc2QtZmFjdHVyYS1oZWFkZXI6Zm9jdXMge1xuICBvdXRsaW5lOiAycHggc29saWQgcmdiYSgwLCA5NywgMTY5LCAwLjM1KTtcbiAgb3V0bGluZS1vZmZzZXQ6IDFweDtcbn1cblxuLnNkLWZhY3R1cmEtdGV4dG8ge1xuICBmbGV4OiAxO1xuICBtaW4td2lkdGg6IDA7XG4gIGRpc3BsYXk6IGZsZXg7XG4gIGZsZXgtZGlyZWN0aW9uOiBjb2x1bW47XG4gIGdhcDogMC4xNXJlbTtcbn1cblxuLnNkLWZhY3R1cmEtZG9jIHtcbiAgZm9udC13ZWlnaHQ6IDcwMDtcbiAgZm9udC1zaXplOiAwLjk1cmVtO1xufVxuXG4uc2QtZmFjdHVyYS1jbGllbnRlIHtcbiAgZm9udC1zaXplOiAwLjg4cmVtO1xuICBsaW5lLWhlaWdodDogMS4yNTtcbiAgd29yZC1icmVhazogYnJlYWstd29yZDtcbn1cblxuLnNkLWZhY3R1cmEtbWV0YSB7XG4gIGZvbnQtc2l6ZTogMC43NXJlbTtcbiAgY29sb3I6ICM2Yzc1N2Q7XG59XG5cbi5zZC1jaGV2cm9uIHtcbiAgdHJhbnNpdGlvbjogdHJhbnNmb3JtIDAuMnMgZWFzZTtcbiAgYWxpZ24tc2VsZjogY2VudGVyO1xuICBjb2xvcjogIzZjNzU3ZDtcbiAgZmxleC1zaHJpbms6IDA7XG59XG5cbi5zZC1jaGV2cm9uLXVwIHtcbiAgdHJhbnNmb3JtOiByb3RhdGUoLTE4MGRlZyk7XG59XG5cbi5zZC1jaGV2cm9uLXNtIHtcbiAgZm9udC1zaXplOiAwLjcycmVtO1xufVxuXG4uc2QtZmFjdHVyYS1jdWVycG8ge1xuICBwYWRkaW5nOiAwLjVyZW0gMC42NXJlbSAwLjc1cmVtO1xuICBiYWNrZ3JvdW5kOiAjZmZmO1xuICBib3JkZXItdG9wOiAxcHggc29saWQgI2U5ZWNlZjtcbn1cblxuLnNkLWl0ZW0td3JhcCB7XG4gIGJvcmRlcjogMXB4IHNvbGlkICNlOWVjZWY7XG4gIGJvcmRlci1yYWRpdXM6IDZweDtcbiAgbWFyZ2luLWJvdHRvbTogMC40NXJlbTtcbiAgb3ZlcmZsb3c6IGhpZGRlbjtcbiAgYmFja2dyb3VuZDogI2ZhZmFmYTtcbn1cblxuLnNkLWl0ZW0tY2FiIHtcbiAgd2lkdGg6IDEwMCU7XG4gIGRpc3BsYXk6IGZsZXg7XG4gIGZsZXgtd3JhcDogd3JhcDtcbiAgYWxpZ24taXRlbXM6IGNlbnRlcjtcbiAgZ2FwOiAwLjM1cmVtIDAuNXJlbTtcbiAgcGFkZGluZzogMC41NXJlbSAwLjZyZW07XG4gIGJvcmRlcjogbm9uZTtcbiAgYmFja2dyb3VuZDogdHJhbnNwYXJlbnQ7XG4gIHRleHQtYWxpZ246IGxlZnQ7XG4gIGN1cnNvcjogcG9pbnRlcjtcbn1cblxuLnNkLWd1YXJkYWRvLW9rIHtcbiAgZm9udC1zaXplOiAxLjE1cmVtO1xuICBmbGV4LXNocmluazogMDtcbn1cblxuLnNkLWd1YXJkYXItbGluZWEtd3JhcCB7XG4gIGRpc3BsYXk6IGZsZXg7XG4gIGZsZXgtd3JhcDogd3JhcDtcbiAgYWxpZ24taXRlbXM6IGNlbnRlcjtcbn1cblxuLmdlc3Rpb24tbGluZWEtb2sge1xuICBkaXNwbGF5OiBpbmxpbmUtYmxvY2s7XG4gIHZlcnRpY2FsLWFsaWduOiBtaWRkbGU7XG4gIGZvbnQtc2l6ZTogMS4xcmVtO1xufVxuXG4uc2QtaXRlbS1jYWI6Zm9jdXMge1xuICBvdXRsaW5lOiAycHggc29saWQgcmdiYSgwLCA5NywgMTY5LCAwLjM1KTtcbiAgb3V0bGluZS1vZmZzZXQ6IDFweDtcbn1cblxuLnNkLWl0ZW0tbm9tYnJlIHtcbiAgZmxleDogMSAxIDEwMCU7XG4gIGZvbnQtd2VpZ2h0OiA2MDA7XG4gIGZvbnQtc2l6ZTogMC45cmVtO1xuICBsaW5lLWhlaWdodDogMS4zO1xuICB3b3JkLWJyZWFrOiBicmVhay13b3JkO1xufVxuXG4uc2QtaXRlbS1yZXN1bWVuIHtcbiAgZmxleDogMSAxIGF1dG87XG4gIG1pbi13aWR0aDogMDtcbn1cblxuLnNkLWl0ZW0tZGV0YWxsZSB7XG4gIHBhZGRpbmc6IDAuNjVyZW0gMC43NXJlbSAwLjg1cmVtO1xuICBiYWNrZ3JvdW5kOiAjZmZmO1xuICBib3JkZXItdG9wOiAxcHggZGFzaGVkICNkZWUyZTY7XG59XG5cbi5zZC1rdi1ncmlkIHtcbiAgZGlzcGxheTogZ3JpZDtcbiAgZ3JpZC10ZW1wbGF0ZS1jb2x1bW5zOiBhdXRvIDFmcjtcbiAgZ2FwOiAwLjI1cmVtIDAuNzVyZW07XG4gIG1hcmdpbi1ib3R0b206IDAuNzVyZW07XG59XG5cbi5zZC1jYW1wbyB7XG4gIG1hcmdpbi1ib3R0b206IDAuNjVyZW07XG59XG5cbi5zZC1jZXJyYXItcHJvY2VzbyA6Om5nLWRlZXAgLmR4LWJ1dHRvbiB7XG4gIHdpZHRoOiAxMDAlO1xufVxuXG4uc2QtY2FtcG8gOjpuZy1kZWVwIC5keC10ZXh0ZWRpdG9yIHtcbiAgd2lkdGg6IDEwMCUgIWltcG9ydGFudDtcbiAgbWF4LXdpZHRoOiAxMDAlO1xufVxuXG4vKiBDw7NkaWdvIGRlIGNvbG9yZXMgKHRleHRvIG1hdGVyaWFsICsgcHVudG8gZmFjdHVyYSkgKi9cbi5zZC1lc3QtdmVyZGUge1xuICBjb2xvcjogIzFlN2UzNCAhaW1wb3J0YW50O1xufVxuXG4uc2QtcHVudG8uc2QtZXN0LXZlcmRlIHtcbiAgYmFja2dyb3VuZC1jb2xvcjogIzI4YTc0NSAhaW1wb3J0YW50O1xufVxuXG4uc2QtZXN0LWF6dWwge1xuICBjb2xvcjogIzAwNDA4NSAhaW1wb3J0YW50O1xufVxuXG4uc2QtcHVudG8uc2QtZXN0LWF6dWwge1xuICBiYWNrZ3JvdW5kLWNvbG9yOiAjMDA3YmZmICFpbXBvcnRhbnQ7XG59XG5cbi5zZC1lc3Qtcm9qbyB7XG4gIGNvbG9yOiAjYzgyMzMzICFpbXBvcnRhbnQ7XG59XG5cbi5zZC1wdW50by5zZC1lc3Qtcm9qbyB7XG4gIGJhY2tncm91bmQtY29sb3I6ICNkYzM1NDUgIWltcG9ydGFudDtcbn1cblxuLnNkLWVzdC1hbWFyaWxsbyB7XG4gIGNvbG9yOiAjODU2NDA0ICFpbXBvcnRhbnQ7XG59XG5cbi5zZC1wdW50by5zZC1lc3QtYW1hcmlsbG8ge1xuICBiYWNrZ3JvdW5kLWNvbG9yOiAjZmZjMTA3ICFpbXBvcnRhbnQ7XG59XG5cbi5zZC1pdGVtLW5vbWJyZS5zZC1pdGVtLWFsZXJ0YSB7XG4gIGNvbG9yOiAjYjAwMDIwICFpbXBvcnRhbnQ7XG4gIGZvbnQtd2VpZ2h0OiA3MDA7XG59XG5cbi8qIExpc3RhZG8gZW50cmVnYXMgKG3Ds3ZpbCk6IHRhcmpldGFzIHBsYW5hcywgaW5mb3JtYXRpdmFzLCBzaW4gYWNvcmRlw7NuICovXG4ubGlzdGFkby1lbnRyZWdhcy1tb3ZpbCB7XG4gIG1hcmdpbi1ib3R0b206IDAuMjVyZW07XG59XG5cbi5saXN0YWRvLWVudHJlZ2EtbW92aWwtY2FyZCB7XG4gIGRpc3BsYXk6IGZsZXg7XG4gIGZsZXgtZGlyZWN0aW9uOiByb3c7XG4gIGFsaWduLWl0ZW1zOiBzdHJldGNoO1xuICB3aWR0aDogMTAwJTtcbiAgbWFyZ2luLWJvdHRvbTogMC42NXJlbTtcbiAgcGFkZGluZzogMDtcbiAgYm9yZGVyOiAxcHggc29saWQgI2RlZTJlNjtcbiAgYm9yZGVyLXJhZGl1czogNnB4O1xuICBiYWNrZ3JvdW5kOiAjZmZmO1xuICB0ZXh0LWFsaWduOiBsZWZ0O1xuICBvdmVyZmxvdzogaGlkZGVuO1xuICB0cmFuc2l0aW9uOiBib3gtc2hhZG93IDAuMTVzIGVhc2UsIGJvcmRlci1jb2xvciAwLjE1cyBlYXNlO1xufVxuXG4ubGlzdGFkby1lbnRyZWdhLW1vdmlsLW1haW4ge1xuICBmbGV4OiAxO1xuICBtaW4td2lkdGg6IDA7XG4gIGRpc3BsYXk6IGJsb2NrO1xuICBtYXJnaW46IDA7XG4gIHBhZGRpbmc6IDA7XG4gIGJvcmRlcjogbm9uZTtcbiAgYmFja2dyb3VuZDogdHJhbnNwYXJlbnQ7XG4gIHRleHQtYWxpZ246IGxlZnQ7XG4gIGN1cnNvcjogcG9pbnRlcjtcbn1cblxuLmxpc3RhZG8tZW50cmVnYS1tb3ZpbC1hY2Npb25lcyB7XG4gIGZsZXg6IDAgMCBhdXRvO1xuICBkaXNwbGF5OiBmbGV4O1xuICBhbGlnbi1pdGVtczogY2VudGVyO1xuICBqdXN0aWZ5LWNvbnRlbnQ6IGNlbnRlcjtcbiAgYm9yZGVyLWxlZnQ6IDFweCBzb2xpZCAjZTllY2VmO1xuICBiYWNrZ3JvdW5kOiAjZmFmYmZjO1xuICBwYWRkaW5nOiAwIDAuMjVyZW07XG59XG5cbi5nZS1idG4tZGV2b2x1Y2lvbi1tb3ZpbCB7XG4gIGZvbnQtc2l6ZTogMS4yNXJlbTtcbiAgbGluZS1oZWlnaHQ6IDE7XG4gIHBhZGRpbmc6IDAuNXJlbSAwLjM1cmVtICFpbXBvcnRhbnQ7XG59XG5cbi5nZS1idG4tZGV2b2x1Y2lvbi1ncmlkIHtcbiAgZm9udC1zaXplOiAxLjFyZW07XG4gIGxpbmUtaGVpZ2h0OiAxO1xuICBtaW4td2lkdGg6IDJyZW07XG59XG5cbi5zZC1kZXZvbHVjaW9uLW1vdmlsLWJ0biBpIHtcbiAgbWFyZ2luLXJpZ2h0OiAwLjE1cmVtO1xufVxuXG4ubGlzdGFkby1lbnRyZWdhLW1vdmlsLWNhcmQ6aG92ZXIsXG4ubGlzdGFkby1lbnRyZWdhLW1vdmlsLWNhcmQ6Zm9jdXMtd2l0aGluIHtcbiAgYm9yZGVyLWNvbG9yOiByZ2JhKDAsIDk3LCAxNjksIDAuNDUpO1xuICBib3gtc2hhZG93OiAwIDJweCA4cHggcmdiYSgwLCAwLCAwLCAwLjA2KTtcbiAgb3V0bGluZTogbm9uZTtcbn1cblxuLmxpc3RhZG8tZW50cmVnYS1tb3ZpbC1tYWluOmZvY3VzLXZpc2libGUge1xuICBvdXRsaW5lOiAycHggc29saWQgcmdiYSgwLCA5NywgMTY5LCAwLjM1KTtcbiAgb3V0bGluZS1vZmZzZXQ6IDJweDtcbn1cblxuLmxpc3RhZG8tZW50cmVnYS1tb3ZpbC1jYWIge1xuICBkaXNwbGF5OiBmbGV4O1xuICBhbGlnbi1pdGVtczogZmxleC1zdGFydDtcbiAgZ2FwOiAwLjVyZW07XG4gIHBhZGRpbmc6IDAuNjVyZW0gMC43NXJlbTtcbiAgYmFja2dyb3VuZDogI2Y4ZjlmYTtcbiAgYm9yZGVyLWJvdHRvbTogMXB4IHNvbGlkICNlOWVjZWY7XG59XG5cbi5saXN0YWRvLWVudHJlZ2EtbW92aWwtY2FiLXRleHRvIHtcbiAgZmxleDogMTtcbiAgbWluLXdpZHRoOiAwO1xuICBkaXNwbGF5OiBmbGV4O1xuICBmbGV4LWRpcmVjdGlvbjogY29sdW1uO1xuICBnYXA6IDAuMnJlbTtcbn1cblxuLmxpc3RhZG8tZW50cmVnYS1tb3ZpbC1kb2Mge1xuICBmb250LXdlaWdodDogNzAwO1xuICBmb250LXNpemU6IDAuOTVyZW07XG4gIHdvcmQtYnJlYWs6IGJyZWFrLXdvcmQ7XG59XG5cbi5saXN0YWRvLWVudHJlZ2EtbW92aWwtc3ViIHtcbiAgZm9udC1zaXplOiAwLjc4cmVtO1xuICBjb2xvcjogIzZjNzU3ZDtcbiAgbGluZS1oZWlnaHQ6IDEuMjU7XG59XG5cbi5saXN0YWRvLWVudHJlZ2EtbW92aWwtY3VlcnBvIHtcbiAgcGFkZGluZzogMC42NXJlbSAwLjc1cmVtIDAuNzVyZW07XG59XG5cbi5saXN0YWRvLWVudHJlZ2EtbW92aWwta3Yge1xuICBkaXNwbGF5OiBncmlkO1xuICBncmlkLXRlbXBsYXRlLWNvbHVtbnM6IG1pbm1heCgwLCAzOCUpIDFmcjtcbiAgZ2FwOiAwLjM1cmVtIDAuNjVyZW07XG4gIGZvbnQtc2l6ZTogMC44OHJlbTtcbiAgYWxpZ24taXRlbXM6IHN0YXJ0O1xufVxuXG4ubGlzdGFkby1lbnRyZWdhLW1vdmlsLWxibCB7XG4gIGNvbG9yOiAjNmM3NTdkO1xuICBmb250LXNpemU6IDAuOHJlbTtcbn1cblxuLmxpc3RhZG8tZW50cmVnYS1tb3ZpbC12YWwge1xuICB3b3JkLWJyZWFrOiBicmVhay13b3JkO1xuICBtaW4td2lkdGg6IDA7XG59XG5cbkBtZWRpYSAobWF4LXdpZHRoOiA3NjcuOThweCkge1xuICAvKiBQcm9kdWN0b3MgcGVuZGllbnRlczogc2Nyb2xsIGhvcml6b250YWwgZW4gcGFudGFsbGFzIGVzdHJlY2hhcyAobcOzdmlsKS4gKi9cbiAgLnByb2R1Y3Rvcy1wZW5kaWVudGVzLWdyaWQtc2Nyb2xsIHtcbiAgICBvdmVyZmxvdy14OiBhdXRvO1xuICAgIC13ZWJraXQtb3ZlcmZsb3ctc2Nyb2xsaW5nOiB0b3VjaDtcbiAgICBvdmVyc2Nyb2xsLWJlaGF2aW9yLXg6IGNvbnRhaW47XG4gICAgcGFkZGluZy1ib3R0b206IDAuMzVyZW07XG4gIH1cblxuICAucHJvZHVjdG9zLXBlbmRpZW50ZXMtZ3JpZC1zY3JvbGwgOjpuZy1kZWVwIC5keC1kYXRhZ3JpZCB7XG4gICAgbWluLXdpZHRoOiA1MnJlbTtcbiAgfVxuXG4gIC5yZW1pUHJvIHtcbiAgICBwYWRkaW5nLWxlZnQ6IDAuNzVyZW07XG4gICAgcGFkZGluZy1yaWdodDogMC43NXJlbTtcbiAgICBwYWRkaW5nLXRvcDogMXJlbTtcbiAgfVxuXG4gIC5nZXN0aW9uLWVudHJlZ2FzLWNhcmQgLmNhcmQtYm9keSB7XG4gICAgcGFkZGluZy1sZWZ0OiAwLjc1cmVtO1xuICAgIHBhZGRpbmctcmlnaHQ6IDAuNzVyZW07XG4gIH1cblxuICAuZ2VzdGlvbi1maWx0cm9zIHtcbiAgICBwYWRkaW5nLWxlZnQ6IDA7XG4gICAgcGFkZGluZy1yaWdodDogMDtcbiAgfVxufVxuLyogVHJhemFiaWxpZGFkOiB0YWJsYSBjb24gc2Nyb2xsIHTDoWN0aWwgeSBib3TDs24gZGUgY29ycmVjY2nDs24gYWNjZXNpYmxlIGVuIG3Ds3ZpbCAqL1xuLnRyYXotaGlzdG9yaWFsLXNjcm9sbCB7XG4gIC13ZWJraXQtb3ZlcmZsb3ctc2Nyb2xsaW5nOiB0b3VjaDtcbiAgb3ZlcnNjcm9sbC1iZWhhdmlvci14OiBjb250YWluO1xufVxuXG4udHJhei1oaXN0b3JpYWwtdGFibGUge1xuICBmb250LXNpemU6IDAuODVyZW07XG59XG5cbi50cmF6LWJ0bi1lZGl0IHtcbiAgbWluLWhlaWdodDogNDRweDtcbiAgbWluLXdpZHRoOiA0NHB4O1xuICB0b3VjaC1hY3Rpb246IG1hbmlwdWxhdGlvbjtcbiAgbGluZS1oZWlnaHQ6IDEuMjtcbn1cblxuLnRyYXotbm90YXMtY2VsZGEge1xuICBtYXgtd2lkdGg6IDE0cmVtO1xuICB3b3JkLWJyZWFrOiBicmVhay13b3JkO1xufVxuXG4udHJhei1lZGl0YXItYWNjaW9uZXMgOjpuZy1kZWVwIC5keC1idXR0b24ge1xuICBtaW4taGVpZ2h0OiA0NHB4O1xufVxuXG4vKiBQb3B1cCBcIkNvcnJlZ2lyIG1vdmltaWVudG86IHTDrXR1bG8gbXVsdGlsw61uZWEgeSBjb250ZW5pZG8gc2luIG92ZXJmbG93ICovXG46Om5nLWRlZXAgLnRyYXotcG9wdXAtY29ycmVnaXItb3ZlcmxheSB7XG4gIGJveC1zaXppbmc6IGJvcmRlci1ib3g7XG59XG46Om5nLWRlZXAgLnRyYXotcG9wdXAtY29ycmVnaXItb3ZlcmxheSAuZHgtcG9wdXAtY29udGVudCB7XG4gIG92ZXJmbG93LXg6IGhpZGRlbjtcbiAgbWF4LXdpZHRoOiAxMDAlO1xuICBib3gtc2l6aW5nOiBib3JkZXItYm94O1xufVxuOjpuZy1kZWVwIC50cmF6LXBvcHVwLWNvcnJlZ2lyLW92ZXJsYXkgLmR4LXBvcHVwLXRpdGxlIHtcbiAgd2hpdGUtc3BhY2U6IG5vcm1hbCAhaW1wb3J0YW50O1xuICB3b3JkLWJyZWFrOiBicmVhay13b3JkO1xuICBvdmVyZmxvdy13cmFwOiBhbnl3aGVyZTtcbiAgbGluZS1oZWlnaHQ6IDEuMztcbiAgcGFkZGluZy1yaWdodDogMi43NXJlbTtcbiAgZm9udC1zaXplOiAwLjk1cmVtO1xuICBtYXgtd2lkdGg6IDEwMCU7XG59XG5cbkBtZWRpYSAobWF4LXdpZHRoOiA3NjcuOThweCkge1xuICA6Om5nLWRlZXAgLnRyYXotcG9wdXAtY29ycmVnaXItb3ZlcmxheSB7XG4gICAgbWF4LXdpZHRoOiAxMDB2dyAhaW1wb3J0YW50O1xuICAgIHdpZHRoOiBjYWxjKDEwMHZ3IC0gZW52KHNhZmUtYXJlYS1pbnNldC1sZWZ0KSAtIGVudihzYWZlLWFyZWEtaW5zZXQtcmlnaHQpKSAhaW1wb3J0YW50O1xuICB9XG59XG4udHJhei1wb3B1cC1lZGl0YXItYm9keSB7XG4gIHdpZHRoOiAxMDAlO1xuICBtYXgtd2lkdGg6IDEwMCU7XG4gIG1pbi13aWR0aDogMDtcbiAgYm94LXNpemluZzogYm9yZGVyLWJveDtcbiAgb3ZlcmZsb3cteDogaGlkZGVuO1xuICBwYWRkaW5nOiAwLjc1cmVtIDAuNzVyZW0gbWF4KDAuNzVyZW0sIGVudihzYWZlLWFyZWEtaW5zZXQtYm90dG9tKSk7XG59XG5AbWVkaWEgKG1pbi13aWR0aDogNTc2cHgpIHtcbiAgLnRyYXotcG9wdXAtZWRpdGFyLWJvZHkge1xuICAgIHBhZGRpbmc6IDFyZW0gMS4yNXJlbSAxcmVtO1xuICB9XG59XG5cbi50cmF6LXBvcHVwLWVkaXRhci1ib2R5IDo6bmctZGVlcCAuZHgtdGV4dGVkaXRvcixcbi50cmF6LXBvcHVwLWVkaXRhci1ib2R5IDo6bmctZGVlcCAuZHgtZHJvcGRvd25lZGl0b3IsXG4udHJhei1wb3B1cC1lZGl0YXItYm9keSA6Om5nLWRlZXAgLmR4LW51bWJlcmJveCB7XG4gIHdpZHRoOiAxMDAlICFpbXBvcnRhbnQ7XG4gIG1heC13aWR0aDogMTAwJSAhaW1wb3J0YW50O1xufVxuXG4udHJhei1wb3B1cC1lZGl0YXItYm9keSA6Om5nLWRlZXAgLmR4LXRleHRlZGl0b3IuZHgtZWRpdG9yLW91dGxpbmVkLFxuLnRyYXotcG9wdXAtZWRpdGFyLWJvZHkgOjpuZy1kZWVwIC5keC1kcm9wZG93bmVkaXRvci5keC1lZGl0b3Itb3V0bGluZWQge1xuICBkaXNwbGF5OiBibG9jaztcbn1cblxuLnRyYXotZWRpdGFyLWFjY2lvbmVzIHtcbiAgd2lkdGg6IDEwMCU7XG4gIG1heC13aWR0aDogMTAwJTtcbiAgcGFkZGluZy10b3A6IDAuMjVyZW07XG59XG5cbkBtZWRpYSAobWF4LXdpZHRoOiA1NzUuOThweCkge1xuICAudHJhei1lZGl0YXItYWNjaW9uZXMge1xuICAgIGZsZXgtZGlyZWN0aW9uOiBjb2x1bW4gIWltcG9ydGFudDtcbiAgICBhbGlnbi1pdGVtczogc3RyZXRjaCAhaW1wb3J0YW50O1xuICB9XG5cbiAgLnRyYXotZWRpdGFyLWFjY2lvbmVzIDo6bmctZGVlcCAuZHgtYnV0dG9uIHtcbiAgICB3aWR0aDogMTAwJTtcbiAgICBtYXgtd2lkdGg6IDEwMCU7XG4gIH1cbn0iLCIvKiBGaWxhIGRlbCBjb21ibyAobWlzbW8gY3JpdGVyaW8gcXVlIGRldm9sdWNpb25lcykuICovXHJcbi5yZW1pUHJvIHtcclxuICBwYWRkaW5nOiAxLjVlbSAyZW0gMDtcclxuICBtYXJnaW4tdG9wOiAwLjVlbTtcclxuICB0ZXh0LWFsaWduOiBjZW50ZXI7XHJcbn1cclxuXHJcbi5nZXN0aW9uLW1lbnUtc3VwZXJpb3Ige1xyXG4gIG1hcmdpbi1sZWZ0OiAwO1xyXG4gIG1hcmdpbi1yaWdodDogMDtcclxufVxyXG5cclxuLnB4LWdlc3Rpb24tbWVudSB7XHJcbiAgcGFkZGluZy1sZWZ0OiAwLjc1cmVtO1xyXG4gIHBhZGRpbmctcmlnaHQ6IDAuNzVyZW07XHJcbn1cclxuXHJcbi8qIEZpbHRyb3M6IGV0aXF1ZXRhIGFycmliYSwgY29udHJvbCBhIGFuY2hvIGNvbXBsZXRvIChldml0YSByZWNvcnRlcyBlbiBtw7N2aWwpLiAqL1xyXG4uZ2VzdGlvbi1maWx0cm9zIHtcclxuICBvdmVyZmxvdy14OiBoaWRkZW47XHJcbn1cclxuXHJcbi5nZXN0aW9uLWZpbHRyby1jYW1wbyAudGV4dFAge1xyXG4gIHBhZGRpbmctbGVmdDogMDtcclxufVxyXG5cclxuLmdlc3Rpb24tZmlsdHJvLWVkaXRvciB7XHJcbiAgd2lkdGg6IDEwMCU7XHJcbiAgbWF4LXdpZHRoOiAxMDAlO1xyXG59XHJcblxyXG4uZ2VzdGlvbi1maWx0cm8tZWRpdG9yLmRhdGVCIGR4LWRhdGUtYm94LFxyXG4uZ2VzdGlvbi1maWx0cm8tZWRpdG9yLmRhdGVCIGR4LW51bWJlci1ib3gsXHJcbi5nZXN0aW9uLWZpbHRyby1lZGl0b3IuZGF0ZUIgZHgtdGV4dC1ib3gge1xyXG4gIG1hcmdpbi10b3A6IDA7XHJcbiAgZGlzcGxheTogYmxvY2s7XHJcbiAgd2lkdGg6IDEwMCU7XHJcbiAgbWF4LXdpZHRoOiAxMDAlO1xyXG59XHJcblxyXG46Om5nLWRlZXAgLmdlc3Rpb24tZmlsdHJvLWVkaXRvciAuZHgtdGV4dGVkaXRvciB7XHJcbiAgd2lkdGg6IDEwMCUgIWltcG9ydGFudDtcclxuICBtYXgtd2lkdGg6IDEwMCU7XHJcbn1cclxuXHJcbi5nZXN0aW9uLWZpbHRyby1jZXJyYWRhcy1pbm5lciB7XHJcbiAgbWluLXdpZHRoOiAwO1xyXG59XHJcblxyXG4uZ2VzdGlvbi1maWx0cm8tY2VycmFkYXMtdGV4dG8ge1xyXG4gIGZsZXg6IDEgMSAxMnJlbTtcclxuICBtaW4td2lkdGg6IDA7XHJcbiAgbGluZS1oZWlnaHQ6IDEuMzU7XHJcbiAgdGV4dC1hbGlnbjogbGVmdDtcclxufVxyXG5cclxuQG1lZGlhIChtYXgtd2lkdGg6IDc2Ny45OHB4KSB7XHJcbiAgLmdlc3Rpb24tZmlsdHJvLWFjY2lvbmVzIHtcclxuICAgIGRpc3BsYXk6IGZsZXg7XHJcbiAgICBmbGV4LWRpcmVjdGlvbjogY29sdW1uO1xyXG4gICAgYWxpZ24taXRlbXM6IHN0cmV0Y2g7XHJcbiAgICBnYXA6IDAuNXJlbTtcclxuICB9XHJcblxyXG4gIC5nZXN0aW9uLWZpbHRyby1hY2Npb25lcyA6Om5nLWRlZXAgLmR4LWJ1dHRvbiB7XHJcbiAgICB3aWR0aDogMTAwJTtcclxuICAgIG1heC13aWR0aDogMTAwJTtcclxuICB9XHJcblxyXG4gIC5nZXN0aW9uLWZpbHRyby1hY2Npb25lcyBkeC1idXR0b24gKyBkeC1idXR0b24ge1xyXG4gICAgbWFyZ2luLWxlZnQ6IDA7XHJcbiAgfVxyXG59XHJcblxyXG4ucmVtaVByby50aXR1bG9zIC5zZWxlY3Qge1xyXG4gIHRleHQtYWxpZ246IGNlbnRlcjtcclxuICBiYWNrZ3JvdW5kLWNvbG9yOiB3aGl0ZTtcclxufVxyXG5cclxuLnNlbGVjdHtcclxuICB0ZXh0LWFsaWduOiBjZW50ZXI7XHJcbiAgYmFja2dyb3VuZC1jb2xvcjogd2hpdGU7XHJcbn1cclxuXHJcbi50aXR1bG9ze1xyXG4gIHRleHQtYWxpZ246IGNlbnRlcjtcclxuICBmb250LXdlaWdodDogYm9sZDtcclxufVxyXG5cclxuLyogTWlzbW8gY3JpdGVyaW8gdmlzdWFsIHF1ZSBjYWphLW1lbm9yICh0ZXh0UCwgZGF0ZUIsIGNlbnRyYXIpLiAqL1xyXG4udGV4dFAge1xyXG4gIGZvbnQtd2VpZ2h0OiBib2xkO1xyXG4gIGZvbnQtc2l6ZTogMTFwdDtcclxufVxyXG5cclxuLnRleHRQMiB7XHJcbiAgbWFyZ2luLXRvcDogMC4zZW07XHJcbn1cclxuXHJcbi5kYXRlQiBkeC1kYXRlLWJveCxcclxuLmRhdGVCIGR4LW51bWJlci1ib3gsXHJcbi5kYXRlQiBkeC10ZXh0LWJveCB7XHJcbiAgbWFyZ2luLXRvcDogLTAuOGVtO1xyXG59XHJcblxyXG4uY2VudHJhciB7XHJcbiAgdGV4dC1hbGlnbjogY2VudGVyO1xyXG59XHJcblxyXG4uZ2VzdGlvbi1lbnRyZWdhcy1jYXJkIHtcclxuICBib3JkZXItcmFkaXVzOiAwLjI1cmVtO1xyXG59XHJcblxyXG4uZ2VzdGlvbi1lbnRyZWdhcy1jYXJkIC5jYXJkLWhlYWRlciB7XHJcbiAgYmFja2dyb3VuZC1jb2xvcjogI2Y4ZjlmYTtcclxufVxyXG5cclxuLmNvbnMtbGFiZWwge1xyXG4gIGZvbnQtc2l6ZTogaW5oZXJpdDtcclxufVxyXG5cclxuLmNvbnMtdmFsb3Ige1xyXG4gIGZvbnQtc2l6ZTogNHJlbTtcclxuICBmb250LXdlaWdodDogYm9sZDtcclxuICBtYXJnaW4tdG9wOiAtMXJlbTtcclxuICBsaW5lLWhlaWdodDogMS4xO1xyXG59XHJcblxyXG4uZ2VzdGlvbi1lbnRyZWdhcy1hY2Npb25lcyBkeC1idXR0b24gKyBkeC1idXR0b24ge1xyXG4gIG1hcmdpbi1sZWZ0OiAwLjVyZW07XHJcbn1cclxuXHJcbjo6bmctZGVlcCAuZ2VzdGlvbi1lbnRyZWdhcy1jYXJkIC5kYXRlQiAuZHgtdGV4dGVkaXRvci1pbnB1dCB7XHJcbiAgdGV4dC1hbGlnbjogY2VudGVyO1xyXG59XHJcblxyXG50YWJsZSB0ZCxcclxudGFibGUgdGgge1xyXG4gIHZlcnRpY2FsLWFsaWduOiBtaWRkbGU7XHJcbn1cclxuXHJcbi50cmF6YWJpbGlkYWQtcG9wdXAgaDYge1xyXG4gIGNvbG9yOiAjMzMzO1xyXG59XHJcblxyXG4udHJhemFiaWxpZGFkLXBvcHVwIC53LTI1IHtcclxuICB3aWR0aDogMjUlO1xyXG59XHJcblxyXG4uZW50cmVnYS1jcC1pbnB1dHMge1xyXG4gIGdhcDogNHB4O1xyXG59XHJcblxyXG4vKiDigJTigJQgU01BUlQtRElTUEFUQ0ggKG3Ds3ZpbCk6IGFjb3JkZcOzbiBmYWN0dXJhIOKGkiDDrXRlbSDihpIgZm9ybXVsYXJpbyDigJTigJQgKi9cclxuLnNtYXJ0LWRpc3BhdGNoLW1vdmlsIHtcclxuICBtYXJnaW4tYm90dG9tOiAwLjI1cmVtO1xyXG59XHJcblxyXG4uc2QtbGV5ZW5kYSB7XHJcbiAgZGlzcGxheTogZmxleDtcclxuICBmbGV4LXdyYXA6IHdyYXA7XHJcbiAgZ2FwOiAwLjVyZW0gICAgICAgMC44NXJlbTtcclxuICBhbGlnbi1pdGVtczogY2VudGVyO1xyXG59XHJcblxyXG4uc2QtbGV5ZW5kYS1pdGVtIHtcclxuICBkaXNwbGF5OiBpbmxpbmUtZmxleDtcclxuICBhbGlnbi1pdGVtczogY2VudGVyO1xyXG4gIGdhcDogMC4zNXJlbTtcclxufVxyXG5cclxuLnNkLXB1bnRvIHtcclxuICBkaXNwbGF5OiBpbmxpbmUtYmxvY2s7XHJcbiAgd2lkdGg6IDEwcHg7XHJcbiAgaGVpZ2h0OiAxMHB4O1xyXG4gIGJvcmRlci1yYWRpdXM6IDUwJTtcclxuICBmbGV4LXNocmluazogMDtcclxufVxyXG5cclxuLnNkLWZhY3R1cmEtY2FyZCB7XHJcbiAgYm9yZGVyOiAxcHggc29saWQgI2RlZTJlNjtcclxuICBib3JkZXItcmFkaXVzOiA2cHg7XHJcbiAgb3ZlcmZsb3c6IGhpZGRlbjtcclxuICBiYWNrZ3JvdW5kOiAjZmZmO1xyXG59XHJcblxyXG4uc2QtZmFjdHVyYS1oZWFkZXIge1xyXG4gIHdpZHRoOiAxMDAlO1xyXG4gIGRpc3BsYXk6IGZsZXg7XHJcbiAgYWxpZ24taXRlbXM6IGZsZXgtc3RhcnQ7XHJcbiAgZ2FwOiAwLjVyZW07XHJcbiAgcGFkZGluZzogMC42NXJlbSAwLjc1cmVtO1xyXG4gIGJvcmRlcjogbm9uZTtcclxuICBiYWNrZ3JvdW5kOiAjZjhmOWZhO1xyXG4gIHRleHQtYWxpZ246IGxlZnQ7XHJcbiAgY3Vyc29yOiBwb2ludGVyO1xyXG59XHJcblxyXG4uc2QtZmFjdHVyYS1oZWFkZXI6Zm9jdXMge1xyXG4gIG91dGxpbmU6IDJweCBzb2xpZCByZ2JhKDAsIDk3LCAxNjksIDAuMzUpO1xyXG4gIG91dGxpbmUtb2Zmc2V0OiAxcHg7XHJcbn1cclxuXHJcbi5zZC1mYWN0dXJhLXRleHRvIHtcclxuICBmbGV4OiAxO1xyXG4gIG1pbi13aWR0aDogMDtcclxuICBkaXNwbGF5OiBmbGV4O1xyXG4gIGZsZXgtZGlyZWN0aW9uOiBjb2x1bW47XHJcbiAgZ2FwOiAwLjE1cmVtO1xyXG59XHJcblxyXG4uc2QtZmFjdHVyYS1kb2Mge1xyXG4gIGZvbnQtd2VpZ2h0OiA3MDA7XHJcbiAgZm9udC1zaXplOiAwLjk1cmVtO1xyXG59XHJcblxyXG4uc2QtZmFjdHVyYS1jbGllbnRlIHtcclxuICBmb250LXNpemU6IDAuODhyZW07XHJcbiAgbGluZS1oZWlnaHQ6IDEuMjU7XHJcbiAgd29yZC1icmVhazogYnJlYWstd29yZDtcclxufVxyXG5cclxuLnNkLWZhY3R1cmEtbWV0YSB7XHJcbiAgZm9udC1zaXplOiAwLjc1cmVtO1xyXG4gIGNvbG9yOiAjNmM3NTdkO1xyXG59XHJcblxyXG4uc2QtY2hldnJvbiB7XHJcbiAgdHJhbnNpdGlvbjogdHJhbnNmb3JtIDAuMnMgZWFzZTtcclxuICBhbGlnbi1zZWxmOiBjZW50ZXI7XHJcbiAgY29sb3I6ICM2Yzc1N2Q7XHJcbiAgZmxleC1zaHJpbms6IDA7XHJcbn1cclxuXHJcbi5zZC1jaGV2cm9uLXVwIHtcclxuICB0cmFuc2Zvcm06IHJvdGF0ZSgtMTgwZGVnKTtcclxufVxyXG5cclxuLnNkLWNoZXZyb24tc20ge1xyXG4gIGZvbnQtc2l6ZTogMC43MnJlbTtcclxufVxyXG5cclxuLnNkLWZhY3R1cmEtY3VlcnBvIHtcclxuICBwYWRkaW5nOiAwLjVyZW0gMC42NXJlbSAwLjc1cmVtO1xyXG4gIGJhY2tncm91bmQ6ICNmZmY7XHJcbiAgYm9yZGVyLXRvcDogMXB4IHNvbGlkICNlOWVjZWY7XHJcbn1cclxuXHJcbi5zZC1pdGVtLXdyYXAge1xyXG4gIGJvcmRlcjogMXB4IHNvbGlkICNlOWVjZWY7XHJcbiAgYm9yZGVyLXJhZGl1czogNnB4O1xyXG4gIG1hcmdpbi1ib3R0b206IDAuNDVyZW07XHJcbiAgb3ZlcmZsb3c6IGhpZGRlbjtcclxuICBiYWNrZ3JvdW5kOiAjZmFmYWZhO1xyXG59XHJcblxyXG4uc2QtaXRlbS1jYWIge1xyXG4gIHdpZHRoOiAxMDAlO1xyXG4gIGRpc3BsYXk6IGZsZXg7XHJcbiAgZmxleC13cmFwOiB3cmFwO1xyXG4gIGFsaWduLWl0ZW1zOiBjZW50ZXI7XHJcbiAgZ2FwOiAwLjM1cmVtIDAuNXJlbTtcclxuICBwYWRkaW5nOiAwLjU1cmVtIDAuNnJlbTtcclxuICBib3JkZXI6IG5vbmU7XHJcbiAgYmFja2dyb3VuZDogdHJhbnNwYXJlbnQ7XHJcbiAgdGV4dC1hbGlnbjogbGVmdDtcclxuICBjdXJzb3I6IHBvaW50ZXI7XHJcbn1cclxuXHJcbi5zZC1ndWFyZGFkby1vayB7XHJcbiAgZm9udC1zaXplOiAxLjE1cmVtO1xyXG4gIGZsZXgtc2hyaW5rOiAwO1xyXG59XHJcblxyXG4uc2QtZ3VhcmRhci1saW5lYS13cmFwIHtcclxuICBkaXNwbGF5OiBmbGV4O1xyXG4gIGZsZXgtd3JhcDogd3JhcDtcclxuICBhbGlnbi1pdGVtczogY2VudGVyO1xyXG59XHJcblxyXG4uZ2VzdGlvbi1saW5lYS1vayB7XHJcbiAgZGlzcGxheTogaW5saW5lLWJsb2NrO1xyXG4gIHZlcnRpY2FsLWFsaWduOiBtaWRkbGU7XHJcbiAgZm9udC1zaXplOiAxLjFyZW07XHJcbn1cclxuXHJcbi5zZC1pdGVtLWNhYjpmb2N1cyB7XHJcbiAgb3V0bGluZTogMnB4IHNvbGlkIHJnYmEoMCwgOTcsIDE2OSwgMC4zNSk7XHJcbiAgb3V0bGluZS1vZmZzZXQ6IDFweDtcclxufVxyXG5cclxuLnNkLWl0ZW0tbm9tYnJlIHtcclxuICBmbGV4OiAxIDEgMTAwJTtcclxuICBmb250LXdlaWdodDogNjAwO1xyXG4gIGZvbnQtc2l6ZTogMC45cmVtO1xyXG4gIGxpbmUtaGVpZ2h0OiAxLjM7XHJcbiAgd29yZC1icmVhazogYnJlYWstd29yZDtcclxufVxyXG5cclxuLnNkLWl0ZW0tcmVzdW1lbiB7XHJcbiAgZmxleDogMSAxIGF1dG87XHJcbiAgbWluLXdpZHRoOiAwO1xyXG59XHJcblxyXG4uc2QtaXRlbS1kZXRhbGxlIHtcclxuICBwYWRkaW5nOiAwLjY1cmVtIDAuNzVyZW0gMC44NXJlbTtcclxuICBiYWNrZ3JvdW5kOiAjZmZmO1xyXG4gIGJvcmRlci10b3A6IDFweCBkYXNoZWQgI2RlZTJlNjtcclxufVxyXG5cclxuLnNkLWt2LWdyaWQge1xyXG4gIGRpc3BsYXk6IGdyaWQ7XHJcbiAgZ3JpZC10ZW1wbGF0ZS1jb2x1bW5zOiBhdXRvIDFmcjtcclxuICBnYXA6IDAuMjVyZW0gMC43NXJlbTtcclxuICBtYXJnaW4tYm90dG9tOiAwLjc1cmVtO1xyXG59XHJcblxyXG4uc2QtY2FtcG8ge1xyXG4gIG1hcmdpbi1ib3R0b206IDAuNjVyZW07XHJcbn1cclxuXHJcbi5zZC1jZXJyYXItcHJvY2VzbyA6Om5nLWRlZXAgLmR4LWJ1dHRvbiB7XHJcbiAgd2lkdGg6IDEwMCU7XHJcbn1cclxuXHJcbi5zZC1jYW1wbyA6Om5nLWRlZXAgLmR4LXRleHRlZGl0b3Ige1xyXG4gIHdpZHRoOiAxMDAlICFpbXBvcnRhbnQ7XHJcbiAgbWF4LXdpZHRoOiAxMDAlO1xyXG59XHJcblxyXG4vKiBDw7NkaWdvIGRlIGNvbG9yZXMgKHRleHRvIG1hdGVyaWFsICsgcHVudG8gZmFjdHVyYSkgKi9cclxuLnNkLWVzdC12ZXJkZSB7XHJcbiAgY29sb3I6ICMxZTdlMzQgIWltcG9ydGFudDtcclxufVxyXG5cclxuLnNkLXB1bnRvLnNkLWVzdC12ZXJkZSB7XHJcbiAgYmFja2dyb3VuZC1jb2xvcjogIzI4YTc0NSAhaW1wb3J0YW50O1xyXG59XHJcblxyXG4uc2QtZXN0LWF6dWwge1xyXG4gIGNvbG9yOiAjMDA0MDg1ICFpbXBvcnRhbnQ7XHJcbn1cclxuXHJcbi5zZC1wdW50by5zZC1lc3QtYXp1bCB7XHJcbiAgYmFja2dyb3VuZC1jb2xvcjogIzAwN2JmZiAhaW1wb3J0YW50O1xyXG59XHJcblxyXG4uc2QtZXN0LXJvam8ge1xyXG4gIGNvbG9yOiAjYzgyMzMzICFpbXBvcnRhbnQ7XHJcbn1cclxuXHJcbi5zZC1wdW50by5zZC1lc3Qtcm9qbyB7XHJcbiAgYmFja2dyb3VuZC1jb2xvcjogI2RjMzU0NSAhaW1wb3J0YW50O1xyXG59XHJcblxyXG4uc2QtZXN0LWFtYXJpbGxvIHtcclxuICBjb2xvcjogIzg1NjQwNCAhaW1wb3J0YW50O1xyXG59XHJcblxyXG4uc2QtcHVudG8uc2QtZXN0LWFtYXJpbGxvIHtcclxuICBiYWNrZ3JvdW5kLWNvbG9yOiAjZmZjMTA3ICFpbXBvcnRhbnQ7XHJcbn1cclxuXHJcbi5zZC1pdGVtLW5vbWJyZS5zZC1pdGVtLWFsZXJ0YSB7XHJcbiAgY29sb3I6ICNiMDAwMjAgIWltcG9ydGFudDtcclxuICBmb250LXdlaWdodDogNzAwO1xyXG59XHJcblxyXG4vKiBMaXN0YWRvIGVudHJlZ2FzIChtw7N2aWwpOiB0YXJqZXRhcyBwbGFuYXMsIGluZm9ybWF0aXZhcywgc2luIGFjb3JkZcOzbiAqL1xyXG4ubGlzdGFkby1lbnRyZWdhcy1tb3ZpbCB7XHJcbiAgbWFyZ2luLWJvdHRvbTogMC4yNXJlbTtcclxufVxyXG5cclxuLmxpc3RhZG8tZW50cmVnYS1tb3ZpbC1jYXJkIHtcclxuICBkaXNwbGF5OiBmbGV4O1xyXG4gIGZsZXgtZGlyZWN0aW9uOiByb3c7XHJcbiAgYWxpZ24taXRlbXM6IHN0cmV0Y2g7XHJcbiAgd2lkdGg6IDEwMCU7XHJcbiAgbWFyZ2luLWJvdHRvbTogMC42NXJlbTtcclxuICBwYWRkaW5nOiAwO1xyXG4gIGJvcmRlcjogMXB4IHNvbGlkICNkZWUyZTY7XHJcbiAgYm9yZGVyLXJhZGl1czogNnB4O1xyXG4gIGJhY2tncm91bmQ6ICNmZmY7XHJcbiAgdGV4dC1hbGlnbjogbGVmdDtcclxuICBvdmVyZmxvdzogaGlkZGVuO1xyXG4gIHRyYW5zaXRpb246IGJveC1zaGFkb3cgMC4xNXMgZWFzZSwgYm9yZGVyLWNvbG9yIDAuMTVzIGVhc2U7XHJcbn1cclxuXHJcbi5saXN0YWRvLWVudHJlZ2EtbW92aWwtbWFpbiB7XHJcbiAgZmxleDogMTtcclxuICBtaW4td2lkdGg6IDA7XHJcbiAgZGlzcGxheTogYmxvY2s7XHJcbiAgbWFyZ2luOiAwO1xyXG4gIHBhZGRpbmc6IDA7XHJcbiAgYm9yZGVyOiBub25lO1xyXG4gIGJhY2tncm91bmQ6IHRyYW5zcGFyZW50O1xyXG4gIHRleHQtYWxpZ246IGxlZnQ7XHJcbiAgY3Vyc29yOiBwb2ludGVyO1xyXG59XHJcblxyXG4ubGlzdGFkby1lbnRyZWdhLW1vdmlsLWFjY2lvbmVzIHtcclxuICBmbGV4OiAwIDAgYXV0bztcclxuICBkaXNwbGF5OiBmbGV4O1xyXG4gIGFsaWduLWl0ZW1zOiBjZW50ZXI7XHJcbiAganVzdGlmeS1jb250ZW50OiBjZW50ZXI7XHJcbiAgYm9yZGVyLWxlZnQ6IDFweCBzb2xpZCAjZTllY2VmO1xyXG4gIGJhY2tncm91bmQ6ICNmYWZiZmM7XHJcbiAgcGFkZGluZzogMCAwLjI1cmVtO1xyXG59XHJcblxyXG4uZ2UtYnRuLWRldm9sdWNpb24tbW92aWwge1xyXG4gIGZvbnQtc2l6ZTogMS4yNXJlbTtcclxuICBsaW5lLWhlaWdodDogMTtcclxuICBwYWRkaW5nOiAwLjVyZW0gMC4zNXJlbSAhaW1wb3J0YW50O1xyXG59XHJcblxyXG4uZ2UtYnRuLWRldm9sdWNpb24tZ3JpZCB7XHJcbiAgZm9udC1zaXplOiAxLjFyZW07XHJcbiAgbGluZS1oZWlnaHQ6IDE7XHJcbiAgbWluLXdpZHRoOiAycmVtO1xyXG59XHJcblxyXG4uc2QtZGV2b2x1Y2lvbi1tb3ZpbC1idG4gaSB7XHJcbiAgbWFyZ2luLXJpZ2h0OiAwLjE1cmVtO1xyXG59XHJcblxyXG4ubGlzdGFkby1lbnRyZWdhLW1vdmlsLWNhcmQ6aG92ZXIsXHJcbi5saXN0YWRvLWVudHJlZ2EtbW92aWwtY2FyZDpmb2N1cy13aXRoaW4ge1xyXG4gIGJvcmRlci1jb2xvcjogcmdiYSgwLCA5NywgMTY5LCAwLjQ1KTtcclxuICBib3gtc2hhZG93OiAwIDJweCA4cHggcmdiYSgwLCAwLCAwLCAwLjA2KTtcclxuICBvdXRsaW5lOiBub25lO1xyXG59XHJcblxyXG4ubGlzdGFkby1lbnRyZWdhLW1vdmlsLW1haW46Zm9jdXMtdmlzaWJsZSB7XHJcbiAgb3V0bGluZTogMnB4IHNvbGlkIHJnYmEoMCwgOTcsIDE2OSwgMC4zNSk7XHJcbiAgb3V0bGluZS1vZmZzZXQ6IDJweDtcclxufVxyXG5cclxuLmxpc3RhZG8tZW50cmVnYS1tb3ZpbC1jYWIge1xyXG4gIGRpc3BsYXk6IGZsZXg7XHJcbiAgYWxpZ24taXRlbXM6IGZsZXgtc3RhcnQ7XHJcbiAgZ2FwOiAwLjVyZW07XHJcbiAgcGFkZGluZzogMC42NXJlbSAwLjc1cmVtO1xyXG4gIGJhY2tncm91bmQ6ICNmOGY5ZmE7XHJcbiAgYm9yZGVyLWJvdHRvbTogMXB4IHNvbGlkICNlOWVjZWY7XHJcbn1cclxuXHJcbi5saXN0YWRvLWVudHJlZ2EtbW92aWwtY2FiLXRleHRvIHtcclxuICBmbGV4OiAxO1xyXG4gIG1pbi13aWR0aDogMDtcclxuICBkaXNwbGF5OiBmbGV4O1xyXG4gIGZsZXgtZGlyZWN0aW9uOiBjb2x1bW47XHJcbiAgZ2FwOiAwLjJyZW07XHJcbn1cclxuXHJcbi5saXN0YWRvLWVudHJlZ2EtbW92aWwtZG9jIHtcclxuICBmb250LXdlaWdodDogNzAwO1xyXG4gIGZvbnQtc2l6ZTogMC45NXJlbTtcclxuICB3b3JkLWJyZWFrOiBicmVhay13b3JkO1xyXG59XHJcblxyXG4ubGlzdGFkby1lbnRyZWdhLW1vdmlsLXN1YiB7XHJcbiAgZm9udC1zaXplOiAwLjc4cmVtO1xyXG4gIGNvbG9yOiAjNmM3NTdkO1xyXG4gIGxpbmUtaGVpZ2h0OiAxLjI1O1xyXG59XHJcblxyXG4ubGlzdGFkby1lbnRyZWdhLW1vdmlsLWN1ZXJwbyB7XHJcbiAgcGFkZGluZzogMC42NXJlbSAwLjc1cmVtIDAuNzVyZW07XHJcbn1cclxuXHJcbi5saXN0YWRvLWVudHJlZ2EtbW92aWwta3Yge1xyXG4gIGRpc3BsYXk6IGdyaWQ7XHJcbiAgZ3JpZC10ZW1wbGF0ZS1jb2x1bW5zOiBtaW5tYXgoMCwgMzglKSAxZnI7XHJcbiAgZ2FwOiAwLjM1cmVtIDAuNjVyZW07XHJcbiAgZm9udC1zaXplOiAwLjg4cmVtO1xyXG4gIGFsaWduLWl0ZW1zOiBzdGFydDtcclxufVxyXG5cclxuLmxpc3RhZG8tZW50cmVnYS1tb3ZpbC1sYmwge1xyXG4gIGNvbG9yOiAjNmM3NTdkO1xyXG4gIGZvbnQtc2l6ZTogMC44cmVtO1xyXG59XHJcblxyXG4ubGlzdGFkby1lbnRyZWdhLW1vdmlsLXZhbCB7XHJcbiAgd29yZC1icmVhazogYnJlYWstd29yZDtcclxuICBtaW4td2lkdGg6IDA7XHJcbn1cclxuXHJcbkBtZWRpYSAobWF4LXdpZHRoOiA3NjcuOThweCkge1xyXG4gIC8qIFByb2R1Y3RvcyBwZW5kaWVudGVzOiBzY3JvbGwgaG9yaXpvbnRhbCBlbiBwYW50YWxsYXMgZXN0cmVjaGFzIChtw7N2aWwpLiAqL1xyXG4gIC5wcm9kdWN0b3MtcGVuZGllbnRlcy1ncmlkLXNjcm9sbCB7XHJcbiAgICBvdmVyZmxvdy14OiBhdXRvO1xyXG4gICAgLXdlYmtpdC1vdmVyZmxvdy1zY3JvbGxpbmc6IHRvdWNoO1xyXG4gICAgb3ZlcnNjcm9sbC1iZWhhdmlvci14OiBjb250YWluO1xyXG4gICAgcGFkZGluZy1ib3R0b206IDAuMzVyZW07XHJcbiAgfVxyXG5cclxuICAucHJvZHVjdG9zLXBlbmRpZW50ZXMtZ3JpZC1zY3JvbGwgOjpuZy1kZWVwIC5keC1kYXRhZ3JpZCB7XHJcbiAgICBtaW4td2lkdGg6IDUycmVtO1xyXG4gIH1cclxuXHJcbiAgLnJlbWlQcm8ge1xyXG4gICAgcGFkZGluZy1sZWZ0OiAwLjc1cmVtO1xyXG4gICAgcGFkZGluZy1yaWdodDogMC43NXJlbTtcclxuICAgIHBhZGRpbmctdG9wOiAxcmVtO1xyXG4gIH1cclxuXHJcbiAgLmdlc3Rpb24tZW50cmVnYXMtY2FyZCAuY2FyZC1ib2R5IHtcclxuICAgIHBhZGRpbmctbGVmdDogMC43NXJlbTtcclxuICAgIHBhZGRpbmctcmlnaHQ6IDAuNzVyZW07XHJcbiAgfVxyXG5cclxuICAuZ2VzdGlvbi1maWx0cm9zIHtcclxuICAgIHBhZGRpbmctbGVmdDogMDtcclxuICAgIHBhZGRpbmctcmlnaHQ6IDA7XHJcbiAgfVxyXG59XHJcblxyXG4vKiBUcmF6YWJpbGlkYWQ6IHRhYmxhIGNvbiBzY3JvbGwgdMOhY3RpbCB5IGJvdMOzbiBkZSBjb3JyZWNjacOzbiBhY2Nlc2libGUgZW4gbcOzdmlsICovXHJcbi50cmF6LWhpc3RvcmlhbC1zY3JvbGwge1xyXG4gIC13ZWJraXQtb3ZlcmZsb3ctc2Nyb2xsaW5nOiB0b3VjaDtcclxuICBvdmVyc2Nyb2xsLWJlaGF2aW9yLXg6IGNvbnRhaW47XHJcbn1cclxuXHJcbi50cmF6LWhpc3RvcmlhbC10YWJsZSB7XHJcbiAgZm9udC1zaXplOiAwLjg1cmVtO1xyXG59XHJcblxyXG4udHJhei1idG4tZWRpdCB7XHJcbiAgbWluLWhlaWdodDogNDRweDtcclxuICBtaW4td2lkdGg6IDQ0cHg7XHJcbiAgdG91Y2gtYWN0aW9uOiBtYW5pcHVsYXRpb247XHJcbiAgbGluZS1oZWlnaHQ6IDEuMjtcclxufVxyXG5cclxuLnRyYXotbm90YXMtY2VsZGEge1xyXG4gIG1heC13aWR0aDogMTRyZW07XHJcbiAgd29yZC1icmVhazogYnJlYWstd29yZDtcclxufVxyXG5cclxuLnRyYXotZWRpdGFyLWFjY2lvbmVzIDo6bmctZGVlcCAuZHgtYnV0dG9uIHtcclxuICBtaW4taGVpZ2h0OiA0NHB4O1xyXG59XHJcblxyXG4vKiBQb3B1cCBcIkNvcnJlZ2lyIG1vdmltaWVudG86IHTDrXR1bG8gbXVsdGlsw61uZWEgeSBjb250ZW5pZG8gc2luIG92ZXJmbG93ICovXHJcbjo6bmctZGVlcCAudHJhei1wb3B1cC1jb3JyZWdpci1vdmVybGF5IHtcclxuICBib3gtc2l6aW5nOiBib3JkZXItYm94O1xyXG5cclxuICAuZHgtcG9wdXAtY29udGVudCB7XHJcbiAgICBvdmVyZmxvdy14OiBoaWRkZW47XHJcbiAgICBtYXgtd2lkdGg6IDEwMCU7XHJcbiAgICBib3gtc2l6aW5nOiBib3JkZXItYm94O1xyXG4gIH1cclxuXHJcbiAgLmR4LXBvcHVwLXRpdGxlIHtcclxuICAgIHdoaXRlLXNwYWNlOiBub3JtYWwgIWltcG9ydGFudDtcclxuICAgIHdvcmQtYnJlYWs6IGJyZWFrLXdvcmQ7XHJcbiAgICBvdmVyZmxvdy13cmFwOiBhbnl3aGVyZTtcclxuICAgIGxpbmUtaGVpZ2h0OiAxLjM7XHJcbiAgICBwYWRkaW5nLXJpZ2h0OiAyLjc1cmVtO1xyXG4gICAgZm9udC1zaXplOiAwLjk1cmVtO1xyXG4gICAgbWF4LXdpZHRoOiAxMDAlO1xyXG4gIH1cclxufVxyXG5cclxuQG1lZGlhIChtYXgtd2lkdGg6IDc2Ny45OHB4KSB7XHJcbiAgOjpuZy1kZWVwIC50cmF6LXBvcHVwLWNvcnJlZ2lyLW92ZXJsYXkge1xyXG4gICAgbWF4LXdpZHRoOiAxMDB2dyAhaW1wb3J0YW50O1xyXG4gICAgd2lkdGg6IGNhbGMoMTAwdncgLSBlbnYoc2FmZS1hcmVhLWluc2V0LWxlZnQpIC0gZW52KHNhZmUtYXJlYS1pbnNldC1yaWdodCkpICFpbXBvcnRhbnQ7XHJcbiAgfVxyXG59XHJcblxyXG4udHJhei1wb3B1cC1lZGl0YXItYm9keSB7XHJcbiAgd2lkdGg6IDEwMCU7XHJcbiAgbWF4LXdpZHRoOiAxMDAlO1xyXG4gIG1pbi13aWR0aDogMDtcclxuICBib3gtc2l6aW5nOiBib3JkZXItYm94O1xyXG4gIG92ZXJmbG93LXg6IGhpZGRlbjtcclxuICBwYWRkaW5nOiAwLjc1cmVtIDAuNzVyZW0gbWF4KDAuNzVyZW0sIGVudihzYWZlLWFyZWEtaW5zZXQtYm90dG9tKSk7XHJcblxyXG4gIEBtZWRpYSAobWluLXdpZHRoOiA1NzZweCkge1xyXG4gICAgcGFkZGluZzogMXJlbSAxLjI1cmVtIDFyZW07XHJcbiAgfVxyXG59XHJcblxyXG4udHJhei1wb3B1cC1lZGl0YXItYm9keSA6Om5nLWRlZXAgLmR4LXRleHRlZGl0b3IsXHJcbi50cmF6LXBvcHVwLWVkaXRhci1ib2R5IDo6bmctZGVlcCAuZHgtZHJvcGRvd25lZGl0b3IsXHJcbi50cmF6LXBvcHVwLWVkaXRhci1ib2R5IDo6bmctZGVlcCAuZHgtbnVtYmVyYm94IHtcclxuICB3aWR0aDogMTAwJSAhaW1wb3J0YW50O1xyXG4gIG1heC13aWR0aDogMTAwJSAhaW1wb3J0YW50O1xyXG59XHJcblxyXG4udHJhei1wb3B1cC1lZGl0YXItYm9keSA6Om5nLWRlZXAgLmR4LXRleHRlZGl0b3IuZHgtZWRpdG9yLW91dGxpbmVkLFxyXG4udHJhei1wb3B1cC1lZGl0YXItYm9keSA6Om5nLWRlZXAgLmR4LWRyb3Bkb3duZWRpdG9yLmR4LWVkaXRvci1vdXRsaW5lZCB7XHJcbiAgZGlzcGxheTogYmxvY2s7XHJcbn1cclxuXHJcbi50cmF6LWVkaXRhci1hY2Npb25lcyB7XHJcbiAgd2lkdGg6IDEwMCU7XHJcbiAgbWF4LXdpZHRoOiAxMDAlO1xyXG4gIHBhZGRpbmctdG9wOiAwLjI1cmVtO1xyXG59XHJcblxyXG5AbWVkaWEgKG1heC13aWR0aDogNTc1Ljk4cHgpIHtcclxuICAudHJhei1lZGl0YXItYWNjaW9uZXMge1xyXG4gICAgZmxleC1kaXJlY3Rpb246IGNvbHVtbiAhaW1wb3J0YW50O1xyXG4gICAgYWxpZ24taXRlbXM6IHN0cmV0Y2ggIWltcG9ydGFudDtcclxuICB9XHJcblxyXG4gIC50cmF6LWVkaXRhci1hY2Npb25lcyA6Om5nLWRlZXAgLmR4LWJ1dHRvbiB7XHJcbiAgICB3aWR0aDogMTAwJTtcclxuICAgIG1heC13aWR0aDogMTAwJTtcclxuICB9XHJcbn1cclxuIl19 */"] });
+    } }, directives: [devextreme_angular__WEBPACK_IMPORTED_MODULE_8__["DxSelectBoxComponent"], _angular_common__WEBPACK_IMPORTED_MODULE_9__["NgIf"], devextreme_angular__WEBPACK_IMPORTED_MODULE_8__["DxPopupComponent"], devextreme_angular_core__WEBPACK_IMPORTED_MODULE_10__["DxTemplateDirective"], devextreme_angular__WEBPACK_IMPORTED_MODULE_8__["DxNumberBoxComponent"], devextreme_angular_ui_text_box__WEBPACK_IMPORTED_MODULE_11__["DxTextBoxComponent"], devextreme_angular__WEBPACK_IMPORTED_MODULE_8__["DxDateBoxComponent"], devextreme_angular_ui_button__WEBPACK_IMPORTED_MODULE_12__["DxButtonComponent"], devextreme_angular_ui_check_box__WEBPACK_IMPORTED_MODULE_13__["DxCheckBoxComponent"], _loading_loading_component__WEBPACK_IMPORTED_MODULE_14__["LoadingComponent"], _angular_common__WEBPACK_IMPORTED_MODULE_9__["NgForOf"], _angular_common__WEBPACK_IMPORTED_MODULE_9__["NgClass"], devextreme_angular__WEBPACK_IMPORTED_MODULE_8__["DxDataGridComponent"], devextreme_angular_ui_nested__WEBPACK_IMPORTED_MODULE_15__["DxoFilterRowComponent"], devextreme_angular_ui_nested__WEBPACK_IMPORTED_MODULE_15__["DxoSearchPanelComponent"], devextreme_angular_ui_nested__WEBPACK_IMPORTED_MODULE_15__["DxiColumnComponent"], devextreme_angular_ui_nested__WEBPACK_IMPORTED_MODULE_15__["DxiButtonComponent"], devextreme_angular_ui_nested__WEBPACK_IMPORTED_MODULE_15__["DxoExportComponent"], devextreme_angular_ui_nested__WEBPACK_IMPORTED_MODULE_15__["DxoPagingComponent"], devextreme_angular_ui_nested__WEBPACK_IMPORTED_MODULE_15__["DxoPagerComponent"], devextreme_angular_ui_scroll_view__WEBPACK_IMPORTED_MODULE_16__["DxScrollViewComponent"], devextreme_angular__WEBPACK_IMPORTED_MODULE_8__["DxTextAreaComponent"]], pipes: [_angular_common__WEBPACK_IMPORTED_MODULE_9__["DecimalPipe"]], styles: ["@charset \"UTF-8\";\n\n.remiPro[_ngcontent-%COMP%] {\n  padding: 1.5em 2em 0;\n  margin-top: 0.5em;\n  text-align: center;\n}\n.gestion-menu-superior[_ngcontent-%COMP%] {\n  margin-left: 0;\n  margin-right: 0;\n}\n.px-gestion-menu[_ngcontent-%COMP%] {\n  padding-left: 0.75rem;\n  padding-right: 0.75rem;\n}\n\n.gestion-filtros[_ngcontent-%COMP%] {\n  overflow-x: hidden;\n}\n.gestion-filtro-campo[_ngcontent-%COMP%]   .textP[_ngcontent-%COMP%] {\n  padding-left: 0;\n}\n.gestion-filtro-editor[_ngcontent-%COMP%] {\n  width: 100%;\n  max-width: 100%;\n}\n.gestion-filtro-editor.dateB[_ngcontent-%COMP%]   dx-date-box[_ngcontent-%COMP%], .gestion-filtro-editor.dateB[_ngcontent-%COMP%]   dx-number-box[_ngcontent-%COMP%], .gestion-filtro-editor.dateB[_ngcontent-%COMP%]   dx-text-box[_ngcontent-%COMP%] {\n  margin-top: 0;\n  display: block;\n  width: 100%;\n  max-width: 100%;\n}\n  .gestion-filtro-editor .dx-texteditor {\n  width: 100% !important;\n  max-width: 100%;\n}\n.gestion-filtro-cerradas-inner[_ngcontent-%COMP%] {\n  min-width: 0;\n}\n.gestion-filtro-cerradas-texto[_ngcontent-%COMP%] {\n  -webkit-box-flex: 1;\n          flex: 1 1 12rem;\n  min-width: 0;\n  line-height: 1.35;\n  text-align: left;\n}\n@media (max-width: 767.98px) {\n  .gestion-filtro-acciones[_ngcontent-%COMP%] {\n    display: -webkit-box;\n    display: flex;\n    -webkit-box-orient: vertical;\n    -webkit-box-direction: normal;\n            flex-direction: column;\n    -webkit-box-align: stretch;\n            align-items: stretch;\n    gap: 0.5rem;\n  }\n\n  .gestion-filtro-acciones[_ngcontent-%COMP%]     .dx-button {\n    width: 100%;\n    max-width: 100%;\n  }\n\n  .gestion-filtro-acciones[_ngcontent-%COMP%]   dx-button[_ngcontent-%COMP%]    + dx-button[_ngcontent-%COMP%] {\n    margin-left: 0;\n  }\n}\n.remiPro.titulos[_ngcontent-%COMP%]   .select[_ngcontent-%COMP%] {\n  text-align: center;\n  background-color: white;\n}\n.select[_ngcontent-%COMP%] {\n  text-align: center;\n  background-color: white;\n}\n.titulos[_ngcontent-%COMP%] {\n  text-align: center;\n  font-weight: bold;\n}\n\n.textP[_ngcontent-%COMP%] {\n  font-weight: bold;\n  font-size: 11pt;\n}\n.textP2[_ngcontent-%COMP%] {\n  margin-top: 0.3em;\n}\n.dateB[_ngcontent-%COMP%]   dx-date-box[_ngcontent-%COMP%], .dateB[_ngcontent-%COMP%]   dx-number-box[_ngcontent-%COMP%], .dateB[_ngcontent-%COMP%]   dx-text-box[_ngcontent-%COMP%] {\n  margin-top: -0.8em;\n}\n.centrar[_ngcontent-%COMP%] {\n  text-align: center;\n}\n.gestion-entregas-card[_ngcontent-%COMP%] {\n  border-radius: 0.25rem;\n}\n.gestion-entregas-card[_ngcontent-%COMP%]   .card-header[_ngcontent-%COMP%] {\n  background-color: #f8f9fa;\n}\n.cons-label[_ngcontent-%COMP%] {\n  font-size: inherit;\n}\n.cons-valor[_ngcontent-%COMP%] {\n  font-size: 4rem;\n  font-weight: bold;\n  margin-top: -1rem;\n  line-height: 1.1;\n}\n.gestion-entregas-acciones[_ngcontent-%COMP%]   dx-button[_ngcontent-%COMP%]    + dx-button[_ngcontent-%COMP%] {\n  margin-left: 0.5rem;\n}\n  .gestion-entregas-card .dateB .dx-texteditor-input {\n  text-align: center;\n}\ntable[_ngcontent-%COMP%]   td[_ngcontent-%COMP%], table[_ngcontent-%COMP%]   th[_ngcontent-%COMP%] {\n  vertical-align: middle;\n}\n.trazabilidad-popup[_ngcontent-%COMP%]   h6[_ngcontent-%COMP%] {\n  color: #333;\n}\n.trazabilidad-popup[_ngcontent-%COMP%]   .w-25[_ngcontent-%COMP%] {\n  width: 25%;\n}\n.entrega-cp-inputs[_ngcontent-%COMP%] {\n  gap: 4px;\n}\n\n.smart-dispatch-movil[_ngcontent-%COMP%] {\n  margin-bottom: 0.25rem;\n}\n.sd-leyenda[_ngcontent-%COMP%] {\n  display: -webkit-box;\n  display: flex;\n  flex-wrap: wrap;\n  gap: 0.5rem 0.85rem;\n  -webkit-box-align: center;\n          align-items: center;\n}\n.sd-leyenda-item[_ngcontent-%COMP%] {\n  display: -webkit-inline-box;\n  display: inline-flex;\n  -webkit-box-align: center;\n          align-items: center;\n  gap: 0.35rem;\n}\n.sd-punto[_ngcontent-%COMP%] {\n  display: inline-block;\n  width: 10px;\n  height: 10px;\n  border-radius: 50%;\n  flex-shrink: 0;\n}\n.sd-factura-card[_ngcontent-%COMP%] {\n  border: 1px solid #dee2e6;\n  border-radius: 6px;\n  overflow: hidden;\n  background: #fff;\n}\n.sd-factura-header[_ngcontent-%COMP%] {\n  width: 100%;\n  display: -webkit-box;\n  display: flex;\n  -webkit-box-align: start;\n          align-items: flex-start;\n  gap: 0.5rem;\n  padding: 0.65rem 0.75rem;\n  border: none;\n  background: #f8f9fa;\n  text-align: left;\n  cursor: pointer;\n}\n.sd-factura-header[_ngcontent-%COMP%]:focus {\n  outline: 2px solid rgba(0, 97, 169, 0.35);\n  outline-offset: 1px;\n}\n.sd-factura-texto[_ngcontent-%COMP%] {\n  -webkit-box-flex: 1;\n          flex: 1;\n  min-width: 0;\n  display: -webkit-box;\n  display: flex;\n  -webkit-box-orient: vertical;\n  -webkit-box-direction: normal;\n          flex-direction: column;\n  gap: 0.15rem;\n}\n.sd-factura-doc[_ngcontent-%COMP%] {\n  font-weight: 700;\n  font-size: 0.95rem;\n}\n.sd-factura-cliente[_ngcontent-%COMP%] {\n  font-size: 0.88rem;\n  line-height: 1.25;\n  word-break: break-word;\n}\n.sd-factura-meta[_ngcontent-%COMP%] {\n  font-size: 0.75rem;\n  color: #6c757d;\n}\n.sd-chevron[_ngcontent-%COMP%] {\n  -webkit-transition: -webkit-transform 0.2s ease;\n  transition: -webkit-transform 0.2s ease;\n  transition: transform 0.2s ease;\n  transition: transform 0.2s ease, -webkit-transform 0.2s ease;\n  align-self: center;\n  color: #6c757d;\n  flex-shrink: 0;\n}\n.sd-chevron-up[_ngcontent-%COMP%] {\n  -webkit-transform: rotate(-180deg);\n          transform: rotate(-180deg);\n}\n.sd-chevron-sm[_ngcontent-%COMP%] {\n  font-size: 0.72rem;\n}\n.sd-factura-cuerpo[_ngcontent-%COMP%] {\n  padding: 0.5rem 0.65rem 0.75rem;\n  background: #fff;\n  border-top: 1px solid #e9ecef;\n}\n.sd-item-wrap[_ngcontent-%COMP%] {\n  border: 1px solid #e9ecef;\n  border-radius: 6px;\n  margin-bottom: 0.45rem;\n  overflow: hidden;\n  background: #fafafa;\n}\n.sd-item-cab[_ngcontent-%COMP%] {\n  width: 100%;\n  display: -webkit-box;\n  display: flex;\n  flex-wrap: wrap;\n  -webkit-box-align: center;\n          align-items: center;\n  gap: 0.35rem 0.5rem;\n  padding: 0.55rem 0.6rem;\n  border: none;\n  background: transparent;\n  text-align: left;\n  cursor: pointer;\n}\n.sd-guardado-ok[_ngcontent-%COMP%] {\n  font-size: 1.15rem;\n  flex-shrink: 0;\n}\n.sd-guardar-linea-wrap[_ngcontent-%COMP%] {\n  display: -webkit-box;\n  display: flex;\n  flex-wrap: wrap;\n  -webkit-box-align: center;\n          align-items: center;\n}\n.gestion-linea-ok[_ngcontent-%COMP%] {\n  display: inline-block;\n  vertical-align: middle;\n  font-size: 1.1rem;\n}\n.sd-item-cab[_ngcontent-%COMP%]:focus {\n  outline: 2px solid rgba(0, 97, 169, 0.35);\n  outline-offset: 1px;\n}\n.sd-item-nombre[_ngcontent-%COMP%] {\n  -webkit-box-flex: 1;\n          flex: 1 1 100%;\n  font-weight: 600;\n  font-size: 0.9rem;\n  line-height: 1.3;\n  word-break: break-word;\n}\n.sd-item-resumen[_ngcontent-%COMP%] {\n  -webkit-box-flex: 1;\n          flex: 1 1 auto;\n  min-width: 0;\n}\n.sd-item-detalle[_ngcontent-%COMP%] {\n  padding: 0.65rem 0.75rem 0.85rem;\n  background: #fff;\n  border-top: 1px dashed #dee2e6;\n}\n.sd-kv-grid[_ngcontent-%COMP%] {\n  display: grid;\n  grid-template-columns: auto 1fr;\n  gap: 0.25rem 0.75rem;\n  margin-bottom: 0.75rem;\n}\n.sd-campo[_ngcontent-%COMP%] {\n  margin-bottom: 0.65rem;\n}\n.sd-cerrar-proceso[_ngcontent-%COMP%]     .dx-button {\n  width: 100%;\n}\n.sd-campo[_ngcontent-%COMP%]     .dx-texteditor {\n  width: 100% !important;\n  max-width: 100%;\n}\n\n.sd-est-verde[_ngcontent-%COMP%] {\n  color: #1e7e34 !important;\n}\n.sd-punto.sd-est-verde[_ngcontent-%COMP%] {\n  background-color: #28a745 !important;\n}\n.sd-est-azul[_ngcontent-%COMP%] {\n  color: #004085 !important;\n}\n.sd-punto.sd-est-azul[_ngcontent-%COMP%] {\n  background-color: #007bff !important;\n}\n.sd-est-rojo[_ngcontent-%COMP%] {\n  color: #c82333 !important;\n}\n.sd-punto.sd-est-rojo[_ngcontent-%COMP%] {\n  background-color: #dc3545 !important;\n}\n.sd-est-amarillo[_ngcontent-%COMP%] {\n  color: #856404 !important;\n}\n.sd-punto.sd-est-amarillo[_ngcontent-%COMP%] {\n  background-color: #ffc107 !important;\n}\n.sd-item-nombre.sd-item-alerta[_ngcontent-%COMP%] {\n  color: #b00020 !important;\n  font-weight: 700;\n}\n\n.listado-entregas-movil[_ngcontent-%COMP%] {\n  margin-bottom: 0.25rem;\n}\n.listado-entrega-movil-card[_ngcontent-%COMP%] {\n  display: -webkit-box;\n  display: flex;\n  -webkit-box-orient: horizontal;\n  -webkit-box-direction: normal;\n          flex-direction: row;\n  -webkit-box-align: stretch;\n          align-items: stretch;\n  width: 100%;\n  margin-bottom: 0.65rem;\n  padding: 0;\n  border: 1px solid #dee2e6;\n  border-radius: 6px;\n  background: #fff;\n  text-align: left;\n  overflow: hidden;\n  -webkit-transition: box-shadow 0.15s ease, border-color 0.15s ease;\n  transition: box-shadow 0.15s ease, border-color 0.15s ease;\n}\n.listado-entrega-movil-main[_ngcontent-%COMP%] {\n  -webkit-box-flex: 1;\n          flex: 1;\n  min-width: 0;\n  display: block;\n  margin: 0;\n  padding: 0;\n  border: none;\n  background: transparent;\n  text-align: left;\n  cursor: pointer;\n}\n.listado-entrega-movil-acciones[_ngcontent-%COMP%] {\n  -webkit-box-flex: 0;\n          flex: 0 0 auto;\n  display: -webkit-box;\n  display: flex;\n  -webkit-box-align: center;\n          align-items: center;\n  -webkit-box-pack: center;\n          justify-content: center;\n  border-left: 1px solid #e9ecef;\n  background: #fafbfc;\n  padding: 0 0.25rem;\n}\n.ge-btn-devolucion-movil[_ngcontent-%COMP%] {\n  font-size: 1.25rem;\n  line-height: 1;\n  padding: 0.5rem 0.35rem !important;\n}\n.ge-btn-devolucion-grid[_ngcontent-%COMP%] {\n  font-size: 1.1rem;\n  line-height: 1;\n  min-width: 2rem;\n}\n.sd-devolucion-movil-btn[_ngcontent-%COMP%]   i[_ngcontent-%COMP%] {\n  margin-right: 0.15rem;\n}\n.listado-entrega-movil-card[_ngcontent-%COMP%]:hover, .listado-entrega-movil-card[_ngcontent-%COMP%]:focus-within {\n  border-color: rgba(0, 97, 169, 0.45);\n  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.06);\n  outline: none;\n}\n.listado-entrega-movil-main[_ngcontent-%COMP%]:focus-visible {\n  outline: 2px solid rgba(0, 97, 169, 0.35);\n  outline-offset: 2px;\n}\n.listado-entrega-movil-cab[_ngcontent-%COMP%] {\n  display: -webkit-box;\n  display: flex;\n  -webkit-box-align: start;\n          align-items: flex-start;\n  gap: 0.5rem;\n  padding: 0.65rem 0.75rem;\n  background: #f8f9fa;\n  border-bottom: 1px solid #e9ecef;\n}\n.listado-entrega-movil-cab-texto[_ngcontent-%COMP%] {\n  -webkit-box-flex: 1;\n          flex: 1;\n  min-width: 0;\n  display: -webkit-box;\n  display: flex;\n  -webkit-box-orient: vertical;\n  -webkit-box-direction: normal;\n          flex-direction: column;\n  gap: 0.2rem;\n}\n.listado-entrega-movil-doc[_ngcontent-%COMP%] {\n  font-weight: 700;\n  font-size: 0.95rem;\n  word-break: break-word;\n}\n.listado-entrega-movil-sub[_ngcontent-%COMP%] {\n  font-size: 0.78rem;\n  color: #6c757d;\n  line-height: 1.25;\n}\n.listado-entrega-movil-cuerpo[_ngcontent-%COMP%] {\n  padding: 0.65rem 0.75rem 0.75rem;\n}\n.listado-entrega-movil-kv[_ngcontent-%COMP%] {\n  display: grid;\n  grid-template-columns: minmax(0, 38%) 1fr;\n  gap: 0.35rem 0.65rem;\n  font-size: 0.88rem;\n  -webkit-box-align: start;\n          align-items: start;\n}\n.listado-entrega-movil-lbl[_ngcontent-%COMP%] {\n  color: #6c757d;\n  font-size: 0.8rem;\n}\n.listado-entrega-movil-val[_ngcontent-%COMP%] {\n  word-break: break-word;\n  min-width: 0;\n}\n@media (max-width: 767.98px) {\n  \n  .productos-pendientes-grid-scroll[_ngcontent-%COMP%] {\n    overflow-x: auto;\n    -webkit-overflow-scrolling: touch;\n    overscroll-behavior-x: contain;\n    padding-bottom: 0.35rem;\n  }\n\n  .productos-pendientes-grid-scroll[_ngcontent-%COMP%]     .dx-datagrid {\n    min-width: 52rem;\n  }\n\n  .remiPro[_ngcontent-%COMP%] {\n    padding-left: 0.75rem;\n    padding-right: 0.75rem;\n    padding-top: 1rem;\n  }\n\n  .gestion-entregas-card[_ngcontent-%COMP%]   .card-body[_ngcontent-%COMP%] {\n    padding-left: 0.75rem;\n    padding-right: 0.75rem;\n  }\n\n  .gestion-filtros[_ngcontent-%COMP%] {\n    padding-left: 0;\n    padding-right: 0;\n  }\n}\n\n.traz-historial-scroll[_ngcontent-%COMP%] {\n  -webkit-overflow-scrolling: touch;\n  overscroll-behavior-x: contain;\n}\n.traz-historial-table[_ngcontent-%COMP%] {\n  font-size: 0.85rem;\n}\n.traz-btn-edit[_ngcontent-%COMP%] {\n  min-height: 44px;\n  min-width: 44px;\n  touch-action: manipulation;\n  line-height: 1.2;\n}\n.traz-notas-celda[_ngcontent-%COMP%] {\n  max-width: 14rem;\n  word-break: break-word;\n}\n.traz-editar-acciones[_ngcontent-%COMP%]     .dx-button {\n  min-height: 44px;\n}\n\n  .traz-popup-corregir-overlay {\n  box-sizing: border-box;\n}\n  .traz-popup-corregir-overlay .dx-popup-content {\n  overflow-x: hidden;\n  max-width: 100%;\n  box-sizing: border-box;\n}\n  .traz-popup-corregir-overlay .dx-popup-title {\n  white-space: normal !important;\n  word-break: break-word;\n  overflow-wrap: anywhere;\n  line-height: 1.3;\n  padding-right: 2.75rem;\n  font-size: 0.95rem;\n  max-width: 100%;\n}\n@media (max-width: 767.98px) {\n    .traz-popup-corregir-overlay {\n    max-width: 100vw !important;\n    width: calc(100vw - env(safe-area-inset-left) - env(safe-area-inset-right)) !important;\n  }\n}\n.traz-popup-editar-body[_ngcontent-%COMP%] {\n  width: 100%;\n  max-width: 100%;\n  min-width: 0;\n  box-sizing: border-box;\n  overflow-x: hidden;\n  padding: 0.75rem 0.75rem max(0.75rem, env(safe-area-inset-bottom));\n}\n@media (min-width: 576px) {\n  .traz-popup-editar-body[_ngcontent-%COMP%] {\n    padding: 1rem 1.25rem 1rem;\n  }\n}\n.traz-popup-editar-body[_ngcontent-%COMP%]     .dx-texteditor, .traz-popup-editar-body[_ngcontent-%COMP%]     .dx-dropdowneditor, .traz-popup-editar-body[_ngcontent-%COMP%]     .dx-numberbox {\n  width: 100% !important;\n  max-width: 100% !important;\n}\n.traz-popup-editar-body[_ngcontent-%COMP%]     .dx-texteditor.dx-editor-outlined, .traz-popup-editar-body[_ngcontent-%COMP%]     .dx-dropdowneditor.dx-editor-outlined {\n  display: block;\n}\n.traz-editar-acciones[_ngcontent-%COMP%] {\n  width: 100%;\n  max-width: 100%;\n  padding-top: 0.25rem;\n}\n@media (max-width: 575.98px) {\n  .traz-editar-acciones[_ngcontent-%COMP%] {\n    -webkit-box-orient: vertical !important;\n    -webkit-box-direction: normal !important;\n            flex-direction: column !important;\n    -webkit-box-align: stretch !important;\n            align-items: stretch !important;\n  }\n\n  .traz-editar-acciones[_ngcontent-%COMP%]     .dx-button {\n    width: 100%;\n    max-width: 100%;\n  }\n}\n/*# sourceMappingURL=data:application/json;base64,eyJ2ZXJzaW9uIjozLCJzb3VyY2VzIjpbInNyYy9hcHAvcGFnZXMvZ2VzdGlvbi1lbnRyZWdhcy1ib2RlZ2EvZ2VzdGlvbi1lbnRyZWdhcy1ib2RlZ2EuY29tcG9uZW50LnNjc3MiLCJzcmMvYXBwL3BhZ2VzL2dlc3Rpb24tZW50cmVnYXMtYm9kZWdhL0M6XFxGSURFTlNcXGFsb2phYmFzZXMyMDI1L3NyY1xcYXBwXFxwYWdlc1xcZ2VzdGlvbi1lbnRyZWdhcy1ib2RlZ2FcXGdlc3Rpb24tZW50cmVnYXMtYm9kZWdhLmNvbXBvbmVudC5zY3NzIl0sIm5hbWVzIjpbXSwibWFwcGluZ3MiOiJBQUFBLGdCQUFnQjtBQ0FoQixzREFBQTtBQUNBO0VBQ0Usb0JBQUE7RUFDQSxpQkFBQTtFQUNBLGtCQUFBO0FERUY7QUNDQTtFQUNFLGNBQUE7RUFDQSxlQUFBO0FERUY7QUNDQTtFQUNFLHFCQUFBO0VBQ0Esc0JBQUE7QURFRjtBQ0NBLGtGQUFBO0FBQ0E7RUFDRSxrQkFBQTtBREVGO0FDQ0E7RUFDRSxlQUFBO0FERUY7QUNDQTtFQUNFLFdBQUE7RUFDQSxlQUFBO0FERUY7QUNDQTs7O0VBR0UsYUFBQTtFQUNBLGNBQUE7RUFDQSxXQUFBO0VBQ0EsZUFBQTtBREVGO0FDQ0E7RUFDRSxzQkFBQTtFQUNBLGVBQUE7QURFRjtBQ0NBO0VBQ0UsWUFBQTtBREVGO0FDQ0E7RUFDRSxtQkFBQTtVQUFBLGVBQUE7RUFDQSxZQUFBO0VBQ0EsaUJBQUE7RUFDQSxnQkFBQTtBREVGO0FDQ0E7RUFDRTtJQUNFLG9CQUFBO0lBQUEsYUFBQTtJQUNBLDRCQUFBO0lBQUEsNkJBQUE7WUFBQSxzQkFBQTtJQUNBLDBCQUFBO1lBQUEsb0JBQUE7SUFDQSxXQUFBO0VERUY7O0VDQ0E7SUFDRSxXQUFBO0lBQ0EsZUFBQTtFREVGOztFQ0NBO0lBQ0UsY0FBQTtFREVGO0FBQ0Y7QUNDQTtFQUNFLGtCQUFBO0VBQ0EsdUJBQUE7QURDRjtBQ0VBO0VBQ0Usa0JBQUE7RUFDQSx1QkFBQTtBRENGO0FDRUE7RUFDRSxrQkFBQTtFQUNBLGlCQUFBO0FEQ0Y7QUNFQSxrRUFBQTtBQUNBO0VBQ0UsaUJBQUE7RUFDQSxlQUFBO0FEQ0Y7QUNFQTtFQUNFLGlCQUFBO0FEQ0Y7QUNFQTs7O0VBR0Usa0JBQUE7QURDRjtBQ0VBO0VBQ0Usa0JBQUE7QURDRjtBQ0VBO0VBQ0Usc0JBQUE7QURDRjtBQ0VBO0VBQ0UseUJBQUE7QURDRjtBQ0VBO0VBQ0Usa0JBQUE7QURDRjtBQ0VBO0VBQ0UsZUFBQTtFQUNBLGlCQUFBO0VBQ0EsaUJBQUE7RUFDQSxnQkFBQTtBRENGO0FDRUE7RUFDRSxtQkFBQTtBRENGO0FDRUE7RUFDRSxrQkFBQTtBRENGO0FDRUE7O0VBRUUsc0JBQUE7QURDRjtBQ0VBO0VBQ0UsV0FBQTtBRENGO0FDRUE7RUFDRSxVQUFBO0FEQ0Y7QUNFQTtFQUNFLFFBQUE7QURDRjtBQ0VBLHVFQUFBO0FBQ0E7RUFDRSxzQkFBQTtBRENGO0FDRUE7RUFDRSxvQkFBQTtFQUFBLGFBQUE7RUFDQSxlQUFBO0VBQ0EsbUJBQUE7RUFDQSx5QkFBQTtVQUFBLG1CQUFBO0FEQ0Y7QUNFQTtFQUNFLDJCQUFBO0VBQUEsb0JBQUE7RUFDQSx5QkFBQTtVQUFBLG1CQUFBO0VBQ0EsWUFBQTtBRENGO0FDRUE7RUFDRSxxQkFBQTtFQUNBLFdBQUE7RUFDQSxZQUFBO0VBQ0Esa0JBQUE7RUFDQSxjQUFBO0FEQ0Y7QUNFQTtFQUNFLHlCQUFBO0VBQ0Esa0JBQUE7RUFDQSxnQkFBQTtFQUNBLGdCQUFBO0FEQ0Y7QUNFQTtFQUNFLFdBQUE7RUFDQSxvQkFBQTtFQUFBLGFBQUE7RUFDQSx3QkFBQTtVQUFBLHVCQUFBO0VBQ0EsV0FBQTtFQUNBLHdCQUFBO0VBQ0EsWUFBQTtFQUNBLG1CQUFBO0VBQ0EsZ0JBQUE7RUFDQSxlQUFBO0FEQ0Y7QUNFQTtFQUNFLHlDQUFBO0VBQ0EsbUJBQUE7QURDRjtBQ0VBO0VBQ0UsbUJBQUE7VUFBQSxPQUFBO0VBQ0EsWUFBQTtFQUNBLG9CQUFBO0VBQUEsYUFBQTtFQUNBLDRCQUFBO0VBQUEsNkJBQUE7VUFBQSxzQkFBQTtFQUNBLFlBQUE7QURDRjtBQ0VBO0VBQ0UsZ0JBQUE7RUFDQSxrQkFBQTtBRENGO0FDRUE7RUFDRSxrQkFBQTtFQUNBLGlCQUFBO0VBQ0Esc0JBQUE7QURDRjtBQ0VBO0VBQ0Usa0JBQUE7RUFDQSxjQUFBO0FEQ0Y7QUNFQTtFQUNFLCtDQUFBO0VBQUEsdUNBQUE7RUFBQSwrQkFBQTtFQUFBLDREQUFBO0VBQ0Esa0JBQUE7RUFDQSxjQUFBO0VBQ0EsY0FBQTtBRENGO0FDRUE7RUFDRSxrQ0FBQTtVQUFBLDBCQUFBO0FEQ0Y7QUNFQTtFQUNFLGtCQUFBO0FEQ0Y7QUNFQTtFQUNFLCtCQUFBO0VBQ0EsZ0JBQUE7RUFDQSw2QkFBQTtBRENGO0FDRUE7RUFDRSx5QkFBQTtFQUNBLGtCQUFBO0VBQ0Esc0JBQUE7RUFDQSxnQkFBQTtFQUNBLG1CQUFBO0FEQ0Y7QUNFQTtFQUNFLFdBQUE7RUFDQSxvQkFBQTtFQUFBLGFBQUE7RUFDQSxlQUFBO0VBQ0EseUJBQUE7VUFBQSxtQkFBQTtFQUNBLG1CQUFBO0VBQ0EsdUJBQUE7RUFDQSxZQUFBO0VBQ0EsdUJBQUE7RUFDQSxnQkFBQTtFQUNBLGVBQUE7QURDRjtBQ0VBO0VBQ0Usa0JBQUE7RUFDQSxjQUFBO0FEQ0Y7QUNFQTtFQUNFLG9CQUFBO0VBQUEsYUFBQTtFQUNBLGVBQUE7RUFDQSx5QkFBQTtVQUFBLG1CQUFBO0FEQ0Y7QUNFQTtFQUNFLHFCQUFBO0VBQ0Esc0JBQUE7RUFDQSxpQkFBQTtBRENGO0FDRUE7RUFDRSx5Q0FBQTtFQUNBLG1CQUFBO0FEQ0Y7QUNFQTtFQUNFLG1CQUFBO1VBQUEsY0FBQTtFQUNBLGdCQUFBO0VBQ0EsaUJBQUE7RUFDQSxnQkFBQTtFQUNBLHNCQUFBO0FEQ0Y7QUNFQTtFQUNFLG1CQUFBO1VBQUEsY0FBQTtFQUNBLFlBQUE7QURDRjtBQ0VBO0VBQ0UsZ0NBQUE7RUFDQSxnQkFBQTtFQUNBLDhCQUFBO0FEQ0Y7QUNFQTtFQUNFLGFBQUE7RUFDQSwrQkFBQTtFQUNBLG9CQUFBO0VBQ0Esc0JBQUE7QURDRjtBQ0VBO0VBQ0Usc0JBQUE7QURDRjtBQ0VBO0VBQ0UsV0FBQTtBRENGO0FDRUE7RUFDRSxzQkFBQTtFQUNBLGVBQUE7QURDRjtBQ0VBLHVEQUFBO0FBQ0E7RUFDRSx5QkFBQTtBRENGO0FDRUE7RUFDRSxvQ0FBQTtBRENGO0FDRUE7RUFDRSx5QkFBQTtBRENGO0FDRUE7RUFDRSxvQ0FBQTtBRENGO0FDRUE7RUFDRSx5QkFBQTtBRENGO0FDRUE7RUFDRSxvQ0FBQTtBRENGO0FDRUE7RUFDRSx5QkFBQTtBRENGO0FDRUE7RUFDRSxvQ0FBQTtBRENGO0FDRUE7RUFDRSx5QkFBQTtFQUNBLGdCQUFBO0FEQ0Y7QUNFQSwwRUFBQTtBQUNBO0VBQ0Usc0JBQUE7QURDRjtBQ0VBO0VBQ0Usb0JBQUE7RUFBQSxhQUFBO0VBQ0EsOEJBQUE7RUFBQSw2QkFBQTtVQUFBLG1CQUFBO0VBQ0EsMEJBQUE7VUFBQSxvQkFBQTtFQUNBLFdBQUE7RUFDQSxzQkFBQTtFQUNBLFVBQUE7RUFDQSx5QkFBQTtFQUNBLGtCQUFBO0VBQ0EsZ0JBQUE7RUFDQSxnQkFBQTtFQUNBLGdCQUFBO0VBQ0Esa0VBQUE7RUFBQSwwREFBQTtBRENGO0FDRUE7RUFDRSxtQkFBQTtVQUFBLE9BQUE7RUFDQSxZQUFBO0VBQ0EsY0FBQTtFQUNBLFNBQUE7RUFDQSxVQUFBO0VBQ0EsWUFBQTtFQUNBLHVCQUFBO0VBQ0EsZ0JBQUE7RUFDQSxlQUFBO0FEQ0Y7QUNFQTtFQUNFLG1CQUFBO1VBQUEsY0FBQTtFQUNBLG9CQUFBO0VBQUEsYUFBQTtFQUNBLHlCQUFBO1VBQUEsbUJBQUE7RUFDQSx3QkFBQTtVQUFBLHVCQUFBO0VBQ0EsOEJBQUE7RUFDQSxtQkFBQTtFQUNBLGtCQUFBO0FEQ0Y7QUNFQTtFQUNFLGtCQUFBO0VBQ0EsY0FBQTtFQUNBLGtDQUFBO0FEQ0Y7QUNFQTtFQUNFLGlCQUFBO0VBQ0EsY0FBQTtFQUNBLGVBQUE7QURDRjtBQ0VBO0VBQ0UscUJBQUE7QURDRjtBQ0VBOztFQUVFLG9DQUFBO0VBQ0EseUNBQUE7RUFDQSxhQUFBO0FEQ0Y7QUNFQTtFQUNFLHlDQUFBO0VBQ0EsbUJBQUE7QURDRjtBQ0VBO0VBQ0Usb0JBQUE7RUFBQSxhQUFBO0VBQ0Esd0JBQUE7VUFBQSx1QkFBQTtFQUNBLFdBQUE7RUFDQSx3QkFBQTtFQUNBLG1CQUFBO0VBQ0EsZ0NBQUE7QURDRjtBQ0VBO0VBQ0UsbUJBQUE7VUFBQSxPQUFBO0VBQ0EsWUFBQTtFQUNBLG9CQUFBO0VBQUEsYUFBQTtFQUNBLDRCQUFBO0VBQUEsNkJBQUE7VUFBQSxzQkFBQTtFQUNBLFdBQUE7QURDRjtBQ0VBO0VBQ0UsZ0JBQUE7RUFDQSxrQkFBQTtFQUNBLHNCQUFBO0FEQ0Y7QUNFQTtFQUNFLGtCQUFBO0VBQ0EsY0FBQTtFQUNBLGlCQUFBO0FEQ0Y7QUNFQTtFQUNFLGdDQUFBO0FEQ0Y7QUNFQTtFQUNFLGFBQUE7RUFDQSx5Q0FBQTtFQUNBLG9CQUFBO0VBQ0Esa0JBQUE7RUFDQSx3QkFBQTtVQUFBLGtCQUFBO0FEQ0Y7QUNFQTtFQUNFLGNBQUE7RUFDQSxpQkFBQTtBRENGO0FDRUE7RUFDRSxzQkFBQTtFQUNBLFlBQUE7QURDRjtBQ0VBO0VBQ0UsNEVBQUE7RUFDQTtJQUNFLGdCQUFBO0lBQ0EsaUNBQUE7SUFDQSw4QkFBQTtJQUNBLHVCQUFBO0VEQ0Y7O0VDRUE7SUFDRSxnQkFBQTtFRENGOztFQ0VBO0lBQ0UscUJBQUE7SUFDQSxzQkFBQTtJQUNBLGlCQUFBO0VEQ0Y7O0VDRUE7SUFDRSxxQkFBQTtJQUNBLHNCQUFBO0VEQ0Y7O0VDRUE7SUFDRSxlQUFBO0lBQ0EsZ0JBQUE7RURDRjtBQUNGO0FDRUEsbUZBQUE7QUFDQTtFQUNFLGlDQUFBO0VBQ0EsOEJBQUE7QURBRjtBQ0dBO0VBQ0Usa0JBQUE7QURBRjtBQ0dBO0VBQ0UsZ0JBQUE7RUFDQSxlQUFBO0VBQ0EsMEJBQUE7RUFDQSxnQkFBQTtBREFGO0FDR0E7RUFDRSxnQkFBQTtFQUNBLHNCQUFBO0FEQUY7QUNHQTtFQUNFLGdCQUFBO0FEQUY7QUNHQSwyRUFBQTtBQUNBO0VBQ0Usc0JBQUE7QURBRjtBQ0VFO0VBQ0Usa0JBQUE7RUFDQSxlQUFBO0VBQ0Esc0JBQUE7QURBSjtBQ0dFO0VBQ0UsOEJBQUE7RUFDQSxzQkFBQTtFQUNBLHVCQUFBO0VBQ0EsZ0JBQUE7RUFDQSxzQkFBQTtFQUNBLGtCQUFBO0VBQ0EsZUFBQTtBRERKO0FDS0E7RUFDRTtJQUNFLDJCQUFBO0lBQ0Esc0ZBQUE7RURGRjtBQUNGO0FDS0E7RUFDRSxXQUFBO0VBQ0EsZUFBQTtFQUNBLFlBQUE7RUFDQSxzQkFBQTtFQUNBLGtCQUFBO0VBQ0Esa0VBQUE7QURIRjtBQ0tFO0VBUkY7SUFTSSwwQkFBQTtFREZGO0FBQ0Y7QUNLQTs7O0VBR0Usc0JBQUE7RUFDQSwwQkFBQTtBREZGO0FDS0E7O0VBRUUsY0FBQTtBREZGO0FDS0E7RUFDRSxXQUFBO0VBQ0EsZUFBQTtFQUNBLG9CQUFBO0FERkY7QUNLQTtFQUNFO0lBQ0UsdUNBQUE7SUFBQSx3Q0FBQTtZQUFBLGlDQUFBO0lBQ0EscUNBQUE7WUFBQSwrQkFBQTtFREZGOztFQ0tBO0lBQ0UsV0FBQTtJQUNBLGVBQUE7RURGRjtBQUNGIiwiZmlsZSI6InNyYy9hcHAvcGFnZXMvZ2VzdGlvbi1lbnRyZWdhcy1ib2RlZ2EvZ2VzdGlvbi1lbnRyZWdhcy1ib2RlZ2EuY29tcG9uZW50LnNjc3MiLCJzb3VyY2VzQ29udGVudCI6WyJAY2hhcnNldCBcIlVURi04XCI7XG4vKiBGaWxhIGRlbCBjb21ibyAobWlzbW8gY3JpdGVyaW8gcXVlIGRldm9sdWNpb25lcykuICovXG4ucmVtaVBybyB7XG4gIHBhZGRpbmc6IDEuNWVtIDJlbSAwO1xuICBtYXJnaW4tdG9wOiAwLjVlbTtcbiAgdGV4dC1hbGlnbjogY2VudGVyO1xufVxuXG4uZ2VzdGlvbi1tZW51LXN1cGVyaW9yIHtcbiAgbWFyZ2luLWxlZnQ6IDA7XG4gIG1hcmdpbi1yaWdodDogMDtcbn1cblxuLnB4LWdlc3Rpb24tbWVudSB7XG4gIHBhZGRpbmctbGVmdDogMC43NXJlbTtcbiAgcGFkZGluZy1yaWdodDogMC43NXJlbTtcbn1cblxuLyogRmlsdHJvczogZXRpcXVldGEgYXJyaWJhLCBjb250cm9sIGEgYW5jaG8gY29tcGxldG8gKGV2aXRhIHJlY29ydGVzIGVuIG3Ds3ZpbCkuICovXG4uZ2VzdGlvbi1maWx0cm9zIHtcbiAgb3ZlcmZsb3cteDogaGlkZGVuO1xufVxuXG4uZ2VzdGlvbi1maWx0cm8tY2FtcG8gLnRleHRQIHtcbiAgcGFkZGluZy1sZWZ0OiAwO1xufVxuXG4uZ2VzdGlvbi1maWx0cm8tZWRpdG9yIHtcbiAgd2lkdGg6IDEwMCU7XG4gIG1heC13aWR0aDogMTAwJTtcbn1cblxuLmdlc3Rpb24tZmlsdHJvLWVkaXRvci5kYXRlQiBkeC1kYXRlLWJveCxcbi5nZXN0aW9uLWZpbHRyby1lZGl0b3IuZGF0ZUIgZHgtbnVtYmVyLWJveCxcbi5nZXN0aW9uLWZpbHRyby1lZGl0b3IuZGF0ZUIgZHgtdGV4dC1ib3gge1xuICBtYXJnaW4tdG9wOiAwO1xuICBkaXNwbGF5OiBibG9jaztcbiAgd2lkdGg6IDEwMCU7XG4gIG1heC13aWR0aDogMTAwJTtcbn1cblxuOjpuZy1kZWVwIC5nZXN0aW9uLWZpbHRyby1lZGl0b3IgLmR4LXRleHRlZGl0b3Ige1xuICB3aWR0aDogMTAwJSAhaW1wb3J0YW50O1xuICBtYXgtd2lkdGg6IDEwMCU7XG59XG5cbi5nZXN0aW9uLWZpbHRyby1jZXJyYWRhcy1pbm5lciB7XG4gIG1pbi13aWR0aDogMDtcbn1cblxuLmdlc3Rpb24tZmlsdHJvLWNlcnJhZGFzLXRleHRvIHtcbiAgZmxleDogMSAxIDEycmVtO1xuICBtaW4td2lkdGg6IDA7XG4gIGxpbmUtaGVpZ2h0OiAxLjM1O1xuICB0ZXh0LWFsaWduOiBsZWZ0O1xufVxuXG5AbWVkaWEgKG1heC13aWR0aDogNzY3Ljk4cHgpIHtcbiAgLmdlc3Rpb24tZmlsdHJvLWFjY2lvbmVzIHtcbiAgICBkaXNwbGF5OiBmbGV4O1xuICAgIGZsZXgtZGlyZWN0aW9uOiBjb2x1bW47XG4gICAgYWxpZ24taXRlbXM6IHN0cmV0Y2g7XG4gICAgZ2FwOiAwLjVyZW07XG4gIH1cblxuICAuZ2VzdGlvbi1maWx0cm8tYWNjaW9uZXMgOjpuZy1kZWVwIC5keC1idXR0b24ge1xuICAgIHdpZHRoOiAxMDAlO1xuICAgIG1heC13aWR0aDogMTAwJTtcbiAgfVxuXG4gIC5nZXN0aW9uLWZpbHRyby1hY2Npb25lcyBkeC1idXR0b24gKyBkeC1idXR0b24ge1xuICAgIG1hcmdpbi1sZWZ0OiAwO1xuICB9XG59XG4ucmVtaVByby50aXR1bG9zIC5zZWxlY3Qge1xuICB0ZXh0LWFsaWduOiBjZW50ZXI7XG4gIGJhY2tncm91bmQtY29sb3I6IHdoaXRlO1xufVxuXG4uc2VsZWN0IHtcbiAgdGV4dC1hbGlnbjogY2VudGVyO1xuICBiYWNrZ3JvdW5kLWNvbG9yOiB3aGl0ZTtcbn1cblxuLnRpdHVsb3Mge1xuICB0ZXh0LWFsaWduOiBjZW50ZXI7XG4gIGZvbnQtd2VpZ2h0OiBib2xkO1xufVxuXG4vKiBNaXNtbyBjcml0ZXJpbyB2aXN1YWwgcXVlIGNhamEtbWVub3IgKHRleHRQLCBkYXRlQiwgY2VudHJhcikuICovXG4udGV4dFAge1xuICBmb250LXdlaWdodDogYm9sZDtcbiAgZm9udC1zaXplOiAxMXB0O1xufVxuXG4udGV4dFAyIHtcbiAgbWFyZ2luLXRvcDogMC4zZW07XG59XG5cbi5kYXRlQiBkeC1kYXRlLWJveCxcbi5kYXRlQiBkeC1udW1iZXItYm94LFxuLmRhdGVCIGR4LXRleHQtYm94IHtcbiAgbWFyZ2luLXRvcDogLTAuOGVtO1xufVxuXG4uY2VudHJhciB7XG4gIHRleHQtYWxpZ246IGNlbnRlcjtcbn1cblxuLmdlc3Rpb24tZW50cmVnYXMtY2FyZCB7XG4gIGJvcmRlci1yYWRpdXM6IDAuMjVyZW07XG59XG5cbi5nZXN0aW9uLWVudHJlZ2FzLWNhcmQgLmNhcmQtaGVhZGVyIHtcbiAgYmFja2dyb3VuZC1jb2xvcjogI2Y4ZjlmYTtcbn1cblxuLmNvbnMtbGFiZWwge1xuICBmb250LXNpemU6IGluaGVyaXQ7XG59XG5cbi5jb25zLXZhbG9yIHtcbiAgZm9udC1zaXplOiA0cmVtO1xuICBmb250LXdlaWdodDogYm9sZDtcbiAgbWFyZ2luLXRvcDogLTFyZW07XG4gIGxpbmUtaGVpZ2h0OiAxLjE7XG59XG5cbi5nZXN0aW9uLWVudHJlZ2FzLWFjY2lvbmVzIGR4LWJ1dHRvbiArIGR4LWJ1dHRvbiB7XG4gIG1hcmdpbi1sZWZ0OiAwLjVyZW07XG59XG5cbjo6bmctZGVlcCAuZ2VzdGlvbi1lbnRyZWdhcy1jYXJkIC5kYXRlQiAuZHgtdGV4dGVkaXRvci1pbnB1dCB7XG4gIHRleHQtYWxpZ246IGNlbnRlcjtcbn1cblxudGFibGUgdGQsXG50YWJsZSB0aCB7XG4gIHZlcnRpY2FsLWFsaWduOiBtaWRkbGU7XG59XG5cbi50cmF6YWJpbGlkYWQtcG9wdXAgaDYge1xuICBjb2xvcjogIzMzMztcbn1cblxuLnRyYXphYmlsaWRhZC1wb3B1cCAudy0yNSB7XG4gIHdpZHRoOiAyNSU7XG59XG5cbi5lbnRyZWdhLWNwLWlucHV0cyB7XG4gIGdhcDogNHB4O1xufVxuXG4vKiDigJTigJQgU01BUlQtRElTUEFUQ0ggKG3Ds3ZpbCk6IGFjb3JkZcOzbiBmYWN0dXJhIOKGkiDDrXRlbSDihpIgZm9ybXVsYXJpbyDigJTigJQgKi9cbi5zbWFydC1kaXNwYXRjaC1tb3ZpbCB7XG4gIG1hcmdpbi1ib3R0b206IDAuMjVyZW07XG59XG5cbi5zZC1sZXllbmRhIHtcbiAgZGlzcGxheTogZmxleDtcbiAgZmxleC13cmFwOiB3cmFwO1xuICBnYXA6IDAuNXJlbSAwLjg1cmVtO1xuICBhbGlnbi1pdGVtczogY2VudGVyO1xufVxuXG4uc2QtbGV5ZW5kYS1pdGVtIHtcbiAgZGlzcGxheTogaW5saW5lLWZsZXg7XG4gIGFsaWduLWl0ZW1zOiBjZW50ZXI7XG4gIGdhcDogMC4zNXJlbTtcbn1cblxuLnNkLXB1bnRvIHtcbiAgZGlzcGxheTogaW5saW5lLWJsb2NrO1xuICB3aWR0aDogMTBweDtcbiAgaGVpZ2h0OiAxMHB4O1xuICBib3JkZXItcmFkaXVzOiA1MCU7XG4gIGZsZXgtc2hyaW5rOiAwO1xufVxuXG4uc2QtZmFjdHVyYS1jYXJkIHtcbiAgYm9yZGVyOiAxcHggc29saWQgI2RlZTJlNjtcbiAgYm9yZGVyLXJhZGl1czogNnB4O1xuICBvdmVyZmxvdzogaGlkZGVuO1xuICBiYWNrZ3JvdW5kOiAjZmZmO1xufVxuXG4uc2QtZmFjdHVyYS1oZWFkZXIge1xuICB3aWR0aDogMTAwJTtcbiAgZGlzcGxheTogZmxleDtcbiAgYWxpZ24taXRlbXM6IGZsZXgtc3RhcnQ7XG4gIGdhcDogMC41cmVtO1xuICBwYWRkaW5nOiAwLjY1cmVtIDAuNzVyZW07XG4gIGJvcmRlcjogbm9uZTtcbiAgYmFja2dyb3VuZDogI2Y4ZjlmYTtcbiAgdGV4dC1hbGlnbjogbGVmdDtcbiAgY3Vyc29yOiBwb2ludGVyO1xufVxuXG4uc2QtZmFjdHVyYS1oZWFkZXI6Zm9jdXMge1xuICBvdXRsaW5lOiAycHggc29saWQgcmdiYSgwLCA5NywgMTY5LCAwLjM1KTtcbiAgb3V0bGluZS1vZmZzZXQ6IDFweDtcbn1cblxuLnNkLWZhY3R1cmEtdGV4dG8ge1xuICBmbGV4OiAxO1xuICBtaW4td2lkdGg6IDA7XG4gIGRpc3BsYXk6IGZsZXg7XG4gIGZsZXgtZGlyZWN0aW9uOiBjb2x1bW47XG4gIGdhcDogMC4xNXJlbTtcbn1cblxuLnNkLWZhY3R1cmEtZG9jIHtcbiAgZm9udC13ZWlnaHQ6IDcwMDtcbiAgZm9udC1zaXplOiAwLjk1cmVtO1xufVxuXG4uc2QtZmFjdHVyYS1jbGllbnRlIHtcbiAgZm9udC1zaXplOiAwLjg4cmVtO1xuICBsaW5lLWhlaWdodDogMS4yNTtcbiAgd29yZC1icmVhazogYnJlYWstd29yZDtcbn1cblxuLnNkLWZhY3R1cmEtbWV0YSB7XG4gIGZvbnQtc2l6ZTogMC43NXJlbTtcbiAgY29sb3I6ICM2Yzc1N2Q7XG59XG5cbi5zZC1jaGV2cm9uIHtcbiAgdHJhbnNpdGlvbjogdHJhbnNmb3JtIDAuMnMgZWFzZTtcbiAgYWxpZ24tc2VsZjogY2VudGVyO1xuICBjb2xvcjogIzZjNzU3ZDtcbiAgZmxleC1zaHJpbms6IDA7XG59XG5cbi5zZC1jaGV2cm9uLXVwIHtcbiAgdHJhbnNmb3JtOiByb3RhdGUoLTE4MGRlZyk7XG59XG5cbi5zZC1jaGV2cm9uLXNtIHtcbiAgZm9udC1zaXplOiAwLjcycmVtO1xufVxuXG4uc2QtZmFjdHVyYS1jdWVycG8ge1xuICBwYWRkaW5nOiAwLjVyZW0gMC42NXJlbSAwLjc1cmVtO1xuICBiYWNrZ3JvdW5kOiAjZmZmO1xuICBib3JkZXItdG9wOiAxcHggc29saWQgI2U5ZWNlZjtcbn1cblxuLnNkLWl0ZW0td3JhcCB7XG4gIGJvcmRlcjogMXB4IHNvbGlkICNlOWVjZWY7XG4gIGJvcmRlci1yYWRpdXM6IDZweDtcbiAgbWFyZ2luLWJvdHRvbTogMC40NXJlbTtcbiAgb3ZlcmZsb3c6IGhpZGRlbjtcbiAgYmFja2dyb3VuZDogI2ZhZmFmYTtcbn1cblxuLnNkLWl0ZW0tY2FiIHtcbiAgd2lkdGg6IDEwMCU7XG4gIGRpc3BsYXk6IGZsZXg7XG4gIGZsZXgtd3JhcDogd3JhcDtcbiAgYWxpZ24taXRlbXM6IGNlbnRlcjtcbiAgZ2FwOiAwLjM1cmVtIDAuNXJlbTtcbiAgcGFkZGluZzogMC41NXJlbSAwLjZyZW07XG4gIGJvcmRlcjogbm9uZTtcbiAgYmFja2dyb3VuZDogdHJhbnNwYXJlbnQ7XG4gIHRleHQtYWxpZ246IGxlZnQ7XG4gIGN1cnNvcjogcG9pbnRlcjtcbn1cblxuLnNkLWd1YXJkYWRvLW9rIHtcbiAgZm9udC1zaXplOiAxLjE1cmVtO1xuICBmbGV4LXNocmluazogMDtcbn1cblxuLnNkLWd1YXJkYXItbGluZWEtd3JhcCB7XG4gIGRpc3BsYXk6IGZsZXg7XG4gIGZsZXgtd3JhcDogd3JhcDtcbiAgYWxpZ24taXRlbXM6IGNlbnRlcjtcbn1cblxuLmdlc3Rpb24tbGluZWEtb2sge1xuICBkaXNwbGF5OiBpbmxpbmUtYmxvY2s7XG4gIHZlcnRpY2FsLWFsaWduOiBtaWRkbGU7XG4gIGZvbnQtc2l6ZTogMS4xcmVtO1xufVxuXG4uc2QtaXRlbS1jYWI6Zm9jdXMge1xuICBvdXRsaW5lOiAycHggc29saWQgcmdiYSgwLCA5NywgMTY5LCAwLjM1KTtcbiAgb3V0bGluZS1vZmZzZXQ6IDFweDtcbn1cblxuLnNkLWl0ZW0tbm9tYnJlIHtcbiAgZmxleDogMSAxIDEwMCU7XG4gIGZvbnQtd2VpZ2h0OiA2MDA7XG4gIGZvbnQtc2l6ZTogMC45cmVtO1xuICBsaW5lLWhlaWdodDogMS4zO1xuICB3b3JkLWJyZWFrOiBicmVhay13b3JkO1xufVxuXG4uc2QtaXRlbS1yZXN1bWVuIHtcbiAgZmxleDogMSAxIGF1dG87XG4gIG1pbi13aWR0aDogMDtcbn1cblxuLnNkLWl0ZW0tZGV0YWxsZSB7XG4gIHBhZGRpbmc6IDAuNjVyZW0gMC43NXJlbSAwLjg1cmVtO1xuICBiYWNrZ3JvdW5kOiAjZmZmO1xuICBib3JkZXItdG9wOiAxcHggZGFzaGVkICNkZWUyZTY7XG59XG5cbi5zZC1rdi1ncmlkIHtcbiAgZGlzcGxheTogZ3JpZDtcbiAgZ3JpZC10ZW1wbGF0ZS1jb2x1bW5zOiBhdXRvIDFmcjtcbiAgZ2FwOiAwLjI1cmVtIDAuNzVyZW07XG4gIG1hcmdpbi1ib3R0b206IDAuNzVyZW07XG59XG5cbi5zZC1jYW1wbyB7XG4gIG1hcmdpbi1ib3R0b206IDAuNjVyZW07XG59XG5cbi5zZC1jZXJyYXItcHJvY2VzbyA6Om5nLWRlZXAgLmR4LWJ1dHRvbiB7XG4gIHdpZHRoOiAxMDAlO1xufVxuXG4uc2QtY2FtcG8gOjpuZy1kZWVwIC5keC10ZXh0ZWRpdG9yIHtcbiAgd2lkdGg6IDEwMCUgIWltcG9ydGFudDtcbiAgbWF4LXdpZHRoOiAxMDAlO1xufVxuXG4vKiBDw7NkaWdvIGRlIGNvbG9yZXMgKHRleHRvIG1hdGVyaWFsICsgcHVudG8gZmFjdHVyYSkgKi9cbi5zZC1lc3QtdmVyZGUge1xuICBjb2xvcjogIzFlN2UzNCAhaW1wb3J0YW50O1xufVxuXG4uc2QtcHVudG8uc2QtZXN0LXZlcmRlIHtcbiAgYmFja2dyb3VuZC1jb2xvcjogIzI4YTc0NSAhaW1wb3J0YW50O1xufVxuXG4uc2QtZXN0LWF6dWwge1xuICBjb2xvcjogIzAwNDA4NSAhaW1wb3J0YW50O1xufVxuXG4uc2QtcHVudG8uc2QtZXN0LWF6dWwge1xuICBiYWNrZ3JvdW5kLWNvbG9yOiAjMDA3YmZmICFpbXBvcnRhbnQ7XG59XG5cbi5zZC1lc3Qtcm9qbyB7XG4gIGNvbG9yOiAjYzgyMzMzICFpbXBvcnRhbnQ7XG59XG5cbi5zZC1wdW50by5zZC1lc3Qtcm9qbyB7XG4gIGJhY2tncm91bmQtY29sb3I6ICNkYzM1NDUgIWltcG9ydGFudDtcbn1cblxuLnNkLWVzdC1hbWFyaWxsbyB7XG4gIGNvbG9yOiAjODU2NDA0ICFpbXBvcnRhbnQ7XG59XG5cbi5zZC1wdW50by5zZC1lc3QtYW1hcmlsbG8ge1xuICBiYWNrZ3JvdW5kLWNvbG9yOiAjZmZjMTA3ICFpbXBvcnRhbnQ7XG59XG5cbi5zZC1pdGVtLW5vbWJyZS5zZC1pdGVtLWFsZXJ0YSB7XG4gIGNvbG9yOiAjYjAwMDIwICFpbXBvcnRhbnQ7XG4gIGZvbnQtd2VpZ2h0OiA3MDA7XG59XG5cbi8qIExpc3RhZG8gZW50cmVnYXMgKG3Ds3ZpbCk6IHRhcmpldGFzIHBsYW5hcywgaW5mb3JtYXRpdmFzLCBzaW4gYWNvcmRlw7NuICovXG4ubGlzdGFkby1lbnRyZWdhcy1tb3ZpbCB7XG4gIG1hcmdpbi1ib3R0b206IDAuMjVyZW07XG59XG5cbi5saXN0YWRvLWVudHJlZ2EtbW92aWwtY2FyZCB7XG4gIGRpc3BsYXk6IGZsZXg7XG4gIGZsZXgtZGlyZWN0aW9uOiByb3c7XG4gIGFsaWduLWl0ZW1zOiBzdHJldGNoO1xuICB3aWR0aDogMTAwJTtcbiAgbWFyZ2luLWJvdHRvbTogMC42NXJlbTtcbiAgcGFkZGluZzogMDtcbiAgYm9yZGVyOiAxcHggc29saWQgI2RlZTJlNjtcbiAgYm9yZGVyLXJhZGl1czogNnB4O1xuICBiYWNrZ3JvdW5kOiAjZmZmO1xuICB0ZXh0LWFsaWduOiBsZWZ0O1xuICBvdmVyZmxvdzogaGlkZGVuO1xuICB0cmFuc2l0aW9uOiBib3gtc2hhZG93IDAuMTVzIGVhc2UsIGJvcmRlci1jb2xvciAwLjE1cyBlYXNlO1xufVxuXG4ubGlzdGFkby1lbnRyZWdhLW1vdmlsLW1haW4ge1xuICBmbGV4OiAxO1xuICBtaW4td2lkdGg6IDA7XG4gIGRpc3BsYXk6IGJsb2NrO1xuICBtYXJnaW46IDA7XG4gIHBhZGRpbmc6IDA7XG4gIGJvcmRlcjogbm9uZTtcbiAgYmFja2dyb3VuZDogdHJhbnNwYXJlbnQ7XG4gIHRleHQtYWxpZ246IGxlZnQ7XG4gIGN1cnNvcjogcG9pbnRlcjtcbn1cblxuLmxpc3RhZG8tZW50cmVnYS1tb3ZpbC1hY2Npb25lcyB7XG4gIGZsZXg6IDAgMCBhdXRvO1xuICBkaXNwbGF5OiBmbGV4O1xuICBhbGlnbi1pdGVtczogY2VudGVyO1xuICBqdXN0aWZ5LWNvbnRlbnQ6IGNlbnRlcjtcbiAgYm9yZGVyLWxlZnQ6IDFweCBzb2xpZCAjZTllY2VmO1xuICBiYWNrZ3JvdW5kOiAjZmFmYmZjO1xuICBwYWRkaW5nOiAwIDAuMjVyZW07XG59XG5cbi5nZS1idG4tZGV2b2x1Y2lvbi1tb3ZpbCB7XG4gIGZvbnQtc2l6ZTogMS4yNXJlbTtcbiAgbGluZS1oZWlnaHQ6IDE7XG4gIHBhZGRpbmc6IDAuNXJlbSAwLjM1cmVtICFpbXBvcnRhbnQ7XG59XG5cbi5nZS1idG4tZGV2b2x1Y2lvbi1ncmlkIHtcbiAgZm9udC1zaXplOiAxLjFyZW07XG4gIGxpbmUtaGVpZ2h0OiAxO1xuICBtaW4td2lkdGg6IDJyZW07XG59XG5cbi5zZC1kZXZvbHVjaW9uLW1vdmlsLWJ0biBpIHtcbiAgbWFyZ2luLXJpZ2h0OiAwLjE1cmVtO1xufVxuXG4ubGlzdGFkby1lbnRyZWdhLW1vdmlsLWNhcmQ6aG92ZXIsXG4ubGlzdGFkby1lbnRyZWdhLW1vdmlsLWNhcmQ6Zm9jdXMtd2l0aGluIHtcbiAgYm9yZGVyLWNvbG9yOiByZ2JhKDAsIDk3LCAxNjksIDAuNDUpO1xuICBib3gtc2hhZG93OiAwIDJweCA4cHggcmdiYSgwLCAwLCAwLCAwLjA2KTtcbiAgb3V0bGluZTogbm9uZTtcbn1cblxuLmxpc3RhZG8tZW50cmVnYS1tb3ZpbC1tYWluOmZvY3VzLXZpc2libGUge1xuICBvdXRsaW5lOiAycHggc29saWQgcmdiYSgwLCA5NywgMTY5LCAwLjM1KTtcbiAgb3V0bGluZS1vZmZzZXQ6IDJweDtcbn1cblxuLmxpc3RhZG8tZW50cmVnYS1tb3ZpbC1jYWIge1xuICBkaXNwbGF5OiBmbGV4O1xuICBhbGlnbi1pdGVtczogZmxleC1zdGFydDtcbiAgZ2FwOiAwLjVyZW07XG4gIHBhZGRpbmc6IDAuNjVyZW0gMC43NXJlbTtcbiAgYmFja2dyb3VuZDogI2Y4ZjlmYTtcbiAgYm9yZGVyLWJvdHRvbTogMXB4IHNvbGlkICNlOWVjZWY7XG59XG5cbi5saXN0YWRvLWVudHJlZ2EtbW92aWwtY2FiLXRleHRvIHtcbiAgZmxleDogMTtcbiAgbWluLXdpZHRoOiAwO1xuICBkaXNwbGF5OiBmbGV4O1xuICBmbGV4LWRpcmVjdGlvbjogY29sdW1uO1xuICBnYXA6IDAuMnJlbTtcbn1cblxuLmxpc3RhZG8tZW50cmVnYS1tb3ZpbC1kb2Mge1xuICBmb250LXdlaWdodDogNzAwO1xuICBmb250LXNpemU6IDAuOTVyZW07XG4gIHdvcmQtYnJlYWs6IGJyZWFrLXdvcmQ7XG59XG5cbi5saXN0YWRvLWVudHJlZ2EtbW92aWwtc3ViIHtcbiAgZm9udC1zaXplOiAwLjc4cmVtO1xuICBjb2xvcjogIzZjNzU3ZDtcbiAgbGluZS1oZWlnaHQ6IDEuMjU7XG59XG5cbi5saXN0YWRvLWVudHJlZ2EtbW92aWwtY3VlcnBvIHtcbiAgcGFkZGluZzogMC42NXJlbSAwLjc1cmVtIDAuNzVyZW07XG59XG5cbi5saXN0YWRvLWVudHJlZ2EtbW92aWwta3Yge1xuICBkaXNwbGF5OiBncmlkO1xuICBncmlkLXRlbXBsYXRlLWNvbHVtbnM6IG1pbm1heCgwLCAzOCUpIDFmcjtcbiAgZ2FwOiAwLjM1cmVtIDAuNjVyZW07XG4gIGZvbnQtc2l6ZTogMC44OHJlbTtcbiAgYWxpZ24taXRlbXM6IHN0YXJ0O1xufVxuXG4ubGlzdGFkby1lbnRyZWdhLW1vdmlsLWxibCB7XG4gIGNvbG9yOiAjNmM3NTdkO1xuICBmb250LXNpemU6IDAuOHJlbTtcbn1cblxuLmxpc3RhZG8tZW50cmVnYS1tb3ZpbC12YWwge1xuICB3b3JkLWJyZWFrOiBicmVhay13b3JkO1xuICBtaW4td2lkdGg6IDA7XG59XG5cbkBtZWRpYSAobWF4LXdpZHRoOiA3NjcuOThweCkge1xuICAvKiBQcm9kdWN0b3MgcGVuZGllbnRlczogc2Nyb2xsIGhvcml6b250YWwgZW4gcGFudGFsbGFzIGVzdHJlY2hhcyAobcOzdmlsKS4gKi9cbiAgLnByb2R1Y3Rvcy1wZW5kaWVudGVzLWdyaWQtc2Nyb2xsIHtcbiAgICBvdmVyZmxvdy14OiBhdXRvO1xuICAgIC13ZWJraXQtb3ZlcmZsb3ctc2Nyb2xsaW5nOiB0b3VjaDtcbiAgICBvdmVyc2Nyb2xsLWJlaGF2aW9yLXg6IGNvbnRhaW47XG4gICAgcGFkZGluZy1ib3R0b206IDAuMzVyZW07XG4gIH1cblxuICAucHJvZHVjdG9zLXBlbmRpZW50ZXMtZ3JpZC1zY3JvbGwgOjpuZy1kZWVwIC5keC1kYXRhZ3JpZCB7XG4gICAgbWluLXdpZHRoOiA1MnJlbTtcbiAgfVxuXG4gIC5yZW1pUHJvIHtcbiAgICBwYWRkaW5nLWxlZnQ6IDAuNzVyZW07XG4gICAgcGFkZGluZy1yaWdodDogMC43NXJlbTtcbiAgICBwYWRkaW5nLXRvcDogMXJlbTtcbiAgfVxuXG4gIC5nZXN0aW9uLWVudHJlZ2FzLWNhcmQgLmNhcmQtYm9keSB7XG4gICAgcGFkZGluZy1sZWZ0OiAwLjc1cmVtO1xuICAgIHBhZGRpbmctcmlnaHQ6IDAuNzVyZW07XG4gIH1cblxuICAuZ2VzdGlvbi1maWx0cm9zIHtcbiAgICBwYWRkaW5nLWxlZnQ6IDA7XG4gICAgcGFkZGluZy1yaWdodDogMDtcbiAgfVxufVxuLyogVHJhemFiaWxpZGFkOiB0YWJsYSBjb24gc2Nyb2xsIHTDoWN0aWwgeSBib3TDs24gZGUgY29ycmVjY2nDs24gYWNjZXNpYmxlIGVuIG3Ds3ZpbCAqL1xuLnRyYXotaGlzdG9yaWFsLXNjcm9sbCB7XG4gIC13ZWJraXQtb3ZlcmZsb3ctc2Nyb2xsaW5nOiB0b3VjaDtcbiAgb3ZlcnNjcm9sbC1iZWhhdmlvci14OiBjb250YWluO1xufVxuXG4udHJhei1oaXN0b3JpYWwtdGFibGUge1xuICBmb250LXNpemU6IDAuODVyZW07XG59XG5cbi50cmF6LWJ0bi1lZGl0IHtcbiAgbWluLWhlaWdodDogNDRweDtcbiAgbWluLXdpZHRoOiA0NHB4O1xuICB0b3VjaC1hY3Rpb246IG1hbmlwdWxhdGlvbjtcbiAgbGluZS1oZWlnaHQ6IDEuMjtcbn1cblxuLnRyYXotbm90YXMtY2VsZGEge1xuICBtYXgtd2lkdGg6IDE0cmVtO1xuICB3b3JkLWJyZWFrOiBicmVhay13b3JkO1xufVxuXG4udHJhei1lZGl0YXItYWNjaW9uZXMgOjpuZy1kZWVwIC5keC1idXR0b24ge1xuICBtaW4taGVpZ2h0OiA0NHB4O1xufVxuXG4vKiBQb3B1cCBcIkNvcnJlZ2lyIG1vdmltaWVudG86IHTDrXR1bG8gbXVsdGlsw61uZWEgeSBjb250ZW5pZG8gc2luIG92ZXJmbG93ICovXG46Om5nLWRlZXAgLnRyYXotcG9wdXAtY29ycmVnaXItb3ZlcmxheSB7XG4gIGJveC1zaXppbmc6IGJvcmRlci1ib3g7XG59XG46Om5nLWRlZXAgLnRyYXotcG9wdXAtY29ycmVnaXItb3ZlcmxheSAuZHgtcG9wdXAtY29udGVudCB7XG4gIG92ZXJmbG93LXg6IGhpZGRlbjtcbiAgbWF4LXdpZHRoOiAxMDAlO1xuICBib3gtc2l6aW5nOiBib3JkZXItYm94O1xufVxuOjpuZy1kZWVwIC50cmF6LXBvcHVwLWNvcnJlZ2lyLW92ZXJsYXkgLmR4LXBvcHVwLXRpdGxlIHtcbiAgd2hpdGUtc3BhY2U6IG5vcm1hbCAhaW1wb3J0YW50O1xuICB3b3JkLWJyZWFrOiBicmVhay13b3JkO1xuICBvdmVyZmxvdy13cmFwOiBhbnl3aGVyZTtcbiAgbGluZS1oZWlnaHQ6IDEuMztcbiAgcGFkZGluZy1yaWdodDogMi43NXJlbTtcbiAgZm9udC1zaXplOiAwLjk1cmVtO1xuICBtYXgtd2lkdGg6IDEwMCU7XG59XG5cbkBtZWRpYSAobWF4LXdpZHRoOiA3NjcuOThweCkge1xuICA6Om5nLWRlZXAgLnRyYXotcG9wdXAtY29ycmVnaXItb3ZlcmxheSB7XG4gICAgbWF4LXdpZHRoOiAxMDB2dyAhaW1wb3J0YW50O1xuICAgIHdpZHRoOiBjYWxjKDEwMHZ3IC0gZW52KHNhZmUtYXJlYS1pbnNldC1sZWZ0KSAtIGVudihzYWZlLWFyZWEtaW5zZXQtcmlnaHQpKSAhaW1wb3J0YW50O1xuICB9XG59XG4udHJhei1wb3B1cC1lZGl0YXItYm9keSB7XG4gIHdpZHRoOiAxMDAlO1xuICBtYXgtd2lkdGg6IDEwMCU7XG4gIG1pbi13aWR0aDogMDtcbiAgYm94LXNpemluZzogYm9yZGVyLWJveDtcbiAgb3ZlcmZsb3cteDogaGlkZGVuO1xuICBwYWRkaW5nOiAwLjc1cmVtIDAuNzVyZW0gbWF4KDAuNzVyZW0sIGVudihzYWZlLWFyZWEtaW5zZXQtYm90dG9tKSk7XG59XG5AbWVkaWEgKG1pbi13aWR0aDogNTc2cHgpIHtcbiAgLnRyYXotcG9wdXAtZWRpdGFyLWJvZHkge1xuICAgIHBhZGRpbmc6IDFyZW0gMS4yNXJlbSAxcmVtO1xuICB9XG59XG5cbi50cmF6LXBvcHVwLWVkaXRhci1ib2R5IDo6bmctZGVlcCAuZHgtdGV4dGVkaXRvcixcbi50cmF6LXBvcHVwLWVkaXRhci1ib2R5IDo6bmctZGVlcCAuZHgtZHJvcGRvd25lZGl0b3IsXG4udHJhei1wb3B1cC1lZGl0YXItYm9keSA6Om5nLWRlZXAgLmR4LW51bWJlcmJveCB7XG4gIHdpZHRoOiAxMDAlICFpbXBvcnRhbnQ7XG4gIG1heC13aWR0aDogMTAwJSAhaW1wb3J0YW50O1xufVxuXG4udHJhei1wb3B1cC1lZGl0YXItYm9keSA6Om5nLWRlZXAgLmR4LXRleHRlZGl0b3IuZHgtZWRpdG9yLW91dGxpbmVkLFxuLnRyYXotcG9wdXAtZWRpdGFyLWJvZHkgOjpuZy1kZWVwIC5keC1kcm9wZG93bmVkaXRvci5keC1lZGl0b3Itb3V0bGluZWQge1xuICBkaXNwbGF5OiBibG9jaztcbn1cblxuLnRyYXotZWRpdGFyLWFjY2lvbmVzIHtcbiAgd2lkdGg6IDEwMCU7XG4gIG1heC13aWR0aDogMTAwJTtcbiAgcGFkZGluZy10b3A6IDAuMjVyZW07XG59XG5cbkBtZWRpYSAobWF4LXdpZHRoOiA1NzUuOThweCkge1xuICAudHJhei1lZGl0YXItYWNjaW9uZXMge1xuICAgIGZsZXgtZGlyZWN0aW9uOiBjb2x1bW4gIWltcG9ydGFudDtcbiAgICBhbGlnbi1pdGVtczogc3RyZXRjaCAhaW1wb3J0YW50O1xuICB9XG5cbiAgLnRyYXotZWRpdGFyLWFjY2lvbmVzIDo6bmctZGVlcCAuZHgtYnV0dG9uIHtcbiAgICB3aWR0aDogMTAwJTtcbiAgICBtYXgtd2lkdGg6IDEwMCU7XG4gIH1cbn0iLCIvKiBGaWxhIGRlbCBjb21ibyAobWlzbW8gY3JpdGVyaW8gcXVlIGRldm9sdWNpb25lcykuICovXHJcbi5yZW1pUHJvIHtcclxuICBwYWRkaW5nOiAxLjVlbSAyZW0gMDtcclxuICBtYXJnaW4tdG9wOiAwLjVlbTtcclxuICB0ZXh0LWFsaWduOiBjZW50ZXI7XHJcbn1cclxuXHJcbi5nZXN0aW9uLW1lbnUtc3VwZXJpb3Ige1xyXG4gIG1hcmdpbi1sZWZ0OiAwO1xyXG4gIG1hcmdpbi1yaWdodDogMDtcclxufVxyXG5cclxuLnB4LWdlc3Rpb24tbWVudSB7XHJcbiAgcGFkZGluZy1sZWZ0OiAwLjc1cmVtO1xyXG4gIHBhZGRpbmctcmlnaHQ6IDAuNzVyZW07XHJcbn1cclxuXHJcbi8qIEZpbHRyb3M6IGV0aXF1ZXRhIGFycmliYSwgY29udHJvbCBhIGFuY2hvIGNvbXBsZXRvIChldml0YSByZWNvcnRlcyBlbiBtw7N2aWwpLiAqL1xyXG4uZ2VzdGlvbi1maWx0cm9zIHtcclxuICBvdmVyZmxvdy14OiBoaWRkZW47XHJcbn1cclxuXHJcbi5nZXN0aW9uLWZpbHRyby1jYW1wbyAudGV4dFAge1xyXG4gIHBhZGRpbmctbGVmdDogMDtcclxufVxyXG5cclxuLmdlc3Rpb24tZmlsdHJvLWVkaXRvciB7XHJcbiAgd2lkdGg6IDEwMCU7XHJcbiAgbWF4LXdpZHRoOiAxMDAlO1xyXG59XHJcblxyXG4uZ2VzdGlvbi1maWx0cm8tZWRpdG9yLmRhdGVCIGR4LWRhdGUtYm94LFxyXG4uZ2VzdGlvbi1maWx0cm8tZWRpdG9yLmRhdGVCIGR4LW51bWJlci1ib3gsXHJcbi5nZXN0aW9uLWZpbHRyby1lZGl0b3IuZGF0ZUIgZHgtdGV4dC1ib3gge1xyXG4gIG1hcmdpbi10b3A6IDA7XHJcbiAgZGlzcGxheTogYmxvY2s7XHJcbiAgd2lkdGg6IDEwMCU7XHJcbiAgbWF4LXdpZHRoOiAxMDAlO1xyXG59XHJcblxyXG46Om5nLWRlZXAgLmdlc3Rpb24tZmlsdHJvLWVkaXRvciAuZHgtdGV4dGVkaXRvciB7XHJcbiAgd2lkdGg6IDEwMCUgIWltcG9ydGFudDtcclxuICBtYXgtd2lkdGg6IDEwMCU7XHJcbn1cclxuXHJcbi5nZXN0aW9uLWZpbHRyby1jZXJyYWRhcy1pbm5lciB7XHJcbiAgbWluLXdpZHRoOiAwO1xyXG59XHJcblxyXG4uZ2VzdGlvbi1maWx0cm8tY2VycmFkYXMtdGV4dG8ge1xyXG4gIGZsZXg6IDEgMSAxMnJlbTtcclxuICBtaW4td2lkdGg6IDA7XHJcbiAgbGluZS1oZWlnaHQ6IDEuMzU7XHJcbiAgdGV4dC1hbGlnbjogbGVmdDtcclxufVxyXG5cclxuQG1lZGlhIChtYXgtd2lkdGg6IDc2Ny45OHB4KSB7XHJcbiAgLmdlc3Rpb24tZmlsdHJvLWFjY2lvbmVzIHtcclxuICAgIGRpc3BsYXk6IGZsZXg7XHJcbiAgICBmbGV4LWRpcmVjdGlvbjogY29sdW1uO1xyXG4gICAgYWxpZ24taXRlbXM6IHN0cmV0Y2g7XHJcbiAgICBnYXA6IDAuNXJlbTtcclxuICB9XHJcblxyXG4gIC5nZXN0aW9uLWZpbHRyby1hY2Npb25lcyA6Om5nLWRlZXAgLmR4LWJ1dHRvbiB7XHJcbiAgICB3aWR0aDogMTAwJTtcclxuICAgIG1heC13aWR0aDogMTAwJTtcclxuICB9XHJcblxyXG4gIC5nZXN0aW9uLWZpbHRyby1hY2Npb25lcyBkeC1idXR0b24gKyBkeC1idXR0b24ge1xyXG4gICAgbWFyZ2luLWxlZnQ6IDA7XHJcbiAgfVxyXG59XHJcblxyXG4ucmVtaVByby50aXR1bG9zIC5zZWxlY3Qge1xyXG4gIHRleHQtYWxpZ246IGNlbnRlcjtcclxuICBiYWNrZ3JvdW5kLWNvbG9yOiB3aGl0ZTtcclxufVxyXG5cclxuLnNlbGVjdHtcclxuICB0ZXh0LWFsaWduOiBjZW50ZXI7XHJcbiAgYmFja2dyb3VuZC1jb2xvcjogd2hpdGU7XHJcbn1cclxuXHJcbi50aXR1bG9ze1xyXG4gIHRleHQtYWxpZ246IGNlbnRlcjtcclxuICBmb250LXdlaWdodDogYm9sZDtcclxufVxyXG5cclxuLyogTWlzbW8gY3JpdGVyaW8gdmlzdWFsIHF1ZSBjYWphLW1lbm9yICh0ZXh0UCwgZGF0ZUIsIGNlbnRyYXIpLiAqL1xyXG4udGV4dFAge1xyXG4gIGZvbnQtd2VpZ2h0OiBib2xkO1xyXG4gIGZvbnQtc2l6ZTogMTFwdDtcclxufVxyXG5cclxuLnRleHRQMiB7XHJcbiAgbWFyZ2luLXRvcDogMC4zZW07XHJcbn1cclxuXHJcbi5kYXRlQiBkeC1kYXRlLWJveCxcclxuLmRhdGVCIGR4LW51bWJlci1ib3gsXHJcbi5kYXRlQiBkeC10ZXh0LWJveCB7XHJcbiAgbWFyZ2luLXRvcDogLTAuOGVtO1xyXG59XHJcblxyXG4uY2VudHJhciB7XHJcbiAgdGV4dC1hbGlnbjogY2VudGVyO1xyXG59XHJcblxyXG4uZ2VzdGlvbi1lbnRyZWdhcy1jYXJkIHtcclxuICBib3JkZXItcmFkaXVzOiAwLjI1cmVtO1xyXG59XHJcblxyXG4uZ2VzdGlvbi1lbnRyZWdhcy1jYXJkIC5jYXJkLWhlYWRlciB7XHJcbiAgYmFja2dyb3VuZC1jb2xvcjogI2Y4ZjlmYTtcclxufVxyXG5cclxuLmNvbnMtbGFiZWwge1xyXG4gIGZvbnQtc2l6ZTogaW5oZXJpdDtcclxufVxyXG5cclxuLmNvbnMtdmFsb3Ige1xyXG4gIGZvbnQtc2l6ZTogNHJlbTtcclxuICBmb250LXdlaWdodDogYm9sZDtcclxuICBtYXJnaW4tdG9wOiAtMXJlbTtcclxuICBsaW5lLWhlaWdodDogMS4xO1xyXG59XHJcblxyXG4uZ2VzdGlvbi1lbnRyZWdhcy1hY2Npb25lcyBkeC1idXR0b24gKyBkeC1idXR0b24ge1xyXG4gIG1hcmdpbi1sZWZ0OiAwLjVyZW07XHJcbn1cclxuXHJcbjo6bmctZGVlcCAuZ2VzdGlvbi1lbnRyZWdhcy1jYXJkIC5kYXRlQiAuZHgtdGV4dGVkaXRvci1pbnB1dCB7XHJcbiAgdGV4dC1hbGlnbjogY2VudGVyO1xyXG59XHJcblxyXG50YWJsZSB0ZCxcclxudGFibGUgdGgge1xyXG4gIHZlcnRpY2FsLWFsaWduOiBtaWRkbGU7XHJcbn1cclxuXHJcbi50cmF6YWJpbGlkYWQtcG9wdXAgaDYge1xyXG4gIGNvbG9yOiAjMzMzO1xyXG59XHJcblxyXG4udHJhemFiaWxpZGFkLXBvcHVwIC53LTI1IHtcclxuICB3aWR0aDogMjUlO1xyXG59XHJcblxyXG4uZW50cmVnYS1jcC1pbnB1dHMge1xyXG4gIGdhcDogNHB4O1xyXG59XHJcblxyXG4vKiDigJTigJQgU01BUlQtRElTUEFUQ0ggKG3Ds3ZpbCk6IGFjb3JkZcOzbiBmYWN0dXJhIOKGkiDDrXRlbSDihpIgZm9ybXVsYXJpbyDigJTigJQgKi9cclxuLnNtYXJ0LWRpc3BhdGNoLW1vdmlsIHtcclxuICBtYXJnaW4tYm90dG9tOiAwLjI1cmVtO1xyXG59XHJcblxyXG4uc2QtbGV5ZW5kYSB7XHJcbiAgZGlzcGxheTogZmxleDtcclxuICBmbGV4LXdyYXA6IHdyYXA7XHJcbiAgZ2FwOiAwLjVyZW0gICAgICAgMC44NXJlbTtcclxuICBhbGlnbi1pdGVtczogY2VudGVyO1xyXG59XHJcblxyXG4uc2QtbGV5ZW5kYS1pdGVtIHtcclxuICBkaXNwbGF5OiBpbmxpbmUtZmxleDtcclxuICBhbGlnbi1pdGVtczogY2VudGVyO1xyXG4gIGdhcDogMC4zNXJlbTtcclxufVxyXG5cclxuLnNkLXB1bnRvIHtcclxuICBkaXNwbGF5OiBpbmxpbmUtYmxvY2s7XHJcbiAgd2lkdGg6IDEwcHg7XHJcbiAgaGVpZ2h0OiAxMHB4O1xyXG4gIGJvcmRlci1yYWRpdXM6IDUwJTtcclxuICBmbGV4LXNocmluazogMDtcclxufVxyXG5cclxuLnNkLWZhY3R1cmEtY2FyZCB7XHJcbiAgYm9yZGVyOiAxcHggc29saWQgI2RlZTJlNjtcclxuICBib3JkZXItcmFkaXVzOiA2cHg7XHJcbiAgb3ZlcmZsb3c6IGhpZGRlbjtcclxuICBiYWNrZ3JvdW5kOiAjZmZmO1xyXG59XHJcblxyXG4uc2QtZmFjdHVyYS1oZWFkZXIge1xyXG4gIHdpZHRoOiAxMDAlO1xyXG4gIGRpc3BsYXk6IGZsZXg7XHJcbiAgYWxpZ24taXRlbXM6IGZsZXgtc3RhcnQ7XHJcbiAgZ2FwOiAwLjVyZW07XHJcbiAgcGFkZGluZzogMC42NXJlbSAwLjc1cmVtO1xyXG4gIGJvcmRlcjogbm9uZTtcclxuICBiYWNrZ3JvdW5kOiAjZjhmOWZhO1xyXG4gIHRleHQtYWxpZ246IGxlZnQ7XHJcbiAgY3Vyc29yOiBwb2ludGVyO1xyXG59XHJcblxyXG4uc2QtZmFjdHVyYS1oZWFkZXI6Zm9jdXMge1xyXG4gIG91dGxpbmU6IDJweCBzb2xpZCByZ2JhKDAsIDk3LCAxNjksIDAuMzUpO1xyXG4gIG91dGxpbmUtb2Zmc2V0OiAxcHg7XHJcbn1cclxuXHJcbi5zZC1mYWN0dXJhLXRleHRvIHtcclxuICBmbGV4OiAxO1xyXG4gIG1pbi13aWR0aDogMDtcclxuICBkaXNwbGF5OiBmbGV4O1xyXG4gIGZsZXgtZGlyZWN0aW9uOiBjb2x1bW47XHJcbiAgZ2FwOiAwLjE1cmVtO1xyXG59XHJcblxyXG4uc2QtZmFjdHVyYS1kb2Mge1xyXG4gIGZvbnQtd2VpZ2h0OiA3MDA7XHJcbiAgZm9udC1zaXplOiAwLjk1cmVtO1xyXG59XHJcblxyXG4uc2QtZmFjdHVyYS1jbGllbnRlIHtcclxuICBmb250LXNpemU6IDAuODhyZW07XHJcbiAgbGluZS1oZWlnaHQ6IDEuMjU7XHJcbiAgd29yZC1icmVhazogYnJlYWstd29yZDtcclxufVxyXG5cclxuLnNkLWZhY3R1cmEtbWV0YSB7XHJcbiAgZm9udC1zaXplOiAwLjc1cmVtO1xyXG4gIGNvbG9yOiAjNmM3NTdkO1xyXG59XHJcblxyXG4uc2QtY2hldnJvbiB7XHJcbiAgdHJhbnNpdGlvbjogdHJhbnNmb3JtIDAuMnMgZWFzZTtcclxuICBhbGlnbi1zZWxmOiBjZW50ZXI7XHJcbiAgY29sb3I6ICM2Yzc1N2Q7XHJcbiAgZmxleC1zaHJpbms6IDA7XHJcbn1cclxuXHJcbi5zZC1jaGV2cm9uLXVwIHtcclxuICB0cmFuc2Zvcm06IHJvdGF0ZSgtMTgwZGVnKTtcclxufVxyXG5cclxuLnNkLWNoZXZyb24tc20ge1xyXG4gIGZvbnQtc2l6ZTogMC43MnJlbTtcclxufVxyXG5cclxuLnNkLWZhY3R1cmEtY3VlcnBvIHtcclxuICBwYWRkaW5nOiAwLjVyZW0gMC42NXJlbSAwLjc1cmVtO1xyXG4gIGJhY2tncm91bmQ6ICNmZmY7XHJcbiAgYm9yZGVyLXRvcDogMXB4IHNvbGlkICNlOWVjZWY7XHJcbn1cclxuXHJcbi5zZC1pdGVtLXdyYXAge1xyXG4gIGJvcmRlcjogMXB4IHNvbGlkICNlOWVjZWY7XHJcbiAgYm9yZGVyLXJhZGl1czogNnB4O1xyXG4gIG1hcmdpbi1ib3R0b206IDAuNDVyZW07XHJcbiAgb3ZlcmZsb3c6IGhpZGRlbjtcclxuICBiYWNrZ3JvdW5kOiAjZmFmYWZhO1xyXG59XHJcblxyXG4uc2QtaXRlbS1jYWIge1xyXG4gIHdpZHRoOiAxMDAlO1xyXG4gIGRpc3BsYXk6IGZsZXg7XHJcbiAgZmxleC13cmFwOiB3cmFwO1xyXG4gIGFsaWduLWl0ZW1zOiBjZW50ZXI7XHJcbiAgZ2FwOiAwLjM1cmVtIDAuNXJlbTtcclxuICBwYWRkaW5nOiAwLjU1cmVtIDAuNnJlbTtcclxuICBib3JkZXI6IG5vbmU7XHJcbiAgYmFja2dyb3VuZDogdHJhbnNwYXJlbnQ7XHJcbiAgdGV4dC1hbGlnbjogbGVmdDtcclxuICBjdXJzb3I6IHBvaW50ZXI7XHJcbn1cclxuXHJcbi5zZC1ndWFyZGFkby1vayB7XHJcbiAgZm9udC1zaXplOiAxLjE1cmVtO1xyXG4gIGZsZXgtc2hyaW5rOiAwO1xyXG59XHJcblxyXG4uc2QtZ3VhcmRhci1saW5lYS13cmFwIHtcclxuICBkaXNwbGF5OiBmbGV4O1xyXG4gIGZsZXgtd3JhcDogd3JhcDtcclxuICBhbGlnbi1pdGVtczogY2VudGVyO1xyXG59XHJcblxyXG4uZ2VzdGlvbi1saW5lYS1vayB7XHJcbiAgZGlzcGxheTogaW5saW5lLWJsb2NrO1xyXG4gIHZlcnRpY2FsLWFsaWduOiBtaWRkbGU7XHJcbiAgZm9udC1zaXplOiAxLjFyZW07XHJcbn1cclxuXHJcbi5zZC1pdGVtLWNhYjpmb2N1cyB7XHJcbiAgb3V0bGluZTogMnB4IHNvbGlkIHJnYmEoMCwgOTcsIDE2OSwgMC4zNSk7XHJcbiAgb3V0bGluZS1vZmZzZXQ6IDFweDtcclxufVxyXG5cclxuLnNkLWl0ZW0tbm9tYnJlIHtcclxuICBmbGV4OiAxIDEgMTAwJTtcclxuICBmb250LXdlaWdodDogNjAwO1xyXG4gIGZvbnQtc2l6ZTogMC45cmVtO1xyXG4gIGxpbmUtaGVpZ2h0OiAxLjM7XHJcbiAgd29yZC1icmVhazogYnJlYWstd29yZDtcclxufVxyXG5cclxuLnNkLWl0ZW0tcmVzdW1lbiB7XHJcbiAgZmxleDogMSAxIGF1dG87XHJcbiAgbWluLXdpZHRoOiAwO1xyXG59XHJcblxyXG4uc2QtaXRlbS1kZXRhbGxlIHtcclxuICBwYWRkaW5nOiAwLjY1cmVtIDAuNzVyZW0gMC44NXJlbTtcclxuICBiYWNrZ3JvdW5kOiAjZmZmO1xyXG4gIGJvcmRlci10b3A6IDFweCBkYXNoZWQgI2RlZTJlNjtcclxufVxyXG5cclxuLnNkLWt2LWdyaWQge1xyXG4gIGRpc3BsYXk6IGdyaWQ7XHJcbiAgZ3JpZC10ZW1wbGF0ZS1jb2x1bW5zOiBhdXRvIDFmcjtcclxuICBnYXA6IDAuMjVyZW0gMC43NXJlbTtcclxuICBtYXJnaW4tYm90dG9tOiAwLjc1cmVtO1xyXG59XHJcblxyXG4uc2QtY2FtcG8ge1xyXG4gIG1hcmdpbi1ib3R0b206IDAuNjVyZW07XHJcbn1cclxuXHJcbi5zZC1jZXJyYXItcHJvY2VzbyA6Om5nLWRlZXAgLmR4LWJ1dHRvbiB7XHJcbiAgd2lkdGg6IDEwMCU7XHJcbn1cclxuXHJcbi5zZC1jYW1wbyA6Om5nLWRlZXAgLmR4LXRleHRlZGl0b3Ige1xyXG4gIHdpZHRoOiAxMDAlICFpbXBvcnRhbnQ7XHJcbiAgbWF4LXdpZHRoOiAxMDAlO1xyXG59XHJcblxyXG4vKiBDw7NkaWdvIGRlIGNvbG9yZXMgKHRleHRvIG1hdGVyaWFsICsgcHVudG8gZmFjdHVyYSkgKi9cclxuLnNkLWVzdC12ZXJkZSB7XHJcbiAgY29sb3I6ICMxZTdlMzQgIWltcG9ydGFudDtcclxufVxyXG5cclxuLnNkLXB1bnRvLnNkLWVzdC12ZXJkZSB7XHJcbiAgYmFja2dyb3VuZC1jb2xvcjogIzI4YTc0NSAhaW1wb3J0YW50O1xyXG59XHJcblxyXG4uc2QtZXN0LWF6dWwge1xyXG4gIGNvbG9yOiAjMDA0MDg1ICFpbXBvcnRhbnQ7XHJcbn1cclxuXHJcbi5zZC1wdW50by5zZC1lc3QtYXp1bCB7XHJcbiAgYmFja2dyb3VuZC1jb2xvcjogIzAwN2JmZiAhaW1wb3J0YW50O1xyXG59XHJcblxyXG4uc2QtZXN0LXJvam8ge1xyXG4gIGNvbG9yOiAjYzgyMzMzICFpbXBvcnRhbnQ7XHJcbn1cclxuXHJcbi5zZC1wdW50by5zZC1lc3Qtcm9qbyB7XHJcbiAgYmFja2dyb3VuZC1jb2xvcjogI2RjMzU0NSAhaW1wb3J0YW50O1xyXG59XHJcblxyXG4uc2QtZXN0LWFtYXJpbGxvIHtcclxuICBjb2xvcjogIzg1NjQwNCAhaW1wb3J0YW50O1xyXG59XHJcblxyXG4uc2QtcHVudG8uc2QtZXN0LWFtYXJpbGxvIHtcclxuICBiYWNrZ3JvdW5kLWNvbG9yOiAjZmZjMTA3ICFpbXBvcnRhbnQ7XHJcbn1cclxuXHJcbi5zZC1pdGVtLW5vbWJyZS5zZC1pdGVtLWFsZXJ0YSB7XHJcbiAgY29sb3I6ICNiMDAwMjAgIWltcG9ydGFudDtcclxuICBmb250LXdlaWdodDogNzAwO1xyXG59XHJcblxyXG4vKiBMaXN0YWRvIGVudHJlZ2FzIChtw7N2aWwpOiB0YXJqZXRhcyBwbGFuYXMsIGluZm9ybWF0aXZhcywgc2luIGFjb3JkZcOzbiAqL1xyXG4ubGlzdGFkby1lbnRyZWdhcy1tb3ZpbCB7XHJcbiAgbWFyZ2luLWJvdHRvbTogMC4yNXJlbTtcclxufVxyXG5cclxuLmxpc3RhZG8tZW50cmVnYS1tb3ZpbC1jYXJkIHtcclxuICBkaXNwbGF5OiBmbGV4O1xyXG4gIGZsZXgtZGlyZWN0aW9uOiByb3c7XHJcbiAgYWxpZ24taXRlbXM6IHN0cmV0Y2g7XHJcbiAgd2lkdGg6IDEwMCU7XHJcbiAgbWFyZ2luLWJvdHRvbTogMC42NXJlbTtcclxuICBwYWRkaW5nOiAwO1xyXG4gIGJvcmRlcjogMXB4IHNvbGlkICNkZWUyZTY7XHJcbiAgYm9yZGVyLXJhZGl1czogNnB4O1xyXG4gIGJhY2tncm91bmQ6ICNmZmY7XHJcbiAgdGV4dC1hbGlnbjogbGVmdDtcclxuICBvdmVyZmxvdzogaGlkZGVuO1xyXG4gIHRyYW5zaXRpb246IGJveC1zaGFkb3cgMC4xNXMgZWFzZSwgYm9yZGVyLWNvbG9yIDAuMTVzIGVhc2U7XHJcbn1cclxuXHJcbi5saXN0YWRvLWVudHJlZ2EtbW92aWwtbWFpbiB7XHJcbiAgZmxleDogMTtcclxuICBtaW4td2lkdGg6IDA7XHJcbiAgZGlzcGxheTogYmxvY2s7XHJcbiAgbWFyZ2luOiAwO1xyXG4gIHBhZGRpbmc6IDA7XHJcbiAgYm9yZGVyOiBub25lO1xyXG4gIGJhY2tncm91bmQ6IHRyYW5zcGFyZW50O1xyXG4gIHRleHQtYWxpZ246IGxlZnQ7XHJcbiAgY3Vyc29yOiBwb2ludGVyO1xyXG59XHJcblxyXG4ubGlzdGFkby1lbnRyZWdhLW1vdmlsLWFjY2lvbmVzIHtcclxuICBmbGV4OiAwIDAgYXV0bztcclxuICBkaXNwbGF5OiBmbGV4O1xyXG4gIGFsaWduLWl0ZW1zOiBjZW50ZXI7XHJcbiAganVzdGlmeS1jb250ZW50OiBjZW50ZXI7XHJcbiAgYm9yZGVyLWxlZnQ6IDFweCBzb2xpZCAjZTllY2VmO1xyXG4gIGJhY2tncm91bmQ6ICNmYWZiZmM7XHJcbiAgcGFkZGluZzogMCAwLjI1cmVtO1xyXG59XHJcblxyXG4uZ2UtYnRuLWRldm9sdWNpb24tbW92aWwge1xyXG4gIGZvbnQtc2l6ZTogMS4yNXJlbTtcclxuICBsaW5lLWhlaWdodDogMTtcclxuICBwYWRkaW5nOiAwLjVyZW0gMC4zNXJlbSAhaW1wb3J0YW50O1xyXG59XHJcblxyXG4uZ2UtYnRuLWRldm9sdWNpb24tZ3JpZCB7XHJcbiAgZm9udC1zaXplOiAxLjFyZW07XHJcbiAgbGluZS1oZWlnaHQ6IDE7XHJcbiAgbWluLXdpZHRoOiAycmVtO1xyXG59XHJcblxyXG4uc2QtZGV2b2x1Y2lvbi1tb3ZpbC1idG4gaSB7XHJcbiAgbWFyZ2luLXJpZ2h0OiAwLjE1cmVtO1xyXG59XHJcblxyXG4ubGlzdGFkby1lbnRyZWdhLW1vdmlsLWNhcmQ6aG92ZXIsXHJcbi5saXN0YWRvLWVudHJlZ2EtbW92aWwtY2FyZDpmb2N1cy13aXRoaW4ge1xyXG4gIGJvcmRlci1jb2xvcjogcmdiYSgwLCA5NywgMTY5LCAwLjQ1KTtcclxuICBib3gtc2hhZG93OiAwIDJweCA4cHggcmdiYSgwLCAwLCAwLCAwLjA2KTtcclxuICBvdXRsaW5lOiBub25lO1xyXG59XHJcblxyXG4ubGlzdGFkby1lbnRyZWdhLW1vdmlsLW1haW46Zm9jdXMtdmlzaWJsZSB7XHJcbiAgb3V0bGluZTogMnB4IHNvbGlkIHJnYmEoMCwgOTcsIDE2OSwgMC4zNSk7XHJcbiAgb3V0bGluZS1vZmZzZXQ6IDJweDtcclxufVxyXG5cclxuLmxpc3RhZG8tZW50cmVnYS1tb3ZpbC1jYWIge1xyXG4gIGRpc3BsYXk6IGZsZXg7XHJcbiAgYWxpZ24taXRlbXM6IGZsZXgtc3RhcnQ7XHJcbiAgZ2FwOiAwLjVyZW07XHJcbiAgcGFkZGluZzogMC42NXJlbSAwLjc1cmVtO1xyXG4gIGJhY2tncm91bmQ6ICNmOGY5ZmE7XHJcbiAgYm9yZGVyLWJvdHRvbTogMXB4IHNvbGlkICNlOWVjZWY7XHJcbn1cclxuXHJcbi5saXN0YWRvLWVudHJlZ2EtbW92aWwtY2FiLXRleHRvIHtcclxuICBmbGV4OiAxO1xyXG4gIG1pbi13aWR0aDogMDtcclxuICBkaXNwbGF5OiBmbGV4O1xyXG4gIGZsZXgtZGlyZWN0aW9uOiBjb2x1bW47XHJcbiAgZ2FwOiAwLjJyZW07XHJcbn1cclxuXHJcbi5saXN0YWRvLWVudHJlZ2EtbW92aWwtZG9jIHtcclxuICBmb250LXdlaWdodDogNzAwO1xyXG4gIGZvbnQtc2l6ZTogMC45NXJlbTtcclxuICB3b3JkLWJyZWFrOiBicmVhay13b3JkO1xyXG59XHJcblxyXG4ubGlzdGFkby1lbnRyZWdhLW1vdmlsLXN1YiB7XHJcbiAgZm9udC1zaXplOiAwLjc4cmVtO1xyXG4gIGNvbG9yOiAjNmM3NTdkO1xyXG4gIGxpbmUtaGVpZ2h0OiAxLjI1O1xyXG59XHJcblxyXG4ubGlzdGFkby1lbnRyZWdhLW1vdmlsLWN1ZXJwbyB7XHJcbiAgcGFkZGluZzogMC42NXJlbSAwLjc1cmVtIDAuNzVyZW07XHJcbn1cclxuXHJcbi5saXN0YWRvLWVudHJlZ2EtbW92aWwta3Yge1xyXG4gIGRpc3BsYXk6IGdyaWQ7XHJcbiAgZ3JpZC10ZW1wbGF0ZS1jb2x1bW5zOiBtaW5tYXgoMCwgMzglKSAxZnI7XHJcbiAgZ2FwOiAwLjM1cmVtIDAuNjVyZW07XHJcbiAgZm9udC1zaXplOiAwLjg4cmVtO1xyXG4gIGFsaWduLWl0ZW1zOiBzdGFydDtcclxufVxyXG5cclxuLmxpc3RhZG8tZW50cmVnYS1tb3ZpbC1sYmwge1xyXG4gIGNvbG9yOiAjNmM3NTdkO1xyXG4gIGZvbnQtc2l6ZTogMC44cmVtO1xyXG59XHJcblxyXG4ubGlzdGFkby1lbnRyZWdhLW1vdmlsLXZhbCB7XHJcbiAgd29yZC1icmVhazogYnJlYWstd29yZDtcclxuICBtaW4td2lkdGg6IDA7XHJcbn1cclxuXHJcbkBtZWRpYSAobWF4LXdpZHRoOiA3NjcuOThweCkge1xyXG4gIC8qIFByb2R1Y3RvcyBwZW5kaWVudGVzOiBzY3JvbGwgaG9yaXpvbnRhbCBlbiBwYW50YWxsYXMgZXN0cmVjaGFzIChtw7N2aWwpLiAqL1xyXG4gIC5wcm9kdWN0b3MtcGVuZGllbnRlcy1ncmlkLXNjcm9sbCB7XHJcbiAgICBvdmVyZmxvdy14OiBhdXRvO1xyXG4gICAgLXdlYmtpdC1vdmVyZmxvdy1zY3JvbGxpbmc6IHRvdWNoO1xyXG4gICAgb3ZlcnNjcm9sbC1iZWhhdmlvci14OiBjb250YWluO1xyXG4gICAgcGFkZGluZy1ib3R0b206IDAuMzVyZW07XHJcbiAgfVxyXG5cclxuICAucHJvZHVjdG9zLXBlbmRpZW50ZXMtZ3JpZC1zY3JvbGwgOjpuZy1kZWVwIC5keC1kYXRhZ3JpZCB7XHJcbiAgICBtaW4td2lkdGg6IDUycmVtO1xyXG4gIH1cclxuXHJcbiAgLnJlbWlQcm8ge1xyXG4gICAgcGFkZGluZy1sZWZ0OiAwLjc1cmVtO1xyXG4gICAgcGFkZGluZy1yaWdodDogMC43NXJlbTtcclxuICAgIHBhZGRpbmctdG9wOiAxcmVtO1xyXG4gIH1cclxuXHJcbiAgLmdlc3Rpb24tZW50cmVnYXMtY2FyZCAuY2FyZC1ib2R5IHtcclxuICAgIHBhZGRpbmctbGVmdDogMC43NXJlbTtcclxuICAgIHBhZGRpbmctcmlnaHQ6IDAuNzVyZW07XHJcbiAgfVxyXG5cclxuICAuZ2VzdGlvbi1maWx0cm9zIHtcclxuICAgIHBhZGRpbmctbGVmdDogMDtcclxuICAgIHBhZGRpbmctcmlnaHQ6IDA7XHJcbiAgfVxyXG59XHJcblxyXG4vKiBUcmF6YWJpbGlkYWQ6IHRhYmxhIGNvbiBzY3JvbGwgdMOhY3RpbCB5IGJvdMOzbiBkZSBjb3JyZWNjacOzbiBhY2Nlc2libGUgZW4gbcOzdmlsICovXHJcbi50cmF6LWhpc3RvcmlhbC1zY3JvbGwge1xyXG4gIC13ZWJraXQtb3ZlcmZsb3ctc2Nyb2xsaW5nOiB0b3VjaDtcclxuICBvdmVyc2Nyb2xsLWJlaGF2aW9yLXg6IGNvbnRhaW47XHJcbn1cclxuXHJcbi50cmF6LWhpc3RvcmlhbC10YWJsZSB7XHJcbiAgZm9udC1zaXplOiAwLjg1cmVtO1xyXG59XHJcblxyXG4udHJhei1idG4tZWRpdCB7XHJcbiAgbWluLWhlaWdodDogNDRweDtcclxuICBtaW4td2lkdGg6IDQ0cHg7XHJcbiAgdG91Y2gtYWN0aW9uOiBtYW5pcHVsYXRpb247XHJcbiAgbGluZS1oZWlnaHQ6IDEuMjtcclxufVxyXG5cclxuLnRyYXotbm90YXMtY2VsZGEge1xyXG4gIG1heC13aWR0aDogMTRyZW07XHJcbiAgd29yZC1icmVhazogYnJlYWstd29yZDtcclxufVxyXG5cclxuLnRyYXotZWRpdGFyLWFjY2lvbmVzIDo6bmctZGVlcCAuZHgtYnV0dG9uIHtcclxuICBtaW4taGVpZ2h0OiA0NHB4O1xyXG59XHJcblxyXG4vKiBQb3B1cCBcIkNvcnJlZ2lyIG1vdmltaWVudG86IHTDrXR1bG8gbXVsdGlsw61uZWEgeSBjb250ZW5pZG8gc2luIG92ZXJmbG93ICovXHJcbjo6bmctZGVlcCAudHJhei1wb3B1cC1jb3JyZWdpci1vdmVybGF5IHtcclxuICBib3gtc2l6aW5nOiBib3JkZXItYm94O1xyXG5cclxuICAuZHgtcG9wdXAtY29udGVudCB7XHJcbiAgICBvdmVyZmxvdy14OiBoaWRkZW47XHJcbiAgICBtYXgtd2lkdGg6IDEwMCU7XHJcbiAgICBib3gtc2l6aW5nOiBib3JkZXItYm94O1xyXG4gIH1cclxuXHJcbiAgLmR4LXBvcHVwLXRpdGxlIHtcclxuICAgIHdoaXRlLXNwYWNlOiBub3JtYWwgIWltcG9ydGFudDtcclxuICAgIHdvcmQtYnJlYWs6IGJyZWFrLXdvcmQ7XHJcbiAgICBvdmVyZmxvdy13cmFwOiBhbnl3aGVyZTtcclxuICAgIGxpbmUtaGVpZ2h0OiAxLjM7XHJcbiAgICBwYWRkaW5nLXJpZ2h0OiAyLjc1cmVtO1xyXG4gICAgZm9udC1zaXplOiAwLjk1cmVtO1xyXG4gICAgbWF4LXdpZHRoOiAxMDAlO1xyXG4gIH1cclxufVxyXG5cclxuQG1lZGlhIChtYXgtd2lkdGg6IDc2Ny45OHB4KSB7XHJcbiAgOjpuZy1kZWVwIC50cmF6LXBvcHVwLWNvcnJlZ2lyLW92ZXJsYXkge1xyXG4gICAgbWF4LXdpZHRoOiAxMDB2dyAhaW1wb3J0YW50O1xyXG4gICAgd2lkdGg6IGNhbGMoMTAwdncgLSBlbnYoc2FmZS1hcmVhLWluc2V0LWxlZnQpIC0gZW52KHNhZmUtYXJlYS1pbnNldC1yaWdodCkpICFpbXBvcnRhbnQ7XHJcbiAgfVxyXG59XHJcblxyXG4udHJhei1wb3B1cC1lZGl0YXItYm9keSB7XHJcbiAgd2lkdGg6IDEwMCU7XHJcbiAgbWF4LXdpZHRoOiAxMDAlO1xyXG4gIG1pbi13aWR0aDogMDtcclxuICBib3gtc2l6aW5nOiBib3JkZXItYm94O1xyXG4gIG92ZXJmbG93LXg6IGhpZGRlbjtcclxuICBwYWRkaW5nOiAwLjc1cmVtIDAuNzVyZW0gbWF4KDAuNzVyZW0sIGVudihzYWZlLWFyZWEtaW5zZXQtYm90dG9tKSk7XHJcblxyXG4gIEBtZWRpYSAobWluLXdpZHRoOiA1NzZweCkge1xyXG4gICAgcGFkZGluZzogMXJlbSAxLjI1cmVtIDFyZW07XHJcbiAgfVxyXG59XHJcblxyXG4udHJhei1wb3B1cC1lZGl0YXItYm9keSA6Om5nLWRlZXAgLmR4LXRleHRlZGl0b3IsXHJcbi50cmF6LXBvcHVwLWVkaXRhci1ib2R5IDo6bmctZGVlcCAuZHgtZHJvcGRvd25lZGl0b3IsXHJcbi50cmF6LXBvcHVwLWVkaXRhci1ib2R5IDo6bmctZGVlcCAuZHgtbnVtYmVyYm94IHtcclxuICB3aWR0aDogMTAwJSAhaW1wb3J0YW50O1xyXG4gIG1heC13aWR0aDogMTAwJSAhaW1wb3J0YW50O1xyXG59XHJcblxyXG4udHJhei1wb3B1cC1lZGl0YXItYm9keSA6Om5nLWRlZXAgLmR4LXRleHRlZGl0b3IuZHgtZWRpdG9yLW91dGxpbmVkLFxyXG4udHJhei1wb3B1cC1lZGl0YXItYm9keSA6Om5nLWRlZXAgLmR4LWRyb3Bkb3duZWRpdG9yLmR4LWVkaXRvci1vdXRsaW5lZCB7XHJcbiAgZGlzcGxheTogYmxvY2s7XHJcbn1cclxuXHJcbi50cmF6LWVkaXRhci1hY2Npb25lcyB7XHJcbiAgd2lkdGg6IDEwMCU7XHJcbiAgbWF4LXdpZHRoOiAxMDAlO1xyXG4gIHBhZGRpbmctdG9wOiAwLjI1cmVtO1xyXG59XHJcblxyXG5AbWVkaWEgKG1heC13aWR0aDogNTc1Ljk4cHgpIHtcclxuICAudHJhei1lZGl0YXItYWNjaW9uZXMge1xyXG4gICAgZmxleC1kaXJlY3Rpb246IGNvbHVtbiAhaW1wb3J0YW50O1xyXG4gICAgYWxpZ24taXRlbXM6IHN0cmV0Y2ggIWltcG9ydGFudDtcclxuICB9XHJcblxyXG4gIC50cmF6LWVkaXRhci1hY2Npb25lcyA6Om5nLWRlZXAgLmR4LWJ1dHRvbiB7XHJcbiAgICB3aWR0aDogMTAwJTtcclxuICAgIG1heC13aWR0aDogMTAwJTtcclxuICB9XHJcbn1cclxuIl19 */"] });
 /*@__PURE__*/ (function () { _angular_core__WEBPACK_IMPORTED_MODULE_1__["ɵsetClassMetadata"](GestionEntregasBodegaComponent, [{
         type: _angular_core__WEBPACK_IMPORTED_MODULE_1__["Component"],
         args: [{
@@ -53877,7 +54050,7 @@ GestionEntregasBodegaComponent.ɵcmp = _angular_core__WEBPACK_IMPORTED_MODULE_1_
                 templateUrl: "./gestion-entregas-bodega.component.html",
                 styleUrls: ["./gestion-entregas-bodega.component.scss"],
             }]
-    }], function () { return [{ type: src_app_servicios_entregas_bodega_service__WEBPACK_IMPORTED_MODULE_4__["EntregasBodegaService"] }, { type: src_app_servicios_transacciones_service__WEBPACK_IMPORTED_MODULE_5__["TransaccionesService"] }, { type: src_app_shared_services__WEBPACK_IMPORTED_MODULE_6__["ScreenService"] }]; }, null); })();
+    }], function () { return [{ type: src_app_servicios_entregas_bodega_service__WEBPACK_IMPORTED_MODULE_4__["EntregasBodegaService"] }, { type: src_app_servicios_productos_pendientes_service__WEBPACK_IMPORTED_MODULE_5__["ProductosPendientesService"] }, { type: src_app_servicios_transacciones_service__WEBPACK_IMPORTED_MODULE_6__["TransaccionesService"] }, { type: src_app_shared_services__WEBPACK_IMPORTED_MODULE_7__["ScreenService"] }]; }, null); })();
 
 
 /***/ }),
@@ -100489,6 +100662,13 @@ class EntregasBodegaService {
     }
     ejecutarDevolucionTotal(ordenId, payload) {
         return this.http.put(`${this.URL}/ejecutarDevolucionTotal/${ordenId}`, payload);
+    }
+    /**
+     * Tras aprobar una devolución: actualiza cantidad devuelta e historial en la orden
+     * de entrega de bodega del mismo documento (si existe y no está cerrada/anulada).
+     */
+    registrarDevolucionAprobada(payload) {
+        return this.http.put(`${this.URL}/registrarDevolucionAprobada`, payload);
     }
     /**
      * Corrige un registro del historial de un ítem (trazabilidad).

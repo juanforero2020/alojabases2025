@@ -10,6 +10,7 @@ const {
   m2PorCajaDeLinea,
   piezasPorCajaDeLinea,
   m2DesdeCajasPiezas,
+  cajasPiezasDesdeM2,
   reconstruirItemDesdeHistorial,
   ordenEsMismoDiaCalendarioQueHoy,
   ordenTieneMovimientoEntrega,
@@ -486,7 +487,9 @@ router.put(
         (req.body && req.body.estadoSeleccionado) || ""
       ).toUpperCase();
       if (
-        !["ENTREGA_TOTAL", "ENTREGA_PARCIAL", "DEVOLUCION"].includes(estadoSel)
+        !["ENTREGA_TOTAL", "ENTREGA_PARCIAL", "DEVOLUCION", "DEVUELTO"].includes(
+          estadoSel
+        )
       ) {
         return res.status(400).json({ mensaje: "Estado seleccionado no válido" });
       }
@@ -692,6 +695,227 @@ router.put("/ejecutarDevolucionTotal/:id", async (req, res) => {
     const msg =
       err && err.message ? err.message : "No se pudo ejecutar la devolución total";
     return res.status(400).json({ mensaje: msg });
+  }
+});
+
+/**
+ * Al aprobar una devolución en el módulo contable: incrementa cantidadDevuelta en la orden
+ * de entrega de bodega, registra historial con estado DEVUELTO y recalcula ítem/orden
+ * (entregado + devuelto = facturado → ítem COMPLETO y sincroniza productos pendientes).
+ */
+router.put("/registrarDevolucionAprobada", async (req, res) => {
+  try {
+    const body = req.body || {};
+    const documentoNumero = normalizarNumero(body.documentoNumero);
+    const tipoOrigen = String(body.tipo_documento || "").trim();
+    const mapTipo = {
+      Factura: "FACTURA",
+      "Nota de Venta": "NOTA_VENTA",
+    };
+    const tipoDocumento = mapTipo[tipoOrigen] || "";
+    const usuario = String(body.usuario || "").trim();
+    const idDevolucion = normalizarNumero(body.id_devolucion);
+    const observaciones = body.observaciones != null ? String(body.observaciones) : "";
+    const productosDevueltos = Array.isArray(body.productosDevueltos)
+      ? body.productosDevueltos
+      : [];
+
+    if (documentoNumero <= 0 || !tipoDocumento) {
+      return res.status(400).json({
+        mensaje: "documentoNumero o tipo_documento no válidos para trazabilidad.",
+      });
+    }
+
+    const orden = await EntregaBodega.findOne({ documentoNumero, tipoDocumento });
+    if (!orden) {
+      return res.json({
+        ok: true,
+        sinOrdenEntrega: true,
+        itemsActualizados: 0,
+        mensaje:
+          "No hay orden de entrega de bodega asociada a este documento; no se aplicó trazabilidad.",
+      });
+    }
+
+    const ep = String(orden.estadoProceso || "").toUpperCase();
+    if (ep === "ANULADO") {
+      return res.json({
+        ok: true,
+        sinActualizacionTrazabilidad: true,
+        itemsActualizados: 0,
+        mensaje: "La orden de entrega está anulada; no se actualizó la trazabilidad.",
+      });
+    }
+
+    // Para órdenes ya finalizadas (COMPLETO/CERRADO), registrar solo trazabilidad de orden.
+    // No se modifica historial de ítems ni cantidades para evitar advertencias innecesarias.
+    if (ep === "COMPLETO" || ep === "CERRADO") {
+      orden.trazabilidad = orden.trazabilidad || [];
+      orden.trazabilidad.push({
+        fecha: new Date().toISOString(),
+        usuario,
+        accion: "APROBACION_DEVOLUCION",
+        detalle: `Devolución #${
+          idDevolucion || "—"
+        }: registro de orden (estado ${ep}), sin actualización por ítem.`,
+      });
+      await orden.save();
+      return res.json({
+        ok: true,
+        itemsActualizados: 0,
+        registroSoloOrden: true,
+        ordenId: orden._id,
+      });
+    }
+
+    const detalleAdvertencias = [];
+    let itemsActualizados = 0;
+
+    for (const pd of productosDevueltos) {
+      const pLine = pd && pd.producto;
+      const codigo = pLine && String(pLine.PRODUCTO || "").trim();
+      if (!codigo) {
+        continue;
+      }
+
+      const idx = orden.items.findIndex((it) => {
+        const nom = String(
+          (it.producto && it.producto.PRODUCTO) || it.productoNombre || ""
+        ).trim();
+        return nom === codigo;
+      });
+      if (idx < 0) {
+        detalleAdvertencias.push(`${codigo}: no figura en la orden de entrega.`);
+        continue;
+      }
+
+      const item = orden.items[idx];
+      const cantidadFacturada = normalizarNumero(item.cantidadFacturada);
+      const entregadaActual = normalizarNumero(item.cantidadEntregada);
+      const devueltaActual = normalizarNumero(item.cantidadDevuelta);
+      const usarMetro = itemUsaMetrosCajaPieza(item);
+
+      let m2Dev = 0;
+      if (usarMetro) {
+        const cc = normalizarNumero(pd.cantDevueltaCajas);
+        const pp = normalizarNumero(pd.cantDevueltaPiezas);
+        const m2Caja = m2PorCajaDeLinea(item);
+        const piezasCaja = piezasPorCajaDeLinea(item);
+        m2Dev = m2DesdeCajasPiezas(cc, pp, m2Caja, piezasCaja);
+        const m2Body = normalizarNumero(
+          pd.cantDevueltam2Flo != null ? pd.cantDevueltam2Flo : pd.cantDevueltam2
+        );
+        if (m2Dev <= 0 && m2Body > 0) {
+          m2Dev = m2Body;
+        }
+      } else {
+        m2Dev = normalizarNumero(
+          pd.cantDevueltam2Flo != null ? pd.cantDevueltam2Flo : pd.cantDevueltam2
+        );
+      }
+
+      if (m2Dev <= 0) {
+        continue;
+      }
+
+      const maxInc = Math.max(0, cantidadFacturada - entregadaActual - devueltaActual);
+      const aplicar = Math.min(m2Dev, maxInc);
+      if (aplicar <= 0) {
+        detalleAdvertencias.push(
+          `${codigo}: sin cupo en la orden (fact. ${cantidadFacturada}, ent. ${entregadaActual}, dev. ${devueltaActual}).`
+        );
+        continue;
+      }
+      if (aplicar + 1e-6 < m2Dev) {
+        detalleAdvertencias.push(
+          `${codigo}: se registró ${aplicar.toFixed(2)} de ${m2Dev.toFixed(2)} en trazabilidad (tope según orden).`
+        );
+      }
+
+      const nuevaDev = devueltaActual + aplicar;
+      item.cantidadDevuelta = nuevaDev;
+
+      let entregaCajasReg = usarMetro ? normalizarNumero(pd.cantDevueltaCajas) : undefined;
+      let entregaPiezasReg = usarMetro ? normalizarNumero(pd.cantDevueltaPiezas) : undefined;
+      if (usarMetro && aplicar + 1e-6 < m2Dev) {
+        const m2Caja = m2PorCajaDeLinea(item);
+        const piezasCaja = piezasPorCajaDeLinea(item);
+        const cp = cajasPiezasDesdeM2(aplicar, m2Caja, piezasCaja);
+        entregaCajasReg = cp.cajas;
+        entregaPiezasReg = cp.piezas;
+      }
+
+      item.historial = item.historial || [];
+      const notasHist = `Devolución #${
+        idDevolucion || "—"
+      } aprobada (módulo devoluciones).${
+        observaciones ? " " + observaciones.slice(0, 500) : ""
+      }`;
+      item.historial.push({
+        fecha: new Date().toISOString(),
+        usuario,
+        accion: "APROBACION_DEVOLUCION",
+        estadoSeleccionado: "DEVUELTO",
+        cantidadEntregada: item.cantidadEntregada,
+        cantidadDevuelta: item.cantidadDevuelta,
+        m2EntregadoEnEstaOperacion: aplicar,
+        entregaCajas: usarMetro ? entregaCajasReg : undefined,
+        entregaPiezas: usarMetro ? entregaPiezasReg : undefined,
+        notas: notasHist,
+      });
+
+      itemsActualizados += 1;
+    }
+
+    if (itemsActualizados > 0) {
+      recalcularEstadoYItems(orden);
+      for (let i = 0; i < (orden.items || []).length; i += 1) {
+        const itemActualizado = orden.items[i];
+        const entregaTotalItem =
+          !!itemActualizado &&
+          (normalizarNumero(itemActualizado.cantidadFacturada) ===
+            normalizarNumero(itemActualizado.cantidadEntregada) +
+              normalizarNumero(itemActualizado.cantidadDevuelta) ||
+            pendienteVisualItem(itemActualizado) === 0);
+        if (entregaTotalItem) {
+          try {
+            await marcarPendienteComoEntregadoDesdeBodega(
+              orden,
+              itemActualizado,
+              usuario
+            );
+          } catch (errorPendiente) {
+            console.log(
+              "No se pudo sincronizar estado en productos pendientes:",
+              errorPendiente && errorPendiente.message
+                ? errorPendiente.message
+                : errorPendiente
+            );
+          }
+        }
+      }
+      orden.trazabilidad = orden.trazabilidad || [];
+      orden.trazabilidad.push({
+        fecha: new Date().toISOString(),
+        usuario,
+        accion: "APROBACION_DEVOLUCION",
+        detalle: `Devolución #${idDevolucion || "—"}: trazabilidad actualizada (${itemsActualizados} línea(s)).`,
+      });
+      await orden.save();
+    }
+
+    return res.json({
+      ok: true,
+      itemsActualizados,
+      detalleAdvertencias,
+      ordenId: orden._id,
+    });
+  } catch (err) {
+    const msg =
+      err && err.message
+        ? err.message
+        : "No se pudo registrar la devolución en la orden de entrega.";
+    return res.status(500).json({ mensaje: msg });
   }
 });
 

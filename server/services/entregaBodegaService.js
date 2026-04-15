@@ -358,6 +358,25 @@ function reconstruirItemDesdeHistorial(item) {
         h.entregaCajas = cajas;
         h.entregaPiezas = piezas;
       }
+    } else if (estado === "DEVUELTO") {
+      let m2Dev = 0;
+      if (usarMetro) {
+        const cajas = normalizarNumero(h.entregaCajas);
+        const piezas = normalizarNumero(h.entregaPiezas);
+        m2Dev = m2DesdeCajasPiezas(cajas, piezas, m2Caja, piezasCaja);
+        const m2Directo = normalizarNumero(h.m2EntregadoEnEstaOperacion);
+        if (m2Dev <= 0 && m2Directo > 0) {
+          m2Dev = m2Directo;
+        }
+      } else {
+        m2Dev = normalizarNumero(h.m2EntregadoEnEstaOperacion);
+      }
+      if (m2Dev < 0) {
+        m2Dev = 0;
+      }
+      ent = entAntes;
+      dev = devAntes + m2Dev;
+      m2Op = m2Dev;
     } else {
       if (usarMetro) {
         const cajas = normalizarNumero(h.entregaCajas);
