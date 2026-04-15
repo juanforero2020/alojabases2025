@@ -14,14 +14,24 @@
         <img src="../../../../assets/Logo 01.png" alt="" class="img-thumbnail">
     </div>
     <div class="dx-field">
-        <dx-text-box [(value)]="login" placeholder="Usuario o email" width="100%" >
+        <dx-text-box
+            [(value)]="login"
+            placeholder="Usuario o email"
+            width="100%"
+            [inputAttr]="{ autocomplete: 'off', autocorrect: 'off', autocapitalize: 'none', spellcheck: 'false', name: 'app-login-user' }">
             <dx-validator>
                 <dxi-validation-rule type="required" message="Usuario es requerido" ></dxi-validation-rule>
             </dx-validator>
         </dx-text-box>
     </div>
     <div class="dx-field">
-        <dx-text-box mode="password" [(value)]="password" placeholder="Contraseña" width="100%" (onEnterKey)="signIn($event)">
+        <dx-text-box
+            mode="password"
+            [(value)]="password"
+            placeholder="Contraseña"
+            width="100%"
+            (onEnterKey)="signIn($event)"
+            [inputAttr]="{ autocomplete: 'new-password', autocorrect: 'off', autocapitalize: 'none', spellcheck: 'false', name: 'app-login-password' }">
             <dx-validator>
                 <dxi-validation-rule type="required" message="Campo requerido"></dxi-validation-rule>
             </dx-validator>

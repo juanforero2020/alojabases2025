@@ -171068,6 +171068,26 @@ function _classCallCheck(instance, Constructor) { if (!(instance instanceof Cons
     /*! devextreme-angular/ui/nested */
     "./node_modules/devextreme-angular/__ivy_ngcc__/fesm2015/devextreme-angular-ui-nested.js");
 
+    var _c0 = function _c0() {
+      return {
+        autocomplete: "off",
+        autocorrect: "off",
+        autocapitalize: "none",
+        spellcheck: "false",
+        name: "app-login-user"
+      };
+    };
+
+    var _c1 = function _c1() {
+      return {
+        autocomplete: "new-password",
+        autocorrect: "off",
+        autocapitalize: "none",
+        spellcheck: "false",
+        name: "app-login-password"
+      };
+    };
+
     var LoginFormComponent = /*#__PURE__*/function () {
       function LoginFormComponent(authenService, router, authService) {
         _classCallCheck(this, LoginFormComponent);
@@ -171123,8 +171143,8 @@ function _classCallCheck(instance, Constructor) { if (!(instance instanceof Cons
       type: LoginFormComponent,
       selectors: [["app-login-form"]],
       decls: 23,
-      vars: 3,
-      consts: [["bdOpacity", "0.4", "bdColor", "#333", "size", "medium", "color", "#fff", "type", "ball-beat", 3, "fullScreen"], [2, "color", "white"], ["validateLogin", ""], [1, "login-header"], ["src", "../../../../assets/Logo 01.png", "alt", "", 1, "img-thumbnail"], [1, "dx-field"], ["placeholder", "Usuario o email", "width", "100%", 3, "value", "valueChange"], ["type", "required", "message", "Usuario es requerido"], ["mode", "password", "placeholder", "Contrase\xF1a", "width", "100%", 3, "value", "valueChange", "onEnterKey"], ["type", "required", "message", "Campo requerido"], ["type", "default", "text", "Iniciar sesion", "width", "100%", 3, "onClick"], [1, "login-footer"], [1, "col-md-12"], [2, "text-align", "center"], ["href", "http://159.223.107.115:3000/"]],
+      vars: 7,
+      consts: [["bdOpacity", "0.4", "bdColor", "#333", "size", "medium", "color", "#fff", "type", "ball-beat", 3, "fullScreen"], [2, "color", "white"], ["validateLogin", ""], [1, "login-header"], ["src", "../../../../assets/Logo 01.png", "alt", "", 1, "img-thumbnail"], [1, "dx-field"], ["placeholder", "Usuario o email", "width", "100%", 3, "value", "inputAttr", "valueChange"], ["type", "required", "message", "Usuario es requerido"], ["mode", "password", "placeholder", "Contrase\xF1a", "width", "100%", 3, "value", "inputAttr", "valueChange", "onEnterKey"], ["type", "required", "message", "Campo requerido"], ["type", "default", "text", "Iniciar sesion", "width", "100%", 3, "onClick"], [1, "login-footer"], [1, "col-md-12"], [2, "text-align", "center"], ["href", "http://159.223.107.115:3000/"]],
       template: function LoginFormComponent_Template(rf, ctx) {
         if (rf & 1) {
           _angular_core__WEBPACK_IMPORTED_MODULE_0__["ɵɵelementStart"](0, "ngx-spinner", 0);
@@ -171223,11 +171243,11 @@ function _classCallCheck(instance, Constructor) { if (!(instance instanceof Cons
 
           _angular_core__WEBPACK_IMPORTED_MODULE_0__["ɵɵadvance"](8);
 
-          _angular_core__WEBPACK_IMPORTED_MODULE_0__["ɵɵproperty"]("value", ctx.login);
+          _angular_core__WEBPACK_IMPORTED_MODULE_0__["ɵɵproperty"]("value", ctx.login)("inputAttr", _angular_core__WEBPACK_IMPORTED_MODULE_0__["ɵɵpureFunction0"](5, _c0));
 
           _angular_core__WEBPACK_IMPORTED_MODULE_0__["ɵɵadvance"](4);
 
-          _angular_core__WEBPACK_IMPORTED_MODULE_0__["ɵɵproperty"]("value", ctx.password);
+          _angular_core__WEBPACK_IMPORTED_MODULE_0__["ɵɵproperty"]("value", ctx.password)("inputAttr", _angular_core__WEBPACK_IMPORTED_MODULE_0__["ɵɵpureFunction0"](6, _c1));
         }
       },
       directives: [ngx_spinner__WEBPACK_IMPORTED_MODULE_12__["NgxSpinnerComponent"], devextreme_angular_ui_validation_group__WEBPACK_IMPORTED_MODULE_7__["DxValidationGroupComponent"], devextreme_angular_ui_text_box__WEBPACK_IMPORTED_MODULE_5__["DxTextBoxComponent"], devextreme_angular_ui_validator__WEBPACK_IMPORTED_MODULE_6__["DxValidatorComponent"], devextreme_angular_ui_nested__WEBPACK_IMPORTED_MODULE_16__["DxiValidationRuleComponent"], devextreme_angular_ui_button__WEBPACK_IMPORTED_MODULE_3__["DxButtonComponent"]],
