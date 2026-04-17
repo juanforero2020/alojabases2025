@@ -46,10 +46,6 @@ export const navigation = [
         text: "Devoluciones",
         path: "/devoluciones",
       },
-      {
-        text: "Entrega Productos",
-        path: "/Entrega_productos",
-      },
       
     ],
   },
@@ -142,6 +138,24 @@ export const navigation = [
     text: "Tutoriales",
     path: "",
     icon: "home",
+  },
+  {
+    text: "Operaciones",
+    icon: "fa fa-spinner",
+    items: [
+      {
+        text: "Gestion Entregas Bodega",
+        path: "/gestion-entregas-bodega",
+      },
+      {
+        text: "Entrega Productos",
+        path: "/Entrega_productos",
+      },
+      {
+        text: "Tiquets",
+        path: "",
+      },
+    ],
   },
   {
     text: "Business Inteligence",

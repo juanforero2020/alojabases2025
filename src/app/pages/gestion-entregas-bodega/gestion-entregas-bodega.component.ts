@@ -99,11 +99,10 @@ export class GestionEntregasBodegaComponent implements OnInit, OnDestroy {
   expandedOrderId: string | null = null;
   expandedItemIndex: number | null = null;
 
-  /** Índices de línea con confirmación visual reciente de guardado OK. */
+  /** Índices de línea con guardado confirmado en esta sesión (hasta cambiar orden o vista). */
   lineasGuardadoFlash: Record<number, boolean> = {};
 
   private screenSub: Subscription;
-  private timeoutsGuardadoFlash: { [k: number]: any } = {};
 
   /** Texto para cabecera estilo Caja Menor (orden seleccionada o guión). */
   get consecutivoVista(): string | number {
@@ -344,6 +343,7 @@ export class GestionEntregasBodegaComponent implements OnInit, OnDestroy {
           if (this.popupTrazabilidadVisible && this.ordenTrazabilidad?._id === vista._id) {
             this.abrirPopupTrazabilidad(vista);
           }
+          this.refrescarProductosPendientesEntregaSiAplica();
           Swal.fire("Listo", "La orden se restableció a estado ABIERTA.", "success");
         },
         error: (err) => {
@@ -465,6 +465,7 @@ export class GestionEntregasBodegaComponent implements OnInit, OnDestroy {
           this.sincronizarOrdenEnListado(vista);
           this.cerrarPopupEditarHistorial();
           this.abrirPopupTrazabilidad(orden);
+          this.refrescarProductosPendientesEntregaSiAplica();
           Swal.fire({
             toast: true,
             position: "top-end",
@@ -923,6 +924,7 @@ export class GestionEntregasBodegaComponent implements OnInit, OnDestroy {
           this.refrescarCamposEventoItem(index);
           this.sincronizarOrdenEnListado(this.ordenSeleccionada);
           this.mostrarFeedbackGuardadoLinea(index);
+          this.refrescarProductosPendientesEntregaSiAplica();
           if (this.vistaMovil) {
             this.expandedItemIndex = null;
           }
@@ -1193,23 +1195,10 @@ export class GestionEntregasBodegaComponent implements OnInit, OnDestroy {
   }
 
   private mostrarFeedbackGuardadoLinea(index: number): void {
-    if (this.timeoutsGuardadoFlash[index]) {
-      clearTimeout(this.timeoutsGuardadoFlash[index]);
-    }
     this.lineasGuardadoFlash = { ...this.lineasGuardadoFlash, [index]: true };
-    this.timeoutsGuardadoFlash[index] = setTimeout(() => {
-      const next = { ...this.lineasGuardadoFlash };
-      delete next[index];
-      this.lineasGuardadoFlash = next;
-      delete this.timeoutsGuardadoFlash[index];
-    }, 3500);
   }
 
   private limpiarIndicadoresGuardadoLinea(): void {
-    Object.keys(this.timeoutsGuardadoFlash).forEach((k) =>
-      clearTimeout(this.timeoutsGuardadoFlash[+k])
-    );
-    this.timeoutsGuardadoFlash = {};
     this.lineasGuardadoFlash = {};
   }
 
@@ -1489,6 +1478,13 @@ export class GestionEntregasBodegaComponent implements OnInit, OnDestroy {
           );
         },
       });
+  }
+
+  /** Tras guardar en bodega, alinear el listado legacy si el usuario está en esa vista. */
+  private refrescarProductosPendientesEntregaSiAplica(): void {
+    if (this.vistaProductosEspecial === "pendientesEntrega") {
+      this.cargarProductosPendientesEntrega();
+    }
   }
 
   private cargarProductosPendientesEntrega(): void {

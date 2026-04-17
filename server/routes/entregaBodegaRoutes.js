@@ -46,7 +46,17 @@ async function revertirPendientesPorDevolucionTotalOrden(orden, usuario) {
   }
 }
 
-async function marcarPendienteComoEntregadoDesdeBodega(orden, item, usuario) {
+/**
+ * Alinea el registro legacy en `productosPendientes` con el ítem de la orden de bodega:
+ * - Entrega parcial: actualiza cajas/piezas/m² pendientes y acumulados, y opcionalmente añade traza en `notas`.
+ * - Sin pendiente (entrega total, devolución que deja el ítem cuadrado, etc.): estado ENTREGADO y sale del listado PENDIENTE.
+ */
+async function sincronizarProductoPendienteLegacyDesdeItem(
+  orden,
+  item,
+  usuario,
+  operacionMeta
+) {
   const documento = normalizarNumero(orden && orden.documentoNumero);
   if (documento <= 0 || !item) return;
 
@@ -58,23 +68,169 @@ async function marcarPendienteComoEntregadoDesdeBodega(orden, item, usuario) {
   ).trim();
   if (!nombreProducto) return;
 
-  await ProductosPendientes.updateMany(
-    {
-      documento,
-      estado: "PENDIENTE",
-      $or: [
-        { "producto.PRODUCTO": nombreProducto },
-        { "producto.REFERENCIA": nombreProducto },
-      ],
-    },
-    {
-      $set: {
-        estado: "ENTREGADO",
-        mensaje: "Entregado automáticamente desde Gestión Entregas de bodega",
-        usuario: usuario || "",
-      },
+  const filtro = {
+    documento,
+    estado: "PENDIENTE",
+    $or: [
+      { "producto.PRODUCTO": nombreProducto },
+      { "producto.REFERENCIA": nombreProducto },
+    ],
+  };
+
+  const docs = await ProductosPendientes.find(filtro);
+  if (!docs.length) return;
+
+  const pend = pendienteVisualItem(item);
+  const usarMetro = itemUsaMetrosCajaPieza(item);
+  const mc = m2PorCajaDeLinea(item);
+  const pp = piezasPorCajaDeLinea(item);
+  const ent = normalizarNumero(item.cantidadEntregada);
+  const dev = normalizarNumero(item.cantidadDevuelta);
+
+  const meta = operacionMeta || {};
+  const m2Op = normalizarNumero(meta.m2EnEstaOperacion);
+  const estMeta = String(meta.estadoSeleccionado || "").toUpperCase();
+  const debeRegistrarTraza =
+    meta.origen === "edicion_historial" ||
+    meta.origen === "devoluciones" ||
+    m2Op > 1e-6 ||
+    estMeta === "ENTREGA_TOTAL" ||
+    estMeta === "DEVOLUCION" ||
+    estMeta === "DEVUELTO";
+
+  let lineaTraza = "";
+  if (debeRegistrarTraza) {
+    const fechaStr = new Date().toLocaleString("es-EC", {
+      timeZone: "America/Guayaquil",
+    });
+    let detalleOp = "";
+    if (meta.origen === "edicion_historial") {
+      detalleOp = "Corrección de historial en ítem.";
+    } else if (meta.origen === "devoluciones") {
+      detalleOp = usarMetro
+        ? `Devolución aprobada (módulo devoluciones): ${m2Op.toFixed(
+            2
+          )} m² registrados en trazabilidad.`
+        : `Devolución aprobada (módulo devoluciones): ${m2Op.toFixed(
+            0
+          )} u. registradas en trazabilidad.`;
+    } else if (usarMetro && mc > 0 && pp > 0) {
+      const { cajas: dc, piezas: dp } = cajasPiezasDesdeM2(
+        Math.max(0, m2Op),
+        mc,
+        pp
+      );
+      detalleOp = `${estMeta || "MOVIMIENTO"}: +${m2Op.toFixed(
+        2
+      )} m² (${dc} cj + ${dp} pz).`;
+    } else {
+      detalleOp = `${estMeta || "MOVIMIENTO"}: +${m2Op.toFixed(3)} u.`;
     }
-  );
+    lineaTraza = `\n[${fechaStr}] Gestión entregas bodega. ${detalleOp} Pendiente según orden: ${pend.toFixed(
+      3
+    )}. Entregado acum.: ${ent.toFixed(3)}. Devuelto acum.: ${dev.toFixed(
+      3
+    )}. Usuario: ${usuario || "—"}.`;
+  }
+
+  const cierre = pendienteVisualItem(item) === 0;
+
+  for (const doc of docs) {
+    const notasBase = (doc.notas != null ? String(doc.notas) : "").trim();
+    const notasNuevas = notasBase + (lineaTraza || "");
+
+    if (cierre) {
+      const cpEnt =
+        usarMetro && mc > 0 && pp > 0
+          ? cajasPiezasDesdeM2(ent, mc, pp)
+          : { cajas: ent, piezas: 0 };
+      await ProductosPendientes.findByIdAndUpdate(doc._id, {
+        $set: {
+          estado: "ENTREGADO",
+          cajas: 0,
+          piezas: 0,
+          cantM2: 0,
+          m2Entregados: ent,
+          cajasEntregadas: cpEnt.cajas,
+          piezasEntregadas: cpEnt.piezas,
+          mensaje:
+            "Ítem sin pendiente (entrega/devolución según orden). Sincronizado desde Gestión Entregas de bodega.",
+          usuario: usuario || "",
+          notas: notasNuevas,
+        },
+      });
+    } else {
+      let nuevasCajas = 0;
+      let nuevasPiezas = 0;
+      let nuevoCantM2 = pend;
+      if (usarMetro && mc > 0 && pp > 0) {
+        const cp = cajasPiezasDesdeM2(pend, mc, pp);
+        nuevasCajas = cp.cajas;
+        nuevasPiezas = cp.piezas;
+        nuevoCantM2 = pend;
+      } else {
+        nuevasCajas = pend;
+        nuevasPiezas = 0;
+        nuevoCantM2 = 0;
+      }
+      const cpEnt =
+        usarMetro && mc > 0 && pp > 0
+          ? cajasPiezasDesdeM2(ent, mc, pp)
+          : { cajas: ent, piezas: 0 };
+      await ProductosPendientes.findByIdAndUpdate(doc._id, {
+        $set: {
+          cajas: nuevasCajas,
+          piezas: nuevasPiezas,
+          cantM2: nuevoCantM2,
+          m2Entregados: ent,
+          cajasEntregadas: cpEnt.cajas,
+          piezasEntregadas: cpEnt.piezas,
+          mensaje:
+            "Actualizado desde Gestión Entregas de bodega (entrega o movimiento parcial).",
+          usuario: usuario || "",
+          notas: notasNuevas,
+        },
+      });
+    }
+  }
+}
+
+/**
+ * Cantidad devuelta en la misma unidad que `cantidadFacturada` del ítem de la orden (m² si es cerámica; unidades si no).
+ * En el módulo de devoluciones, productos por unidad suelen dejar `cantDevueltam2` en 0 y capturar todo en cajas/piezas.
+ */
+function cantidadDevolucionDesdePayload(pd, item) {
+  const usarMetro = itemUsaMetrosCajaPieza(item);
+  let cant = 0;
+  if (usarMetro) {
+    const cc = normalizarNumero(pd.cantDevueltaCajas);
+    const pp = normalizarNumero(pd.cantDevueltaPiezas);
+    const m2Caja = m2PorCajaDeLinea(item);
+    const piezasCaja = piezasPorCajaDeLinea(item);
+    cant = m2DesdeCajasPiezas(cc, pp, m2Caja, piezasCaja);
+    const m2Body = normalizarNumero(
+      pd.cantDevueltam2Flo != null ? pd.cantDevueltam2Flo : pd.cantDevueltam2
+    );
+    if (cant <= 0 && m2Body > 0) {
+      cant = m2Body;
+    }
+  } else {
+    cant = normalizarNumero(
+      pd.cantDevueltam2Flo != null ? pd.cantDevueltam2Flo : pd.cantDevueltam2
+    );
+    if (cant <= 0) {
+      const pLine = pd && pd.producto;
+      const piezasPorCajaProd = normalizarNumero(pLine && pLine.P_CAJA);
+      const cc = normalizarNumero(pd.cantDevueltaCajas);
+      const pc = normalizarNumero(pd.cantDevueltaPiezas);
+      if (piezasPorCajaProd > 0) {
+        cant = cc * piezasPorCajaProd + pc;
+      } else if (cc > 0 || pc > 0) {
+        cant = cc + pc;
+      }
+    }
+  }
+  return cant;
 }
 
 /**
@@ -415,21 +571,23 @@ router.put("/actualizarItem/:id/:itemIndex", async (req, res) => {
 
   recalcularEstadoYItems(orden);
   const itemActualizado = orden.items[index];
-  const entregaTotalItem =
-    !!itemActualizado &&
-    (normalizarNumero(itemActualizado.cantidadFacturada) ===
-      normalizarNumero(itemActualizado.cantidadEntregada) +
-        normalizarNumero(itemActualizado.cantidadDevuelta) ||
-      pendienteVisualItem(itemActualizado) === 0);
-  if (entregaTotalItem) {
-    try {
-      await marcarPendienteComoEntregadoDesdeBodega(orden, itemActualizado, usuario);
-    } catch (errorPendiente) {
-      console.log(
-        "No se pudo sincronizar estado en productos pendientes:",
-        errorPendiente?.message || errorPendiente
-      );
-    }
+  try {
+    await sincronizarProductoPendienteLegacyDesdeItem(
+      orden,
+      itemActualizado,
+      usuario,
+      {
+        m2EnEstaOperacion: m2EnEstaOperacion,
+        estadoSeleccionado,
+        entregaCajas: entregaCajasRegistro,
+        entregaPiezas: entregaPiezasRegistro,
+      }
+    );
+  } catch (errorPendiente) {
+    console.log(
+      "No se pudo sincronizar productos pendientes (legacy):",
+      errorPendiente?.message || errorPendiente
+    );
   }
   await orden.save();
   res.json(orden);
@@ -545,25 +703,21 @@ router.put(
 
       recalcularEstadoYItems(orden);
       const itemActualizado = orden.items[idxItem];
-      const entregaTotalItem =
-        !!itemActualizado &&
-        (normalizarNumero(itemActualizado.cantidadFacturada) ===
-          normalizarNumero(itemActualizado.cantidadEntregada) +
-            normalizarNumero(itemActualizado.cantidadDevuelta) ||
-          pendienteVisualItem(itemActualizado) === 0);
-      if (entregaTotalItem) {
-        try {
-          await marcarPendienteComoEntregadoDesdeBodega(
-            orden,
-            itemActualizado,
-            usuario
-          );
-        } catch (errorPendiente) {
-          console.log(
-            "No se pudo sincronizar estado en productos pendientes:",
-            errorPendiente?.message || errorPendiente
-          );
-        }
+      try {
+        await sincronizarProductoPendienteLegacyDesdeItem(
+          orden,
+          itemActualizado,
+          usuario,
+          {
+            origen: "edicion_historial",
+            estadoSeleccionado: estadoSel,
+          }
+        );
+      } catch (errorPendiente) {
+        console.log(
+          "No se pudo sincronizar productos pendientes (legacy):",
+          errorPendiente?.message || errorPendiente
+        );
       }
 
       await orden.save();
@@ -770,6 +924,8 @@ router.put("/registrarDevolucionAprobada", async (req, res) => {
 
     const detalleAdvertencias = [];
     let itemsActualizados = 0;
+    /** idx ítem → m²/u aplicados en esta aprobación (para traza en productos pendientes legacy). */
+    const syncDevolucionPorIndice = new Map();
 
     for (const pd of productosDevueltos) {
       const pLine = pd && pd.producto;
@@ -795,24 +951,7 @@ router.put("/registrarDevolucionAprobada", async (req, res) => {
       const devueltaActual = normalizarNumero(item.cantidadDevuelta);
       const usarMetro = itemUsaMetrosCajaPieza(item);
 
-      let m2Dev = 0;
-      if (usarMetro) {
-        const cc = normalizarNumero(pd.cantDevueltaCajas);
-        const pp = normalizarNumero(pd.cantDevueltaPiezas);
-        const m2Caja = m2PorCajaDeLinea(item);
-        const piezasCaja = piezasPorCajaDeLinea(item);
-        m2Dev = m2DesdeCajasPiezas(cc, pp, m2Caja, piezasCaja);
-        const m2Body = normalizarNumero(
-          pd.cantDevueltam2Flo != null ? pd.cantDevueltam2Flo : pd.cantDevueltam2
-        );
-        if (m2Dev <= 0 && m2Body > 0) {
-          m2Dev = m2Body;
-        }
-      } else {
-        m2Dev = normalizarNumero(
-          pd.cantDevueltam2Flo != null ? pd.cantDevueltam2Flo : pd.cantDevueltam2
-        );
-      }
+      const m2Dev = cantidadDevolucionDesdePayload(pd, item);
 
       if (m2Dev <= 0) {
         continue;
@@ -865,33 +1004,33 @@ router.put("/registrarDevolucionAprobada", async (req, res) => {
       });
 
       itemsActualizados += 1;
+      const prev = syncDevolucionPorIndice.get(idx) || 0;
+      syncDevolucionPorIndice.set(idx, prev + aplicar);
     }
 
     if (itemsActualizados > 0) {
       recalcularEstadoYItems(orden);
-      for (let i = 0; i < (orden.items || []).length; i += 1) {
-        const itemActualizado = orden.items[i];
-        const entregaTotalItem =
-          !!itemActualizado &&
-          (normalizarNumero(itemActualizado.cantidadFacturada) ===
-            normalizarNumero(itemActualizado.cantidadEntregada) +
-              normalizarNumero(itemActualizado.cantidadDevuelta) ||
-            pendienteVisualItem(itemActualizado) === 0);
-        if (entregaTotalItem) {
-          try {
-            await marcarPendienteComoEntregadoDesdeBodega(
-              orden,
-              itemActualizado,
-              usuario
-            );
-          } catch (errorPendiente) {
-            console.log(
-              "No se pudo sincronizar estado en productos pendientes:",
-              errorPendiente && errorPendiente.message
-                ? errorPendiente.message
-                : errorPendiente
-            );
-          }
+      for (const [idx, m2Aprobado] of syncDevolucionPorIndice) {
+        const itemActualizado = orden.items[idx];
+        if (!itemActualizado) continue;
+        try {
+          await sincronizarProductoPendienteLegacyDesdeItem(
+            orden,
+            itemActualizado,
+            usuario,
+            {
+              origen: "devoluciones",
+              m2EnEstaOperacion: m2Aprobado,
+              estadoSeleccionado: "DEVUELTO",
+            }
+          );
+        } catch (errorPendiente) {
+          console.log(
+            "No se pudo sincronizar productos pendientes (legacy):",
+            errorPendiente && errorPendiente.message
+              ? errorPendiente.message
+              : errorPendiente
+          );
         }
       }
       orden.trazabilidad = orden.trazabilidad || [];

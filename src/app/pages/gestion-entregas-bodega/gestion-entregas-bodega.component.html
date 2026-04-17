@@ -122,7 +122,10 @@
         Si el inventario calculado es negativo, se muestra como <strong>0</strong> y el balance usa esa existencia en cero.
       </p>
       <p *ngIf="vistaProductosEspecial === 'pendientesEntrega'" class="text-muted small mb-2">
-        Listado de productos con estado <strong>PENDIENTE</strong> del módulo de entregas pendientes.
+        Productos con estado <strong>PENDIENTE</strong>. Al registrar entregas o devoluciones en
+        <strong>Gestión Entregas</strong>, las cantidades y las notas de trazabilidad se sincronizan en el servidor;
+        las filas pasan a <strong>ENTREGADO</strong> cuando el ítem de la orden queda sin pendiente (entrega total o
+        devolución que cierra el saldo).
       </p>
 
       <!-- SMART-DISPATCH: solo gestión en móvil/tablet pequeña -->
@@ -622,46 +625,55 @@
             dataField="id_Pedido"
             caption="Entrega N"
             dataType="string"
+            width="10%"
             sortOrder="desc"
           ></dxi-column>
           <dxi-column
             dataField="fecha"
             caption="Fecha"
+            width="10%"
             dataType="string"
           ></dxi-column>
           <dxi-column
             dataField="documento"
             caption="Documento #"
+            width="10%"
             dataType="string"
           ></dxi-column>
           <dxi-column
             dataField="cliente"
             caption="Cliente"
+            width="15%"
             dataType="string"
           ></dxi-column>
           <dxi-column
             dataField="producto.PRODUCTO"
             caption="Producto"
-            dataType="string"
-          ></dxi-column>
-          <dxi-column
-            dataField="sucursal"
-            caption="Sucursal"
+            width="24%"
             dataType="string"
           ></dxi-column>
           <dxi-column
             dataField="cajas"
             caption="Cajas"
+            width="7%"
             dataType="number"
           ></dxi-column>
           <dxi-column
             dataField="piezas"
             caption="Piezas"
+            width="7%"
             dataType="number"
+          ></dxi-column>
+          <dxi-column
+            dataField="notas"
+            caption="Notas / trazabilidad"
+            width="18%"
+            dataType="string"
           ></dxi-column>
           <dxi-column
             dataField="estado"
             caption="Estado"
+            width="10%"
             dataType="string"
           ></dxi-column>
           <dxo-paging [pageSize]="12"></dxo-paging>
