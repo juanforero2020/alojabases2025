@@ -392,11 +392,27 @@
             </div>
           </button>
           <div
-            *ngIf="mostrarAccionesDevolucion"
             class="listado-entrega-movil-acciones"
             (click)="$event.stopPropagation()"
           >
             <button
+              type="button"
+              class="btn btn-link ge-btn-descarga-movil p-1"
+              title="Descargar PDF con trazabilidad de la orden"
+              (click)="descargarPdfTrazabilidadDesdeOrden(ord, $event)"
+            >
+              <i class="fa fa-download text-secondary" aria-hidden="true"></i>
+            </button>
+            <button
+              type="button"
+              class="btn btn-link ge-btn-descarga-movil p-1"
+              title="Descargar PDF simple de la orden"
+              (click)="descargarPdfSimpleDesdeOrden(ord, $event)"
+            >
+              <i class="fa fa-file-pdf-o text-secondary" aria-hidden="true"></i>
+            </button>
+            <button
+              *ngIf="mostrarAccionesDevolucion"
               type="button"
               class="btn btn-link ge-btn-devolucion-movil"
               [disabled]="tipoAccionDevolucionParaOrden(ord) === 'nada'"
@@ -470,6 +486,28 @@
           [visible]="mostrarAccionesDevolucion"
           cellTemplate="devolucionOrdenCell"
         ></dxi-column>
+        <dxi-column
+          type="buttons"
+          caption="PDF Trazabilidad"
+          width="10%"
+          [visible]="mostrarListado"
+        >
+          <dxi-button
+            icon="fa fa-download"
+            [onClick]="descargarPdfTrazabilidadListado"
+          ></dxi-button>
+        </dxi-column>
+        <dxi-column
+          type="buttons"
+          caption="PDF Entrega"
+          width="10%"
+          [visible]="mostrarListado"
+        >
+          <dxi-button
+            icon="fa fa-file-pdf-o"
+            [onClick]="descargarPdfSimpleListado"
+          ></dxi-button>
+        </dxi-column>
         <dxi-column
           type="buttons"
           caption="Gestionar"
@@ -930,7 +968,15 @@
             <p>
               Facturado: {{ formatoCantidadLinea(it.cantidadFacturada, it) }} ·
               Entregado: {{ formatoCantidadLinea(it.cantidadEntregada, it) }} ·
-              Devuelto: {{ formatoCantidadLinea(it.cantidadDevuelta, it) }} ·
+              Devuelto: {{ formatoCantidadLinea(it.cantidadDevuelta, it) }}
+              (virtual:
+              {{
+                formatoCantidadLinea(devolucionVirtualAcumuladaDesdeHistorial(it), it)
+              }}
+              · física:
+              {{
+                formatoCantidadLinea(devolucionFisicaAcumuladaDesdeHistorial(it), it)
+              }}) ·
               Estado ítem: {{ it.estadoItem }}
             </p>
           </div>

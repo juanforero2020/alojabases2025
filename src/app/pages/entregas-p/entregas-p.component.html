@@ -114,7 +114,7 @@
                     <dxi-column type="buttons" dataField="bt1" caption="Ver" width="7%">
                         <dxi-button icon="fa fa-eye" [onClick]="getCourseFile"></dxi-button>
                     </dxi-column>
-                    <dxi-column type="buttons" dataField="bt2" caption="Eliminar" width="7%" [visible]="true">
+                    <dxi-column type="buttons" dataField="bt2" caption="Eliminar" width="7%" [visible]="esAdministrador">
                         <dxi-button icon="clear" [onClick]="getCourseFile7"></dxi-button>
                     </dxi-column>
                     <dxi-column type="buttons" dataField="bt1" caption="Notas" width="7%">

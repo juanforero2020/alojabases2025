@@ -56,6 +56,14 @@ export class EntregasBodegaService {
     return this.http.put(`${this.URL}/registrarDevolucionAprobada`, payload);
   }
 
+  previsualizarDevolucionAprobada(payload: {
+    documentoNumero: number;
+    tipo_documento: string;
+    productosDevueltos: unknown[];
+  }) {
+    return this.http.post(`${this.URL}/previsualizarDevolucionAprobada`, payload);
+  }
+
   /**
    * Corrige un registro del historial de un ítem (trazabilidad).
    * El servidor valida rol (Administrador vs Bodeguero mismo día) y orden no cerrada.

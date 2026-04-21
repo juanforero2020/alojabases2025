@@ -1,6 +1,7 @@
 import { Component, OnDestroy, OnInit } from "@angular/core";
 import { Subscription } from "rxjs";
 import Swal from "sweetalert2";
+import pdfMake from "pdfmake/build/pdfmake";
 import { productoMultiple } from "src/app/pages/consolidado/consolidado";
 import { EntregasBodegaService } from "src/app/servicios/entregas-bodega.service";
 import { ProductosPendientesService } from "src/app/servicios/productos-pendientes.service";
@@ -713,9 +714,12 @@ export class GestionEntregasBodegaComponent implements OnInit, OnDestroy {
     }
   }
 
-  abrirPopupTrazabilidad(fila: any) {
+  /**
+   * Misma vista que el popup de trazabilidad (bitácora e historial por ítem ordenados por fecha desc.).
+   */
+  private prepararVistaTrazabilidad(fila: any): any {
     if (!fila) {
-      return;
+      return null;
     }
     const o = JSON.parse(JSON.stringify(fila));
     if (Array.isArray(o.trazabilidad)) {
@@ -746,8 +750,389 @@ export class GestionEntregasBodegaComponent implements OnInit, OnDestroy {
           })),
       }));
     }
+    return o;
+  }
+
+  abrirPopupTrazabilidad(fila: any) {
+    const o = this.prepararVistaTrazabilidad(fila);
+    if (!o) {
+      return;
+    }
     this.ordenTrazabilidad = o;
     this.popupTrazabilidadVisible = true;
+  }
+
+  /** Columna tipo botones (listado): descarga PDF con la misma trazabilidad que el popup. */
+  descargarPdfTrazabilidadListado = (e: any) => {
+    const fila = e?.row?.data;
+    if (!fila) {
+      return;
+    }
+    const vista = this.prepararVistaTrazabilidad(fila);
+    if (!vista) {
+      return;
+    }
+    try {
+      const doc = this.buildDocumentDefinitionTrazabilidadPdf(vista);
+      const n = vista.consecutivoEntrega != null ? String(vista.consecutivoEntrega) : "orden";
+      pdfMake.createPdf(doc).download(`Trazabilidad_entrega_bodega_${n}.pdf`);
+    } catch (err) {
+      console.error(err);
+      Swal.fire("Error", "No se pudo generar el PDF de trazabilidad.", "error");
+    }
+  };
+
+  descargarPdfTrazabilidadDesdeOrden(orden: any, ev?: Event): void {
+    if (ev) {
+      ev.stopPropagation();
+      ev.preventDefault();
+    }
+    this.descargarPdfTrazabilidadListado({ row: { data: orden } });
+  }
+
+  descargarPdfSimpleListado = (e: any) => {
+    const fila = e?.row?.data;
+    if (!fila) {
+      return;
+    }
+    const vista = this.prepararVistaTrazabilidad(fila);
+    if (!vista) {
+      return;
+    }
+    try {
+      const doc = this.buildDocumentDefinitionSimplePdf(vista);
+      const n = vista.consecutivoEntrega != null ? String(vista.consecutivoEntrega) : "orden";
+      pdfMake.createPdf(doc).download(`Orden_entrega_simple_${n}.pdf`);
+    } catch (err) {
+      console.error(err);
+      Swal.fire("Error", "No se pudo generar el PDF simple.", "error");
+    }
+  };
+
+  descargarPdfSimpleDesdeOrden(orden: any, ev?: Event): void {
+    if (ev) {
+      ev.stopPropagation();
+      ev.preventDefault();
+    }
+    this.descargarPdfSimpleListado({ row: { data: orden } });
+  }
+
+  private txtPdf(v: any): string {
+    if (v == null || v === "") {
+      return "";
+    }
+    return String(v);
+  }
+
+  private buildDocumentDefinitionSimplePdf(o: any): any {
+    const items = Array.isArray(o?.items) ? o.items : [];
+    const bodyItems: any[] = [
+      [
+        { text: "Producto", style: "th" },
+        { text: "Fact", style: "th", alignment: "center" },
+        { text: "Ent", style: "th", alignment: "center" },
+        { text: "Dev", style: "th", alignment: "center" },
+        { text: "Pend", style: "th", alignment: "center" },
+        { text: "Est", style: "th", alignment: "center" },
+      ],
+    ];
+
+    if (!items.length) {
+      bodyItems.push([
+        { text: "Sin ítems registrados.", style: "td", colSpan: 6 },
+        {},
+        {},
+        {},
+        {},
+        {},
+      ]);
+    } else {
+      items.forEach((it: any) => {
+        bodyItems.push([
+          { text: this.txtPdf(it.productoNombre), style: "td" },
+          { text: this.formatoCantidadLinea(it.cantidadFacturada, it), style: "td", alignment: "center" },
+          { text: this.formatoCantidadLinea(it.cantidadEntregada, it), style: "td", alignment: "center" },
+          { text: this.formatoCantidadLinea(it.cantidadDevuelta, it), style: "td", alignment: "center" },
+          { text: this.formatoCantidadLinea(this.pendienteEfectivo(it), it), style: "td", alignment: "center" },
+          { text: this.txtPdf(it.estadoItem || ""), style: "td", alignment: "center" },
+        ]);
+      });
+    }
+
+    return {
+      pageSize: "A4",
+      pageOrientation: "portrait",
+      pageMargins: [32, 36, 32, 36],
+      content: [
+        { text: "NOTA_VENTA / ORDEN DE ENTREGA", style: "header" },
+        {
+          text:
+            `${this.txtPdf(o.tipoDocumento)} #${this.txtPdf(o.documentoNumero)} - ${this.txtPdf(o.clienteNombre)}`,
+          style: "subheader",
+          margin: [0, 2, 0, 10],
+        },
+        {
+          style: "tableMain",
+          table: {
+            widths: [110, "*", 110, "*"],
+            body: [
+              [
+                { text: "Orden #", style: "th" },
+                { text: this.txtPdf(o.consecutivoEntrega), style: "td" },
+                { text: "Estado", style: "th" },
+                { text: this.txtPdf(o.estadoProceso), style: "td" },
+              ],
+              [
+                { text: "Fecha doc.", style: "th" },
+                { text: this.txtPdf(this.formatearFechaDocumentoListado(o)), style: "td" },
+                { text: "Cliente", style: "th" },
+                { text: this.txtPdf(o.clienteNombre), style: "td" },
+              ],
+            ],
+          },
+          layout: "lightHorizontalLines",
+          margin: [0, 0, 0, 10],
+        },
+        {
+          style: "tableMain",
+          table: {
+            widths: ["34%", "11%", "11%", "11%", "11%", "22%"],
+            body: bodyItems,
+          },
+          layout: "lightHorizontalLines",
+        },
+      ],
+      styles: {
+        header: { fontSize: 13, bold: true, alignment: "center" },
+        subheader: { fontSize: 11, bold: true, alignment: "center" },
+        th: { bold: true, fontSize: 8, fillColor: "#efefef" },
+        td: { fontSize: 8 },
+        tableMain: { fontSize: 8 },
+      },
+      defaultStyle: { fontSize: 9 },
+    };
+  }
+
+  private buildDocumentDefinitionTrazabilidadPdf(o: any): any {
+    const fechaDoc = this.txtPdf(o.fechaDocumento);
+    const resumenRows: any[] = [
+      [
+        { text: "Consecutivo", style: "th" },
+        { text: this.txtPdf(o.consecutivoEntrega), style: "td" },
+        { text: "Estado proceso", style: "th" },
+        { text: this.txtPdf(o.estadoProceso), style: "td" },
+      ],
+      [
+        { text: "Tipo documento", style: "th" },
+        { text: this.txtPdf(o.tipoDocumento), style: "td" },
+        { text: "Fecha documento", style: "th" },
+        { text: fechaDoc, style: "td" },
+      ],
+      [
+        { text: "N.º documento venta", style: "th" },
+        { text: this.txtPdf(o.documentoNumero), style: "td" },
+        { text: "Cliente", style: "th" },
+        { text: this.txtPdf(o.clienteNombre), style: "td" },
+      ],
+    ];
+    if (o.createdAt) {
+      resumenRows.push([
+        { text: "Creada en sistema", style: "th" },
+        { text: this.formatearFechaIso(o.createdAt), style: "td", colSpan: 3 },
+        {},
+        {},
+      ]);
+    }
+    if (o.updatedAt) {
+      resumenRows.push([
+        { text: "Última actualización", style: "th" },
+        { text: this.formatearFechaIso(o.updatedAt), style: "td", colSpan: 3 },
+        {},
+        {},
+      ]);
+    }
+
+    const bitacora = Array.isArray(o.trazabilidad) ? o.trazabilidad : [];
+    const bitacoraBody: any[] = [
+      [
+        { text: "Fecha / hora", style: "th" },
+        { text: "Usuario", style: "th" },
+        { text: "Acción", style: "th" },
+        { text: "Detalle", style: "th" },
+      ],
+    ];
+    if (bitacora.length === 0) {
+      bitacoraBody.push([
+        { text: "Sin registros en la bitácora de la orden.", style: "tdSmall", colSpan: 4 },
+        {},
+        {},
+        {},
+      ]);
+    } else {
+      bitacora.forEach((t: any) => {
+        bitacoraBody.push([
+          { text: this.txtPdf(t.fechaFmt || t.fecha), style: "tdSmall" },
+          { text: this.txtPdf(t.usuario), style: "tdSmall" },
+          { text: this.txtPdf(t.accion), style: "tdSmall" },
+          { text: this.txtPdf(t.detalle), style: "tdSmall" },
+        ]);
+      });
+    }
+
+    const content: any[] = [
+      {
+        text: "Trazabilidad · Entrega de bodega",
+        style: "header",
+        margin: [0, 0, 0, 4],
+      },
+      {
+        text: `Generado: ${new Date().toLocaleString()}`,
+        fontSize: 8,
+        color: "#555",
+        margin: [0, 0, 0, 12],
+      },
+      { text: "Resumen de la orden", style: "subheader", margin: [0, 0, 0, 6] },
+      {
+        style: "tableMain",
+        table: {
+          widths: ["22%", "28%", "22%", "28%"],
+          body: resumenRows,
+        },
+        layout: "lightHorizontalLines",
+        margin: [0, 0, 0, 14],
+      },
+      { text: "Bitácora del proceso (orden)", style: "subheader", margin: [0, 0, 0, 6] },
+      {
+        style: "tableMain",
+        table: {
+          widths: [80, 70, 70, "*"],
+          body: bitacoraBody,
+        },
+        layout: "lightHorizontalLines",
+        margin: [0, 0, 0, 14],
+      },
+      { text: "Ítems y movimientos por línea", style: "subheader", margin: [0, 0, 0, 6] },
+    ];
+
+    const items = Array.isArray(o.items) ? o.items : [];
+    if (!items.length) {
+      content.push({
+        text: "Sin ítems en esta orden.",
+        italics: true,
+        fontSize: 9,
+        margin: [0, 0, 0, 8],
+      });
+    } else {
+      items.forEach((it: any, idx: number) => {
+        const hist = Array.isArray(it.historialOrdenado) ? it.historialOrdenado : [];
+        const vHist = this.devolucionVirtualAcumuladaDesdeHistorial(it);
+        const fHist = this.devolucionFisicaAcumuladaDesdeHistorial(it);
+        const sub =
+          `Facturado: ${this.formatoCantidadLinea(it.cantidadFacturada, it)} · ` +
+          `Entregado: ${this.formatoCantidadLinea(it.cantidadEntregada, it)} · ` +
+          `Devuelto: ${this.formatoCantidadLinea(it.cantidadDevuelta, it)} ` +
+          `(virtual: ${this.formatoCantidadLinea(vHist, it)} · física: ${this.formatoCantidadLinea(
+            fHist,
+            it
+          )}) · ` +
+          `Estado ítem: ${this.txtPdf(it.estadoItem)}`;
+        content.push({
+          text: `${idx + 1}. ${this.txtPdf(it.productoNombre)}`,
+          style: "itemTitle",
+          margin: [0, 10, 0, 2],
+        });
+        content.push({
+          text: sub,
+          fontSize: 8,
+          color: "#333",
+          margin: [0, 0, 0, 6],
+        });
+        if (!hist.length) {
+          content.push({
+            text: "Sin movimientos registrados en este ítem.",
+            italics: true,
+            fontSize: 8,
+            margin: [0, 0, 0, 8],
+          });
+          return;
+        }
+        const histBody: any[] = [
+          [
+            { text: "Fecha / hora", style: "th" },
+            { text: "Usuario", style: "th" },
+            { text: "Acción", style: "th" },
+            { text: "Estado sel.", style: "th" },
+            { text: "Entr. acum.", style: "th" },
+            { text: "Dev. acum.", style: "th" },
+            { text: "m² op.", style: "th" },
+            { text: "Cajas", style: "th" },
+            { text: "Piezas", style: "th" },
+            { text: "Notas", style: "th" },
+          ],
+        ];
+        hist.forEach((h: any) => {
+          histBody.push([
+            { text: this.txtPdf(h.fechaFmt || h.fecha), style: "tdMini" },
+            { text: this.txtPdf(h.usuario), style: "tdMini" },
+            { text: this.txtPdf(h.accion), style: "tdMini" },
+            { text: this.txtPdf(h.estadoSeleccionado), style: "tdMini" },
+            {
+              text: this.num(h.cantidadEntregada).toFixed(2),
+              style: "tdMini",
+              alignment: "right",
+            },
+            {
+              text: this.num(h.cantidadDevuelta).toFixed(2),
+              style: "tdMini",
+              alignment: "right",
+            },
+            {
+              text: this.num(h.m2EntregadoEnEstaOperacion).toFixed(2),
+              style: "tdMini",
+              alignment: "right",
+            },
+            {
+              text: this.txtPdf(h.entregaCajas),
+              style: "tdMini",
+              alignment: "right",
+            },
+            {
+              text: this.txtPdf(h.entregaPiezas),
+              style: "tdMini",
+              alignment: "right",
+            },
+            { text: this.txtPdf(h.notas), style: "tdMini" },
+          ]);
+        });
+        content.push({
+          style: "tableMain",
+          table: {
+            widths: [52, 40, 40, 40, 30, 30, 30, 25, 25, "*"],
+            body: histBody,
+          },
+          layout: "lightHorizontalLines",
+          margin: [0, 0, 0, 4],
+        });
+      });
+    }
+
+    return {
+      pageSize: "A4",
+      pageOrientation: "portrait",
+      pageMargins: [40, 40, 40, 48],
+      styles: {
+        header: { fontSize: 14, bold: true },
+        subheader: { fontSize: 11, bold: true },
+        itemTitle: { fontSize: 10, bold: true },
+        th: { bold: true, fontSize: 8, fillColor: "#eeeeee" },
+        td: { fontSize: 9 },
+        tdSmall: { fontSize: 7 },
+        tdMini: { fontSize: 6 },
+        tableMain: { fontSize: 8 },
+      },
+      defaultStyle: { fontSize: 9 },
+      content,
+    };
   }
 
   get tituloPopupTrazabilidad(): string {
@@ -1071,6 +1456,36 @@ export class GestionEntregasBodegaComponent implements OnInit, OnDestroy {
     }
     const { cajas, piezas } = this.cajasPiezasDesdeM2(m2, item);
     return `${this.num(m2).toFixed(2)} m² (${cajas} C + ${piezas} P)`;
+  }
+
+  /**
+   * Suma devoluciones registradas en historial con tipo explícito o legado (sin tipo = virtual).
+   */
+  devolucionVirtualAcumuladaDesdeHistorial(item: any): number {
+    let v = 0;
+    const hist = Array.isArray(item?.historial) ? item.historial : [];
+    for (const h of hist) {
+      const estado = String(h?.estadoSeleccionado || "").toUpperCase();
+      if (estado !== "DEVUELTO") continue;
+      const op = this.num(h?.m2EntregadoEnEstaOperacion);
+      if (op <= 0) continue;
+      const tipo = String(h?.tipoDevolucion || "").toUpperCase();
+      if (tipo === "FISICA") continue;
+      v += op;
+    }
+    return v;
+  }
+
+  devolucionFisicaAcumuladaDesdeHistorial(item: any): number {
+    let f = 0;
+    const hist = Array.isArray(item?.historial) ? item.historial : [];
+    for (const h of hist) {
+      const estado = String(h?.estadoSeleccionado || "").toUpperCase();
+      if (estado !== "DEVUELTO") continue;
+      if (String(h?.tipoDevolucion || "").toUpperCase() !== "FISICA") continue;
+      f += this.num(h?.m2EntregadoEnEstaOperacion);
+    }
+    return f;
   }
 
   private prepararOrdenParaVista(orden: any) {

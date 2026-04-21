@@ -544,6 +544,7 @@ export class ReciboCajaComponent implements OnInit {
     this.obtenerDataRecibo(e.row.data);
   };
 
+
   deleteRecibo = (e) => {  
     this.anularRecibo(e.row.data)  
   }
@@ -658,6 +659,7 @@ export class ReciboCajaComponent implements OnInit {
         this.mostrarMensajeGenerico(2,"Error al traer la información")
     }); 
   }
+
 
   limpiarArrays(){
     this.listadoRecibosCaja = [];
@@ -1587,6 +1589,7 @@ export class ReciboCajaComponent implements OnInit {
 
   }
 
+
   traerDatosFaltantes(sucursal){
     this.parametrizacionSucu = this.parametrizaciones.find(element=> element.sucursal == sucursal);
   }
@@ -1861,6 +1864,7 @@ export class ReciboCajaComponent implements OnInit {
       },
     };
   }
+
 
   getListaOperaciones(operaciones: OperacionComercial[]) {
     return {

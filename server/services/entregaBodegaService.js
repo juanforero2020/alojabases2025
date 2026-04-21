@@ -359,6 +359,7 @@ function reconstruirItemDesdeHistorial(item) {
         h.entregaPiezas = piezas;
       }
     } else if (estado === "DEVUELTO") {
+      const tipoDevolucion = String(h.tipoDevolucion || "").toUpperCase();
       let m2Dev = 0;
       if (usarMetro) {
         const cajas = normalizarNumero(h.entregaCajas);
@@ -375,7 +376,12 @@ function reconstruirItemDesdeHistorial(item) {
         m2Dev = 0;
       }
       ent = entAntes;
-      dev = devAntes + m2Dev;
+      // La devolución física se conserva como registro de trazabilidad y no altera el pendiente lógico.
+      if (tipoDevolucion === "FISICA") {
+        dev = devAntes;
+      } else {
+        dev = devAntes + m2Dev;
+      }
       m2Op = m2Dev;
     } else {
       if (usarMetro) {

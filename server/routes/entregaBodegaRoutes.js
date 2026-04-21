@@ -234,6 +234,125 @@ function cantidadDevolucionDesdePayload(pd, item) {
 }
 
 /**
+ * Separa una devolución aprobada en dos componentes:
+ * - virtual: cubre solo lo pendiente por entregar (facturado - entregado - devuelto acumulado).
+ * - fisica: exceso sobre lo pendiente, limitado por lo entregado.
+ *
+ * Reglas:
+ * 1) virtual <= (facturado - entregado - devueltoActual)
+ * 2) fisica <= entregado
+ * 3) virtual + fisica <= facturado
+ */
+function separarDevolucionVirtualFisica({
+  cantidadSolicitada,
+  facturada,
+  entregada,
+  devueltaActual,
+}) {
+  const solicitada = Math.max(0, normalizarNumero(cantidadSolicitada));
+  const f = Math.max(0, normalizarNumero(facturada));
+  const e = Math.max(0, normalizarNumero(entregada));
+  const d = Math.max(0, normalizarNumero(devueltaActual));
+
+  // Tope global por ítem/documento en esta operación.
+  const totalPermitido = Math.max(0, f - d);
+  const aplicable = Math.min(solicitada, totalPermitido);
+
+  // Parte virtual: lo pendiente real remanente.
+  const pendienteVirtual = Math.max(0, f - e - d);
+  const virtual = Math.min(aplicable, pendienteVirtual);
+
+  // Parte física: excedente sobre pendiente, limitado por lo entregado.
+  const excedente = Math.max(0, aplicable - virtual);
+  const fisica = Math.min(excedente, e);
+
+  return {
+    virtual,
+    fisica,
+    aplicadoTotal: virtual + fisica,
+    solicitado: solicitada,
+    truncadoPorTope: solicitada - aplicable > 1e-6,
+  };
+}
+
+function construirPrevisualizacionDevolucion(orden, productosDevueltos = []) {
+  const detalleAdvertencias = [];
+  const detallePreview = [];
+
+  for (const pd of productosDevueltos) {
+    const pLine = pd && pd.producto;
+    const codigo = pLine && String(pLine.PRODUCTO || "").trim();
+    if (!codigo) continue;
+
+    const idx = (orden.items || []).findIndex((it) => {
+      const nom = String(
+        (it.producto && it.producto.PRODUCTO) || it.productoNombre || ""
+      ).trim();
+      return nom === codigo;
+    });
+
+    if (idx < 0) {
+      detalleAdvertencias.push(`${codigo}: no figura en la orden de entrega.`);
+      continue;
+    }
+
+    const item = orden.items[idx];
+    const cantidadFacturada = normalizarNumero(item.cantidadFacturada);
+    const entregadaActual = normalizarNumero(item.cantidadEntregada);
+    const devueltaActual = normalizarNumero(item.cantidadDevuelta);
+    const solicitada = cantidadDevolucionDesdePayload(pd, item);
+    if (solicitada <= 0) continue;
+
+    const split = separarDevolucionVirtualFisica({
+      cantidadSolicitada: solicitada,
+      facturada: cantidadFacturada,
+      entregada: entregadaActual,
+      devueltaActual,
+    });
+
+    if (split.aplicadoTotal <= 0) {
+      detalleAdvertencias.push(
+        `${codigo}: sin cupo en la orden (fact. ${cantidadFacturada}, ent. ${entregadaActual}, dev. ${devueltaActual}).`
+      );
+      continue;
+    }
+
+    if (split.truncadoPorTope) {
+      detalleAdvertencias.push(
+        `${codigo}: se registrará ${split.aplicadoTotal.toFixed(2)} de ${solicitada.toFixed(
+          2
+        )} (tope total según facturado).`
+      );
+    }
+
+    detallePreview.push({
+      producto: codigo,
+      solicitada,
+      virtual: split.virtual,
+      fisica: split.fisica,
+      aplicadoTotal: split.aplicadoTotal,
+      facturada: cantidadFacturada,
+      entregada: entregadaActual,
+      devueltaActual,
+      devueltaResultante: devueltaActual + split.virtual,
+    });
+  }
+
+  const totales = detallePreview.reduce(
+    (acc, it) => {
+      acc.solicitada += normalizarNumero(it.solicitada);
+      acc.virtual += normalizarNumero(it.virtual);
+      acc.fisica += normalizarNumero(it.fisica);
+      acc.aplicadoTotal += normalizarNumero(it.aplicadoTotal);
+      return acc;
+    },
+    { solicitada: 0, virtual: 0, fisica: 0, aplicadoTotal: 0 }
+  );
+
+  return { detallePreview, detalleAdvertencias, totales };
+}
+
+/**
  * Mismo criterio para getPendientes (POST) y buscar: filtra en MongoDB.
  */
 function construirFiltroConsulta(body) {
@@ -957,31 +1076,47 @@ router.put("/registrarDevolucionAprobada", async (req, res) => {
         continue;
       }
 
-      const maxInc = Math.max(0, cantidadFacturada - entregadaActual - devueltaActual);
-      const aplicar = Math.min(m2Dev, maxInc);
-      if (aplicar <= 0) {
+      const split = separarDevolucionVirtualFisica({
+        cantidadSolicitada: m2Dev,
+        facturada: cantidadFacturada,
+        entregada: entregadaActual,
+        devueltaActual,
+      });
+
+      if (split.aplicadoTotal <= 0) {
         detalleAdvertencias.push(
           `${codigo}: sin cupo en la orden (fact. ${cantidadFacturada}, ent. ${entregadaActual}, dev. ${devueltaActual}).`
         );
         continue;
       }
-      if (aplicar + 1e-6 < m2Dev) {
+      if (split.truncadoPorTope) {
         detalleAdvertencias.push(
-          `${codigo}: se registró ${aplicar.toFixed(2)} de ${m2Dev.toFixed(2)} en trazabilidad (tope según orden).`
+          `${codigo}: se registró ${split.aplicadoTotal.toFixed(
+            2
+          )} de ${m2Dev.toFixed(2)} (tope total según facturado).`
         );
       }
 
-      const nuevaDev = devueltaActual + aplicar;
+      if (split.fisica - entregadaActual > 1e-6) {
+        detalleAdvertencias.push(
+          `${codigo}: devolución física ajustada al máximo entregado (${entregadaActual.toFixed(
+            2
+          )}).`
+        );
+      }
+
+      // Solo la virtual afecta cantidadDevuelta (pendiente de la orden).
+      const nuevaDev = devueltaActual + split.virtual;
       item.cantidadDevuelta = nuevaDev;
 
-      let entregaCajasReg = usarMetro ? normalizarNumero(pd.cantDevueltaCajas) : undefined;
-      let entregaPiezasReg = usarMetro ? normalizarNumero(pd.cantDevueltaPiezas) : undefined;
-      if (usarMetro && aplicar + 1e-6 < m2Dev) {
+      let entregaCajasRegVirtual = usarMetro ? normalizarNumero(pd.cantDevueltaCajas) : undefined;
+      let entregaPiezasRegVirtual = usarMetro ? normalizarNumero(pd.cantDevueltaPiezas) : undefined;
+      if (usarMetro && split.virtual + 1e-6 < m2Dev) {
         const m2Caja = m2PorCajaDeLinea(item);
         const piezasCaja = piezasPorCajaDeLinea(item);
-        const cp = cajasPiezasDesdeM2(aplicar, m2Caja, piezasCaja);
-        entregaCajasReg = cp.cajas;
-        entregaPiezasReg = cp.piezas;
+        const cpVirtual = cajasPiezasDesdeM2(split.virtual, m2Caja, piezasCaja);
+        entregaCajasRegVirtual = cpVirtual.cajas;
+        entregaPiezasRegVirtual = cpVirtual.piezas;
       }
 
       item.historial = item.historial || [];
@@ -990,22 +1125,72 @@ router.put("/registrarDevolucionAprobada", async (req, res) => {
       } aprobada (módulo devoluciones).${
         observaciones ? " " + observaciones.slice(0, 500) : ""
       }`;
-      item.historial.push({
-        fecha: new Date().toISOString(),
-        usuario,
-        accion: "APROBACION_DEVOLUCION",
-        estadoSeleccionado: "DEVUELTO",
-        cantidadEntregada: item.cantidadEntregada,
-        cantidadDevuelta: item.cantidadDevuelta,
-        m2EntregadoEnEstaOperacion: aplicar,
-        entregaCajas: usarMetro ? entregaCajasReg : undefined,
-        entregaPiezas: usarMetro ? entregaPiezasReg : undefined,
-        notas: notasHist,
-      });
+      const fechaOperacion = new Date().toISOString();
+      if (split.virtual > 0) {
+        item.historial.push({
+          fecha: fechaOperacion,
+          usuario,
+          accion: "APROBACION_DEVOLUCION",
+          estadoSeleccionado: "DEVUELTO",
+          tipoDevolucion: "VIRTUAL",
+          cantidadEntregada: item.cantidadEntregada,
+          cantidadDevuelta: item.cantidadDevuelta,
+          m2EntregadoEnEstaOperacion: split.virtual,
+          entregaCajas: usarMetro ? entregaCajasRegVirtual : undefined,
+          entregaPiezas: usarMetro ? entregaPiezasRegVirtual : undefined,
+          notas: `${notasHist} Tipo: devolución virtual.`,
+        });
+      }
+
+      if (split.fisica > 0) {
+        let entregaCajasRegFisica;
+        let entregaPiezasRegFisica;
+        if (usarMetro) {
+          const m2Caja = m2PorCajaDeLinea(item);
+          const piezasCaja = piezasPorCajaDeLinea(item);
+          const cpFisica = cajasPiezasDesdeM2(split.fisica, m2Caja, piezasCaja);
+          entregaCajasRegFisica = cpFisica.cajas;
+          entregaPiezasRegFisica = cpFisica.piezas;
+        }
+        item.historial.push({
+          fecha: fechaOperacion,
+          usuario,
+          accion: "APROBACION_DEVOLUCION",
+          estadoSeleccionado: "DEVUELTO",
+          tipoDevolucion: "FISICA",
+          cantidadEntregada: item.cantidadEntregada,
+          cantidadDevuelta: item.cantidadDevuelta,
+          m2EntregadoEnEstaOperacion: split.fisica,
+          entregaCajas: usarMetro ? entregaCajasRegFisica : undefined,
+          entregaPiezas: usarMetro ? entregaPiezasRegFisica : undefined,
+          notas: `${notasHist} Tipo: devolución física (registro trazabilidad).`,
+        });
+      }
 
       itemsActualizados += 1;
-      const prev = syncDevolucionPorIndice.get(idx) || 0;
-      syncDevolucionPorIndice.set(idx, prev + aplicar);
+      if (split.virtual > 0) {
+        const prev = syncDevolucionPorIndice.get(idx) || 0;
+        // Legacy de pendientes se alinea solo con devolución virtual (afecta pendiente).
+        syncDevolucionPorIndice.set(idx, prev + split.virtual);
+      }
+
+      if (split.virtual > 0 && split.fisica > 0) {
+        detalleAdvertencias.push(
+          `${codigo}: devolución registrada como virtual ${split.virtual.toFixed(
+            2
+          )} + física ${split.fisica.toFixed(2)}.`
+        );
+      } else if (split.virtual > 0) {
+        detalleAdvertencias.push(
+          `${codigo}: devolución registrada como virtual ${split.virtual.toFixed(
+            2
+          )}.`
+        );
+      } else if (split.fisica > 0) {
+        detalleAdvertencias.push(
+          `${codigo}: devolución registrada como física ${split.fisica.toFixed(2)}.`
+        );
+      }
     }
 
     if (itemsActualizados > 0) {
@@ -1054,6 +1239,67 @@ router.put("/registrarDevolucionAprobada", async (req, res) => {
       err && err.message
         ? err.message
         : "No se pudo registrar la devolución en la orden de entrega.";
+    return res.status(500).json({ mensaje: msg });
+  }
+});
+
+router.post("/previsualizarDevolucionAprobada", async (req, res) => {
+  try {
+    const body = req.body || {};
+    const documentoNumero = normalizarNumero(body.documentoNumero);
+    const tipoOrigen = String(body.tipo_documento || "").trim();
+    const mapTipo = {
+      Factura: "FACTURA",
+      "Nota de Venta": "NOTA_VENTA",
+    };
+    const tipoDocumento = mapTipo[tipoOrigen] || "";
+    const productosDevueltos = Array.isArray(body.productosDevueltos)
+      ? body.productosDevueltos
+      : [];
+
+    if (documentoNumero <= 0 || !tipoDocumento) {
+      return res.status(400).json({
+        mensaje: "documentoNumero o tipo_documento no válidos para previsualización.",
+      });
+    }
+
+    const orden = await EntregaBodega.findOne({ documentoNumero, tipoDocumento });
+    if (!orden) {
+      return res.json({
+        ok: true,
+        sinOrdenEntrega: true,
+        detallePreview: [],
+        detalleAdvertencias: [
+          "No hay orden de entrega de bodega asociada a este documento.",
+        ],
+        totales: { solicitada: 0, virtual: 0, fisica: 0, aplicadoTotal: 0 },
+      });
+    }
+
+    const ep = String(orden.estadoProceso || "").toUpperCase();
+    if (ep === "ANULADO") {
+      return res.json({
+        ok: true,
+        ordenAnulada: true,
+        detallePreview: [],
+        detalleAdvertencias: [
+          "La orden de entrega está anulada; no se puede sincronizar trazabilidad.",
+        ],
+        totales: { solicitada: 0, virtual: 0, fisica: 0, aplicadoTotal: 0 },
+      });
+    }
+
+    const resultado = construirPrevisualizacionDevolucion(orden, productosDevueltos);
+    return res.json({
+      ok: true,
+      ordenId: orden._id,
+      ...resultado,
+    });
+  } catch (err) {
+    const msg =
+      err && err.message
+        ? err.message
+        : "No se pudo previsualizar la devolución para trazabilidad.";
     return res.status(500).json({ mensaje: msg });
   }
 });

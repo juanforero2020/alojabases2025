@@ -43,6 +43,10 @@ export class EntregasPComponent implements OnInit {
   itemsVistaPendientes: string[] = ['Pendientes entrega', 'Eliminados'];
   mostrarVistaEliminacionAdmin = false;
   usuarioLogueado:user
+  get esAdministrador(): boolean {
+    const u = this.usuarioLogueado as unknown as { rol?: string }[] | undefined;
+    return u?.[0]?.rol === 'Administrador';
+  }
   cantidadEntCajas=0
   cantidadEntPiezas=0
   cantidadEntM2=0

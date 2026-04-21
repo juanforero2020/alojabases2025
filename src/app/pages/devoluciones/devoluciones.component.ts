@@ -928,41 +928,113 @@ export class DevolucionesComponent implements OnInit, OnDestroy {
     this.actualizarProductosAnulacion(e.id_devolucion);
   }
 
+  private formatearNumeroPreview(valor: any): string {
+    const n = Number(valor) || 0;
+    return n.toFixed(2);
+  }
+
+  private armarHtmlPreviewTrazabilidad(preview: any): string {
+    const lineas: any[] = Array.isArray(preview?.detallePreview) ? preview.detallePreview : [];
+    const advertencias: string[] = Array.isArray(preview?.detalleAdvertencias)
+      ? preview.detalleAdvertencias
+      : [];
+    const totales = preview?.totales || {};
+
+    const bloquesLineas = lineas
+      .map(
+        (it) =>
+          `<p class="text-left mb-1"><b>${it.producto}</b>: Dev.Solicitada ${this.formatearNumeroPreview(
+            it.solicitada
+          )} | Dev.Virtual ${this.formatearNumeroPreview(it.virtual)} | Dev.Física ${this.formatearNumeroPreview(
+            it.fisica
+          )}</p>`
+      )
+      .join("");
+
+    const bloqueAdvertencias = advertencias.length
+      ? `<div class="mt-2">${advertencias
+          .map((a) => `<p class="text-left mb-1 text-warning">${a}</p>`)
+          .join("")}</div>`
+      : "";
+
+    return `
+      <div>
+        <p class="text-left mb-2"><b>Previsualización de trazabilidad:</b></p>
+        ${bloquesLineas || '<p class="text-left mb-1">No hay líneas aplicables para trazabilidad.</p>'}
+        <hr class="my-2"/>
+        <p class="text-left mb-1"><b>Totales</b> — Dev.Solicitada: ${this.formatearNumeroPreview(
+          totales.solicitada
+        )}, Dev.Virtual: ${this.formatearNumeroPreview(totales.virtual)}, Dev.Física: ${this.formatearNumeroPreview(
+      totales.fisica
+    )}</p>
+        ${bloqueAdvertencias}
+      </div>
+    `;
+  }
+
   aceptarDevolucion(e: any) {
-    Swal.fire({
-      title: "Aceptar Devolución",
-      text: "Desea aceptar la devolución #" + e.id_devolucion,
-      icon: "warning",
-      showCancelButton: true,
-      confirmButtonText: "Si",
-      cancelButtonText: "No",
-    }).then((result) => {
-      if (result.value) {
-        this.mostrarMensaje();
-        this.devolucionesService
-          .updateEstado(e, "Aprobado")
-          .pipe(
-            retry(2),
-            takeUntil(this.destroy$)
-          )
-          .subscribe({
-            next: (res) => {
-              console.log("Update OK", res);
-              console.log("e", e);
-              this.realizarTransacciones(e);
-            },
-            error: (err) => {
-              console.error("Error updateEstado", err);
-              Swal.fire("Error", "No se pudo aprobar la devolución", "error");
-            },
-            complete: () => {
-              console.log("Observable completado");
+    const dev = this.listadoDevoluciones.find(
+      (el) => String(el.id_devolucion) === String(e.id_devolucion)
+    );
+    const payloadPreview = {
+      documentoNumero: Number(dev?.num_documento || e?.num_documento || 0),
+      tipo_documento: String(dev?.tipo_documento || e?.tipo_documento || ""),
+      productosDevueltos: (dev?.productosDevueltos || e?.productosDevueltos || []).map((p: any) => ({
+        producto: p.producto,
+        cantDevueltam2: p.cantDevueltam2,
+        cantDevueltam2Flo: p.cantDevueltam2Flo,
+        cantDevueltaCajas: p.cantDevueltaCajas,
+        cantDevueltaPiezas: p.cantDevueltaPiezas,
+      })),
+    };
+
+    this.entregasBodegaService
+      .previsualizarDevolucionAprobada(payloadPreview)
+      .pipe(take(1), takeUntil(this.destroy$))
+      .subscribe({
+        next: (preview: any) => {
+          const html = this.armarHtmlPreviewTrazabilidad(preview);
+          Swal.fire({
+            title: "Aceptar Devolución",
+            html,
+            icon: "warning",
+            showCancelButton: true,
+            confirmButtonText: "Aprobar",
+            cancelButtonText: "Cancelar",
+            width: "720px",
+          }).then((result) => {
+            if (result.value) {
+              this.mostrarMensaje();
+              this.devolucionesService
+                .updateEstado(e, "Aprobado")
+                .pipe(retry(2), takeUntil(this.destroy$))
+                .subscribe({
+                  next: (res) => {
+                    console.log("Update OK", res);
+                    console.log("e", e);
+                    this.realizarTransacciones(e);
+                  },
+                  error: (err) => {
+                    console.error("Error updateEstado", err);
+                    Swal.fire("Error", "No se pudo aprobar la devolución", "error");
+                  },
+                  complete: () => {
+                    console.log("Observable completado");
+                  },
+                });
+            } else if (result.dismiss === Swal.DismissReason.cancel) {
+              Swal.fire("Cancelado!", "Se ha cancelado su proceso.", "error");
             }
           });
-      } else if (result.dismiss === Swal.DismissReason.cancel) {
-        Swal.fire("Cancelado!", "Se ha cancelado su proceso.", "error");
-      }
-    });
+        },
+        error: () => {
+          Swal.fire(
+            "Error",
+            "No se pudo obtener la previsualización de trazabilidad. Revise la conexión e intente de nuevo.",
+            "error"
+          );
+        },
+      });
   }
 
   mostrarMensaje() {
