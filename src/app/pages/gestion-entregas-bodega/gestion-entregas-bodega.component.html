@@ -224,6 +224,12 @@
                     {{ formatoCantidadLinea(item.pendiente, item) }}
                   </div>
                 </div>
+                <div
+                  *ngIf="mostrarResumenAjusteFisico(item)"
+                  class="small text-info mt-1"
+                >
+                  {{ resumenFacturadoProceso(item) }}
+                </div>
 
                 <div class="sd-campo">
                   <label class="small font-weight-bold mb-1 d-block">Despacho</label>
@@ -790,7 +796,15 @@
         <tbody>
           <tr *ngFor="let item of ordenSeleccionada.items; let i = index">
             <td>{{ item.productoNombre }}</td>
-            <td>{{ formatoCantidadLinea(item.cantidadFacturada, item) }}</td>
+            <td>
+              <div>{{ formatoCantidadLinea(item.cantidadFacturada, item) }}</div>
+              <div
+                *ngIf="mostrarResumenAjusteFisico(item)"
+                class="small text-info"
+              >
+                {{ resumenFacturadoProceso(item) }}
+              </div>
+            </td>
             <td>{{ formatoCantidadLinea(item.cantidadEntregada, item) }}</td>
             <td>{{ formatoCantidadLinea(item.cantidadDevuelta, item) }}</td>
             <td>{{ formatoCantidadLinea(item.pendiente, item) }}</td>

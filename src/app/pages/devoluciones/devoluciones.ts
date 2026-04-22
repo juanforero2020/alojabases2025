@@ -32,6 +32,7 @@ export class productosDevueltos {
   cantDevueltam2Flo: number;
   motivo: string;
   justificacion: string;
+  tipoDevolucion: string;
   devolucion_id: number;
   valorunitario: number;
   valorunitariopiezas: number;
@@ -40,6 +41,7 @@ export class productosDevueltos {
     this.cantDevueltaCajas = 0;
     this.cantDevueltaPiezas = 0;
     this.justificacion = "";
+    this.tipoDevolucion = "VIRTUAL";
   }
 }
 

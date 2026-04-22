@@ -152,7 +152,7 @@
             </div>
 
             <div class="row titulosT">
-              <div class="col-3">
+              <div class="col-2">
                 <h5>Producto</h5>
               </div>
               <div class="col-1">
@@ -170,18 +170,21 @@
               <div class="col-2">
                 <h5>Motivo</h5>
               </div>
-              <div class="col-2">
+              <div class="col-1">
                 <h5>Justificación</h5>
+              </div>
+              <div class="col-2">
+                <h5>Tipo devolución</h5>
               </div>
               <div class="col-1">
                 <div class="row">
-                  <div class="col-md-12"><h5>Eliminar</h5></div>
+                  <div class="col-md-12"><h5>Acciones</h5></div>
                 </div>
               </div>
             </div>
             <div *ngFor="let p of productosDevueltos; let i = index" style="text-align: center; margin-top: 1em" >
               <div class="row altura">
-                <div class="col-3" style="margin-top: 1em;">
+                <div class="col-2" style="margin-top: 1em;">
                   <dx-select-box
                     [items]="productosVendidos2"
                     [(value)]="p.REFERENCIA"
@@ -234,20 +237,43 @@
                   >
                   </dx-select-box>
                 </div>
-                <div class="col-2">
+                <div class="col-1">
                   <dx-text-box
                     [(value)]="p.justificacion"
                     [disabled]="false"
                     [readOnly]="false"
                   ></dx-text-box>
                 </div>
+                <div class="col-2" style="margin-top: 1em;">
+                  <dx-select-box
+                    [items]="menuTipoDevolucion"
+                    [(value)]="p.tipoDevolucion"
+                    valueExpr="id"
+                    displayExpr="label"
+                    [readOnly]="false"
+                    [disabled]="false"
+                    (onValueChanged)="cambiarTipoDevolucion(i)"
+                  ></dx-select-box>
+                  <small class="text-muted d-block mt-1">
+                    {{ obtenerMensajeTipoDevolucion(p.tipoDevolucion) }}
+                  </small>
+                </div>
                 <div class="col-1">
-                  <dx-button
-                    icon="clear"
-                    color="white"
-                    class="bt"
-                    (onClick)="deleteProducto($event, i)"
-                  ></dx-button>
+                  <div class="acciones-botones">
+                    <dx-button
+                      icon="fa fa-info-circle"
+                      hint="Ver trazabilidad del producto"
+                      color="white"
+                      class="bt-info"
+                      (onClick)="verTrazabilidadProducto(i)"
+                    ></dx-button>
+                    <dx-button
+                      icon="clear"
+                      color="white"
+                      class="bt"
+                      (onClick)="deleteProducto($event, i)"
+                    ></dx-button>
+                  </div>
                 </div>
               </div>
             </div>

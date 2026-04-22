@@ -56,6 +56,15 @@ export class EntregasBodegaService {
     return this.http.put(`${this.URL}/registrarDevolucionAprobada`, payload);
   }
 
+  revertirDevolucionAprobada(payload: {
+    documentoNumero: number;
+    tipo_documento: string;
+    usuario: string;
+    id_devolucion: number;
+  }) {
+    return this.http.put(`${this.URL}/revertirDevolucionAprobada`, payload);
+  }
+
   previsualizarDevolucionAprobada(payload: {
     documentoNumero: number;
     tipo_documento: string;

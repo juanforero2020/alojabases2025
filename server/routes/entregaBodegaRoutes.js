@@ -80,7 +80,7 @@ async function sincronizarProductoPendienteLegacyDesdeItem(
   const docs = await ProductosPendientes.find(filtro);
   if (!docs.length) return;
 
-  const pend = pendienteVisualItem(item);
+  const pendBase = pendienteVisualItem(item);
   const usarMetro = itemUsaMetrosCajaPieza(item);
   const mc = m2PorCajaDeLinea(item);
   const pp = piezasPorCajaDeLinea(item);
@@ -89,6 +89,7 @@ async function sincronizarProductoPendienteLegacyDesdeItem(
 
   const meta = operacionMeta || {};
   const m2Op = normalizarNumero(meta.m2EnEstaOperacion);
+  const m2FisicaOp = normalizarNumero(meta.devolucionFisicaEnEstaOperacion);
   const estMeta = String(meta.estadoSeleccionado || "").toUpperCase();
   const debeRegistrarTraza =
     meta.origen === "edicion_historial" ||
@@ -97,6 +98,15 @@ async function sincronizarProductoPendienteLegacyDesdeItem(
     estMeta === "ENTREGA_TOTAL" ||
     estMeta === "DEVOLUCION" ||
     estMeta === "DEVUELTO";
+
+  /**
+   * En el listado legacy "productosPendientesEntrega", la devolución física también
+   * debe reducir pendiente operativo aunque no incremente `cantidadDevuelta` del ítem.
+   */
+  let pend = pendBase;
+  if (meta.origen === "devoluciones" && m2FisicaOp > 0) {
+    pend = Math.max(0, pendBase - m2FisicaOp);
+  }
 
   let lineaTraza = "";
   if (debeRegistrarTraza) {
@@ -248,18 +258,42 @@ function separarDevolucionVirtualFisica({
   facturada,
   entregada,
   devueltaActual,
+  tipoSolicitado = "",
 }) {
   const solicitada = Math.max(0, normalizarNumero(cantidadSolicitada));
   const f = Math.max(0, normalizarNumero(facturada));
   const e = Math.max(0, normalizarNumero(entregada));
   const d = Math.max(0, normalizarNumero(devueltaActual));
+  const tipo = String(tipoSolicitado || "").trim().toUpperCase();
 
   // Tope global por ítem/documento en esta operación.
   const totalPermitido = Math.max(0, f - d);
   const aplicable = Math.min(solicitada, totalPermitido);
-
-  // Parte virtual: lo pendiente real remanente.
   const pendienteVirtual = Math.max(0, f - e - d);
+
+  // Si el módulo de devoluciones envía tipo explícito, se respeta.
+  if (tipo === "FISICA") {
+    const fisica = Math.min(aplicable, e);
+    return {
+      virtual: 0,
+      fisica,
+      aplicadoTotal: fisica,
+      solicitado: solicitada,
+      truncadoPorTope: solicitada - fisica > 1e-6,
+    };
+  }
+  if (tipo === "VIRTUAL") {
+    const virtual = Math.min(aplicable, pendienteVirtual);
+    return {
+      virtual,
+      fisica: 0,
+      aplicadoTotal: virtual,
+      solicitado: solicitada,
+      truncadoPorTope: solicitada - virtual > 1e-6,
+    };
+  }
+
+  // Fallback legacy (sin tipo): separar automáticamente.
   const virtual = Math.min(aplicable, pendienteVirtual);
 
   // Parte física: excedente sobre pendiente, limitado por lo entregado.
@@ -273,6 +307,21 @@ function separarDevolucionVirtualFisica({
     solicitado: solicitada,
     truncadoPorTope: solicitada - aplicable > 1e-6,
   };
+}
+
+function normalizarTipoSolicitado(pd = {}) {
+  const tipo = String(
+    pd.tipoDevolucion != null ? pd.tipoDevolucion : pd.tipo_devolucion != null ? pd.tipo_devolucion : ""
+  )
+    .trim()
+    .toUpperCase();
+  if (tipo === "FISICA" || tipo === "FÍSICA") {
+    return "FISICA";
+  }
+  if (tipo === "VIRTUAL") {
+    return "VIRTUAL";
+  }
+  return "";
 }
 
 function construirPrevisualizacionDevolucion(orden, productosDevueltos = []) {
@@ -308,6 +357,7 @@ function construirPrevisualizacionDevolucion(orden, productosDevueltos = []) {
       facturada: cantidadFacturada,
       entregada: entregadaActual,
       devueltaActual,
+      tipoSolicitado: normalizarTipoSolicitado(pd),
     });
 
     if (split.aplicadoTotal <= 0) {
@@ -1081,6 +1131,7 @@ router.put("/registrarDevolucionAprobada", async (req, res) => {
         facturada: cantidadFacturada,
         entregada: entregadaActual,
         devueltaActual,
+        tipoSolicitado: normalizarTipoSolicitado(pd),
       });
 
       if (split.aplicadoTotal <= 0) {
@@ -1168,10 +1219,12 @@ router.put("/registrarDevolucionAprobada", async (req, res) => {
       }
 
       itemsActualizados += 1;
-      if (split.virtual > 0) {
-        const prev = syncDevolucionPorIndice.get(idx) || 0;
-        // Legacy de pendientes se alinea solo con devolución virtual (afecta pendiente).
-        syncDevolucionPorIndice.set(idx, prev + split.virtual);
+      if (split.virtual > 0 || split.fisica > 0) {
+        const prev = syncDevolucionPorIndice.get(idx) || { virtual: 0, fisica: 0 };
+        syncDevolucionPorIndice.set(idx, {
+          virtual: normalizarNumero(prev.virtual) + split.virtual,
+          fisica: normalizarNumero(prev.fisica) + split.fisica,
+        });
       }
 
       if (split.virtual > 0 && split.fisica > 0) {
@@ -1195,17 +1248,20 @@ router.put("/registrarDevolucionAprobada", async (req, res) => {
 
     if (itemsActualizados > 0) {
       recalcularEstadoYItems(orden);
-      for (const [idx, m2Aprobado] of syncDevolucionPorIndice) {
+      for (const [idx, totalesAprobados] of syncDevolucionPorIndice) {
         const itemActualizado = orden.items[idx];
         if (!itemActualizado) continue;
         try {
+          const virtualAprobado = normalizarNumero(totalesAprobados?.virtual);
+          const fisicaAprobada = normalizarNumero(totalesAprobados?.fisica);
           await sincronizarProductoPendienteLegacyDesdeItem(
             orden,
             itemActualizado,
             usuario,
             {
               origen: "devoluciones",
-              m2EnEstaOperacion: m2Aprobado,
+              m2EnEstaOperacion: virtualAprobado + fisicaAprobada,
+              devolucionFisicaEnEstaOperacion: fisicaAprobada,
               estadoSeleccionado: "DEVUELTO",
             }
           );
@@ -1239,6 +1295,124 @@ router.put("/registrarDevolucionAprobada", async (req, res) => {
       err && err.message
         ? err.message
         : "No se pudo registrar la devolución en la orden de entrega.";
+    return res.status(500).json({ mensaje: msg });
+  }
+});
+
+/**
+ * Reversa de trazabilidad al anular una devolución aprobada en módulo contable.
+ * - Elimina movimientos de historial ligados a `id_devolucion`.
+ * - Recalcula cantidades del ítem desde historial restante.
+ * - Sincroniza listado legacy de productos pendientes.
+ */
+router.put("/revertirDevolucionAprobada", async (req, res) => {
+  try {
+    const body = req.body || {};
+    const documentoNumero = normalizarNumero(body.documentoNumero);
+    const tipoOrigen = String(body.tipo_documento || "").trim();
+    const mapTipo = {
+      Factura: "FACTURA",
+      "Nota de Venta": "NOTA_VENTA",
+    };
+    const tipoDocumento = mapTipo[tipoOrigen] || "";
+    const usuario = String(body.usuario || "").trim();
+    const idDevolucion = normalizarNumero(body.id_devolucion);
+
+    if (documentoNumero <= 0 || !tipoDocumento || idDevolucion <= 0) {
+      return res.status(400).json({
+        mensaje:
+          "documentoNumero, tipo_documento o id_devolucion no válidos para reversa.",
+      });
+    }
+
+    const orden = await EntregaBodega.findOne({ documentoNumero, tipoDocumento });
+    if (!orden) {
+      return res.json({
+        ok: true,
+        sinOrdenEntrega: true,
+        itemsActualizados: 0,
+        mensaje:
+          "No hay orden de entrega de bodega asociada a este documento; no se aplicó reversa de trazabilidad.",
+      });
+    }
+
+    const ep = String(orden.estadoProceso || "").toUpperCase();
+    if (ep === "ANULADO") {
+      return res.json({
+        ok: true,
+        sinActualizacionTrazabilidad: true,
+        itemsActualizados: 0,
+        mensaje: "La orden de entrega está anulada; no se actualizó la trazabilidad.",
+      });
+    }
+
+    let itemsActualizados = 0;
+    const detalleAdvertencias = [];
+    const marcador = `Devolución #${idDevolucion}`;
+
+    for (let idx = 0; idx < (orden.items || []).length; idx++) {
+      const item = orden.items[idx];
+      const historial = Array.isArray(item?.historial) ? item.historial : [];
+      if (!historial.length) continue;
+
+      const originalLen = historial.length;
+      item.historial = historial.filter((h) => {
+        const accion = String(h?.accion || "").toUpperCase();
+        const notas = String(h?.notas || "");
+        if (accion !== "APROBACION_DEVOLUCION") return true;
+        return !notas.includes(marcador);
+      });
+      const removidos = originalLen - item.historial.length;
+      if (removidos <= 0) continue;
+
+      try {
+        reconstruirItemDesdeHistorial(item);
+      } catch (errRebuild) {
+        detalleAdvertencias.push(
+          `No se pudo reconstruir historial del ítem #${idx + 1}: ${
+            errRebuild && errRebuild.message ? errRebuild.message : "error de reconstrucción"
+          }`
+        );
+      }
+
+      try {
+        await sincronizarProductoPendienteLegacyDesdeItem(orden, item, usuario, {
+          origen: "devoluciones_anulacion",
+          estadoSeleccionado: "DEVUELTO",
+          m2EnEstaOperacion: 0,
+        });
+      } catch (errorPendiente) {
+        detalleAdvertencias.push(
+          `No se pudo sincronizar productos pendientes del ítem #${idx + 1}.`
+        );
+      }
+
+      itemsActualizados += 1;
+    }
+
+    if (itemsActualizados > 0) {
+      recalcularEstadoYItems(orden);
+      orden.trazabilidad = orden.trazabilidad || [];
+      orden.trazabilidad.push({
+        fecha: new Date().toISOString(),
+        usuario,
+        accion: "ANULACION_DEVOLUCION",
+        detalle: `Devolución #${idDevolucion}: reversa de trazabilidad aplicada en ${itemsActualizados} línea(s).`,
+      });
+      await orden.save();
+    }
+
+    return res.json({
+      ok: true,
+      itemsActualizados,
+      detalleAdvertencias,
+      ordenId: orden._id,
+    });
+  } catch (err) {
+    const msg =
+      err && err.message
+        ? err.message
+        : "No se pudo revertir la devolución en la orden de entrega.";
     return res.status(500).json({ mensaje: msg });
   }
 });

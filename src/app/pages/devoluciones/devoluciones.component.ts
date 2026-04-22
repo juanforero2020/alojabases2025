@@ -97,6 +97,10 @@ export class DevolucionesComponent implements OnInit, OnDestroy {
     "Defectos fábrica",
     "Otros",
   ];
+  menuTipoDevolucion = [
+    { id: "VIRTUAL", label: "Dev. Virtual" },
+    { id: "FISICA", label: "Dev. Física" },
+  ];
   menu1: string[] = ["Devoluciones", "Listado Devoluciones"];
 
 
@@ -145,6 +149,7 @@ export class DevolucionesComponent implements OnInit, OnDestroy {
   mostrarAprobacion = false;
   mostrarAnulacion = false;
   listadoProductosCombo : productosCombo[];
+  ordenEntregaDocumento: any = null;
 
 
   constructor(
@@ -525,6 +530,7 @@ export class DevolucionesComponent implements OnInit, OnDestroy {
     if (combos.length === 0) {
       this.listadoProductosCombo = [];
       this.asignarDatosCliente();
+      this.cargarOrdenEntregaDocumento();
       return;
     }
     this.mensajeLoading = "Cargando Productos..";
@@ -561,12 +567,117 @@ export class DevolucionesComponent implements OnInit, OnDestroy {
           );
           this.mostrarLoading = false;
           this.asignarDatosCliente();
+          this.cargarOrdenEntregaDocumento();
         },
         error: () => {
           this.mostrarLoading = false;
           Swal.fire("Error", "Error al cargar combos", "error");
         },
       });
+  }
+
+  private cargarOrdenEntregaDocumento() {
+    const tipoDocMap = {
+      Factura: "FACTURA",
+      "Nota de Venta": "NOTA_VENTA",
+    };
+    const tipoDoc = tipoDocMap[this.devolucion?.tipo_documento] || "";
+    if (!this.idDocumento || !tipoDoc) {
+      this.ordenEntregaDocumento = null;
+      return;
+    }
+    const filtros = {
+      documentoNumero: this.idDocumento,
+      modoConsulta: "listado",
+    };
+    this.entregasBodegaService
+      .getPendientes(filtros)
+      .pipe(take(1), takeUntil(this.destroy$))
+      .subscribe({
+        next: (res: any) => {
+          const lista = Array.isArray(res) ? res : [];
+          this.ordenEntregaDocumento =
+            lista.find(
+              (o: any) =>
+                String(o?.documentoNumero) === String(this.idDocumento) &&
+                String(o?.tipoDocumento || "").toUpperCase() === tipoDoc
+            ) || null;
+        },
+        error: () => {
+          this.ordenEntregaDocumento = null;
+        },
+      });
+  }
+
+  verTrazabilidadProducto(index: number) {
+    const linea = this.productosDevueltos[index];
+    const codigo = String(linea?.producto?.PRODUCTO || linea?.REFERENCIA || "").trim();
+    if (!codigo) {
+      Swal.fire("Advertencia", "Seleccione primero el producto para ver trazabilidad.", "warning");
+      return;
+    }
+
+    const itemOrden = (this.ordenEntregaDocumento?.items || []).find((it: any) => {
+      const nombre = String(
+        (it?.producto && it.producto.PRODUCTO) || it?.productoNombre || ""
+      ).trim();
+      return nombre === codigo;
+    });
+
+    let devVirtual = 0;
+    let devFisica = 0;
+    let entregada = 0;
+    let pendiente = 0;
+
+    if (itemOrden) {
+      const historial = Array.isArray(itemOrden.historial) ? itemOrden.historial : [];
+      historial.forEach((h: any) => {
+        const estado = String(h?.estadoSeleccionado || "").toUpperCase();
+        if (estado !== "DEVUELTO") return;
+        const op = Number(h?.m2EntregadoEnEstaOperacion) || 0;
+        if (op <= 0) return;
+        const tipo = this.normalizarTipoDevolucion(h?.tipoDevolucion);
+        if (tipo === "FISICA") devFisica += op;
+        else devVirtual += op;
+      });
+      entregada = Number(itemOrden?.cantidadEntregada) || 0;
+      const facturada = Number(itemOrden?.cantidadFacturada) || 0;
+      const virtualAcumulada = Number(itemOrden?.cantidadDevuelta) || devVirtual;
+      pendiente = Math.max(facturada - entregada - virtualAcumulada, 0);
+    } else {
+      const devolucionesValidas = (this.devoluciones || []).filter(
+        (d) => String(d.estado) !== "Anulada" && String(d.estado) !== "Rechazado"
+      );
+      devolucionesValidas.forEach((dev) => {
+        (dev.productosDevueltos || []).forEach((p: any) => {
+          if (String(p?.producto?.PRODUCTO || "").trim() !== codigo) return;
+          const unidades =
+            (Number(p?.cantDevueltaCajas) || 0) * (Number(p?.producto?.P_CAJA) || 0) +
+            (Number(p?.cantDevueltaPiezas) || 0);
+          const tipo = this.normalizarTipoDevolucion(p?.tipoDevolucion);
+          if (tipo === "FISICA") devFisica += unidades;
+          else devVirtual += unidades;
+        });
+      });
+      const facturadaFallback =
+        (Number(linea?.cantFactCajas) || 0) * (Number(linea?.producto?.P_CAJA) || 0) +
+        (Number(linea?.cantFactPiezas) || 0);
+      pendiente = Math.max(facturadaFallback - devVirtual, 0);
+    }
+
+    Swal.fire({
+      title: `Trazabilidad ${codigo}`,
+      html: `
+        <div style="text-align:left">
+          <p><b>Devuelta física:</b> ${devFisica.toFixed(2)}</p>
+          <p><b>Devuelta virtual:</b> ${devVirtual.toFixed(2)}</p>
+          <p><b>Entregada:</b> ${entregada.toFixed(2)}</p>
+          <p><b>Pendiente:</b> ${pendiente.toFixed(2)}</p>
+        </div>
+      `,
+      icon: "info",
+      confirmButtonText: "Cerrar",
+    });
   }
 
 
@@ -665,6 +776,54 @@ export class DevolucionesComponent implements OnInit, OnDestroy {
     return total;
   }
 
+  private getUnidadesDevueltasHistoricasPorTipo(codigoProducto: string): {
+    virtual: number;
+    fisica: number;
+    total: number;
+  } {
+    const out = { virtual: 0, fisica: 0, total: 0 };
+    if (!this.idDocumento || !codigoProducto || !this.devoluciones?.length) {
+      return out;
+    }
+    this.devoluciones.forEach((dev) => {
+      if (
+        String(dev.num_documento) === String(this.idDocumento) &&
+        String(dev.tipo_documento) === String(this.devolucion.tipo_documento) &&
+        String(dev.estado) !== "Anulada" &&
+        String(dev.estado) !== "Rechazado" &&
+        dev.productosDevueltos?.length
+      ) {
+        dev.productosDevueltos.forEach((p) => {
+          if (p.producto && p.producto.PRODUCTO === codigoProducto && p.producto.P_CAJA) {
+            const unidades =
+              (p.cantDevueltaCajas || 0) * p.producto.P_CAJA + (p.cantDevueltaPiezas || 0);
+            const tipo = this.normalizarTipoDevolucion((p as any)?.tipoDevolucion);
+            if (tipo === "FISICA") out.fisica += unidades;
+            else out.virtual += unidades;
+            out.total += unidades;
+          }
+        });
+      }
+    });
+    return out;
+  }
+
+  private getUnidadesEntregadasOrden(codigoProducto: string): number {
+    const itemOrden = (this.ordenEntregaDocumento?.items || []).find((it: any) => {
+      const nombre = String((it?.producto && it.producto.PRODUCTO) || it?.productoNombre || "").trim();
+      return nombre === codigoProducto;
+    });
+    if (!itemOrden) {
+      return 0;
+    }
+    const entregada = Number(itemOrden?.cantidadEntregada) || 0;
+    const pCaja = Number(itemOrden?.producto?.P_CAJA || itemOrden?.piezasPorCaja || 0) || 0;
+    if (pCaja > 0) {
+      return entregada * pCaja;
+    }
+    return entregada;
+  }
+
   deleteProducto(e, i: number) {
     if (this.productosDevueltos.length > 1) {
       this.productosDevueltos.splice(i, 1);
@@ -715,14 +874,43 @@ export class DevolucionesComponent implements OnInit, OnDestroy {
             this.productosDevueltos[i].cantFactCajas * element.producto.P_CAJA +
             this.productosDevueltos[i].cantFactPiezas;
 
-        // Restar lo que ya se devolvió en otras devoluciones del mismo documento
-        const yaDevuelto = this.getUnidadesDevueltasHistoricas(element.producto.PRODUCTO);
-        const disponible = Math.max(cal2 - yaDevuelto, 0);
+        // Restar lo que ya se devolvió en otras devoluciones del mismo documento (tope global)
+        const hist = this.getUnidadesDevueltasHistoricasPorTipo(element.producto.PRODUCTO);
+        const disponibleGlobal = Math.max(cal2 - hist.total, 0);
+        const tipoActual = this.normalizarTipoDevolucion(
+          this.productosDevueltos[i]?.tipoDevolucion
+        );
+        let mensajeRegla = "";
+        let invalido = false;
 
-        if (cal1 > disponible) {
+        if (cal1 > disponibleGlobal) {
+          mensajeRegla =
+            "La cantidad supera lo disponible para devolver considerando devoluciones anteriores.";
+          invalido = true;
+        } else if (tipoActual === "FISICA") {
+          // Regla 1: devolución física acumulada no puede superar la entregada.
+          const entregadaUnidades = this.getUnidadesEntregadasOrden(element.producto.PRODUCTO);
+          const fisicaAcumulada = hist.fisica + cal1;
+          if (fisicaAcumulada > entregadaUnidades) {
+            mensajeRegla =
+              "La devolución física no puede superar la cantidad entregada del producto.";
+            invalido = true;
+          }
+        } else {
+          // Regla 2: entregada + virtual acumulada no debe superar facturada.
+          const entregadaUnidades = this.getUnidadesEntregadasOrden(element.producto.PRODUCTO);
+          const virtualAcumulada = hist.virtual + cal1;
+          if (entregadaUnidades + virtualAcumulada > cal2) {
+            mensajeRegla =
+              "La devolución virtual sumada con lo entregado no puede superar la cantidad facturada.";
+            invalido = true;
+          }
+        }
+
+        if (invalido) {
           Swal.fire(
             "Advertencia",
-            "La cantidad supera lo disponible para devolver considerando devoluciones anteriores.",
+            mensajeRegla,
             "warning"
           );
           this.productosDevueltos[i].cantDevueltaCajas = 0;
@@ -799,7 +987,10 @@ export class DevolucionesComponent implements OnInit, OnDestroy {
     this.devolucion.id_devolucion = this.id_devolucion;
     this.devolucion.totalDevolucion = this.total;
     this.devolucion.num_documento = this.idDocumento;
-    this.devolucion.productosDevueltos = this.productosDevueltos;
+    this.devolucion.productosDevueltos = this.productosDevueltos.map((p) => ({
+      ...p,
+      tipoDevolucion: this.normalizarTipoDevolucion(p?.tipoDevolucion),
+    }));
 
     if (
       this.devolucion.cliente == null ||
@@ -906,9 +1097,34 @@ export class DevolucionesComponent implements OnInit, OnDestroy {
         this.mostrarMensaje();
         this.devolucionesService
           .updateEstado(e, "Anulada")
-          .pipe(take(1), retry(2), takeUntil(this.destroy$))
+          .pipe(
+            take(1),
+            retry(2),
+            switchMap(() =>
+              this.entregasBodegaService.revertirDevolucionAprobada({
+                documentoNumero: Number(e?.num_documento || 0),
+                tipo_documento: String(e?.tipo_documento || ""),
+                usuario: this.usuario || "",
+                id_devolucion: Number(e?.id_devolucion || 0),
+              }).pipe(
+                take(1),
+                catchError(() => of({ errorReversaTrazabilidad: true }))
+              )
+            ),
+            takeUntil(this.destroy$)
+          )
           .subscribe({
-            next: () => this.buscarProductos(e),
+            next: (resp: any) => {
+              if (resp?.errorReversaTrazabilidad) {
+                Swal.fire(
+                  "Advertencia",
+                  "La devolución se anuló, pero no se pudo revertir la trazabilidad en entregas de bodega.",
+                  "warning"
+                ).then(() => this.buscarProductos(e));
+                return;
+              }
+              this.buscarProductos(e);
+            },
             error: () => Swal.fire("Error", "No se pudo anular la devolución", "error"),
           });
       } else if (result.dismiss === Swal.DismissReason.cancel) {
@@ -928,113 +1144,73 @@ export class DevolucionesComponent implements OnInit, OnDestroy {
     this.actualizarProductosAnulacion(e.id_devolucion);
   }
 
-  private formatearNumeroPreview(valor: any): string {
-    const n = Number(valor) || 0;
-    return n.toFixed(2);
-  }
-
-  private armarHtmlPreviewTrazabilidad(preview: any): string {
-    const lineas: any[] = Array.isArray(preview?.detallePreview) ? preview.detallePreview : [];
-    const advertencias: string[] = Array.isArray(preview?.detalleAdvertencias)
-      ? preview.detalleAdvertencias
-      : [];
-    const totales = preview?.totales || {};
-
-    const bloquesLineas = lineas
-      .map(
-        (it) =>
-          `<p class="text-left mb-1"><b>${it.producto}</b>: Dev.Solicitada ${this.formatearNumeroPreview(
-            it.solicitada
-          )} | Dev.Virtual ${this.formatearNumeroPreview(it.virtual)} | Dev.Física ${this.formatearNumeroPreview(
-            it.fisica
-          )}</p>`
-      )
-      .join("");
-
-    const bloqueAdvertencias = advertencias.length
-      ? `<div class="mt-2">${advertencias
-          .map((a) => `<p class="text-left mb-1 text-warning">${a}</p>`)
-          .join("")}</div>`
-      : "";
-
-    return `
-      <div>
-        <p class="text-left mb-2"><b>Previsualización de trazabilidad:</b></p>
-        ${bloquesLineas || '<p class="text-left mb-1">No hay líneas aplicables para trazabilidad.</p>'}
-        <hr class="my-2"/>
-        <p class="text-left mb-1"><b>Totales</b> — Dev.Solicitada: ${this.formatearNumeroPreview(
-          totales.solicitada
-        )}, Dev.Virtual: ${this.formatearNumeroPreview(totales.virtual)}, Dev.Física: ${this.formatearNumeroPreview(
-      totales.fisica
-    )}</p>
-        ${bloqueAdvertencias}
-      </div>
-    `;
+  private calcularTotalesPorTipo(items: any[]): { virtual: number; fisica: number } {
+    let virtual = 0;
+    let fisica = 0;
+    (items || []).forEach((p: any) => {
+      const tipo = this.normalizarTipoDevolucion(p?.tipoDevolucion);
+      console.log("tipo devolucion");
+      console.log(tipo);
+      const m2 = Number(p?.cantDevueltam2Flo ?? p?.cantDevueltam2 ?? 0) || 0;
+      if (tipo === "FISICA") {
+        fisica += m2;
+      } else {
+        virtual += m2;
+      }
+    });
+    return { virtual, fisica };
   }
 
   aceptarDevolucion(e: any) {
     const dev = this.listadoDevoluciones.find(
       (el) => String(el.id_devolucion) === String(e.id_devolucion)
     );
-    const payloadPreview = {
-      documentoNumero: Number(dev?.num_documento || e?.num_documento || 0),
-      tipo_documento: String(dev?.tipo_documento || e?.tipo_documento || ""),
-      productosDevueltos: (dev?.productosDevueltos || e?.productosDevueltos || []).map((p: any) => ({
-        producto: p.producto,
-        cantDevueltam2: p.cantDevueltam2,
-        cantDevueltam2Flo: p.cantDevueltam2Flo,
-        cantDevueltaCajas: p.cantDevueltaCajas,
-        cantDevueltaPiezas: p.cantDevueltaPiezas,
-      })),
-    };
+    const items = (dev?.productosDevueltos || e?.productosDevueltos || []).map((p: any) => ({
+      ...p,
+      tipoDevolucion: this.normalizarTipoDevolucion(p?.tipoDevolucion),
+    }));
+    const totales = this.calcularTotalesPorTipo(items);
+    const html = `
+      <div>
+        <p class="text-left mb-2"><b>Se aprobará la devolución #${e?.id_devolucion}.</b></p>
+        <p class="text-left mb-1">Dev. virtual: ${totales.virtual.toFixed(2)} m²</p>
+        <p class="text-left mb-1">Dev. física: ${totales.fisica.toFixed(2)} m²</p>
+        <p class="text-left mb-0">La regla de proceso usará el tipo por ítem (física/virtual).</p>
+      </div>
+    `;
 
-    this.entregasBodegaService
-      .previsualizarDevolucionAprobada(payloadPreview)
-      .pipe(take(1), takeUntil(this.destroy$))
-      .subscribe({
-        next: (preview: any) => {
-          const html = this.armarHtmlPreviewTrazabilidad(preview);
-          Swal.fire({
-            title: "Aceptar Devolución",
-            html,
-            icon: "warning",
-            showCancelButton: true,
-            confirmButtonText: "Aprobar",
-            cancelButtonText: "Cancelar",
-            width: "720px",
-          }).then((result) => {
-            if (result.value) {
-              this.mostrarMensaje();
-              this.devolucionesService
-                .updateEstado(e, "Aprobado")
-                .pipe(retry(2), takeUntil(this.destroy$))
-                .subscribe({
-                  next: (res) => {
-                    console.log("Update OK", res);
-                    console.log("e", e);
-                    this.realizarTransacciones(e);
-                  },
-                  error: (err) => {
-                    console.error("Error updateEstado", err);
-                    Swal.fire("Error", "No se pudo aprobar la devolución", "error");
-                  },
-                  complete: () => {
-                    console.log("Observable completado");
-                  },
-                });
-            } else if (result.dismiss === Swal.DismissReason.cancel) {
-              Swal.fire("Cancelado!", "Se ha cancelado su proceso.", "error");
-            }
+    Swal.fire({
+      title: "Aceptar Devolución",
+      html,
+      icon: "warning",
+      showCancelButton: true,
+      confirmButtonText: "Aprobar",
+      cancelButtonText: "Cancelar",
+      width: "720px",
+    }).then((result) => {
+      if (result.value) {
+        this.mostrarMensaje();
+        this.devolucionesService
+          .updateEstado(e, "Aprobado")
+          .pipe(retry(2), takeUntil(this.destroy$))
+          .subscribe({
+            next: (res) => {
+              console.log("Update OK", res);
+              console.log("e", e);
+              this.realizarTransacciones(e);
+            },
+            error: (err) => {
+              console.error("Error updateEstado", err);
+              Swal.fire("Error", "No se pudo aprobar la devolución", "error");
+            },
+            complete: () => {
+              console.log("Observable completado");
+            },
           });
-        },
-        error: () => {
-          Swal.fire(
-            "Error",
-            "No se pudo obtener la previsualización de trazabilidad. Revise la conexión e intente de nuevo.",
-            "error"
-          );
-        },
-      });
+      } else if (result.dismiss === Swal.DismissReason.cancel) {
+        Swal.fire("Cancelado!", "Se ha cancelado su proceso.", "error");
+      }
+    });
   }
 
   mostrarMensaje() {
@@ -1151,6 +1327,7 @@ export class DevolucionesComponent implements OnInit, OnDestroy {
                 cantDevueltam2Flo: p.cantDevueltam2Flo,
                 cantDevueltaCajas: p.cantDevueltaCajas,
                 cantDevueltaPiezas: p.cantDevueltaPiezas,
+                tipoDevolucion: this.normalizarTipoDevolucion((p as any)?.tipoDevolucion),
               })),
             })
             .pipe(
@@ -1870,7 +2047,26 @@ export class DevolucionesComponent implements OnInit, OnDestroy {
   }
 
   anadirProducto(e) {
-    this.productosDevueltos.push(new productosDevueltos());
+    const nuevo = new productosDevueltos();
+    nuevo.tipoDevolucion = "VIRTUAL";
+    this.productosDevueltos.push(nuevo);
+  }
+
+  cambiarTipoDevolucion(i: number) {
+    this.transformarM2(null, i);
+  }
+
+  private normalizarTipoDevolucion(tipo: any): string {
+    const valor = String(tipo || "").trim().toUpperCase();
+    return valor === "FISICA" ? "FISICA" : "VIRTUAL";
+  }
+
+  obtenerMensajeTipoDevolucion(tipo: any): string {
+    const tipoNormalizado = this.normalizarTipoDevolucion(tipo);
+    if (tipoNormalizado === "FISICA") {
+      return "Este tipo de devolución afecta a la cantidad facturada del producto.";
+    }
+    return "Esta devolución afecta al producto aún no retirado de bodega.";
   }
 
   ngOnDestroy() {

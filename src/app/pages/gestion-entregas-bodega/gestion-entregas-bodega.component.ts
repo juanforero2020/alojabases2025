@@ -864,7 +864,7 @@ export class GestionEntregasBodegaComponent implements OnInit, OnDestroy {
       pageOrientation: "portrait",
       pageMargins: [32, 36, 32, 36],
       content: [
-        { text: "NOTA_VENTA / ORDEN DE ENTREGA", style: "header" },
+        { text: "DOCUMENTO VENTA / ORDEN DE ENTREGA", style: "header" },
         {
           text:
             `${this.txtPdf(o.tipoDocumento)} #${this.txtPdf(o.documentoNumero)} - ${this.txtPdf(o.clienteNombre)}`,
@@ -1432,19 +1432,20 @@ export class GestionEntregasBodegaComponent implements OnInit, OnDestroy {
    * no deja residuo “fantasma” de m² por coma flotante.
    */
   pendienteEfectivo(item: any): number {
-    const fact = this.num(item?.cantidadFacturada);
+    const fact = this.cantidadFacturadaAjustadaProceso(item);
     const ent = this.num(item?.cantidadEntregada);
-    const dev = this.num(item?.cantidadDevuelta);
-    const base = fact - ent - dev;
+    // En el proceso: la física reduce facturada y la virtual sigue reduciendo pendiente.
+    const devVirtual = this.num(item?.cantidadDevuelta);
+    const base = fact - ent - devVirtual;
     if (!this.esItemMetrosCajaPieza(item)) return base;
     const mc = this.m2PorCajaDeItem(item);
     const pp = this.piezasPorCajaDeItem(item);
     if (mc <= 0 || pp <= 0) return base;
-    const pFact = this.piezasTotalesFacturado(item);
+    const pFact = this.piezasTotalesDesdeM2(fact, item);
     const pEnt = this.piezasTotalesDesdeM2(ent, item);
-    const pDev = this.piezasTotalesDesdeM2(dev, item);
+    const pDevVirtual = this.piezasTotalesDesdeM2(devVirtual, item);
     const umbral = this.umbralM2MediaPieza(item);
-    if (pEnt + pDev >= pFact && ent + dev <= fact + umbral) {
+    if (pEnt + pDevVirtual >= pFact && ent + devVirtual <= fact + umbral) {
       return 0;
     }
     return base;
@@ -1458,6 +1459,20 @@ export class GestionEntregasBodegaComponent implements OnInit, OnDestroy {
     return `${this.num(m2).toFixed(2)} m² (${cajas} C + ${piezas} P)`;
   }
 
+  mostrarResumenAjusteFisico(item: any): boolean {
+    return this.num(item?.cantidadDevueltaFisica) > 0.0001;
+  }
+
+  resumenFacturadoProceso(item: any): string {
+    const original = this.num(item?.cantidadFacturadaOriginal);
+    const fisica = this.num(item?.cantidadDevueltaFisica);
+    const proceso = this.num(item?.cantidadFacturadaProceso);
+    return `Original: ${this.formatoCantidadLinea(original, item)} | Dev. física: ${this.formatoCantidadLinea(
+      fisica,
+      item
+    )} | Proceso: ${this.formatoCantidadLinea(proceso, item)}`;
+  }
+
   /**
    * Suma devoluciones registradas en historial con tipo explícito o legado (sin tipo = virtual).
    */
@@ -1465,11 +1480,11 @@ export class GestionEntregasBodegaComponent implements OnInit, OnDestroy {
     let v = 0;
     const hist = Array.isArray(item?.historial) ? item.historial : [];
     for (const h of hist) {
-      const estado = String(h?.estadoSeleccionado || "").toUpperCase();
-      if (estado !== "DEVUELTO") continue;
+      if (!this.esMovimientoDevolucion(h)) continue;
       const op = this.num(h?.m2EntregadoEnEstaOperacion);
       if (op <= 0) continue;
-      const tipo = String(h?.tipoDevolucion || "").toUpperCase();
+      const tipo = this.normalizarTipoDevolucionHistorial(h);
+
       if (tipo === "FISICA") continue;
       v += op;
     }
@@ -1477,28 +1492,78 @@ export class GestionEntregasBodegaComponent implements OnInit, OnDestroy {
   }
 
   devolucionFisicaAcumuladaDesdeHistorial(item: any): number {
+    const fisicaDirecta = this.num(item?.cantidadDevueltaFisica);
+    if (fisicaDirecta > 0) {
+      return fisicaDirecta;
+    }
     let f = 0;
     const hist = Array.isArray(item?.historial) ? item.historial : [];
     for (const h of hist) {
-      const estado = String(h?.estadoSeleccionado || "").toUpperCase();
-      if (estado !== "DEVUELTO") continue;
-      if (String(h?.tipoDevolucion || "").toUpperCase() !== "FISICA") continue;
+      if (!this.esMovimientoDevolucion(h)) continue;
+      if (this.normalizarTipoDevolucionHistorial(h) !== "FISICA") continue;
       f += this.num(h?.m2EntregadoEnEstaOperacion);
     }
     return f;
   }
 
+  private normalizarTipoDevolucionHistorial(h: any): "VIRTUAL" | "FISICA" {
+    const crudo = String(
+      h?.tipoDevolucion ??
+        h?.tipo_devolucion ??
+        h?.tipo ??
+        ""
+    )
+      .trim()
+      .toUpperCase();
+    if (
+      crudo === "FISICA" ||
+      crudo === "FÍSICA" ||
+      crudo === "DEV. FISICA" ||
+      crudo === "DEVOLUCION FISICA"
+    ) {
+      return "FISICA";
+    }
+    return "VIRTUAL";
+  }
+
+  private esMovimientoDevolucion(h: any): boolean {
+    const estado = String(h?.estadoSeleccionado || "").trim().toUpperCase();
+    const accion = String(h?.accion || "").trim().toUpperCase();
+    return (
+      estado === "DEVUELTO" ||
+      estado === "DEVOLUCION" ||
+      accion.includes("DEVOLUC")
+    );
+  }
+
+  private cantidadFacturadaAjustadaProceso(item: any): number {
+    const facturada = this.num(
+      item?.cantidadFacturadaOriginal != null
+        ? item?.cantidadFacturadaOriginal
+        : item?.cantidadFacturada
+    );
+    const fisica = this.devolucionFisicaAcumuladaDesdeHistorial(item);
+    const ajustada = facturada - fisica;
+    return ajustada > 0 ? ajustada : 0;
+  }
+
   private prepararOrdenParaVista(orden: any) {
     const copia = JSON.parse(JSON.stringify(orden || {}));
     copia.items = (copia.items || []).map((item: any) => {
+      const facturadaOriginal = this.num(item?.cantidadFacturada);
+      const devueltaFisica = this.devolucionFisicaAcumuladaDesdeHistorial(item);
+      const facturadaProceso = this.cantidadFacturadaAjustadaProceso(item);
       const pend = this.pendienteEfectivo(item);
       return {
         ...item,
+        cantidadFacturadaOriginal: facturadaOriginal,
+        cantidadFacturadaProceso: facturadaProceso,
+        cantidadDevueltaFisica: devueltaFisica,
         pendiente: pend,
         estadoGestion:
           pend <= 0
             ? "ENTREGA_TOTAL"
-            : Number(item.cantidadDevuelta || 0) > 0
+            : devueltaFisica > 0
             ? "DEVOLUCION"
             : "ENTREGA_PARCIAL",
         cantidadEntregadaInput: 0,
@@ -1531,7 +1596,7 @@ export class GestionEntregasBodegaComponent implements OnInit, OnDestroy {
     const pendiente = this.num(item?.pendiente);
     const ingreso = this.m2OperacionIngresada(item);
     const entregadoAcum = this.num(item?.cantidadEntregada);
-    const devueltaAcum = this.num(item?.cantidadDevuelta);
+    const devueltaAcum = this.devolucionFisicaAcumuladaDesdeHistorial(item);
     const sinMovimientoEnServidor =
       entregadoAcum <= 0.0001 && devueltaAcum <= 0.0001;
 
@@ -1761,7 +1826,10 @@ export class GestionEntregasBodegaComponent implements OnInit, OnDestroy {
       )
       .forEach((orden: any) => {
         (orden.items || []).forEach((item: any) => {
-          const pendiente = this.pendienteEfectivo(item);
+          // Usar el mismo pendiente ya preparado para vista, igual que "Facturados sin entregar".
+          // Esto evita diferencias entre listados cuando hay devolución física/virtual.
+          const pendiente =
+            item?.pendiente != null ? this.num(item.pendiente) : this.pendienteEfectivo(item);
           if (pendiente <= 0) {
             return;
           }

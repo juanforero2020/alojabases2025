@@ -43,6 +43,24 @@
     color: white;
 }
 
+.bt-info{
+    background-color: #1f4e79;
+    color: white;
+}
+
+::ng-deep .bt-info .dx-icon {
+    font-size: 12px;
+    color: white;
+}
+
+.acciones-botones{
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 0.35rem;
+    flex-wrap: nowrap;
+}
+
 
 .bt2{
     background-color: green;
