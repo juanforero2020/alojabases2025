@@ -630,7 +630,7 @@ export class GestionEntregasBodegaComponent implements OnInit, OnDestroy {
     if (pendiente <= 0) {
       return false;
     }
-    return this.m2OperacionIngresada(item) > pendiente + 0.0001;
+    return this.ingresoExcedePendiente(this.m2OperacionIngresada(item), pendiente);
   }
 
   opcionMenu(e: any) {
@@ -1274,7 +1274,8 @@ export class GestionEntregasBodegaComponent implements OnInit, OnDestroy {
     const metro = this.esItemMetrosCajaPieza(item);
     const ingreso = this.m2OperacionIngresada(item);
     const pendiente = this.num(item?.pendiente);
-    if (ingreso > pendiente + 0.0001) {
+    console.log("ingreso", ingreso, "pendiente", pendiente);
+    if (this.ingresoExcedePendiente(ingreso, pendiente)) {
       Swal.fire(
         "Cantidad inválida",
         "La cantidad ingresada supera el pendiente del ítem. Ajuste el valor antes de guardar.",
@@ -1603,10 +1604,24 @@ export class GestionEntregasBodegaComponent implements OnInit, OnDestroy {
     if (sinMovimientoEnServidor && ingreso === 0) {
       return "ABIERTO";
     }
-    if (pendiente <= 0 || ingreso >= pendiente + 0.0001) {
+    if (pendiente <= 0 || this.ingresoAlcanzaPendiente(ingreso, pendiente)) {
       return "ENTREGA_TOTAL";
     }
     return "ENTREGA_PARCIAL";
+  }
+
+  /**
+   * Evita falsos positivos por precisión flotante.
+   * Se aplica tolerancia equivalente a trabajar con 2 decimales.
+   */
+  private ingresoExcedePendiente(ingreso: number, pendiente: number): boolean {
+    const tolerancia = 0.005;
+    return ingreso - pendiente > tolerancia;
+  }
+
+  private ingresoAlcanzaPendiente(ingreso: number, pendiente: number): boolean {
+    const tolerancia = 0.005;
+    return pendiente - ingreso <= tolerancia;
   }
 
   esCompromisoBloqueado(item: any): boolean {

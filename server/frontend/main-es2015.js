@@ -53635,7 +53635,7 @@ class GestionEntregasBodegaComponent {
         if (pendiente <= 0) {
             return false;
         }
-        return this.m2OperacionIngresada(item) > pendiente + 0.0001;
+        return this.ingresoExcedePendiente(this.m2OperacionIngresada(item), pendiente);
     }
     opcionMenu(e) {
         switch (e.value) {
@@ -54188,7 +54188,8 @@ class GestionEntregasBodegaComponent {
         const metro = this.esItemMetrosCajaPieza(item);
         const ingreso = this.m2OperacionIngresada(item);
         const pendiente = this.num((_b = item) === null || _b === void 0 ? void 0 : _b.pendiente);
-        if (ingreso > pendiente + 0.0001) {
+        console.log("ingreso", ingreso, "pendiente", pendiente);
+        if (this.ingresoExcedePendiente(ingreso, pendiente)) {
             sweetalert2__WEBPACK_IMPORTED_MODULE_2___default.a.fire("Cantidad inválida", "La cantidad ingresada supera el pendiente del ítem. Ajuste el valor antes de guardar.", "warning");
             return;
         }
@@ -54486,10 +54487,22 @@ class GestionEntregasBodegaComponent {
         if (sinMovimientoEnServidor && ingreso === 0) {
             return "ABIERTO";
         }
-        if (pendiente <= 0 || ingreso >= pendiente + 0.0001) {
+        if (pendiente <= 0 || this.ingresoAlcanzaPendiente(ingreso, pendiente)) {
             return "ENTREGA_TOTAL";
         }
         return "ENTREGA_PARCIAL";
+    }
+    /**
+     * Evita falsos positivos por precisión flotante.
+     * Se aplica tolerancia equivalente a trabajar con 2 decimales.
+     */
+    ingresoExcedePendiente(ingreso, pendiente) {
+        const tolerancia = 0.005;
+        return ingreso - pendiente > tolerancia;
+    }
+    ingresoAlcanzaPendiente(ingreso, pendiente) {
+        const tolerancia = 0.005;
+        return pendiente - ingreso <= tolerancia;
     }
     esCompromisoBloqueado(item) {
         return this.estadoGestionAutomatico(item) === "ENTREGA_TOTAL";
