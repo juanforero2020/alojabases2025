@@ -144,15 +144,29 @@ async function sincronizarProductoPendienteLegacyDesdeItem(
     )}. Usuario: ${usuario || "—"}.`;
   }
 
-  /**
-   * Puede quedar pendiente negativo por redondeos de m²/caja-pieza u over-entrega.
-   * En esos casos se considera ítem sin pendiente y debe salir del listado legacy.
-   */
-  const cierre = pendOperativo <= 1e-6;
-
   for (const doc of docs) {
     const notasBase = (doc.notas != null ? String(doc.notas) : "").trim();
     const notasNuevas = notasBase + (lineaTraza || "");
+    let pendLegacyActual = 0;
+    if (usarMetro && mc > 0 && pp > 0) {
+      const cantM2Legacy = normalizarNumero(doc?.cantM2);
+      pendLegacyActual =
+        cantM2Legacy > 0
+          ? cantM2Legacy
+          : m2DesdeCajasPiezas(doc?.cajas, doc?.piezas, mc, pp);
+    } else {
+      pendLegacyActual = normalizarNumero(
+        doc?.cajas != null ? doc.cajas : doc?.cantM2
+      );
+    }
+    // Ajuste clave: comparar también contra el pendiente del registro legacy.
+    const pendLegacyTrasOperacion =
+      m2Op > 0 ? Math.max(0, pendLegacyActual - m2Op) : pendLegacyActual;
+    const pendFinal = Math.max(
+      0,
+      Math.min(pendOperativo, pendLegacyTrasOperacion)
+    );
+    const cierre = pendFinal <= 1e-6;
 
     if (cierre) {
       const cpEnt =
@@ -177,14 +191,14 @@ async function sincronizarProductoPendienteLegacyDesdeItem(
     } else {
       let nuevasCajas = 0;
       let nuevasPiezas = 0;
-      let nuevoCantM2 = pendOperativo;
+      let nuevoCantM2 = pendFinal;
       if (usarMetro && mc > 0 && pp > 0) {
-        const cp = cajasPiezasDesdeM2(pendOperativo, mc, pp);
+        const cp = cajasPiezasDesdeM2(pendFinal, mc, pp);
         nuevasCajas = cp.cajas;
         nuevasPiezas = cp.piezas;
-        nuevoCantM2 = pendOperativo;
+        nuevoCantM2 = pendFinal;
       } else {
-        nuevasCajas = pendOperativo;
+        nuevasCajas = pendFinal;
         nuevasPiezas = 0;
         nuevoCantM2 = 0;
       }
