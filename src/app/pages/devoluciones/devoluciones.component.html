@@ -151,40 +151,38 @@
               </div>
             </div>
 
-            <div class="row titulosT">
-              <div class="col-2">
+            <div class="titulosT detalle-productos-grid">
+              <div class="grid-cell col-producto">
                 <h5>Producto</h5>
               </div>
-              <div class="col-1">
+              <div class="grid-cell col-cajas-fact">
                 <h5>Cajas</h5>
               </div>
-              <div class="col-1">
+              <div class="grid-cell col-piezas-fact">
                 <h5>Piezas</h5>
               </div>
-              <div class="col-1">
+              <div class="grid-cell col-cajas-dev">
                 <h5>Cajas</h5>
               </div>
-              <div class="col-1">
+              <div class="grid-cell col-piezas-dev">
                 <h5>Piezas</h5>
               </div>
-              <div class="col-2">
+              <div class="grid-cell col-motivo">
                 <h5>Motivo</h5>
               </div>
-              <div class="col-1">
+              <div class="grid-cell col-justificacion">
                 <h5>Justificación</h5>
               </div>
-              <div class="col-2">
+              <div class="grid-cell col-tipo">
                 <h5>Tipo devolución</h5>
               </div>
-              <div class="col-1">
-                <div class="row">
-                  <div class="col-md-12"><h5>Acciones</h5></div>
-                </div>
+              <div class="grid-cell col-acciones">
+                <h5>Acciones</h5>
               </div>
             </div>
             <div *ngFor="let p of productosDevueltos; let i = index" style="text-align: center; margin-top: 1em" >
-              <div class="row altura">
-                <div class="col-2" style="margin-top: 1em;">
+              <div class="altura detalle-productos-grid detalle-productos-fila">
+                <div class="grid-cell col-producto" style="margin-top: 1em;">
                   <dx-select-box
                     [items]="productosVendidos2"
                     [(value)]="p.REFERENCIA"
@@ -197,21 +195,21 @@
                   >
                   </dx-select-box>
                 </div>
-                <div class="col-1">
+                <div class="grid-cell col-cajas-fact">
                   <dx-number-box
                     [(value)]="p.cantFactCajas"
                     [disabled]="false"
                     [readOnly]="true"
                   ></dx-number-box>
                 </div>
-                <div class="col-1">
+                <div class="grid-cell col-piezas-fact">
                   <dx-number-box
                     [(value)]="p.cantFactPiezas"
                     [disabled]="false"
                     [readOnly]="true"
                   ></dx-number-box>
                 </div>
-                <div class="col-1">
+                <div class="grid-cell col-cajas-dev">
                   <dx-number-box
                     [(value)]="p.cantDevueltaCajas"
                     [disabled]="false"
@@ -219,7 +217,7 @@
                     (onValueChanged)="transformarM2($event, i)"
                   ></dx-number-box>
                 </div>
-                <div class="col-1">
+                <div class="grid-cell col-piezas-dev">
                   <dx-number-box
                     [(value)]="p.cantDevueltaPiezas"
                     [disabled]="false"
@@ -227,7 +225,7 @@
                     (onValueChanged)="transformarM2($event, i)"
                   ></dx-number-box>
                 </div>
-                <div class="col-2" style="margin-top: 1em;">
+                <div class="grid-cell col-motivo" style="margin-top: 1em;">
                   <dx-select-box
                     [items]="menuMotivo"
                     [(value)]="p.motivo"
@@ -237,14 +235,14 @@
                   >
                   </dx-select-box>
                 </div>
-                <div class="col-1">
+                <div class="grid-cell col-justificacion">
                   <dx-text-box
                     [(value)]="p.justificacion"
                     [disabled]="false"
                     [readOnly]="false"
                   ></dx-text-box>
                 </div>
-                <div class="col-2" style="margin-top: 1em;">
+                <div class="grid-cell col-tipo" style="margin-top: 1em;">
                   <dx-select-box
                     [items]="menuTipoDevolucion"
                     [(value)]="p.tipoDevolucion"
@@ -258,7 +256,7 @@
                     {{ obtenerMensajeTipoDevolucion(p.tipoDevolucion) }}
                   </small>
                 </div>
-                <div class="col-1">
+                <div class="grid-cell col-acciones">
                   <div class="acciones-botones">
                     <dx-button
                       icon="fa fa-info-circle"

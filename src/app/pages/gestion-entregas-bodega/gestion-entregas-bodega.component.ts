@@ -1468,10 +1468,17 @@ export class GestionEntregasBodegaComponent implements OnInit, OnDestroy {
     const original = this.num(item?.cantidadFacturadaOriginal);
     const fisica = this.num(item?.cantidadDevueltaFisica);
     const proceso = this.num(item?.cantidadFacturadaProceso);
-    return `Original: ${this.formatoCantidadLinea(original, item)} | Dev. física: ${this.formatoCantidadLinea(
+    return `Original: ${this.formatoCantidadLinea(original, item)} | Proceso: ${this.formatoCantidadLinea(proceso, item)}`;
+  }
+
+  resumenFacturadoProcesoDev(item: any): string {
+    const original = this.num(item?.cantidadFacturadaOriginal);
+    const fisica = this.num(item?.cantidadDevueltaFisica);
+    const proceso = this.num(item?.cantidadFacturadaProceso);
+    return `Física: ${this.formatoCantidadLinea(
       fisica,
       item
-    )} | Proceso: ${this.formatoCantidadLinea(proceso, item)}`;
+    )} `;
   }
 
   /**

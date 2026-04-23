@@ -107,6 +107,7 @@ async function sincronizarProductoPendienteLegacyDesdeItem(
   if (meta.origen === "devoluciones" && m2FisicaOp > 0) {
     pend = Math.max(0, pendBase - m2FisicaOp);
   }
+  const pendOperativo = Math.max(0, pend);
 
   let lineaTraza = "";
   if (debeRegistrarTraza) {
@@ -136,14 +137,18 @@ async function sincronizarProductoPendienteLegacyDesdeItem(
     } else {
       detalleOp = `${estMeta || "MOVIMIENTO"}: +${m2Op.toFixed(3)} u.`;
     }
-    lineaTraza = `\n[${fechaStr}] Gestión entregas bodega. ${detalleOp} Pendiente según orden: ${pend.toFixed(
+    lineaTraza = `\n[${fechaStr}] Gestión entregas bodega. ${detalleOp} Pendiente según orden: ${pendOperativo.toFixed(
       3
     )}. Entregado acum.: ${ent.toFixed(3)}. Devuelto acum.: ${dev.toFixed(
       3
     )}. Usuario: ${usuario || "—"}.`;
   }
 
-  const cierre = pendienteVisualItem(item) === 0;
+  /**
+   * Puede quedar pendiente negativo por redondeos de m²/caja-pieza u over-entrega.
+   * En esos casos se considera ítem sin pendiente y debe salir del listado legacy.
+   */
+  const cierre = pendOperativo <= 1e-6;
 
   for (const doc of docs) {
     const notasBase = (doc.notas != null ? String(doc.notas) : "").trim();
@@ -172,14 +177,14 @@ async function sincronizarProductoPendienteLegacyDesdeItem(
     } else {
       let nuevasCajas = 0;
       let nuevasPiezas = 0;
-      let nuevoCantM2 = pend;
+      let nuevoCantM2 = pendOperativo;
       if (usarMetro && mc > 0 && pp > 0) {
-        const cp = cajasPiezasDesdeM2(pend, mc, pp);
+        const cp = cajasPiezasDesdeM2(pendOperativo, mc, pp);
         nuevasCajas = cp.cajas;
         nuevasPiezas = cp.piezas;
-        nuevoCantM2 = pend;
+        nuevoCantM2 = pendOperativo;
       } else {
-        nuevasCajas = pend;
+        nuevasCajas = pendOperativo;
         nuevasPiezas = 0;
         nuevoCantM2 = 0;
       }
@@ -694,10 +699,24 @@ router.put("/actualizarItem/:id/:itemIndex", async (req, res) => {
 
   const maximoEntregable = cantidadFacturada - nuevaCantidadDevuelta;
   if (nuevaCantidadEntregada > maximoEntregable) {
-    return res.status(400).json({
-      mensaje:
-        "La cantidad ingresada excede la cantidad pendiente por entregar.",
-    });
+    const exceso = nuevaCantidadEntregada - maximoEntregable;
+    let excesoPermitido = 0.005;
+    if (usarMetro) {
+      const m2Caja = m2PorCajaDeLinea(item);
+      const piezasCaja = piezasPorCajaDeLinea(item);
+      if (m2Caja > 0 && piezasCaja > 0) {
+        // Permite un exceso de hasta 1 pieza por redondeo/conversión.
+        excesoPermitido = m2Caja / piezasCaja + 0.005;
+      }
+    }
+    if (exceso <= excesoPermitido) {
+      nuevaCantidadEntregada = maximoEntregable;
+    } else {
+      return res.status(400).json({
+        mensaje:
+          "La cantidad ingresada excede la cantidad pendiente por entregar.",
+      });
+    }
   }
 
   item.cantidadEntregada = nuevaCantidadEntregada;
@@ -716,7 +735,16 @@ router.put("/actualizarItem/:id/:itemIndex", async (req, res) => {
   const m2EnEstaOperacion =
     estadoSeleccionado === "ENTREGA_TOTAL"
       ? Math.max(0, cantidadFacturada - devueltaActual - entregadaActual)
-      : m2Incremental;
+      : Math.max(0, nuevaCantidadEntregada - entregadaActual);
+  if (usarMetro && estadoSeleccionado !== "ENTREGA_TOTAL") {
+    const m2Caja = m2PorCajaDeLinea(item);
+    const piezasCaja = piezasPorCajaDeLinea(item);
+    if (m2Caja > 0 && piezasCaja > 0) {
+      const cpReg = cajasPiezasDesdeM2(m2EnEstaOperacion, m2Caja, piezasCaja);
+      entregaCajasRegistro = cpReg.cajas;
+      entregaPiezasRegistro = cpReg.piezas;
+    }
+  }
   item.historial.push({
     fecha: new Date().toISOString(),
     usuario,
@@ -1067,27 +1095,6 @@ router.put("/registrarDevolucionAprobada", async (req, res) => {
         sinActualizacionTrazabilidad: true,
         itemsActualizados: 0,
         mensaje: "La orden de entrega está anulada; no se actualizó la trazabilidad.",
-      });
-    }
-
-    // Para órdenes ya finalizadas (COMPLETO/CERRADO), registrar solo trazabilidad de orden.
-    // No se modifica historial de ítems ni cantidades para evitar advertencias innecesarias.
-    if (ep === "COMPLETO" || ep === "CERRADO") {
-      orden.trazabilidad = orden.trazabilidad || [];
-      orden.trazabilidad.push({
-        fecha: new Date().toISOString(),
-        usuario,
-        accion: "APROBACION_DEVOLUCION",
-        detalle: `Devolución #${
-          idDevolucion || "—"
-        }: registro de orden (estado ${ep}), sin actualización por ítem.`,
-      });
-      await orden.save();
-      return res.json({
-        ok: true,
-        itemsActualizados: 0,
-        registroSoloOrden: true,
-        ordenId: orden._id,
       });
     }
 

@@ -805,9 +805,13 @@
                 {{ resumenFacturadoProceso(item) }}
               </div>
             </td>
-            <td>{{ formatoCantidadLinea(item.cantidadEntregada, item) }}</td>
-            <td>{{ formatoCantidadLinea(item.cantidadDevuelta, item) }}</td>
-            <td>{{ formatoCantidadLinea(item.pendiente, item) }}</td>
+            <td>{{ formatoCantidadLinea(item.cantidadEntregada < 0 ? 0 : item.cantidadEntregada, item) }}</td>
+            <td>
+              Virtual: {{ formatoCantidadLinea(item.cantidadDevuelta < 0 ? 0 : item.cantidadDevuelta, item) }}
+              /
+              {{ resumenFacturadoProcesoDev(item) }}
+            </td>
+            <td>{{ formatoCantidadLinea(item.pendiente < 0 ? 0 : item.pendiente, item) }}</td>
             <td>
               <div
                 *ngIf="esItemMetrosCajaPieza(item)"

@@ -809,19 +809,25 @@ export class DevolucionesComponent implements OnInit, OnDestroy {
   }
 
   private getUnidadesEntregadasOrden(codigoProducto: string): number {
+    console.log("this.ordenEntregaDocumento", this.ordenEntregaDocumento);
+    console.log("codigoProducto", codigoProducto);
     const itemOrden = (this.ordenEntregaDocumento?.items || []).find((it: any) => {
       const nombre = String((it?.producto && it.producto.PRODUCTO) || it?.productoNombre || "").trim();
       return nombre === codigoProducto;
+      console.log("nombre", nombre);
+      console.log("codigoProducto", codigoProducto);
+      console.log("nombre === codigoProducto", nombre === codigoProducto);
     });
-    if (!itemOrden) {
-      return 0;
+    console.log("itemOrden", itemOrden);
+    if (itemOrden) {
+      const entregada = Number(itemOrden?.cantidadEntregada) || 0;
+      const pCaja = Number(itemOrden?.producto?.P_CAJA || itemOrden?.piezasPorCaja || 0) || 0;
+      if (pCaja > 0) {
+        return entregada * pCaja;
+      }
+      return entregada;
     }
-    const entregada = Number(itemOrden?.cantidadEntregada) || 0;
-    const pCaja = Number(itemOrden?.producto?.P_CAJA || itemOrden?.piezasPorCaja || 0) || 0;
-    if (pCaja > 0) {
-      return entregada * pCaja;
-    }
-    return entregada;
+    return 0;
   }
 
   deleteProducto(e, i: number) {
@@ -891,6 +897,7 @@ export class DevolucionesComponent implements OnInit, OnDestroy {
           // Regla 1: devolución física acumulada no puede superar la entregada.
           const entregadaUnidades = this.getUnidadesEntregadasOrden(element.producto.PRODUCTO);
           const fisicaAcumulada = hist.fisica + cal1;
+          console.log("fisicaAcumulada", fisicaAcumulada, "entregadaUnidades", entregadaUnidades);
           if (fisicaAcumulada > entregadaUnidades) {
             mensajeRegla =
               "La devolución física no puede superar la cantidad entregada del producto.";
