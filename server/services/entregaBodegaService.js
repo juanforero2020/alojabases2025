@@ -456,9 +456,23 @@ function ordenTieneMovimientoEntrega(orden) {
   );
 }
 
+function esMovimientoDevolucion(historial) {
+  const estado = String(
+    (historial && historial.estadoSeleccionado) || ""
+  ).trim().toUpperCase();
+  const accion = String((historial && historial.accion) || "")
+    .trim()
+    .toUpperCase();
+  return (
+    estado === "DEVUELTO" ||
+    estado === "DEVOLUCION" ||
+    accion.includes("DEVOLUC")
+  );
+}
+
 /**
- * Elimina historial por ítem, pone cantidades en cero y deja la orden como al inicio (ABIERTA).
- * Conserva al menos el evento CREACION_AUTOMATICA en trazabilidad de orden si existía.
+ * Elimina de trazabilidad solo eventos de entrega, conserva devoluciones y pone cantidades en cero.
+ * Deja la orden en estado ABIERTA como reinicio operativo.
  */
 function aplicarDevolucionTotalResetOrden(orden, usuario) {
   (orden.items || []).forEach((item) => {
@@ -466,18 +480,20 @@ function aplicarDevolucionTotalResetOrden(orden, usuario) {
     item.cantidadDevuelta = 0;
     item.fechaCompromiso = "";
     item.notas = "";
-    item.historial = [];
+    item.historial = (item.historial || []).filter(esMovimientoDevolucion);
   });
   const traz = orden.trazabilidad || [];
   const creacion = traz.filter((t) => String(t.accion) === "CREACION_AUTOMATICA");
+  const devoluciones = traz.filter((t) => esMovimientoDevolucion(t));
   orden.trazabilidad = [
     ...creacion.slice(0, 1),
+    ...devoluciones,
     {
       fecha: new Date().toISOString(),
       usuario: usuario || "",
       accion: "DEVOLUCION_TOTAL_RESET",
       detalle:
-        "Devolución total: se eliminó la trazabilidad de entregas y la orden volvió a estado ABIERTA.",
+        "Devolución total: se eliminó la trazabilidad de entregas y se conservó la de devoluciones. La orden volvió a estado ABIERTA.",
     },
   ];
   orden.solicitudDevolucionPendiente = false;

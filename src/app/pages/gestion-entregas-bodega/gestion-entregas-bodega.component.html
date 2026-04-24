@@ -798,14 +798,15 @@
             <td>{{ item.productoNombre }}</td>
             <td>
               <div>{{ formatoCantidadLinea(item.cantidadFacturada, item) }}</div>
+              
+            </td>
+            <td>{{ formatoCantidadLinea(item.cantidadEntregada < 0 ? 0 : item.cantidadEntregada, item) }}
               <div
                 *ngIf="mostrarResumenAjusteFisico(item)"
-                class="small text-info"
-              >
+                class="small text-info">
                 {{ resumenFacturadoProceso(item) }}
               </div>
             </td>
-            <td>{{ formatoCantidadLinea(item.cantidadEntregada < 0 ? 0 : item.cantidadEntregada, item) }}</td>
             <td>
               Virtual: {{ formatoCantidadLinea(item.cantidadDevuelta < 0 ? 0 : item.cantidadDevuelta, item) }}
               /

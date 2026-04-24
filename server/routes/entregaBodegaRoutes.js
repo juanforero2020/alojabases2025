@@ -159,9 +159,24 @@ async function sincronizarProductoPendienteLegacyDesdeItem(
         doc?.cajas != null ? doc.cajas : doc?.cantM2
       );
     }
-    // Ajuste clave: comparar también contra el pendiente del registro legacy.
-    const pendLegacyTrasOperacion =
-      m2Op > 0 ? Math.max(0, pendLegacyActual - m2Op) : pendLegacyActual;
+    /**
+     * Regla de sincronización legacy:
+     * - No cerrar/restar directo por `m2Op`.
+     * - Usar facturado real del ítem y entregado acumulado para detectar sobreentrega
+     *   frente al pendiente legacy actual.
+     *   restanteEsperadoLegacy = facturado - pendienteLegacyActual
+     *   si entregado > restanteEsperadoLegacy => el exceso reduce pendiente legacy.
+     */
+    const facturadaItem = Math.max(0, normalizarNumero(item?.cantidadFacturada));
+    let pendLegacyTrasOperacion = pendLegacyActual;
+    if (facturadaItem > 0 && pendLegacyActual > 0) {
+      const restanteEsperadoLegacy = Math.max(0, facturadaItem - pendLegacyActual);
+      const excesoEntrega =
+        ent > restanteEsperadoLegacy ? ent - restanteEsperadoLegacy : 0;
+      if (excesoEntrega > 0) {
+        pendLegacyTrasOperacion = Math.max(0, pendLegacyActual - excesoEntrega);
+      }
+    }
     const pendFinal = Math.max(
       0,
       Math.min(pendOperativo, pendLegacyTrasOperacion)

@@ -1,5 +1,5 @@
 import { Component, OnDestroy, OnInit } from "@angular/core";
-import { Subscription } from "rxjs";
+import { forkJoin, Subscription } from "rxjs";
 import Swal from "sweetalert2";
 import pdfMake from "pdfmake/build/pdfmake";
 import { productoMultiple } from "src/app/pages/consolidado/consolidado";
@@ -289,7 +289,7 @@ export class GestionEntregasBodegaComponent implements OnInit, OnDestroy {
         (esAprobacion
           ? "<p class='mb-2'>Se aprueba la solicitud del bodeguero.</p>"
           : "") +
-        "<p>Se eliminará la trazabilidad de entregas en los ítems y la orden volverá a estado <strong>ABIERTA</strong>, como al inicio.</p>",
+        "<p>Se eliminará la trazabilidad de entregas y se conservará la trazabilidad de devoluciones. La orden volverá a estado <strong>ABIERTA</strong>, como al inicio.</p>",
       icon: "warning",
       showCancelButton: true,
       confirmButtonText: "Sí, ejecutar",
@@ -1433,9 +1433,13 @@ export class GestionEntregasBodegaComponent implements OnInit, OnDestroy {
    * no deja residuo “fantasma” de m² por coma flotante.
    */
   pendienteEfectivo(item: any): number {
-    const fact = this.cantidadFacturadaAjustadaProceso(item);
+    const fact = this.num(
+      item?.cantidadFacturadaOriginal != null
+        ? item?.cantidadFacturadaOriginal
+        : item?.cantidadFacturada
+    );
     const ent = this.num(item?.cantidadEntregada);
-    // En el proceso: la física reduce facturada y la virtual sigue reduciendo pendiente.
+    // Regla de negocio: solo la devolución virtual reduce el pendiente.
     const devVirtual = this.num(item?.cantidadDevuelta);
     const base = fact - ent - devVirtual;
     if (!this.esItemMetrosCajaPieza(item)) return base;
@@ -1465,10 +1469,10 @@ export class GestionEntregasBodegaComponent implements OnInit, OnDestroy {
   }
 
   resumenFacturadoProceso(item: any): string {
-    const original = this.num(item?.cantidadFacturadaOriginal);
+    const original = this.num(item?.cantidadEntregada);
     const fisica = this.num(item?.cantidadDevueltaFisica);
-    const proceso = this.num(item?.cantidadFacturadaProceso);
-    return `Original: ${this.formatoCantidadLinea(original, item)} | Proceso: ${this.formatoCantidadLinea(proceso, item)}`;
+    const proceso = Math.max(0, original - fisica);
+    return `Original: ${this.formatoCantidadLinea(original, item)} | Actualizado: ${this.formatoCantidadLinea(proceso, item)}`;
   }
 
   resumenFacturadoProcesoDev(item: any): string {
@@ -1992,12 +1996,154 @@ export class GestionEntregasBodegaComponent implements OnInit, OnDestroy {
     }
   }
 
+  /**
+   * Ajuste visual de pendiente:
+   * - restanteEsperado = facturado - pendienteBase
+   * - en "entregado" se suma además la devolución virtual (orden: cantidadDevuelta)
+   * - si (entregado + dev. virtual) > restanteEsperado, se descuenta el exceso del pendiente mostrado
+   * No persiste cambios en base de datos.
+   */
+  private clavePendienteEntrega(
+    documento: any,
+    producto: any,
+    tipoDocumento?: any
+  ): string {
+    const doc = String(documento ?? "")
+      .trim()
+      .toUpperCase();
+    const prod = String(producto ?? "")
+      .trim()
+      .toUpperCase();
+    const tipo = String(tipoDocumento ?? "")
+      .trim()
+      .toUpperCase();
+    return `${doc}__${tipo}__${prod}`;
+  }
+
+  private construirMapaFacturadoRealDesdeOrdenes(ordenes: any[]): Map<string, number> {
+    const mapa = new Map<string, number>();
+    (ordenes || []).forEach((orden: any) => {
+      const doc = orden?.documentoNumero;
+      const tipo = orden?.tipoDocumento;
+      (orden?.items || []).forEach((it: any) => {
+        const producto = it?.productoNombre || it?.producto?.PRODUCTO || "";
+        const factM2 = this.num(
+          it?.cantidadFacturadaOriginal != null
+            ? it?.cantidadFacturadaOriginal
+            : it?.cantidadFacturada
+        );
+        const factUnidades = this.esItemMetrosCajaPieza(it)
+          ? this.piezasTotalesDesdeM2(factM2, it)
+          : factM2;
+        const fact = Math.max(0, Math.trunc(factUnidades));
+        if (fact <= 0) {
+          return;
+        }
+        const key = this.clavePendienteEntrega(doc, producto, tipo);
+        mapa.set(key, (mapa.get(key) || 0) + fact);
+      });
+    });
+    return mapa;
+  }
+
+  private construirMapaDevolucionVirtualDesdeOrdenes(ordenes: any[]): Map<string, number> {
+    const mapa = new Map<string, number>();
+    (ordenes || []).forEach((orden: any) => {
+      const doc = orden?.documentoNumero;
+      const tipo = orden?.tipoDocumento;
+      (orden?.items || []).forEach((it: any) => {
+        const producto = it?.productoNombre || it?.producto?.PRODUCTO || "";
+        const v = this.num(it?.cantidadDevuelta);
+        if (v <= 0) {
+          return;
+        }
+        const key = this.clavePendienteEntrega(doc, producto, tipo);
+        const vUn = this.esItemMetrosCajaPieza(it)
+          ? this.piezasTotalesDesdeM2(v, it)
+          : v;
+        mapa.set(key, (mapa.get(key) || 0) + Math.max(0, this.num(vUn)));
+      });
+    });
+    return mapa;
+  }
+
+  private ajustarPendienteVisualPendientesEntrega(
+    row: any,
+    facturadoReal?: number,
+    devolucionVirtualUnidades?: number
+  ): any {
+    const baseCajas = Math.max(0, Math.trunc(this.num(row?.cajasPen)));
+    const basePiezas = Math.max(0, Math.trunc(this.num(row?.piezasPen)));
+    const pendienteBase = baseCajas + basePiezas;
+
+    console.log("row", row);
+    console.log("baseCajas", baseCajas, "basePiezas", basePiezas);
+    console.log("pendienteBase", pendienteBase);
+    console.log("devolucionVirtualUnidades", devolucionVirtualUnidades);
+
+    const facturadoFallback =
+      Math.max(0, Math.trunc(this.num(row?.cajasPen))) +
+      Math.max(0, Math.trunc(this.num(row?.piezasPen)));
+    const facturado = Math.max(0, Math.trunc(this.num(facturadoReal)));
+    const facturadoBase = facturado > 0 ? facturado : facturadoFallback;
+    const entregado =
+      Math.max(0, Math.trunc(this.num(row?.cajasEntregadas))) +
+      Math.max(0, Math.trunc(this.num(row?.piezasEntregadas)));
+    const entregadoConAjuste =
+      entregado + Math.max(0, this.num(devolucionVirtualUnidades));
+
+      console.log("entregadoConAjuste", entregadoConAjuste);
+      console.log("facturadoBase", facturadoBase);
+      console.log("pendienteBase", pendienteBase);
+
+    if (pendienteBase <= 0 || facturadoBase <= 0) {
+      return row;
+    }
+
+    const restanteEsperado = Math.max(0, facturadoBase - pendienteBase);
+
+    const excesoEntrega =
+      entregadoConAjuste > restanteEsperado
+        ? entregadoConAjuste - restanteEsperado
+        : 0;
+    if (excesoEntrega <= 0) {
+      return row;
+    }
+
+    const pendienteAjustado = Math.max(0, pendienteBase - excesoEntrega);
+    const reduccion = pendienteBase - pendienteAjustado;
+    if (reduccion <= 0) {
+      return row;
+    }
+
+    // Se reduce primero piezas y luego cajas para conservar un reparto legible.
+    const piezasAjustadas = Math.max(0, basePiezas - reduccion);
+    const reduccionRestante = Math.max(0, reduccion - basePiezas);
+    const cajasAjustadas = Math.max(0, baseCajas - reduccionRestante);
+
+    return {
+      ...row,
+      cajas: cajasAjustadas,
+      piezas: piezasAjustadas,
+    };
+  }
+
   private cargarProductosPendientesEntrega(): void {
     this.loading = true;
     this.productosPendientesEntrega = [];
-    this.productosPendientesService.getProductoPendiente().subscribe({
-      next: (res: any) => {
-        const listado = Array.isArray(res) ? res : [];
+    forkJoin({
+      pendientes: this.productosPendientesService.getProductoPendiente(),
+      ordenes: this.entregasBodegaService.getPendientes({ modoConsulta: "listado" }),
+    }).subscribe({
+      next: ({ pendientes, ordenes }: any) => {
+        const listado = Array.isArray(pendientes) ? pendientes : [];
+        const ordenesList = Array.isArray(ordenes) ? ordenes : [];
+        const mapaFacturadoReal = this.construirMapaFacturadoRealDesdeOrdenes(
+          ordenesList
+        );
+        const mapaDevolucionVirtual = this.construirMapaDevolucionVirtualDesdeOrdenes(
+          ordenesList
+        );
         const rol = (sessionStorage.getItem("rol") || "").trim();
         const sucursalSesion = (sessionStorage.getItem("sucursal") || "")
           .trim()
@@ -2010,9 +2156,20 @@ export class GestionEntregasBodegaComponent implements OnInit, OnDestroy {
                   sucursalSesion
               )
             : listado;
-        this.productosPendientesEntrega = filtradosPorSucursal.filter(
-          (x: any) => String(x?.estado || "").trim().toUpperCase() === "PENDIENTE"
-        );
+        this.productosPendientesEntrega = filtradosPorSucursal
+          .filter((x: any) => String(x?.estado || "").trim().toUpperCase() === "PENDIENTE")
+          .map((x: any) => {
+            const key = this.clavePendienteEntrega(
+              x?.documento,
+              x?.producto?.PRODUCTO,
+              x?.tipo_documento
+            );
+            return this.ajustarPendienteVisualPendientesEntrega(
+              x,
+              mapaFacturadoReal.get(key),
+              mapaDevolucionVirtual.get(key)
+            );
+          });
         this.loading = false;
       },
       error: () => {
