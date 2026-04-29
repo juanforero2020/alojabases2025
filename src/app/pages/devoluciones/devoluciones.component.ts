@@ -809,21 +809,21 @@ export class DevolucionesComponent implements OnInit, OnDestroy {
   }
 
   private getUnidadesEntregadasOrden(codigoProducto: string): number {
-    console.log("this.ordenEntregaDocumento", this.ordenEntregaDocumento);
-    console.log("codigoProducto", codigoProducto);
     const itemOrden = (this.ordenEntregaDocumento?.items || []).find((it: any) => {
       const nombre = String((it?.producto && it.producto.PRODUCTO) || it?.productoNombre || "").trim();
       return nombre === codigoProducto;
-      console.log("nombre", nombre);
-      console.log("codigoProducto", codigoProducto);
-      console.log("nombre === codigoProducto", nombre === codigoProducto);
     });
-    console.log("itemOrden", itemOrden);
     if (itemOrden) {
       const entregada = Number(itemOrden?.cantidadEntregada) || 0;
-      const pCaja = Number(itemOrden?.producto?.P_CAJA || itemOrden?.piezasPorCaja || 0) || 0;
-      if (pCaja > 0) {
-        return entregada * pCaja;
+      const pCaja = Number(itemOrden?.piezasPorCaja ?? itemOrden?.producto?.P_CAJA) || 0;
+      const m2Caja = Number(itemOrden?.m2PorCaja ?? itemOrden?.producto?.M2) || 0;
+      const unidad = String(itemOrden?.producto?.UNIDAD || "");
+
+      // Solo convertir m2 -> piezas cuando el item realmente maneja Metros + M2 + P_CAJA.
+      if (unidad === "Metros" && pCaja > 0 && m2Caja > 0) {
+        const cajas = Math.trunc((entregada + 0.01) / m2Caja);
+        const piezas = Math.trunc(((entregada + 0.01) * pCaja) / m2Caja) - cajas * pCaja;
+        return cajas * pCaja + piezas;
       }
       return entregada;
     }
@@ -907,6 +907,8 @@ export class DevolucionesComponent implements OnInit, OnDestroy {
           // Regla 2: entregada + virtual acumulada no debe superar facturada.
           const entregadaUnidades = this.getUnidadesEntregadasOrden(element.producto.PRODUCTO);
           const virtualAcumulada = hist.virtual + cal1;
+          console.log("entregadaUnidades", entregadaUnidades, "virtualAcumulada", virtualAcumulada, "cal2", cal2);
+          console.log("entregadaUnidades + virtualAcumulada > cal2", entregadaUnidades + virtualAcumulada > cal2);
           if (entregadaUnidades + virtualAcumulada > cal2) {
             mensajeRegla =
               "La devolución virtual sumada con lo entregado no puede superar la cantidad facturada.";
@@ -1992,9 +1994,9 @@ export class DevolucionesComponent implements OnInit, OnDestroy {
       });
   }
 
-  eliminarTransaccionesFinancieras() {
+  eliminarTransaccionesFinancieras(num: number) {
     this.busquedaTransaccion = new tipoBusquedaTransaccion();
-    this.busquedaTransaccion.NumDocumento = this.devolucioLeida.id_devolucion.toString();
+    this.busquedaTransaccion.NumDocumento = num.toString();
     this.busquedaTransaccion.tipoTransaccion = "devolucion";
     this._transaccionFinancieraService
       .getTransaccionesPorTipoDocumento(this.busquedaTransaccion)
@@ -2013,7 +2015,7 @@ export class DevolucionesComponent implements OnInit, OnDestroy {
 
   actualizarProductosAnulacion(num: number) {
     this.eliminarTransacciones(num);
-    this.eliminarTransaccionesFinancieras();
+    this.eliminarTransaccionesFinancieras(num);
     const suc = this.devolucioLeida?.sucursal?.nombre;
     const updates: any[] = [];
     for (const element of this.productosDevueltosCarga) {

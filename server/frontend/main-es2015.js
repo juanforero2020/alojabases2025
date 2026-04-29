@@ -46427,23 +46427,22 @@ class DevolucionesComponent {
         return out;
     }
     getUnidadesEntregadasOrden(codigoProducto) {
-        var _a, _b, _c, _d, _e;
-        console.log("this.ordenEntregaDocumento", this.ordenEntregaDocumento);
-        console.log("codigoProducto", codigoProducto);
+        var _a, _b, _c, _d, _e, _f, _g, _h, _j, _k, _l, _m;
         const itemOrden = (((_a = this.ordenEntregaDocumento) === null || _a === void 0 ? void 0 : _a.items) || []).find((it) => {
             var _a, _b;
             const nombre = String((((_a = it) === null || _a === void 0 ? void 0 : _a.producto) && it.producto.PRODUCTO) || ((_b = it) === null || _b === void 0 ? void 0 : _b.productoNombre) || "").trim();
             return nombre === codigoProducto;
-            console.log("nombre", nombre);
-            console.log("codigoProducto", codigoProducto);
-            console.log("nombre === codigoProducto", nombre === codigoProducto);
         });
-        console.log("itemOrden", itemOrden);
         if (itemOrden) {
             const entregada = Number((_b = itemOrden) === null || _b === void 0 ? void 0 : _b.cantidadEntregada) || 0;
-            const pCaja = Number(((_d = (_c = itemOrden) === null || _c === void 0 ? void 0 : _c.producto) === null || _d === void 0 ? void 0 : _d.P_CAJA) || ((_e = itemOrden) === null || _e === void 0 ? void 0 : _e.piezasPorCaja) || 0) || 0;
-            if (pCaja > 0) {
-                return entregada * pCaja;
+            const pCaja = Number((_d = (_c = itemOrden) === null || _c === void 0 ? void 0 : _c.piezasPorCaja, (_d !== null && _d !== void 0 ? _d : (_f = (_e = itemOrden) === null || _e === void 0 ? void 0 : _e.producto) === null || _f === void 0 ? void 0 : _f.P_CAJA))) || 0;
+            const m2Caja = Number((_h = (_g = itemOrden) === null || _g === void 0 ? void 0 : _g.m2PorCaja, (_h !== null && _h !== void 0 ? _h : (_k = (_j = itemOrden) === null || _j === void 0 ? void 0 : _j.producto) === null || _k === void 0 ? void 0 : _k.M2))) || 0;
+            const unidad = String(((_m = (_l = itemOrden) === null || _l === void 0 ? void 0 : _l.producto) === null || _m === void 0 ? void 0 : _m.UNIDAD) || "");
+            // Solo convertir m2 -> piezas cuando el item realmente maneja Metros + M2 + P_CAJA.
+            if (unidad === "Metros" && pCaja > 0 && m2Caja > 0) {
+                const cajas = Math.trunc((entregada + 0.01) / m2Caja);
+                const piezas = Math.trunc(((entregada + 0.01) * pCaja) / m2Caja) - cajas * pCaja;
+                return cajas * pCaja + piezas;
             }
             return entregada;
         }
@@ -46512,6 +46511,8 @@ class DevolucionesComponent {
                     // Regla 2: entregada + virtual acumulada no debe superar facturada.
                     const entregadaUnidades = this.getUnidadesEntregadasOrden(element.producto.PRODUCTO);
                     const virtualAcumulada = hist.virtual + cal1;
+                    console.log("entregadaUnidades", entregadaUnidades, "virtualAcumulada", virtualAcumulada, "cal2", cal2);
+                    console.log("entregadaUnidades + virtualAcumulada > cal2", entregadaUnidades + virtualAcumulada > cal2);
                     if (entregadaUnidades + virtualAcumulada > cal2) {
                         mensajeRegla =
                             "La devolución virtual sumada con lo entregado no puede superar la cantidad facturada.";
@@ -47490,9 +47491,9 @@ class DevolucionesComponent {
             error: () => sweetalert2__WEBPACK_IMPORTED_MODULE_6___default.a.fire("Error", "Error al actualizar productos", "error"),
         });
     }
-    eliminarTransaccionesFinancieras() {
+    eliminarTransaccionesFinancieras(num) {
         this.busquedaTransaccion = new _transacciones_transacciones__WEBPACK_IMPORTED_MODULE_7__["tipoBusquedaTransaccion"]();
-        this.busquedaTransaccion.NumDocumento = this.devolucioLeida.id_devolucion.toString();
+        this.busquedaTransaccion.NumDocumento = num.toString();
         this.busquedaTransaccion.tipoTransaccion = "devolucion";
         this._transaccionFinancieraService
             .getTransaccionesPorTipoDocumento(this.busquedaTransaccion)
@@ -47512,7 +47513,7 @@ class DevolucionesComponent {
     actualizarProductosAnulacion(num) {
         var _a, _b;
         this.eliminarTransacciones(num);
-        this.eliminarTransaccionesFinancieras();
+        this.eliminarTransaccionesFinancieras(num);
         const suc = (_b = (_a = this.devolucioLeida) === null || _a === void 0 ? void 0 : _a.sucursal) === null || _b === void 0 ? void 0 : _b.nombre;
         const updates = [];
         for (const element of this.productosDevueltosCarga) {
