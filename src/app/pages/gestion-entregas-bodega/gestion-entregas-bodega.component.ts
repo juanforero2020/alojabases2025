@@ -2053,7 +2053,8 @@ export class GestionEntregasBodegaComponent implements OnInit, OnDestroy {
       const tipo = orden?.tipoDocumento;
       (orden?.items || []).forEach((it: any) => {
         const producto = it?.productoNombre || it?.producto?.PRODUCTO || "";
-        const v = this.num(it?.cantidadDevuelta);
+        const virtualHistorial = this.devolucionVirtualAcumuladaDesdeHistorial(it);
+        const v = virtualHistorial > 0 ? virtualHistorial : this.num(it?.cantidadDevuelta);
         if (v <= 0) {
           return;
         }
@@ -2067,20 +2068,127 @@ export class GestionEntregasBodegaComponent implements OnInit, OnDestroy {
     return mapa;
   }
 
+  private pendienteDesdeTexto(
+    cantidadPendienteTexto: any
+  ): { cajas: number; piezas: number; total: number } {
+    const txt = String(cantidadPendienteTexto ?? "")
+      .trim()
+      .toUpperCase();
+    if (!txt) {
+      return { cajas: 0, piezas: 0, total: 0 };
+    }
+    const mCajas = txt.match(/(-?\d+)\s*C\b/);
+    const mPiezas = txt.match(/(-?\d+)\s*P\b/);
+    if (mCajas || mPiezas) {
+      const cajas = mCajas ? Number(mCajas[1]) : 0;
+      const piezas = mPiezas ? Number(mPiezas[1]) : 0;
+      const c = Math.max(0, Math.trunc(this.num(cajas)));
+      const p = Math.max(0, Math.trunc(this.num(piezas)));
+      return { cajas: c, piezas: p, total: c + p };
+    }
+    const total = Math.max(0, Math.trunc(this.num(txt)));
+    return { cajas: 0, piezas: total, total };
+  }
+
+  private construirMapaPendienteDesdeTextoOrdenes(
+    ordenes: any[]
+  ): Map<string, { cajas: number; piezas: number; total: number }> {
+    const mapa = new Map<string, { cajas: number; piezas: number; total: number }>();
+    (ordenes || [])
+      .filter((o: any) => ["ABIERTA", "NOVEDAD"].includes(String(o?.estadoProceso || "")))
+      .forEach((orden: any) => {
+        (orden?.items || []).forEach((item: any) => {
+          const pendienteNum =
+            item?.pendiente != null ? this.num(item.pendiente) : this.pendienteEfectivo(item);
+          if (pendienteNum <= 0) {
+            return;
+          }
+          const pendienteTxt = this.formatoPendienteReporte(item, pendienteNum);
+          const pendiente = this.pendienteDesdeTexto(pendienteTxt);
+          if (pendiente.total <= 0) {
+            return;
+          }
+          const key = this.clavePendienteEntrega(
+            orden?.documentoNumero,
+            item?.productoNombre || item?.producto?.PRODUCTO,
+            orden?.tipoDocumento
+          );
+          const prev = mapa.get(key) || { cajas: 0, piezas: 0, total: 0 };
+          const next = {
+            cajas: prev.cajas + pendiente.cajas,
+            piezas: prev.piezas + pendiente.piezas,
+            total: prev.total + pendiente.total,
+          };
+          mapa.set(key, next);
+        });
+    });
+    return mapa;
+  }
+
+  private repartirUnidadesEnCajasPiezas(
+    totalUnidades: number,
+    row: any
+  ): { cajas: number; piezas: number } {
+    const total = Math.max(0, Math.trunc(this.num(totalUnidades)));
+    const pPorCaja = Math.max(0, Math.trunc(this.num(row?.producto?.P_CAJA)));
+    if (pPorCaja > 0) {
+      const cajas = Math.trunc(total / pPorCaja);
+      const piezas = total - cajas * pPorCaja;
+      return { cajas, piezas };
+    }
+    return { cajas: 0, piezas: total };
+  }
+
   private ajustarPendienteVisualPendientesEntrega(
     row: any,
     facturadoReal?: number,
-    devolucionVirtualUnidades?: number
+    devolucionVirtualUnidades?: number,
+    pendienteProceso?: { cajas: number; piezas: number; total: number }
   ): any {
+    console.log("producto", row.producto.PRODUCTO);
+    console.log("row", row);
+    console.log("pendienteProceso", pendienteProceso);
+    if (pendienteProceso) {
+      // Fuente de verdad: mismo pendiente consolidado que usa "Facturados sin entregar".
+      if (
+        row?.cajasPen != null &&
+        row?.piezasPen != null &&
+        pendienteProceso != null
+      ) {
+        const m2PorCaja = this.m2PorCajaDeItem(row);
+        const piezasPorCaja = this.piezasPorCajaDeItem(row);
+        const factorM2PorPieza =
+          m2PorCaja > 0 && piezasPorCaja > 0 ? m2PorCaja / piezasPorCaja : 0;
+
+        const m2PendienteProceso =
+          this.num(pendienteProceso.cajas) * m2PorCaja +
+          this.num(pendienteProceso.piezas) * factorM2PorPieza;
+        const m2PendienteBase =
+          this.num(row.cajasPen) * m2PorCaja +
+          this.num(row.piezasPen) * factorM2PorPieza;
+
+        if (m2PendienteProceso > m2PendienteBase) {
+          return {
+            ...row,
+            cajas: Math.max(0, Math.trunc(this.num(row?.cajasPen))),
+            piezas: Math.max(0, Math.trunc(this.num(row?.piezasPen))),
+          };
+        }
+      }
+
+      return {
+        ...row,
+        cajas: Math.max(0, Math.trunc(this.num(pendienteProceso.cajas))),
+        piezas: Math.max(0, Math.trunc(this.num(pendienteProceso.piezas))),
+      };
+    }
+
     const baseCajas = Math.max(0, Math.trunc(this.num(row?.cajasPen)));
     const basePiezas = Math.max(0, Math.trunc(this.num(row?.piezasPen)));
+    const baseCantM2 = Math.max(0, this.num(row?.cantM2Pen));
     const pendienteBase = baseCajas + basePiezas;
-
-    console.log("row", row);
-    console.log("baseCajas", baseCajas, "basePiezas", basePiezas);
-    console.log("pendienteBase", pendienteBase);
-    console.log("devolucionVirtualUnidades", devolucionVirtualUnidades);
-
+    const inventarioInicial =
+      baseCajas + basePiezas > 0 ? baseCajas + basePiezas : baseCantM2;
     const facturadoFallback =
       Math.max(0, Math.trunc(this.num(row?.cajasPen))) +
       Math.max(0, Math.trunc(this.num(row?.piezasPen)));
@@ -2092,35 +2200,24 @@ export class GestionEntregasBodegaComponent implements OnInit, OnDestroy {
     const entregadoConAjuste =
       entregado + Math.max(0, this.num(devolucionVirtualUnidades));
 
-      console.log("entregadoConAjuste", entregadoConAjuste);
-      console.log("facturadoBase", facturadoBase);
-      console.log("pendienteBase", pendienteBase);
 
     if (pendienteBase <= 0 || facturadoBase <= 0) {
       return row;
     }
 
-    const restanteEsperado = Math.max(0, facturadoBase - pendienteBase);
+    const prodFacNoEntr = Math.max(0, facturadoBase - entregadoConAjuste);
+    const diferencia = prodFacNoEntr - pendienteBase;
+    const pendienteAjustado =
+      diferencia >= 0
+        ? Math.max(0, facturadoBase - inventarioInicial)
+        : prodFacNoEntr;
+    const objetivo = Math.max(0, Math.trunc(this.num(pendienteAjustado)));
+    const { cajas: cajasAjustadas, piezas: piezasAjustadas } =
+      this.repartirUnidadesEnCajasPiezas(objetivo, row);
 
-    const excesoEntrega =
-      entregadoConAjuste > restanteEsperado
-        ? entregadoConAjuste - restanteEsperado
-        : 0;
-    if (excesoEntrega <= 0) {
-      return row;
-    }
-
-    const pendienteAjustado = Math.max(0, pendienteBase - excesoEntrega);
-    const reduccion = pendienteBase - pendienteAjustado;
-    if (reduccion <= 0) {
-      return row;
-    }
-
-    // Se reduce primero piezas y luego cajas para conservar un reparto legible.
-    const piezasAjustadas = Math.max(0, basePiezas - reduccion);
-    const reduccionRestante = Math.max(0, reduccion - basePiezas);
-    const cajasAjustadas = Math.max(0, baseCajas - reduccionRestante);
-
+      
+      console.log("cajasAjustadas", cajasAjustadas);
+      console.log("piezasAjustadas", piezasAjustadas);
     return {
       ...row,
       cajas: cajasAjustadas,
@@ -2142,6 +2239,9 @@ export class GestionEntregasBodegaComponent implements OnInit, OnDestroy {
           ordenesList
         );
         const mapaDevolucionVirtual = this.construirMapaDevolucionVirtualDesdeOrdenes(
+          ordenesList
+        );
+        const mapaPendienteProceso = this.construirMapaPendienteDesdeTextoOrdenes(
           ordenesList
         );
         const rol = (sessionStorage.getItem("rol") || "").trim();
@@ -2167,7 +2267,8 @@ export class GestionEntregasBodegaComponent implements OnInit, OnDestroy {
             return this.ajustarPendienteVisualPendientesEntrega(
               x,
               mapaFacturadoReal.get(key),
-              mapaDevolucionVirtual.get(key)
+              mapaDevolucionVirtual.get(key),
+              mapaPendienteProceso.get(key)
             );
           });
         this.loading = false;

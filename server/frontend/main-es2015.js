@@ -47860,21 +47860,21 @@ function EntregasPComponent_div_60_Template(rf, ctx) { if (rf & 1) {
     _angular_core__WEBPACK_IMPORTED_MODULE_0__["ɵɵelement"](12, "dxi-column", 41);
     _angular_core__WEBPACK_IMPORTED_MODULE_0__["ɵɵelement"](13, "dxi-column", 42);
     _angular_core__WEBPACK_IMPORTED_MODULE_0__["ɵɵelement"](14, "dxi-column", 43);
-    _angular_core__WEBPACK_IMPORTED_MODULE_0__["ɵɵelement"](15, "dxi-column", 88);
-    _angular_core__WEBPACK_IMPORTED_MODULE_0__["ɵɵelement"](16, "dxi-column", 89);
-    _angular_core__WEBPACK_IMPORTED_MODULE_0__["ɵɵelement"](17, "dxi-column", 90);
-    _angular_core__WEBPACK_IMPORTED_MODULE_0__["ɵɵelement"](18, "dxi-column", 91);
+    _angular_core__WEBPACK_IMPORTED_MODULE_0__["ɵɵelement"](15, "dxi-column", 44);
+    _angular_core__WEBPACK_IMPORTED_MODULE_0__["ɵɵelement"](16, "dxi-column", 45);
+    _angular_core__WEBPACK_IMPORTED_MODULE_0__["ɵɵelement"](17, "dxi-column", 88);
+    _angular_core__WEBPACK_IMPORTED_MODULE_0__["ɵɵelement"](18, "dxi-column", 89);
     _angular_core__WEBPACK_IMPORTED_MODULE_0__["ɵɵelement"](19, "dxi-column", 48);
     _angular_core__WEBPACK_IMPORTED_MODULE_0__["ɵɵelement"](20, "dxi-column", 49);
     _angular_core__WEBPACK_IMPORTED_MODULE_0__["ɵɵelement"](21, "dxi-column", 50);
-    _angular_core__WEBPACK_IMPORTED_MODULE_0__["ɵɵelementStart"](22, "dxi-column", 92);
+    _angular_core__WEBPACK_IMPORTED_MODULE_0__["ɵɵelementStart"](22, "dxi-column", 90);
     _angular_core__WEBPACK_IMPORTED_MODULE_0__["ɵɵelement"](23, "dxi-button", 52);
     _angular_core__WEBPACK_IMPORTED_MODULE_0__["ɵɵelementEnd"]();
-    _angular_core__WEBPACK_IMPORTED_MODULE_0__["ɵɵelementStart"](24, "dxi-column", 93);
+    _angular_core__WEBPACK_IMPORTED_MODULE_0__["ɵɵelementStart"](24, "dxi-column", 91);
     _angular_core__WEBPACK_IMPORTED_MODULE_0__["ɵɵelement"](25, "dxi-button", 64);
     _angular_core__WEBPACK_IMPORTED_MODULE_0__["ɵɵelementEnd"]();
-    _angular_core__WEBPACK_IMPORTED_MODULE_0__["ɵɵelementStart"](26, "dxi-column", 94);
-    _angular_core__WEBPACK_IMPORTED_MODULE_0__["ɵɵelement"](27, "dxi-button", 95);
+    _angular_core__WEBPACK_IMPORTED_MODULE_0__["ɵɵelementStart"](26, "dxi-column", 92);
+    _angular_core__WEBPACK_IMPORTED_MODULE_0__["ɵɵelement"](27, "dxi-button", 93);
     _angular_core__WEBPACK_IMPORTED_MODULE_0__["ɵɵelementEnd"]();
     _angular_core__WEBPACK_IMPORTED_MODULE_0__["ɵɵelement"](28, "dxo-paging", 53);
     _angular_core__WEBPACK_IMPORTED_MODULE_0__["ɵɵelement"](29, "dxo-pager", 54);
@@ -47924,24 +47924,24 @@ function EntregasPComponent_div_60_Template(rf, ctx) { if (rf & 1) {
 function EntregasPComponent_div_61_Template(rf, ctx) { if (rf & 1) {
     const _r18 = _angular_core__WEBPACK_IMPORTED_MODULE_0__["ɵɵgetCurrentView"]();
     _angular_core__WEBPACK_IMPORTED_MODULE_0__["ɵɵelementStart"](0, "div");
-    _angular_core__WEBPACK_IMPORTED_MODULE_0__["ɵɵelementStart"](1, "dx-data-grid", 96, 97);
+    _angular_core__WEBPACK_IMPORTED_MODULE_0__["ɵɵelementStart"](1, "dx-data-grid", 94, 95);
     _angular_core__WEBPACK_IMPORTED_MODULE_0__["ɵɵlistener"]("onExporting", function EntregasPComponent_div_61_Template_dx_data_grid_onExporting_1_listener($event) { _angular_core__WEBPACK_IMPORTED_MODULE_0__["ɵɵrestoreView"](_r18); const ctx_r17 = _angular_core__WEBPACK_IMPORTED_MODULE_0__["ɵɵnextContext"](); return ctx_r17.onExporting($event); })("onExported", function EntregasPComponent_div_61_Template_dx_data_grid_onExported_1_listener($event) { _angular_core__WEBPACK_IMPORTED_MODULE_0__["ɵɵrestoreView"](_r18); const ctx_r19 = _angular_core__WEBPACK_IMPORTED_MODULE_0__["ɵɵnextContext"](); return ctx_r19.onExported($event); });
     _angular_core__WEBPACK_IMPORTED_MODULE_0__["ɵɵelement"](3, "dxo-filter-row", 32);
     _angular_core__WEBPACK_IMPORTED_MODULE_0__["ɵɵelement"](4, "dxo-export", 87);
     _angular_core__WEBPACK_IMPORTED_MODULE_0__["ɵɵelement"](5, "dxo-search-panel", 34);
     _angular_core__WEBPACK_IMPORTED_MODULE_0__["ɵɵelement"](6, "dxi-column", 35);
-    _angular_core__WEBPACK_IMPORTED_MODULE_0__["ɵɵelement"](7, "dxi-column", 98);
-    _angular_core__WEBPACK_IMPORTED_MODULE_0__["ɵɵelement"](8, "dxi-column", 99);
+    _angular_core__WEBPACK_IMPORTED_MODULE_0__["ɵɵelement"](7, "dxi-column", 96);
+    _angular_core__WEBPACK_IMPORTED_MODULE_0__["ɵɵelement"](8, "dxi-column", 97);
     _angular_core__WEBPACK_IMPORTED_MODULE_0__["ɵɵelement"](9, "dxi-column", 38);
     _angular_core__WEBPACK_IMPORTED_MODULE_0__["ɵɵelement"](10, "dxi-column", 39);
     _angular_core__WEBPACK_IMPORTED_MODULE_0__["ɵɵelement"](11, "dxi-column", 40);
     _angular_core__WEBPACK_IMPORTED_MODULE_0__["ɵɵelement"](12, "dxi-column", 41);
     _angular_core__WEBPACK_IMPORTED_MODULE_0__["ɵɵelement"](13, "dxi-column", 42);
     _angular_core__WEBPACK_IMPORTED_MODULE_0__["ɵɵelement"](14, "dxi-column", 43);
-    _angular_core__WEBPACK_IMPORTED_MODULE_0__["ɵɵelement"](15, "dxi-column", 88);
-    _angular_core__WEBPACK_IMPORTED_MODULE_0__["ɵɵelement"](16, "dxi-column", 89);
-    _angular_core__WEBPACK_IMPORTED_MODULE_0__["ɵɵelement"](17, "dxi-column", 90);
-    _angular_core__WEBPACK_IMPORTED_MODULE_0__["ɵɵelement"](18, "dxi-column", 91);
+    _angular_core__WEBPACK_IMPORTED_MODULE_0__["ɵɵelement"](15, "dxi-column", 98);
+    _angular_core__WEBPACK_IMPORTED_MODULE_0__["ɵɵelement"](16, "dxi-column", 99);
+    _angular_core__WEBPACK_IMPORTED_MODULE_0__["ɵɵelement"](17, "dxi-column", 88);
+    _angular_core__WEBPACK_IMPORTED_MODULE_0__["ɵɵelement"](18, "dxi-column", 89);
     _angular_core__WEBPACK_IMPORTED_MODULE_0__["ɵɵelement"](19, "dxi-column", 48);
     _angular_core__WEBPACK_IMPORTED_MODULE_0__["ɵɵelement"](20, "dxi-column", 100);
     _angular_core__WEBPACK_IMPORTED_MODULE_0__["ɵɵelement"](21, "dxi-column", 101);
@@ -47955,8 +47955,8 @@ function EntregasPComponent_div_61_Template(rf, ctx) { if (rf & 1) {
     _angular_core__WEBPACK_IMPORTED_MODULE_0__["ɵɵelementStart"](27, "dxi-column", 103);
     _angular_core__WEBPACK_IMPORTED_MODULE_0__["ɵɵelement"](28, "dxi-button", 68);
     _angular_core__WEBPACK_IMPORTED_MODULE_0__["ɵɵelementEnd"]();
-    _angular_core__WEBPACK_IMPORTED_MODULE_0__["ɵɵelementStart"](29, "dxi-column", 94);
-    _angular_core__WEBPACK_IMPORTED_MODULE_0__["ɵɵelement"](30, "dxi-button", 95);
+    _angular_core__WEBPACK_IMPORTED_MODULE_0__["ɵɵelementStart"](29, "dxi-column", 92);
+    _angular_core__WEBPACK_IMPORTED_MODULE_0__["ɵɵelement"](30, "dxi-button", 93);
     _angular_core__WEBPACK_IMPORTED_MODULE_0__["ɵɵelementEnd"]();
     _angular_core__WEBPACK_IMPORTED_MODULE_0__["ɵɵelement"](31, "dxo-paging", 53);
     _angular_core__WEBPACK_IMPORTED_MODULE_0__["ɵɵelement"](32, "dxo-pager", 54);
@@ -48032,18 +48032,18 @@ function EntregasPComponent_div_62_Template(rf, ctx) { if (rf & 1) {
     _angular_core__WEBPACK_IMPORTED_MODULE_0__["ɵɵelement"](12, "dxi-column", 41);
     _angular_core__WEBPACK_IMPORTED_MODULE_0__["ɵɵelement"](13, "dxi-column", 42);
     _angular_core__WEBPACK_IMPORTED_MODULE_0__["ɵɵelement"](14, "dxi-column", 43);
-    _angular_core__WEBPACK_IMPORTED_MODULE_0__["ɵɵelement"](15, "dxi-column", 88);
-    _angular_core__WEBPACK_IMPORTED_MODULE_0__["ɵɵelement"](16, "dxi-column", 89);
-    _angular_core__WEBPACK_IMPORTED_MODULE_0__["ɵɵelement"](17, "dxi-column", 90);
-    _angular_core__WEBPACK_IMPORTED_MODULE_0__["ɵɵelement"](18, "dxi-column", 91);
+    _angular_core__WEBPACK_IMPORTED_MODULE_0__["ɵɵelement"](15, "dxi-column", 98);
+    _angular_core__WEBPACK_IMPORTED_MODULE_0__["ɵɵelement"](16, "dxi-column", 99);
+    _angular_core__WEBPACK_IMPORTED_MODULE_0__["ɵɵelement"](17, "dxi-column", 88);
+    _angular_core__WEBPACK_IMPORTED_MODULE_0__["ɵɵelement"](18, "dxi-column", 89);
     _angular_core__WEBPACK_IMPORTED_MODULE_0__["ɵɵelement"](19, "dxi-column", 48);
     _angular_core__WEBPACK_IMPORTED_MODULE_0__["ɵɵelement"](20, "dxi-column", 49);
     _angular_core__WEBPACK_IMPORTED_MODULE_0__["ɵɵelement"](21, "dxi-column", 50);
     _angular_core__WEBPACK_IMPORTED_MODULE_0__["ɵɵelementStart"](22, "dxi-column", 51);
     _angular_core__WEBPACK_IMPORTED_MODULE_0__["ɵɵelement"](23, "dxi-button", 52);
     _angular_core__WEBPACK_IMPORTED_MODULE_0__["ɵɵelementEnd"]();
-    _angular_core__WEBPACK_IMPORTED_MODULE_0__["ɵɵelementStart"](24, "dxi-column", 94);
-    _angular_core__WEBPACK_IMPORTED_MODULE_0__["ɵɵelement"](25, "dxi-button", 95);
+    _angular_core__WEBPACK_IMPORTED_MODULE_0__["ɵɵelementStart"](24, "dxi-column", 92);
+    _angular_core__WEBPACK_IMPORTED_MODULE_0__["ɵɵelement"](25, "dxi-button", 93);
     _angular_core__WEBPACK_IMPORTED_MODULE_0__["ɵɵelementEnd"]();
     _angular_core__WEBPACK_IMPORTED_MODULE_0__["ɵɵelement"](26, "dxo-paging", 53);
     _angular_core__WEBPACK_IMPORTED_MODULE_0__["ɵɵelement"](27, "dxo-pager", 54);
@@ -50508,7 +50508,7 @@ class EntregasPComponent {
     }
 }
 EntregasPComponent.ɵfac = function EntregasPComponent_Factory(t) { return new (t || EntregasPComponent)(_angular_core__WEBPACK_IMPORTED_MODULE_0__["ɵɵdirectiveInject"](src_app_servicios_parametrizaciones_service__WEBPACK_IMPORTED_MODULE_5__["ParametrizacionesService"]), _angular_core__WEBPACK_IMPORTED_MODULE_0__["ɵɵdirectiveInject"](src_app_servicios_documento_generado_entrega_service__WEBPACK_IMPORTED_MODULE_6__["DocumentoGeneradoEntregaService"]), _angular_core__WEBPACK_IMPORTED_MODULE_0__["ɵɵdirectiveInject"](src_app_shared_services__WEBPACK_IMPORTED_MODULE_7__["AuthService"]), _angular_core__WEBPACK_IMPORTED_MODULE_0__["ɵɵdirectiveInject"](src_app_servicios_productos_entregados_service__WEBPACK_IMPORTED_MODULE_8__["ProductosEntregadosService"]), _angular_core__WEBPACK_IMPORTED_MODULE_0__["ɵɵdirectiveInject"](src_app_servicios_contadores_documentos_service__WEBPACK_IMPORTED_MODULE_9__["ContadoresDocumentosService"]), _angular_core__WEBPACK_IMPORTED_MODULE_0__["ɵɵdirectiveInject"](src_app_servicios_authen_service__WEBPACK_IMPORTED_MODULE_10__["AuthenService"]), _angular_core__WEBPACK_IMPORTED_MODULE_0__["ɵɵdirectiveInject"](src_app_servicios_productos_pendientes_service__WEBPACK_IMPORTED_MODULE_11__["ProductosPendientesService"]), _angular_core__WEBPACK_IMPORTED_MODULE_0__["ɵɵdirectiveInject"](src_app_servicios_producto_service__WEBPACK_IMPORTED_MODULE_12__["ProductoService"])); };
-EntregasPComponent.ɵcmp = _angular_core__WEBPACK_IMPORTED_MODULE_0__["ɵɵdefineComponent"]({ type: EntregasPComponent, selectors: [["app-entregas-p"]], decls: 196, vars: 98, consts: [[1, "row", "remiPro", "titulos"], [1, "col-md-8"], [1, ""], [1, "col-md-4"], [1, "form-control", "select", 3, "items", "value", "readOnly", "disabled", "onValueChanged"], [4, "ngIf"], ["id", "pendientes", 2, "display", "block"], [1, "card", "entregas-p-consulta-card"], [1, "card-header", "text-center", "font-weight-bold", "text-uppercase"], [1, "card-body"], [1, "row"], [1, "col-md-2"], [1, "col-md-12", 2, "text-align", "center", "font-weight", "bold"], [1, "row", "card"], [1, "col-md-12"], [1, "col-md-3", 2, "margin-top", "0.5em"], [1, "col-md-9"], ["type", "date", 3, "value", "valueChange"], [1, "col-md-4", "btnSearch"], [1, "btn", "btn-block", "btn-success", "btn-consulta-entregas", 3, "click"], [1, "col-md-4", 2, "margin-left", "1em"], [1, "col-md-3"], [1, "col-md-6", "btnSearch"], [1, "card", "entregas-p-listado-card"], [1, "row", "entregas-p-radio-fila"], [1, "col-12"], [1, "dx-field", "radio", "entregas-p-radio-wrap"], [1, "dx-field-value"], ["layout", "horizontal", 3, "items", "value", "onValueChanged"], ["id", "entregados", 2, "display", "none"], ["id", "gridContainer", 3, "dataSource", "showBorders", "onExporting", "onExported"], ["datag2", ""], [3, "visible"], ["fileName", "Productos Entregados", 3, "enabled", "allowExportSelectedData"], ["placeholder", "Buscar...", 3, "visible", "width"], ["dataField", "id_Pedido", "caption", "Entrega N", "dataType", "string", "sortOrder", "desc"], ["dataField", "fecha", "caption", "Fecha", "dataType", "string"], ["dataField", "documento", "caption", "Documento #", "dataType", "string"], ["dataField", "tipo_documento", "caption", "Tipo Documento", "dataType", "string", 3, "visible"], ["dataField", "cliente", "caption", "Cliente", "dataType", "string"], ["dataField", "celular", "caption", "Celular", "dataType", "string", 3, "visible"], ["dataField", "producto.PRODUCTO", "caption", "Producto", "dataType", "string"], ["dataField", "sucursal", "caption", "Sucursal", "dataType", "string"], ["dataField", "valor_unitario", "caption", "V.Unitario", "dataType", "number", 3, "visible"], ["dataField", "cajasPen", "caption", "Cajas", "dataType", "number", 3, "visible"], ["dataField", "piezasPen", "caption", "Piezas", "dataType", "number", 3, "visible"], ["dataField", "cantM2Pen", "caption", "m2", "dataType", "number", 3, "visible"], ["dataField", "total", "caption", "Total", "dataType", "number", 3, "visible"], ["dataField", "usuario", "caption", "Usuario", "dataType", "string", 3, "visible"], ["dataField", "estado", "caption", "Estado", "dataType", "string"], ["dataField", "notas", "caption", "Notas", "dataType", "string", 3, "visible"], ["type", "buttons", "dataField", "bt1", "caption", "Ver", "width", "10%"], ["icon", "fa fa-eye", 3, "onClick"], [3, "pageSize"], [3, "showPageSizeSelector", "allowedPageSizes"], ["id", "historial", 2, "display", "none"], ["id", "gridContainer", 3, "dataSource", "showBorders"], ["fileName", "HistorialEntregas", 3, "enabled", "allowExportSelectedData"], ["dataField", "Ndocumento", "caption", "Entrega N", "dataType", "string", "width", "10%", "sortOrder", "desc"], ["dataField", "fechaEntrega", "caption", "Fecha Entrega", "dataType", "string"], ["dataField", "idDocumento", "caption", "ID_Documento", "dataType", "string"], ["dataField", "tipoDocumento", "caption", "Tipo Documento", "dataType", "string"], ["icon", "fa fa-arrow-down", 3, "onClick"], ["type", "buttons", "dataField", "bt2", "caption", "Eliminar", "width", "10%", 3, "visible"], ["icon", "clear", 3, "onClick"], ["id", "admin5", 2, "display", "block"], ["type", "buttons", "dataField", "bt2", "caption", "Eliminar", "width", "20%", 3, "visible"], ["text", "Eliminar", 3, "onClick"], ["text", "Rechazar", 3, "onClick"], ["id", "entrega", 2, "display", "none"], [1, "row", "remiPro"], [1, "col-md-12", "titulo"], [1, "col-md-6"], [3, "value", "valueChange"], [3, "items", "value", "readOnly", "disabled", "searchEnabled", "onValueChanged"], ["selectId", ""], [1, "col-md-1"], [1, "col-md-10"], ["id", "tabla1", 1, "table", "table-bordered", "table-responsive-md", "table-striped", "text-center"], ["rowspan", "2", 1, "text-center"], ["colspan", "3", "rowspan", "1", 1, "text-center"], ["rowspan", "1", 1, "text-center"], [4, "ngFor", "ngForOf"], [1, "bt2", 3, "text", "type", "onClick"], [3, "width", "height", "showTitle", "title", "closeOnOutsideClick", "visible", "visibleChange"], [4, "dxTemplate", "dxTemplateOf"], ["id", "gridPendientesEntrega", 3, "dataSource", "showBorders", "onExporting", "onExported"], ["fileName", "Productos Pendientes", 3, "enabled", "allowExportSelectedData"], ["dataField", "cajas", "caption", "Cajas", "dataType", "number", 3, "visible"], ["dataField", "piezas", "caption", "Piezas", "dataType", "number", 3, "visible"], ["dataField", "m2", "caption", "m2", "dataType", "number", 3, "visible"], ["dataField", "total", "caption", "Total", "dataType", "string", 3, "visible"], ["type", "buttons", "dataField", "bt1", "caption", "Ver", "width", "7%"], ["type", "buttons", "dataField", "bt2", "caption", "Eliminar", "width", "7%", 3, "visible"], ["type", "buttons", "dataField", "bt1", "caption", "Notas", "width", "7%"], ["hint", "Notas", "icon", "fa fa-list-alt", 3, "onClick"], ["id", "gridPendientesEliminacion", 3, "dataSource", "showBorders", "onExporting", "onExported"], ["datagPendElim", ""], ["dataField", "fecha", "caption", "Fecha", "dataType", "string", 3, "visible"], ["dataField", "documento", "caption", "Documento #", "dataType", "string", 3, "visible"], ["dataField", "mensaje", "caption", "Motivo", "dataType", "string", 3, "visible"], ["dataField", "estado", "caption", "Estado", "dataType", "string", 3, "visible"], ["text", "Aprobar", 3, "onClick"], ["type", "buttons", "dataField", "bt2", "caption", "Rechazar", "width", "10%", 3, "visible"], ["id", "gridPendientesEliminados", 3, "dataSource", "showBorders", "onExporting", "onExported"], ["datagEliminados", ""], ["contenteditable", "false"], ["width", "100%", "height", "100%"], [1, "popup-property-details"], [2, "width", "100%"], [3, "value", "readOnly", "valueChange"], ["id", "mostrar", 2, "display", "block"], [2, "text-align", "center"], ["dataField", "identrega", "caption", "ID Entrega", "dataType", "string"], ["dataField", "cajas", "caption", "Cajas", "dataType", "number"], ["dataField", "piezas", "caption", "Piezas", "dataType", "number"], ["dataField", "fecha", "caption", "Fecha", "dataType", "string", "sortOrder", "desc"], ["id", "ent", 1, "row", 2, "display", "none"], [1, "card"], [3, "value", "disabled", "readOnly", "valueChange", "onChange"], [3, "value", "disabled", "readOnly", "valueChange"], [1, "btn6", 3, "text", "disabled", "onClick"], [1, "col-2"], [1, "col-4"], [1, "btn6", 3, "text", "onClick"]], template: function EntregasPComponent_Template(rf, ctx) { if (rf & 1) {
+EntregasPComponent.ɵcmp = _angular_core__WEBPACK_IMPORTED_MODULE_0__["ɵɵdefineComponent"]({ type: EntregasPComponent, selectors: [["app-entregas-p"]], decls: 196, vars: 98, consts: [[1, "row", "remiPro", "titulos"], [1, "col-md-8"], [1, ""], [1, "col-md-4"], [1, "form-control", "select", 3, "items", "value", "readOnly", "disabled", "onValueChanged"], [4, "ngIf"], ["id", "pendientes", 2, "display", "block"], [1, "card", "entregas-p-consulta-card"], [1, "card-header", "text-center", "font-weight-bold", "text-uppercase"], [1, "card-body"], [1, "row"], [1, "col-md-2"], [1, "col-md-12", 2, "text-align", "center", "font-weight", "bold"], [1, "row", "card"], [1, "col-md-12"], [1, "col-md-3", 2, "margin-top", "0.5em"], [1, "col-md-9"], ["type", "date", 3, "value", "valueChange"], [1, "col-md-4", "btnSearch"], [1, "btn", "btn-block", "btn-success", "btn-consulta-entregas", 3, "click"], [1, "col-md-4", 2, "margin-left", "1em"], [1, "col-md-3"], [1, "col-md-6", "btnSearch"], [1, "card", "entregas-p-listado-card"], [1, "row", "entregas-p-radio-fila"], [1, "col-12"], [1, "dx-field", "radio", "entregas-p-radio-wrap"], [1, "dx-field-value"], ["layout", "horizontal", 3, "items", "value", "onValueChanged"], ["id", "entregados", 2, "display", "none"], ["id", "gridContainer", 3, "dataSource", "showBorders", "onExporting", "onExported"], ["datag2", ""], [3, "visible"], ["fileName", "Productos Entregados", 3, "enabled", "allowExportSelectedData"], ["placeholder", "Buscar...", 3, "visible", "width"], ["dataField", "id_Pedido", "caption", "Entrega N", "dataType", "string", "sortOrder", "desc"], ["dataField", "fecha", "caption", "Fecha", "dataType", "string"], ["dataField", "documento", "caption", "Documento #", "dataType", "string"], ["dataField", "tipo_documento", "caption", "Tipo Documento", "dataType", "string", 3, "visible"], ["dataField", "cliente", "caption", "Cliente", "dataType", "string"], ["dataField", "celular", "caption", "Celular", "dataType", "string", 3, "visible"], ["dataField", "producto.PRODUCTO", "caption", "Producto", "dataType", "string"], ["dataField", "sucursal", "caption", "Sucursal", "dataType", "string"], ["dataField", "valor_unitario", "caption", "V.Unitario", "dataType", "number", 3, "visible"], ["dataField", "cajasPen", "caption", "Cajas", "dataType", "number", 3, "visible"], ["dataField", "piezasPen", "caption", "Piezas", "dataType", "number", 3, "visible"], ["dataField", "cantM2Pen", "caption", "m2", "dataType", "number", 3, "visible"], ["dataField", "total", "caption", "Total", "dataType", "number", 3, "visible"], ["dataField", "usuario", "caption", "Usuario", "dataType", "string", 3, "visible"], ["dataField", "estado", "caption", "Estado", "dataType", "string"], ["dataField", "notas", "caption", "Notas", "dataType", "string", 3, "visible"], ["type", "buttons", "dataField", "bt1", "caption", "Ver", "width", "10%"], ["icon", "fa fa-eye", 3, "onClick"], [3, "pageSize"], [3, "showPageSizeSelector", "allowedPageSizes"], ["id", "historial", 2, "display", "none"], ["id", "gridContainer", 3, "dataSource", "showBorders"], ["fileName", "HistorialEntregas", 3, "enabled", "allowExportSelectedData"], ["dataField", "Ndocumento", "caption", "Entrega N", "dataType", "string", "width", "10%", "sortOrder", "desc"], ["dataField", "fechaEntrega", "caption", "Fecha Entrega", "dataType", "string"], ["dataField", "idDocumento", "caption", "ID_Documento", "dataType", "string"], ["dataField", "tipoDocumento", "caption", "Tipo Documento", "dataType", "string"], ["icon", "fa fa-arrow-down", 3, "onClick"], ["type", "buttons", "dataField", "bt2", "caption", "Eliminar", "width", "10%", 3, "visible"], ["icon", "clear", 3, "onClick"], ["id", "admin5", 2, "display", "block"], ["type", "buttons", "dataField", "bt2", "caption", "Eliminar", "width", "20%", 3, "visible"], ["text", "Eliminar", 3, "onClick"], ["text", "Rechazar", 3, "onClick"], ["id", "entrega", 2, "display", "none"], [1, "row", "remiPro"], [1, "col-md-12", "titulo"], [1, "col-md-6"], [3, "value", "valueChange"], [3, "items", "value", "readOnly", "disabled", "searchEnabled", "onValueChanged"], ["selectId", ""], [1, "col-md-1"], [1, "col-md-10"], ["id", "tabla1", 1, "table", "table-bordered", "table-responsive-md", "table-striped", "text-center"], ["rowspan", "2", 1, "text-center"], ["colspan", "3", "rowspan", "1", 1, "text-center"], ["rowspan", "1", 1, "text-center"], [4, "ngFor", "ngForOf"], [1, "bt2", 3, "text", "type", "onClick"], [3, "width", "height", "showTitle", "title", "closeOnOutsideClick", "visible", "visibleChange"], [4, "dxTemplate", "dxTemplateOf"], ["id", "gridPendientesEntrega", 3, "dataSource", "showBorders", "onExporting", "onExported"], ["fileName", "Productos Pendientes", 3, "enabled", "allowExportSelectedData"], ["dataField", "m2", "caption", "m2", "dataType", "number", 3, "visible"], ["dataField", "total", "caption", "Total", "dataType", "string", 3, "visible"], ["type", "buttons", "dataField", "bt1", "caption", "Ver", "width", "7%"], ["type", "buttons", "dataField", "bt2", "caption", "Eliminar", "width", "7%", 3, "visible"], ["type", "buttons", "dataField", "bt1", "caption", "Notas", "width", "7%"], ["hint", "Notas", "icon", "fa fa-list-alt", 3, "onClick"], ["id", "gridPendientesEliminacion", 3, "dataSource", "showBorders", "onExporting", "onExported"], ["datagPendElim", ""], ["dataField", "fecha", "caption", "Fecha", "dataType", "string", 3, "visible"], ["dataField", "documento", "caption", "Documento #", "dataType", "string", 3, "visible"], ["dataField", "cajas", "caption", "Cajas", "dataType", "number", 3, "visible"], ["dataField", "piezas", "caption", "Piezas", "dataType", "number", 3, "visible"], ["dataField", "mensaje", "caption", "Motivo", "dataType", "string", 3, "visible"], ["dataField", "estado", "caption", "Estado", "dataType", "string", 3, "visible"], ["text", "Aprobar", 3, "onClick"], ["type", "buttons", "dataField", "bt2", "caption", "Rechazar", "width", "10%", 3, "visible"], ["id", "gridPendientesEliminados", 3, "dataSource", "showBorders", "onExporting", "onExported"], ["datagEliminados", ""], ["contenteditable", "false"], ["width", "100%", "height", "100%"], [1, "popup-property-details"], [2, "width", "100%"], [3, "value", "readOnly", "valueChange"], ["id", "mostrar", 2, "display", "block"], [2, "text-align", "center"], ["dataField", "identrega", "caption", "ID Entrega", "dataType", "string"], ["dataField", "cajas", "caption", "Cajas", "dataType", "number"], ["dataField", "piezas", "caption", "Piezas", "dataType", "number"], ["dataField", "fecha", "caption", "Fecha", "dataType", "string", "sortOrder", "desc"], ["id", "ent", 1, "row", 2, "display", "none"], [1, "card"], [3, "value", "disabled", "readOnly", "valueChange", "onChange"], [3, "value", "disabled", "readOnly", "valueChange"], [1, "btn6", 3, "text", "disabled", "onClick"], [1, "col-2"], [1, "col-4"], [1, "btn6", 3, "text", "onClick"]], template: function EntregasPComponent_Template(rf, ctx) { if (rf & 1) {
         _angular_core__WEBPACK_IMPORTED_MODULE_0__["ɵɵelement"](0, "br");
         _angular_core__WEBPACK_IMPORTED_MODULE_0__["ɵɵelementStart"](1, "div", 0);
         _angular_core__WEBPACK_IMPORTED_MODULE_0__["ɵɵelementStart"](2, "div", 1);
@@ -54866,7 +54866,8 @@ class GestionEntregasBodegaComponent {
             (((_c = orden) === null || _c === void 0 ? void 0 : _c.items) || []).forEach((it) => {
                 var _a, _b, _c, _d;
                 const producto = ((_a = it) === null || _a === void 0 ? void 0 : _a.productoNombre) || ((_c = (_b = it) === null || _b === void 0 ? void 0 : _b.producto) === null || _c === void 0 ? void 0 : _c.PRODUCTO) || "";
-                const v = this.num((_d = it) === null || _d === void 0 ? void 0 : _d.cantidadDevuelta);
+                const virtualHistorial = this.devolucionVirtualAcumuladaDesdeHistorial(it);
+                const v = virtualHistorial > 0 ? virtualHistorial : this.num((_d = it) === null || _d === void 0 ? void 0 : _d.cantidadDevuelta);
                 if (v <= 0) {
                     return;
                 }
@@ -54879,44 +54880,112 @@ class GestionEntregasBodegaComponent {
         });
         return mapa;
     }
-    ajustarPendienteVisualPendientesEntrega(row, facturadoReal, devolucionVirtualUnidades) {
-        var _a, _b, _c, _d, _e, _f;
-        const baseCajas = Math.max(0, Math.trunc(this.num((_a = row) === null || _a === void 0 ? void 0 : _a.cajasPen)));
-        const basePiezas = Math.max(0, Math.trunc(this.num((_b = row) === null || _b === void 0 ? void 0 : _b.piezasPen)));
-        const pendienteBase = baseCajas + basePiezas;
+    pendienteDesdeTexto(cantidadPendienteTexto) {
+        const txt = String((cantidadPendienteTexto !== null && cantidadPendienteTexto !== void 0 ? cantidadPendienteTexto : ""))
+            .trim()
+            .toUpperCase();
+        if (!txt) {
+            return { cajas: 0, piezas: 0, total: 0 };
+        }
+        const mCajas = txt.match(/(-?\d+)\s*C\b/);
+        const mPiezas = txt.match(/(-?\d+)\s*P\b/);
+        if (mCajas || mPiezas) {
+            const cajas = mCajas ? Number(mCajas[1]) : 0;
+            const piezas = mPiezas ? Number(mPiezas[1]) : 0;
+            const c = Math.max(0, Math.trunc(this.num(cajas)));
+            const p = Math.max(0, Math.trunc(this.num(piezas)));
+            return { cajas: c, piezas: p, total: c + p };
+        }
+        const total = Math.max(0, Math.trunc(this.num(txt)));
+        return { cajas: 0, piezas: total, total };
+    }
+    construirMapaPendienteDesdeTextoOrdenes(ordenes) {
+        const mapa = new Map();
+        (ordenes || [])
+            .filter((o) => { var _a; return ["ABIERTA", "NOVEDAD"].includes(String(((_a = o) === null || _a === void 0 ? void 0 : _a.estadoProceso) || "")); })
+            .forEach((orden) => {
+            var _a;
+            (((_a = orden) === null || _a === void 0 ? void 0 : _a.items) || []).forEach((item) => {
+                var _a, _b, _c, _d, _e, _f;
+                const pendienteNum = ((_a = item) === null || _a === void 0 ? void 0 : _a.pendiente) != null ? this.num(item.pendiente) : this.pendienteEfectivo(item);
+                if (pendienteNum <= 0) {
+                    return;
+                }
+                const pendienteTxt = this.formatoPendienteReporte(item, pendienteNum);
+                const pendiente = this.pendienteDesdeTexto(pendienteTxt);
+                if (pendiente.total <= 0) {
+                    return;
+                }
+                const key = this.clavePendienteEntrega((_b = orden) === null || _b === void 0 ? void 0 : _b.documentoNumero, ((_c = item) === null || _c === void 0 ? void 0 : _c.productoNombre) || ((_e = (_d = item) === null || _d === void 0 ? void 0 : _d.producto) === null || _e === void 0 ? void 0 : _e.PRODUCTO), (_f = orden) === null || _f === void 0 ? void 0 : _f.tipoDocumento);
+                const prev = mapa.get(key) || { cajas: 0, piezas: 0, total: 0 };
+                const next = {
+                    cajas: prev.cajas + pendiente.cajas,
+                    piezas: prev.piezas + pendiente.piezas,
+                    total: prev.total + pendiente.total,
+                };
+                mapa.set(key, next);
+            });
+        });
+        return mapa;
+    }
+    repartirUnidadesEnCajasPiezas(totalUnidades, row) {
+        var _a, _b;
+        const total = Math.max(0, Math.trunc(this.num(totalUnidades)));
+        const pPorCaja = Math.max(0, Math.trunc(this.num((_b = (_a = row) === null || _a === void 0 ? void 0 : _a.producto) === null || _b === void 0 ? void 0 : _b.P_CAJA)));
+        if (pPorCaja > 0) {
+            const cajas = Math.trunc(total / pPorCaja);
+            const piezas = total - cajas * pPorCaja;
+            return { cajas, piezas };
+        }
+        return { cajas: 0, piezas: total };
+    }
+    ajustarPendienteVisualPendientesEntrega(row, facturadoReal, devolucionVirtualUnidades, pendienteProceso) {
+        var _a, _b, _c, _d, _e, _f, _g, _h, _j, _k, _l;
+        console.log("producto", row.producto.PRODUCTO);
         console.log("row", row);
-        console.log("baseCajas", baseCajas, "basePiezas", basePiezas);
-        console.log("pendienteBase", pendienteBase);
-        console.log("devolucionVirtualUnidades", devolucionVirtualUnidades);
-        const facturadoFallback = Math.max(0, Math.trunc(this.num((_c = row) === null || _c === void 0 ? void 0 : _c.cajasPen))) +
-            Math.max(0, Math.trunc(this.num((_d = row) === null || _d === void 0 ? void 0 : _d.piezasPen)));
+        console.log("pendienteProceso", pendienteProceso);
+        if (pendienteProceso) {
+            // Fuente de verdad: mismo pendiente consolidado que usa "Facturados sin entregar".
+            if (((_a = row) === null || _a === void 0 ? void 0 : _a.cajasPen) != null &&
+                ((_b = row) === null || _b === void 0 ? void 0 : _b.piezasPen) != null &&
+                pendienteProceso != null) {
+                const m2PorCaja = this.m2PorCajaDeItem(row);
+                const piezasPorCaja = this.piezasPorCajaDeItem(row);
+                const factorM2PorPieza = m2PorCaja > 0 && piezasPorCaja > 0 ? m2PorCaja / piezasPorCaja : 0;
+                const m2PendienteProceso = this.num(pendienteProceso.cajas) * m2PorCaja +
+                    this.num(pendienteProceso.piezas) * factorM2PorPieza;
+                const m2PendienteBase = this.num(row.cajasPen) * m2PorCaja +
+                    this.num(row.piezasPen) * factorM2PorPieza;
+                if (m2PendienteProceso > m2PendienteBase) {
+                    return Object.assign(Object.assign({}, row), { cajas: Math.max(0, Math.trunc(this.num((_c = row) === null || _c === void 0 ? void 0 : _c.cajasPen))), piezas: Math.max(0, Math.trunc(this.num((_d = row) === null || _d === void 0 ? void 0 : _d.piezasPen))) });
+                }
+            }
+            return Object.assign(Object.assign({}, row), { cajas: Math.max(0, Math.trunc(this.num(pendienteProceso.cajas))), piezas: Math.max(0, Math.trunc(this.num(pendienteProceso.piezas))) });
+        }
+        const baseCajas = Math.max(0, Math.trunc(this.num((_e = row) === null || _e === void 0 ? void 0 : _e.cajasPen)));
+        const basePiezas = Math.max(0, Math.trunc(this.num((_f = row) === null || _f === void 0 ? void 0 : _f.piezasPen)));
+        const baseCantM2 = Math.max(0, this.num((_g = row) === null || _g === void 0 ? void 0 : _g.cantM2Pen));
+        const pendienteBase = baseCajas + basePiezas;
+        const inventarioInicial = baseCajas + basePiezas > 0 ? baseCajas + basePiezas : baseCantM2;
+        const facturadoFallback = Math.max(0, Math.trunc(this.num((_h = row) === null || _h === void 0 ? void 0 : _h.cajasPen))) +
+            Math.max(0, Math.trunc(this.num((_j = row) === null || _j === void 0 ? void 0 : _j.piezasPen)));
         const facturado = Math.max(0, Math.trunc(this.num(facturadoReal)));
         const facturadoBase = facturado > 0 ? facturado : facturadoFallback;
-        const entregado = Math.max(0, Math.trunc(this.num((_e = row) === null || _e === void 0 ? void 0 : _e.cajasEntregadas))) +
-            Math.max(0, Math.trunc(this.num((_f = row) === null || _f === void 0 ? void 0 : _f.piezasEntregadas)));
+        const entregado = Math.max(0, Math.trunc(this.num((_k = row) === null || _k === void 0 ? void 0 : _k.cajasEntregadas))) +
+            Math.max(0, Math.trunc(this.num((_l = row) === null || _l === void 0 ? void 0 : _l.piezasEntregadas)));
         const entregadoConAjuste = entregado + Math.max(0, this.num(devolucionVirtualUnidades));
-        console.log("entregadoConAjuste", entregadoConAjuste);
-        console.log("facturadoBase", facturadoBase);
-        console.log("pendienteBase", pendienteBase);
         if (pendienteBase <= 0 || facturadoBase <= 0) {
             return row;
         }
-        const restanteEsperado = Math.max(0, facturadoBase - pendienteBase);
-        const excesoEntrega = entregadoConAjuste > restanteEsperado
-            ? entregadoConAjuste - restanteEsperado
-            : 0;
-        if (excesoEntrega <= 0) {
-            return row;
-        }
-        const pendienteAjustado = Math.max(0, pendienteBase - excesoEntrega);
-        const reduccion = pendienteBase - pendienteAjustado;
-        if (reduccion <= 0) {
-            return row;
-        }
-        // Se reduce primero piezas y luego cajas para conservar un reparto legible.
-        const piezasAjustadas = Math.max(0, basePiezas - reduccion);
-        const reduccionRestante = Math.max(0, reduccion - basePiezas);
-        const cajasAjustadas = Math.max(0, baseCajas - reduccionRestante);
+        const prodFacNoEntr = Math.max(0, facturadoBase - entregadoConAjuste);
+        const diferencia = prodFacNoEntr - pendienteBase;
+        const pendienteAjustado = diferencia >= 0
+            ? Math.max(0, facturadoBase - inventarioInicial)
+            : prodFacNoEntr;
+        const objetivo = Math.max(0, Math.trunc(this.num(pendienteAjustado)));
+        const { cajas: cajasAjustadas, piezas: piezasAjustadas } = this.repartirUnidadesEnCajasPiezas(objetivo, row);
+        console.log("cajasAjustadas", cajasAjustadas);
+        console.log("piezasAjustadas", piezasAjustadas);
         return Object.assign(Object.assign({}, row), { cajas: cajasAjustadas, piezas: piezasAjustadas });
     }
     cargarProductosPendientesEntrega() {
@@ -54931,6 +55000,7 @@ class GestionEntregasBodegaComponent {
                 const ordenesList = Array.isArray(ordenes) ? ordenes : [];
                 const mapaFacturadoReal = this.construirMapaFacturadoRealDesdeOrdenes(ordenesList);
                 const mapaDevolucionVirtual = this.construirMapaDevolucionVirtualDesdeOrdenes(ordenesList);
+                const mapaPendienteProceso = this.construirMapaPendienteDesdeTextoOrdenes(ordenesList);
                 const rol = (sessionStorage.getItem("rol") || "").trim();
                 const sucursalSesion = (sessionStorage.getItem("sucursal") || "")
                     .trim()
@@ -54947,7 +55017,7 @@ class GestionEntregasBodegaComponent {
                     .map((x) => {
                     var _a, _b, _c, _d;
                     const key = this.clavePendienteEntrega((_a = x) === null || _a === void 0 ? void 0 : _a.documento, (_c = (_b = x) === null || _b === void 0 ? void 0 : _b.producto) === null || _c === void 0 ? void 0 : _c.PRODUCTO, (_d = x) === null || _d === void 0 ? void 0 : _d.tipo_documento);
-                    return this.ajustarPendienteVisualPendientesEntrega(x, mapaFacturadoReal.get(key), mapaDevolucionVirtual.get(key));
+                    return this.ajustarPendienteVisualPendientesEntrega(x, mapaFacturadoReal.get(key), mapaDevolucionVirtual.get(key), mapaPendienteProceso.get(key));
                 });
                 this.loading = false;
             },
