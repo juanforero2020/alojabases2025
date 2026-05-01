@@ -88812,15 +88812,15 @@ function _classCallCheck(instance, Constructor) { if (!(instance instanceof Cons
 
         _angular_core__WEBPACK_IMPORTED_MODULE_1__["ɵɵadvance"](2);
 
-        _angular_core__WEBPACK_IMPORTED_MODULE_1__["ɵɵtextInterpolate6"](" Facturado: ", ctx_r131.formatoCantidadLinea(it_r132.cantidadFacturada, it_r132), " \xB7 Entregado: ", ctx_r131.formatoCantidadLinea(it_r132.cantidadEntregada, it_r132), " \xB7 Devuelto: ", ctx_r131.formatoCantidadLinea(it_r132.cantidadDevuelta, it_r132), " (virtual: ", ctx_r131.formatoCantidadLinea(ctx_r131.devolucionVirtualAcumuladaDesdeHistorial(it_r132), it_r132), " \xB7 f\xEDsica: ", ctx_r131.formatoCantidadLinea(ctx_r131.devolucionFisicaAcumuladaDesdeHistorial(it_r132), it_r132), ") \xB7 Estado \xEDtem: ", it_r132.estadoItem, " ");
+        _angular_core__WEBPACK_IMPORTED_MODULE_1__["ɵɵtextInterpolate7"](" Facturado: ", ctx_r131.formatoCantidadLinea(it_r132.cantidadFacturada, it_r132), " \xB7 Entregado: ", ctx_r131.formatoCantidadLinea(it_r132.cantidadEntregada, it_r132), " \xB7 Devuelto: ", ctx_r131.formatoCantidadLinea(it_r132.cantidadDevuelta, it_r132), " (virtual: ", ctx_r131.formatoCantidadLinea(ctx_r131.devolucionVirtualAcumuladaDesdeHistorial(it_r132), it_r132), " \xB7 f\xEDsica: ", ctx_r131.formatoCantidadLinea(ctx_r131.devolucionFisicaAcumuladaDesdeHistorial(it_r132), it_r132), ") \xB7 Pendiente: ", ctx_r131.formatoCantidadLinea(ctx_r131.pendienteEfectivo(it_r132), it_r132), " \xB7 Estado \xEDtem: ", it_r132.estadoItem, " ");
 
         _angular_core__WEBPACK_IMPORTED_MODULE_1__["ɵɵadvance"](1);
 
-        _angular_core__WEBPACK_IMPORTED_MODULE_1__["ɵɵproperty"]("ngIf", (it_r132.historialOrdenado || _angular_core__WEBPACK_IMPORTED_MODULE_1__["ɵɵpureFunction0"](9, _c2)).length > 0);
+        _angular_core__WEBPACK_IMPORTED_MODULE_1__["ɵɵproperty"]("ngIf", (it_r132.historialOrdenado || _angular_core__WEBPACK_IMPORTED_MODULE_1__["ɵɵpureFunction0"](10, _c2)).length > 0);
 
         _angular_core__WEBPACK_IMPORTED_MODULE_1__["ɵɵadvance"](1);
 
-        _angular_core__WEBPACK_IMPORTED_MODULE_1__["ɵɵproperty"]("ngIf", !(it_r132.historialOrdenado || _angular_core__WEBPACK_IMPORTED_MODULE_1__["ɵɵpureFunction0"](10, _c2)).length);
+        _angular_core__WEBPACK_IMPORTED_MODULE_1__["ɵɵproperty"]("ngIf", !(it_r132.historialOrdenado || _angular_core__WEBPACK_IMPORTED_MODULE_1__["ɵɵpureFunction0"](11, _c2)).length);
       }
     }
 
@@ -88988,7 +88988,7 @@ function _classCallCheck(instance, Constructor) { if (!(instance instanceof Cons
 
         _angular_core__WEBPACK_IMPORTED_MODULE_1__["ɵɵtemplate"](51, GestionEntregasBodegaComponent_div_8_div_2_p_51_Template, 2, 1, "p", 198);
 
-        _angular_core__WEBPACK_IMPORTED_MODULE_1__["ɵɵtemplate"](52, GestionEntregasBodegaComponent_div_8_div_2_div_52_Template, 7, 11, "div", 199);
+        _angular_core__WEBPACK_IMPORTED_MODULE_1__["ɵɵtemplate"](52, GestionEntregasBodegaComponent_div_8_div_2_div_52_Template, 7, 12, "div", 199);
 
         _angular_core__WEBPACK_IMPORTED_MODULE_1__["ɵɵelementEnd"]();
       }
@@ -90531,7 +90531,7 @@ function _classCallCheck(instance, Constructor) { if (!(instance instanceof Cons
 
               var fHist = _this737.devolucionFisicaAcumuladaDesdeHistorial(it);
 
-              var sub = "Facturado: ".concat(_this737.formatoCantidadLinea(it.cantidadFacturada, it), " \xB7 ") + "Entregado: ".concat(_this737.formatoCantidadLinea(it.cantidadEntregada, it), " \xB7 ") + "Devuelto: ".concat(_this737.formatoCantidadLinea(it.cantidadDevuelta, it), " ") + "(virtual: ".concat(_this737.formatoCantidadLinea(vHist, it), " \xB7 f\xEDsica: ").concat(_this737.formatoCantidadLinea(fHist, it), ") \xB7 ") + "Estado \xEDtem: ".concat(_this737.txtPdf(it.estadoItem));
+              var sub = "Facturado: ".concat(_this737.formatoCantidadLinea(it.cantidadFacturada, it), " \xB7 ") + "Entregado: ".concat(_this737.formatoCantidadLinea(it.cantidadEntregada, it), " \xB7 ") + "Devuelto: ".concat(_this737.formatoCantidadLinea(it.cantidadDevuelta, it), " ") + "(virtual: ".concat(_this737.formatoCantidadLinea(vHist, it), " \xB7 f\xEDsica: ").concat(_this737.formatoCantidadLinea(fHist, it), ") \xB7 ") + "Pendiente: ".concat(_this737.formatoCantidadLinea(_this737.pendienteEfectivo(it), it), " \xB7 ") + "Estado \xEDtem: ".concat(_this737.txtPdf(it.estadoItem));
               content.push({
                 text: "".concat(idx + 1, ". ").concat(_this737.txtPdf(it.productoNombre)),
                 style: "itemTitle",
@@ -91263,8 +91263,16 @@ function _classCallCheck(instance, Constructor) { if (!(instance instanceof Cons
       }, {
         key: "ingresoExcedePendiente",
         value: function ingresoExcedePendiente(ingreso, pendiente) {
-          var tolerancia = 0.005;
-          return ingreso - pendiente > tolerancia;
+          // Se compara con precisión de 3 decimales para tolerar casos como:
+          // ingreso 3.9285714285714284 pendiente 3.928571428571429
+          // con redondeo, ambos serían iguales.
+          var decimales = 3;
+          var ingresoRedondeado = Number(ingreso.toFixed(decimales));
+          var pendienteRedondeado = Number(pendiente.toFixed(decimales));
+          console.log("ingresoRedondeado", ingresoRedondeado);
+          console.log("pendienteRedondeado", pendienteRedondeado);
+          console.log("ingresoRedondeado - pendienteRedondeado", ingresoRedondeado - pendienteRedondeado > 0);
+          return ingresoRedondeado - pendienteRedondeado > 0;
         }
       }, {
         key: "ingresoAlcanzaPendiente",
@@ -91854,12 +91862,26 @@ function _classCallCheck(instance, Constructor) { if (!(instance instanceof Cons
           console.log("row", row);
           console.log("pendienteProceso", pendienteProceso);
 
+          if (pendienteProceso == null) {
+            return row;
+          }
+
           if (pendienteProceso) {
             // Fuente de verdad: mismo pendiente consolidado que usa "Facturados sin entregar".
             if (((_a = row) === null || _a === void 0 ? void 0 : _a.cajasPen) != null && ((_b = row) === null || _b === void 0 ? void 0 : _b.piezasPen) != null && pendienteProceso != null) {
               var m2PorCaja = this.m2PorCajaDeItem(row);
               var piezasPorCaja = this.piezasPorCajaDeItem(row);
               var factorM2PorPieza = m2PorCaja > 0 && piezasPorCaja > 0 ? m2PorCaja / piezasPorCaja : 0;
+              console.log("m2PorCaja", m2PorCaja);
+              console.log("piezasPorCaja", piezasPorCaja);
+              console.log("factorM2PorPieza", factorM2PorPieza);
+              console.log("pendienteProceso", pendienteProceso);
+              console.log("row.cajasPen", row.cajasPen);
+              console.log("row.piezasPen", row.piezasPen);
+              console.log("row.cantM2Pen", row.cantM2Pen);
+              console.log("row.cajasEntregadas", row.cajasEntregadas);
+              console.log("row.piezasEntregadas", row.piezasEntregadas);
+              console.log("devolucionVirtualUnidades", devolucionVirtualUnidades);
               var m2PendienteProceso = this.num(pendienteProceso.cajas) * m2PorCaja + this.num(pendienteProceso.piezas) * factorM2PorPieza;
               var m2PendienteBase = this.num(row.cajasPen) * m2PorCaja + this.num(row.piezasPen) * factorM2PorPieza;
 

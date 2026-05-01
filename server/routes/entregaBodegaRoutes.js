@@ -652,6 +652,8 @@ router.put("/actualizarItem/:id/:itemIndex", async (req, res) => {
   const { id, itemIndex } = req.params;
   const index = Number(itemIndex);
   const orden = await EntregaBodega.findById(id);
+  console.log("entra a actualizarItem");
+  console.log("orden", orden);
   if (!orden) {
     return res.status(404).json({ mensaje: "Orden no encontrada" });
   }
@@ -673,7 +675,7 @@ router.put("/actualizarItem/:id/:itemIndex", async (req, res) => {
   const entregadaActual = normalizarNumero(item.cantidadEntregada);
   const devueltaActual = normalizarNumero(item.cantidadDevuelta);
   const usarMetro = itemUsaMetrosCajaPieza(item);
-
+  console.log("usarMetro", usarMetro);
   let m2Incremental = 0;
   let entregaCajasRegistro = 0;
   let entregaPiezasRegistro = 0;
@@ -681,6 +683,8 @@ router.put("/actualizarItem/:id/:itemIndex", async (req, res) => {
     if (usarMetro) {
       entregaCajasRegistro = normalizarNumero(req.body.entregaCajas);
       entregaPiezasRegistro = normalizarNumero(req.body.entregaPiezas);
+      console.log("entregaCajasRegistro", entregaCajasRegistro);
+      console.log("entregaPiezasRegistro", entregaPiezasRegistro);
       if (entregaCajasRegistro < 0 || entregaPiezasRegistro < 0) {
         return res.status(400).json({
           mensaje: "Las cajas y piezas a entregar no pueden ser negativas.",
@@ -703,6 +707,7 @@ router.put("/actualizarItem/:id/:itemIndex", async (req, res) => {
     }
   }
 
+  console.log("m2Incremental", m2Incremental);
   if (m2Incremental < 0) {
     return res
       .status(400)
@@ -738,9 +743,12 @@ router.put("/actualizarItem/:id/:itemIndex", async (req, res) => {
         excesoPermitido = m2Caja / piezasCaja + 0.005;
       }
     }
+    console.log("exceso", exceso);
+    console.log("excesoPermitido", excesoPermitido);
     if (exceso <= excesoPermitido) {
       nuevaCantidadEntregada = maximoEntregable;
     } else {
+      console.log("exceso > excesoPermitido");
       return res.status(400).json({
         mensaje:
           "La cantidad ingresada excede la cantidad pendiente por entregar.",
@@ -751,7 +759,14 @@ router.put("/actualizarItem/:id/:itemIndex", async (req, res) => {
   item.cantidadEntregada = nuevaCantidadEntregada;
   item.cantidadDevuelta = nuevaCantidadDevuelta;
 
-  const pendiente = cantidadFacturada - item.cantidadEntregada - item.cantidadDevuelta;
+  const pendiente = 
+    Number(cantidadFacturada.toFixed(3)) - 
+    Number(item.cantidadEntregada.toFixed(3)) - 
+    Number(item.cantidadDevuelta.toFixed(3));
+  console.log("pendiente", pendiente);
+  console.log("cantidadFacturada", cantidadFacturada);  
+  console.log("item.cantidadEntregada", item.cantidadEntregada);
+  console.log("item.cantidadDevuelta", item.cantidadDevuelta);
   if (pendiente < 0) {
     return res
       .status(400)
@@ -815,7 +830,11 @@ router.put("/actualizarItem/:id/:itemIndex", async (req, res) => {
       errorPendiente?.message || errorPendiente
     );
   }
-  await orden.save();
+  try {
+    await orden.save();
+  } catch (error) {
+    console.log("No se pudo guardar la orden:", error);
+  }
   res.json(orden);
 });
 

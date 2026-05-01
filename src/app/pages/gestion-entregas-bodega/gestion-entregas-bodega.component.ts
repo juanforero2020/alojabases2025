@@ -1035,6 +1035,7 @@ export class GestionEntregasBodegaComponent implements OnInit, OnDestroy {
             fHist,
             it
           )}) · ` +
+          `Pendiente: ${this.formatoCantidadLinea(this.pendienteEfectivo(it), it)} · ` +
           `Estado ítem: ${this.txtPdf(it.estadoItem)}`;
         content.push({
           text: `${idx + 1}. ${this.txtPdf(it.productoNombre)}`,
@@ -1626,8 +1627,16 @@ export class GestionEntregasBodegaComponent implements OnInit, OnDestroy {
    * Se aplica tolerancia equivalente a trabajar con 2 decimales.
    */
   private ingresoExcedePendiente(ingreso: number, pendiente: number): boolean {
-    const tolerancia = 0.005;
-    return ingreso - pendiente > tolerancia;
+    // Se compara con precisión de 3 decimales para tolerar casos como:
+    // ingreso 3.9285714285714284 pendiente 3.928571428571429
+    // con redondeo, ambos serían iguales.
+    const decimales = 3;
+    const ingresoRedondeado = Number(ingreso.toFixed(decimales));
+    const pendienteRedondeado = Number(pendiente.toFixed(decimales));
+    console.log("ingresoRedondeado", ingresoRedondeado);
+    console.log("pendienteRedondeado", pendienteRedondeado);
+    console.log("ingresoRedondeado - pendienteRedondeado", ingresoRedondeado - pendienteRedondeado > 0);
+    return ingresoRedondeado - pendienteRedondeado > 0;
   }
 
   private ingresoAlcanzaPendiente(ingreso: number, pendiente: number): boolean {
@@ -2148,6 +2157,9 @@ export class GestionEntregasBodegaComponent implements OnInit, OnDestroy {
     console.log("producto", row.producto.PRODUCTO);
     console.log("row", row);
     console.log("pendienteProceso", pendienteProceso);
+    if (pendienteProceso == null) {
+      return row;
+    }
     if (pendienteProceso) {
       // Fuente de verdad: mismo pendiente consolidado que usa "Facturados sin entregar".
       if (
@@ -2159,6 +2171,17 @@ export class GestionEntregasBodegaComponent implements OnInit, OnDestroy {
         const piezasPorCaja = this.piezasPorCajaDeItem(row);
         const factorM2PorPieza =
           m2PorCaja > 0 && piezasPorCaja > 0 ? m2PorCaja / piezasPorCaja : 0;
+
+          console.log("m2PorCaja", m2PorCaja);
+          console.log("piezasPorCaja", piezasPorCaja);
+          console.log("factorM2PorPieza", factorM2PorPieza);
+          console.log("pendienteProceso", pendienteProceso);
+          console.log("row.cajasPen", row.cajasPen);
+          console.log("row.piezasPen", row.piezasPen);
+          console.log("row.cantM2Pen", row.cantM2Pen);
+          console.log("row.cajasEntregadas", row.cajasEntregadas);
+          console.log("row.piezasEntregadas", row.piezasEntregadas);
+          console.log("devolucionVirtualUnidades", devolucionVirtualUnidades);
 
         const m2PendienteProceso =
           this.num(pendienteProceso.cajas) * m2PorCaja +

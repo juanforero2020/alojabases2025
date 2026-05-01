@@ -52829,11 +52829,11 @@ function GestionEntregasBodegaComponent_div_8_div_2_div_52_Template(rf, ctx) { i
     _angular_core__WEBPACK_IMPORTED_MODULE_1__["ɵɵadvance"](2);
     _angular_core__WEBPACK_IMPORTED_MODULE_1__["ɵɵtextInterpolate1"](" ", it_r132.productoNombre, " ");
     _angular_core__WEBPACK_IMPORTED_MODULE_1__["ɵɵadvance"](2);
-    _angular_core__WEBPACK_IMPORTED_MODULE_1__["ɵɵtextInterpolate6"](" Facturado: ", ctx_r131.formatoCantidadLinea(it_r132.cantidadFacturada, it_r132), " \u00B7 Entregado: ", ctx_r131.formatoCantidadLinea(it_r132.cantidadEntregada, it_r132), " \u00B7 Devuelto: ", ctx_r131.formatoCantidadLinea(it_r132.cantidadDevuelta, it_r132), " (virtual: ", ctx_r131.formatoCantidadLinea(ctx_r131.devolucionVirtualAcumuladaDesdeHistorial(it_r132), it_r132), " \u00B7 f\u00EDsica: ", ctx_r131.formatoCantidadLinea(ctx_r131.devolucionFisicaAcumuladaDesdeHistorial(it_r132), it_r132), ") \u00B7 Estado \u00EDtem: ", it_r132.estadoItem, " ");
+    _angular_core__WEBPACK_IMPORTED_MODULE_1__["ɵɵtextInterpolate7"](" Facturado: ", ctx_r131.formatoCantidadLinea(it_r132.cantidadFacturada, it_r132), " \u00B7 Entregado: ", ctx_r131.formatoCantidadLinea(it_r132.cantidadEntregada, it_r132), " \u00B7 Devuelto: ", ctx_r131.formatoCantidadLinea(it_r132.cantidadDevuelta, it_r132), " (virtual: ", ctx_r131.formatoCantidadLinea(ctx_r131.devolucionVirtualAcumuladaDesdeHistorial(it_r132), it_r132), " \u00B7 f\u00EDsica: ", ctx_r131.formatoCantidadLinea(ctx_r131.devolucionFisicaAcumuladaDesdeHistorial(it_r132), it_r132), ") \u00B7 Pendiente: ", ctx_r131.formatoCantidadLinea(ctx_r131.pendienteEfectivo(it_r132), it_r132), " \u00B7 Estado \u00EDtem: ", it_r132.estadoItem, " ");
     _angular_core__WEBPACK_IMPORTED_MODULE_1__["ɵɵadvance"](1);
-    _angular_core__WEBPACK_IMPORTED_MODULE_1__["ɵɵproperty"]("ngIf", (it_r132.historialOrdenado || _angular_core__WEBPACK_IMPORTED_MODULE_1__["ɵɵpureFunction0"](9, _c2)).length > 0);
+    _angular_core__WEBPACK_IMPORTED_MODULE_1__["ɵɵproperty"]("ngIf", (it_r132.historialOrdenado || _angular_core__WEBPACK_IMPORTED_MODULE_1__["ɵɵpureFunction0"](10, _c2)).length > 0);
     _angular_core__WEBPACK_IMPORTED_MODULE_1__["ɵɵadvance"](1);
-    _angular_core__WEBPACK_IMPORTED_MODULE_1__["ɵɵproperty"]("ngIf", !(it_r132.historialOrdenado || _angular_core__WEBPACK_IMPORTED_MODULE_1__["ɵɵpureFunction0"](10, _c2)).length);
+    _angular_core__WEBPACK_IMPORTED_MODULE_1__["ɵɵproperty"]("ngIf", !(it_r132.historialOrdenado || _angular_core__WEBPACK_IMPORTED_MODULE_1__["ɵɵpureFunction0"](11, _c2)).length);
 } }
 function GestionEntregasBodegaComponent_div_8_div_2_Template(rf, ctx) { if (rf & 1) {
     _angular_core__WEBPACK_IMPORTED_MODULE_1__["ɵɵelementStart"](0, "div", 188);
@@ -52917,7 +52917,7 @@ function GestionEntregasBodegaComponent_div_8_div_2_Template(rf, ctx) { if (rf &
     _angular_core__WEBPACK_IMPORTED_MODULE_1__["ɵɵtext"](50, "\u00CDtems y movimientos por l\u00EDnea");
     _angular_core__WEBPACK_IMPORTED_MODULE_1__["ɵɵelementEnd"]();
     _angular_core__WEBPACK_IMPORTED_MODULE_1__["ɵɵtemplate"](51, GestionEntregasBodegaComponent_div_8_div_2_p_51_Template, 2, 1, "p", 198);
-    _angular_core__WEBPACK_IMPORTED_MODULE_1__["ɵɵtemplate"](52, GestionEntregasBodegaComponent_div_8_div_2_div_52_Template, 7, 11, "div", 199);
+    _angular_core__WEBPACK_IMPORTED_MODULE_1__["ɵɵtemplate"](52, GestionEntregasBodegaComponent_div_8_div_2_div_52_Template, 7, 12, "div", 199);
     _angular_core__WEBPACK_IMPORTED_MODULE_1__["ɵɵelementEnd"]();
 } if (rf & 2) {
     const ctx_r127 = _angular_core__WEBPACK_IMPORTED_MODULE_1__["ɵɵnextContext"](2);
@@ -53978,6 +53978,7 @@ class GestionEntregasBodegaComponent {
                     `Entregado: ${this.formatoCantidadLinea(it.cantidadEntregada, it)} · ` +
                     `Devuelto: ${this.formatoCantidadLinea(it.cantidadDevuelta, it)} ` +
                     `(virtual: ${this.formatoCantidadLinea(vHist, it)} · física: ${this.formatoCantidadLinea(fHist, it)}) · ` +
+                    `Pendiente: ${this.formatoCantidadLinea(this.pendienteEfectivo(it), it)} · ` +
                     `Estado ítem: ${this.txtPdf(it.estadoItem)}`;
                 content.push({
                     text: `${idx + 1}. ${this.txtPdf(it.productoNombre)}`,
@@ -54511,8 +54512,16 @@ class GestionEntregasBodegaComponent {
      * Se aplica tolerancia equivalente a trabajar con 2 decimales.
      */
     ingresoExcedePendiente(ingreso, pendiente) {
-        const tolerancia = 0.005;
-        return ingreso - pendiente > tolerancia;
+        // Se compara con precisión de 3 decimales para tolerar casos como:
+        // ingreso 3.9285714285714284 pendiente 3.928571428571429
+        // con redondeo, ambos serían iguales.
+        const decimales = 3;
+        const ingresoRedondeado = Number(ingreso.toFixed(decimales));
+        const pendienteRedondeado = Number(pendiente.toFixed(decimales));
+        console.log("ingresoRedondeado", ingresoRedondeado);
+        console.log("pendienteRedondeado", pendienteRedondeado);
+        console.log("ingresoRedondeado - pendienteRedondeado", ingresoRedondeado - pendienteRedondeado > 0);
+        return ingresoRedondeado - pendienteRedondeado > 0;
     }
     ingresoAlcanzaPendiente(ingreso, pendiente) {
         const tolerancia = 0.005;
@@ -54944,6 +54953,9 @@ class GestionEntregasBodegaComponent {
         console.log("producto", row.producto.PRODUCTO);
         console.log("row", row);
         console.log("pendienteProceso", pendienteProceso);
+        if (pendienteProceso == null) {
+            return row;
+        }
         if (pendienteProceso) {
             // Fuente de verdad: mismo pendiente consolidado que usa "Facturados sin entregar".
             if (((_a = row) === null || _a === void 0 ? void 0 : _a.cajasPen) != null &&
@@ -54952,6 +54964,16 @@ class GestionEntregasBodegaComponent {
                 const m2PorCaja = this.m2PorCajaDeItem(row);
                 const piezasPorCaja = this.piezasPorCajaDeItem(row);
                 const factorM2PorPieza = m2PorCaja > 0 && piezasPorCaja > 0 ? m2PorCaja / piezasPorCaja : 0;
+                console.log("m2PorCaja", m2PorCaja);
+                console.log("piezasPorCaja", piezasPorCaja);
+                console.log("factorM2PorPieza", factorM2PorPieza);
+                console.log("pendienteProceso", pendienteProceso);
+                console.log("row.cajasPen", row.cajasPen);
+                console.log("row.piezasPen", row.piezasPen);
+                console.log("row.cantM2Pen", row.cantM2Pen);
+                console.log("row.cajasEntregadas", row.cajasEntregadas);
+                console.log("row.piezasEntregadas", row.piezasEntregadas);
+                console.log("devolucionVirtualUnidades", devolucionVirtualUnidades);
                 const m2PendienteProceso = this.num(pendienteProceso.cajas) * m2PorCaja +
                     this.num(pendienteProceso.piezas) * factorM2PorPieza;
                 const m2PendienteBase = this.num(row.cajasPen) * m2PorCaja +
