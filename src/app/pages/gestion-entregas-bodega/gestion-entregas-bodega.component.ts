@@ -2012,30 +2012,53 @@ export class GestionEntregasBodegaComponent implements OnInit, OnDestroy {
    * - si (entregado + dev. virtual) > restanteEsperado, se descuenta el exceso del pendiente mostrado
    * No persiste cambios en base de datos.
    */
+  /** Unifica espacios raros (NBSP, etc.) y mayúsculas para claves de Map estables. */
+  private normalizarTextoClave(value: any): string {
+    let s = String(value ?? "")
+      .replace(/\u00A0/g, " ")
+      .replace(/[\u1680\u2000-\u200A\u202F\u205F\u3000]/g, " ");
+    try {
+      s = s.normalize("NFC");
+    } catch {
+      /* sin Intl en runtime muy antiguo */
+    }
+    return s.replace(/\s+/g, " ").trim().toUpperCase();
+  }
+
   private clavePendienteEntrega(
     documento: any,
     producto: any,
     tipoDocumento?: any
   ): string {
-    const doc = String(documento ?? "")
-      .trim()
-      .toUpperCase();
-    const prod = String(producto ?? "")
-      .trim()
-      .toUpperCase();
-    const tipo = String(tipoDocumento ?? "")
-      .trim()
-      .toUpperCase();
+    const doc = this.normalizarTextoClave(documento);
+    const prod = this.normalizarTextoClave(producto);
+    console.log("tipoDocumento", tipoDocumento);
+    if(tipoDocumento == "NOTA_VENTA") {
+      tipoDocumento = "NOTA DE VENTA";
+    }
+    const tipo = this.normalizarTextoClave(tipoDocumento);
     return `${doc}__${tipo}__${prod}`;
+  }
+
+  /** Misma semántica de documento / tipo / nombre que en filas de pendientes. */
+  private clavePendienteEntregaDesdeOrdenYItem(orden: any, item: any): string {
+    const doc = orden?.documentoNumero ?? orden?.documento;
+    const tipo = orden?.tipoDocumento ?? orden?.tipo_documento;
+    const prod = item?.productoNombre ?? item?.producto?.PRODUCTO;
+    return this.clavePendienteEntrega(doc, prod, tipo);
+  }
+
+  private clavePendienteEntregaDesdeFilaPendiente(row: any): string {
+    const doc = row?.documentoNumero ?? row?.documento;
+    const tipo = row?.tipoDocumento ?? row?.tipo_documento;
+    const prod = row?.productoNombre ?? row?.producto?.PRODUCTO;
+    return this.clavePendienteEntrega(doc, prod, tipo);
   }
 
   private construirMapaFacturadoRealDesdeOrdenes(ordenes: any[]): Map<string, number> {
     const mapa = new Map<string, number>();
     (ordenes || []).forEach((orden: any) => {
-      const doc = orden?.documentoNumero;
-      const tipo = orden?.tipoDocumento;
       (orden?.items || []).forEach((it: any) => {
-        const producto = it?.productoNombre || it?.producto?.PRODUCTO || "";
         const factM2 = this.num(
           it?.cantidadFacturadaOriginal != null
             ? it?.cantidadFacturadaOriginal
@@ -2048,7 +2071,7 @@ export class GestionEntregasBodegaComponent implements OnInit, OnDestroy {
         if (fact <= 0) {
           return;
         }
-        const key = this.clavePendienteEntrega(doc, producto, tipo);
+        const key = this.clavePendienteEntregaDesdeOrdenYItem(orden, it);
         mapa.set(key, (mapa.get(key) || 0) + fact);
       });
     });
@@ -2058,16 +2081,13 @@ export class GestionEntregasBodegaComponent implements OnInit, OnDestroy {
   private construirMapaDevolucionVirtualDesdeOrdenes(ordenes: any[]): Map<string, number> {
     const mapa = new Map<string, number>();
     (ordenes || []).forEach((orden: any) => {
-      const doc = orden?.documentoNumero;
-      const tipo = orden?.tipoDocumento;
       (orden?.items || []).forEach((it: any) => {
-        const producto = it?.productoNombre || it?.producto?.PRODUCTO || "";
         const virtualHistorial = this.devolucionVirtualAcumuladaDesdeHistorial(it);
         const v = virtualHistorial > 0 ? virtualHistorial : this.num(it?.cantidadDevuelta);
         if (v <= 0) {
           return;
         }
-        const key = this.clavePendienteEntrega(doc, producto, tipo);
+        const key = this.clavePendienteEntregaDesdeOrdenYItem(orden, it);
         const vUn = this.esItemMetrosCajaPieza(it)
           ? this.piezasTotalesDesdeM2(v, it)
           : v;
@@ -2117,12 +2137,8 @@ export class GestionEntregasBodegaComponent implements OnInit, OnDestroy {
           if (pendiente.total <= 0) {
             return;
           }
-          const key = this.clavePendienteEntrega(
-            orden?.documentoNumero,
-            item?.productoNombre || item?.producto?.PRODUCTO,
-            orden?.tipoDocumento
-          );
-          const prev = mapa.get(key) || { cajas: 0, piezas: 0, total: 0 };
+          const key = this.clavePendienteEntregaDesdeOrdenYItem(orden, item);
+          const prev = mapa.get(key) ?? { cajas: 0, piezas: 0, total: 0 };
           const next = {
             cajas: prev.cajas + pendiente.cajas,
             piezas: prev.piezas + pendiente.piezas,
@@ -2279,14 +2295,14 @@ export class GestionEntregasBodegaComponent implements OnInit, OnDestroy {
                   sucursalSesion
               )
             : listado;
+
+            console.log("mapaPendienteProceso", mapaPendienteProceso);
         this.productosPendientesEntrega = filtradosPorSucursal
           .filter((x: any) => String(x?.estado || "").trim().toUpperCase() === "PENDIENTE")
           .map((x: any) => {
-            const key = this.clavePendienteEntrega(
-              x?.documento,
-              x?.producto?.PRODUCTO,
-              x?.tipo_documento
-            );
+            const key = this.clavePendienteEntregaDesdeFilaPendiente(x);
+            console.log("key", key, "x", x.producto.PRODUCTO);
+            console.log("key", key,"mapaPendienteProceso.get(key)", mapaPendienteProceso.get(key));
             return this.ajustarPendienteVisualPendientesEntrega(
               x,
               mapaFacturadoReal.get(key),
