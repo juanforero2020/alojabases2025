@@ -25,7 +25,7 @@ export class HomeComponent implements OnInit {
   };
   errorIndicadoresEntregas = false;
   versionSistema = "1.1.3";
-  ultimaFechaActualizacion = "01/01/2026 21:00";
+  ultimaFechaActualizacion = "02/05/2026 11:00";
 
   popupIndicadoresVisible = false;
   tituloPopupIndicadores = "";
