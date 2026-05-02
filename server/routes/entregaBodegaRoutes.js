@@ -1100,7 +1100,7 @@ router.put("/ejecutarDevolucionTotal/:id", async (req, res) => {
 /**
  * Al aprobar una devolución en el módulo contable: incrementa cantidadDevuelta en la orden
  * de entrega de bodega, registra historial con estado DEVUELTO y recalcula ítem/orden
- * (entregado + devuelto = facturado → ítem COMPLETO y sincroniza productos pendientes).
+ * (entregado + devuelto = facturado → ítem COMPLETO). No sincroniza productos pendientes legacy.
  */
 router.put("/registrarDevolucionAprobada", async (req, res) => {
   try {
@@ -1148,8 +1148,6 @@ router.put("/registrarDevolucionAprobada", async (req, res) => {
 
     const detalleAdvertencias = [];
     let itemsActualizados = 0;
-    /** idx ítem → m²/u aplicados en esta aprobación (para traza en productos pendientes legacy). */
-    const syncDevolucionPorIndice = new Map();
 
     for (const pd of productosDevueltos) {
       const pLine = pd && pd.producto;
@@ -1274,13 +1272,6 @@ router.put("/registrarDevolucionAprobada", async (req, res) => {
       }
 
       itemsActualizados += 1;
-      if (split.virtual > 0 || split.fisica > 0) {
-        const prev = syncDevolucionPorIndice.get(idx) || { virtual: 0, fisica: 0 };
-        syncDevolucionPorIndice.set(idx, {
-          virtual: normalizarNumero(prev.virtual) + split.virtual,
-          fisica: normalizarNumero(prev.fisica) + split.fisica,
-        });
-      }
 
       if (split.virtual > 0 && split.fisica > 0) {
         detalleAdvertencias.push(
@@ -1303,32 +1294,8 @@ router.put("/registrarDevolucionAprobada", async (req, res) => {
 
     if (itemsActualizados > 0) {
       recalcularEstadoYItems(orden);
-      for (const [idx, totalesAprobados] of syncDevolucionPorIndice) {
-        const itemActualizado = orden.items[idx];
-        if (!itemActualizado) continue;
-        try {
-          const virtualAprobado = normalizarNumero(totalesAprobados?.virtual);
-          const fisicaAprobada = normalizarNumero(totalesAprobados?.fisica);
-          await sincronizarProductoPendienteLegacyDesdeItem(
-            orden,
-            itemActualizado,
-            usuario,
-            {
-              origen: "devoluciones",
-              m2EnEstaOperacion: virtualAprobado + fisicaAprobada,
-              devolucionFisicaEnEstaOperacion: fisicaAprobada,
-              estadoSeleccionado: "DEVUELTO",
-            }
-          );
-        } catch (errorPendiente) {
-          console.log(
-            "No se pudo sincronizar productos pendientes (legacy):",
-            errorPendiente && errorPendiente.message
-              ? errorPendiente.message
-              : errorPendiente
-          );
-        }
-      }
+      /* Intencionalmente no se llama a sincronizarProductoPendienteLegacyDesdeItem aquí:
+       * al aprobar devolución no debe modificarse el listado legacy productosPendientesEntrega. */
       orden.trazabilidad = orden.trazabilidad || [];
       orden.trazabilidad.push({
         fecha: new Date().toISOString(),

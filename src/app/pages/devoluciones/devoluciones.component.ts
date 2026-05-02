@@ -98,8 +98,8 @@ export class DevolucionesComponent implements OnInit, OnDestroy {
     "Otros",
   ];
   menuTipoDevolucion = [
-    { id: "VIRTUAL", label: "Dev. Virtual" },
     { id: "FISICA", label: "Dev. Física" },
+    { id: "VIRTUAL", label: "Dev. Virtual" },
   ];
   menu1: string[] = ["Devoluciones", "Listado Devoluciones"];
 
@@ -2057,7 +2057,7 @@ export class DevolucionesComponent implements OnInit, OnDestroy {
 
   anadirProducto(e) {
     const nuevo = new productosDevueltos();
-    nuevo.tipoDevolucion = "VIRTUAL";
+    nuevo.tipoDevolucion = "FISICA";
     this.productosDevueltos.push(nuevo);
   }
 

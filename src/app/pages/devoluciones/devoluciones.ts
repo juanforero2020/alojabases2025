@@ -41,7 +41,7 @@ export class productosDevueltos {
     this.cantDevueltaCajas = 0;
     this.cantDevueltaPiezas = 0;
     this.justificacion = "";
-    this.tipoDevolucion = "VIRTUAL";
+    this.tipoDevolucion = "FISICA";
   }
 }
 

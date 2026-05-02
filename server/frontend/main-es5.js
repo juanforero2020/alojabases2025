@@ -77819,11 +77819,11 @@ function _classCallCheck(instance, Constructor) { if (!(instance instanceof Cons
         this.arrayFacturas = [];
         this.menuMotivo = ["Caducidad", "Cambio", "Daño", "Defectos fábrica", "Otros"];
         this.menuTipoDevolucion = [{
-          id: "VIRTUAL",
-          label: "Dev. Virtual"
-        }, {
           id: "FISICA",
           label: "Dev. Física"
+        }, {
+          id: "VIRTUAL",
+          label: "Dev. Virtual"
         }];
         this.menu1 = ["Devoluciones", "Listado Devoluciones"];
         this.sucursalesDefault = ["matriz", "sucursal1", "sucursal2"];
@@ -79854,7 +79854,7 @@ function _classCallCheck(instance, Constructor) { if (!(instance instanceof Cons
         key: "anadirProducto",
         value: function anadirProducto(e) {
           var nuevo = new _devoluciones__WEBPACK_IMPORTED_MODULE_3__["productosDevueltos"]();
-          nuevo.tipoDevolucion = "VIRTUAL";
+          nuevo.tipoDevolucion = "FISICA";
           this.productosDevueltos.push(nuevo);
         }
       }, {
@@ -80044,7 +80044,7 @@ function _classCallCheck(instance, Constructor) { if (!(instance instanceof Cons
       this.cantDevueltaCajas = 0;
       this.cantDevueltaPiezas = 0;
       this.justificacion = "";
-      this.tipoDevolucion = "VIRTUAL";
+      this.tipoDevolucion = "FISICA";
     };
 
     var tipoDocEliminacion = function tipoDocEliminacion() {
@@ -91677,13 +91677,56 @@ function _classCallCheck(instance, Constructor) { if (!(instance instanceof Cons
          * No persiste cambios en base de datos.
          */
 
+        /** Unifica espacios raros (NBSP, etc.) y mayúsculas para claves de Map estables. */
+
+      }, {
+        key: "normalizarTextoClave",
+        value: function normalizarTextoClave(value) {
+          var s = String(value !== null && value !== void 0 ? value : "").replace(/\u00A0/g, " ").replace(/[\u1680\u2000-\u200A\u202F\u205F\u3000]/g, " ");
+
+          try {
+            s = s.normalize("NFC");
+          } catch (_a) {
+            /* sin Intl en runtime muy antiguo */
+          }
+
+          return s.replace(/\s+/g, " ").trim().toUpperCase();
+        }
       }, {
         key: "clavePendienteEntrega",
         value: function clavePendienteEntrega(documento, producto, tipoDocumento) {
-          var doc = String(documento !== null && documento !== void 0 ? documento : "").trim().toUpperCase();
-          var prod = String(producto !== null && producto !== void 0 ? producto : "").trim().toUpperCase();
-          var tipo = String(tipoDocumento !== null && tipoDocumento !== void 0 ? tipoDocumento : "").trim().toUpperCase();
+          var doc = this.normalizarTextoClave(documento);
+          var prod = this.normalizarTextoClave(producto);
+          console.log("tipoDocumento", tipoDocumento);
+
+          if (tipoDocumento == "NOTA_VENTA") {
+            tipoDocumento = "NOTA DE VENTA";
+          }
+
+          var tipo = this.normalizarTextoClave(tipoDocumento);
           return "".concat(doc, "__").concat(tipo, "__").concat(prod);
+        }
+        /** Misma semántica de documento / tipo / nombre que en filas de pendientes. */
+
+      }, {
+        key: "clavePendienteEntregaDesdeOrdenYItem",
+        value: function clavePendienteEntregaDesdeOrdenYItem(orden, item) {
+          var _a, _b, _c, _d, _e, _f, _g, _h, _j, _k;
+
+          var doc = (_b = (_a = orden) === null || _a === void 0 ? void 0 : _a.documentoNumero, _b !== null && _b !== void 0 ? _b : (_c = orden) === null || _c === void 0 ? void 0 : _c.documento);
+          var tipo = (_e = (_d = orden) === null || _d === void 0 ? void 0 : _d.tipoDocumento, _e !== null && _e !== void 0 ? _e : (_f = orden) === null || _f === void 0 ? void 0 : _f.tipo_documento);
+          var prod = (_h = (_g = item) === null || _g === void 0 ? void 0 : _g.productoNombre, _h !== null && _h !== void 0 ? _h : (_k = (_j = item) === null || _j === void 0 ? void 0 : _j.producto) === null || _k === void 0 ? void 0 : _k.PRODUCTO);
+          return this.clavePendienteEntrega(doc, prod, tipo);
+        }
+      }, {
+        key: "clavePendienteEntregaDesdeFilaPendiente",
+        value: function clavePendienteEntregaDesdeFilaPendiente(row) {
+          var _a, _b, _c, _d, _e, _f, _g, _h, _j, _k;
+
+          var doc = (_b = (_a = row) === null || _a === void 0 ? void 0 : _a.documentoNumero, _b !== null && _b !== void 0 ? _b : (_c = row) === null || _c === void 0 ? void 0 : _c.documento);
+          var tipo = (_e = (_d = row) === null || _d === void 0 ? void 0 : _d.tipoDocumento, _e !== null && _e !== void 0 ? _e : (_f = row) === null || _f === void 0 ? void 0 : _f.tipo_documento);
+          var prod = (_h = (_g = row) === null || _g === void 0 ? void 0 : _g.productoNombre, _h !== null && _h !== void 0 ? _h : (_k = (_j = row) === null || _j === void 0 ? void 0 : _j.producto) === null || _k === void 0 ? void 0 : _k.PRODUCTO);
+          return this.clavePendienteEntrega(doc, prod, tipo);
         }
       }, {
         key: "construirMapaFacturadoRealDesdeOrdenes",
@@ -91692,16 +91735,12 @@ function _classCallCheck(instance, Constructor) { if (!(instance instanceof Cons
 
           var mapa = new Map();
           (ordenes || []).forEach(function (orden) {
-            var _a, _b, _c;
+            var _a;
 
-            var doc = (_a = orden) === null || _a === void 0 ? void 0 : _a.documentoNumero;
-            var tipo = (_b = orden) === null || _b === void 0 ? void 0 : _b.tipoDocumento;
-            (((_c = orden) === null || _c === void 0 ? void 0 : _c.items) || []).forEach(function (it) {
-              var _a, _b, _c, _d, _e, _f;
+            (((_a = orden) === null || _a === void 0 ? void 0 : _a.items) || []).forEach(function (it) {
+              var _a, _b, _c;
 
-              var producto = ((_a = it) === null || _a === void 0 ? void 0 : _a.productoNombre) || ((_c = (_b = it) === null || _b === void 0 ? void 0 : _b.producto) === null || _c === void 0 ? void 0 : _c.PRODUCTO) || "";
-
-              var factM2 = _this746.num(((_d = it) === null || _d === void 0 ? void 0 : _d.cantidadFacturadaOriginal) != null ? (_e = it) === null || _e === void 0 ? void 0 : _e.cantidadFacturadaOriginal : (_f = it) === null || _f === void 0 ? void 0 : _f.cantidadFacturada);
+              var factM2 = _this746.num(((_a = it) === null || _a === void 0 ? void 0 : _a.cantidadFacturadaOriginal) != null ? (_b = it) === null || _b === void 0 ? void 0 : _b.cantidadFacturadaOriginal : (_c = it) === null || _c === void 0 ? void 0 : _c.cantidadFacturada);
 
               var factUnidades = _this746.esItemMetrosCajaPieza(it) ? _this746.piezasTotalesDesdeM2(factM2, it) : factM2;
               var fact = Math.max(0, Math.trunc(factUnidades));
@@ -91710,7 +91749,7 @@ function _classCallCheck(instance, Constructor) { if (!(instance instanceof Cons
                 return;
               }
 
-              var key = _this746.clavePendienteEntrega(doc, producto, tipo);
+              var key = _this746.clavePendienteEntregaDesdeOrdenYItem(orden, it);
 
               mapa.set(key, (mapa.get(key) || 0) + fact);
             });
@@ -91724,24 +91763,20 @@ function _classCallCheck(instance, Constructor) { if (!(instance instanceof Cons
 
           var mapa = new Map();
           (ordenes || []).forEach(function (orden) {
-            var _a, _b, _c;
+            var _a;
 
-            var doc = (_a = orden) === null || _a === void 0 ? void 0 : _a.documentoNumero;
-            var tipo = (_b = orden) === null || _b === void 0 ? void 0 : _b.tipoDocumento;
-            (((_c = orden) === null || _c === void 0 ? void 0 : _c.items) || []).forEach(function (it) {
-              var _a, _b, _c, _d;
-
-              var producto = ((_a = it) === null || _a === void 0 ? void 0 : _a.productoNombre) || ((_c = (_b = it) === null || _b === void 0 ? void 0 : _b.producto) === null || _c === void 0 ? void 0 : _c.PRODUCTO) || "";
+            (((_a = orden) === null || _a === void 0 ? void 0 : _a.items) || []).forEach(function (it) {
+              var _a;
 
               var virtualHistorial = _this747.devolucionVirtualAcumuladaDesdeHistorial(it);
 
-              var v = virtualHistorial > 0 ? virtualHistorial : _this747.num((_d = it) === null || _d === void 0 ? void 0 : _d.cantidadDevuelta);
+              var v = virtualHistorial > 0 ? virtualHistorial : _this747.num((_a = it) === null || _a === void 0 ? void 0 : _a.cantidadDevuelta);
 
               if (v <= 0) {
                 return;
               }
 
-              var key = _this747.clavePendienteEntrega(doc, producto, tipo);
+              var key = _this747.clavePendienteEntregaDesdeOrdenYItem(orden, it);
 
               var vUn = _this747.esItemMetrosCajaPieza(it) ? _this747.piezasTotalesDesdeM2(v, it) : v;
               mapa.set(key, (mapa.get(key) || 0) + Math.max(0, _this747.num(vUn)));
@@ -91798,7 +91833,7 @@ function _classCallCheck(instance, Constructor) { if (!(instance instanceof Cons
             var _a;
 
             (((_a = orden) === null || _a === void 0 ? void 0 : _a.items) || []).forEach(function (item) {
-              var _a, _b, _c, _d, _e, _f;
+              var _a, _b;
 
               var pendienteNum = ((_a = item) === null || _a === void 0 ? void 0 : _a.pendiente) != null ? _this748.num(item.pendiente) : _this748.pendienteEfectivo(item);
 
@@ -91814,13 +91849,13 @@ function _classCallCheck(instance, Constructor) { if (!(instance instanceof Cons
                 return;
               }
 
-              var key = _this748.clavePendienteEntrega((_b = orden) === null || _b === void 0 ? void 0 : _b.documentoNumero, ((_c = item) === null || _c === void 0 ? void 0 : _c.productoNombre) || ((_e = (_d = item) === null || _d === void 0 ? void 0 : _d.producto) === null || _e === void 0 ? void 0 : _e.PRODUCTO), (_f = orden) === null || _f === void 0 ? void 0 : _f.tipoDocumento);
+              var key = _this748.clavePendienteEntregaDesdeOrdenYItem(orden, item);
 
-              var prev = mapa.get(key) || {
+              var prev = (_b = mapa.get(key), _b !== null && _b !== void 0 ? _b : {
                 cajas: 0,
                 piezas: 0,
                 total: 0
-              };
+              });
               var next = {
                 cajas: prev.cajas + pendiente.cajas,
                 piezas: prev.piezas + pendiente.piezas,
@@ -91962,15 +91997,16 @@ function _classCallCheck(instance, Constructor) { if (!(instance instanceof Cons
 
                 return String(((_a = x) === null || _a === void 0 ? void 0 : _a.sucursal) || "").trim().toLowerCase() === sucursalSesion;
               }) : listado;
+              console.log("mapaPendienteProceso", mapaPendienteProceso);
               _this749.productosPendientesEntrega = filtradosPorSucursal.filter(function (x) {
                 var _a;
 
                 return String(((_a = x) === null || _a === void 0 ? void 0 : _a.estado) || "").trim().toUpperCase() === "PENDIENTE";
               }).map(function (x) {
-                var _a, _b, _c, _d;
+                var key = _this749.clavePendienteEntregaDesdeFilaPendiente(x);
 
-                var key = _this749.clavePendienteEntrega((_a = x) === null || _a === void 0 ? void 0 : _a.documento, (_c = (_b = x) === null || _b === void 0 ? void 0 : _b.producto) === null || _c === void 0 ? void 0 : _c.PRODUCTO, (_d = x) === null || _d === void 0 ? void 0 : _d.tipo_documento);
-
+                console.log("key", key, "x", x.producto.PRODUCTO);
+                console.log("key", key, "mapaPendienteProceso.get(key)", mapaPendienteProceso.get(key));
                 return _this749.ajustarPendienteVisualPendientesEntrega(x, mapaFacturadoReal.get(key), mapaDevolucionVirtual.get(key), mapaPendienteProceso.get(key));
               });
               _this749.loading = false;
@@ -94673,7 +94709,7 @@ function _classCallCheck(instance, Constructor) { if (!(instance instanceof Cons
         };
         this.errorIndicadoresEntregas = false;
         this.versionSistema = "1.1.3";
-        this.ultimaFechaActualizacion = "16/03/2026 14:00";
+        this.ultimaFechaActualizacion = "01/01/2026 21:00";
         this.popupIndicadoresVisible = false;
         this.tituloPopupIndicadores = "";
         this.tipoDetalleActivo = null;

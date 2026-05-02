@@ -45809,8 +45809,8 @@ class DevolucionesComponent {
             "Otros",
         ];
         this.menuTipoDevolucion = [
-            { id: "VIRTUAL", label: "Dev. Virtual" },
             { id: "FISICA", label: "Dev. Física" },
+            { id: "VIRTUAL", label: "Dev. Virtual" },
         ];
         this.menu1 = ["Devoluciones", "Listado Devoluciones"];
         this.sucursalesDefault = ["matriz", "sucursal1", "sucursal2"];
@@ -47555,7 +47555,7 @@ class DevolucionesComponent {
     }
     anadirProducto(e) {
         const nuevo = new _devoluciones__WEBPACK_IMPORTED_MODULE_3__["productosDevueltos"]();
-        nuevo.tipoDevolucion = "VIRTUAL";
+        nuevo.tipoDevolucion = "FISICA";
         this.productosDevueltos.push(nuevo);
     }
     cambiarTipoDevolucion(i) {
@@ -47635,7 +47635,7 @@ class productosDevueltos {
         this.cantDevueltaCajas = 0;
         this.cantDevueltaPiezas = 0;
         this.justificacion = "";
-        this.tipoDevolucion = "VIRTUAL";
+        this.tipoDevolucion = "FISICA";
     }
 }
 class tipoDocEliminacion {
@@ -54830,29 +54830,52 @@ class GestionEntregasBodegaComponent {
      * - si (entregado + dev. virtual) > restanteEsperado, se descuenta el exceso del pendiente mostrado
      * No persiste cambios en base de datos.
      */
+    /** Unifica espacios raros (NBSP, etc.) y mayúsculas para claves de Map estables. */
+    normalizarTextoClave(value) {
+        let s = String((value !== null && value !== void 0 ? value : ""))
+            .replace(/\u00A0/g, " ")
+            .replace(/[\u1680\u2000-\u200A\u202F\u205F\u3000]/g, " ");
+        try {
+            s = s.normalize("NFC");
+        }
+        catch (_a) {
+            /* sin Intl en runtime muy antiguo */
+        }
+        return s.replace(/\s+/g, " ").trim().toUpperCase();
+    }
     clavePendienteEntrega(documento, producto, tipoDocumento) {
-        const doc = String((documento !== null && documento !== void 0 ? documento : ""))
-            .trim()
-            .toUpperCase();
-        const prod = String((producto !== null && producto !== void 0 ? producto : ""))
-            .trim()
-            .toUpperCase();
-        const tipo = String((tipoDocumento !== null && tipoDocumento !== void 0 ? tipoDocumento : ""))
-            .trim()
-            .toUpperCase();
+        const doc = this.normalizarTextoClave(documento);
+        const prod = this.normalizarTextoClave(producto);
+        console.log("tipoDocumento", tipoDocumento);
+        if (tipoDocumento == "NOTA_VENTA") {
+            tipoDocumento = "NOTA DE VENTA";
+        }
+        const tipo = this.normalizarTextoClave(tipoDocumento);
         return `${doc}__${tipo}__${prod}`;
+    }
+    /** Misma semántica de documento / tipo / nombre que en filas de pendientes. */
+    clavePendienteEntregaDesdeOrdenYItem(orden, item) {
+        var _a, _b, _c, _d, _e, _f, _g, _h, _j, _k;
+        const doc = (_b = (_a = orden) === null || _a === void 0 ? void 0 : _a.documentoNumero, (_b !== null && _b !== void 0 ? _b : (_c = orden) === null || _c === void 0 ? void 0 : _c.documento));
+        const tipo = (_e = (_d = orden) === null || _d === void 0 ? void 0 : _d.tipoDocumento, (_e !== null && _e !== void 0 ? _e : (_f = orden) === null || _f === void 0 ? void 0 : _f.tipo_documento));
+        const prod = (_h = (_g = item) === null || _g === void 0 ? void 0 : _g.productoNombre, (_h !== null && _h !== void 0 ? _h : (_k = (_j = item) === null || _j === void 0 ? void 0 : _j.producto) === null || _k === void 0 ? void 0 : _k.PRODUCTO));
+        return this.clavePendienteEntrega(doc, prod, tipo);
+    }
+    clavePendienteEntregaDesdeFilaPendiente(row) {
+        var _a, _b, _c, _d, _e, _f, _g, _h, _j, _k;
+        const doc = (_b = (_a = row) === null || _a === void 0 ? void 0 : _a.documentoNumero, (_b !== null && _b !== void 0 ? _b : (_c = row) === null || _c === void 0 ? void 0 : _c.documento));
+        const tipo = (_e = (_d = row) === null || _d === void 0 ? void 0 : _d.tipoDocumento, (_e !== null && _e !== void 0 ? _e : (_f = row) === null || _f === void 0 ? void 0 : _f.tipo_documento));
+        const prod = (_h = (_g = row) === null || _g === void 0 ? void 0 : _g.productoNombre, (_h !== null && _h !== void 0 ? _h : (_k = (_j = row) === null || _j === void 0 ? void 0 : _j.producto) === null || _k === void 0 ? void 0 : _k.PRODUCTO));
+        return this.clavePendienteEntrega(doc, prod, tipo);
     }
     construirMapaFacturadoRealDesdeOrdenes(ordenes) {
         const mapa = new Map();
         (ordenes || []).forEach((orden) => {
-            var _a, _b, _c;
-            const doc = (_a = orden) === null || _a === void 0 ? void 0 : _a.documentoNumero;
-            const tipo = (_b = orden) === null || _b === void 0 ? void 0 : _b.tipoDocumento;
-            (((_c = orden) === null || _c === void 0 ? void 0 : _c.items) || []).forEach((it) => {
-                var _a, _b, _c, _d, _e, _f;
-                const producto = ((_a = it) === null || _a === void 0 ? void 0 : _a.productoNombre) || ((_c = (_b = it) === null || _b === void 0 ? void 0 : _b.producto) === null || _c === void 0 ? void 0 : _c.PRODUCTO) || "";
-                const factM2 = this.num(((_d = it) === null || _d === void 0 ? void 0 : _d.cantidadFacturadaOriginal) != null
-                    ? (_e = it) === null || _e === void 0 ? void 0 : _e.cantidadFacturadaOriginal : (_f = it) === null || _f === void 0 ? void 0 : _f.cantidadFacturada);
+            var _a;
+            (((_a = orden) === null || _a === void 0 ? void 0 : _a.items) || []).forEach((it) => {
+                var _a, _b, _c;
+                const factM2 = this.num(((_a = it) === null || _a === void 0 ? void 0 : _a.cantidadFacturadaOriginal) != null
+                    ? (_b = it) === null || _b === void 0 ? void 0 : _b.cantidadFacturadaOriginal : (_c = it) === null || _c === void 0 ? void 0 : _c.cantidadFacturada);
                 const factUnidades = this.esItemMetrosCajaPieza(it)
                     ? this.piezasTotalesDesdeM2(factM2, it)
                     : factM2;
@@ -54860,7 +54883,7 @@ class GestionEntregasBodegaComponent {
                 if (fact <= 0) {
                     return;
                 }
-                const key = this.clavePendienteEntrega(doc, producto, tipo);
+                const key = this.clavePendienteEntregaDesdeOrdenYItem(orden, it);
                 mapa.set(key, (mapa.get(key) || 0) + fact);
             });
         });
@@ -54869,18 +54892,15 @@ class GestionEntregasBodegaComponent {
     construirMapaDevolucionVirtualDesdeOrdenes(ordenes) {
         const mapa = new Map();
         (ordenes || []).forEach((orden) => {
-            var _a, _b, _c;
-            const doc = (_a = orden) === null || _a === void 0 ? void 0 : _a.documentoNumero;
-            const tipo = (_b = orden) === null || _b === void 0 ? void 0 : _b.tipoDocumento;
-            (((_c = orden) === null || _c === void 0 ? void 0 : _c.items) || []).forEach((it) => {
-                var _a, _b, _c, _d;
-                const producto = ((_a = it) === null || _a === void 0 ? void 0 : _a.productoNombre) || ((_c = (_b = it) === null || _b === void 0 ? void 0 : _b.producto) === null || _c === void 0 ? void 0 : _c.PRODUCTO) || "";
+            var _a;
+            (((_a = orden) === null || _a === void 0 ? void 0 : _a.items) || []).forEach((it) => {
+                var _a;
                 const virtualHistorial = this.devolucionVirtualAcumuladaDesdeHistorial(it);
-                const v = virtualHistorial > 0 ? virtualHistorial : this.num((_d = it) === null || _d === void 0 ? void 0 : _d.cantidadDevuelta);
+                const v = virtualHistorial > 0 ? virtualHistorial : this.num((_a = it) === null || _a === void 0 ? void 0 : _a.cantidadDevuelta);
                 if (v <= 0) {
                     return;
                 }
-                const key = this.clavePendienteEntrega(doc, producto, tipo);
+                const key = this.clavePendienteEntregaDesdeOrdenYItem(orden, it);
                 const vUn = this.esItemMetrosCajaPieza(it)
                     ? this.piezasTotalesDesdeM2(v, it)
                     : v;
@@ -54915,7 +54935,7 @@ class GestionEntregasBodegaComponent {
             .forEach((orden) => {
             var _a;
             (((_a = orden) === null || _a === void 0 ? void 0 : _a.items) || []).forEach((item) => {
-                var _a, _b, _c, _d, _e, _f;
+                var _a, _b;
                 const pendienteNum = ((_a = item) === null || _a === void 0 ? void 0 : _a.pendiente) != null ? this.num(item.pendiente) : this.pendienteEfectivo(item);
                 if (pendienteNum <= 0) {
                     return;
@@ -54925,8 +54945,8 @@ class GestionEntregasBodegaComponent {
                 if (pendiente.total <= 0) {
                     return;
                 }
-                const key = this.clavePendienteEntrega((_b = orden) === null || _b === void 0 ? void 0 : _b.documentoNumero, ((_c = item) === null || _c === void 0 ? void 0 : _c.productoNombre) || ((_e = (_d = item) === null || _d === void 0 ? void 0 : _d.producto) === null || _e === void 0 ? void 0 : _e.PRODUCTO), (_f = orden) === null || _f === void 0 ? void 0 : _f.tipoDocumento);
-                const prev = mapa.get(key) || { cajas: 0, piezas: 0, total: 0 };
+                const key = this.clavePendienteEntregaDesdeOrdenYItem(orden, item);
+                const prev = (_b = mapa.get(key), (_b !== null && _b !== void 0 ? _b : { cajas: 0, piezas: 0, total: 0 }));
                 const next = {
                     cajas: prev.cajas + pendiente.cajas,
                     piezas: prev.piezas + pendiente.piezas,
@@ -55034,11 +55054,13 @@ class GestionEntregasBodegaComponent {
                             sucursalSesion;
                     })
                     : listado;
+                console.log("mapaPendienteProceso", mapaPendienteProceso);
                 this.productosPendientesEntrega = filtradosPorSucursal
                     .filter((x) => { var _a; return String(((_a = x) === null || _a === void 0 ? void 0 : _a.estado) || "").trim().toUpperCase() === "PENDIENTE"; })
                     .map((x) => {
-                    var _a, _b, _c, _d;
-                    const key = this.clavePendienteEntrega((_a = x) === null || _a === void 0 ? void 0 : _a.documento, (_c = (_b = x) === null || _b === void 0 ? void 0 : _b.producto) === null || _c === void 0 ? void 0 : _c.PRODUCTO, (_d = x) === null || _d === void 0 ? void 0 : _d.tipo_documento);
+                    const key = this.clavePendienteEntregaDesdeFilaPendiente(x);
+                    console.log("key", key, "x", x.producto.PRODUCTO);
+                    console.log("key", key, "mapaPendienteProceso.get(key)", mapaPendienteProceso.get(key));
                     return this.ajustarPendienteVisualPendientesEntrega(x, mapaFacturadoReal.get(key), mapaDevolucionVirtual.get(key), mapaPendienteProceso.get(key));
                 });
                 this.loading = false;
@@ -56395,7 +56417,7 @@ class HomeComponent {
         };
         this.errorIndicadoresEntregas = false;
         this.versionSistema = "1.1.3";
-        this.ultimaFechaActualizacion = "16/03/2026 14:00";
+        this.ultimaFechaActualizacion = "01/01/2026 21:00";
         this.popupIndicadoresVisible = false;
         this.tituloPopupIndicadores = "";
         this.tipoDetalleActivo = null;
