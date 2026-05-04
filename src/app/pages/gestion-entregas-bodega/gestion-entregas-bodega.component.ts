@@ -7,6 +7,7 @@ import { EntregasBodegaService } from "src/app/servicios/entregas-bodega.service
 import { ProductosPendientesService } from "src/app/servicios/productos-pendientes.service";
 import { TransaccionesService } from "src/app/servicios/transacciones.service";
 import { ScreenService } from "src/app/shared/services";
+import { objDate } from "../transacciones/transacciones";
 
 /** Valores de entrada del usuario por línea (despacho / compromiso / notas). */
 interface BorradorLineaEntrega {
@@ -33,6 +34,7 @@ export class GestionEntregasBodegaComponent implements OnInit, OnDestroy {
   valorMenu = "Gestión Entregas";
   mostrarGestion = true;
   mostrarListado = false;
+  obj: objDate;
   /**
    * ninguno: gestión o listado de órdenes.
    * facturados: detalle por factura/cliente (productos facturados sin entregar).
@@ -2267,8 +2269,11 @@ export class GestionEntregasBodegaComponent implements OnInit, OnDestroy {
   private cargarProductosPendientesEntrega(): void {
     this.loading = true;
     this.productosPendientesEntrega = [];
+    this.obj = new objDate();
+    this.obj.fechaActual = new Date();
+    this.obj.fechaAnterior = new Date(2026, 4, 2); // 2 de mayo del 2026 (meses base 0);
     forkJoin({
-      pendientes: this.productosPendientesService.getProductoPendiente(),
+      pendientes: this.productosPendientesService.getProductosPendientesPorRango(this.obj),
       ordenes: this.entregasBodegaService.getPendientes({ modoConsulta: "listado" }),
     }).subscribe({
       next: ({ pendientes, ordenes }: any) => {

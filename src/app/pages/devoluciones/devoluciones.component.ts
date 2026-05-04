@@ -177,13 +177,16 @@ export class DevolucionesComponent implements OnInit, OnDestroy {
   }
 
   ngOnInit() {
+    var obj2 = new objDate();
+    obj2.fechaActual = new Date();
+    obj2.fechaAnterior = new Date(this.nowdesde.getFullYear(), this.nowdesde.getMonth(), this.nowdesde.getDate() - 30);
     this.nowdesde.setDate(this.nowdesde.getDate() - 15);
     forkJoin({
       contadores: this.contadoresService.getContadores(),
       productos: this.productoService.getProducto(),
-      ordenes: this.ordenesService.getOrden(),
+      //ordenes: this.ordenesService.getOrden(),
       parametrizaciones: this.parametrizacionService.getParametrizacion(),
-      pendientes: this.productosPendientesService.getProductosPendientesEntrega(),
+      pendientes: this.productosPendientesService.getProductosPendientesPorRango(obj2),
       sucursales: this.sucursalesService.getSucursales(),
       config: this._configuracionService.getDatosConfiguracion(),
     }).pipe(
@@ -193,7 +196,7 @@ export class DevolucionesComponent implements OnInit, OnDestroy {
       next: (res) => {
         this.contadores = res.contadores as contadoresDocumentos[];
         this.productos = res.productos as producto[];
-        this.ordenesCompra = res.ordenes as OrdenDeCompra[];
+        //this.ordenesCompra = res.ordenes as OrdenDeCompra[];
         this.parametrizaciones = res.parametrizaciones as parametrizacionsuc[];
         this.productosPendientes = res.pendientes as productosPendientesEntrega[];
         this.locales = res.sucursales as Sucursal[];
