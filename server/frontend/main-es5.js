@@ -91275,13 +91275,13 @@ function _classCallCheck(instance, Constructor) { if (!(instance instanceof Cons
           // Se compara con precisión de 3 decimales para tolerar casos como:
           // ingreso 3.9285714285714284 pendiente 3.928571428571429
           // con redondeo, ambos serían iguales.
-          var decimales = 3;
+          var decimales = 4;
           var ingresoRedondeado = Number(ingreso.toFixed(decimales));
           var pendienteRedondeado = Number(pendiente.toFixed(decimales));
           console.log("ingresoRedondeado", ingresoRedondeado);
           console.log("pendienteRedondeado", pendienteRedondeado);
-          console.log("ingresoRedondeado - pendienteRedondeado", ingresoRedondeado - pendienteRedondeado > 0);
-          return ingresoRedondeado - pendienteRedondeado > 0;
+          console.log("ingresoRedondeado - pendienteRedondeado", ingresoRedondeado - pendienteRedondeado);
+          return ingresoRedondeado - pendienteRedondeado > 0.001;
         }
       }, {
         key: "ingresoAlcanzaPendiente",

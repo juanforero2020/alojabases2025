@@ -54520,13 +54520,13 @@ class GestionEntregasBodegaComponent {
         // Se compara con precisión de 3 decimales para tolerar casos como:
         // ingreso 3.9285714285714284 pendiente 3.928571428571429
         // con redondeo, ambos serían iguales.
-        const decimales = 3;
+        const decimales = 4;
         const ingresoRedondeado = Number(ingreso.toFixed(decimales));
         const pendienteRedondeado = Number(pendiente.toFixed(decimales));
         console.log("ingresoRedondeado", ingresoRedondeado);
         console.log("pendienteRedondeado", pendienteRedondeado);
-        console.log("ingresoRedondeado - pendienteRedondeado", ingresoRedondeado - pendienteRedondeado > 0);
-        return ingresoRedondeado - pendienteRedondeado > 0;
+        console.log("ingresoRedondeado - pendienteRedondeado", ingresoRedondeado - pendienteRedondeado);
+        return ingresoRedondeado - pendienteRedondeado > 0.001;
     }
     ingresoAlcanzaPendiente(ingreso, pendiente) {
         const tolerancia = 0.005;
