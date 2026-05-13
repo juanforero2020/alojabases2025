@@ -79383,7 +79383,7 @@ class RevionInventarioComponent {
                     this.mostrarLoading = false;
                     this.mostrarMensajeGenerico(2, "Ingrese con una revisión Iniciada");
                 }
-                else if ((this.usuarioLogueado[0].rol == "Inspector" || this.usuarioLogueado[0].rol == "Usuario Web") && this.idRevision != "0") {
+                else if ((this.usuarioLogueado[0].rol == "Inspector" || this.usuarioLogueado[0].rol == "Usuario Web" || this.usuarioLogueado[0].rol == "Bodeguero") && this.idRevision != "0") {
                     this.mostrarCreacion = false;
                     this.mostrarLoading = false;
                     this.newIngreso = true;

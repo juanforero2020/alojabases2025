@@ -131839,7 +131839,7 @@ function _classCallCheck(instance, Constructor) { if (!(instance instanceof Cons
                 _this1114.mostrarLoading = false;
 
                 _this1114.mostrarMensajeGenerico(2, "Ingrese con una revisión Iniciada");
-              } else if ((_this1114.usuarioLogueado[0].rol == "Inspector" || _this1114.usuarioLogueado[0].rol == "Usuario Web") && _this1114.idRevision != "0") {
+              } else if ((_this1114.usuarioLogueado[0].rol == "Inspector" || _this1114.usuarioLogueado[0].rol == "Usuario Web" || _this1114.usuarioLogueado[0].rol == "Bodeguero") && _this1114.idRevision != "0") {
                 _this1114.mostrarCreacion = false;
                 _this1114.mostrarLoading = false;
                 _this1114.newIngreso = true;
