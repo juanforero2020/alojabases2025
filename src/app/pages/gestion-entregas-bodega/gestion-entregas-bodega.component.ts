@@ -1638,7 +1638,7 @@ export class GestionEntregasBodegaComponent implements OnInit, OnDestroy {
     console.log("ingresoRedondeado", ingresoRedondeado);
     console.log("pendienteRedondeado", pendienteRedondeado);
     console.log("ingresoRedondeado - pendienteRedondeado", ingresoRedondeado - pendienteRedondeado);
-    return ingresoRedondeado - pendienteRedondeado > 0.001;
+    return ingresoRedondeado - pendienteRedondeado > 0.009;
   }
 
   private ingresoAlcanzaPendiente(ingreso: number, pendiente: number): boolean {

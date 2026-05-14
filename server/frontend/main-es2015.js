@@ -54526,7 +54526,7 @@ class GestionEntregasBodegaComponent {
         console.log("ingresoRedondeado", ingresoRedondeado);
         console.log("pendienteRedondeado", pendienteRedondeado);
         console.log("ingresoRedondeado - pendienteRedondeado", ingresoRedondeado - pendienteRedondeado);
-        return ingresoRedondeado - pendienteRedondeado > 0.001;
+        return ingresoRedondeado - pendienteRedondeado > 0.009;
     }
     ingresoAlcanzaPendiente(ingreso, pendiente) {
         const tolerancia = 0.005;
