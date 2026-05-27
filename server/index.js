@@ -92,6 +92,7 @@ app.use('/servicioWebVeronica', require('./routes/servicioWebVeronicaRoutes'));
 app.use('/controlMercaderia', require('./routes/controlMercaderiaRoutes'));
 app.use('/descuentos', require('./routes/descuentosRoutes'));
 app.use('/entregasBodega', require('./routes/entregaBodegaRoutes'));
+app.use('/nominas', require('./routes/nominasRoutes'));
 
 
 

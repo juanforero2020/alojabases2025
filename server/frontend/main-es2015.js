@@ -536,6 +536,10 @@ const navigationAdmin = [
                 text: "Novedades Personal",
                 path: "",
             },
+            {
+                text: "Nóminas",
+                path: "/nominas",
+            },
         ],
     },
     {
@@ -802,6 +806,10 @@ const navigationSupervisor = [
                 text: "Novedades Personal",
                 path: "",
             },
+            {
+                text: "Nóminas",
+                path: "/nominas",
+            },
         ],
     },
     {
@@ -1004,6 +1012,8 @@ __webpack_require__.r(__webpack_exports__);
 /* harmony import */ var _pages_iva_iva_component__WEBPACK_IMPORTED_MODULE_61__ = __webpack_require__(/*! ./pages/iva/iva.component */ "./src/app/pages/iva/iva.component.ts");
 /* harmony import */ var _pages_configuracion_presentacion_configuracion_presentacion_component__WEBPACK_IMPORTED_MODULE_62__ = __webpack_require__(/*! ./pages/configuracion-presentacion/configuracion-presentacion.component */ "./src/app/pages/configuracion-presentacion/configuracion-presentacion.component.ts");
 /* harmony import */ var _pages_gestion_entregas_bodega_gestion_entregas_bodega_component__WEBPACK_IMPORTED_MODULE_63__ = __webpack_require__(/*! ./pages/gestion-entregas-bodega/gestion-entregas-bodega.component */ "./src/app/pages/gestion-entregas-bodega/gestion-entregas-bodega.component.ts");
+/* harmony import */ var _pages_nominas_nominas_component__WEBPACK_IMPORTED_MODULE_64__ = __webpack_require__(/*! ./pages/nominas/nominas.component */ "./src/app/pages/nominas/nominas.component.ts");
+
 
 
 
@@ -1378,6 +1388,11 @@ const routes = [
         canActivate: [_shared_services__WEBPACK_IMPORTED_MODULE_4__["AuthGuardService"]],
     },
     {
+        path: "nominas",
+        component: _pages_nominas_nominas_component__WEBPACK_IMPORTED_MODULE_64__["NominasComponent"],
+        canActivate: [_shared_services__WEBPACK_IMPORTED_MODULE_4__["AuthGuardService"]],
+    },
+    {
         path: "**",
         redirectTo: "home",
         canActivate: [_shared_services__WEBPACK_IMPORTED_MODULE_4__["AuthGuardService"]],
@@ -1635,6 +1650,10 @@ __webpack_require__.r(__webpack_exports__);
 /* harmony import */ var _pages_iva_iva_component__WEBPACK_IMPORTED_MODULE_77__ = __webpack_require__(/*! ./pages/iva/iva.component */ "./src/app/pages/iva/iva.component.ts");
 /* harmony import */ var _pages_configuracion_presentacion_configuracion_presentacion_component__WEBPACK_IMPORTED_MODULE_78__ = __webpack_require__(/*! ./pages/configuracion-presentacion/configuracion-presentacion.component */ "./src/app/pages/configuracion-presentacion/configuracion-presentacion.component.ts");
 /* harmony import */ var _pages_gestion_entregas_bodega_gestion_entregas_bodega_component__WEBPACK_IMPORTED_MODULE_79__ = __webpack_require__(/*! ./pages/gestion-entregas-bodega/gestion-entregas-bodega.component */ "./src/app/pages/gestion-entregas-bodega/gestion-entregas-bodega.component.ts");
+/* harmony import */ var _pages_nominas_nominas_component__WEBPACK_IMPORTED_MODULE_80__ = __webpack_require__(/*! ./pages/nominas/nominas.component */ "./src/app/pages/nominas/nominas.component.ts");
+/* harmony import */ var _pages_nominas_nominas_eventos_pagos_component__WEBPACK_IMPORTED_MODULE_81__ = __webpack_require__(/*! ./pages/nominas/nominas-eventos-pagos.component */ "./src/app/pages/nominas/nominas-eventos-pagos.component.ts");
+
+
 
 
 
@@ -1843,7 +1862,9 @@ AppModule.ɵinj = _angular_core__WEBPACK_IMPORTED_MODULE_1__["ɵɵdefineInjector
         _pages_carga_masiva_carga_masiva_component__WEBPACK_IMPORTED_MODULE_75__["CargaMasivaComponent"],
         _pages_iva_iva_component__WEBPACK_IMPORTED_MODULE_77__["IvaComponent"],
         _pages_configuracion_presentacion_configuracion_presentacion_component__WEBPACK_IMPORTED_MODULE_78__["ConfiguracionPresentacionComponent"],
-        _pages_gestion_entregas_bodega_gestion_entregas_bodega_component__WEBPACK_IMPORTED_MODULE_79__["GestionEntregasBodegaComponent"]], imports: [_angular_platform_browser__WEBPACK_IMPORTED_MODULE_0__["BrowserModule"],
+        _pages_gestion_entregas_bodega_gestion_entregas_bodega_component__WEBPACK_IMPORTED_MODULE_79__["GestionEntregasBodegaComponent"],
+        _pages_nominas_nominas_component__WEBPACK_IMPORTED_MODULE_80__["NominasComponent"],
+        _pages_nominas_nominas_eventos_pagos_component__WEBPACK_IMPORTED_MODULE_81__["NominasEventosPagosComponent"]], imports: [_angular_platform_browser__WEBPACK_IMPORTED_MODULE_0__["BrowserModule"],
         _layouts__WEBPACK_IMPORTED_MODULE_3__["SideNavOuterToolbarModule"],
         _layouts__WEBPACK_IMPORTED_MODULE_3__["SideNavInnerToolbarModule"],
         _layouts__WEBPACK_IMPORTED_MODULE_3__["SingleCardModule"],
@@ -1948,7 +1969,9 @@ AppModule.ɵinj = _angular_core__WEBPACK_IMPORTED_MODULE_1__["ɵɵdefineInjector
                     _pages_carga_masiva_carga_masiva_component__WEBPACK_IMPORTED_MODULE_75__["CargaMasivaComponent"],
                     _pages_iva_iva_component__WEBPACK_IMPORTED_MODULE_77__["IvaComponent"],
                     _pages_configuracion_presentacion_configuracion_presentacion_component__WEBPACK_IMPORTED_MODULE_78__["ConfiguracionPresentacionComponent"],
-                    _pages_gestion_entregas_bodega_gestion_entregas_bodega_component__WEBPACK_IMPORTED_MODULE_79__["GestionEntregasBodegaComponent"]
+                    _pages_gestion_entregas_bodega_gestion_entregas_bodega_component__WEBPACK_IMPORTED_MODULE_79__["GestionEntregasBodegaComponent"],
+                    _pages_nominas_nominas_component__WEBPACK_IMPORTED_MODULE_80__["NominasComponent"],
+                    _pages_nominas_nominas_eventos_pagos_component__WEBPACK_IMPORTED_MODULE_81__["NominasEventosPagosComponent"]
                 ],
                 imports: [
                     _angular_platform_browser__WEBPACK_IMPORTED_MODULE_0__["BrowserModule"],
@@ -58147,6 +58170,3468 @@ LoadingComponent.ɵcmp = _angular_core__WEBPACK_IMPORTED_MODULE_0__["ɵɵdefineC
 
 /***/ }),
 
+/***/ "./src/app/pages/nominas/nominas-eventos-pagos.component.ts":
+/*!******************************************************************!*\
+  !*** ./src/app/pages/nominas/nominas-eventos-pagos.component.ts ***!
+  \******************************************************************/
+/*! exports provided: NominasEventosPagosComponent */
+/***/ (function(module, __webpack_exports__, __webpack_require__) {
+
+"use strict";
+__webpack_require__.r(__webpack_exports__);
+/* harmony export (binding) */ __webpack_require__.d(__webpack_exports__, "NominasEventosPagosComponent", function() { return NominasEventosPagosComponent; });
+/* harmony import */ var _angular_core__WEBPACK_IMPORTED_MODULE_0__ = __webpack_require__(/*! @angular/core */ "./node_modules/@angular/core/__ivy_ngcc__/fesm2015/core.js");
+/* harmony import */ var sweetalert2__WEBPACK_IMPORTED_MODULE_1__ = __webpack_require__(/*! sweetalert2 */ "./node_modules/sweetalert2/dist/sweetalert2.all.js");
+/* harmony import */ var sweetalert2__WEBPACK_IMPORTED_MODULE_1___default = /*#__PURE__*/__webpack_require__.n(sweetalert2__WEBPACK_IMPORTED_MODULE_1__);
+/* harmony import */ var src_app_servicios_nominas_service__WEBPACK_IMPORTED_MODULE_2__ = __webpack_require__(/*! src/app/servicios/nominas.service */ "./src/app/servicios/nominas.service.ts");
+/* harmony import */ var src_app_servicios_centro_costo_service__WEBPACK_IMPORTED_MODULE_3__ = __webpack_require__(/*! src/app/servicios/centro-costo.service */ "./src/app/servicios/centro-costo.service.ts");
+/* harmony import */ var _angular_common__WEBPACK_IMPORTED_MODULE_4__ = __webpack_require__(/*! @angular/common */ "./node_modules/@angular/common/__ivy_ngcc__/fesm2015/common.js");
+/* harmony import */ var devextreme_angular__WEBPACK_IMPORTED_MODULE_5__ = __webpack_require__(/*! devextreme-angular */ "./node_modules/devextreme-angular/__ivy_ngcc__/fesm2015/devextreme-angular.js");
+/* harmony import */ var devextreme_angular_ui_text_box__WEBPACK_IMPORTED_MODULE_6__ = __webpack_require__(/*! devextreme-angular/ui/text-box */ "./node_modules/devextreme-angular/__ivy_ngcc__/fesm2015/devextreme-angular-ui-text-box.js");
+/* harmony import */ var devextreme_angular_ui_nested__WEBPACK_IMPORTED_MODULE_7__ = __webpack_require__(/*! devextreme-angular/ui/nested */ "./node_modules/devextreme-angular/__ivy_ngcc__/fesm2015/devextreme-angular-ui-nested.js");
+/* harmony import */ var devextreme_angular_core__WEBPACK_IMPORTED_MODULE_8__ = __webpack_require__(/*! devextreme-angular/core */ "./node_modules/devextreme-angular/__ivy_ngcc__/fesm2015/devextreme-angular-core.js");
+
+
+
+
+
+
+
+
+
+
+function NominasEventosPagosComponent_p_4_Template(rf, ctx) { if (rf & 1) {
+    _angular_core__WEBPACK_IMPORTED_MODULE_0__["ɵɵelementStart"](0, "p", 46);
+    _angular_core__WEBPACK_IMPORTED_MODULE_0__["ɵɵtext"](1, " Tipo A \u2014 Pagos c\u00EDclicos ejecutados autom\u00E1ticamente (n\u00F3mina, dominical, etc.) ");
+    _angular_core__WEBPACK_IMPORTED_MODULE_0__["ɵɵelementEnd"]();
+} }
+function NominasEventosPagosComponent_p_5_Template(rf, ctx) { if (rf & 1) {
+    _angular_core__WEBPACK_IMPORTED_MODULE_0__["ɵɵelementStart"](0, "p", 46);
+    _angular_core__WEBPACK_IMPORTED_MODULE_0__["ɵɵtext"](1, " Tipo B \u2014 Deudas programadas (arriendos, pr\u00E9stamos, tarjetas). Se cargan en calendario y el encargado ejecuta en la fecha. ");
+    _angular_core__WEBPACK_IMPORTED_MODULE_0__["ɵɵelementEnd"]();
+} }
+function NominasEventosPagosComponent_dx_select_box_29_Template(rf, ctx) { if (rf & 1) {
+    const _r15 = _angular_core__WEBPACK_IMPORTED_MODULE_0__["ɵɵgetCurrentView"]();
+    _angular_core__WEBPACK_IMPORTED_MODULE_0__["ɵɵelementStart"](0, "dx-select-box", 47);
+    _angular_core__WEBPACK_IMPORTED_MODULE_0__["ɵɵlistener"]("valueChange", function NominasEventosPagosComponent_dx_select_box_29_Template_dx_select_box_valueChange_0_listener($event) { _angular_core__WEBPACK_IMPORTED_MODULE_0__["ɵɵrestoreView"](_r15); const ctx_r14 = _angular_core__WEBPACK_IMPORTED_MODULE_0__["ɵɵnextContext"](); return ctx_r14.formulario.transaccionNomina = $event; });
+    _angular_core__WEBPACK_IMPORTED_MODULE_0__["ɵɵelementEnd"]();
+} if (rf & 2) {
+    const ctx_r2 = _angular_core__WEBPACK_IMPORTED_MODULE_0__["ɵɵnextContext"]();
+    _angular_core__WEBPACK_IMPORTED_MODULE_0__["ɵɵproperty"]("items", ctx_r2.transaccionesNominaA)("value", ctx_r2.formulario.transaccionNomina);
+} }
+function NominasEventosPagosComponent_dx_select_box_30_Template(rf, ctx) { if (rf & 1) {
+    const _r17 = _angular_core__WEBPACK_IMPORTED_MODULE_0__["ɵɵgetCurrentView"]();
+    _angular_core__WEBPACK_IMPORTED_MODULE_0__["ɵɵelementStart"](0, "dx-select-box", 47);
+    _angular_core__WEBPACK_IMPORTED_MODULE_0__["ɵɵlistener"]("valueChange", function NominasEventosPagosComponent_dx_select_box_30_Template_dx_select_box_valueChange_0_listener($event) { _angular_core__WEBPACK_IMPORTED_MODULE_0__["ɵɵrestoreView"](_r17); const ctx_r16 = _angular_core__WEBPACK_IMPORTED_MODULE_0__["ɵɵnextContext"](); return ctx_r16.formulario.transaccionNomina = $event; });
+    _angular_core__WEBPACK_IMPORTED_MODULE_0__["ɵɵelementEnd"]();
+} if (rf & 2) {
+    const ctx_r3 = _angular_core__WEBPACK_IMPORTED_MODULE_0__["ɵɵnextContext"]();
+    _angular_core__WEBPACK_IMPORTED_MODULE_0__["ɵɵproperty"]("items", ctx_r3.transaccionesNominaB)("value", ctx_r3.formulario.transaccionNomina);
+} }
+function NominasEventosPagosComponent_ng_container_31_small_5_Template(rf, ctx) { if (rf & 1) {
+    _angular_core__WEBPACK_IMPORTED_MODULE_0__["ɵɵelementStart"](0, "small", 52);
+    _angular_core__WEBPACK_IMPORTED_MODULE_0__["ɵɵtext"](1, " Monto desde Tabla Maestra Salarial (asignaci\u00F3n salarial) ");
+    _angular_core__WEBPACK_IMPORTED_MODULE_0__["ɵɵelementEnd"]();
+} }
+function NominasEventosPagosComponent_ng_container_31_small_6_Template(rf, ctx) { if (rf & 1) {
+    _angular_core__WEBPACK_IMPORTED_MODULE_0__["ɵɵelementStart"](0, "small", 52);
+    _angular_core__WEBPACK_IMPORTED_MODULE_0__["ɵɵtext"](1, " Fuente: facturaci\u00F3n del domingo (ventas \u2212 devoluciones del d\u00EDa) ");
+    _angular_core__WEBPACK_IMPORTED_MODULE_0__["ɵɵelementEnd"]();
+} }
+function NominasEventosPagosComponent_ng_container_31_div_22_span_1_Template(rf, ctx) { if (rf & 1) {
+    _angular_core__WEBPACK_IMPORTED_MODULE_0__["ɵɵelementStart"](0, "span");
+    _angular_core__WEBPACK_IMPORTED_MODULE_0__["ɵɵtext"](1);
+    _angular_core__WEBPACK_IMPORTED_MODULE_0__["ɵɵpipe"](2, "number");
+    _angular_core__WEBPACK_IMPORTED_MODULE_0__["ɵɵelementEnd"]();
+} if (rf & 2) {
+    const ctx_r25 = _angular_core__WEBPACK_IMPORTED_MODULE_0__["ɵɵnextContext"](3);
+    _angular_core__WEBPACK_IMPORTED_MODULE_0__["ɵɵadvance"](1);
+    _angular_core__WEBPACK_IMPORTED_MODULE_0__["ɵɵtextInterpolate1"](" ", _angular_core__WEBPACK_IMPORTED_MODULE_0__["ɵɵpipeBind2"](2, 1, ctx_r25.montoDominicalPreview(), "1.2-2"), " ");
+} }
+function NominasEventosPagosComponent_ng_container_31_div_22_span_2_Template(rf, ctx) { if (rf & 1) {
+    _angular_core__WEBPACK_IMPORTED_MODULE_0__["ɵɵelementStart"](0, "span", 55);
+    _angular_core__WEBPACK_IMPORTED_MODULE_0__["ɵɵtext"](1, " Simule liquidaci\u00F3n ");
+    _angular_core__WEBPACK_IMPORTED_MODULE_0__["ɵɵelementEnd"]();
+} }
+function NominasEventosPagosComponent_ng_container_31_div_22_Template(rf, ctx) { if (rf & 1) {
+    _angular_core__WEBPACK_IMPORTED_MODULE_0__["ɵɵelementStart"](0, "div", 53);
+    _angular_core__WEBPACK_IMPORTED_MODULE_0__["ɵɵtemplate"](1, NominasEventosPagosComponent_ng_container_31_div_22_span_1_Template, 3, 4, "span", 13);
+    _angular_core__WEBPACK_IMPORTED_MODULE_0__["ɵɵtemplate"](2, NominasEventosPagosComponent_ng_container_31_div_22_span_2_Template, 2, 0, "span", 54);
+    _angular_core__WEBPACK_IMPORTED_MODULE_0__["ɵɵelementEnd"]();
+} if (rf & 2) {
+    const ctx_r20 = _angular_core__WEBPACK_IMPORTED_MODULE_0__["ɵɵnextContext"](2);
+    _angular_core__WEBPACK_IMPORTED_MODULE_0__["ɵɵadvance"](1);
+    _angular_core__WEBPACK_IMPORTED_MODULE_0__["ɵɵproperty"]("ngIf", ctx_r20.montoDominicalPreview() !== null);
+    _angular_core__WEBPACK_IMPORTED_MODULE_0__["ɵɵadvance"](1);
+    _angular_core__WEBPACK_IMPORTED_MODULE_0__["ɵɵproperty"]("ngIf", ctx_r20.montoDominicalPreview() === null);
+} }
+function NominasEventosPagosComponent_ng_container_31_div_23_Template(rf, ctx) { if (rf & 1) {
+    _angular_core__WEBPACK_IMPORTED_MODULE_0__["ɵɵelementStart"](0, "div", 53);
+    _angular_core__WEBPACK_IMPORTED_MODULE_0__["ɵɵtext"](1);
+    _angular_core__WEBPACK_IMPORTED_MODULE_0__["ɵɵpipe"](2, "number");
+    _angular_core__WEBPACK_IMPORTED_MODULE_0__["ɵɵelementEnd"]();
+} if (rf & 2) {
+    const ctx_r21 = _angular_core__WEBPACK_IMPORTED_MODULE_0__["ɵɵnextContext"](2);
+    _angular_core__WEBPACK_IMPORTED_MODULE_0__["ɵɵadvance"](1);
+    _angular_core__WEBPACK_IMPORTED_MODULE_0__["ɵɵtextInterpolate1"](" ", _angular_core__WEBPACK_IMPORTED_MODULE_0__["ɵɵpipeBind2"](2, 1, ctx_r21.formulario.monto, "1.2-2"), " ");
+} }
+function NominasEventosPagosComponent_ng_container_31_dx_number_box_24_Template(rf, ctx) { if (rf & 1) {
+    const _r28 = _angular_core__WEBPACK_IMPORTED_MODULE_0__["ɵɵgetCurrentView"]();
+    _angular_core__WEBPACK_IMPORTED_MODULE_0__["ɵɵelementStart"](0, "dx-number-box", 56);
+    _angular_core__WEBPACK_IMPORTED_MODULE_0__["ɵɵlistener"]("valueChange", function NominasEventosPagosComponent_ng_container_31_dx_number_box_24_Template_dx_number_box_valueChange_0_listener($event) { _angular_core__WEBPACK_IMPORTED_MODULE_0__["ɵɵrestoreView"](_r28); const ctx_r27 = _angular_core__WEBPACK_IMPORTED_MODULE_0__["ɵɵnextContext"](2); return ctx_r27.formulario.monto = $event; });
+    _angular_core__WEBPACK_IMPORTED_MODULE_0__["ɵɵelementEnd"]();
+} if (rf & 2) {
+    const ctx_r22 = _angular_core__WEBPACK_IMPORTED_MODULE_0__["ɵɵnextContext"](2);
+    _angular_core__WEBPACK_IMPORTED_MODULE_0__["ɵɵproperty"]("value", ctx_r22.formulario.monto)("min", 0);
+} }
+function NominasEventosPagosComponent_ng_container_31_small_25_Template(rf, ctx) { if (rf & 1) {
+    _angular_core__WEBPACK_IMPORTED_MODULE_0__["ɵɵelementStart"](0, "small", 52);
+    _angular_core__WEBPACK_IMPORTED_MODULE_0__["ɵɵtext"](1);
+    _angular_core__WEBPACK_IMPORTED_MODULE_0__["ɵɵelementEnd"]();
+} if (rf & 2) {
+    const ctx_r23 = _angular_core__WEBPACK_IMPORTED_MODULE_0__["ɵɵnextContext"](2);
+    _angular_core__WEBPACK_IMPORTED_MODULE_0__["ɵɵadvance"](1);
+    _angular_core__WEBPACK_IMPORTED_MODULE_0__["ɵɵtextInterpolate1"](" Cargo TMS: ", ctx_r23.formulario.cargoNomina, " \u2014 tarifa seg\u00FAn c\u00E1lculo dominical ");
+} }
+function NominasEventosPagosComponent_ng_container_31_small_26_Template(rf, ctx) { if (rf & 1) {
+    _angular_core__WEBPACK_IMPORTED_MODULE_0__["ɵɵelementStart"](0, "small", 52);
+    _angular_core__WEBPACK_IMPORTED_MODULE_0__["ɵɵtext"](1);
+    _angular_core__WEBPACK_IMPORTED_MODULE_0__["ɵɵpipe"](2, "number");
+    _angular_core__WEBPACK_IMPORTED_MODULE_0__["ɵɵelementEnd"]();
+} if (rf & 2) {
+    const ctx_r24 = _angular_core__WEBPACK_IMPORTED_MODULE_0__["ɵɵnextContext"](2);
+    _angular_core__WEBPACK_IMPORTED_MODULE_0__["ɵɵadvance"](1);
+    _angular_core__WEBPACK_IMPORTED_MODULE_0__["ɵɵtextInterpolate1"](" TMS: asignaci\u00F3n ", _angular_core__WEBPACK_IMPORTED_MODULE_0__["ɵɵpipeBind2"](2, 1, ctx_r24.beneficiario.asignacionSalarial, "1.2-2"), " ");
+} }
+function NominasEventosPagosComponent_ng_container_31_Template(rf, ctx) { if (rf & 1) {
+    const _r30 = _angular_core__WEBPACK_IMPORTED_MODULE_0__["ɵɵgetCurrentView"]();
+    _angular_core__WEBPACK_IMPORTED_MODULE_0__["ɵɵelementContainerStart"](0);
+    _angular_core__WEBPACK_IMPORTED_MODULE_0__["ɵɵelementStart"](1, "div", 5);
+    _angular_core__WEBPACK_IMPORTED_MODULE_0__["ɵɵelementStart"](2, "label", 6);
+    _angular_core__WEBPACK_IMPORTED_MODULE_0__["ɵɵtext"](3, "Fuente");
+    _angular_core__WEBPACK_IMPORTED_MODULE_0__["ɵɵelementEnd"]();
+    _angular_core__WEBPACK_IMPORTED_MODULE_0__["ɵɵelementStart"](4, "dx-select-box", 48);
+    _angular_core__WEBPACK_IMPORTED_MODULE_0__["ɵɵlistener"]("valueChange", function NominasEventosPagosComponent_ng_container_31_Template_dx_select_box_valueChange_4_listener($event) { _angular_core__WEBPACK_IMPORTED_MODULE_0__["ɵɵrestoreView"](_r30); const ctx_r29 = _angular_core__WEBPACK_IMPORTED_MODULE_0__["ɵɵnextContext"](); return ctx_r29.formulario.fuente = $event; })("onValueChanged", function NominasEventosPagosComponent_ng_container_31_Template_dx_select_box_onValueChanged_4_listener() { _angular_core__WEBPACK_IMPORTED_MODULE_0__["ɵɵrestoreView"](_r30); const ctx_r31 = _angular_core__WEBPACK_IMPORTED_MODULE_0__["ɵɵnextContext"](); return ctx_r31.onFuenteChanged(); });
+    _angular_core__WEBPACK_IMPORTED_MODULE_0__["ɵɵelementEnd"]();
+    _angular_core__WEBPACK_IMPORTED_MODULE_0__["ɵɵtemplate"](5, NominasEventosPagosComponent_ng_container_31_small_5_Template, 2, 0, "small", 49);
+    _angular_core__WEBPACK_IMPORTED_MODULE_0__["ɵɵtemplate"](6, NominasEventosPagosComponent_ng_container_31_small_6_Template, 2, 0, "small", 49);
+    _angular_core__WEBPACK_IMPORTED_MODULE_0__["ɵɵelementEnd"]();
+    _angular_core__WEBPACK_IMPORTED_MODULE_0__["ɵɵelementStart"](7, "div", 5);
+    _angular_core__WEBPACK_IMPORTED_MODULE_0__["ɵɵelementStart"](8, "label", 6);
+    _angular_core__WEBPACK_IMPORTED_MODULE_0__["ɵɵtext"](9, "Frecuencia");
+    _angular_core__WEBPACK_IMPORTED_MODULE_0__["ɵɵelementEnd"]();
+    _angular_core__WEBPACK_IMPORTED_MODULE_0__["ɵɵelementStart"](10, "dx-select-box", 48);
+    _angular_core__WEBPACK_IMPORTED_MODULE_0__["ɵɵlistener"]("valueChange", function NominasEventosPagosComponent_ng_container_31_Template_dx_select_box_valueChange_10_listener($event) { _angular_core__WEBPACK_IMPORTED_MODULE_0__["ɵɵrestoreView"](_r30); const ctx_r32 = _angular_core__WEBPACK_IMPORTED_MODULE_0__["ɵɵnextContext"](); return ctx_r32.formulario.frecuencia = $event; })("onValueChanged", function NominasEventosPagosComponent_ng_container_31_Template_dx_select_box_onValueChanged_10_listener() { _angular_core__WEBPACK_IMPORTED_MODULE_0__["ɵɵrestoreView"](_r30); const ctx_r33 = _angular_core__WEBPACK_IMPORTED_MODULE_0__["ɵɵnextContext"](); return ctx_r33.onFrecuenciaChanged(); });
+    _angular_core__WEBPACK_IMPORTED_MODULE_0__["ɵɵelementEnd"]();
+    _angular_core__WEBPACK_IMPORTED_MODULE_0__["ɵɵelementEnd"]();
+    _angular_core__WEBPACK_IMPORTED_MODULE_0__["ɵɵelementStart"](11, "div", 5);
+    _angular_core__WEBPACK_IMPORTED_MODULE_0__["ɵɵelementStart"](12, "label", 6);
+    _angular_core__WEBPACK_IMPORTED_MODULE_0__["ɵɵtext"](13, "Par\u00E1metro");
+    _angular_core__WEBPACK_IMPORTED_MODULE_0__["ɵɵelementEnd"]();
+    _angular_core__WEBPACK_IMPORTED_MODULE_0__["ɵɵelementStart"](14, "dx-select-box", 47);
+    _angular_core__WEBPACK_IMPORTED_MODULE_0__["ɵɵlistener"]("valueChange", function NominasEventosPagosComponent_ng_container_31_Template_dx_select_box_valueChange_14_listener($event) { _angular_core__WEBPACK_IMPORTED_MODULE_0__["ɵɵrestoreView"](_r30); const ctx_r34 = _angular_core__WEBPACK_IMPORTED_MODULE_0__["ɵɵnextContext"](); return ctx_r34.formulario.parametro = $event; });
+    _angular_core__WEBPACK_IMPORTED_MODULE_0__["ɵɵelementEnd"]();
+    _angular_core__WEBPACK_IMPORTED_MODULE_0__["ɵɵelementEnd"]();
+    _angular_core__WEBPACK_IMPORTED_MODULE_0__["ɵɵelementStart"](15, "div", 5);
+    _angular_core__WEBPACK_IMPORTED_MODULE_0__["ɵɵelementStart"](16, "label", 6);
+    _angular_core__WEBPACK_IMPORTED_MODULE_0__["ɵɵtext"](17, "Vigencia de la regla");
+    _angular_core__WEBPACK_IMPORTED_MODULE_0__["ɵɵelementEnd"]();
+    _angular_core__WEBPACK_IMPORTED_MODULE_0__["ɵɵelementStart"](18, "dx-select-box", 47);
+    _angular_core__WEBPACK_IMPORTED_MODULE_0__["ɵɵlistener"]("valueChange", function NominasEventosPagosComponent_ng_container_31_Template_dx_select_box_valueChange_18_listener($event) { _angular_core__WEBPACK_IMPORTED_MODULE_0__["ɵɵrestoreView"](_r30); const ctx_r35 = _angular_core__WEBPACK_IMPORTED_MODULE_0__["ɵɵnextContext"](); return ctx_r35.formulario.vigenciaRegla = $event; });
+    _angular_core__WEBPACK_IMPORTED_MODULE_0__["ɵɵelementEnd"]();
+    _angular_core__WEBPACK_IMPORTED_MODULE_0__["ɵɵelementEnd"]();
+    _angular_core__WEBPACK_IMPORTED_MODULE_0__["ɵɵelementStart"](19, "div", 5);
+    _angular_core__WEBPACK_IMPORTED_MODULE_0__["ɵɵelementStart"](20, "label", 6);
+    _angular_core__WEBPACK_IMPORTED_MODULE_0__["ɵɵtext"](21, "Monto ($)");
+    _angular_core__WEBPACK_IMPORTED_MODULE_0__["ɵɵelementEnd"]();
+    _angular_core__WEBPACK_IMPORTED_MODULE_0__["ɵɵtemplate"](22, NominasEventosPagosComponent_ng_container_31_div_22_Template, 3, 2, "div", 50);
+    _angular_core__WEBPACK_IMPORTED_MODULE_0__["ɵɵtemplate"](23, NominasEventosPagosComponent_ng_container_31_div_23_Template, 3, 4, "div", 50);
+    _angular_core__WEBPACK_IMPORTED_MODULE_0__["ɵɵtemplate"](24, NominasEventosPagosComponent_ng_container_31_dx_number_box_24_Template, 1, 2, "dx-number-box", 51);
+    _angular_core__WEBPACK_IMPORTED_MODULE_0__["ɵɵtemplate"](25, NominasEventosPagosComponent_ng_container_31_small_25_Template, 2, 1, "small", 49);
+    _angular_core__WEBPACK_IMPORTED_MODULE_0__["ɵɵtemplate"](26, NominasEventosPagosComponent_ng_container_31_small_26_Template, 3, 4, "small", 49);
+    _angular_core__WEBPACK_IMPORTED_MODULE_0__["ɵɵelementEnd"]();
+    _angular_core__WEBPACK_IMPORTED_MODULE_0__["ɵɵelementContainerEnd"]();
+} if (rf & 2) {
+    const ctx_r4 = _angular_core__WEBPACK_IMPORTED_MODULE_0__["ɵɵnextContext"]();
+    _angular_core__WEBPACK_IMPORTED_MODULE_0__["ɵɵadvance"](4);
+    _angular_core__WEBPACK_IMPORTED_MODULE_0__["ɵɵproperty"]("items", ctx_r4.fuentesMontoA)("value", ctx_r4.formulario.fuente);
+    _angular_core__WEBPACK_IMPORTED_MODULE_0__["ɵɵadvance"](1);
+    _angular_core__WEBPACK_IMPORTED_MODULE_0__["ɵɵproperty"]("ngIf", ctx_r4.formulario.fuente === "TMS" && !ctx_r4.esDominical);
+    _angular_core__WEBPACK_IMPORTED_MODULE_0__["ɵɵadvance"](1);
+    _angular_core__WEBPACK_IMPORTED_MODULE_0__["ɵɵproperty"]("ngIf", ctx_r4.esDominical);
+    _angular_core__WEBPACK_IMPORTED_MODULE_0__["ɵɵadvance"](4);
+    _angular_core__WEBPACK_IMPORTED_MODULE_0__["ɵɵproperty"]("items", ctx_r4.frecuenciasA)("value", ctx_r4.formulario.frecuencia);
+    _angular_core__WEBPACK_IMPORTED_MODULE_0__["ɵɵadvance"](4);
+    _angular_core__WEBPACK_IMPORTED_MODULE_0__["ɵɵproperty"]("items", ctx_r4.parametrosActuales)("value", ctx_r4.formulario.parametro);
+    _angular_core__WEBPACK_IMPORTED_MODULE_0__["ɵɵadvance"](4);
+    _angular_core__WEBPACK_IMPORTED_MODULE_0__["ɵɵproperty"]("items", ctx_r4.vigenciasReglaA)("value", ctx_r4.formulario.vigenciaRegla);
+    _angular_core__WEBPACK_IMPORTED_MODULE_0__["ɵɵadvance"](4);
+    _angular_core__WEBPACK_IMPORTED_MODULE_0__["ɵɵproperty"]("ngIf", ctx_r4.esDominical);
+    _angular_core__WEBPACK_IMPORTED_MODULE_0__["ɵɵadvance"](1);
+    _angular_core__WEBPACK_IMPORTED_MODULE_0__["ɵɵproperty"]("ngIf", !ctx_r4.esDominical && ctx_r4.formulario.tipoBeneficiario === "Interno" && ctx_r4.formulario.fuente === "TMS");
+    _angular_core__WEBPACK_IMPORTED_MODULE_0__["ɵɵadvance"](1);
+    _angular_core__WEBPACK_IMPORTED_MODULE_0__["ɵɵproperty"]("ngIf", !ctx_r4.esDominical && (ctx_r4.formulario.tipoBeneficiario === "Externo" || ctx_r4.formulario.fuente !== "TMS"));
+    _angular_core__WEBPACK_IMPORTED_MODULE_0__["ɵɵadvance"](1);
+    _angular_core__WEBPACK_IMPORTED_MODULE_0__["ɵɵproperty"]("ngIf", ctx_r4.esDominical && ctx_r4.beneficiario);
+    _angular_core__WEBPACK_IMPORTED_MODULE_0__["ɵɵadvance"](1);
+    _angular_core__WEBPACK_IMPORTED_MODULE_0__["ɵɵproperty"]("ngIf", ctx_r4.beneficiario && ctx_r4.formulario.fuente === "TMS" && !ctx_r4.esDominical);
+} }
+function NominasEventosPagosComponent_ng_container_32_small_21_Template(rf, ctx) { if (rf & 1) {
+    _angular_core__WEBPACK_IMPORTED_MODULE_0__["ɵɵelementStart"](0, "small", 52);
+    _angular_core__WEBPACK_IMPORTED_MODULE_0__["ɵɵtext"](1, " N\u00FAmero de pagos hasta saldar la deuda ");
+    _angular_core__WEBPACK_IMPORTED_MODULE_0__["ɵɵelementEnd"]();
+} }
+function NominasEventosPagosComponent_ng_container_32_div_26_Template(rf, ctx) { if (rf & 1) {
+    const _r45 = _angular_core__WEBPACK_IMPORTED_MODULE_0__["ɵɵgetCurrentView"]();
+    _angular_core__WEBPACK_IMPORTED_MODULE_0__["ɵɵelementStart"](0, "div", 62);
+    _angular_core__WEBPACK_IMPORTED_MODULE_0__["ɵɵelementStart"](1, "label", 63);
+    _angular_core__WEBPACK_IMPORTED_MODULE_0__["ɵɵtext"](2, "D\u00EDa del mes");
+    _angular_core__WEBPACK_IMPORTED_MODULE_0__["ɵɵelementEnd"]();
+    _angular_core__WEBPACK_IMPORTED_MODULE_0__["ɵɵelementStart"](3, "dx-number-box", 64);
+    _angular_core__WEBPACK_IMPORTED_MODULE_0__["ɵɵlistener"]("valueChange", function NominasEventosPagosComponent_ng_container_32_div_26_Template_dx_number_box_valueChange_3_listener($event) { _angular_core__WEBPACK_IMPORTED_MODULE_0__["ɵɵrestoreView"](_r45); const ctx_r44 = _angular_core__WEBPACK_IMPORTED_MODULE_0__["ɵɵnextContext"](2); return ctx_r44.formulario.diaDelMes = $event; })("onValueChanged", function NominasEventosPagosComponent_ng_container_32_div_26_Template_dx_number_box_onValueChanged_3_listener() { _angular_core__WEBPACK_IMPORTED_MODULE_0__["ɵɵrestoreView"](_r45); const ctx_r46 = _angular_core__WEBPACK_IMPORTED_MODULE_0__["ɵɵnextContext"](2); return ctx_r46.sincronizarParametroDiaMes(); });
+    _angular_core__WEBPACK_IMPORTED_MODULE_0__["ɵɵelementEnd"]();
+    _angular_core__WEBPACK_IMPORTED_MODULE_0__["ɵɵelementEnd"]();
+} if (rf & 2) {
+    const ctx_r37 = _angular_core__WEBPACK_IMPORTED_MODULE_0__["ɵɵnextContext"](2);
+    _angular_core__WEBPACK_IMPORTED_MODULE_0__["ɵɵadvance"](3);
+    _angular_core__WEBPACK_IMPORTED_MODULE_0__["ɵɵproperty"]("value", ctx_r37.formulario.diaDelMes)("min", 1)("max", 31);
+} }
+function NominasEventosPagosComponent_ng_container_32_div_27_Template(rf, ctx) { if (rf & 1) {
+    const _r48 = _angular_core__WEBPACK_IMPORTED_MODULE_0__["ɵɵgetCurrentView"]();
+    _angular_core__WEBPACK_IMPORTED_MODULE_0__["ɵɵelementStart"](0, "div", 62);
+    _angular_core__WEBPACK_IMPORTED_MODULE_0__["ɵɵelementStart"](1, "label", 63);
+    _angular_core__WEBPACK_IMPORTED_MODULE_0__["ɵɵtext"](2, "Fecha referencia anual (mes inicio)");
+    _angular_core__WEBPACK_IMPORTED_MODULE_0__["ɵɵelementEnd"]();
+    _angular_core__WEBPACK_IMPORTED_MODULE_0__["ɵɵelementStart"](3, "dx-date-box", 65);
+    _angular_core__WEBPACK_IMPORTED_MODULE_0__["ɵɵlistener"]("valueChange", function NominasEventosPagosComponent_ng_container_32_div_27_Template_dx_date_box_valueChange_3_listener($event) { _angular_core__WEBPACK_IMPORTED_MODULE_0__["ɵɵrestoreView"](_r48); const ctx_r47 = _angular_core__WEBPACK_IMPORTED_MODULE_0__["ɵɵnextContext"](2); return ctx_r47.formulario.fechaReferenciaAnual = $event; })("onValueChanged", function NominasEventosPagosComponent_ng_container_32_div_27_Template_dx_date_box_onValueChanged_3_listener() { _angular_core__WEBPACK_IMPORTED_MODULE_0__["ɵɵrestoreView"](_r48); const ctx_r49 = _angular_core__WEBPACK_IMPORTED_MODULE_0__["ɵɵnextContext"](2); return ctx_r49.onDatosAmortizacionChanged(); });
+    _angular_core__WEBPACK_IMPORTED_MODULE_0__["ɵɵelementEnd"]();
+    _angular_core__WEBPACK_IMPORTED_MODULE_0__["ɵɵelementStart"](4, "div", 15);
+    _angular_core__WEBPACK_IMPORTED_MODULE_0__["ɵɵelementStart"](5, "div", 66);
+    _angular_core__WEBPACK_IMPORTED_MODULE_0__["ɵɵelementStart"](6, "label", 63);
+    _angular_core__WEBPACK_IMPORTED_MODULE_0__["ɵɵtext"](7, "D\u00EDa inicio ventana");
+    _angular_core__WEBPACK_IMPORTED_MODULE_0__["ɵɵelementEnd"]();
+    _angular_core__WEBPACK_IMPORTED_MODULE_0__["ɵɵelementStart"](8, "dx-number-box", 64);
+    _angular_core__WEBPACK_IMPORTED_MODULE_0__["ɵɵlistener"]("valueChange", function NominasEventosPagosComponent_ng_container_32_div_27_Template_dx_number_box_valueChange_8_listener($event) { _angular_core__WEBPACK_IMPORTED_MODULE_0__["ɵɵrestoreView"](_r48); const ctx_r50 = _angular_core__WEBPACK_IMPORTED_MODULE_0__["ɵɵnextContext"](2); return ctx_r50.formulario.diaInicioVentana = $event; })("onValueChanged", function NominasEventosPagosComponent_ng_container_32_div_27_Template_dx_number_box_onValueChanged_8_listener() { _angular_core__WEBPACK_IMPORTED_MODULE_0__["ɵɵrestoreView"](_r48); const ctx_r51 = _angular_core__WEBPACK_IMPORTED_MODULE_0__["ɵɵnextContext"](2); return ctx_r51.onDatosAmortizacionChanged(); });
+    _angular_core__WEBPACK_IMPORTED_MODULE_0__["ɵɵelementEnd"]();
+    _angular_core__WEBPACK_IMPORTED_MODULE_0__["ɵɵelementEnd"]();
+    _angular_core__WEBPACK_IMPORTED_MODULE_0__["ɵɵelementStart"](9, "div", 66);
+    _angular_core__WEBPACK_IMPORTED_MODULE_0__["ɵɵelementStart"](10, "label", 63);
+    _angular_core__WEBPACK_IMPORTED_MODULE_0__["ɵɵtext"](11, "D\u00EDa l\u00EDmite ventana");
+    _angular_core__WEBPACK_IMPORTED_MODULE_0__["ɵɵelementEnd"]();
+    _angular_core__WEBPACK_IMPORTED_MODULE_0__["ɵɵelementStart"](12, "dx-number-box", 64);
+    _angular_core__WEBPACK_IMPORTED_MODULE_0__["ɵɵlistener"]("valueChange", function NominasEventosPagosComponent_ng_container_32_div_27_Template_dx_number_box_valueChange_12_listener($event) { _angular_core__WEBPACK_IMPORTED_MODULE_0__["ɵɵrestoreView"](_r48); const ctx_r52 = _angular_core__WEBPACK_IMPORTED_MODULE_0__["ɵɵnextContext"](2); return ctx_r52.formulario.diaLimiteVentana = $event; })("onValueChanged", function NominasEventosPagosComponent_ng_container_32_div_27_Template_dx_number_box_onValueChanged_12_listener() { _angular_core__WEBPACK_IMPORTED_MODULE_0__["ɵɵrestoreView"](_r48); const ctx_r53 = _angular_core__WEBPACK_IMPORTED_MODULE_0__["ɵɵnextContext"](2); return ctx_r53.onDatosAmortizacionChanged(); });
+    _angular_core__WEBPACK_IMPORTED_MODULE_0__["ɵɵelementEnd"]();
+    _angular_core__WEBPACK_IMPORTED_MODULE_0__["ɵɵelementEnd"]();
+    _angular_core__WEBPACK_IMPORTED_MODULE_0__["ɵɵelementEnd"]();
+    _angular_core__WEBPACK_IMPORTED_MODULE_0__["ɵɵelementEnd"]();
+} if (rf & 2) {
+    const ctx_r38 = _angular_core__WEBPACK_IMPORTED_MODULE_0__["ɵɵnextContext"](2);
+    _angular_core__WEBPACK_IMPORTED_MODULE_0__["ɵɵadvance"](3);
+    _angular_core__WEBPACK_IMPORTED_MODULE_0__["ɵɵproperty"]("value", ctx_r38.formulario.fechaReferenciaAnual);
+    _angular_core__WEBPACK_IMPORTED_MODULE_0__["ɵɵadvance"](5);
+    _angular_core__WEBPACK_IMPORTED_MODULE_0__["ɵɵproperty"]("value", ctx_r38.formulario.diaInicioVentana)("min", 1)("max", 31);
+    _angular_core__WEBPACK_IMPORTED_MODULE_0__["ɵɵadvance"](4);
+    _angular_core__WEBPACK_IMPORTED_MODULE_0__["ɵɵproperty"]("value", ctx_r38.formulario.diaLimiteVentana)("min", 1)("max", 31);
+} }
+function NominasEventosPagosComponent_ng_container_32_div_32_small_4_Template(rf, ctx) { if (rf & 1) {
+    _angular_core__WEBPACK_IMPORTED_MODULE_0__["ɵɵelementStart"](0, "small", 68);
+    _angular_core__WEBPACK_IMPORTED_MODULE_0__["ɵɵtext"](1, " Cuota fija recurrente (ej. arriendo $650/mes, sin monto total) ");
+    _angular_core__WEBPACK_IMPORTED_MODULE_0__["ɵɵelementEnd"]();
+} }
+function NominasEventosPagosComponent_ng_container_32_div_32_small_5_Template(rf, ctx) { if (rf & 1) {
+    _angular_core__WEBPACK_IMPORTED_MODULE_0__["ɵɵelementStart"](0, "small", 68);
+    _angular_core__WEBPACK_IMPORTED_MODULE_0__["ɵɵtext"](1, " Deuda con monto total que termina al completar cuotas ");
+    _angular_core__WEBPACK_IMPORTED_MODULE_0__["ɵɵelementEnd"]();
+} }
+function NominasEventosPagosComponent_ng_container_32_div_32_Template(rf, ctx) { if (rf & 1) {
+    const _r57 = _angular_core__WEBPACK_IMPORTED_MODULE_0__["ɵɵgetCurrentView"]();
+    _angular_core__WEBPACK_IMPORTED_MODULE_0__["ɵɵelementStart"](0, "div", 5);
+    _angular_core__WEBPACK_IMPORTED_MODULE_0__["ɵɵelementStart"](1, "label", 6);
+    _angular_core__WEBPACK_IMPORTED_MODULE_0__["ɵɵtext"](2, "Monto");
+    _angular_core__WEBPACK_IMPORTED_MODULE_0__["ɵɵelementEnd"]();
+    _angular_core__WEBPACK_IMPORTED_MODULE_0__["ɵɵelementStart"](3, "dx-select-box", 48);
+    _angular_core__WEBPACK_IMPORTED_MODULE_0__["ɵɵlistener"]("valueChange", function NominasEventosPagosComponent_ng_container_32_div_32_Template_dx_select_box_valueChange_3_listener($event) { _angular_core__WEBPACK_IMPORTED_MODULE_0__["ɵɵrestoreView"](_r57); const ctx_r56 = _angular_core__WEBPACK_IMPORTED_MODULE_0__["ɵɵnextContext"](2); return ctx_r56.formulario.modalidadMonto = $event; })("onValueChanged", function NominasEventosPagosComponent_ng_container_32_div_32_Template_dx_select_box_onValueChanged_3_listener() { _angular_core__WEBPACK_IMPORTED_MODULE_0__["ɵɵrestoreView"](_r57); const ctx_r58 = _angular_core__WEBPACK_IMPORTED_MODULE_0__["ɵɵnextContext"](2); return ctx_r58.onModalidadMontoChanged(); });
+    _angular_core__WEBPACK_IMPORTED_MODULE_0__["ɵɵelementEnd"]();
+    _angular_core__WEBPACK_IMPORTED_MODULE_0__["ɵɵtemplate"](4, NominasEventosPagosComponent_ng_container_32_div_32_small_4_Template, 2, 0, "small", 67);
+    _angular_core__WEBPACK_IMPORTED_MODULE_0__["ɵɵtemplate"](5, NominasEventosPagosComponent_ng_container_32_div_32_small_5_Template, 2, 0, "small", 67);
+    _angular_core__WEBPACK_IMPORTED_MODULE_0__["ɵɵelementEnd"]();
+} if (rf & 2) {
+    const ctx_r39 = _angular_core__WEBPACK_IMPORTED_MODULE_0__["ɵɵnextContext"](2);
+    _angular_core__WEBPACK_IMPORTED_MODULE_0__["ɵɵadvance"](3);
+    _angular_core__WEBPACK_IMPORTED_MODULE_0__["ɵɵproperty"]("items", ctx_r39.modalidadesMontoB)("value", ctx_r39.formulario.modalidadMonto);
+    _angular_core__WEBPACK_IMPORTED_MODULE_0__["ɵɵadvance"](1);
+    _angular_core__WEBPACK_IMPORTED_MODULE_0__["ɵɵproperty"]("ngIf", ctx_r39.formulario.modalidadMonto === "Periodico");
+    _angular_core__WEBPACK_IMPORTED_MODULE_0__["ɵɵadvance"](1);
+    _angular_core__WEBPACK_IMPORTED_MODULE_0__["ɵɵproperty"]("ngIf", ctx_r39.formulario.modalidadMonto === "Finito");
+} }
+function NominasEventosPagosComponent_ng_container_32_div_33_Template(rf, ctx) { if (rf & 1) {
+    const _r60 = _angular_core__WEBPACK_IMPORTED_MODULE_0__["ɵɵgetCurrentView"]();
+    _angular_core__WEBPACK_IMPORTED_MODULE_0__["ɵɵelementStart"](0, "div", 5);
+    _angular_core__WEBPACK_IMPORTED_MODULE_0__["ɵɵelementStart"](1, "label", 6);
+    _angular_core__WEBPACK_IMPORTED_MODULE_0__["ɵɵtext"](2, "Monto total ($)");
+    _angular_core__WEBPACK_IMPORTED_MODULE_0__["ɵɵelementEnd"]();
+    _angular_core__WEBPACK_IMPORTED_MODULE_0__["ɵɵelementStart"](3, "dx-number-box", 69);
+    _angular_core__WEBPACK_IMPORTED_MODULE_0__["ɵɵlistener"]("valueChange", function NominasEventosPagosComponent_ng_container_32_div_33_Template_dx_number_box_valueChange_3_listener($event) { _angular_core__WEBPACK_IMPORTED_MODULE_0__["ɵɵrestoreView"](_r60); const ctx_r59 = _angular_core__WEBPACK_IMPORTED_MODULE_0__["ɵɵnextContext"](2); return ctx_r59.formulario.montoTotalDeuda = $event; })("onValueChanged", function NominasEventosPagosComponent_ng_container_32_div_33_Template_dx_number_box_onValueChanged_3_listener() { _angular_core__WEBPACK_IMPORTED_MODULE_0__["ɵɵrestoreView"](_r60); const ctx_r61 = _angular_core__WEBPACK_IMPORTED_MODULE_0__["ɵɵnextContext"](2); return ctx_r61.onDatosAmortizacionChanged(); });
+    _angular_core__WEBPACK_IMPORTED_MODULE_0__["ɵɵelementEnd"]();
+    _angular_core__WEBPACK_IMPORTED_MODULE_0__["ɵɵelementEnd"]();
+} if (rf & 2) {
+    const ctx_r40 = _angular_core__WEBPACK_IMPORTED_MODULE_0__["ɵɵnextContext"](2);
+    _angular_core__WEBPACK_IMPORTED_MODULE_0__["ɵɵadvance"](3);
+    _angular_core__WEBPACK_IMPORTED_MODULE_0__["ɵɵproperty"]("value", ctx_r40.formulario.montoTotalDeuda)("min", 0);
+} }
+function NominasEventosPagosComponent_ng_container_32_div_34_Template(rf, ctx) { if (rf & 1) {
+    const _r63 = _angular_core__WEBPACK_IMPORTED_MODULE_0__["ɵɵgetCurrentView"]();
+    _angular_core__WEBPACK_IMPORTED_MODULE_0__["ɵɵelementStart"](0, "div", 5);
+    _angular_core__WEBPACK_IMPORTED_MODULE_0__["ɵɵelementStart"](1, "label", 6);
+    _angular_core__WEBPACK_IMPORTED_MODULE_0__["ɵɵtext"](2, "Cuota evento ($)");
+    _angular_core__WEBPACK_IMPORTED_MODULE_0__["ɵɵelementEnd"]();
+    _angular_core__WEBPACK_IMPORTED_MODULE_0__["ɵɵelementStart"](3, "dx-number-box", 56);
+    _angular_core__WEBPACK_IMPORTED_MODULE_0__["ɵɵlistener"]("valueChange", function NominasEventosPagosComponent_ng_container_32_div_34_Template_dx_number_box_valueChange_3_listener($event) { _angular_core__WEBPACK_IMPORTED_MODULE_0__["ɵɵrestoreView"](_r63); const ctx_r62 = _angular_core__WEBPACK_IMPORTED_MODULE_0__["ɵɵnextContext"](2); return ctx_r62.formulario.cuotaEvento = $event; });
+    _angular_core__WEBPACK_IMPORTED_MODULE_0__["ɵɵelementEnd"]();
+    _angular_core__WEBPACK_IMPORTED_MODULE_0__["ɵɵelementEnd"]();
+} if (rf & 2) {
+    const ctx_r41 = _angular_core__WEBPACK_IMPORTED_MODULE_0__["ɵɵnextContext"](2);
+    _angular_core__WEBPACK_IMPORTED_MODULE_0__["ɵɵadvance"](3);
+    _angular_core__WEBPACK_IMPORTED_MODULE_0__["ɵɵproperty"]("value", ctx_r41.formulario.cuotaEvento)("min", 0);
+} }
+function NominasEventosPagosComponent_ng_container_32_div_35_Template(rf, ctx) { if (rf & 1) {
+    _angular_core__WEBPACK_IMPORTED_MODULE_0__["ɵɵelementStart"](0, "div", 5);
+    _angular_core__WEBPACK_IMPORTED_MODULE_0__["ɵɵelementStart"](1, "label", 6);
+    _angular_core__WEBPACK_IMPORTED_MODULE_0__["ɵɵtext"](2, "Cuota evento ($)");
+    _angular_core__WEBPACK_IMPORTED_MODULE_0__["ɵɵelementEnd"]();
+    _angular_core__WEBPACK_IMPORTED_MODULE_0__["ɵɵelement"](3, "dx-text-box", 70);
+    _angular_core__WEBPACK_IMPORTED_MODULE_0__["ɵɵpipe"](4, "number");
+    _angular_core__WEBPACK_IMPORTED_MODULE_0__["ɵɵelementStart"](5, "small", 52);
+    _angular_core__WEBPACK_IMPORTED_MODULE_0__["ɵɵtext"](6, "Calculada desde amortizaci\u00F3n (1\u00AA cuota)");
+    _angular_core__WEBPACK_IMPORTED_MODULE_0__["ɵɵelementEnd"]();
+    _angular_core__WEBPACK_IMPORTED_MODULE_0__["ɵɵelementEnd"]();
+} if (rf & 2) {
+    const ctx_r42 = _angular_core__WEBPACK_IMPORTED_MODULE_0__["ɵɵnextContext"](2);
+    _angular_core__WEBPACK_IMPORTED_MODULE_0__["ɵɵadvance"](3);
+    _angular_core__WEBPACK_IMPORTED_MODULE_0__["ɵɵproperty"]("value", _angular_core__WEBPACK_IMPORTED_MODULE_0__["ɵɵpipeBind2"](4, 2, ctx_r42.formulario.cuotaEvento, "1.2-2") || "")("readOnly", true);
+} }
+function NominasEventosPagosComponent_ng_container_32_div_36_Template(rf, ctx) { if (rf & 1) {
+    const _r65 = _angular_core__WEBPACK_IMPORTED_MODULE_0__["ɵɵgetCurrentView"]();
+    _angular_core__WEBPACK_IMPORTED_MODULE_0__["ɵɵelementStart"](0, "div", 71);
+    _angular_core__WEBPACK_IMPORTED_MODULE_0__["ɵɵelementStart"](1, "button", 72);
+    _angular_core__WEBPACK_IMPORTED_MODULE_0__["ɵɵlistener"]("click", function NominasEventosPagosComponent_ng_container_32_div_36_Template_button_click_1_listener() { _angular_core__WEBPACK_IMPORTED_MODULE_0__["ɵɵrestoreView"](_r65); const ctx_r64 = _angular_core__WEBPACK_IMPORTED_MODULE_0__["ɵɵnextContext"](2); return ctx_r64.generarAmortizacion(true); });
+    _angular_core__WEBPACK_IMPORTED_MODULE_0__["ɵɵtext"](2, " Recalcular tabla ");
+    _angular_core__WEBPACK_IMPORTED_MODULE_0__["ɵɵelementEnd"]();
+    _angular_core__WEBPACK_IMPORTED_MODULE_0__["ɵɵelementEnd"]();
+} }
+function NominasEventosPagosComponent_ng_container_32_Template(rf, ctx) { if (rf & 1) {
+    const _r67 = _angular_core__WEBPACK_IMPORTED_MODULE_0__["ɵɵgetCurrentView"]();
+    _angular_core__WEBPACK_IMPORTED_MODULE_0__["ɵɵelementContainerStart"](0);
+    _angular_core__WEBPACK_IMPORTED_MODULE_0__["ɵɵelementStart"](1, "div", 5);
+    _angular_core__WEBPACK_IMPORTED_MODULE_0__["ɵɵelementStart"](2, "label", 6);
+    _angular_core__WEBPACK_IMPORTED_MODULE_0__["ɵɵtext"](3, "Centro de costo");
+    _angular_core__WEBPACK_IMPORTED_MODULE_0__["ɵɵelementEnd"]();
+    _angular_core__WEBPACK_IMPORTED_MODULE_0__["ɵɵelementStart"](4, "dx-select-box", 57);
+    _angular_core__WEBPACK_IMPORTED_MODULE_0__["ɵɵlistener"]("valueChange", function NominasEventosPagosComponent_ng_container_32_Template_dx_select_box_valueChange_4_listener($event) { _angular_core__WEBPACK_IMPORTED_MODULE_0__["ɵɵrestoreView"](_r67); const ctx_r66 = _angular_core__WEBPACK_IMPORTED_MODULE_0__["ɵɵnextContext"](); return ctx_r66.formulario.centroCosto = $event; });
+    _angular_core__WEBPACK_IMPORTED_MODULE_0__["ɵɵelementEnd"]();
+    _angular_core__WEBPACK_IMPORTED_MODULE_0__["ɵɵelementStart"](5, "small", 52);
+    _angular_core__WEBPACK_IMPORTED_MODULE_0__["ɵɵtext"](6, "Identifica la deuda particular para consolidar informaci\u00F3n");
+    _angular_core__WEBPACK_IMPORTED_MODULE_0__["ɵɵelementEnd"]();
+    _angular_core__WEBPACK_IMPORTED_MODULE_0__["ɵɵelementEnd"]();
+    _angular_core__WEBPACK_IMPORTED_MODULE_0__["ɵɵelementStart"](7, "div", 5);
+    _angular_core__WEBPACK_IMPORTED_MODULE_0__["ɵɵelementStart"](8, "label", 6);
+    _angular_core__WEBPACK_IMPORTED_MODULE_0__["ɵɵtext"](9, "Fuente");
+    _angular_core__WEBPACK_IMPORTED_MODULE_0__["ɵɵelementEnd"]();
+    _angular_core__WEBPACK_IMPORTED_MODULE_0__["ɵɵelementStart"](10, "dx-text-box", 11);
+    _angular_core__WEBPACK_IMPORTED_MODULE_0__["ɵɵlistener"]("valueChange", function NominasEventosPagosComponent_ng_container_32_Template_dx_text_box_valueChange_10_listener($event) { _angular_core__WEBPACK_IMPORTED_MODULE_0__["ɵɵrestoreView"](_r67); const ctx_r68 = _angular_core__WEBPACK_IMPORTED_MODULE_0__["ɵɵnextContext"](); return ctx_r68.formulario.fuente = $event; });
+    _angular_core__WEBPACK_IMPORTED_MODULE_0__["ɵɵelementEnd"]();
+    _angular_core__WEBPACK_IMPORTED_MODULE_0__["ɵɵelementStart"](11, "small", 52);
+    _angular_core__WEBPACK_IMPORTED_MODULE_0__["ɵɵtext"](12, "Manual \u2014 sin c\u00E1lculo del sistema");
+    _angular_core__WEBPACK_IMPORTED_MODULE_0__["ɵɵelementEnd"]();
+    _angular_core__WEBPACK_IMPORTED_MODULE_0__["ɵɵelementEnd"]();
+    _angular_core__WEBPACK_IMPORTED_MODULE_0__["ɵɵelementStart"](13, "div", 5);
+    _angular_core__WEBPACK_IMPORTED_MODULE_0__["ɵɵelementStart"](14, "label", 6);
+    _angular_core__WEBPACK_IMPORTED_MODULE_0__["ɵɵtext"](15, "Frecuencia");
+    _angular_core__WEBPACK_IMPORTED_MODULE_0__["ɵɵelementEnd"]();
+    _angular_core__WEBPACK_IMPORTED_MODULE_0__["ɵɵelementStart"](16, "dx-select-box", 48);
+    _angular_core__WEBPACK_IMPORTED_MODULE_0__["ɵɵlistener"]("valueChange", function NominasEventosPagosComponent_ng_container_32_Template_dx_select_box_valueChange_16_listener($event) { _angular_core__WEBPACK_IMPORTED_MODULE_0__["ɵɵrestoreView"](_r67); const ctx_r69 = _angular_core__WEBPACK_IMPORTED_MODULE_0__["ɵɵnextContext"](); return ctx_r69.formulario.frecuencia = $event; })("onValueChanged", function NominasEventosPagosComponent_ng_container_32_Template_dx_select_box_onValueChanged_16_listener() { _angular_core__WEBPACK_IMPORTED_MODULE_0__["ɵɵrestoreView"](_r67); const ctx_r70 = _angular_core__WEBPACK_IMPORTED_MODULE_0__["ɵɵnextContext"](); return ctx_r70.onFrecuenciaChanged(); });
+    _angular_core__WEBPACK_IMPORTED_MODULE_0__["ɵɵelementEnd"]();
+    _angular_core__WEBPACK_IMPORTED_MODULE_0__["ɵɵelementEnd"]();
+    _angular_core__WEBPACK_IMPORTED_MODULE_0__["ɵɵelementStart"](17, "div", 5);
+    _angular_core__WEBPACK_IMPORTED_MODULE_0__["ɵɵelementStart"](18, "label", 6);
+    _angular_core__WEBPACK_IMPORTED_MODULE_0__["ɵɵtext"](19, "Cuotas");
+    _angular_core__WEBPACK_IMPORTED_MODULE_0__["ɵɵelementEnd"]();
+    _angular_core__WEBPACK_IMPORTED_MODULE_0__["ɵɵelementStart"](20, "dx-number-box", 58);
+    _angular_core__WEBPACK_IMPORTED_MODULE_0__["ɵɵlistener"]("valueChange", function NominasEventosPagosComponent_ng_container_32_Template_dx_number_box_valueChange_20_listener($event) { _angular_core__WEBPACK_IMPORTED_MODULE_0__["ɵɵrestoreView"](_r67); const ctx_r71 = _angular_core__WEBPACK_IMPORTED_MODULE_0__["ɵɵnextContext"](); return ctx_r71.formulario.cuotas = $event; })("onValueChanged", function NominasEventosPagosComponent_ng_container_32_Template_dx_number_box_onValueChanged_20_listener() { _angular_core__WEBPACK_IMPORTED_MODULE_0__["ɵɵrestoreView"](_r67); const ctx_r72 = _angular_core__WEBPACK_IMPORTED_MODULE_0__["ɵɵnextContext"](); return ctx_r72.onDatosAmortizacionChanged(); });
+    _angular_core__WEBPACK_IMPORTED_MODULE_0__["ɵɵelementEnd"]();
+    _angular_core__WEBPACK_IMPORTED_MODULE_0__["ɵɵtemplate"](21, NominasEventosPagosComponent_ng_container_32_small_21_Template, 2, 0, "small", 49);
+    _angular_core__WEBPACK_IMPORTED_MODULE_0__["ɵɵelementEnd"]();
+    _angular_core__WEBPACK_IMPORTED_MODULE_0__["ɵɵelementStart"](22, "div", 5);
+    _angular_core__WEBPACK_IMPORTED_MODULE_0__["ɵɵelementStart"](23, "label", 6);
+    _angular_core__WEBPACK_IMPORTED_MODULE_0__["ɵɵtext"](24, "Par\u00E1metro");
+    _angular_core__WEBPACK_IMPORTED_MODULE_0__["ɵɵelementEnd"]();
+    _angular_core__WEBPACK_IMPORTED_MODULE_0__["ɵɵelementStart"](25, "dx-select-box", 48);
+    _angular_core__WEBPACK_IMPORTED_MODULE_0__["ɵɵlistener"]("valueChange", function NominasEventosPagosComponent_ng_container_32_Template_dx_select_box_valueChange_25_listener($event) { _angular_core__WEBPACK_IMPORTED_MODULE_0__["ɵɵrestoreView"](_r67); const ctx_r73 = _angular_core__WEBPACK_IMPORTED_MODULE_0__["ɵɵnextContext"](); return ctx_r73.formulario.parametro = $event; })("onValueChanged", function NominasEventosPagosComponent_ng_container_32_Template_dx_select_box_onValueChanged_25_listener() { _angular_core__WEBPACK_IMPORTED_MODULE_0__["ɵɵrestoreView"](_r67); const ctx_r74 = _angular_core__WEBPACK_IMPORTED_MODULE_0__["ɵɵnextContext"](); ctx_r74.sincronizarParametroDiaMes(); return ctx_r74.onDatosAmortizacionChanged(); });
+    _angular_core__WEBPACK_IMPORTED_MODULE_0__["ɵɵelementEnd"]();
+    _angular_core__WEBPACK_IMPORTED_MODULE_0__["ɵɵtemplate"](26, NominasEventosPagosComponent_ng_container_32_div_26_Template, 4, 3, "div", 59);
+    _angular_core__WEBPACK_IMPORTED_MODULE_0__["ɵɵtemplate"](27, NominasEventosPagosComponent_ng_container_32_div_27_Template, 13, 7, "div", 59);
+    _angular_core__WEBPACK_IMPORTED_MODULE_0__["ɵɵelementEnd"]();
+    _angular_core__WEBPACK_IMPORTED_MODULE_0__["ɵɵelementStart"](28, "div", 5);
+    _angular_core__WEBPACK_IMPORTED_MODULE_0__["ɵɵelementStart"](29, "label", 6);
+    _angular_core__WEBPACK_IMPORTED_MODULE_0__["ɵɵtext"](30, "Vigencia de la regla");
+    _angular_core__WEBPACK_IMPORTED_MODULE_0__["ɵɵelementEnd"]();
+    _angular_core__WEBPACK_IMPORTED_MODULE_0__["ɵɵelementStart"](31, "dx-select-box", 48);
+    _angular_core__WEBPACK_IMPORTED_MODULE_0__["ɵɵlistener"]("valueChange", function NominasEventosPagosComponent_ng_container_32_Template_dx_select_box_valueChange_31_listener($event) { _angular_core__WEBPACK_IMPORTED_MODULE_0__["ɵɵrestoreView"](_r67); const ctx_r75 = _angular_core__WEBPACK_IMPORTED_MODULE_0__["ɵɵnextContext"](); return ctx_r75.formulario.vigenciaRegla = $event; })("onValueChanged", function NominasEventosPagosComponent_ng_container_32_Template_dx_select_box_onValueChanged_31_listener() { _angular_core__WEBPACK_IMPORTED_MODULE_0__["ɵɵrestoreView"](_r67); const ctx_r76 = _angular_core__WEBPACK_IMPORTED_MODULE_0__["ɵɵnextContext"](); return ctx_r76.onVigenciaTipoBChanged(); });
+    _angular_core__WEBPACK_IMPORTED_MODULE_0__["ɵɵelementEnd"]();
+    _angular_core__WEBPACK_IMPORTED_MODULE_0__["ɵɵelementEnd"]();
+    _angular_core__WEBPACK_IMPORTED_MODULE_0__["ɵɵtemplate"](32, NominasEventosPagosComponent_ng_container_32_div_32_Template, 6, 4, "div", 60);
+    _angular_core__WEBPACK_IMPORTED_MODULE_0__["ɵɵtemplate"](33, NominasEventosPagosComponent_ng_container_32_div_33_Template, 4, 2, "div", 60);
+    _angular_core__WEBPACK_IMPORTED_MODULE_0__["ɵɵtemplate"](34, NominasEventosPagosComponent_ng_container_32_div_34_Template, 4, 2, "div", 60);
+    _angular_core__WEBPACK_IMPORTED_MODULE_0__["ɵɵtemplate"](35, NominasEventosPagosComponent_ng_container_32_div_35_Template, 7, 5, "div", 60);
+    _angular_core__WEBPACK_IMPORTED_MODULE_0__["ɵɵtemplate"](36, NominasEventosPagosComponent_ng_container_32_div_36_Template, 3, 0, "div", 61);
+    _angular_core__WEBPACK_IMPORTED_MODULE_0__["ɵɵelementContainerEnd"]();
+} if (rf & 2) {
+    const ctx_r5 = _angular_core__WEBPACK_IMPORTED_MODULE_0__["ɵɵnextContext"]();
+    _angular_core__WEBPACK_IMPORTED_MODULE_0__["ɵɵadvance"](4);
+    _angular_core__WEBPACK_IMPORTED_MODULE_0__["ɵɵproperty"]("items", ctx_r5.nombresCentrosCosto)("value", ctx_r5.formulario.centroCosto)("searchEnabled", true);
+    _angular_core__WEBPACK_IMPORTED_MODULE_0__["ɵɵadvance"](6);
+    _angular_core__WEBPACK_IMPORTED_MODULE_0__["ɵɵproperty"]("value", ctx_r5.formulario.fuente)("readOnly", true);
+    _angular_core__WEBPACK_IMPORTED_MODULE_0__["ɵɵadvance"](6);
+    _angular_core__WEBPACK_IMPORTED_MODULE_0__["ɵɵproperty"]("items", ctx_r5.frecuenciasB)("value", ctx_r5.formulario.frecuencia);
+    _angular_core__WEBPACK_IMPORTED_MODULE_0__["ɵɵadvance"](4);
+    _angular_core__WEBPACK_IMPORTED_MODULE_0__["ɵɵproperty"]("value", ctx_r5.formulario.cuotas)("min", 1)("readOnly", ctx_r5.formulario.modalidadMonto === "Periodico" && ctx_r5.formulario.vigenciaRegla === "Indefinido" && !ctx_r5.esAnual);
+    _angular_core__WEBPACK_IMPORTED_MODULE_0__["ɵɵadvance"](1);
+    _angular_core__WEBPACK_IMPORTED_MODULE_0__["ɵɵproperty"]("ngIf", ctx_r5.formulario.modalidadMonto === "Finito");
+    _angular_core__WEBPACK_IMPORTED_MODULE_0__["ɵɵadvance"](4);
+    _angular_core__WEBPACK_IMPORTED_MODULE_0__["ɵɵproperty"]("items", ctx_r5.parametrosActuales)("value", ctx_r5.formulario.parametro);
+    _angular_core__WEBPACK_IMPORTED_MODULE_0__["ɵɵadvance"](1);
+    _angular_core__WEBPACK_IMPORTED_MODULE_0__["ɵɵproperty"]("ngIf", ctx_r5.formulario.frecuencia === "Mensual");
+    _angular_core__WEBPACK_IMPORTED_MODULE_0__["ɵɵadvance"](1);
+    _angular_core__WEBPACK_IMPORTED_MODULE_0__["ɵɵproperty"]("ngIf", ctx_r5.esAnual);
+    _angular_core__WEBPACK_IMPORTED_MODULE_0__["ɵɵadvance"](4);
+    _angular_core__WEBPACK_IMPORTED_MODULE_0__["ɵɵproperty"]("items", ctx_r5.vigenciasReglaB)("value", ctx_r5.formulario.vigenciaRegla);
+    _angular_core__WEBPACK_IMPORTED_MODULE_0__["ɵɵadvance"](1);
+    _angular_core__WEBPACK_IMPORTED_MODULE_0__["ɵɵproperty"]("ngIf", !ctx_r5.usaAmortizacion);
+    _angular_core__WEBPACK_IMPORTED_MODULE_0__["ɵɵadvance"](1);
+    _angular_core__WEBPACK_IMPORTED_MODULE_0__["ɵɵproperty"]("ngIf", ctx_r5.usaAmortizacion || ctx_r5.formulario.modalidadMonto === "Finito");
+    _angular_core__WEBPACK_IMPORTED_MODULE_0__["ɵɵadvance"](1);
+    _angular_core__WEBPACK_IMPORTED_MODULE_0__["ɵɵproperty"]("ngIf", !ctx_r5.usaAmortizacion);
+    _angular_core__WEBPACK_IMPORTED_MODULE_0__["ɵɵadvance"](1);
+    _angular_core__WEBPACK_IMPORTED_MODULE_0__["ɵɵproperty"]("ngIf", ctx_r5.usaAmortizacion);
+    _angular_core__WEBPACK_IMPORTED_MODULE_0__["ɵɵadvance"](1);
+    _angular_core__WEBPACK_IMPORTED_MODULE_0__["ɵɵproperty"]("ngIf", ctx_r5.usaAmortizacion);
+} }
+function NominasEventosPagosComponent_div_33_tr_19_Template(rf, ctx) { if (rf & 1) {
+    const _r83 = _angular_core__WEBPACK_IMPORTED_MODULE_0__["ɵɵgetCurrentView"]();
+    _angular_core__WEBPACK_IMPORTED_MODULE_0__["ɵɵelementStart"](0, "tr");
+    _angular_core__WEBPACK_IMPORTED_MODULE_0__["ɵɵelementStart"](1, "td");
+    _angular_core__WEBPACK_IMPORTED_MODULE_0__["ɵɵtext"](2);
+    _angular_core__WEBPACK_IMPORTED_MODULE_0__["ɵɵelementEnd"]();
+    _angular_core__WEBPACK_IMPORTED_MODULE_0__["ɵɵelementStart"](3, "td", 83);
+    _angular_core__WEBPACK_IMPORTED_MODULE_0__["ɵɵelementStart"](4, "dx-date-box", 65);
+    _angular_core__WEBPACK_IMPORTED_MODULE_0__["ɵɵlistener"]("valueChange", function NominasEventosPagosComponent_div_33_tr_19_Template_dx_date_box_valueChange_4_listener($event) { _angular_core__WEBPACK_IMPORTED_MODULE_0__["ɵɵrestoreView"](_r83); const i_r81 = ctx.index; const ctx_r82 = _angular_core__WEBPACK_IMPORTED_MODULE_0__["ɵɵnextContext"](2); return ctx_r82.tablaAmortizacion[i_r81].fechaMin = $event; })("onValueChanged", function NominasEventosPagosComponent_div_33_tr_19_Template_dx_date_box_onValueChanged_4_listener() { _angular_core__WEBPACK_IMPORTED_MODULE_0__["ɵɵrestoreView"](_r83); const ctx_r84 = _angular_core__WEBPACK_IMPORTED_MODULE_0__["ɵɵnextContext"](2); return ctx_r84.onAmortizacionChanged(); });
+    _angular_core__WEBPACK_IMPORTED_MODULE_0__["ɵɵelementEnd"]();
+    _angular_core__WEBPACK_IMPORTED_MODULE_0__["ɵɵelementEnd"]();
+    _angular_core__WEBPACK_IMPORTED_MODULE_0__["ɵɵelementStart"](5, "td", 83);
+    _angular_core__WEBPACK_IMPORTED_MODULE_0__["ɵɵelementStart"](6, "dx-date-box", 65);
+    _angular_core__WEBPACK_IMPORTED_MODULE_0__["ɵɵlistener"]("valueChange", function NominasEventosPagosComponent_div_33_tr_19_Template_dx_date_box_valueChange_6_listener($event) { _angular_core__WEBPACK_IMPORTED_MODULE_0__["ɵɵrestoreView"](_r83); const i_r81 = ctx.index; const ctx_r85 = _angular_core__WEBPACK_IMPORTED_MODULE_0__["ɵɵnextContext"](2); return ctx_r85.tablaAmortizacion[i_r81].fechaMax = $event; })("onValueChanged", function NominasEventosPagosComponent_div_33_tr_19_Template_dx_date_box_onValueChanged_6_listener() { _angular_core__WEBPACK_IMPORTED_MODULE_0__["ɵɵrestoreView"](_r83); const ctx_r86 = _angular_core__WEBPACK_IMPORTED_MODULE_0__["ɵɵnextContext"](2); return ctx_r86.onAmortizacionChanged(); });
+    _angular_core__WEBPACK_IMPORTED_MODULE_0__["ɵɵelementEnd"]();
+    _angular_core__WEBPACK_IMPORTED_MODULE_0__["ɵɵelementEnd"]();
+    _angular_core__WEBPACK_IMPORTED_MODULE_0__["ɵɵelementStart"](7, "td", 84);
+    _angular_core__WEBPACK_IMPORTED_MODULE_0__["ɵɵelementStart"](8, "dx-number-box", 69);
+    _angular_core__WEBPACK_IMPORTED_MODULE_0__["ɵɵlistener"]("valueChange", function NominasEventosPagosComponent_div_33_tr_19_Template_dx_number_box_valueChange_8_listener($event) { _angular_core__WEBPACK_IMPORTED_MODULE_0__["ɵɵrestoreView"](_r83); const i_r81 = ctx.index; const ctx_r87 = _angular_core__WEBPACK_IMPORTED_MODULE_0__["ɵɵnextContext"](2); return ctx_r87.tablaAmortizacion[i_r81].monto = $event; })("onValueChanged", function NominasEventosPagosComponent_div_33_tr_19_Template_dx_number_box_onValueChanged_8_listener() { _angular_core__WEBPACK_IMPORTED_MODULE_0__["ɵɵrestoreView"](_r83); const ctx_r88 = _angular_core__WEBPACK_IMPORTED_MODULE_0__["ɵɵnextContext"](2); return ctx_r88.onAmortizacionChanged(); });
+    _angular_core__WEBPACK_IMPORTED_MODULE_0__["ɵɵelementEnd"]();
+    _angular_core__WEBPACK_IMPORTED_MODULE_0__["ɵɵelementEnd"]();
+    _angular_core__WEBPACK_IMPORTED_MODULE_0__["ɵɵelementEnd"]();
+} if (rf & 2) {
+    const fila_r80 = ctx.$implicit;
+    const i_r81 = ctx.index;
+    const ctx_r77 = _angular_core__WEBPACK_IMPORTED_MODULE_0__["ɵɵnextContext"](2);
+    _angular_core__WEBPACK_IMPORTED_MODULE_0__["ɵɵadvance"](2);
+    _angular_core__WEBPACK_IMPORTED_MODULE_0__["ɵɵtextInterpolate"](fila_r80.numeroCuota);
+    _angular_core__WEBPACK_IMPORTED_MODULE_0__["ɵɵadvance"](2);
+    _angular_core__WEBPACK_IMPORTED_MODULE_0__["ɵɵproperty"]("value", ctx_r77.tablaAmortizacion[i_r81].fechaMin);
+    _angular_core__WEBPACK_IMPORTED_MODULE_0__["ɵɵadvance"](2);
+    _angular_core__WEBPACK_IMPORTED_MODULE_0__["ɵɵproperty"]("value", ctx_r77.tablaAmortizacion[i_r81].fechaMax);
+    _angular_core__WEBPACK_IMPORTED_MODULE_0__["ɵɵadvance"](2);
+    _angular_core__WEBPACK_IMPORTED_MODULE_0__["ɵɵproperty"]("value", ctx_r77.tablaAmortizacion[i_r81].monto)("min", 0);
+} }
+function NominasEventosPagosComponent_div_33_div_28_Template(rf, ctx) { if (rf & 1) {
+    _angular_core__WEBPACK_IMPORTED_MODULE_0__["ɵɵelementStart"](0, "div", 85);
+    _angular_core__WEBPACK_IMPORTED_MODULE_0__["ɵɵtext"](1);
+    _angular_core__WEBPACK_IMPORTED_MODULE_0__["ɵɵelementEnd"]();
+} if (rf & 2) {
+    const ctx_r78 = _angular_core__WEBPACK_IMPORTED_MODULE_0__["ɵɵnextContext"](2);
+    _angular_core__WEBPACK_IMPORTED_MODULE_0__["ɵɵadvance"](1);
+    _angular_core__WEBPACK_IMPORTED_MODULE_0__["ɵɵtextInterpolate1"](" ", ctx_r78.validacionAmortizacion.mensaje, " ");
+} }
+function NominasEventosPagosComponent_div_33_div_29_Template(rf, ctx) { if (rf & 1) {
+    _angular_core__WEBPACK_IMPORTED_MODULE_0__["ɵɵelementStart"](0, "div", 86);
+    _angular_core__WEBPACK_IMPORTED_MODULE_0__["ɵɵtext"](1);
+    _angular_core__WEBPACK_IMPORTED_MODULE_0__["ɵɵpipe"](2, "number");
+    _angular_core__WEBPACK_IMPORTED_MODULE_0__["ɵɵpipe"](3, "number");
+    _angular_core__WEBPACK_IMPORTED_MODULE_0__["ɵɵelementEnd"]();
+} if (rf & 2) {
+    const ctx_r79 = _angular_core__WEBPACK_IMPORTED_MODULE_0__["ɵɵnextContext"](2);
+    _angular_core__WEBPACK_IMPORTED_MODULE_0__["ɵɵadvance"](1);
+    _angular_core__WEBPACK_IMPORTED_MODULE_0__["ɵɵtextInterpolate2"](" Distribuido $", _angular_core__WEBPACK_IMPORTED_MODULE_0__["ɵɵpipeBind2"](2, 2, ctx_r79.validacionAmortizacion.suma, "1.2-2"), " \u2014 pendiente por asignar: $", _angular_core__WEBPACK_IMPORTED_MODULE_0__["ɵɵpipeBind2"](3, 5, ctx_r79.validacionAmortizacion.pendiente, "1.2-2"), " ");
+} }
+function NominasEventosPagosComponent_div_33_Template(rf, ctx) { if (rf & 1) {
+    _angular_core__WEBPACK_IMPORTED_MODULE_0__["ɵɵelementStart"](0, "div", 73);
+    _angular_core__WEBPACK_IMPORTED_MODULE_0__["ɵɵelementStart"](1, "div", 74);
+    _angular_core__WEBPACK_IMPORTED_MODULE_0__["ɵɵelementStart"](2, "h6", 75);
+    _angular_core__WEBPACK_IMPORTED_MODULE_0__["ɵɵtext"](3, "Tabla de amortizaci\u00F3n de pago");
+    _angular_core__WEBPACK_IMPORTED_MODULE_0__["ɵɵelementEnd"]();
+    _angular_core__WEBPACK_IMPORTED_MODULE_0__["ɵɵelementStart"](4, "p", 76);
+    _angular_core__WEBPACK_IMPORTED_MODULE_0__["ɵɵtext"](5, " Puede ajustar fechas y valores de cada cuota. La suma de valores no debe superar el monto total. El pago puede ser parcial o total en uno o varios abonos. ");
+    _angular_core__WEBPACK_IMPORTED_MODULE_0__["ɵɵelementEnd"]();
+    _angular_core__WEBPACK_IMPORTED_MODULE_0__["ɵɵelementStart"](6, "div", 77);
+    _angular_core__WEBPACK_IMPORTED_MODULE_0__["ɵɵelementStart"](7, "table", 78);
+    _angular_core__WEBPACK_IMPORTED_MODULE_0__["ɵɵelementStart"](8, "thead");
+    _angular_core__WEBPACK_IMPORTED_MODULE_0__["ɵɵelementStart"](9, "tr");
+    _angular_core__WEBPACK_IMPORTED_MODULE_0__["ɵɵelementStart"](10, "th");
+    _angular_core__WEBPACK_IMPORTED_MODULE_0__["ɵɵtext"](11, "Cuota");
+    _angular_core__WEBPACK_IMPORTED_MODULE_0__["ɵɵelementEnd"]();
+    _angular_core__WEBPACK_IMPORTED_MODULE_0__["ɵɵelementStart"](12, "th");
+    _angular_core__WEBPACK_IMPORTED_MODULE_0__["ɵɵtext"](13, "Fecha m\u00EDn.");
+    _angular_core__WEBPACK_IMPORTED_MODULE_0__["ɵɵelementEnd"]();
+    _angular_core__WEBPACK_IMPORTED_MODULE_0__["ɵɵelementStart"](14, "th");
+    _angular_core__WEBPACK_IMPORTED_MODULE_0__["ɵɵtext"](15, "Fecha m\u00E1x.");
+    _angular_core__WEBPACK_IMPORTED_MODULE_0__["ɵɵelementEnd"]();
+    _angular_core__WEBPACK_IMPORTED_MODULE_0__["ɵɵelementStart"](16, "th");
+    _angular_core__WEBPACK_IMPORTED_MODULE_0__["ɵɵtext"](17, "Valor ($)");
+    _angular_core__WEBPACK_IMPORTED_MODULE_0__["ɵɵelementEnd"]();
+    _angular_core__WEBPACK_IMPORTED_MODULE_0__["ɵɵelementEnd"]();
+    _angular_core__WEBPACK_IMPORTED_MODULE_0__["ɵɵelementEnd"]();
+    _angular_core__WEBPACK_IMPORTED_MODULE_0__["ɵɵelementStart"](18, "tbody");
+    _angular_core__WEBPACK_IMPORTED_MODULE_0__["ɵɵtemplate"](19, NominasEventosPagosComponent_div_33_tr_19_Template, 9, 5, "tr", 79);
+    _angular_core__WEBPACK_IMPORTED_MODULE_0__["ɵɵelementEnd"]();
+    _angular_core__WEBPACK_IMPORTED_MODULE_0__["ɵɵelementStart"](20, "tfoot");
+    _angular_core__WEBPACK_IMPORTED_MODULE_0__["ɵɵelementStart"](21, "tr");
+    _angular_core__WEBPACK_IMPORTED_MODULE_0__["ɵɵelementStart"](22, "td", 80);
+    _angular_core__WEBPACK_IMPORTED_MODULE_0__["ɵɵtext"](23, "Suma cuotas");
+    _angular_core__WEBPACK_IMPORTED_MODULE_0__["ɵɵelementEnd"]();
+    _angular_core__WEBPACK_IMPORTED_MODULE_0__["ɵɵelementStart"](24, "td", 75);
+    _angular_core__WEBPACK_IMPORTED_MODULE_0__["ɵɵtext"](25);
+    _angular_core__WEBPACK_IMPORTED_MODULE_0__["ɵɵpipe"](26, "number");
+    _angular_core__WEBPACK_IMPORTED_MODULE_0__["ɵɵpipe"](27, "number");
+    _angular_core__WEBPACK_IMPORTED_MODULE_0__["ɵɵelementEnd"]();
+    _angular_core__WEBPACK_IMPORTED_MODULE_0__["ɵɵelementEnd"]();
+    _angular_core__WEBPACK_IMPORTED_MODULE_0__["ɵɵelementEnd"]();
+    _angular_core__WEBPACK_IMPORTED_MODULE_0__["ɵɵelementEnd"]();
+    _angular_core__WEBPACK_IMPORTED_MODULE_0__["ɵɵelementEnd"]();
+    _angular_core__WEBPACK_IMPORTED_MODULE_0__["ɵɵtemplate"](28, NominasEventosPagosComponent_div_33_div_28_Template, 2, 1, "div", 81);
+    _angular_core__WEBPACK_IMPORTED_MODULE_0__["ɵɵtemplate"](29, NominasEventosPagosComponent_div_33_div_29_Template, 4, 8, "div", 82);
+    _angular_core__WEBPACK_IMPORTED_MODULE_0__["ɵɵelementEnd"]();
+    _angular_core__WEBPACK_IMPORTED_MODULE_0__["ɵɵelementEnd"]();
+} if (rf & 2) {
+    const ctx_r6 = _angular_core__WEBPACK_IMPORTED_MODULE_0__["ɵɵnextContext"]();
+    _angular_core__WEBPACK_IMPORTED_MODULE_0__["ɵɵadvance"](19);
+    _angular_core__WEBPACK_IMPORTED_MODULE_0__["ɵɵproperty"]("ngForOf", ctx_r6.tablaAmortizacion);
+    _angular_core__WEBPACK_IMPORTED_MODULE_0__["ɵɵadvance"](6);
+    _angular_core__WEBPACK_IMPORTED_MODULE_0__["ɵɵtextInterpolate2"](" ", _angular_core__WEBPACK_IMPORTED_MODULE_0__["ɵɵpipeBind2"](26, 5, ctx_r6.sumaAmortizacion, "1.2-2"), " / ", _angular_core__WEBPACK_IMPORTED_MODULE_0__["ɵɵpipeBind2"](27, 8, ctx_r6.formulario.montoTotalDeuda, "1.2-2"), " ");
+    _angular_core__WEBPACK_IMPORTED_MODULE_0__["ɵɵadvance"](3);
+    _angular_core__WEBPACK_IMPORTED_MODULE_0__["ɵɵproperty"]("ngIf", ctx_r6.validacionAmortizacion && !ctx_r6.validacionAmortizacion.ok);
+    _angular_core__WEBPACK_IMPORTED_MODULE_0__["ɵɵadvance"](1);
+    _angular_core__WEBPACK_IMPORTED_MODULE_0__["ɵɵproperty"]("ngIf", (ctx_r6.validacionAmortizacion == null ? null : ctx_r6.validacionAmortizacion.ok) && ctx_r6.validacionAmortizacion.pendiente > 0);
+} }
+function NominasEventosPagosComponent_div_47_Template(rf, ctx) { if (rf & 1) {
+    _angular_core__WEBPACK_IMPORTED_MODULE_0__["ɵɵelementStart"](0, "div", 87);
+    _angular_core__WEBPACK_IMPORTED_MODULE_0__["ɵɵtext"](1, " Empleado ");
+    _angular_core__WEBPACK_IMPORTED_MODULE_0__["ɵɵelementStart"](2, "strong");
+    _angular_core__WEBPACK_IMPORTED_MODULE_0__["ɵɵtext"](3, "INACTIVO");
+    _angular_core__WEBPACK_IMPORTED_MODULE_0__["ɵɵelementEnd"]();
+    _angular_core__WEBPACK_IMPORTED_MODULE_0__["ɵɵtext"](4, ": los pagos cesan al finalizar el contrato. ");
+    _angular_core__WEBPACK_IMPORTED_MODULE_0__["ɵɵelementEnd"]();
+} }
+function NominasEventosPagosComponent_div_48_table_14_tr_23_span_2_Template(rf, ctx) { if (rf & 1) {
+    _angular_core__WEBPACK_IMPORTED_MODULE_0__["ɵɵelementStart"](0, "span");
+    _angular_core__WEBPACK_IMPORTED_MODULE_0__["ɵɵtext"](1);
+    _angular_core__WEBPACK_IMPORTED_MODULE_0__["ɵɵpipe"](2, "date");
+    _angular_core__WEBPACK_IMPORTED_MODULE_0__["ɵɵpipe"](3, "date");
+    _angular_core__WEBPACK_IMPORTED_MODULE_0__["ɵɵelementEnd"]();
+} if (rf & 2) {
+    const ev_r92 = _angular_core__WEBPACK_IMPORTED_MODULE_0__["ɵɵnextContext"]().$implicit;
+    _angular_core__WEBPACK_IMPORTED_MODULE_0__["ɵɵadvance"](1);
+    _angular_core__WEBPACK_IMPORTED_MODULE_0__["ɵɵtextInterpolate2"](" ", _angular_core__WEBPACK_IMPORTED_MODULE_0__["ɵɵpipeBind2"](2, 2, ev_r92.fechaMin, "dd/MM/yy"), " \u2014 ", _angular_core__WEBPACK_IMPORTED_MODULE_0__["ɵɵpipeBind2"](3, 5, ev_r92.fechaMax, "dd/MM/yy"), " ");
+} }
+function NominasEventosPagosComponent_div_48_table_14_tr_23_span_3_Template(rf, ctx) { if (rf & 1) {
+    _angular_core__WEBPACK_IMPORTED_MODULE_0__["ɵɵelementStart"](0, "span");
+    _angular_core__WEBPACK_IMPORTED_MODULE_0__["ɵɵtext"](1);
+    _angular_core__WEBPACK_IMPORTED_MODULE_0__["ɵɵpipe"](2, "date");
+    _angular_core__WEBPACK_IMPORTED_MODULE_0__["ɵɵelementEnd"]();
+} if (rf & 2) {
+    const ev_r92 = _angular_core__WEBPACK_IMPORTED_MODULE_0__["ɵɵnextContext"]().$implicit;
+    _angular_core__WEBPACK_IMPORTED_MODULE_0__["ɵɵadvance"](1);
+    _angular_core__WEBPACK_IMPORTED_MODULE_0__["ɵɵtextInterpolate"](_angular_core__WEBPACK_IMPORTED_MODULE_0__["ɵɵpipeBind2"](2, 1, ev_r92.fechaProgramada, "dd/MM/yyyy"));
+} }
+function NominasEventosPagosComponent_div_48_table_14_tr_23_button_25_Template(rf, ctx) { if (rf & 1) {
+    const _r101 = _angular_core__WEBPACK_IMPORTED_MODULE_0__["ɵɵgetCurrentView"]();
+    _angular_core__WEBPACK_IMPORTED_MODULE_0__["ɵɵelementStart"](0, "button", 96);
+    _angular_core__WEBPACK_IMPORTED_MODULE_0__["ɵɵlistener"]("click", function NominasEventosPagosComponent_div_48_table_14_tr_23_button_25_Template_button_click_0_listener() { _angular_core__WEBPACK_IMPORTED_MODULE_0__["ɵɵrestoreView"](_r101); const ev_r92 = _angular_core__WEBPACK_IMPORTED_MODULE_0__["ɵɵnextContext"]().$implicit; const ctx_r99 = _angular_core__WEBPACK_IMPORTED_MODULE_0__["ɵɵnextContext"](3); return ctx_r99.ejecutarEventoProgramado(ev_r92); });
+    _angular_core__WEBPACK_IMPORTED_MODULE_0__["ɵɵtext"](1, " Pagar ");
+    _angular_core__WEBPACK_IMPORTED_MODULE_0__["ɵɵelementEnd"]();
+} }
+function NominasEventosPagosComponent_div_48_table_14_tr_23_span_26_Template(rf, ctx) { if (rf & 1) {
+    _angular_core__WEBPACK_IMPORTED_MODULE_0__["ɵɵelementStart"](0, "span", 55);
+    _angular_core__WEBPACK_IMPORTED_MODULE_0__["ɵɵtext"](1, " Fuera de ventana ");
+    _angular_core__WEBPACK_IMPORTED_MODULE_0__["ɵɵelementEnd"]();
+} }
+function NominasEventosPagosComponent_div_48_table_14_tr_23_Template(rf, ctx) { if (rf & 1) {
+    _angular_core__WEBPACK_IMPORTED_MODULE_0__["ɵɵelementStart"](0, "tr");
+    _angular_core__WEBPACK_IMPORTED_MODULE_0__["ɵɵelementStart"](1, "td", 63);
+    _angular_core__WEBPACK_IMPORTED_MODULE_0__["ɵɵtemplate"](2, NominasEventosPagosComponent_div_48_table_14_tr_23_span_2_Template, 4, 8, "span", 13);
+    _angular_core__WEBPACK_IMPORTED_MODULE_0__["ɵɵtemplate"](3, NominasEventosPagosComponent_div_48_table_14_tr_23_span_3_Template, 3, 4, "span", 13);
+    _angular_core__WEBPACK_IMPORTED_MODULE_0__["ɵɵelementEnd"]();
+    _angular_core__WEBPACK_IMPORTED_MODULE_0__["ɵɵelementStart"](4, "td");
+    _angular_core__WEBPACK_IMPORTED_MODULE_0__["ɵɵtext"](5);
+    _angular_core__WEBPACK_IMPORTED_MODULE_0__["ɵɵelementEnd"]();
+    _angular_core__WEBPACK_IMPORTED_MODULE_0__["ɵɵelementStart"](6, "td");
+    _angular_core__WEBPACK_IMPORTED_MODULE_0__["ɵɵtext"](7);
+    _angular_core__WEBPACK_IMPORTED_MODULE_0__["ɵɵelementEnd"]();
+    _angular_core__WEBPACK_IMPORTED_MODULE_0__["ɵɵelementStart"](8, "td");
+    _angular_core__WEBPACK_IMPORTED_MODULE_0__["ɵɵtext"](9);
+    _angular_core__WEBPACK_IMPORTED_MODULE_0__["ɵɵelementEnd"]();
+    _angular_core__WEBPACK_IMPORTED_MODULE_0__["ɵɵelementStart"](10, "td");
+    _angular_core__WEBPACK_IMPORTED_MODULE_0__["ɵɵtext"](11);
+    _angular_core__WEBPACK_IMPORTED_MODULE_0__["ɵɵelementEnd"]();
+    _angular_core__WEBPACK_IMPORTED_MODULE_0__["ɵɵelementStart"](12, "td");
+    _angular_core__WEBPACK_IMPORTED_MODULE_0__["ɵɵtext"](13);
+    _angular_core__WEBPACK_IMPORTED_MODULE_0__["ɵɵpipe"](14, "number");
+    _angular_core__WEBPACK_IMPORTED_MODULE_0__["ɵɵelementEnd"]();
+    _angular_core__WEBPACK_IMPORTED_MODULE_0__["ɵɵelementStart"](15, "td");
+    _angular_core__WEBPACK_IMPORTED_MODULE_0__["ɵɵtext"](16);
+    _angular_core__WEBPACK_IMPORTED_MODULE_0__["ɵɵpipe"](17, "number");
+    _angular_core__WEBPACK_IMPORTED_MODULE_0__["ɵɵelementEnd"]();
+    _angular_core__WEBPACK_IMPORTED_MODULE_0__["ɵɵelementStart"](18, "td");
+    _angular_core__WEBPACK_IMPORTED_MODULE_0__["ɵɵtext"](19);
+    _angular_core__WEBPACK_IMPORTED_MODULE_0__["ɵɵpipe"](20, "number");
+    _angular_core__WEBPACK_IMPORTED_MODULE_0__["ɵɵelementEnd"]();
+    _angular_core__WEBPACK_IMPORTED_MODULE_0__["ɵɵelementStart"](21, "td");
+    _angular_core__WEBPACK_IMPORTED_MODULE_0__["ɵɵelementStart"](22, "span", 94);
+    _angular_core__WEBPACK_IMPORTED_MODULE_0__["ɵɵtext"](23);
+    _angular_core__WEBPACK_IMPORTED_MODULE_0__["ɵɵelementEnd"]();
+    _angular_core__WEBPACK_IMPORTED_MODULE_0__["ɵɵelementEnd"]();
+    _angular_core__WEBPACK_IMPORTED_MODULE_0__["ɵɵelementStart"](24, "td");
+    _angular_core__WEBPACK_IMPORTED_MODULE_0__["ɵɵtemplate"](25, NominasEventosPagosComponent_div_48_table_14_tr_23_button_25_Template, 2, 0, "button", 95);
+    _angular_core__WEBPACK_IMPORTED_MODULE_0__["ɵɵtemplate"](26, NominasEventosPagosComponent_div_48_table_14_tr_23_span_26_Template, 2, 0, "span", 54);
+    _angular_core__WEBPACK_IMPORTED_MODULE_0__["ɵɵelementEnd"]();
+    _angular_core__WEBPACK_IMPORTED_MODULE_0__["ɵɵelementEnd"]();
+} if (rf & 2) {
+    const ev_r92 = ctx.$implicit;
+    const ctx_r91 = _angular_core__WEBPACK_IMPORTED_MODULE_0__["ɵɵnextContext"](3);
+    _angular_core__WEBPACK_IMPORTED_MODULE_0__["ɵɵadvance"](2);
+    _angular_core__WEBPACK_IMPORTED_MODULE_0__["ɵɵproperty"]("ngIf", ev_r92.fechaMin && ev_r92.fechaMax);
+    _angular_core__WEBPACK_IMPORTED_MODULE_0__["ɵɵadvance"](1);
+    _angular_core__WEBPACK_IMPORTED_MODULE_0__["ɵɵproperty"]("ngIf", !ev_r92.fechaMin);
+    _angular_core__WEBPACK_IMPORTED_MODULE_0__["ɵɵadvance"](2);
+    _angular_core__WEBPACK_IMPORTED_MODULE_0__["ɵɵtextInterpolate"](ev_r92.nombreBeneficiario);
+    _angular_core__WEBPACK_IMPORTED_MODULE_0__["ɵɵadvance"](2);
+    _angular_core__WEBPACK_IMPORTED_MODULE_0__["ɵɵtextInterpolate"](ev_r92.transaccionNomina);
+    _angular_core__WEBPACK_IMPORTED_MODULE_0__["ɵɵadvance"](2);
+    _angular_core__WEBPACK_IMPORTED_MODULE_0__["ɵɵtextInterpolate"](ev_r92.centroCosto);
+    _angular_core__WEBPACK_IMPORTED_MODULE_0__["ɵɵadvance"](2);
+    _angular_core__WEBPACK_IMPORTED_MODULE_0__["ɵɵtextInterpolate2"]("", ev_r92.numeroCuota, "/", ev_r92.totalCuotas, "");
+    _angular_core__WEBPACK_IMPORTED_MODULE_0__["ɵɵadvance"](2);
+    _angular_core__WEBPACK_IMPORTED_MODULE_0__["ɵɵtextInterpolate"](_angular_core__WEBPACK_IMPORTED_MODULE_0__["ɵɵpipeBind2"](14, 21, ev_r92.monto, "1.2-2"));
+    _angular_core__WEBPACK_IMPORTED_MODULE_0__["ɵɵadvance"](3);
+    _angular_core__WEBPACK_IMPORTED_MODULE_0__["ɵɵtextInterpolate"](_angular_core__WEBPACK_IMPORTED_MODULE_0__["ɵɵpipeBind2"](17, 24, ev_r92.montoPagado || 0, "1.2-2"));
+    _angular_core__WEBPACK_IMPORTED_MODULE_0__["ɵɵadvance"](3);
+    _angular_core__WEBPACK_IMPORTED_MODULE_0__["ɵɵtextInterpolate"](_angular_core__WEBPACK_IMPORTED_MODULE_0__["ɵɵpipeBind2"](20, 27, ctx_r91.saldoPendienteEvento(ev_r92), "1.2-2"));
+    _angular_core__WEBPACK_IMPORTED_MODULE_0__["ɵɵadvance"](3);
+    _angular_core__WEBPACK_IMPORTED_MODULE_0__["ɵɵclassProp"]("badge-warning", ev_r92.estado === "Pendiente")("badge-info", ev_r92.estado === "Parcial")("badge-success", ev_r92.estado === "Ejecutado")("badge-secondary", ev_r92.estado === "Cancelado");
+    _angular_core__WEBPACK_IMPORTED_MODULE_0__["ɵɵadvance"](1);
+    _angular_core__WEBPACK_IMPORTED_MODULE_0__["ɵɵtextInterpolate1"](" ", ev_r92.estado, " ");
+    _angular_core__WEBPACK_IMPORTED_MODULE_0__["ɵɵadvance"](2);
+    _angular_core__WEBPACK_IMPORTED_MODULE_0__["ɵɵproperty"]("ngIf", ctx_r91.puedeEjecutarEvento(ev_r92));
+    _angular_core__WEBPACK_IMPORTED_MODULE_0__["ɵɵadvance"](1);
+    _angular_core__WEBPACK_IMPORTED_MODULE_0__["ɵɵproperty"]("ngIf", (ev_r92.estado === "Pendiente" || ev_r92.estado === "Parcial") && !ctx_r91.puedeEjecutarEvento(ev_r92));
+} }
+function NominasEventosPagosComponent_div_48_table_14_Template(rf, ctx) { if (rf & 1) {
+    _angular_core__WEBPACK_IMPORTED_MODULE_0__["ɵɵelementStart"](0, "table", 93);
+    _angular_core__WEBPACK_IMPORTED_MODULE_0__["ɵɵelementStart"](1, "thead");
+    _angular_core__WEBPACK_IMPORTED_MODULE_0__["ɵɵelementStart"](2, "tr");
+    _angular_core__WEBPACK_IMPORTED_MODULE_0__["ɵɵelementStart"](3, "th");
+    _angular_core__WEBPACK_IMPORTED_MODULE_0__["ɵɵtext"](4, "Ventana");
+    _angular_core__WEBPACK_IMPORTED_MODULE_0__["ɵɵelementEnd"]();
+    _angular_core__WEBPACK_IMPORTED_MODULE_0__["ɵɵelementStart"](5, "th");
+    _angular_core__WEBPACK_IMPORTED_MODULE_0__["ɵɵtext"](6, "Beneficiario");
+    _angular_core__WEBPACK_IMPORTED_MODULE_0__["ɵɵelementEnd"]();
+    _angular_core__WEBPACK_IMPORTED_MODULE_0__["ɵɵelementStart"](7, "th");
+    _angular_core__WEBPACK_IMPORTED_MODULE_0__["ɵɵtext"](8, "Transacci\u00F3n");
+    _angular_core__WEBPACK_IMPORTED_MODULE_0__["ɵɵelementEnd"]();
+    _angular_core__WEBPACK_IMPORTED_MODULE_0__["ɵɵelementStart"](9, "th");
+    _angular_core__WEBPACK_IMPORTED_MODULE_0__["ɵɵtext"](10, "Centro costo");
+    _angular_core__WEBPACK_IMPORTED_MODULE_0__["ɵɵelementEnd"]();
+    _angular_core__WEBPACK_IMPORTED_MODULE_0__["ɵɵelementStart"](11, "th");
+    _angular_core__WEBPACK_IMPORTED_MODULE_0__["ɵɵtext"](12, "Cuota");
+    _angular_core__WEBPACK_IMPORTED_MODULE_0__["ɵɵelementEnd"]();
+    _angular_core__WEBPACK_IMPORTED_MODULE_0__["ɵɵelementStart"](13, "th");
+    _angular_core__WEBPACK_IMPORTED_MODULE_0__["ɵɵtext"](14, "Programado");
+    _angular_core__WEBPACK_IMPORTED_MODULE_0__["ɵɵelementEnd"]();
+    _angular_core__WEBPACK_IMPORTED_MODULE_0__["ɵɵelementStart"](15, "th");
+    _angular_core__WEBPACK_IMPORTED_MODULE_0__["ɵɵtext"](16, "Pagado");
+    _angular_core__WEBPACK_IMPORTED_MODULE_0__["ɵɵelementEnd"]();
+    _angular_core__WEBPACK_IMPORTED_MODULE_0__["ɵɵelementStart"](17, "th");
+    _angular_core__WEBPACK_IMPORTED_MODULE_0__["ɵɵtext"](18, "Saldo");
+    _angular_core__WEBPACK_IMPORTED_MODULE_0__["ɵɵelementEnd"]();
+    _angular_core__WEBPACK_IMPORTED_MODULE_0__["ɵɵelementStart"](19, "th");
+    _angular_core__WEBPACK_IMPORTED_MODULE_0__["ɵɵtext"](20, "Estado");
+    _angular_core__WEBPACK_IMPORTED_MODULE_0__["ɵɵelementEnd"]();
+    _angular_core__WEBPACK_IMPORTED_MODULE_0__["ɵɵelement"](21, "th");
+    _angular_core__WEBPACK_IMPORTED_MODULE_0__["ɵɵelementEnd"]();
+    _angular_core__WEBPACK_IMPORTED_MODULE_0__["ɵɵelementEnd"]();
+    _angular_core__WEBPACK_IMPORTED_MODULE_0__["ɵɵelementStart"](22, "tbody");
+    _angular_core__WEBPACK_IMPORTED_MODULE_0__["ɵɵtemplate"](23, NominasEventosPagosComponent_div_48_table_14_tr_23_Template, 27, 30, "tr", 79);
+    _angular_core__WEBPACK_IMPORTED_MODULE_0__["ɵɵelementEnd"]();
+    _angular_core__WEBPACK_IMPORTED_MODULE_0__["ɵɵelementEnd"]();
+} if (rf & 2) {
+    const ctx_r89 = _angular_core__WEBPACK_IMPORTED_MODULE_0__["ɵɵnextContext"](2);
+    _angular_core__WEBPACK_IMPORTED_MODULE_0__["ɵɵadvance"](23);
+    _angular_core__WEBPACK_IMPORTED_MODULE_0__["ɵɵproperty"]("ngForOf", ctx_r89.eventosProgramados);
+} }
+function NominasEventosPagosComponent_div_48_p_15_Template(rf, ctx) { if (rf & 1) {
+    _angular_core__WEBPACK_IMPORTED_MODULE_0__["ɵɵelementStart"](0, "p", 97);
+    _angular_core__WEBPACK_IMPORTED_MODULE_0__["ɵɵtext"](1, " No hay eventos programados. Autorice una regla tipo B para generarlos. ");
+    _angular_core__WEBPACK_IMPORTED_MODULE_0__["ɵɵelementEnd"]();
+} }
+function NominasEventosPagosComponent_div_48_Template(rf, ctx) { if (rf & 1) {
+    const _r103 = _angular_core__WEBPACK_IMPORTED_MODULE_0__["ɵɵgetCurrentView"]();
+    _angular_core__WEBPACK_IMPORTED_MODULE_0__["ɵɵelementStart"](0, "div", 0);
+    _angular_core__WEBPACK_IMPORTED_MODULE_0__["ɵɵelementStart"](1, "div", 1);
+    _angular_core__WEBPACK_IMPORTED_MODULE_0__["ɵɵelementStart"](2, "h6", 37);
+    _angular_core__WEBPACK_IMPORTED_MODULE_0__["ɵɵtext"](3, " Pagos programados \u2014 ejecuci\u00F3n manual (Tipo B) ");
+    _angular_core__WEBPACK_IMPORTED_MODULE_0__["ɵɵelementEnd"]();
+    _angular_core__WEBPACK_IMPORTED_MODULE_0__["ɵɵelementStart"](4, "p", 38);
+    _angular_core__WEBPACK_IMPORTED_MODULE_0__["ɵɵtext"](5, " Los eventos se cargan al autorizar la regla. El encargado registra el pago en finanzas cuando corresponde la fecha. ");
+    _angular_core__WEBPACK_IMPORTED_MODULE_0__["ɵɵelementEnd"]();
+    _angular_core__WEBPACK_IMPORTED_MODULE_0__["ɵɵelementStart"](6, "div", 88);
+    _angular_core__WEBPACK_IMPORTED_MODULE_0__["ɵɵelementStart"](7, "div", 89);
+    _angular_core__WEBPACK_IMPORTED_MODULE_0__["ɵɵelementStart"](8, "label");
+    _angular_core__WEBPACK_IMPORTED_MODULE_0__["ɵɵtext"](9, "Filtrar estado");
+    _angular_core__WEBPACK_IMPORTED_MODULE_0__["ɵɵelementEnd"]();
+    _angular_core__WEBPACK_IMPORTED_MODULE_0__["ɵɵelementStart"](10, "dx-select-box", 48);
+    _angular_core__WEBPACK_IMPORTED_MODULE_0__["ɵɵlistener"]("valueChange", function NominasEventosPagosComponent_div_48_Template_dx_select_box_valueChange_10_listener($event) { _angular_core__WEBPACK_IMPORTED_MODULE_0__["ɵɵrestoreView"](_r103); const ctx_r102 = _angular_core__WEBPACK_IMPORTED_MODULE_0__["ɵɵnextContext"](); return ctx_r102.filtroEventosEstado = $event; })("onValueChanged", function NominasEventosPagosComponent_div_48_Template_dx_select_box_onValueChanged_10_listener() { _angular_core__WEBPACK_IMPORTED_MODULE_0__["ɵɵrestoreView"](_r103); const ctx_r104 = _angular_core__WEBPACK_IMPORTED_MODULE_0__["ɵɵnextContext"](); return ctx_r104.cargarEventosProgramados(); });
+    _angular_core__WEBPACK_IMPORTED_MODULE_0__["ɵɵelementEnd"]();
+    _angular_core__WEBPACK_IMPORTED_MODULE_0__["ɵɵelementEnd"]();
+    _angular_core__WEBPACK_IMPORTED_MODULE_0__["ɵɵelementStart"](11, "div", 90);
+    _angular_core__WEBPACK_IMPORTED_MODULE_0__["ɵɵelementStart"](12, "button", 72);
+    _angular_core__WEBPACK_IMPORTED_MODULE_0__["ɵɵlistener"]("click", function NominasEventosPagosComponent_div_48_Template_button_click_12_listener() { _angular_core__WEBPACK_IMPORTED_MODULE_0__["ɵɵrestoreView"](_r103); const ctx_r105 = _angular_core__WEBPACK_IMPORTED_MODULE_0__["ɵɵnextContext"](); return ctx_r105.cargarEventosProgramados(); });
+    _angular_core__WEBPACK_IMPORTED_MODULE_0__["ɵɵtext"](13, " Actualizar listado ");
+    _angular_core__WEBPACK_IMPORTED_MODULE_0__["ɵɵelementEnd"]();
+    _angular_core__WEBPACK_IMPORTED_MODULE_0__["ɵɵelementEnd"]();
+    _angular_core__WEBPACK_IMPORTED_MODULE_0__["ɵɵelementEnd"]();
+    _angular_core__WEBPACK_IMPORTED_MODULE_0__["ɵɵtemplate"](14, NominasEventosPagosComponent_div_48_table_14_Template, 24, 1, "table", 91);
+    _angular_core__WEBPACK_IMPORTED_MODULE_0__["ɵɵtemplate"](15, NominasEventosPagosComponent_div_48_p_15_Template, 2, 0, "p", 92);
+    _angular_core__WEBPACK_IMPORTED_MODULE_0__["ɵɵelementEnd"]();
+    _angular_core__WEBPACK_IMPORTED_MODULE_0__["ɵɵelementEnd"]();
+} if (rf & 2) {
+    const ctx_r8 = _angular_core__WEBPACK_IMPORTED_MODULE_0__["ɵɵnextContext"]();
+    _angular_core__WEBPACK_IMPORTED_MODULE_0__["ɵɵadvance"](10);
+    _angular_core__WEBPACK_IMPORTED_MODULE_0__["ɵɵproperty"]("items", ctx_r8.estadosEventoFiltro)("value", ctx_r8.filtroEventosEstado);
+    _angular_core__WEBPACK_IMPORTED_MODULE_0__["ɵɵadvance"](4);
+    _angular_core__WEBPACK_IMPORTED_MODULE_0__["ɵɵproperty"]("ngIf", ctx_r8.eventosProgramados.length);
+    _angular_core__WEBPACK_IMPORTED_MODULE_0__["ɵɵadvance"](1);
+    _angular_core__WEBPACK_IMPORTED_MODULE_0__["ɵɵproperty"]("ngIf", !ctx_r8.eventosProgramados.length);
+} }
+function NominasEventosPagosComponent_div_49_div_17_Template(rf, ctx) { if (rf & 1) {
+    _angular_core__WEBPACK_IMPORTED_MODULE_0__["ɵɵelementStart"](0, "div", 102);
+    _angular_core__WEBPACK_IMPORTED_MODULE_0__["ɵɵelementStart"](1, "strong");
+    _angular_core__WEBPACK_IMPORTED_MODULE_0__["ɵɵtext"](2, "Facturaci\u00F3n neta del domingo (tienda):");
+    _angular_core__WEBPACK_IMPORTED_MODULE_0__["ɵɵelementEnd"]();
+    _angular_core__WEBPACK_IMPORTED_MODULE_0__["ɵɵtext"](3);
+    _angular_core__WEBPACK_IMPORTED_MODULE_0__["ɵɵpipe"](4, "number");
+    _angular_core__WEBPACK_IMPORTED_MODULE_0__["ɵɵpipe"](5, "number");
+    _angular_core__WEBPACK_IMPORTED_MODULE_0__["ɵɵpipe"](6, "number");
+    _angular_core__WEBPACK_IMPORTED_MODULE_0__["ɵɵpipe"](7, "number");
+    _angular_core__WEBPACK_IMPORTED_MODULE_0__["ɵɵelement"](8, "br");
+    _angular_core__WEBPACK_IMPORTED_MODULE_0__["ɵɵelementEnd"]();
+} if (rf & 2) {
+    const ctx_r106 = _angular_core__WEBPACK_IMPORTED_MODULE_0__["ɵɵnextContext"](2);
+    _angular_core__WEBPACK_IMPORTED_MODULE_0__["ɵɵadvance"](3);
+    _angular_core__WEBPACK_IMPORTED_MODULE_0__["ɵɵtextInterpolate6"](" $", _angular_core__WEBPACK_IMPORTED_MODULE_0__["ɵɵpipeBind2"](4, 6, ctx_r106.simulacionDominical.facturacion.facturacionNeta, "1.2-2"), " (facturas + notas $", _angular_core__WEBPACK_IMPORTED_MODULE_0__["ɵɵpipeBind2"](5, 9, ctx_r106.simulacionDominical.facturacion.facturacionBruta || 0, "1.2-2"), " \u2212 devoluciones $", _angular_core__WEBPACK_IMPORTED_MODULE_0__["ɵɵpipeBind2"](6, 12, ctx_r106.simulacionDominical.facturacion.devoluciones, "1.2-2"), ") \u00B7 ", ctx_r106.simulacionDominical.facturacion.cantidadFacturas || 0, " facturas, ", ctx_r106.simulacionDominical.facturacion.cantidadNotas || 0, " notas de venta \u00B7 L\u00EDmite: $", _angular_core__WEBPACK_IMPORTED_MODULE_0__["ɵɵpipeBind2"](7, 15, ctx_r106.simulacionDominical.limiteFacturacion, "1.0-0"), " ");
+} }
+function NominasEventosPagosComponent_div_49_table_18_tr_23_span_9_Template(rf, ctx) { if (rf & 1) {
+    _angular_core__WEBPACK_IMPORTED_MODULE_0__["ɵɵelementStart"](0, "span");
+    _angular_core__WEBPACK_IMPORTED_MODULE_0__["ɵɵtext"](1);
+    _angular_core__WEBPACK_IMPORTED_MODULE_0__["ɵɵpipe"](2, "number");
+    _angular_core__WEBPACK_IMPORTED_MODULE_0__["ɵɵelementEnd"]();
+} if (rf & 2) {
+    const liq_r109 = _angular_core__WEBPACK_IMPORTED_MODULE_0__["ɵɵnextContext"]().$implicit;
+    _angular_core__WEBPACK_IMPORTED_MODULE_0__["ɵɵadvance"](1);
+    _angular_core__WEBPACK_IMPORTED_MODULE_0__["ɵɵtextInterpolate"](_angular_core__WEBPACK_IMPORTED_MODULE_0__["ɵɵpipeBind2"](2, 1, liq_r109.facturacionNetaTrabajador, "1.2-2"));
+} }
+function NominasEventosPagosComponent_div_49_table_18_tr_23_span_10_Template(rf, ctx) { if (rf & 1) {
+    _angular_core__WEBPACK_IMPORTED_MODULE_0__["ɵɵelementStart"](0, "span", 107);
+    _angular_core__WEBPACK_IMPORTED_MODULE_0__["ɵɵtext"](1, "Sin vincular TMS");
+    _angular_core__WEBPACK_IMPORTED_MODULE_0__["ɵɵelementEnd"]();
+} }
+function NominasEventosPagosComponent_div_49_table_18_tr_23_span_14_Template(rf, ctx) { if (rf & 1) {
+    _angular_core__WEBPACK_IMPORTED_MODULE_0__["ɵɵelementStart"](0, "span");
+    _angular_core__WEBPACK_IMPORTED_MODULE_0__["ɵɵtext"](1);
+    _angular_core__WEBPACK_IMPORTED_MODULE_0__["ɵɵelementEnd"]();
+} if (rf & 2) {
+    const liq_r109 = _angular_core__WEBPACK_IMPORTED_MODULE_0__["ɵɵnextContext"]().$implicit;
+    _angular_core__WEBPACK_IMPORTED_MODULE_0__["ɵɵadvance"](1);
+    _angular_core__WEBPACK_IMPORTED_MODULE_0__["ɵɵtextInterpolate"](liq_r109.rangoAplicado);
+} }
+function NominasEventosPagosComponent_div_49_table_18_tr_23_span_15_Template(rf, ctx) { if (rf & 1) {
+    _angular_core__WEBPACK_IMPORTED_MODULE_0__["ɵɵelementStart"](0, "span", 108);
+    _angular_core__WEBPACK_IMPORTED_MODULE_0__["ɵɵtext"](1);
+    _angular_core__WEBPACK_IMPORTED_MODULE_0__["ɵɵelementEnd"]();
+} if (rf & 2) {
+    const liq_r109 = _angular_core__WEBPACK_IMPORTED_MODULE_0__["ɵɵnextContext"]().$implicit;
+    _angular_core__WEBPACK_IMPORTED_MODULE_0__["ɵɵadvance"](1);
+    _angular_core__WEBPACK_IMPORTED_MODULE_0__["ɵɵtextInterpolate"](liq_r109.error);
+} }
+function NominasEventosPagosComponent_div_49_table_18_tr_23_span_26_Template(rf, ctx) { if (rf & 1) {
+    _angular_core__WEBPACK_IMPORTED_MODULE_0__["ɵɵelementStart"](0, "span", 109);
+    _angular_core__WEBPACK_IMPORTED_MODULE_0__["ɵɵtext"](1, "Pagado");
+    _angular_core__WEBPACK_IMPORTED_MODULE_0__["ɵɵelementEnd"]();
+} }
+function NominasEventosPagosComponent_div_49_table_18_tr_23_Template(rf, ctx) { if (rf & 1) {
+    _angular_core__WEBPACK_IMPORTED_MODULE_0__["ɵɵelementStart"](0, "tr");
+    _angular_core__WEBPACK_IMPORTED_MODULE_0__["ɵɵelementStart"](1, "td");
+    _angular_core__WEBPACK_IMPORTED_MODULE_0__["ɵɵtext"](2);
+    _angular_core__WEBPACK_IMPORTED_MODULE_0__["ɵɵelementEnd"]();
+    _angular_core__WEBPACK_IMPORTED_MODULE_0__["ɵɵelementStart"](3, "td");
+    _angular_core__WEBPACK_IMPORTED_MODULE_0__["ɵɵtext"](4);
+    _angular_core__WEBPACK_IMPORTED_MODULE_0__["ɵɵelementEnd"]();
+    _angular_core__WEBPACK_IMPORTED_MODULE_0__["ɵɵelementStart"](5, "td");
+    _angular_core__WEBPACK_IMPORTED_MODULE_0__["ɵɵtext"](6);
+    _angular_core__WEBPACK_IMPORTED_MODULE_0__["ɵɵpipe"](7, "number");
+    _angular_core__WEBPACK_IMPORTED_MODULE_0__["ɵɵelementEnd"]();
+    _angular_core__WEBPACK_IMPORTED_MODULE_0__["ɵɵelementStart"](8, "td");
+    _angular_core__WEBPACK_IMPORTED_MODULE_0__["ɵɵtemplate"](9, NominasEventosPagosComponent_div_49_table_18_tr_23_span_9_Template, 3, 4, "span", 13);
+    _angular_core__WEBPACK_IMPORTED_MODULE_0__["ɵɵtemplate"](10, NominasEventosPagosComponent_div_49_table_18_tr_23_span_10_Template, 2, 0, "span", 104);
+    _angular_core__WEBPACK_IMPORTED_MODULE_0__["ɵɵelementEnd"]();
+    _angular_core__WEBPACK_IMPORTED_MODULE_0__["ɵɵelementStart"](11, "td");
+    _angular_core__WEBPACK_IMPORTED_MODULE_0__["ɵɵtext"](12);
+    _angular_core__WEBPACK_IMPORTED_MODULE_0__["ɵɵelementEnd"]();
+    _angular_core__WEBPACK_IMPORTED_MODULE_0__["ɵɵelementStart"](13, "td");
+    _angular_core__WEBPACK_IMPORTED_MODULE_0__["ɵɵtemplate"](14, NominasEventosPagosComponent_div_49_table_18_tr_23_span_14_Template, 2, 1, "span", 13);
+    _angular_core__WEBPACK_IMPORTED_MODULE_0__["ɵɵtemplate"](15, NominasEventosPagosComponent_div_49_table_18_tr_23_span_15_Template, 2, 1, "span", 105);
+    _angular_core__WEBPACK_IMPORTED_MODULE_0__["ɵɵelementEnd"]();
+    _angular_core__WEBPACK_IMPORTED_MODULE_0__["ɵɵelementStart"](16, "td");
+    _angular_core__WEBPACK_IMPORTED_MODULE_0__["ɵɵtext"](17);
+    _angular_core__WEBPACK_IMPORTED_MODULE_0__["ɵɵpipe"](18, "number");
+    _angular_core__WEBPACK_IMPORTED_MODULE_0__["ɵɵelementEnd"]();
+    _angular_core__WEBPACK_IMPORTED_MODULE_0__["ɵɵelementStart"](19, "td");
+    _angular_core__WEBPACK_IMPORTED_MODULE_0__["ɵɵtext"](20);
+    _angular_core__WEBPACK_IMPORTED_MODULE_0__["ɵɵpipe"](21, "number");
+    _angular_core__WEBPACK_IMPORTED_MODULE_0__["ɵɵelementEnd"]();
+    _angular_core__WEBPACK_IMPORTED_MODULE_0__["ɵɵelementStart"](22, "td");
+    _angular_core__WEBPACK_IMPORTED_MODULE_0__["ɵɵtext"](23);
+    _angular_core__WEBPACK_IMPORTED_MODULE_0__["ɵɵpipe"](24, "number");
+    _angular_core__WEBPACK_IMPORTED_MODULE_0__["ɵɵelementEnd"]();
+    _angular_core__WEBPACK_IMPORTED_MODULE_0__["ɵɵelementStart"](25, "td");
+    _angular_core__WEBPACK_IMPORTED_MODULE_0__["ɵɵtemplate"](26, NominasEventosPagosComponent_div_49_table_18_tr_23_span_26_Template, 2, 0, "span", 106);
+    _angular_core__WEBPACK_IMPORTED_MODULE_0__["ɵɵelementEnd"]();
+    _angular_core__WEBPACK_IMPORTED_MODULE_0__["ɵɵelementEnd"]();
+} if (rf & 2) {
+    const liq_r109 = ctx.$implicit;
+    _angular_core__WEBPACK_IMPORTED_MODULE_0__["ɵɵadvance"](2);
+    _angular_core__WEBPACK_IMPORTED_MODULE_0__["ɵɵtextInterpolate"](liq_r109.nombre);
+    _angular_core__WEBPACK_IMPORTED_MODULE_0__["ɵɵadvance"](2);
+    _angular_core__WEBPACK_IMPORTED_MODULE_0__["ɵɵtextInterpolate"](liq_r109.usuarioSistemaUsername || liq_r109.usuarioSistemaNombre || "\u2014");
+    _angular_core__WEBPACK_IMPORTED_MODULE_0__["ɵɵadvance"](2);
+    _angular_core__WEBPACK_IMPORTED_MODULE_0__["ɵɵtextInterpolate"](_angular_core__WEBPACK_IMPORTED_MODULE_0__["ɵɵpipeBind2"](7, 12, liq_r109.facturacionNetaTienda, "1.2-2"));
+    _angular_core__WEBPACK_IMPORTED_MODULE_0__["ɵɵadvance"](3);
+    _angular_core__WEBPACK_IMPORTED_MODULE_0__["ɵɵproperty"]("ngIf", liq_r109.vinculadoUsuario);
+    _angular_core__WEBPACK_IMPORTED_MODULE_0__["ɵɵadvance"](1);
+    _angular_core__WEBPACK_IMPORTED_MODULE_0__["ɵɵproperty"]("ngIf", !liq_r109.vinculadoUsuario);
+    _angular_core__WEBPACK_IMPORTED_MODULE_0__["ɵɵadvance"](2);
+    _angular_core__WEBPACK_IMPORTED_MODULE_0__["ɵɵtextInterpolate"](liq_r109.cargo);
+    _angular_core__WEBPACK_IMPORTED_MODULE_0__["ɵɵadvance"](2);
+    _angular_core__WEBPACK_IMPORTED_MODULE_0__["ɵɵproperty"]("ngIf", !liq_r109.error);
+    _angular_core__WEBPACK_IMPORTED_MODULE_0__["ɵɵadvance"](1);
+    _angular_core__WEBPACK_IMPORTED_MODULE_0__["ɵɵproperty"]("ngIf", liq_r109.error);
+    _angular_core__WEBPACK_IMPORTED_MODULE_0__["ɵɵadvance"](2);
+    _angular_core__WEBPACK_IMPORTED_MODULE_0__["ɵɵtextInterpolate"](_angular_core__WEBPACK_IMPORTED_MODULE_0__["ɵɵpipeBind2"](18, 15, liq_r109.montoBruto, "1.2-2"));
+    _angular_core__WEBPACK_IMPORTED_MODULE_0__["ɵɵadvance"](3);
+    _angular_core__WEBPACK_IMPORTED_MODULE_0__["ɵɵtextInterpolate"](_angular_core__WEBPACK_IMPORTED_MODULE_0__["ɵɵpipeBind2"](21, 18, liq_r109.ajustesPendientes, "1.2-2"));
+    _angular_core__WEBPACK_IMPORTED_MODULE_0__["ɵɵadvance"](3);
+    _angular_core__WEBPACK_IMPORTED_MODULE_0__["ɵɵtextInterpolate"](_angular_core__WEBPACK_IMPORTED_MODULE_0__["ɵɵpipeBind2"](24, 21, liq_r109.montoNeto, "1.2-2"));
+    _angular_core__WEBPACK_IMPORTED_MODULE_0__["ɵɵadvance"](3);
+    _angular_core__WEBPACK_IMPORTED_MODULE_0__["ɵɵproperty"]("ngIf", liq_r109.yaLiquidado);
+} }
+function NominasEventosPagosComponent_div_49_table_18_Template(rf, ctx) { if (rf & 1) {
+    _angular_core__WEBPACK_IMPORTED_MODULE_0__["ɵɵelementStart"](0, "table", 103);
+    _angular_core__WEBPACK_IMPORTED_MODULE_0__["ɵɵelementStart"](1, "thead");
+    _angular_core__WEBPACK_IMPORTED_MODULE_0__["ɵɵelementStart"](2, "tr");
+    _angular_core__WEBPACK_IMPORTED_MODULE_0__["ɵɵelementStart"](3, "th");
+    _angular_core__WEBPACK_IMPORTED_MODULE_0__["ɵɵtext"](4, "Trabajador");
+    _angular_core__WEBPACK_IMPORTED_MODULE_0__["ɵɵelementEnd"]();
+    _angular_core__WEBPACK_IMPORTED_MODULE_0__["ɵɵelementStart"](5, "th");
+    _angular_core__WEBPACK_IMPORTED_MODULE_0__["ɵɵtext"](6, "Usuario (username)");
+    _angular_core__WEBPACK_IMPORTED_MODULE_0__["ɵɵelementEnd"]();
+    _angular_core__WEBPACK_IMPORTED_MODULE_0__["ɵɵelementStart"](7, "th");
+    _angular_core__WEBPACK_IMPORTED_MODULE_0__["ɵɵtext"](8, "Fact. tienda");
+    _angular_core__WEBPACK_IMPORTED_MODULE_0__["ɵɵelementEnd"]();
+    _angular_core__WEBPACK_IMPORTED_MODULE_0__["ɵɵelementStart"](9, "th");
+    _angular_core__WEBPACK_IMPORTED_MODULE_0__["ɵɵtext"](10, "Fact. trabajador");
+    _angular_core__WEBPACK_IMPORTED_MODULE_0__["ɵɵelementEnd"]();
+    _angular_core__WEBPACK_IMPORTED_MODULE_0__["ɵɵelementStart"](11, "th");
+    _angular_core__WEBPACK_IMPORTED_MODULE_0__["ɵɵtext"](12, "Cargo");
+    _angular_core__WEBPACK_IMPORTED_MODULE_0__["ɵɵelementEnd"]();
+    _angular_core__WEBPACK_IMPORTED_MODULE_0__["ɵɵelementStart"](13, "th");
+    _angular_core__WEBPACK_IMPORTED_MODULE_0__["ɵɵtext"](14, "Rango");
+    _angular_core__WEBPACK_IMPORTED_MODULE_0__["ɵɵelementEnd"]();
+    _angular_core__WEBPACK_IMPORTED_MODULE_0__["ɵɵelementStart"](15, "th");
+    _angular_core__WEBPACK_IMPORTED_MODULE_0__["ɵɵtext"](16, "Monto");
+    _angular_core__WEBPACK_IMPORTED_MODULE_0__["ɵɵelementEnd"]();
+    _angular_core__WEBPACK_IMPORTED_MODULE_0__["ɵɵelementStart"](17, "th");
+    _angular_core__WEBPACK_IMPORTED_MODULE_0__["ɵɵtext"](18, "Ajustes pend.");
+    _angular_core__WEBPACK_IMPORTED_MODULE_0__["ɵɵelementEnd"]();
+    _angular_core__WEBPACK_IMPORTED_MODULE_0__["ɵɵelementStart"](19, "th");
+    _angular_core__WEBPACK_IMPORTED_MODULE_0__["ɵɵtext"](20, "Neto a pagar");
+    _angular_core__WEBPACK_IMPORTED_MODULE_0__["ɵɵelementEnd"]();
+    _angular_core__WEBPACK_IMPORTED_MODULE_0__["ɵɵelement"](21, "th");
+    _angular_core__WEBPACK_IMPORTED_MODULE_0__["ɵɵelementEnd"]();
+    _angular_core__WEBPACK_IMPORTED_MODULE_0__["ɵɵelementEnd"]();
+    _angular_core__WEBPACK_IMPORTED_MODULE_0__["ɵɵelementStart"](22, "tbody");
+    _angular_core__WEBPACK_IMPORTED_MODULE_0__["ɵɵtemplate"](23, NominasEventosPagosComponent_div_49_table_18_tr_23_Template, 27, 24, "tr", 79);
+    _angular_core__WEBPACK_IMPORTED_MODULE_0__["ɵɵelementEnd"]();
+    _angular_core__WEBPACK_IMPORTED_MODULE_0__["ɵɵelementEnd"]();
+} if (rf & 2) {
+    const ctx_r107 = _angular_core__WEBPACK_IMPORTED_MODULE_0__["ɵɵnextContext"](2);
+    _angular_core__WEBPACK_IMPORTED_MODULE_0__["ɵɵadvance"](23);
+    _angular_core__WEBPACK_IMPORTED_MODULE_0__["ɵɵproperty"]("ngForOf", ctx_r107.simulacionDominical.liquidaciones);
+} }
+function NominasEventosPagosComponent_div_49_Template(rf, ctx) { if (rf & 1) {
+    const _r119 = _angular_core__WEBPACK_IMPORTED_MODULE_0__["ɵɵgetCurrentView"]();
+    _angular_core__WEBPACK_IMPORTED_MODULE_0__["ɵɵelementStart"](0, "div", 0);
+    _angular_core__WEBPACK_IMPORTED_MODULE_0__["ɵɵelementStart"](1, "div", 1);
+    _angular_core__WEBPACK_IMPORTED_MODULE_0__["ɵɵelementStart"](2, "div", 2);
+    _angular_core__WEBPACK_IMPORTED_MODULE_0__["ɵɵtext"](3, "Liquidaci\u00F3n pago dominical");
+    _angular_core__WEBPACK_IMPORTED_MODULE_0__["ɵɵelementEnd"]();
+    _angular_core__WEBPACK_IMPORTED_MODULE_0__["ɵɵelementStart"](4, "p", 38);
+    _angular_core__WEBPACK_IMPORTED_MODULE_0__["ɵɵtext"](5, " Facturaci\u00F3n neta del domingo = ventas del d\u00EDa \u2212 devoluciones del mismo d\u00EDa. Si es \u2265 l\u00EDmite (config. global), aplica rango superior; si no, rango inferior. ");
+    _angular_core__WEBPACK_IMPORTED_MODULE_0__["ɵɵelementEnd"]();
+    _angular_core__WEBPACK_IMPORTED_MODULE_0__["ɵɵelementStart"](6, "div", 39);
+    _angular_core__WEBPACK_IMPORTED_MODULE_0__["ɵɵelementStart"](7, "div", 89);
+    _angular_core__WEBPACK_IMPORTED_MODULE_0__["ɵɵelementStart"](8, "label");
+    _angular_core__WEBPACK_IMPORTED_MODULE_0__["ɵɵtext"](9, "Fecha (domingo)");
+    _angular_core__WEBPACK_IMPORTED_MODULE_0__["ɵɵelementEnd"]();
+    _angular_core__WEBPACK_IMPORTED_MODULE_0__["ɵɵelementStart"](10, "dx-date-box", 43);
+    _angular_core__WEBPACK_IMPORTED_MODULE_0__["ɵɵlistener"]("valueChange", function NominasEventosPagosComponent_div_49_Template_dx_date_box_valueChange_10_listener($event) { _angular_core__WEBPACK_IMPORTED_MODULE_0__["ɵɵrestoreView"](_r119); const ctx_r118 = _angular_core__WEBPACK_IMPORTED_MODULE_0__["ɵɵnextContext"](); return ctx_r118.fechaDominicalLiquidacion = $event; });
+    _angular_core__WEBPACK_IMPORTED_MODULE_0__["ɵɵelementEnd"]();
+    _angular_core__WEBPACK_IMPORTED_MODULE_0__["ɵɵelementEnd"]();
+    _angular_core__WEBPACK_IMPORTED_MODULE_0__["ɵɵelementStart"](11, "div", 89);
+    _angular_core__WEBPACK_IMPORTED_MODULE_0__["ɵɵelementStart"](12, "button", 98);
+    _angular_core__WEBPACK_IMPORTED_MODULE_0__["ɵɵlistener"]("click", function NominasEventosPagosComponent_div_49_Template_button_click_12_listener() { _angular_core__WEBPACK_IMPORTED_MODULE_0__["ɵɵrestoreView"](_r119); const ctx_r120 = _angular_core__WEBPACK_IMPORTED_MODULE_0__["ɵɵnextContext"](); return ctx_r120.simularPagoDominical(); });
+    _angular_core__WEBPACK_IMPORTED_MODULE_0__["ɵɵtext"](13, " Simular / calcular montos ");
+    _angular_core__WEBPACK_IMPORTED_MODULE_0__["ɵɵelementEnd"]();
+    _angular_core__WEBPACK_IMPORTED_MODULE_0__["ɵɵelementEnd"]();
+    _angular_core__WEBPACK_IMPORTED_MODULE_0__["ɵɵelementStart"](14, "div", 89);
+    _angular_core__WEBPACK_IMPORTED_MODULE_0__["ɵɵelementStart"](15, "button", 99);
+    _angular_core__WEBPACK_IMPORTED_MODULE_0__["ɵɵlistener"]("click", function NominasEventosPagosComponent_div_49_Template_button_click_15_listener() { _angular_core__WEBPACK_IMPORTED_MODULE_0__["ɵɵrestoreView"](_r119); const ctx_r121 = _angular_core__WEBPACK_IMPORTED_MODULE_0__["ɵɵnextContext"](); return ctx_r121.liquidarPagoDominical(); });
+    _angular_core__WEBPACK_IMPORTED_MODULE_0__["ɵɵtext"](16, " Liquidar y registrar en finanzas ");
+    _angular_core__WEBPACK_IMPORTED_MODULE_0__["ɵɵelementEnd"]();
+    _angular_core__WEBPACK_IMPORTED_MODULE_0__["ɵɵelementEnd"]();
+    _angular_core__WEBPACK_IMPORTED_MODULE_0__["ɵɵelementEnd"]();
+    _angular_core__WEBPACK_IMPORTED_MODULE_0__["ɵɵtemplate"](17, NominasEventosPagosComponent_div_49_div_17_Template, 9, 18, "div", 100);
+    _angular_core__WEBPACK_IMPORTED_MODULE_0__["ɵɵtemplate"](18, NominasEventosPagosComponent_div_49_table_18_Template, 24, 1, "table", 101);
+    _angular_core__WEBPACK_IMPORTED_MODULE_0__["ɵɵelementEnd"]();
+    _angular_core__WEBPACK_IMPORTED_MODULE_0__["ɵɵelementEnd"]();
+} if (rf & 2) {
+    const ctx_r9 = _angular_core__WEBPACK_IMPORTED_MODULE_0__["ɵɵnextContext"]();
+    _angular_core__WEBPACK_IMPORTED_MODULE_0__["ɵɵadvance"](10);
+    _angular_core__WEBPACK_IMPORTED_MODULE_0__["ɵɵproperty"]("value", ctx_r9.fechaDominicalLiquidacion);
+    _angular_core__WEBPACK_IMPORTED_MODULE_0__["ɵɵadvance"](7);
+    _angular_core__WEBPACK_IMPORTED_MODULE_0__["ɵɵproperty"]("ngIf", ctx_r9.simulacionDominical);
+    _angular_core__WEBPACK_IMPORTED_MODULE_0__["ɵɵadvance"](1);
+    _angular_core__WEBPACK_IMPORTED_MODULE_0__["ɵɵproperty"]("ngIf", ctx_r9.simulacionDominical == null ? null : ctx_r9.simulacionDominical.liquidaciones == null ? null : ctx_r9.simulacionDominical.liquidaciones.length);
+} }
+function NominasEventosPagosComponent_div_50_tr_18_Template(rf, ctx) { if (rf & 1) {
+    _angular_core__WEBPACK_IMPORTED_MODULE_0__["ɵɵelementStart"](0, "tr");
+    _angular_core__WEBPACK_IMPORTED_MODULE_0__["ɵɵelementStart"](1, "td");
+    _angular_core__WEBPACK_IMPORTED_MODULE_0__["ɵɵtext"](2);
+    _angular_core__WEBPACK_IMPORTED_MODULE_0__["ɵɵelementEnd"]();
+    _angular_core__WEBPACK_IMPORTED_MODULE_0__["ɵɵelementStart"](3, "td");
+    _angular_core__WEBPACK_IMPORTED_MODULE_0__["ɵɵtext"](4);
+    _angular_core__WEBPACK_IMPORTED_MODULE_0__["ɵɵpipe"](5, "date");
+    _angular_core__WEBPACK_IMPORTED_MODULE_0__["ɵɵelementEnd"]();
+    _angular_core__WEBPACK_IMPORTED_MODULE_0__["ɵɵelementStart"](6, "td", 112);
+    _angular_core__WEBPACK_IMPORTED_MODULE_0__["ɵɵtext"](7);
+    _angular_core__WEBPACK_IMPORTED_MODULE_0__["ɵɵpipe"](8, "number");
+    _angular_core__WEBPACK_IMPORTED_MODULE_0__["ɵɵelementEnd"]();
+    _angular_core__WEBPACK_IMPORTED_MODULE_0__["ɵɵelementStart"](9, "td", 63);
+    _angular_core__WEBPACK_IMPORTED_MODULE_0__["ɵɵtext"](10);
+    _angular_core__WEBPACK_IMPORTED_MODULE_0__["ɵɵelementEnd"]();
+    _angular_core__WEBPACK_IMPORTED_MODULE_0__["ɵɵelementEnd"]();
+} if (rf & 2) {
+    const aj_r123 = ctx.$implicit;
+    _angular_core__WEBPACK_IMPORTED_MODULE_0__["ɵɵadvance"](2);
+    _angular_core__WEBPACK_IMPORTED_MODULE_0__["ɵɵtextInterpolate"](aj_r123.nombreBeneficiario);
+    _angular_core__WEBPACK_IMPORTED_MODULE_0__["ɵɵadvance"](2);
+    _angular_core__WEBPACK_IMPORTED_MODULE_0__["ɵɵtextInterpolate"](_angular_core__WEBPACK_IMPORTED_MODULE_0__["ɵɵpipeBind2"](5, 4, aj_r123.fechaDominical, "dd/MM/yyyy"));
+    _angular_core__WEBPACK_IMPORTED_MODULE_0__["ɵɵadvance"](3);
+    _angular_core__WEBPACK_IMPORTED_MODULE_0__["ɵɵtextInterpolate1"](" ", _angular_core__WEBPACK_IMPORTED_MODULE_0__["ɵɵpipeBind2"](8, 7, aj_r123.montoAjuste, "1.2-2"), " ");
+    _angular_core__WEBPACK_IMPORTED_MODULE_0__["ɵɵadvance"](3);
+    _angular_core__WEBPACK_IMPORTED_MODULE_0__["ɵɵtextInterpolate"](aj_r123.motivo);
+} }
+function NominasEventosPagosComponent_div_50_Template(rf, ctx) { if (rf & 1) {
+    _angular_core__WEBPACK_IMPORTED_MODULE_0__["ɵɵelementStart"](0, "div", 0);
+    _angular_core__WEBPACK_IMPORTED_MODULE_0__["ɵɵelementStart"](1, "div", 1);
+    _angular_core__WEBPACK_IMPORTED_MODULE_0__["ɵɵelementStart"](2, "h6", 110);
+    _angular_core__WEBPACK_IMPORTED_MODULE_0__["ɵɵtext"](3, " Ajustes pendientes (por anulaci\u00F3n de facturas) ");
+    _angular_core__WEBPACK_IMPORTED_MODULE_0__["ɵɵelementEnd"]();
+    _angular_core__WEBPACK_IMPORTED_MODULE_0__["ɵɵelementStart"](4, "p", 111);
+    _angular_core__WEBPACK_IMPORTED_MODULE_0__["ɵɵtext"](5, " Se descontar\u00E1n autom\u00E1ticamente en la pr\u00F3xima liquidaci\u00F3n de n\u00F3mina/dominical. ");
+    _angular_core__WEBPACK_IMPORTED_MODULE_0__["ɵɵelementEnd"]();
+    _angular_core__WEBPACK_IMPORTED_MODULE_0__["ɵɵelementStart"](6, "table", 93);
+    _angular_core__WEBPACK_IMPORTED_MODULE_0__["ɵɵelementStart"](7, "thead");
+    _angular_core__WEBPACK_IMPORTED_MODULE_0__["ɵɵelementStart"](8, "tr");
+    _angular_core__WEBPACK_IMPORTED_MODULE_0__["ɵɵelementStart"](9, "th");
+    _angular_core__WEBPACK_IMPORTED_MODULE_0__["ɵɵtext"](10, "Trabajador");
+    _angular_core__WEBPACK_IMPORTED_MODULE_0__["ɵɵelementEnd"]();
+    _angular_core__WEBPACK_IMPORTED_MODULE_0__["ɵɵelementStart"](11, "th");
+    _angular_core__WEBPACK_IMPORTED_MODULE_0__["ɵɵtext"](12, "Domingo");
+    _angular_core__WEBPACK_IMPORTED_MODULE_0__["ɵɵelementEnd"]();
+    _angular_core__WEBPACK_IMPORTED_MODULE_0__["ɵɵelementStart"](13, "th");
+    _angular_core__WEBPACK_IMPORTED_MODULE_0__["ɵɵtext"](14, "Debitar ($)");
+    _angular_core__WEBPACK_IMPORTED_MODULE_0__["ɵɵelementEnd"]();
+    _angular_core__WEBPACK_IMPORTED_MODULE_0__["ɵɵelementStart"](15, "th");
+    _angular_core__WEBPACK_IMPORTED_MODULE_0__["ɵɵtext"](16, "Motivo");
+    _angular_core__WEBPACK_IMPORTED_MODULE_0__["ɵɵelementEnd"]();
+    _angular_core__WEBPACK_IMPORTED_MODULE_0__["ɵɵelementEnd"]();
+    _angular_core__WEBPACK_IMPORTED_MODULE_0__["ɵɵelementEnd"]();
+    _angular_core__WEBPACK_IMPORTED_MODULE_0__["ɵɵelementStart"](17, "tbody");
+    _angular_core__WEBPACK_IMPORTED_MODULE_0__["ɵɵtemplate"](18, NominasEventosPagosComponent_div_50_tr_18_Template, 11, 10, "tr", 79);
+    _angular_core__WEBPACK_IMPORTED_MODULE_0__["ɵɵelementEnd"]();
+    _angular_core__WEBPACK_IMPORTED_MODULE_0__["ɵɵelementEnd"]();
+    _angular_core__WEBPACK_IMPORTED_MODULE_0__["ɵɵelementEnd"]();
+    _angular_core__WEBPACK_IMPORTED_MODULE_0__["ɵɵelementEnd"]();
+} if (rf & 2) {
+    const ctx_r10 = _angular_core__WEBPACK_IMPORTED_MODULE_0__["ɵɵnextContext"]();
+    _angular_core__WEBPACK_IMPORTED_MODULE_0__["ɵɵadvance"](18);
+    _angular_core__WEBPACK_IMPORTED_MODULE_0__["ɵɵproperty"]("ngForOf", ctx_r10.ajustesPendientes);
+} }
+function NominasEventosPagosComponent_div_51_th_9_Template(rf, ctx) { if (rf & 1) {
+    _angular_core__WEBPACK_IMPORTED_MODULE_0__["ɵɵelementStart"](0, "th", 117);
+    _angular_core__WEBPACK_IMPORTED_MODULE_0__["ɵɵtext"](1);
+    _angular_core__WEBPACK_IMPORTED_MODULE_0__["ɵɵelementEnd"]();
+} if (rf & 2) {
+    const mes_r127 = ctx.$implicit;
+    const mi_r128 = ctx.index;
+    const ctx_r124 = _angular_core__WEBPACK_IMPORTED_MODULE_0__["ɵɵnextContext"](2);
+    _angular_core__WEBPACK_IMPORTED_MODULE_0__["ɵɵproperty"]("ngClass", ctx_r124.claseMes(mi_r128));
+    _angular_core__WEBPACK_IMPORTED_MODULE_0__["ɵɵattribute"]("colspan", mes_r127.ocurrencias.length);
+    _angular_core__WEBPACK_IMPORTED_MODULE_0__["ɵɵadvance"](1);
+    _angular_core__WEBPACK_IMPORTED_MODULE_0__["ɵɵtextInterpolate1"](" ", mes_r127.mes, " ");
+} }
+function NominasEventosPagosComponent_div_51_ng_container_12_th_1_Template(rf, ctx) { if (rf & 1) {
+    _angular_core__WEBPACK_IMPORTED_MODULE_0__["ɵɵelementStart"](0, "th", 119);
+    _angular_core__WEBPACK_IMPORTED_MODULE_0__["ɵɵtext"](1);
+    _angular_core__WEBPACK_IMPORTED_MODULE_0__["ɵɵelementEnd"]();
+} if (rf & 2) {
+    const oc_r131 = ctx.$implicit;
+    _angular_core__WEBPACK_IMPORTED_MODULE_0__["ɵɵadvance"](1);
+    _angular_core__WEBPACK_IMPORTED_MODULE_0__["ɵɵtextInterpolate1"](" ", oc_r131.etiqueta, " ");
+} }
+function NominasEventosPagosComponent_div_51_ng_container_12_Template(rf, ctx) { if (rf & 1) {
+    _angular_core__WEBPACK_IMPORTED_MODULE_0__["ɵɵelementContainerStart"](0);
+    _angular_core__WEBPACK_IMPORTED_MODULE_0__["ɵɵtemplate"](1, NominasEventosPagosComponent_div_51_ng_container_12_th_1_Template, 2, 1, "th", 118);
+    _angular_core__WEBPACK_IMPORTED_MODULE_0__["ɵɵelementContainerEnd"]();
+} if (rf & 2) {
+    const mes_r129 = ctx.$implicit;
+    _angular_core__WEBPACK_IMPORTED_MODULE_0__["ɵɵadvance"](1);
+    _angular_core__WEBPACK_IMPORTED_MODULE_0__["ɵɵproperty"]("ngForOf", mes_r129.ocurrencias);
+} }
+function NominasEventosPagosComponent_div_51_ng_container_17_td_1_Template(rf, ctx) { if (rf & 1) {
+    _angular_core__WEBPACK_IMPORTED_MODULE_0__["ɵɵelementStart"](0, "td", 121);
+    _angular_core__WEBPACK_IMPORTED_MODULE_0__["ɵɵtext"](1);
+    _angular_core__WEBPACK_IMPORTED_MODULE_0__["ɵɵpipe"](2, "number");
+    _angular_core__WEBPACK_IMPORTED_MODULE_0__["ɵɵelementEnd"]();
+} if (rf & 2) {
+    const oc_r134 = ctx.$implicit;
+    _angular_core__WEBPACK_IMPORTED_MODULE_0__["ɵɵadvance"](1);
+    _angular_core__WEBPACK_IMPORTED_MODULE_0__["ɵɵtextInterpolate1"](" ", _angular_core__WEBPACK_IMPORTED_MODULE_0__["ɵɵpipeBind2"](2, 1, oc_r134.monto, "1.0-0"), " ");
+} }
+function NominasEventosPagosComponent_div_51_ng_container_17_Template(rf, ctx) { if (rf & 1) {
+    _angular_core__WEBPACK_IMPORTED_MODULE_0__["ɵɵelementContainerStart"](0);
+    _angular_core__WEBPACK_IMPORTED_MODULE_0__["ɵɵtemplate"](1, NominasEventosPagosComponent_div_51_ng_container_17_td_1_Template, 3, 4, "td", 120);
+    _angular_core__WEBPACK_IMPORTED_MODULE_0__["ɵɵelementContainerEnd"]();
+} if (rf & 2) {
+    const mes_r132 = ctx.$implicit;
+    _angular_core__WEBPACK_IMPORTED_MODULE_0__["ɵɵadvance"](1);
+    _angular_core__WEBPACK_IMPORTED_MODULE_0__["ɵɵproperty"]("ngForOf", mes_r132.ocurrencias);
+} }
+function NominasEventosPagosComponent_div_51_Template(rf, ctx) { if (rf & 1) {
+    _angular_core__WEBPACK_IMPORTED_MODULE_0__["ɵɵelementStart"](0, "div", 0);
+    _angular_core__WEBPACK_IMPORTED_MODULE_0__["ɵɵelementStart"](1, "div", 1);
+    _angular_core__WEBPACK_IMPORTED_MODULE_0__["ɵɵelementStart"](2, "h6", 113);
+    _angular_core__WEBPACK_IMPORTED_MODULE_0__["ɵɵtext"](3);
+    _angular_core__WEBPACK_IMPORTED_MODULE_0__["ɵɵelementEnd"]();
+    _angular_core__WEBPACK_IMPORTED_MODULE_0__["ɵɵelementStart"](4, "div", 77);
+    _angular_core__WEBPACK_IMPORTED_MODULE_0__["ɵɵelementStart"](5, "table", 114);
+    _angular_core__WEBPACK_IMPORTED_MODULE_0__["ɵɵelementStart"](6, "thead");
+    _angular_core__WEBPACK_IMPORTED_MODULE_0__["ɵɵelementStart"](7, "tr");
+    _angular_core__WEBPACK_IMPORTED_MODULE_0__["ɵɵelement"](8, "th", 115);
+    _angular_core__WEBPACK_IMPORTED_MODULE_0__["ɵɵtemplate"](9, NominasEventosPagosComponent_div_51_th_9_Template, 2, 3, "th", 116);
+    _angular_core__WEBPACK_IMPORTED_MODULE_0__["ɵɵelementEnd"]();
+    _angular_core__WEBPACK_IMPORTED_MODULE_0__["ɵɵelementStart"](10, "tr");
+    _angular_core__WEBPACK_IMPORTED_MODULE_0__["ɵɵelement"](11, "th", 115);
+    _angular_core__WEBPACK_IMPORTED_MODULE_0__["ɵɵtemplate"](12, NominasEventosPagosComponent_div_51_ng_container_12_Template, 2, 1, "ng-container", 79);
+    _angular_core__WEBPACK_IMPORTED_MODULE_0__["ɵɵelementEnd"]();
+    _angular_core__WEBPACK_IMPORTED_MODULE_0__["ɵɵelementEnd"]();
+    _angular_core__WEBPACK_IMPORTED_MODULE_0__["ɵɵelementStart"](13, "tbody");
+    _angular_core__WEBPACK_IMPORTED_MODULE_0__["ɵɵelementStart"](14, "tr");
+    _angular_core__WEBPACK_IMPORTED_MODULE_0__["ɵɵelementStart"](15, "td", 115);
+    _angular_core__WEBPACK_IMPORTED_MODULE_0__["ɵɵtext"](16);
+    _angular_core__WEBPACK_IMPORTED_MODULE_0__["ɵɵelementEnd"]();
+    _angular_core__WEBPACK_IMPORTED_MODULE_0__["ɵɵtemplate"](17, NominasEventosPagosComponent_div_51_ng_container_17_Template, 2, 1, "ng-container", 79);
+    _angular_core__WEBPACK_IMPORTED_MODULE_0__["ɵɵelementEnd"]();
+    _angular_core__WEBPACK_IMPORTED_MODULE_0__["ɵɵelementEnd"]();
+    _angular_core__WEBPACK_IMPORTED_MODULE_0__["ɵɵelementEnd"]();
+    _angular_core__WEBPACK_IMPORTED_MODULE_0__["ɵɵelementEnd"]();
+    _angular_core__WEBPACK_IMPORTED_MODULE_0__["ɵɵelementEnd"]();
+    _angular_core__WEBPACK_IMPORTED_MODULE_0__["ɵɵelementEnd"]();
+} if (rf & 2) {
+    const ctx_r11 = _angular_core__WEBPACK_IMPORTED_MODULE_0__["ɵɵnextContext"]();
+    _angular_core__WEBPACK_IMPORTED_MODULE_0__["ɵɵadvance"](3);
+    _angular_core__WEBPACK_IMPORTED_MODULE_0__["ɵɵtextInterpolate1"](" Proyecci\u00F3n de pagos \u2014 ", ctx_r11.proyeccionVista.etiquetaFila, " ");
+    _angular_core__WEBPACK_IMPORTED_MODULE_0__["ɵɵadvance"](6);
+    _angular_core__WEBPACK_IMPORTED_MODULE_0__["ɵɵproperty"]("ngForOf", ctx_r11.proyeccionVista.meses);
+    _angular_core__WEBPACK_IMPORTED_MODULE_0__["ɵɵadvance"](3);
+    _angular_core__WEBPACK_IMPORTED_MODULE_0__["ɵɵproperty"]("ngForOf", ctx_r11.proyeccionVista.meses);
+    _angular_core__WEBPACK_IMPORTED_MODULE_0__["ɵɵadvance"](4);
+    _angular_core__WEBPACK_IMPORTED_MODULE_0__["ɵɵtextInterpolate"](ctx_r11.proyeccionVista.etiquetaFila);
+    _angular_core__WEBPACK_IMPORTED_MODULE_0__["ɵɵadvance"](1);
+    _angular_core__WEBPACK_IMPORTED_MODULE_0__["ɵɵproperty"]("ngForOf", ctx_r11.proyeccionVista.meses);
+} }
+function NominasEventosPagosComponent_div_67_button_5_Template(rf, ctx) { if (rf & 1) {
+    const _r140 = _angular_core__WEBPACK_IMPORTED_MODULE_0__["ɵɵgetCurrentView"]();
+    _angular_core__WEBPACK_IMPORTED_MODULE_0__["ɵɵelementStart"](0, "button", 126);
+    _angular_core__WEBPACK_IMPORTED_MODULE_0__["ɵɵlistener"]("click", function NominasEventosPagosComponent_div_67_button_5_Template_button_click_0_listener() { _angular_core__WEBPACK_IMPORTED_MODULE_0__["ɵɵrestoreView"](_r140); const d_r135 = _angular_core__WEBPACK_IMPORTED_MODULE_0__["ɵɵnextContext"]().$implicit; const ctx_r138 = _angular_core__WEBPACK_IMPORTED_MODULE_0__["ɵɵnextContext"](); return ctx_r138.finalizarRegla(d_r135.data); });
+    _angular_core__WEBPACK_IMPORTED_MODULE_0__["ɵɵtext"](1, " Finalizar ");
+    _angular_core__WEBPACK_IMPORTED_MODULE_0__["ɵɵelementEnd"]();
+} }
+function NominasEventosPagosComponent_div_67_button_6_Template(rf, ctx) { if (rf & 1) {
+    const _r143 = _angular_core__WEBPACK_IMPORTED_MODULE_0__["ɵɵgetCurrentView"]();
+    _angular_core__WEBPACK_IMPORTED_MODULE_0__["ɵɵelementStart"](0, "button", 127);
+    _angular_core__WEBPACK_IMPORTED_MODULE_0__["ɵɵlistener"]("click", function NominasEventosPagosComponent_div_67_button_6_Template_button_click_0_listener() { _angular_core__WEBPACK_IMPORTED_MODULE_0__["ɵɵrestoreView"](_r143); const d_r135 = _angular_core__WEBPACK_IMPORTED_MODULE_0__["ɵɵnextContext"]().$implicit; const ctx_r141 = _angular_core__WEBPACK_IMPORTED_MODULE_0__["ɵɵnextContext"](); return ctx_r141.eliminarRegla(d_r135.data); });
+    _angular_core__WEBPACK_IMPORTED_MODULE_0__["ɵɵtext"](1, " \u00D7 ");
+    _angular_core__WEBPACK_IMPORTED_MODULE_0__["ɵɵelementEnd"]();
+} }
+function NominasEventosPagosComponent_div_67_Template(rf, ctx) { if (rf & 1) {
+    const _r145 = _angular_core__WEBPACK_IMPORTED_MODULE_0__["ɵɵgetCurrentView"]();
+    _angular_core__WEBPACK_IMPORTED_MODULE_0__["ɵɵelementStart"](0, "div");
+    _angular_core__WEBPACK_IMPORTED_MODULE_0__["ɵɵelementStart"](1, "button", 122);
+    _angular_core__WEBPACK_IMPORTED_MODULE_0__["ɵɵlistener"]("click", function NominasEventosPagosComponent_div_67_Template_button_click_1_listener() { _angular_core__WEBPACK_IMPORTED_MODULE_0__["ɵɵrestoreView"](_r145); const d_r135 = ctx.$implicit; const ctx_r144 = _angular_core__WEBPACK_IMPORTED_MODULE_0__["ɵɵnextContext"](); return ctx_r144.editarRegla(d_r135.data); });
+    _angular_core__WEBPACK_IMPORTED_MODULE_0__["ɵɵtext"](2, " Ver ");
+    _angular_core__WEBPACK_IMPORTED_MODULE_0__["ɵɵelementEnd"]();
+    _angular_core__WEBPACK_IMPORTED_MODULE_0__["ɵɵelementStart"](3, "button", 123);
+    _angular_core__WEBPACK_IMPORTED_MODULE_0__["ɵɵlistener"]("click", function NominasEventosPagosComponent_div_67_Template_button_click_3_listener() { _angular_core__WEBPACK_IMPORTED_MODULE_0__["ɵɵrestoreView"](_r145); const d_r135 = ctx.$implicit; const ctx_r146 = _angular_core__WEBPACK_IMPORTED_MODULE_0__["ɵɵnextContext"](); return ctx_r146.verProyeccion(d_r135.data); });
+    _angular_core__WEBPACK_IMPORTED_MODULE_0__["ɵɵtext"](4, " Calendario ");
+    _angular_core__WEBPACK_IMPORTED_MODULE_0__["ɵɵelementEnd"]();
+    _angular_core__WEBPACK_IMPORTED_MODULE_0__["ɵɵtemplate"](5, NominasEventosPagosComponent_div_67_button_5_Template, 2, 0, "button", 124);
+    _angular_core__WEBPACK_IMPORTED_MODULE_0__["ɵɵtemplate"](6, NominasEventosPagosComponent_div_67_button_6_Template, 2, 0, "button", 125);
+    _angular_core__WEBPACK_IMPORTED_MODULE_0__["ɵɵelementEnd"]();
+} if (rf & 2) {
+    const d_r135 = ctx.$implicit;
+    _angular_core__WEBPACK_IMPORTED_MODULE_0__["ɵɵadvance"](5);
+    _angular_core__WEBPACK_IMPORTED_MODULE_0__["ɵɵproperty"]("ngIf", d_r135.data.estadoRegla === "Autorizada");
+    _angular_core__WEBPACK_IMPORTED_MODULE_0__["ɵɵadvance"](1);
+    _angular_core__WEBPACK_IMPORTED_MODULE_0__["ɵɵproperty"]("ngIf", d_r135.data.estadoRegla !== "Autorizada");
+} }
+function NominasEventosPagosComponent_div_96_table_23_tr_16_Template(rf, ctx) { if (rf & 1) {
+    _angular_core__WEBPACK_IMPORTED_MODULE_0__["ɵɵelementStart"](0, "tr");
+    _angular_core__WEBPACK_IMPORTED_MODULE_0__["ɵɵelementStart"](1, "td");
+    _angular_core__WEBPACK_IMPORTED_MODULE_0__["ɵɵtext"](2);
+    _angular_core__WEBPACK_IMPORTED_MODULE_0__["ɵɵelementEnd"]();
+    _angular_core__WEBPACK_IMPORTED_MODULE_0__["ɵɵelementStart"](3, "td");
+    _angular_core__WEBPACK_IMPORTED_MODULE_0__["ɵɵtext"](4);
+    _angular_core__WEBPACK_IMPORTED_MODULE_0__["ɵɵelementEnd"]();
+    _angular_core__WEBPACK_IMPORTED_MODULE_0__["ɵɵelementStart"](5, "td");
+    _angular_core__WEBPACK_IMPORTED_MODULE_0__["ɵɵtext"](6);
+    _angular_core__WEBPACK_IMPORTED_MODULE_0__["ɵɵelementEnd"]();
+    _angular_core__WEBPACK_IMPORTED_MODULE_0__["ɵɵelementStart"](7, "td");
+    _angular_core__WEBPACK_IMPORTED_MODULE_0__["ɵɵtext"](8);
+    _angular_core__WEBPACK_IMPORTED_MODULE_0__["ɵɵpipe"](9, "number");
+    _angular_core__WEBPACK_IMPORTED_MODULE_0__["ɵɵelementEnd"]();
+    _angular_core__WEBPACK_IMPORTED_MODULE_0__["ɵɵelementStart"](10, "td");
+    _angular_core__WEBPACK_IMPORTED_MODULE_0__["ɵɵtext"](11);
+    _angular_core__WEBPACK_IMPORTED_MODULE_0__["ɵɵpipe"](12, "number");
+    _angular_core__WEBPACK_IMPORTED_MODULE_0__["ɵɵelementEnd"]();
+    _angular_core__WEBPACK_IMPORTED_MODULE_0__["ɵɵelementStart"](13, "td");
+    _angular_core__WEBPACK_IMPORTED_MODULE_0__["ɵɵtext"](14);
+    _angular_core__WEBPACK_IMPORTED_MODULE_0__["ɵɵpipe"](15, "number");
+    _angular_core__WEBPACK_IMPORTED_MODULE_0__["ɵɵelementEnd"]();
+    _angular_core__WEBPACK_IMPORTED_MODULE_0__["ɵɵelementEnd"]();
+} if (rf & 2) {
+    const t_r151 = ctx.$implicit;
+    _angular_core__WEBPACK_IMPORTED_MODULE_0__["ɵɵadvance"](2);
+    _angular_core__WEBPACK_IMPORTED_MODULE_0__["ɵɵtextInterpolate"](t_r151.transaccionNomina);
+    _angular_core__WEBPACK_IMPORTED_MODULE_0__["ɵɵadvance"](2);
+    _angular_core__WEBPACK_IMPORTED_MODULE_0__["ɵɵtextInterpolate"](t_r151.centroCosto);
+    _angular_core__WEBPACK_IMPORTED_MODULE_0__["ɵɵadvance"](2);
+    _angular_core__WEBPACK_IMPORTED_MODULE_0__["ɵɵtextInterpolate"](t_r151.cuotas);
+    _angular_core__WEBPACK_IMPORTED_MODULE_0__["ɵɵadvance"](2);
+    _angular_core__WEBPACK_IMPORTED_MODULE_0__["ɵɵtextInterpolate"](_angular_core__WEBPACK_IMPORTED_MODULE_0__["ɵɵpipeBind2"](9, 6, t_r151.programado, "1.2-2"));
+    _angular_core__WEBPACK_IMPORTED_MODULE_0__["ɵɵadvance"](3);
+    _angular_core__WEBPACK_IMPORTED_MODULE_0__["ɵɵtextInterpolate"](_angular_core__WEBPACK_IMPORTED_MODULE_0__["ɵɵpipeBind2"](12, 9, t_r151.pagado, "1.2-2"));
+    _angular_core__WEBPACK_IMPORTED_MODULE_0__["ɵɵadvance"](3);
+    _angular_core__WEBPACK_IMPORTED_MODULE_0__["ɵɵtextInterpolate"](_angular_core__WEBPACK_IMPORTED_MODULE_0__["ɵɵpipeBind2"](15, 12, t_r151.pendiente, "1.2-2"));
+} }
+function NominasEventosPagosComponent_div_96_table_23_Template(rf, ctx) { if (rf & 1) {
+    _angular_core__WEBPACK_IMPORTED_MODULE_0__["ɵɵelementStart"](0, "table", 132);
+    _angular_core__WEBPACK_IMPORTED_MODULE_0__["ɵɵelementStart"](1, "thead");
+    _angular_core__WEBPACK_IMPORTED_MODULE_0__["ɵɵelementStart"](2, "tr");
+    _angular_core__WEBPACK_IMPORTED_MODULE_0__["ɵɵelementStart"](3, "th");
+    _angular_core__WEBPACK_IMPORTED_MODULE_0__["ɵɵtext"](4, "Transacci\u00F3n");
+    _angular_core__WEBPACK_IMPORTED_MODULE_0__["ɵɵelementEnd"]();
+    _angular_core__WEBPACK_IMPORTED_MODULE_0__["ɵɵelementStart"](5, "th");
+    _angular_core__WEBPACK_IMPORTED_MODULE_0__["ɵɵtext"](6, "Centro costo");
+    _angular_core__WEBPACK_IMPORTED_MODULE_0__["ɵɵelementEnd"]();
+    _angular_core__WEBPACK_IMPORTED_MODULE_0__["ɵɵelementStart"](7, "th");
+    _angular_core__WEBPACK_IMPORTED_MODULE_0__["ɵɵtext"](8, "Cuotas");
+    _angular_core__WEBPACK_IMPORTED_MODULE_0__["ɵɵelementEnd"]();
+    _angular_core__WEBPACK_IMPORTED_MODULE_0__["ɵɵelementStart"](9, "th");
+    _angular_core__WEBPACK_IMPORTED_MODULE_0__["ɵɵtext"](10, "Programado");
+    _angular_core__WEBPACK_IMPORTED_MODULE_0__["ɵɵelementEnd"]();
+    _angular_core__WEBPACK_IMPORTED_MODULE_0__["ɵɵelementStart"](11, "th");
+    _angular_core__WEBPACK_IMPORTED_MODULE_0__["ɵɵtext"](12, "Pagado");
+    _angular_core__WEBPACK_IMPORTED_MODULE_0__["ɵɵelementEnd"]();
+    _angular_core__WEBPACK_IMPORTED_MODULE_0__["ɵɵelementStart"](13, "th");
+    _angular_core__WEBPACK_IMPORTED_MODULE_0__["ɵɵtext"](14, "Pendiente");
+    _angular_core__WEBPACK_IMPORTED_MODULE_0__["ɵɵelementEnd"]();
+    _angular_core__WEBPACK_IMPORTED_MODULE_0__["ɵɵelementEnd"]();
+    _angular_core__WEBPACK_IMPORTED_MODULE_0__["ɵɵelementEnd"]();
+    _angular_core__WEBPACK_IMPORTED_MODULE_0__["ɵɵelementStart"](15, "tbody");
+    _angular_core__WEBPACK_IMPORTED_MODULE_0__["ɵɵtemplate"](16, NominasEventosPagosComponent_div_96_table_23_tr_16_Template, 16, 15, "tr", 79);
+    _angular_core__WEBPACK_IMPORTED_MODULE_0__["ɵɵelementEnd"]();
+    _angular_core__WEBPACK_IMPORTED_MODULE_0__["ɵɵelementEnd"]();
+} if (rf & 2) {
+    const ctx_r147 = _angular_core__WEBPACK_IMPORTED_MODULE_0__["ɵɵnextContext"](2);
+    _angular_core__WEBPACK_IMPORTED_MODULE_0__["ɵɵadvance"](16);
+    _angular_core__WEBPACK_IMPORTED_MODULE_0__["ɵɵproperty"]("ngForOf", ctx_r147.reporteEstado.porTransaccion);
+} }
+function NominasEventosPagosComponent_div_96_table_24_tr_16_span_6_Template(rf, ctx) { if (rf & 1) {
+    _angular_core__WEBPACK_IMPORTED_MODULE_0__["ɵɵelementStart"](0, "span");
+    _angular_core__WEBPACK_IMPORTED_MODULE_0__["ɵɵtext"](1);
+    _angular_core__WEBPACK_IMPORTED_MODULE_0__["ɵɵpipe"](2, "date");
+    _angular_core__WEBPACK_IMPORTED_MODULE_0__["ɵɵpipe"](3, "date");
+    _angular_core__WEBPACK_IMPORTED_MODULE_0__["ɵɵelementEnd"]();
+} if (rf & 2) {
+    const ev_r153 = _angular_core__WEBPACK_IMPORTED_MODULE_0__["ɵɵnextContext"]().$implicit;
+    _angular_core__WEBPACK_IMPORTED_MODULE_0__["ɵɵadvance"](1);
+    _angular_core__WEBPACK_IMPORTED_MODULE_0__["ɵɵtextInterpolate2"]("", _angular_core__WEBPACK_IMPORTED_MODULE_0__["ɵɵpipeBind2"](2, 2, ev_r153.fechaMin, "dd/MM/yy"), " \u2014 ", _angular_core__WEBPACK_IMPORTED_MODULE_0__["ɵɵpipeBind2"](3, 5, ev_r153.fechaMax, "dd/MM/yy"), "");
+} }
+function NominasEventosPagosComponent_div_96_table_24_tr_16_span_7_Template(rf, ctx) { if (rf & 1) {
+    _angular_core__WEBPACK_IMPORTED_MODULE_0__["ɵɵelementStart"](0, "span");
+    _angular_core__WEBPACK_IMPORTED_MODULE_0__["ɵɵtext"](1);
+    _angular_core__WEBPACK_IMPORTED_MODULE_0__["ɵɵpipe"](2, "date");
+    _angular_core__WEBPACK_IMPORTED_MODULE_0__["ɵɵelementEnd"]();
+} if (rf & 2) {
+    const ev_r153 = _angular_core__WEBPACK_IMPORTED_MODULE_0__["ɵɵnextContext"]().$implicit;
+    _angular_core__WEBPACK_IMPORTED_MODULE_0__["ɵɵadvance"](1);
+    _angular_core__WEBPACK_IMPORTED_MODULE_0__["ɵɵtextInterpolate"](_angular_core__WEBPACK_IMPORTED_MODULE_0__["ɵɵpipeBind2"](2, 1, ev_r153.fechaProgramada, "dd/MM/yyyy"));
+} }
+function NominasEventosPagosComponent_div_96_table_24_tr_16_Template(rf, ctx) { if (rf & 1) {
+    _angular_core__WEBPACK_IMPORTED_MODULE_0__["ɵɵelementStart"](0, "tr");
+    _angular_core__WEBPACK_IMPORTED_MODULE_0__["ɵɵelementStart"](1, "td");
+    _angular_core__WEBPACK_IMPORTED_MODULE_0__["ɵɵtext"](2);
+    _angular_core__WEBPACK_IMPORTED_MODULE_0__["ɵɵelementEnd"]();
+    _angular_core__WEBPACK_IMPORTED_MODULE_0__["ɵɵelementStart"](3, "td");
+    _angular_core__WEBPACK_IMPORTED_MODULE_0__["ɵɵtext"](4);
+    _angular_core__WEBPACK_IMPORTED_MODULE_0__["ɵɵelementEnd"]();
+    _angular_core__WEBPACK_IMPORTED_MODULE_0__["ɵɵelementStart"](5, "td", 63);
+    _angular_core__WEBPACK_IMPORTED_MODULE_0__["ɵɵtemplate"](6, NominasEventosPagosComponent_div_96_table_24_tr_16_span_6_Template, 4, 8, "span", 13);
+    _angular_core__WEBPACK_IMPORTED_MODULE_0__["ɵɵtemplate"](7, NominasEventosPagosComponent_div_96_table_24_tr_16_span_7_Template, 3, 4, "span", 13);
+    _angular_core__WEBPACK_IMPORTED_MODULE_0__["ɵɵelementEnd"]();
+    _angular_core__WEBPACK_IMPORTED_MODULE_0__["ɵɵelementStart"](8, "td");
+    _angular_core__WEBPACK_IMPORTED_MODULE_0__["ɵɵtext"](9);
+    _angular_core__WEBPACK_IMPORTED_MODULE_0__["ɵɵpipe"](10, "number");
+    _angular_core__WEBPACK_IMPORTED_MODULE_0__["ɵɵelementEnd"]();
+    _angular_core__WEBPACK_IMPORTED_MODULE_0__["ɵɵelementStart"](11, "td");
+    _angular_core__WEBPACK_IMPORTED_MODULE_0__["ɵɵtext"](12);
+    _angular_core__WEBPACK_IMPORTED_MODULE_0__["ɵɵpipe"](13, "number");
+    _angular_core__WEBPACK_IMPORTED_MODULE_0__["ɵɵelementEnd"]();
+    _angular_core__WEBPACK_IMPORTED_MODULE_0__["ɵɵelementStart"](14, "td");
+    _angular_core__WEBPACK_IMPORTED_MODULE_0__["ɵɵtext"](15);
+    _angular_core__WEBPACK_IMPORTED_MODULE_0__["ɵɵelementEnd"]();
+    _angular_core__WEBPACK_IMPORTED_MODULE_0__["ɵɵelementEnd"]();
+} if (rf & 2) {
+    const ev_r153 = ctx.$implicit;
+    _angular_core__WEBPACK_IMPORTED_MODULE_0__["ɵɵadvance"](2);
+    _angular_core__WEBPACK_IMPORTED_MODULE_0__["ɵɵtextInterpolate2"]("", ev_r153.numeroCuota, "/", ev_r153.totalCuotas, "");
+    _angular_core__WEBPACK_IMPORTED_MODULE_0__["ɵɵadvance"](2);
+    _angular_core__WEBPACK_IMPORTED_MODULE_0__["ɵɵtextInterpolate"](ev_r153.transaccionNomina);
+    _angular_core__WEBPACK_IMPORTED_MODULE_0__["ɵɵadvance"](2);
+    _angular_core__WEBPACK_IMPORTED_MODULE_0__["ɵɵproperty"]("ngIf", ev_r153.fechaMin);
+    _angular_core__WEBPACK_IMPORTED_MODULE_0__["ɵɵadvance"](1);
+    _angular_core__WEBPACK_IMPORTED_MODULE_0__["ɵɵproperty"]("ngIf", !ev_r153.fechaMin);
+    _angular_core__WEBPACK_IMPORTED_MODULE_0__["ɵɵadvance"](2);
+    _angular_core__WEBPACK_IMPORTED_MODULE_0__["ɵɵtextInterpolate"](_angular_core__WEBPACK_IMPORTED_MODULE_0__["ɵɵpipeBind2"](10, 8, ev_r153.monto, "1.2-2"));
+    _angular_core__WEBPACK_IMPORTED_MODULE_0__["ɵɵadvance"](3);
+    _angular_core__WEBPACK_IMPORTED_MODULE_0__["ɵɵtextInterpolate"](_angular_core__WEBPACK_IMPORTED_MODULE_0__["ɵɵpipeBind2"](13, 11, ev_r153.montoPagado || 0, "1.2-2"));
+    _angular_core__WEBPACK_IMPORTED_MODULE_0__["ɵɵadvance"](3);
+    _angular_core__WEBPACK_IMPORTED_MODULE_0__["ɵɵtextInterpolate"](ev_r153.estado);
+} }
+function NominasEventosPagosComponent_div_96_table_24_Template(rf, ctx) { if (rf & 1) {
+    _angular_core__WEBPACK_IMPORTED_MODULE_0__["ɵɵelementStart"](0, "table", 93);
+    _angular_core__WEBPACK_IMPORTED_MODULE_0__["ɵɵelementStart"](1, "thead");
+    _angular_core__WEBPACK_IMPORTED_MODULE_0__["ɵɵelementStart"](2, "tr");
+    _angular_core__WEBPACK_IMPORTED_MODULE_0__["ɵɵelementStart"](3, "th");
+    _angular_core__WEBPACK_IMPORTED_MODULE_0__["ɵɵtext"](4, "Cuota");
+    _angular_core__WEBPACK_IMPORTED_MODULE_0__["ɵɵelementEnd"]();
+    _angular_core__WEBPACK_IMPORTED_MODULE_0__["ɵɵelementStart"](5, "th");
+    _angular_core__WEBPACK_IMPORTED_MODULE_0__["ɵɵtext"](6, "Transacci\u00F3n");
+    _angular_core__WEBPACK_IMPORTED_MODULE_0__["ɵɵelementEnd"]();
+    _angular_core__WEBPACK_IMPORTED_MODULE_0__["ɵɵelementStart"](7, "th");
+    _angular_core__WEBPACK_IMPORTED_MODULE_0__["ɵɵtext"](8, "Ventana");
+    _angular_core__WEBPACK_IMPORTED_MODULE_0__["ɵɵelementEnd"]();
+    _angular_core__WEBPACK_IMPORTED_MODULE_0__["ɵɵelementStart"](9, "th");
+    _angular_core__WEBPACK_IMPORTED_MODULE_0__["ɵɵtext"](10, "Programado");
+    _angular_core__WEBPACK_IMPORTED_MODULE_0__["ɵɵelementEnd"]();
+    _angular_core__WEBPACK_IMPORTED_MODULE_0__["ɵɵelementStart"](11, "th");
+    _angular_core__WEBPACK_IMPORTED_MODULE_0__["ɵɵtext"](12, "Pagado");
+    _angular_core__WEBPACK_IMPORTED_MODULE_0__["ɵɵelementEnd"]();
+    _angular_core__WEBPACK_IMPORTED_MODULE_0__["ɵɵelementStart"](13, "th");
+    _angular_core__WEBPACK_IMPORTED_MODULE_0__["ɵɵtext"](14, "Estado");
+    _angular_core__WEBPACK_IMPORTED_MODULE_0__["ɵɵelementEnd"]();
+    _angular_core__WEBPACK_IMPORTED_MODULE_0__["ɵɵelementEnd"]();
+    _angular_core__WEBPACK_IMPORTED_MODULE_0__["ɵɵelementEnd"]();
+    _angular_core__WEBPACK_IMPORTED_MODULE_0__["ɵɵelementStart"](15, "tbody");
+    _angular_core__WEBPACK_IMPORTED_MODULE_0__["ɵɵtemplate"](16, NominasEventosPagosComponent_div_96_table_24_tr_16_Template, 16, 14, "tr", 79);
+    _angular_core__WEBPACK_IMPORTED_MODULE_0__["ɵɵelementEnd"]();
+    _angular_core__WEBPACK_IMPORTED_MODULE_0__["ɵɵelementEnd"]();
+} if (rf & 2) {
+    const ctx_r148 = _angular_core__WEBPACK_IMPORTED_MODULE_0__["ɵɵnextContext"](2);
+    _angular_core__WEBPACK_IMPORTED_MODULE_0__["ɵɵadvance"](16);
+    _angular_core__WEBPACK_IMPORTED_MODULE_0__["ɵɵproperty"]("ngForOf", ctx_r148.reporteEstado.eventos);
+} }
+function NominasEventosPagosComponent_div_96_p_25_Template(rf, ctx) { if (rf & 1) {
+    _angular_core__WEBPACK_IMPORTED_MODULE_0__["ɵɵelementStart"](0, "p", 97);
+    _angular_core__WEBPACK_IMPORTED_MODULE_0__["ɵɵtext"](1, " Sin movimientos en el rango seleccionado. ");
+    _angular_core__WEBPACK_IMPORTED_MODULE_0__["ɵɵelementEnd"]();
+} }
+function NominasEventosPagosComponent_div_96_Template(rf, ctx) { if (rf & 1) {
+    _angular_core__WEBPACK_IMPORTED_MODULE_0__["ɵɵelementStart"](0, "div");
+    _angular_core__WEBPACK_IMPORTED_MODULE_0__["ɵɵelementStart"](1, "div", 88);
+    _angular_core__WEBPACK_IMPORTED_MODULE_0__["ɵɵelementStart"](2, "div", 89);
+    _angular_core__WEBPACK_IMPORTED_MODULE_0__["ɵɵelementStart"](3, "div", 128);
+    _angular_core__WEBPACK_IMPORTED_MODULE_0__["ɵɵelementStart"](4, "div", 111);
+    _angular_core__WEBPACK_IMPORTED_MODULE_0__["ɵɵtext"](5, "Programado");
+    _angular_core__WEBPACK_IMPORTED_MODULE_0__["ɵɵelementEnd"]();
+    _angular_core__WEBPACK_IMPORTED_MODULE_0__["ɵɵelementStart"](6, "strong");
+    _angular_core__WEBPACK_IMPORTED_MODULE_0__["ɵɵtext"](7);
+    _angular_core__WEBPACK_IMPORTED_MODULE_0__["ɵɵpipe"](8, "number");
+    _angular_core__WEBPACK_IMPORTED_MODULE_0__["ɵɵelementEnd"]();
+    _angular_core__WEBPACK_IMPORTED_MODULE_0__["ɵɵelementEnd"]();
+    _angular_core__WEBPACK_IMPORTED_MODULE_0__["ɵɵelementEnd"]();
+    _angular_core__WEBPACK_IMPORTED_MODULE_0__["ɵɵelementStart"](9, "div", 89);
+    _angular_core__WEBPACK_IMPORTED_MODULE_0__["ɵɵelementStart"](10, "div", 128);
+    _angular_core__WEBPACK_IMPORTED_MODULE_0__["ɵɵelementStart"](11, "div", 111);
+    _angular_core__WEBPACK_IMPORTED_MODULE_0__["ɵɵtext"](12, "Pagado");
+    _angular_core__WEBPACK_IMPORTED_MODULE_0__["ɵɵelementEnd"]();
+    _angular_core__WEBPACK_IMPORTED_MODULE_0__["ɵɵelementStart"](13, "strong", 129);
+    _angular_core__WEBPACK_IMPORTED_MODULE_0__["ɵɵtext"](14);
+    _angular_core__WEBPACK_IMPORTED_MODULE_0__["ɵɵpipe"](15, "number");
+    _angular_core__WEBPACK_IMPORTED_MODULE_0__["ɵɵelementEnd"]();
+    _angular_core__WEBPACK_IMPORTED_MODULE_0__["ɵɵelementEnd"]();
+    _angular_core__WEBPACK_IMPORTED_MODULE_0__["ɵɵelementEnd"]();
+    _angular_core__WEBPACK_IMPORTED_MODULE_0__["ɵɵelementStart"](16, "div", 89);
+    _angular_core__WEBPACK_IMPORTED_MODULE_0__["ɵɵelementStart"](17, "div", 128);
+    _angular_core__WEBPACK_IMPORTED_MODULE_0__["ɵɵelementStart"](18, "div", 111);
+    _angular_core__WEBPACK_IMPORTED_MODULE_0__["ɵɵtext"](19, "Pendiente");
+    _angular_core__WEBPACK_IMPORTED_MODULE_0__["ɵɵelementEnd"]();
+    _angular_core__WEBPACK_IMPORTED_MODULE_0__["ɵɵelementStart"](20, "strong", 130);
+    _angular_core__WEBPACK_IMPORTED_MODULE_0__["ɵɵtext"](21);
+    _angular_core__WEBPACK_IMPORTED_MODULE_0__["ɵɵpipe"](22, "number");
+    _angular_core__WEBPACK_IMPORTED_MODULE_0__["ɵɵelementEnd"]();
+    _angular_core__WEBPACK_IMPORTED_MODULE_0__["ɵɵelementEnd"]();
+    _angular_core__WEBPACK_IMPORTED_MODULE_0__["ɵɵelementEnd"]();
+    _angular_core__WEBPACK_IMPORTED_MODULE_0__["ɵɵelementEnd"]();
+    _angular_core__WEBPACK_IMPORTED_MODULE_0__["ɵɵtemplate"](23, NominasEventosPagosComponent_div_96_table_23_Template, 17, 1, "table", 131);
+    _angular_core__WEBPACK_IMPORTED_MODULE_0__["ɵɵtemplate"](24, NominasEventosPagosComponent_div_96_table_24_Template, 17, 1, "table", 91);
+    _angular_core__WEBPACK_IMPORTED_MODULE_0__["ɵɵtemplate"](25, NominasEventosPagosComponent_div_96_p_25_Template, 2, 0, "p", 92);
+    _angular_core__WEBPACK_IMPORTED_MODULE_0__["ɵɵelementEnd"]();
+} if (rf & 2) {
+    const ctx_r13 = _angular_core__WEBPACK_IMPORTED_MODULE_0__["ɵɵnextContext"]();
+    _angular_core__WEBPACK_IMPORTED_MODULE_0__["ɵɵadvance"](7);
+    _angular_core__WEBPACK_IMPORTED_MODULE_0__["ɵɵtextInterpolate1"]("$", _angular_core__WEBPACK_IMPORTED_MODULE_0__["ɵɵpipeBind2"](8, 6, ctx_r13.reporteEstado.totalProgramado, "1.2-2"), "");
+    _angular_core__WEBPACK_IMPORTED_MODULE_0__["ɵɵadvance"](7);
+    _angular_core__WEBPACK_IMPORTED_MODULE_0__["ɵɵtextInterpolate1"]("$", _angular_core__WEBPACK_IMPORTED_MODULE_0__["ɵɵpipeBind2"](15, 9, ctx_r13.reporteEstado.totalPagado, "1.2-2"), "");
+    _angular_core__WEBPACK_IMPORTED_MODULE_0__["ɵɵadvance"](7);
+    _angular_core__WEBPACK_IMPORTED_MODULE_0__["ɵɵtextInterpolate1"]("$", _angular_core__WEBPACK_IMPORTED_MODULE_0__["ɵɵpipeBind2"](22, 12, ctx_r13.reporteEstado.totalPendiente, "1.2-2"), "");
+    _angular_core__WEBPACK_IMPORTED_MODULE_0__["ɵɵadvance"](2);
+    _angular_core__WEBPACK_IMPORTED_MODULE_0__["ɵɵproperty"]("ngIf", ctx_r13.reporteEstado.porTransaccion.length);
+    _angular_core__WEBPACK_IMPORTED_MODULE_0__["ɵɵadvance"](1);
+    _angular_core__WEBPACK_IMPORTED_MODULE_0__["ɵɵproperty"]("ngIf", ctx_r13.reporteEstado.eventos.length);
+    _angular_core__WEBPACK_IMPORTED_MODULE_0__["ɵɵadvance"](1);
+    _angular_core__WEBPACK_IMPORTED_MODULE_0__["ɵɵproperty"]("ngIf", !ctx_r13.reporteEstado.eventos.length);
+} }
+class NominasEventosPagosComponent {
+    constructor(_nominasService, _centroCostoService) {
+        this._nominasService = _nominasService;
+        this._centroCostoService = _centroCostoService;
+        this.usuarioNombre = "";
+        this.tiposRegla = ["A", "B"];
+        this.tiposBeneficiario = ["Interno", "Externo"];
+        this.transaccionesNominaA = [
+            "Asignacion nomina",
+            "Anticipo nomina",
+            "Pago extra",
+            "Comision",
+        ];
+        this.transaccionesNominaB = [
+            "Arriendos",
+            "Prestamos recibidos",
+            "Tarjetas de credito",
+            "Pagos puntuales",
+            "Otros compromisos",
+            "Bono de navidad",
+            "Decimo tercer sueldo",
+            "Decimo cuarto sueldo",
+            "Decimo escolar",
+        ];
+        this.fuentesMontoA = ["TMS"];
+        this.frecuenciasA = ["Semanal", "Dominical", "Quincenal", "Mensual"];
+        this.frecuenciasB = ["Unica", "Semanal", "Quincenal", "Mensual", "Anual"];
+        this.vigenciasReglaA = ["Finalizacion Contrato"];
+        this.vigenciasReglaB = ["Indefinido", "Numero de cuotas", "Unica vez"];
+        this.modalidadesMontoB = ["Periodico", "Finito"];
+        this.parametrosAnualB = ["Limite Fecha"];
+        this.centrosCosto = [];
+        this.nombresCentrosCosto = [];
+        this.parametrosSemanal = [
+            "Los lunes",
+            "Los martes",
+            "Los miercoles",
+            "Los jueves",
+            "Los viernes",
+            "Los sabados",
+            "Los domingos",
+        ];
+        this.parametrosDominical = ["Los domingos"];
+        this.parametrosQuincenal = ["Dia 1 y 15", "Dia 15 y ultimo dia"];
+        this.parametrosMensual = ["Dia 1 del mes", "Dia 15 del mes", "Ultimo dia del mes"];
+        this.parametrosMensualB = ["El dia x del mes"];
+        this.parametrosActuales = this.parametrosSemanal;
+        this.reglas = [];
+        this.reglaSeleccionada = null;
+        this.proyeccionVista = null;
+        this.beneficiario = null;
+        this.modoEdicion = false;
+        this.formulario = this.nuevaRegla();
+        this.fechaDominicalLiquidacion = this.ultimoDomingo();
+        this.simulacionDominical = null;
+        this.ajustesPendientes = [];
+        this.eventosDominical = [];
+        this.eventosProgramados = [];
+        this.filtroEventosEstado = "Pendiente";
+        this.estadosEventoFiltro = ["Pendiente", "Parcial", "Ejecutado", "Cancelado", "Todos"];
+        this.tablaAmortizacion = [];
+        this.amortizacionEditadaManual = false;
+        this.validacionAmortizacion = null;
+        this.reporteCedula = "";
+        this.reporteCentroCosto = "";
+        this.reporteDesde = new Date(new Date().getFullYear(), 0, 1);
+        this.reporteHasta = new Date();
+        this.reporteEstado = null;
+    }
+    get esTipoB() {
+        return this.formulario.tipoRegla === "B";
+    }
+    get esTipoA() {
+        return !this.esTipoB;
+    }
+    get esDominical() {
+        return this.esTipoA && this.formulario.frecuencia === "Dominical";
+    }
+    get esAnual() {
+        return this.esTipoB && this.formulario.frecuencia === "Anual";
+    }
+    get usaAmortizacion() {
+        return (this.esTipoB &&
+            (this.formulario.frecuencia === "Anual" ||
+                this.formulario.vigenciaRegla === "Unica vez" ||
+                (this.formulario.modalidadMonto === "Finito" &&
+                    this.formulario.parametro === "Limite Fecha")));
+    }
+    get sumaAmortizacion() {
+        return this.tablaAmortizacion.reduce((s, f) => s + (Number(f.monto) || 0), 0);
+    }
+    ngOnInit() {
+        this.cargarReglas();
+        this.cargarAjustesPendientes();
+        this.cargarCentrosCosto();
+        this.cargarEventosProgramados();
+        this.actualizarParametrosPorFrecuencia();
+    }
+    cargarCentrosCosto() {
+        this._centroCostoService.getCentrosCostos().subscribe((res) => {
+            this.centrosCosto = res;
+            this.nombresCentrosCosto = this.centrosCosto.map((c) => c.nombre);
+        }, () => { });
+    }
+    cargarEventosProgramados() {
+        var _a;
+        const estado = this.filtroEventosEstado === "Todos"
+            ? undefined
+            : this.filtroEventosEstado;
+        this._nominasService
+            .getEventosProgramados({
+            estado,
+            reglaId: (_a = this.reglaSeleccionada) === null || _a === void 0 ? void 0 : _a._id,
+        })
+            .subscribe((res) => (this.eventosProgramados = res), () => { });
+    }
+    ultimoDomingo() {
+        const d = new Date();
+        d.setDate(d.getDate() - d.getDay());
+        d.setHours(0, 0, 0, 0);
+        return d;
+    }
+    nuevaRegla() {
+        return {
+            tipoRegla: "A",
+            tipoBeneficiario: "Interno",
+            cedulaBeneficiario: "",
+            nombreBeneficiario: "",
+            transaccionNomina: "Asignacion nomina",
+            fuente: "TMS",
+            frecuencia: "Semanal",
+            parametro: "Los sabados",
+            vigenciaRegla: "Finalizacion Contrato",
+            monto: 0,
+            campoMontoTms: "asignacionSalarial",
+            empleadoActivo: true,
+            mesesProyeccion: 3,
+        };
+    }
+    nuevaReglaTipoB() {
+        const hoy = new Date();
+        return {
+            tipoRegla: "B",
+            tipoBeneficiario: "Externo",
+            cedulaBeneficiario: "",
+            nombreBeneficiario: "",
+            transaccionNomina: "Arriendos",
+            centroCosto: "",
+            fuente: "Manual",
+            frecuencia: "Mensual",
+            parametro: "El dia x del mes",
+            diaDelMes: 1,
+            fechaReferenciaAnual: hoy,
+            diaInicioVentana: 2,
+            diaLimiteVentana: 5,
+            vigenciaRegla: "Indefinido",
+            cuotas: 1,
+            cuotaEvento: 0,
+            modalidadMonto: "Periodico",
+            montoTotalDeuda: 0,
+            tablaAmortizacion: [],
+            monto: 0,
+            empleadoActivo: true,
+            mesesProyeccion: 12,
+        };
+    }
+    onTipoReglaChanged() {
+        if (this.formulario.tipoRegla === "B") {
+            const cedula = this.formulario.cedulaBeneficiario;
+            const nombre = this.formulario.nombreBeneficiario;
+            this.formulario = this.nuevaReglaTipoB();
+            this.formulario.cedulaBeneficiario = cedula;
+            this.formulario.nombreBeneficiario = nombre;
+        }
+        else {
+            const cedula = this.formulario.cedulaBeneficiario;
+            const nombre = this.formulario.nombreBeneficiario;
+            this.formulario = this.nuevaRegla();
+            this.formulario.cedulaBeneficiario = cedula;
+            this.formulario.nombreBeneficiario = nombre;
+        }
+        this.beneficiario = null;
+        this.tablaAmortizacion = [];
+        this.amortizacionEditadaManual = false;
+        this.actualizarParametrosPorFrecuencia();
+        if (this.formulario.cedulaBeneficiario) {
+            this.buscarBeneficiario();
+        }
+    }
+    onModalidadMontoChanged() {
+        if (this.formulario.modalidadMonto === "Periodico") {
+            if (this.formulario.frecuencia !== "Anual") {
+                this.formulario.vigenciaRegla = "Indefinido";
+            }
+            this.formulario.montoTotalDeuda = 0;
+            this.tablaAmortizacion = [];
+        }
+        else {
+            this.generarAmortizacion(true);
+        }
+    }
+    onVigenciaTipoBChanged() {
+        if (this.formulario.vigenciaRegla === "Indefinido") {
+            if (this.formulario.frecuencia !== "Anual") {
+                this.formulario.modalidadMonto = "Periodico";
+            }
+        }
+        else if (this.formulario.vigenciaRegla === "Numero de cuotas") {
+            this.formulario.modalidadMonto = "Finito";
+            this.generarAmortizacion(true);
+        }
+        else if (this.formulario.vigenciaRegla === "Unica vez") {
+            this.formulario.modalidadMonto = "Finito";
+            this.generarAmortizacion(true);
+        }
+    }
+    onDatosAmortizacionChanged() {
+        if (this.usaAmortizacion && !this.amortizacionEditadaManual) {
+            this.generarAmortizacion(true);
+        }
+    }
+    onAmortizacionChanged() {
+        this.amortizacionEditadaManual = true;
+        this.validarAmortizacionLocal();
+    }
+    normalizarFechasAmortizacion(tabla = []) {
+        return tabla.map((f) => (Object.assign(Object.assign({}, f), { fechaMin: f.fechaMin ? new Date(f.fechaMin) : f.fechaMin, fechaMax: f.fechaMax ? new Date(f.fechaMax) : f.fechaMax })));
+    }
+    validarAmortizacionLocal() {
+        const total = Number(this.formulario.montoTotalDeuda) || 0;
+        const suma = Math.round(this.sumaAmortizacion * 100) / 100;
+        for (const fila of this.tablaAmortizacion) {
+            const min = fila.fechaMin ? new Date(fila.fechaMin) : null;
+            const max = fila.fechaMax ? new Date(fila.fechaMax) : null;
+            if (min && max && min > max) {
+                this.validacionAmortizacion = {
+                    ok: false,
+                    mensaje: `Cuota ${fila.numeroCuota}: la fecha mínima no puede ser posterior a la fecha máxima`,
+                    suma,
+                    pendiente: Math.max(0, total - suma),
+                };
+                this.formulario.tablaAmortizacion = [...this.tablaAmortizacion];
+                return;
+            }
+        }
+        if (suma > total + 0.01) {
+            this.validacionAmortizacion = {
+                ok: false,
+                mensaje: `La suma ($${suma}) supera el monto total ($${total})`,
+                suma,
+                pendiente: Math.max(0, total - suma),
+            };
+        }
+        else {
+            this.validacionAmortizacion = {
+                ok: true,
+                suma,
+                pendiente: Math.max(0, total - suma),
+            };
+        }
+        this.formulario.tablaAmortizacion = [...this.tablaAmortizacion];
+        if (this.tablaAmortizacion.length) {
+            this.formulario.cuotaEvento = this.tablaAmortizacion[0].monto;
+        }
+    }
+    generarAmortizacion(forzar = false) {
+        if (!this.usaAmortizacion) {
+            this.tablaAmortizacion = [];
+            return;
+        }
+        const payload = Object.assign(Object.assign({}, this.formulario), { tablaAmortizacion: forzar ? [] : this.tablaAmortizacion });
+        this._nominasService
+            .amortizacionPrevia(payload, forzar || !this.amortizacionEditadaManual)
+            .subscribe((res) => {
+            if (!this.amortizacionEditadaManual || forzar) {
+                this.tablaAmortizacion = this.normalizarFechasAmortizacion(res.tabla);
+                this.amortizacionEditadaManual = false;
+            }
+            this.validacionAmortizacion = res.validacion;
+            this.formulario.tablaAmortizacion = [...this.tablaAmortizacion];
+            this.formulario.cuotaEvento = res.cuotaEvento;
+        }, () => { });
+    }
+    sincronizarParametroDiaMes() {
+        if (this.esTipoB && this.formulario.parametro === "El dia x del mes") {
+            const dia = this.formulario.diaDelMes || 1;
+            this.formulario.parametro = `El dia ${dia} del mes`;
+        }
+    }
+    cargarReglas() {
+        this._nominasService.getReglasPago().subscribe((res) => {
+            this.reglas = res;
+        }, () => { });
+    }
+    onTipoBeneficiarioChanged(_event) {
+        if (_event && !_event.event)
+            return;
+        this.formulario.cedulaBeneficiario = "";
+        this.formulario.nombreBeneficiario = "";
+        this.beneficiario = null;
+        this.formulario.monto = 0;
+    }
+    onFrecuenciaChanged(_event) {
+        if (_event && !_event.event)
+            return;
+        this.actualizarParametrosPorFrecuencia();
+        this.formulario.parametro = this.parametrosActuales[0] || "";
+        if (this.esTipoB) {
+            if (this.esAnual) {
+                this.formulario.vigenciaRegla = "Unica vez";
+                this.formulario.modalidadMonto = "Finito";
+                if (!this.formulario.fechaReferenciaAnual) {
+                    this.formulario.fechaReferenciaAnual = new Date();
+                }
+                if (!this.formulario.cuotas || this.formulario.cuotas < 1) {
+                    this.formulario.cuotas = 4;
+                }
+            }
+            this.sincronizarParametroDiaMes();
+            this.amortizacionEditadaManual = false;
+            this.generarAmortizacion(true);
+        }
+    }
+    actualizarParametrosPorFrecuencia() {
+        if (this.esTipoB) {
+            switch (this.formulario.frecuencia) {
+                case "Anual":
+                    this.parametrosActuales = this.parametrosAnualB;
+                    break;
+                case "Quincenal":
+                    this.parametrosActuales = this.parametrosQuincenal;
+                    break;
+                case "Mensual":
+                    this.parametrosActuales = this.parametrosMensualB;
+                    if (!this.formulario.diaDelMes)
+                        this.formulario.diaDelMes = 1;
+                    this.sincronizarParametroDiaMes();
+                    break;
+                case "Unica":
+                    this.parametrosActuales = ["Fecha unica"];
+                    break;
+                default:
+                    this.parametrosActuales = this.parametrosSemanal;
+            }
+            return;
+        }
+        switch (this.formulario.frecuencia) {
+            case "Dominical":
+                this.parametrosActuales = this.parametrosDominical;
+                this.formulario.tipoBeneficiario = "Interno";
+                this.formulario.fuente = "FACTURACION_DOMINICAL";
+                this.formulario.transaccionNomina = "Pago dominical";
+                this.formulario.parametro = "Los domingos";
+                this.formulario.montoVariable = true;
+                this.formulario.monto = 0;
+                break;
+            case "Quincenal":
+                this.parametrosActuales = this.parametrosQuincenal;
+                break;
+            case "Mensual":
+                this.parametrosActuales = this.parametrosMensual;
+                break;
+            default:
+                this.parametrosActuales = this.parametrosSemanal;
+        }
+    }
+    buscarBeneficiario() {
+        const doc = (this.formulario.cedulaBeneficiario || "").trim();
+        if (!doc) {
+            sweetalert2__WEBPACK_IMPORTED_MODULE_1___default.a.fire("Validación", "Ingrese la cédula o RUC del beneficiario", "warning");
+            return;
+        }
+        const peticion = this.formulario.tipoBeneficiario === "Interno"
+            ? this._nominasService.getBeneficiarioInterno(doc)
+            : this._nominasService.getBeneficiarioExterno(doc);
+        peticion.subscribe((res) => {
+            var _a;
+            this.beneficiario = res;
+            this.formulario.cedulaBeneficiario = res.cedula;
+            this.formulario.nombreBeneficiario = res.nombre;
+            this.formulario.empleadoActivo = res.activo !== false;
+            this.formulario.tablaMaestraSalarialId = res.tablaMaestraSalarialId;
+            this.formulario.proveedorId = res.proveedorId;
+            this.formulario.cargoNomina = res.cargo || "";
+            if (this.esTipoB && this.formulario.tipoBeneficiario === "Interno") {
+                if (!((_a = this.formulario.centroCosto) === null || _a === void 0 ? void 0 : _a.trim())) {
+                    this.formulario.centroCosto =
+                        res.nombre || this.formulario.nombreBeneficiario || "";
+                }
+            }
+            if (this.esDominical) {
+                this.formulario.fuente = "FACTURACION_DOMINICAL";
+                this.formulario.monto = 0;
+                this.formulario.montoVariable = true;
+            }
+            else if (this.formulario.tipoBeneficiario === "Interno" &&
+                this.formulario.fuente === "TMS") {
+                this.aplicarMontoDesdeTms();
+                if (res.periodoPago && !this.modoEdicion) {
+                    const mapa = {
+                        Semanal: "Semanal",
+                        Quincenal: "Quincenal",
+                        Mensual: "Mensual",
+                    };
+                    if (mapa[res.periodoPago]) {
+                        this.formulario.frecuencia = mapa[res.periodoPago];
+                        this.onFrecuenciaChanged();
+                    }
+                }
+            }
+            if (res.estadoEmpleado === "INACTIVO") {
+                sweetalert2__WEBPACK_IMPORTED_MODULE_1___default.a.fire("Empleado inactivo", "El contrato laboral está finalizado. Solo podrá guardar borrador; no autorizar pagos.", "warning");
+            }
+        }, (err) => {
+            var _a, _b;
+            this.beneficiario = null;
+            this.formulario.nombreBeneficiario = "";
+            sweetalert2__WEBPACK_IMPORTED_MODULE_1___default.a.fire("No encontrado", ((_b = (_a = err) === null || _a === void 0 ? void 0 : _a.error) === null || _b === void 0 ? void 0 : _b.mensaje) || "Beneficiario no registrado", "error");
+        });
+    }
+    aplicarMontoDesdeTms() {
+        if (!this.beneficiario || this.formulario.fuente !== "TMS") {
+            return;
+        }
+        if (this.formulario.tipoBeneficiario !== "Interno") {
+            return;
+        }
+        this.formulario.monto = this.beneficiario.asignacionSalarial || 0;
+        this.formulario.campoMontoTms = "asignacionSalarial";
+    }
+    onFuenteChanged() {
+        this.aplicarMontoDesdeTms();
+    }
+    limpiarFormulario() {
+        this.formulario = this.nuevaRegla();
+        this.beneficiario = null;
+        this.modoEdicion = false;
+        this.reglaSeleccionada = null;
+        this.proyeccionVista = null;
+        this.tablaAmortizacion = [];
+        this.amortizacionEditadaManual = false;
+        this.validacionAmortizacion = null;
+        this.actualizarParametrosPorFrecuencia();
+    }
+    guardarRegla() {
+        var _a, _b, _c, _d, _e, _f;
+        if (!((_a = this.formulario.cedulaBeneficiario) === null || _a === void 0 ? void 0 : _a.trim())) {
+            sweetalert2__WEBPACK_IMPORTED_MODULE_1___default.a.fire("Validación", "Ingrese la cédula del beneficiario", "warning");
+            return;
+        }
+        if (!((_b = this.formulario.nombreBeneficiario) === null || _b === void 0 ? void 0 : _b.trim())) {
+            sweetalert2__WEBPACK_IMPORTED_MODULE_1___default.a.fire("Validación", "Busque el beneficiario para cargar el nombre", "warning");
+            return;
+        }
+        if (this.esTipoB) {
+            if (!((_c = this.formulario.centroCosto) === null || _c === void 0 ? void 0 : _c.trim())) {
+                sweetalert2__WEBPACK_IMPORTED_MODULE_1___default.a.fire("Validación", "Seleccione el centro de costo (raíz de la deuda)", "warning");
+                return;
+            }
+            this.sincronizarParametroDiaMes();
+            if (this.esAnual && !this.formulario.fechaReferenciaAnual) {
+                sweetalert2__WEBPACK_IMPORTED_MODULE_1___default.a.fire("Validación", "Indique la fecha de referencia anual (mes de inicio de pagos)", "warning");
+                return;
+            }
+            if (this.usaAmortizacion) {
+                this.formulario.tablaAmortizacion = [...this.tablaAmortizacion];
+                this.validarAmortizacionLocal();
+                if (this.validacionAmortizacion && !this.validacionAmortizacion.ok) {
+                    sweetalert2__WEBPACK_IMPORTED_MODULE_1___default.a.fire("Validación", this.validacionAmortizacion.mensaje || "Revise la tabla de amortización", "warning");
+                    return;
+                }
+                if (!this.formulario.montoTotalDeuda ||
+                    this.formulario.montoTotalDeuda <= 0) {
+                    sweetalert2__WEBPACK_IMPORTED_MODULE_1___default.a.fire("Validación", "Indique el monto total a pagar", "warning");
+                    return;
+                }
+                if (!this.formulario.cuotas || this.formulario.cuotas < 1) {
+                    sweetalert2__WEBPACK_IMPORTED_MODULE_1___default.a.fire("Validación", "Indique el número de cuotas", "warning");
+                    return;
+                }
+                if (!this.tablaAmortizacion.length) {
+                    sweetalert2__WEBPACK_IMPORTED_MODULE_1___default.a.fire("Validación", "Genere la tabla de amortización", "warning");
+                    return;
+                }
+                this.formulario.cuotaEvento =
+                    ((_d = this.tablaAmortizacion[0]) === null || _d === void 0 ? void 0 : _d.monto) || this.formulario.cuotaEvento;
+            }
+            else if (!this.formulario.cuotaEvento || this.formulario.cuotaEvento <= 0) {
+                sweetalert2__WEBPACK_IMPORTED_MODULE_1___default.a.fire("Validación", "La cuota por evento debe ser mayor a cero", "warning");
+                return;
+            }
+            if (!this.usaAmortizacion &&
+                this.formulario.modalidadMonto === "Finito") {
+                if (!this.formulario.cuotas || this.formulario.cuotas < 1) {
+                    sweetalert2__WEBPACK_IMPORTED_MODULE_1___default.a.fire("Validación", "Indique el número de cuotas", "warning");
+                    return;
+                }
+                if (!this.formulario.montoTotalDeuda ||
+                    this.formulario.montoTotalDeuda <= 0) {
+                    sweetalert2__WEBPACK_IMPORTED_MODULE_1___default.a.fire("Validación", "Indique el monto total de la deuda", "warning");
+                    return;
+                }
+            }
+            this.formulario.fuente = "Manual";
+            this.formulario.monto =
+                this.formulario.cuotaEvento || ((_e = this.tablaAmortizacion[0]) === null || _e === void 0 ? void 0 : _e.monto) || 0;
+        }
+        else if (!this.esDominical &&
+            (!this.formulario.monto || this.formulario.monto <= 0)) {
+            sweetalert2__WEBPACK_IMPORTED_MODULE_1___default.a.fire("Validación", "El monto debe ser mayor a cero", "warning");
+            return;
+        }
+        if (this.esDominical && this.formulario.tipoBeneficiario !== "Interno") {
+            sweetalert2__WEBPACK_IMPORTED_MODULE_1___default.a.fire("Validación", "El pago dominical solo aplica a beneficiarios internos", "warning");
+            return;
+        }
+        const payload = Object.assign(Object.assign({}, this.formulario), { creadoPor: this.usuarioNombre });
+        const peticion = this.modoEdicion && ((_f = this.reglaSeleccionada) === null || _f === void 0 ? void 0 : _f._id)
+            ? this._nominasService.actualizarReglaPago(this.reglaSeleccionada._id, payload)
+            : this._nominasService.crearReglaPago(payload);
+        peticion.subscribe((res) => {
+            var _a, _b, _c;
+            sweetalert2__WEBPACK_IMPORTED_MODULE_1___default.a.fire("Éxito", "Regla guardada en borrador", "success");
+            this.cargarReglas();
+            if ((_b = (_a = res) === null || _a === void 0 ? void 0 : _a.data) === null || _b === void 0 ? void 0 : _b._id) {
+                this.reglaSeleccionada = res.data;
+                this.formulario = Object.assign({}, res.data);
+                if ((_c = res.data.tablaAmortizacion) === null || _c === void 0 ? void 0 : _c.length) {
+                    this.tablaAmortizacion = this.normalizarFechasAmortizacion(res.data.tablaAmortizacion);
+                }
+                this.modoEdicion = true;
+            }
+        }, (err) => {
+            var _a, _b;
+            sweetalert2__WEBPACK_IMPORTED_MODULE_1___default.a.fire("Error", ((_b = (_a = err) === null || _a === void 0 ? void 0 : _a.error) === null || _b === void 0 ? void 0 : _b.mensaje) || "No se pudo guardar la regla", "error");
+        });
+    }
+    autorizarRegla() {
+        var _a;
+        const id = (_a = this.reglaSeleccionada) === null || _a === void 0 ? void 0 : _a._id;
+        if (!id) {
+            sweetalert2__WEBPACK_IMPORTED_MODULE_1___default.a.fire("Validación", "Guarde la regla antes de autorizar", "warning");
+            return;
+        }
+        if (this.formulario.tipoBeneficiario === "Interno" &&
+            this.formulario.empleadoActivo === false) {
+            sweetalert2__WEBPACK_IMPORTED_MODULE_1___default.a.fire("No autorizado", "El empleado está INACTIVO. La regla finaliza con el contrato laboral.", "error");
+            return;
+        }
+        const textoAutorizar = this.esTipoB
+            ? this.usaAmortizacion
+                ? `Se programarán ${this.formulario.cuotas} cuotas por un total de $${this.formulario.montoTotalDeuda} (ejecución manual, parcial o total).`
+                : `Se programarán pagos ${this.formulario.frecuencia.toLowerCase()} de $${this.formulario.cuotaEvento} (ejecución manual por el encargado).`
+            : `Se generará la proyección ${this.formulario.frecuencia.toLowerCase()} por $${this.formulario.monto}`;
+        sweetalert2__WEBPACK_IMPORTED_MODULE_1___default.a.fire({
+            title: "¿Autorizar evento de pago?",
+            text: textoAutorizar,
+            icon: "question",
+            showCancelButton: true,
+            confirmButtonText: "Autorizar",
+            cancelButtonText: "Cancelar",
+        }).then((result) => {
+            if (!result.value)
+                return;
+            this._nominasService.autorizarReglaPago(id).subscribe((res) => {
+                const msg = this.esTipoB
+                    ? `Regla autorizada. ${res.eventosGenerados || 0} pagos programados (pendientes de ejecución).`
+                    : "Evento de pago activo";
+                sweetalert2__WEBPACK_IMPORTED_MODULE_1___default.a.fire("Autorizado", msg, "success");
+                this.reglaSeleccionada = res.data;
+                this.formulario = Object.assign({}, res.data);
+                this.proyeccionVista = res.data.proyeccion || null;
+                this.cargarReglas();
+                if (this.esTipoB) {
+                    this.cargarEventosProgramados();
+                }
+            }, (err) => {
+                var _a, _b;
+                sweetalert2__WEBPACK_IMPORTED_MODULE_1___default.a.fire("Error", ((_b = (_a = err) === null || _a === void 0 ? void 0 : _a.error) === null || _b === void 0 ? void 0 : _b.mensaje) || "No se pudo autorizar", "error");
+            });
+        });
+    }
+    verProyeccion(regla) {
+        var _a, _b;
+        if (regla.estadoRegla === "Autorizada" && ((_b = (_a = regla.proyeccion) === null || _a === void 0 ? void 0 : _a.meses) === null || _b === void 0 ? void 0 : _b.length)) {
+            this.proyeccionVista = regla.proyeccion;
+            return;
+        }
+        if (regla._id) {
+            this._nominasService
+                .getProyeccionRegla(regla._id, regla.mesesProyeccion || 3)
+                .subscribe((res) => {
+                this.proyeccionVista = res;
+            }, () => sweetalert2__WEBPACK_IMPORTED_MODULE_1___default.a.fire("Error", "No se pudo calcular la proyección", "error"));
+            return;
+        }
+        this._nominasService.vistaPreviaProyeccion(this.formulario).subscribe((res) => {
+            this.proyeccionVista = res;
+        }, () => sweetalert2__WEBPACK_IMPORTED_MODULE_1___default.a.fire("Error", "No se pudo calcular la proyección", "error"));
+    }
+    editarRegla(regla) {
+        if (regla.estadoRegla === "Autorizada") {
+            this.reglaSeleccionada = regla;
+            this.formulario = Object.assign({}, regla);
+            this.tablaAmortizacion = regla.tablaAmortizacion
+                ? this.normalizarFechasAmortizacion([...regla.tablaAmortizacion])
+                : [];
+            this.verProyeccion(regla);
+            if (regla.tipoRegla === "B") {
+                this.cargarEventosProgramados();
+            }
+            return;
+        }
+        this.modoEdicion = true;
+        this.reglaSeleccionada = regla;
+        this.formulario = Object.assign({}, regla);
+        if (regla.tipoRegla === "B" && !regla.cuotaEvento) {
+            this.formulario.cuotaEvento = regla.monto;
+        }
+        this.tablaAmortizacion = regla.tablaAmortizacion
+            ? this.normalizarFechasAmortizacion([...regla.tablaAmortizacion])
+            : [];
+        this.amortizacionEditadaManual = this.tablaAmortizacion.length > 0;
+        this.actualizarParametrosPorFrecuencia();
+        if (this.usaAmortizacion && !this.tablaAmortizacion.length) {
+            this.generarAmortizacion(true);
+        }
+        else if (this.tablaAmortizacion.length) {
+            this.validarAmortizacionLocal();
+        }
+        if (regla.cedulaBeneficiario) {
+            this.buscarBeneficiario();
+        }
+    }
+    saldoPendienteEvento(ev) {
+        return Math.max(0, Math.round(((Number(ev.monto) || 0) - (Number(ev.montoPagado) || 0)) * 100) /
+            100);
+    }
+    ejecutarEventoProgramado(ev) {
+        const saldo = this.saldoPendienteEvento(ev);
+        const ventana = ev.fechaMin && ev.fechaMax
+            ? `${new Date(ev.fechaMin).toLocaleDateString("es-EC")} — ${new Date(ev.fechaMax).toLocaleDateString("es-EC")}`
+            : new Date(ev.fechaProgramada).toLocaleDateString("es-EC");
+        sweetalert2__WEBPACK_IMPORTED_MODULE_1___default.a.fire({
+            title: "Registrar pago",
+            html: `<strong>${ev.nombreBeneficiario}</strong><br/>
+        Cuota ${ev.numeroCuota}/${ev.totalCuotas}<br/>
+        Ventana: ${ventana}<br/>
+        Programado: $${ev.monto} · Pagado: $${ev.montoPagado || 0}<br/>
+        <strong>Saldo: $${saldo}</strong>`,
+            input: "number",
+            inputValue: String(saldo),
+            inputAttributes: { min: "0.01", step: "0.01" },
+            icon: "question",
+            showCancelButton: true,
+            confirmButtonText: "Registrar",
+            cancelButtonText: "Cancelar",
+        }).then((result) => {
+            if (!result.value || !ev._id)
+                return;
+            const monto = parseFloat(result.value);
+            if (!monto || monto <= 0) {
+                sweetalert2__WEBPACK_IMPORTED_MODULE_1___default.a.fire("Validación", "Indique un monto válido", "warning");
+                return;
+            }
+            if (monto > saldo + 0.01) {
+                sweetalert2__WEBPACK_IMPORTED_MODULE_1___default.a.fire("Validación", `El monto supera el saldo pendiente ($${saldo})`, "warning");
+                return;
+            }
+            this._nominasService
+                .ejecutarEventoProgramado(ev._id, {
+                usuario: this.usuarioNombre,
+                monto,
+            })
+                .subscribe((res) => {
+                var _a, _b;
+                const parcial = ((_b = (_a = res) === null || _a === void 0 ? void 0 : _a.data) === null || _b === void 0 ? void 0 : _b.saldoPendiente) > 0;
+                sweetalert2__WEBPACK_IMPORTED_MODULE_1___default.a.fire(parcial ? "Pago parcial registrado" : "Pago completo registrado", parcial
+                    ? `Saldo pendiente: $${res.data.saldoPendiente}`
+                    : "Cuota saldada en finanzas", "success");
+                this.cargarEventosProgramados();
+                this.cargarReglas();
+            }, (err) => {
+                var _a, _b;
+                return sweetalert2__WEBPACK_IMPORTED_MODULE_1___default.a.fire("Error", ((_b = (_a = err) === null || _a === void 0 ? void 0 : _a.error) === null || _b === void 0 ? void 0 : _b.mensaje) || "No se pudo ejecutar", "error");
+            });
+        });
+    }
+    puedeEjecutarEvento(ev) {
+        if (ev.estado !== "Pendiente" && ev.estado !== "Parcial")
+            return false;
+        if (this.saldoPendienteEvento(ev) <= 0)
+            return false;
+        const hoy = new Date();
+        hoy.setHours(0, 0, 0, 0);
+        if (ev.fechaMin) {
+            const min = new Date(ev.fechaMin);
+            min.setHours(0, 0, 0, 0);
+            if (hoy < min)
+                return false;
+        }
+        else {
+            const fecha = new Date(ev.fechaProgramada);
+            fecha.setHours(0, 0, 0, 0);
+            if (hoy < fecha)
+                return false;
+        }
+        return true;
+    }
+    consultarReporteEstado() {
+        var _a, _b, _c, _d;
+        if (!((_a = this.reporteCedula) === null || _a === void 0 ? void 0 : _a.trim()) && !((_b = this.reporteCentroCosto) === null || _b === void 0 ? void 0 : _b.trim())) {
+            sweetalert2__WEBPACK_IMPORTED_MODULE_1___default.a.fire("Validación", "Indique la cédula del empleado o el centro de costo", "warning");
+            return;
+        }
+        this._nominasService
+            .getReporteEstadoEmpleado({
+            cedula: ((_c = this.reporteCedula) === null || _c === void 0 ? void 0 : _c.trim()) || undefined,
+            centroCosto: ((_d = this.reporteCentroCosto) === null || _d === void 0 ? void 0 : _d.trim()) || undefined,
+            desde: this.reporteDesde.toISOString().slice(0, 10),
+            hasta: this.reporteHasta.toISOString().slice(0, 10),
+        })
+            .subscribe((res) => (this.reporteEstado = res), (err) => {
+            var _a, _b;
+            return sweetalert2__WEBPACK_IMPORTED_MODULE_1___default.a.fire("Error", ((_b = (_a = err) === null || _a === void 0 ? void 0 : _a.error) === null || _b === void 0 ? void 0 : _b.mensaje) || "No se pudo consultar", "error");
+        });
+    }
+    usarBeneficiarioEnReporte() {
+        if (this.formulario.cedulaBeneficiario) {
+            this.reporteCedula = this.formulario.cedulaBeneficiario;
+        }
+        if (this.formulario.centroCosto) {
+            this.reporteCentroCosto = this.formulario.centroCosto;
+        }
+    }
+    eliminarRegla(regla) {
+        sweetalert2__WEBPACK_IMPORTED_MODULE_1___default.a.fire({
+            title: "¿Eliminar regla?",
+            text: regla.nombreBeneficiario,
+            icon: "warning",
+            showCancelButton: true,
+            confirmButtonText: "Eliminar",
+        }).then((result) => {
+            if (!result.value)
+                return;
+            this._nominasService.eliminarReglaPago(regla._id).subscribe(() => {
+                var _a;
+                sweetalert2__WEBPACK_IMPORTED_MODULE_1___default.a.fire("Eliminada", "", "success");
+                if (((_a = this.reglaSeleccionada) === null || _a === void 0 ? void 0 : _a._id) === regla._id) {
+                    this.limpiarFormulario();
+                }
+                this.cargarReglas();
+            }, (err) => { var _a, _b; return sweetalert2__WEBPACK_IMPORTED_MODULE_1___default.a.fire("Error", ((_b = (_a = err) === null || _a === void 0 ? void 0 : _a.error) === null || _b === void 0 ? void 0 : _b.mensaje) || "No se pudo eliminar", "error"); });
+        });
+    }
+    finalizarRegla(regla) {
+        this._nominasService.finalizarReglaPago(regla._id).subscribe(() => {
+            sweetalert2__WEBPACK_IMPORTED_MODULE_1___default.a.fire("Finalizada", "La regla dejó de generar pagos", "success");
+            this.cargarReglas();
+        }, () => sweetalert2__WEBPACK_IMPORTED_MODULE_1___default.a.fire("Error", "No se pudo finalizar", "error"));
+    }
+    etiquetaEstado(estado) {
+        return estado || "Borrador";
+    }
+    claseMes(indice) {
+        return indice % 2 === 0 ? "mes-mayo" : "mes-junio";
+    }
+    cargarAjustesPendientes() {
+        this._nominasService.getAjustesPendientesNomina().subscribe((res) => (this.ajustesPendientes = res), () => { });
+    }
+    simularPagoDominical() {
+        this._nominasService
+            .simularDominical({
+            fecha: this.fechaDominicalLiquidacion,
+            cedula: this.formulario.cedulaBeneficiario || undefined,
+        })
+            .subscribe((res) => {
+            this.simulacionDominical = res;
+            if (!res.esDomingo) {
+                sweetalert2__WEBPACK_IMPORTED_MODULE_1___default.a.fire("Aviso", "La fecha seleccionada no es domingo; se usará el domingo de esa semana para el cálculo.", "info");
+            }
+        }, (err) => {
+            var _a, _b;
+            return sweetalert2__WEBPACK_IMPORTED_MODULE_1___default.a.fire("Error", ((_b = (_a = err) === null || _a === void 0 ? void 0 : _a.error) === null || _b === void 0 ? void 0 : _b.mensaje) || "No se pudo simular", "error");
+        });
+    }
+    liquidarPagoDominical() {
+        sweetalert2__WEBPACK_IMPORTED_MODULE_1___default.a.fire({
+            title: "¿Liquidar pago dominical?",
+            text: "Se registrarán transacciones financieras y se aplicarán ajustes pendientes.",
+            icon: "question",
+            showCancelButton: true,
+            confirmButtonText: "Liquidar",
+        }).then((result) => {
+            if (!result.value)
+                return;
+            this._nominasService
+                .liquidarDominical({
+                fecha: this.fechaDominicalLiquidacion,
+                usuario: this.usuarioNombre,
+                cedula: this.formulario.cedulaBeneficiario || undefined,
+                aplicarAjustes: true,
+            })
+                .subscribe(() => {
+                sweetalert2__WEBPACK_IMPORTED_MODULE_1___default.a.fire("Listo", "Liquidación dominical registrada", "success");
+                this.simularPagoDominical();
+                this.cargarAjustesPendientes();
+                this.cargarEventosDominical();
+            }, (err) => {
+                var _a, _b;
+                return sweetalert2__WEBPACK_IMPORTED_MODULE_1___default.a.fire("Error", ((_b = (_a = err) === null || _a === void 0 ? void 0 : _a.error) === null || _b === void 0 ? void 0 : _b.mensaje) || "No se pudo liquidar", "error");
+            });
+        });
+    }
+    cargarEventosDominical() {
+        const f = this.fechaDominicalLiquidacion.toISOString().slice(0, 10);
+        this._nominasService.getEventosDominical(f).subscribe((res) => (this.eventosDominical = res), () => { });
+    }
+    montoDominicalPreview() {
+        var _a, _b, _c, _d, _e, _f;
+        if (!((_b = (_a = this.simulacionDominical) === null || _a === void 0 ? void 0 : _a.liquidaciones) === null || _b === void 0 ? void 0 : _b.length))
+            return null;
+        const cedula = this.formulario.cedulaBeneficiario;
+        const item = this.simulacionDominical.liquidaciones.find((l) => !cedula || l.cedula === cedula);
+        return _f = (_d = (_c = item) === null || _c === void 0 ? void 0 : _c.montoBruto, (_d !== null && _d !== void 0 ? _d : (_e = item) === null || _e === void 0 ? void 0 : _e.monto)), (_f !== null && _f !== void 0 ? _f : null);
+    }
+    liquidacionActual() {
+        if (!this.simulacionDominical)
+            return undefined;
+        const cedula = this.formulario.cedulaBeneficiario;
+        return this.simulacionDominical.liquidaciones.find((l) => !cedula || l.cedula === cedula);
+    }
+}
+NominasEventosPagosComponent.ɵfac = function NominasEventosPagosComponent_Factory(t) { return new (t || NominasEventosPagosComponent)(_angular_core__WEBPACK_IMPORTED_MODULE_0__["ɵɵdirectiveInject"](src_app_servicios_nominas_service__WEBPACK_IMPORTED_MODULE_2__["NominasService"]), _angular_core__WEBPACK_IMPORTED_MODULE_0__["ɵɵdirectiveInject"](src_app_servicios_centro_costo_service__WEBPACK_IMPORTED_MODULE_3__["CentroCostoService"])); };
+NominasEventosPagosComponent.ɵcmp = _angular_core__WEBPACK_IMPORTED_MODULE_0__["ɵɵdefineComponent"]({ type: NominasEventosPagosComponent, selectors: [["app-nominas-eventos-pagos"]], inputs: { usuarioNombre: "usuarioNombre" }, decls: 97, vars: 38, consts: [[1, "card", "mb-3"], [1, "card-body"], [1, "eventos-pagos-titulo", "text-center"], ["class", "text-muted text-center small mb-3", 4, "ngIf"], [1, "row", "eventos-formulario"], [1, "col-md-4", "mb-3"], [1, "form-label"], [3, "items", "value", "disabled", "valueChange", "onValueChanged"], [1, "d-flex"], [1, "flex-grow-1", 3, "value", "valueChange"], ["type", "button", 1, "btn", "btn-sm", "btn-nomina-primario", "ml-2", 3, "click"], [3, "value", "readOnly", "valueChange"], [3, "items", "value", "valueChange", 4, "ngIf"], [4, "ngIf"], ["class", "row", 4, "ngIf"], [1, "row", "mt-2"], [1, "col-md-3", "mb-2"], [1, "btn", "btn-block", "btn-secondary", 3, "click"], [1, "btn", "btn-block", "btn-nomina-primario", 3, "disabled", "click"], [1, "btn", "btn-block", "btn-success", 3, "disabled", "click"], [1, "btn", "btn-block", "btn-outline-primary", 3, "disabled", "click"], ["class", "alert alert-warning mt-2 mb-0", 4, "ngIf"], ["class", "card mb-3", 4, "ngIf"], [1, "card"], [1, "font-weight-bold", "mb-3"], ["keyExpr", "_id", 3, "dataSource", "showBorders", "columnAutoWidth"], ["dataField", "tipoRegla", "caption", "Tipo", 3, "width"], ["dataField", "nombreBeneficiario", "caption", "Beneficiario"], ["dataField", "cedulaBeneficiario", "caption", "C\u00E9dula"], ["dataField", "centroCosto", "caption", "Centro costo"], ["dataField", "transaccionNomina", "caption", "Transacci\u00F3n"], ["dataField", "frecuencia", "caption", "Frecuencia"], ["dataField", "parametro", "caption", "Par\u00E1metro"], ["dataField", "monto", "caption", "Monto", "format", "#,##0.##"], ["dataField", "estadoRegla", "caption", "Estado"], ["caption", "Acciones", "cellTemplate", "accionesRegla", 3, "width"], [4, "dxTemplate", "dxTemplateOf"], [1, "font-weight-bold", "text-center", "mb-3"], [1, "text-muted", "small", "text-center"], [1, "row", "align-items-end", "mb-3"], [3, "value", "valueChange"], [3, "items", "value", "searchEnabled", "showClearButton", "valueChange"], [1, "col-md-2", "mb-2"], ["type", "date", 3, "value", "valueChange"], ["type", "button", 1, "btn", "btn-nomina-primario", "btn-block", 3, "click"], ["type", "button", 1, "btn", "btn-sm", "btn-link", "mb-2", 3, "click"], [1, "text-muted", "text-center", "small", "mb-3"], [3, "items", "value", "valueChange"], [3, "items", "value", "valueChange", "onValueChanged"], ["class", "text-muted", 4, "ngIf"], ["class", "eventos-monto-display", 4, "ngIf"], ["format", "#,##0.##", 3, "value", "min", "valueChange", 4, "ngIf"], [1, "text-muted"], [1, "eventos-monto-display"], ["class", "text-muted small", 4, "ngIf"], [1, "text-muted", "small"], ["format", "#,##0.##", 3, "value", "min", "valueChange"], ["placeholder", "Ra\u00EDz de la deuda / trazabilidad", 3, "items", "value", "searchEnabled", "valueChange"], ["format", "#0", 3, "value", "min", "readOnly", "valueChange", "onValueChanged"], ["class", "mt-2", 4, "ngIf"], ["class", "col-md-4 mb-3", 4, "ngIf"], ["class", "col-md-4 mb-3 d-flex align-items-end", 4, "ngIf"], [1, "mt-2"], [1, "small"], ["format", "#0", 3, "value", "min", "max", "valueChange", "onValueChanged"], ["type", "date", 3, "value", "valueChange", "onValueChanged"], [1, "col-6"], ["class", "text-muted d-block", 4, "ngIf"], [1, "text-muted", "d-block"], ["format", "#,##0.##", 3, "value", "min", "valueChange", "onValueChanged"], [3, "value", "readOnly"], [1, "col-md-4", "mb-3", "d-flex", "align-items-end"], ["type", "button", 1, "btn", "btn-outline-primary", "btn-block", 3, "click"], [1, "row"], [1, "col-12", "mb-3"], [1, "font-weight-bold"], [1, "small", "text-muted", "mb-2"], [1, "table-responsive"], [1, "table", "table-sm", "table-bordered", "amortizacion-tabla"], [4, "ngFor", "ngForOf"], ["colspan", "3", 1, "text-right", "font-weight-bold"], ["class", "alert alert-danger py-1 small mb-0", 4, "ngIf"], ["class", "alert alert-success py-1 small mb-0", 4, "ngIf"], [2, "min-width", "150px"], [2, "width", "140px"], [1, "alert", "alert-danger", "py-1", "small", "mb-0"], [1, "alert", "alert-success", "py-1", "small", "mb-0"], [1, "alert", "alert-warning", "mt-2", "mb-0"], [1, "row", "mb-3"], [1, "col-md-4"], [1, "col-md-4", "d-flex", "align-items-end"], ["class", "table table-sm table-bordered", 4, "ngIf"], ["class", "text-muted small mb-0", 4, "ngIf"], [1, "table", "table-sm", "table-bordered"], [1, "badge"], ["class", "btn btn-sm btn-success", 3, "click", 4, "ngIf"], [1, "btn", "btn-sm", "btn-success", 3, "click"], [1, "text-muted", "small", "mb-0"], [1, "btn", "btn-block", "btn-outline-primary", 3, "click"], [1, "btn", "btn-block", "btn-nomina-primario", 3, "click"], ["class", "alert alert-info", 4, "ngIf"], ["class", "table table-bordered table-sm", 4, "ngIf"], [1, "alert", "alert-info"], [1, "table", "table-bordered", "table-sm"], ["class", "text-warning small", 4, "ngIf"], ["class", "text-danger", 4, "ngIf"], ["class", "badge badge-success", 4, "ngIf"], [1, "text-warning", "small"], [1, "text-danger"], [1, "badge", "badge-success"], [1, "font-weight-bold", "text-danger"], [1, "small", "text-muted"], [1, "text-danger", "font-weight-bold"], [1, "text-center", "font-weight-bold", "text-uppercase", "mb-3"], [1, "proyeccion-tabla"], [1, "fila-etiqueta"], ["class", "mes-header", 3, "ngClass", 4, "ngFor", "ngForOf"], [1, "mes-header", 3, "ngClass"], ["class", "fecha-header", 4, "ngFor", "ngForOf"], [1, "fecha-header"], ["class", "celda-monto", 4, "ngFor", "ngForOf"], [1, "celda-monto"], [1, "btn", "btn-sm", "btn-primary", "mr-1", 3, "click"], [1, "btn", "btn-sm", "btn-info", "mr-1", 3, "click"], ["class", "btn btn-sm btn-warning mr-1", 3, "click", 4, "ngIf"], ["class", "btn btn-sm btn-danger", 3, "click", 4, "ngIf"], [1, "btn", "btn-sm", "btn-warning", "mr-1", 3, "click"], [1, "btn", "btn-sm", "btn-danger", 3, "click"], [1, "border", "rounded", "p-2", "text-center"], [1, "text-success"], [1, "text-warning"], ["class", "table table-sm table-bordered mb-3", 4, "ngIf"], [1, "table", "table-sm", "table-bordered", "mb-3"]], template: function NominasEventosPagosComponent_Template(rf, ctx) { if (rf & 1) {
+        _angular_core__WEBPACK_IMPORTED_MODULE_0__["ɵɵelementStart"](0, "div", 0);
+        _angular_core__WEBPACK_IMPORTED_MODULE_0__["ɵɵelementStart"](1, "div", 1);
+        _angular_core__WEBPACK_IMPORTED_MODULE_0__["ɵɵelementStart"](2, "div", 2);
+        _angular_core__WEBPACK_IMPORTED_MODULE_0__["ɵɵtext"](3, " Activaci\u00F3n reglas de pagos ");
+        _angular_core__WEBPACK_IMPORTED_MODULE_0__["ɵɵelementEnd"]();
+        _angular_core__WEBPACK_IMPORTED_MODULE_0__["ɵɵtemplate"](4, NominasEventosPagosComponent_p_4_Template, 2, 0, "p", 3);
+        _angular_core__WEBPACK_IMPORTED_MODULE_0__["ɵɵtemplate"](5, NominasEventosPagosComponent_p_5_Template, 2, 0, "p", 3);
+        _angular_core__WEBPACK_IMPORTED_MODULE_0__["ɵɵelementStart"](6, "div", 4);
+        _angular_core__WEBPACK_IMPORTED_MODULE_0__["ɵɵelementStart"](7, "div", 5);
+        _angular_core__WEBPACK_IMPORTED_MODULE_0__["ɵɵelementStart"](8, "label", 6);
+        _angular_core__WEBPACK_IMPORTED_MODULE_0__["ɵɵtext"](9, "Tipo regla");
+        _angular_core__WEBPACK_IMPORTED_MODULE_0__["ɵɵelementEnd"]();
+        _angular_core__WEBPACK_IMPORTED_MODULE_0__["ɵɵelementStart"](10, "dx-select-box", 7);
+        _angular_core__WEBPACK_IMPORTED_MODULE_0__["ɵɵlistener"]("valueChange", function NominasEventosPagosComponent_Template_dx_select_box_valueChange_10_listener($event) { return ctx.formulario.tipoRegla = $event; })("onValueChanged", function NominasEventosPagosComponent_Template_dx_select_box_onValueChanged_10_listener() { return ctx.onTipoReglaChanged(); });
+        _angular_core__WEBPACK_IMPORTED_MODULE_0__["ɵɵelementEnd"]();
+        _angular_core__WEBPACK_IMPORTED_MODULE_0__["ɵɵelementEnd"]();
+        _angular_core__WEBPACK_IMPORTED_MODULE_0__["ɵɵelementStart"](11, "div", 5);
+        _angular_core__WEBPACK_IMPORTED_MODULE_0__["ɵɵelementStart"](12, "label", 6);
+        _angular_core__WEBPACK_IMPORTED_MODULE_0__["ɵɵtext"](13, "Tipo beneficiario");
+        _angular_core__WEBPACK_IMPORTED_MODULE_0__["ɵɵelementEnd"]();
+        _angular_core__WEBPACK_IMPORTED_MODULE_0__["ɵɵelementStart"](14, "dx-select-box", 7);
+        _angular_core__WEBPACK_IMPORTED_MODULE_0__["ɵɵlistener"]("valueChange", function NominasEventosPagosComponent_Template_dx_select_box_valueChange_14_listener($event) { return ctx.formulario.tipoBeneficiario = $event; })("onValueChanged", function NominasEventosPagosComponent_Template_dx_select_box_onValueChanged_14_listener() { return ctx.onTipoBeneficiarioChanged(); });
+        _angular_core__WEBPACK_IMPORTED_MODULE_0__["ɵɵelementEnd"]();
+        _angular_core__WEBPACK_IMPORTED_MODULE_0__["ɵɵelementEnd"]();
+        _angular_core__WEBPACK_IMPORTED_MODULE_0__["ɵɵelementStart"](15, "div", 5);
+        _angular_core__WEBPACK_IMPORTED_MODULE_0__["ɵɵelementStart"](16, "label", 6);
+        _angular_core__WEBPACK_IMPORTED_MODULE_0__["ɵɵtext"](17, "C\u00E9dula beneficiario");
+        _angular_core__WEBPACK_IMPORTED_MODULE_0__["ɵɵelementEnd"]();
+        _angular_core__WEBPACK_IMPORTED_MODULE_0__["ɵɵelementStart"](18, "div", 8);
+        _angular_core__WEBPACK_IMPORTED_MODULE_0__["ɵɵelementStart"](19, "dx-text-box", 9);
+        _angular_core__WEBPACK_IMPORTED_MODULE_0__["ɵɵlistener"]("valueChange", function NominasEventosPagosComponent_Template_dx_text_box_valueChange_19_listener($event) { return ctx.formulario.cedulaBeneficiario = $event; });
+        _angular_core__WEBPACK_IMPORTED_MODULE_0__["ɵɵelementEnd"]();
+        _angular_core__WEBPACK_IMPORTED_MODULE_0__["ɵɵelementStart"](20, "button", 10);
+        _angular_core__WEBPACK_IMPORTED_MODULE_0__["ɵɵlistener"]("click", function NominasEventosPagosComponent_Template_button_click_20_listener() { return ctx.buscarBeneficiario(); });
+        _angular_core__WEBPACK_IMPORTED_MODULE_0__["ɵɵtext"](21, " Buscar ");
+        _angular_core__WEBPACK_IMPORTED_MODULE_0__["ɵɵelementEnd"]();
+        _angular_core__WEBPACK_IMPORTED_MODULE_0__["ɵɵelementEnd"]();
+        _angular_core__WEBPACK_IMPORTED_MODULE_0__["ɵɵelementEnd"]();
+        _angular_core__WEBPACK_IMPORTED_MODULE_0__["ɵɵelementStart"](22, "div", 5);
+        _angular_core__WEBPACK_IMPORTED_MODULE_0__["ɵɵelementStart"](23, "label", 6);
+        _angular_core__WEBPACK_IMPORTED_MODULE_0__["ɵɵtext"](24, "Nombre");
+        _angular_core__WEBPACK_IMPORTED_MODULE_0__["ɵɵelementEnd"]();
+        _angular_core__WEBPACK_IMPORTED_MODULE_0__["ɵɵelementStart"](25, "dx-text-box", 11);
+        _angular_core__WEBPACK_IMPORTED_MODULE_0__["ɵɵlistener"]("valueChange", function NominasEventosPagosComponent_Template_dx_text_box_valueChange_25_listener($event) { return ctx.formulario.nombreBeneficiario = $event; });
+        _angular_core__WEBPACK_IMPORTED_MODULE_0__["ɵɵelementEnd"]();
+        _angular_core__WEBPACK_IMPORTED_MODULE_0__["ɵɵelementEnd"]();
+        _angular_core__WEBPACK_IMPORTED_MODULE_0__["ɵɵelementStart"](26, "div", 5);
+        _angular_core__WEBPACK_IMPORTED_MODULE_0__["ɵɵelementStart"](27, "label", 6);
+        _angular_core__WEBPACK_IMPORTED_MODULE_0__["ɵɵtext"](28, "Transacci\u00F3n n\u00F3mina");
+        _angular_core__WEBPACK_IMPORTED_MODULE_0__["ɵɵelementEnd"]();
+        _angular_core__WEBPACK_IMPORTED_MODULE_0__["ɵɵtemplate"](29, NominasEventosPagosComponent_dx_select_box_29_Template, 1, 2, "dx-select-box", 12);
+        _angular_core__WEBPACK_IMPORTED_MODULE_0__["ɵɵtemplate"](30, NominasEventosPagosComponent_dx_select_box_30_Template, 1, 2, "dx-select-box", 12);
+        _angular_core__WEBPACK_IMPORTED_MODULE_0__["ɵɵelementEnd"]();
+        _angular_core__WEBPACK_IMPORTED_MODULE_0__["ɵɵtemplate"](31, NominasEventosPagosComponent_ng_container_31_Template, 27, 15, "ng-container", 13);
+        _angular_core__WEBPACK_IMPORTED_MODULE_0__["ɵɵtemplate"](32, NominasEventosPagosComponent_ng_container_32_Template, 37, 22, "ng-container", 13);
+        _angular_core__WEBPACK_IMPORTED_MODULE_0__["ɵɵelementEnd"]();
+        _angular_core__WEBPACK_IMPORTED_MODULE_0__["ɵɵtemplate"](33, NominasEventosPagosComponent_div_33_Template, 30, 11, "div", 14);
+        _angular_core__WEBPACK_IMPORTED_MODULE_0__["ɵɵelementStart"](34, "div", 15);
+        _angular_core__WEBPACK_IMPORTED_MODULE_0__["ɵɵelementStart"](35, "div", 16);
+        _angular_core__WEBPACK_IMPORTED_MODULE_0__["ɵɵelementStart"](36, "button", 17);
+        _angular_core__WEBPACK_IMPORTED_MODULE_0__["ɵɵlistener"]("click", function NominasEventosPagosComponent_Template_button_click_36_listener() { return ctx.limpiarFormulario(); });
+        _angular_core__WEBPACK_IMPORTED_MODULE_0__["ɵɵtext"](37, " Nuevo ");
+        _angular_core__WEBPACK_IMPORTED_MODULE_0__["ɵɵelementEnd"]();
+        _angular_core__WEBPACK_IMPORTED_MODULE_0__["ɵɵelementEnd"]();
+        _angular_core__WEBPACK_IMPORTED_MODULE_0__["ɵɵelementStart"](38, "div", 16);
+        _angular_core__WEBPACK_IMPORTED_MODULE_0__["ɵɵelementStart"](39, "button", 18);
+        _angular_core__WEBPACK_IMPORTED_MODULE_0__["ɵɵlistener"]("click", function NominasEventosPagosComponent_Template_button_click_39_listener() { return ctx.guardarRegla(); });
+        _angular_core__WEBPACK_IMPORTED_MODULE_0__["ɵɵtext"](40, " Guardar borrador ");
+        _angular_core__WEBPACK_IMPORTED_MODULE_0__["ɵɵelementEnd"]();
+        _angular_core__WEBPACK_IMPORTED_MODULE_0__["ɵɵelementEnd"]();
+        _angular_core__WEBPACK_IMPORTED_MODULE_0__["ɵɵelementStart"](41, "div", 16);
+        _angular_core__WEBPACK_IMPORTED_MODULE_0__["ɵɵelementStart"](42, "button", 19);
+        _angular_core__WEBPACK_IMPORTED_MODULE_0__["ɵɵlistener"]("click", function NominasEventosPagosComponent_Template_button_click_42_listener() { return ctx.autorizarRegla(); });
+        _angular_core__WEBPACK_IMPORTED_MODULE_0__["ɵɵtext"](43, " Autorizar evento ");
+        _angular_core__WEBPACK_IMPORTED_MODULE_0__["ɵɵelementEnd"]();
+        _angular_core__WEBPACK_IMPORTED_MODULE_0__["ɵɵelementEnd"]();
+        _angular_core__WEBPACK_IMPORTED_MODULE_0__["ɵɵelementStart"](44, "div", 16);
+        _angular_core__WEBPACK_IMPORTED_MODULE_0__["ɵɵelementStart"](45, "button", 20);
+        _angular_core__WEBPACK_IMPORTED_MODULE_0__["ɵɵlistener"]("click", function NominasEventosPagosComponent_Template_button_click_45_listener() { return ctx.verProyeccion(ctx.formulario); });
+        _angular_core__WEBPACK_IMPORTED_MODULE_0__["ɵɵtext"](46, " Vista previa ");
+        _angular_core__WEBPACK_IMPORTED_MODULE_0__["ɵɵelementEnd"]();
+        _angular_core__WEBPACK_IMPORTED_MODULE_0__["ɵɵelementEnd"]();
+        _angular_core__WEBPACK_IMPORTED_MODULE_0__["ɵɵelementEnd"]();
+        _angular_core__WEBPACK_IMPORTED_MODULE_0__["ɵɵtemplate"](47, NominasEventosPagosComponent_div_47_Template, 5, 0, "div", 21);
+        _angular_core__WEBPACK_IMPORTED_MODULE_0__["ɵɵelementEnd"]();
+        _angular_core__WEBPACK_IMPORTED_MODULE_0__["ɵɵelementEnd"]();
+        _angular_core__WEBPACK_IMPORTED_MODULE_0__["ɵɵtemplate"](48, NominasEventosPagosComponent_div_48_Template, 16, 4, "div", 22);
+        _angular_core__WEBPACK_IMPORTED_MODULE_0__["ɵɵtemplate"](49, NominasEventosPagosComponent_div_49_Template, 19, 3, "div", 22);
+        _angular_core__WEBPACK_IMPORTED_MODULE_0__["ɵɵtemplate"](50, NominasEventosPagosComponent_div_50_Template, 19, 1, "div", 22);
+        _angular_core__WEBPACK_IMPORTED_MODULE_0__["ɵɵtemplate"](51, NominasEventosPagosComponent_div_51_Template, 18, 5, "div", 22);
+        _angular_core__WEBPACK_IMPORTED_MODULE_0__["ɵɵelementStart"](52, "div", 23);
+        _angular_core__WEBPACK_IMPORTED_MODULE_0__["ɵɵelementStart"](53, "div", 1);
+        _angular_core__WEBPACK_IMPORTED_MODULE_0__["ɵɵelementStart"](54, "h6", 24);
+        _angular_core__WEBPACK_IMPORTED_MODULE_0__["ɵɵtext"](55, "Reglas de pago registradas");
+        _angular_core__WEBPACK_IMPORTED_MODULE_0__["ɵɵelementEnd"]();
+        _angular_core__WEBPACK_IMPORTED_MODULE_0__["ɵɵelementStart"](56, "dx-data-grid", 25);
+        _angular_core__WEBPACK_IMPORTED_MODULE_0__["ɵɵelement"](57, "dxi-column", 26);
+        _angular_core__WEBPACK_IMPORTED_MODULE_0__["ɵɵelement"](58, "dxi-column", 27);
+        _angular_core__WEBPACK_IMPORTED_MODULE_0__["ɵɵelement"](59, "dxi-column", 28);
+        _angular_core__WEBPACK_IMPORTED_MODULE_0__["ɵɵelement"](60, "dxi-column", 29);
+        _angular_core__WEBPACK_IMPORTED_MODULE_0__["ɵɵelement"](61, "dxi-column", 30);
+        _angular_core__WEBPACK_IMPORTED_MODULE_0__["ɵɵelement"](62, "dxi-column", 31);
+        _angular_core__WEBPACK_IMPORTED_MODULE_0__["ɵɵelement"](63, "dxi-column", 32);
+        _angular_core__WEBPACK_IMPORTED_MODULE_0__["ɵɵelement"](64, "dxi-column", 33);
+        _angular_core__WEBPACK_IMPORTED_MODULE_0__["ɵɵelement"](65, "dxi-column", 34);
+        _angular_core__WEBPACK_IMPORTED_MODULE_0__["ɵɵelement"](66, "dxi-column", 35);
+        _angular_core__WEBPACK_IMPORTED_MODULE_0__["ɵɵtemplate"](67, NominasEventosPagosComponent_div_67_Template, 7, 2, "div", 36);
+        _angular_core__WEBPACK_IMPORTED_MODULE_0__["ɵɵelementEnd"]();
+        _angular_core__WEBPACK_IMPORTED_MODULE_0__["ɵɵelementEnd"]();
+        _angular_core__WEBPACK_IMPORTED_MODULE_0__["ɵɵelementEnd"]();
+        _angular_core__WEBPACK_IMPORTED_MODULE_0__["ɵɵelementStart"](68, "div", 0);
+        _angular_core__WEBPACK_IMPORTED_MODULE_0__["ɵɵelementStart"](69, "div", 1);
+        _angular_core__WEBPACK_IMPORTED_MODULE_0__["ɵɵelementStart"](70, "h6", 37);
+        _angular_core__WEBPACK_IMPORTED_MODULE_0__["ɵɵtext"](71, " Consulta de pagos por empleado (centro de costo) ");
+        _angular_core__WEBPACK_IMPORTED_MODULE_0__["ɵɵelementEnd"]();
+        _angular_core__WEBPACK_IMPORTED_MODULE_0__["ɵɵelementStart"](72, "p", 38);
+        _angular_core__WEBPACK_IMPORTED_MODULE_0__["ɵɵtext"](73, " Detalle de lo pagado a un empleado o centro de costo en un rango de fechas (Tipo B). ");
+        _angular_core__WEBPACK_IMPORTED_MODULE_0__["ɵɵelementEnd"]();
+        _angular_core__WEBPACK_IMPORTED_MODULE_0__["ɵɵelementStart"](74, "div", 39);
+        _angular_core__WEBPACK_IMPORTED_MODULE_0__["ɵɵelementStart"](75, "div", 16);
+        _angular_core__WEBPACK_IMPORTED_MODULE_0__["ɵɵelementStart"](76, "label");
+        _angular_core__WEBPACK_IMPORTED_MODULE_0__["ɵɵtext"](77, "C\u00E9dula empleado");
+        _angular_core__WEBPACK_IMPORTED_MODULE_0__["ɵɵelementEnd"]();
+        _angular_core__WEBPACK_IMPORTED_MODULE_0__["ɵɵelementStart"](78, "dx-text-box", 40);
+        _angular_core__WEBPACK_IMPORTED_MODULE_0__["ɵɵlistener"]("valueChange", function NominasEventosPagosComponent_Template_dx_text_box_valueChange_78_listener($event) { return ctx.reporteCedula = $event; });
+        _angular_core__WEBPACK_IMPORTED_MODULE_0__["ɵɵelementEnd"]();
+        _angular_core__WEBPACK_IMPORTED_MODULE_0__["ɵɵelementEnd"]();
+        _angular_core__WEBPACK_IMPORTED_MODULE_0__["ɵɵelementStart"](79, "div", 16);
+        _angular_core__WEBPACK_IMPORTED_MODULE_0__["ɵɵelementStart"](80, "label");
+        _angular_core__WEBPACK_IMPORTED_MODULE_0__["ɵɵtext"](81, "Centro de costo");
+        _angular_core__WEBPACK_IMPORTED_MODULE_0__["ɵɵelementEnd"]();
+        _angular_core__WEBPACK_IMPORTED_MODULE_0__["ɵɵelementStart"](82, "dx-select-box", 41);
+        _angular_core__WEBPACK_IMPORTED_MODULE_0__["ɵɵlistener"]("valueChange", function NominasEventosPagosComponent_Template_dx_select_box_valueChange_82_listener($event) { return ctx.reporteCentroCosto = $event; });
+        _angular_core__WEBPACK_IMPORTED_MODULE_0__["ɵɵelementEnd"]();
+        _angular_core__WEBPACK_IMPORTED_MODULE_0__["ɵɵelementEnd"]();
+        _angular_core__WEBPACK_IMPORTED_MODULE_0__["ɵɵelementStart"](83, "div", 42);
+        _angular_core__WEBPACK_IMPORTED_MODULE_0__["ɵɵelementStart"](84, "label");
+        _angular_core__WEBPACK_IMPORTED_MODULE_0__["ɵɵtext"](85, "Desde");
+        _angular_core__WEBPACK_IMPORTED_MODULE_0__["ɵɵelementEnd"]();
+        _angular_core__WEBPACK_IMPORTED_MODULE_0__["ɵɵelementStart"](86, "dx-date-box", 43);
+        _angular_core__WEBPACK_IMPORTED_MODULE_0__["ɵɵlistener"]("valueChange", function NominasEventosPagosComponent_Template_dx_date_box_valueChange_86_listener($event) { return ctx.reporteDesde = $event; });
+        _angular_core__WEBPACK_IMPORTED_MODULE_0__["ɵɵelementEnd"]();
+        _angular_core__WEBPACK_IMPORTED_MODULE_0__["ɵɵelementEnd"]();
+        _angular_core__WEBPACK_IMPORTED_MODULE_0__["ɵɵelementStart"](87, "div", 42);
+        _angular_core__WEBPACK_IMPORTED_MODULE_0__["ɵɵelementStart"](88, "label");
+        _angular_core__WEBPACK_IMPORTED_MODULE_0__["ɵɵtext"](89, "Hasta");
+        _angular_core__WEBPACK_IMPORTED_MODULE_0__["ɵɵelementEnd"]();
+        _angular_core__WEBPACK_IMPORTED_MODULE_0__["ɵɵelementStart"](90, "dx-date-box", 43);
+        _angular_core__WEBPACK_IMPORTED_MODULE_0__["ɵɵlistener"]("valueChange", function NominasEventosPagosComponent_Template_dx_date_box_valueChange_90_listener($event) { return ctx.reporteHasta = $event; });
+        _angular_core__WEBPACK_IMPORTED_MODULE_0__["ɵɵelementEnd"]();
+        _angular_core__WEBPACK_IMPORTED_MODULE_0__["ɵɵelementEnd"]();
+        _angular_core__WEBPACK_IMPORTED_MODULE_0__["ɵɵelementStart"](91, "div", 42);
+        _angular_core__WEBPACK_IMPORTED_MODULE_0__["ɵɵelementStart"](92, "button", 44);
+        _angular_core__WEBPACK_IMPORTED_MODULE_0__["ɵɵlistener"]("click", function NominasEventosPagosComponent_Template_button_click_92_listener() { return ctx.consultarReporteEstado(); });
+        _angular_core__WEBPACK_IMPORTED_MODULE_0__["ɵɵtext"](93, " Consultar ");
+        _angular_core__WEBPACK_IMPORTED_MODULE_0__["ɵɵelementEnd"]();
+        _angular_core__WEBPACK_IMPORTED_MODULE_0__["ɵɵelementEnd"]();
+        _angular_core__WEBPACK_IMPORTED_MODULE_0__["ɵɵelementEnd"]();
+        _angular_core__WEBPACK_IMPORTED_MODULE_0__["ɵɵelementStart"](94, "button", 45);
+        _angular_core__WEBPACK_IMPORTED_MODULE_0__["ɵɵlistener"]("click", function NominasEventosPagosComponent_Template_button_click_94_listener() { return ctx.usarBeneficiarioEnReporte(); });
+        _angular_core__WEBPACK_IMPORTED_MODULE_0__["ɵɵtext"](95, " Usar beneficiario del formulario ");
+        _angular_core__WEBPACK_IMPORTED_MODULE_0__["ɵɵelementEnd"]();
+        _angular_core__WEBPACK_IMPORTED_MODULE_0__["ɵɵtemplate"](96, NominasEventosPagosComponent_div_96_Template, 26, 15, "div", 13);
+        _angular_core__WEBPACK_IMPORTED_MODULE_0__["ɵɵelementEnd"]();
+        _angular_core__WEBPACK_IMPORTED_MODULE_0__["ɵɵelementEnd"]();
+    } if (rf & 2) {
+        _angular_core__WEBPACK_IMPORTED_MODULE_0__["ɵɵadvance"](4);
+        _angular_core__WEBPACK_IMPORTED_MODULE_0__["ɵɵproperty"]("ngIf", ctx.esTipoA);
+        _angular_core__WEBPACK_IMPORTED_MODULE_0__["ɵɵadvance"](1);
+        _angular_core__WEBPACK_IMPORTED_MODULE_0__["ɵɵproperty"]("ngIf", ctx.esTipoB);
+        _angular_core__WEBPACK_IMPORTED_MODULE_0__["ɵɵadvance"](5);
+        _angular_core__WEBPACK_IMPORTED_MODULE_0__["ɵɵproperty"]("items", ctx.tiposRegla)("value", ctx.formulario.tipoRegla)("disabled", ctx.formulario.estadoRegla === "Autorizada");
+        _angular_core__WEBPACK_IMPORTED_MODULE_0__["ɵɵadvance"](4);
+        _angular_core__WEBPACK_IMPORTED_MODULE_0__["ɵɵproperty"]("items", ctx.tiposBeneficiario)("value", ctx.formulario.tipoBeneficiario)("disabled", ctx.esDominical);
+        _angular_core__WEBPACK_IMPORTED_MODULE_0__["ɵɵadvance"](5);
+        _angular_core__WEBPACK_IMPORTED_MODULE_0__["ɵɵproperty"]("value", ctx.formulario.cedulaBeneficiario);
+        _angular_core__WEBPACK_IMPORTED_MODULE_0__["ɵɵadvance"](6);
+        _angular_core__WEBPACK_IMPORTED_MODULE_0__["ɵɵproperty"]("value", ctx.formulario.nombreBeneficiario)("readOnly", true);
+        _angular_core__WEBPACK_IMPORTED_MODULE_0__["ɵɵadvance"](4);
+        _angular_core__WEBPACK_IMPORTED_MODULE_0__["ɵɵproperty"]("ngIf", ctx.esTipoA);
+        _angular_core__WEBPACK_IMPORTED_MODULE_0__["ɵɵadvance"](1);
+        _angular_core__WEBPACK_IMPORTED_MODULE_0__["ɵɵproperty"]("ngIf", ctx.esTipoB);
+        _angular_core__WEBPACK_IMPORTED_MODULE_0__["ɵɵadvance"](1);
+        _angular_core__WEBPACK_IMPORTED_MODULE_0__["ɵɵproperty"]("ngIf", ctx.esTipoA);
+        _angular_core__WEBPACK_IMPORTED_MODULE_0__["ɵɵadvance"](1);
+        _angular_core__WEBPACK_IMPORTED_MODULE_0__["ɵɵproperty"]("ngIf", ctx.esTipoB);
+        _angular_core__WEBPACK_IMPORTED_MODULE_0__["ɵɵadvance"](1);
+        _angular_core__WEBPACK_IMPORTED_MODULE_0__["ɵɵproperty"]("ngIf", ctx.esTipoB && ctx.usaAmortizacion && ctx.tablaAmortizacion.length);
+        _angular_core__WEBPACK_IMPORTED_MODULE_0__["ɵɵadvance"](6);
+        _angular_core__WEBPACK_IMPORTED_MODULE_0__["ɵɵproperty"]("disabled", ctx.formulario.estadoRegla === "Autorizada");
+        _angular_core__WEBPACK_IMPORTED_MODULE_0__["ɵɵadvance"](3);
+        _angular_core__WEBPACK_IMPORTED_MODULE_0__["ɵɵproperty"]("disabled", !(ctx.reglaSeleccionada == null ? null : ctx.reglaSeleccionada._id));
+        _angular_core__WEBPACK_IMPORTED_MODULE_0__["ɵɵadvance"](3);
+        _angular_core__WEBPACK_IMPORTED_MODULE_0__["ɵɵproperty"]("disabled", ctx.esTipoA && !ctx.esDominical && !ctx.formulario.monto || ctx.esTipoB && !ctx.usaAmortizacion && !ctx.formulario.cuotaEvento || ctx.esTipoB && ctx.usaAmortizacion && !ctx.formulario.montoTotalDeuda);
+        _angular_core__WEBPACK_IMPORTED_MODULE_0__["ɵɵadvance"](2);
+        _angular_core__WEBPACK_IMPORTED_MODULE_0__["ɵɵproperty"]("ngIf", (ctx.beneficiario == null ? null : ctx.beneficiario.estadoEmpleado) === "INACTIVO");
+        _angular_core__WEBPACK_IMPORTED_MODULE_0__["ɵɵadvance"](1);
+        _angular_core__WEBPACK_IMPORTED_MODULE_0__["ɵɵproperty"]("ngIf", ctx.esTipoB || ctx.eventosProgramados.length);
+        _angular_core__WEBPACK_IMPORTED_MODULE_0__["ɵɵadvance"](1);
+        _angular_core__WEBPACK_IMPORTED_MODULE_0__["ɵɵproperty"]("ngIf", ctx.esDominical || ctx.simulacionDominical);
+        _angular_core__WEBPACK_IMPORTED_MODULE_0__["ɵɵadvance"](1);
+        _angular_core__WEBPACK_IMPORTED_MODULE_0__["ɵɵproperty"]("ngIf", ctx.ajustesPendientes.length);
+        _angular_core__WEBPACK_IMPORTED_MODULE_0__["ɵɵadvance"](1);
+        _angular_core__WEBPACK_IMPORTED_MODULE_0__["ɵɵproperty"]("ngIf", ctx.proyeccionVista == null ? null : ctx.proyeccionVista.meses == null ? null : ctx.proyeccionVista.meses.length);
+        _angular_core__WEBPACK_IMPORTED_MODULE_0__["ɵɵadvance"](5);
+        _angular_core__WEBPACK_IMPORTED_MODULE_0__["ɵɵproperty"]("dataSource", ctx.reglas)("showBorders", true)("columnAutoWidth", true);
+        _angular_core__WEBPACK_IMPORTED_MODULE_0__["ɵɵadvance"](1);
+        _angular_core__WEBPACK_IMPORTED_MODULE_0__["ɵɵproperty"]("width", 60);
+        _angular_core__WEBPACK_IMPORTED_MODULE_0__["ɵɵadvance"](9);
+        _angular_core__WEBPACK_IMPORTED_MODULE_0__["ɵɵproperty"]("width", 220);
+        _angular_core__WEBPACK_IMPORTED_MODULE_0__["ɵɵadvance"](1);
+        _angular_core__WEBPACK_IMPORTED_MODULE_0__["ɵɵproperty"]("dxTemplateOf", "accionesRegla");
+        _angular_core__WEBPACK_IMPORTED_MODULE_0__["ɵɵadvance"](11);
+        _angular_core__WEBPACK_IMPORTED_MODULE_0__["ɵɵproperty"]("value", ctx.reporteCedula);
+        _angular_core__WEBPACK_IMPORTED_MODULE_0__["ɵɵadvance"](4);
+        _angular_core__WEBPACK_IMPORTED_MODULE_0__["ɵɵproperty"]("items", ctx.nombresCentrosCosto)("value", ctx.reporteCentroCosto)("searchEnabled", true)("showClearButton", true);
+        _angular_core__WEBPACK_IMPORTED_MODULE_0__["ɵɵadvance"](4);
+        _angular_core__WEBPACK_IMPORTED_MODULE_0__["ɵɵproperty"]("value", ctx.reporteDesde);
+        _angular_core__WEBPACK_IMPORTED_MODULE_0__["ɵɵadvance"](4);
+        _angular_core__WEBPACK_IMPORTED_MODULE_0__["ɵɵproperty"]("value", ctx.reporteHasta);
+        _angular_core__WEBPACK_IMPORTED_MODULE_0__["ɵɵadvance"](6);
+        _angular_core__WEBPACK_IMPORTED_MODULE_0__["ɵɵproperty"]("ngIf", ctx.reporteEstado);
+    } }, directives: [_angular_common__WEBPACK_IMPORTED_MODULE_4__["NgIf"], devextreme_angular__WEBPACK_IMPORTED_MODULE_5__["DxSelectBoxComponent"], devextreme_angular_ui_text_box__WEBPACK_IMPORTED_MODULE_6__["DxTextBoxComponent"], devextreme_angular__WEBPACK_IMPORTED_MODULE_5__["DxDataGridComponent"], devextreme_angular_ui_nested__WEBPACK_IMPORTED_MODULE_7__["DxiColumnComponent"], devextreme_angular_core__WEBPACK_IMPORTED_MODULE_8__["DxTemplateDirective"], devextreme_angular__WEBPACK_IMPORTED_MODULE_5__["DxDateBoxComponent"], devextreme_angular__WEBPACK_IMPORTED_MODULE_5__["DxNumberBoxComponent"], _angular_common__WEBPACK_IMPORTED_MODULE_4__["NgForOf"], _angular_common__WEBPACK_IMPORTED_MODULE_4__["NgClass"]], pipes: [_angular_common__WEBPACK_IMPORTED_MODULE_4__["DecimalPipe"], _angular_common__WEBPACK_IMPORTED_MODULE_4__["DatePipe"]], styles: [".eventos-pagos-titulo[_ngcontent-%COMP%] {\n  background-color: #fff3cd;\n  color: #c62828;\n  font-weight: bold;\n  text-transform: uppercase;\n  padding: 0.5rem 1rem;\n  margin-bottom: 1rem;\n  border-left: 4px solid #c62828;\n}\n\n.eventos-formulario[_ngcontent-%COMP%]   .form-label[_ngcontent-%COMP%] {\n  font-weight: 600;\n  font-size: 0.85rem;\n  margin-bottom: 0.25rem;\n}\n\n.eventos-monto-display[_ngcontent-%COMP%] {\n  font-size: 1.5rem;\n  font-weight: bold;\n  color: #2e7d32;\n  padding: 0.5rem;\n  border: 2px solid #c62828;\n  text-align: center;\n  min-height: 48px;\n}\n\n.proyeccion-tabla[_ngcontent-%COMP%] {\n  width: 100%;\n  border-collapse: collapse;\n  font-size: 0.85rem;\n}\n\n.proyeccion-tabla[_ngcontent-%COMP%]   th[_ngcontent-%COMP%], .proyeccion-tabla[_ngcontent-%COMP%]   td[_ngcontent-%COMP%] {\n  border: 1px solid #333;\n  text-align: center;\n  padding: 0.35rem 0.5rem;\n}\n\n.proyeccion-tabla[_ngcontent-%COMP%]   .fila-etiqueta[_ngcontent-%COMP%] {\n  font-weight: bold;\n  text-align: left;\n  background: #f5f5f5;\n  min-width: 140px;\n}\n\n.proyeccion-tabla[_ngcontent-%COMP%]   .mes-header.mes-mayo[_ngcontent-%COMP%] {\n  background-color: #fff9c4;\n  font-weight: bold;\n}\n\n.proyeccion-tabla[_ngcontent-%COMP%]   .mes-header.mes-junio[_ngcontent-%COMP%] {\n  background-color: #e1bee7;\n  font-weight: bold;\n}\n\n.proyeccion-tabla[_ngcontent-%COMP%]   .fecha-header[_ngcontent-%COMP%] {\n  background: #000;\n  color: #fff;\n  font-size: 0.8rem;\n}\n\n.proyeccion-tabla[_ngcontent-%COMP%]   .celda-monto[_ngcontent-%COMP%] {\n  font-weight: 600;\n}\n\n.btn-nomina-primario[_ngcontent-%COMP%] {\n  background-color: #ff5722;\n  border-color: #ff5722;\n  color: #fff;\n}\n\n.btn-nomina-primario[_ngcontent-%COMP%]:hover {\n  color: #fff;\n  background-color: #e64a19;\n}\n/*# sourceMappingURL=data:application/json;base64,eyJ2ZXJzaW9uIjozLCJzb3VyY2VzIjpbInNyYy9hcHAvcGFnZXMvbm9taW5hcy9DOlxcRklERU5TXFxhbG9qYWJhc2VzMjAyNS9zcmNcXGFwcFxccGFnZXNcXG5vbWluYXNcXG5vbWluYXMtZXZlbnRvcy1wYWdvcy5jb21wb25lbnQuc2NzcyIsInNyYy9hcHAvcGFnZXMvbm9taW5hcy9ub21pbmFzLWV2ZW50b3MtcGFnb3MuY29tcG9uZW50LnNjc3MiXSwibmFtZXMiOltdLCJtYXBwaW5ncyI6IkFBQUE7RUFDRSx5QkFBQTtFQUNBLGNBQUE7RUFDQSxpQkFBQTtFQUNBLHlCQUFBO0VBQ0Esb0JBQUE7RUFDQSxtQkFBQTtFQUNBLDhCQUFBO0FDQ0Y7O0FERUE7RUFDRSxnQkFBQTtFQUNBLGtCQUFBO0VBQ0Esc0JBQUE7QUNDRjs7QURFQTtFQUNFLGlCQUFBO0VBQ0EsaUJBQUE7RUFDQSxjQUFBO0VBQ0EsZUFBQTtFQUNBLHlCQUFBO0VBQ0Esa0JBQUE7RUFDQSxnQkFBQTtBQ0NGOztBREVBO0VBQ0UsV0FBQTtFQUNBLHlCQUFBO0VBQ0Esa0JBQUE7QUNDRjs7QURFQTs7RUFFRSxzQkFBQTtFQUNBLGtCQUFBO0VBQ0EsdUJBQUE7QUNDRjs7QURFQTtFQUNFLGlCQUFBO0VBQ0EsZ0JBQUE7RUFDQSxtQkFBQTtFQUNBLGdCQUFBO0FDQ0Y7O0FERUE7RUFDRSx5QkFBQTtFQUNBLGlCQUFBO0FDQ0Y7O0FERUE7RUFDRSx5QkFBQTtFQUNBLGlCQUFBO0FDQ0Y7O0FERUE7RUFDRSxnQkFBQTtFQUNBLFdBQUE7RUFDQSxpQkFBQTtBQ0NGOztBREVBO0VBQ0UsZ0JBQUE7QUNDRjs7QURFQTtFQUNFLHlCQUFBO0VBQ0EscUJBQUE7RUFDQSxXQUFBO0FDQ0Y7O0FERUE7RUFDRSxXQUFBO0VBQ0EseUJBQUE7QUNDRiIsImZpbGUiOiJzcmMvYXBwL3BhZ2VzL25vbWluYXMvbm9taW5hcy1ldmVudG9zLXBhZ29zLmNvbXBvbmVudC5zY3NzIiwic291cmNlc0NvbnRlbnQiOlsiLmV2ZW50b3MtcGFnb3MtdGl0dWxvIHtcclxuICBiYWNrZ3JvdW5kLWNvbG9yOiAjZmZmM2NkO1xyXG4gIGNvbG9yOiAjYzYyODI4O1xyXG4gIGZvbnQtd2VpZ2h0OiBib2xkO1xyXG4gIHRleHQtdHJhbnNmb3JtOiB1cHBlcmNhc2U7XHJcbiAgcGFkZGluZzogMC41cmVtIDFyZW07XHJcbiAgbWFyZ2luLWJvdHRvbTogMXJlbTtcclxuICBib3JkZXItbGVmdDogNHB4IHNvbGlkICNjNjI4Mjg7XHJcbn1cclxuXHJcbi5ldmVudG9zLWZvcm11bGFyaW8gLmZvcm0tbGFiZWwge1xyXG4gIGZvbnQtd2VpZ2h0OiA2MDA7XHJcbiAgZm9udC1zaXplOiAwLjg1cmVtO1xyXG4gIG1hcmdpbi1ib3R0b206IDAuMjVyZW07XHJcbn1cclxuXHJcbi5ldmVudG9zLW1vbnRvLWRpc3BsYXkge1xyXG4gIGZvbnQtc2l6ZTogMS41cmVtO1xyXG4gIGZvbnQtd2VpZ2h0OiBib2xkO1xyXG4gIGNvbG9yOiAjMmU3ZDMyO1xyXG4gIHBhZGRpbmc6IDAuNXJlbTtcclxuICBib3JkZXI6IDJweCBzb2xpZCAjYzYyODI4O1xyXG4gIHRleHQtYWxpZ246IGNlbnRlcjtcclxuICBtaW4taGVpZ2h0OiA0OHB4O1xyXG59XHJcblxyXG4ucHJveWVjY2lvbi10YWJsYSB7XHJcbiAgd2lkdGg6IDEwMCU7XHJcbiAgYm9yZGVyLWNvbGxhcHNlOiBjb2xsYXBzZTtcclxuICBmb250LXNpemU6IDAuODVyZW07XHJcbn1cclxuXHJcbi5wcm95ZWNjaW9uLXRhYmxhIHRoLFxyXG4ucHJveWVjY2lvbi10YWJsYSB0ZCB7XHJcbiAgYm9yZGVyOiAxcHggc29saWQgIzMzMztcclxuICB0ZXh0LWFsaWduOiBjZW50ZXI7XHJcbiAgcGFkZGluZzogMC4zNXJlbSAwLjVyZW07XHJcbn1cclxuXHJcbi5wcm95ZWNjaW9uLXRhYmxhIC5maWxhLWV0aXF1ZXRhIHtcclxuICBmb250LXdlaWdodDogYm9sZDtcclxuICB0ZXh0LWFsaWduOiBsZWZ0O1xyXG4gIGJhY2tncm91bmQ6ICNmNWY1ZjU7XHJcbiAgbWluLXdpZHRoOiAxNDBweDtcclxufVxyXG5cclxuLnByb3llY2Npb24tdGFibGEgLm1lcy1oZWFkZXIubWVzLW1heW8ge1xyXG4gIGJhY2tncm91bmQtY29sb3I6ICNmZmY5YzQ7XHJcbiAgZm9udC13ZWlnaHQ6IGJvbGQ7XHJcbn1cclxuXHJcbi5wcm95ZWNjaW9uLXRhYmxhIC5tZXMtaGVhZGVyLm1lcy1qdW5pbyB7XHJcbiAgYmFja2dyb3VuZC1jb2xvcjogI2UxYmVlNztcclxuICBmb250LXdlaWdodDogYm9sZDtcclxufVxyXG5cclxuLnByb3llY2Npb24tdGFibGEgLmZlY2hhLWhlYWRlciB7XHJcbiAgYmFja2dyb3VuZDogIzAwMDtcclxuICBjb2xvcjogI2ZmZjtcclxuICBmb250LXNpemU6IDAuOHJlbTtcclxufVxyXG5cclxuLnByb3llY2Npb24tdGFibGEgLmNlbGRhLW1vbnRvIHtcclxuICBmb250LXdlaWdodDogNjAwO1xyXG59XHJcblxyXG4uYnRuLW5vbWluYS1wcmltYXJpbyB7XHJcbiAgYmFja2dyb3VuZC1jb2xvcjogI2ZmNTcyMjtcclxuICBib3JkZXItY29sb3I6ICNmZjU3MjI7XHJcbiAgY29sb3I6ICNmZmY7XHJcbn1cclxuXHJcbi5idG4tbm9taW5hLXByaW1hcmlvOmhvdmVyIHtcclxuICBjb2xvcjogI2ZmZjtcclxuICBiYWNrZ3JvdW5kLWNvbG9yOiAjZTY0YTE5O1xyXG59XHJcbiIsIi5ldmVudG9zLXBhZ29zLXRpdHVsbyB7XG4gIGJhY2tncm91bmQtY29sb3I6ICNmZmYzY2Q7XG4gIGNvbG9yOiAjYzYyODI4O1xuICBmb250LXdlaWdodDogYm9sZDtcbiAgdGV4dC10cmFuc2Zvcm06IHVwcGVyY2FzZTtcbiAgcGFkZGluZzogMC41cmVtIDFyZW07XG4gIG1hcmdpbi1ib3R0b206IDFyZW07XG4gIGJvcmRlci1sZWZ0OiA0cHggc29saWQgI2M2MjgyODtcbn1cblxuLmV2ZW50b3MtZm9ybXVsYXJpbyAuZm9ybS1sYWJlbCB7XG4gIGZvbnQtd2VpZ2h0OiA2MDA7XG4gIGZvbnQtc2l6ZTogMC44NXJlbTtcbiAgbWFyZ2luLWJvdHRvbTogMC4yNXJlbTtcbn1cblxuLmV2ZW50b3MtbW9udG8tZGlzcGxheSB7XG4gIGZvbnQtc2l6ZTogMS41cmVtO1xuICBmb250LXdlaWdodDogYm9sZDtcbiAgY29sb3I6ICMyZTdkMzI7XG4gIHBhZGRpbmc6IDAuNXJlbTtcbiAgYm9yZGVyOiAycHggc29saWQgI2M2MjgyODtcbiAgdGV4dC1hbGlnbjogY2VudGVyO1xuICBtaW4taGVpZ2h0OiA0OHB4O1xufVxuXG4ucHJveWVjY2lvbi10YWJsYSB7XG4gIHdpZHRoOiAxMDAlO1xuICBib3JkZXItY29sbGFwc2U6IGNvbGxhcHNlO1xuICBmb250LXNpemU6IDAuODVyZW07XG59XG5cbi5wcm95ZWNjaW9uLXRhYmxhIHRoLFxuLnByb3llY2Npb24tdGFibGEgdGQge1xuICBib3JkZXI6IDFweCBzb2xpZCAjMzMzO1xuICB0ZXh0LWFsaWduOiBjZW50ZXI7XG4gIHBhZGRpbmc6IDAuMzVyZW0gMC41cmVtO1xufVxuXG4ucHJveWVjY2lvbi10YWJsYSAuZmlsYS1ldGlxdWV0YSB7XG4gIGZvbnQtd2VpZ2h0OiBib2xkO1xuICB0ZXh0LWFsaWduOiBsZWZ0O1xuICBiYWNrZ3JvdW5kOiAjZjVmNWY1O1xuICBtaW4td2lkdGg6IDE0MHB4O1xufVxuXG4ucHJveWVjY2lvbi10YWJsYSAubWVzLWhlYWRlci5tZXMtbWF5byB7XG4gIGJhY2tncm91bmQtY29sb3I6ICNmZmY5YzQ7XG4gIGZvbnQtd2VpZ2h0OiBib2xkO1xufVxuXG4ucHJveWVjY2lvbi10YWJsYSAubWVzLWhlYWRlci5tZXMtanVuaW8ge1xuICBiYWNrZ3JvdW5kLWNvbG9yOiAjZTFiZWU3O1xuICBmb250LXdlaWdodDogYm9sZDtcbn1cblxuLnByb3llY2Npb24tdGFibGEgLmZlY2hhLWhlYWRlciB7XG4gIGJhY2tncm91bmQ6ICMwMDA7XG4gIGNvbG9yOiAjZmZmO1xuICBmb250LXNpemU6IDAuOHJlbTtcbn1cblxuLnByb3llY2Npb24tdGFibGEgLmNlbGRhLW1vbnRvIHtcbiAgZm9udC13ZWlnaHQ6IDYwMDtcbn1cblxuLmJ0bi1ub21pbmEtcHJpbWFyaW8ge1xuICBiYWNrZ3JvdW5kLWNvbG9yOiAjZmY1NzIyO1xuICBib3JkZXItY29sb3I6ICNmZjU3MjI7XG4gIGNvbG9yOiAjZmZmO1xufVxuXG4uYnRuLW5vbWluYS1wcmltYXJpbzpob3ZlciB7XG4gIGNvbG9yOiAjZmZmO1xuICBiYWNrZ3JvdW5kLWNvbG9yOiAjZTY0YTE5O1xufSJdfQ== */"] });
+/*@__PURE__*/ (function () { _angular_core__WEBPACK_IMPORTED_MODULE_0__["ɵsetClassMetadata"](NominasEventosPagosComponent, [{
+        type: _angular_core__WEBPACK_IMPORTED_MODULE_0__["Component"],
+        args: [{
+                selector: "app-nominas-eventos-pagos",
+                templateUrl: "./nominas-eventos-pagos.component.html",
+                styleUrls: ["./nominas-eventos-pagos.component.scss"],
+            }]
+    }], function () { return [{ type: src_app_servicios_nominas_service__WEBPACK_IMPORTED_MODULE_2__["NominasService"] }, { type: src_app_servicios_centro_costo_service__WEBPACK_IMPORTED_MODULE_3__["CentroCostoService"] }]; }, { usuarioNombre: [{
+            type: _angular_core__WEBPACK_IMPORTED_MODULE_0__["Input"]
+        }] }); })();
+
+
+/***/ }),
+
+/***/ "./src/app/pages/nominas/nominas.component.ts":
+/*!****************************************************!*\
+  !*** ./src/app/pages/nominas/nominas.component.ts ***!
+  \****************************************************/
+/*! exports provided: NominasComponent */
+/***/ (function(module, __webpack_exports__, __webpack_require__) {
+
+"use strict";
+__webpack_require__.r(__webpack_exports__);
+/* harmony export (binding) */ __webpack_require__.d(__webpack_exports__, "NominasComponent", function() { return NominasComponent; });
+/* harmony import */ var _angular_core__WEBPACK_IMPORTED_MODULE_0__ = __webpack_require__(/*! @angular/core */ "./node_modules/@angular/core/__ivy_ngcc__/fesm2015/core.js");
+/* harmony import */ var sweetalert2__WEBPACK_IMPORTED_MODULE_1__ = __webpack_require__(/*! sweetalert2 */ "./node_modules/sweetalert2/dist/sweetalert2.all.js");
+/* harmony import */ var sweetalert2__WEBPACK_IMPORTED_MODULE_1___default = /*#__PURE__*/__webpack_require__.n(sweetalert2__WEBPACK_IMPORTED_MODULE_1__);
+/* harmony import */ var src_app_servicios_authen_service__WEBPACK_IMPORTED_MODULE_2__ = __webpack_require__(/*! src/app/servicios/authen.service */ "./src/app/servicios/authen.service.ts");
+/* harmony import */ var src_app_servicios_nominas_service__WEBPACK_IMPORTED_MODULE_3__ = __webpack_require__(/*! src/app/servicios/nominas.service */ "./src/app/servicios/nominas.service.ts");
+/* harmony import */ var src_app_servicios_user_service__WEBPACK_IMPORTED_MODULE_4__ = __webpack_require__(/*! src/app/servicios/user.service */ "./src/app/servicios/user.service.ts");
+/* harmony import */ var _angular_common__WEBPACK_IMPORTED_MODULE_5__ = __webpack_require__(/*! @angular/common */ "./node_modules/@angular/common/__ivy_ngcc__/fesm2015/common.js");
+/* harmony import */ var devextreme_angular__WEBPACK_IMPORTED_MODULE_6__ = __webpack_require__(/*! devextreme-angular */ "./node_modules/devextreme-angular/__ivy_ngcc__/fesm2015/devextreme-angular.js");
+/* harmony import */ var devextreme_angular_ui_text_box__WEBPACK_IMPORTED_MODULE_7__ = __webpack_require__(/*! devextreme-angular/ui/text-box */ "./node_modules/devextreme-angular/__ivy_ngcc__/fesm2015/devextreme-angular-ui-text-box.js");
+/* harmony import */ var _loading_message_loading_messagge_component__WEBPACK_IMPORTED_MODULE_8__ = __webpack_require__(/*! ../loading-message/loading-messagge.component */ "./src/app/pages/loading-message/loading-messagge.component.ts");
+/* harmony import */ var devextreme_angular_ui_nested__WEBPACK_IMPORTED_MODULE_9__ = __webpack_require__(/*! devextreme-angular/ui/nested */ "./node_modules/devextreme-angular/__ivy_ngcc__/fesm2015/devextreme-angular-ui-nested.js");
+/* harmony import */ var devextreme_angular_core__WEBPACK_IMPORTED_MODULE_10__ = __webpack_require__(/*! devextreme-angular/core */ "./node_modules/devextreme-angular/__ivy_ngcc__/fesm2015/devextreme-angular-core.js");
+/* harmony import */ var devextreme_angular_ui_check_box__WEBPACK_IMPORTED_MODULE_11__ = __webpack_require__(/*! devextreme-angular/ui/check-box */ "./node_modules/devextreme-angular/__ivy_ngcc__/fesm2015/devextreme-angular-ui-check-box.js");
+/* harmony import */ var _nominas_eventos_pagos_component__WEBPACK_IMPORTED_MODULE_12__ = __webpack_require__(/*! ./nominas-eventos-pagos.component */ "./src/app/pages/nominas/nominas-eventos-pagos.component.ts");
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+function NominasComponent_div_0_Template(rf, ctx) { if (rf & 1) {
+    _angular_core__WEBPACK_IMPORTED_MODULE_0__["ɵɵelementStart"](0, "div");
+    _angular_core__WEBPACK_IMPORTED_MODULE_0__["ɵɵelement"](1, "app-loading-messagge", 22);
+    _angular_core__WEBPACK_IMPORTED_MODULE_0__["ɵɵelementEnd"]();
+} if (rf & 2) {
+    const ctx_r0 = _angular_core__WEBPACK_IMPORTED_MODULE_0__["ɵɵnextContext"]();
+    _angular_core__WEBPACK_IMPORTED_MODULE_0__["ɵɵadvance"](1);
+    _angular_core__WEBPACK_IMPORTED_MODULE_0__["ɵɵproperty"]("messagge", ctx_r0.mensajeLoading);
+} }
+function NominasComponent_div_1_Template(rf, ctx) { if (rf & 1) {
+    _angular_core__WEBPACK_IMPORTED_MODULE_0__["ɵɵelement"](0, "div", 5);
+} }
+function NominasComponent_div_2_div_6_div_24_Template(rf, ctx) { if (rf & 1) {
+    const _r10 = _angular_core__WEBPACK_IMPORTED_MODULE_0__["ɵɵgetCurrentView"]();
+    _angular_core__WEBPACK_IMPORTED_MODULE_0__["ɵɵelementStart"](0, "div");
+    _angular_core__WEBPACK_IMPORTED_MODULE_0__["ɵɵelementStart"](1, "button", 45);
+    _angular_core__WEBPACK_IMPORTED_MODULE_0__["ɵɵlistener"]("click", function NominasComponent_div_2_div_6_div_24_Template_button_click_1_listener() { _angular_core__WEBPACK_IMPORTED_MODULE_0__["ɵɵrestoreView"](_r10); const data_r8 = ctx.$implicit; const ctx_r9 = _angular_core__WEBPACK_IMPORTED_MODULE_0__["ɵɵnextContext"](3); return ctx_r9.abrirEdicion(data_r8.data); });
+    _angular_core__WEBPACK_IMPORTED_MODULE_0__["ɵɵtext"](2, " Editar ");
+    _angular_core__WEBPACK_IMPORTED_MODULE_0__["ɵɵelementEnd"]();
+    _angular_core__WEBPACK_IMPORTED_MODULE_0__["ɵɵelementStart"](3, "button", 46);
+    _angular_core__WEBPACK_IMPORTED_MODULE_0__["ɵɵlistener"]("click", function NominasComponent_div_2_div_6_div_24_Template_button_click_3_listener() { _angular_core__WEBPACK_IMPORTED_MODULE_0__["ɵɵrestoreView"](_r10); const data_r8 = ctx.$implicit; const ctx_r11 = _angular_core__WEBPACK_IMPORTED_MODULE_0__["ɵɵnextContext"](3); return ctx_r11.eliminarTablaSalarial(data_r8.data); });
+    _angular_core__WEBPACK_IMPORTED_MODULE_0__["ɵɵtext"](4, " Eliminar ");
+    _angular_core__WEBPACK_IMPORTED_MODULE_0__["ɵɵelementEnd"]();
+    _angular_core__WEBPACK_IMPORTED_MODULE_0__["ɵɵelementEnd"]();
+} }
+function NominasComponent_div_2_div_6_Template(rf, ctx) { if (rf & 1) {
+    const _r13 = _angular_core__WEBPACK_IMPORTED_MODULE_0__["ɵɵgetCurrentView"]();
+    _angular_core__WEBPACK_IMPORTED_MODULE_0__["ɵɵelementStart"](0, "div");
+    _angular_core__WEBPACK_IMPORTED_MODULE_0__["ɵɵelementStart"](1, "div", 26);
+    _angular_core__WEBPACK_IMPORTED_MODULE_0__["ɵɵelementStart"](2, "h5", 27);
+    _angular_core__WEBPACK_IMPORTED_MODULE_0__["ɵɵtext"](3, " Motor de Reglas \u2014 N\u00F3minas ");
+    _angular_core__WEBPACK_IMPORTED_MODULE_0__["ɵɵelementEnd"]();
+    _angular_core__WEBPACK_IMPORTED_MODULE_0__["ɵɵelementStart"](4, "div", 28);
+    _angular_core__WEBPACK_IMPORTED_MODULE_0__["ɵɵelementStart"](5, "div", 29);
+    _angular_core__WEBPACK_IMPORTED_MODULE_0__["ɵɵtext"](6, " Tabla Maestra Salarial ");
+    _angular_core__WEBPACK_IMPORTED_MODULE_0__["ɵɵelementEnd"]();
+    _angular_core__WEBPACK_IMPORTED_MODULE_0__["ɵɵelementStart"](7, "p", 30);
+    _angular_core__WEBPACK_IMPORTED_MODULE_0__["ɵɵtext"](8, " Asignaci\u00F3n \u00FAnica por trabajador. Base para c\u00E1lculo de aportes, pagos y descuentos del motor de reglas. ");
+    _angular_core__WEBPACK_IMPORTED_MODULE_0__["ɵɵelementEnd"]();
+    _angular_core__WEBPACK_IMPORTED_MODULE_0__["ɵɵelementStart"](9, "div", 31);
+    _angular_core__WEBPACK_IMPORTED_MODULE_0__["ɵɵelementStart"](10, "div", 32);
+    _angular_core__WEBPACK_IMPORTED_MODULE_0__["ɵɵelementStart"](11, "button", 21);
+    _angular_core__WEBPACK_IMPORTED_MODULE_0__["ɵɵlistener"]("click", function NominasComponent_div_2_div_6_Template_button_click_11_listener() { _angular_core__WEBPACK_IMPORTED_MODULE_0__["ɵɵrestoreView"](_r13); const ctx_r12 = _angular_core__WEBPACK_IMPORTED_MODULE_0__["ɵɵnextContext"](2); return ctx_r12.abrirNuevoRegistro(); });
+    _angular_core__WEBPACK_IMPORTED_MODULE_0__["ɵɵtext"](12, " + Nuevo trabajador ");
+    _angular_core__WEBPACK_IMPORTED_MODULE_0__["ɵɵelementEnd"]();
+    _angular_core__WEBPACK_IMPORTED_MODULE_0__["ɵɵelementEnd"]();
+    _angular_core__WEBPACK_IMPORTED_MODULE_0__["ɵɵelementEnd"]();
+    _angular_core__WEBPACK_IMPORTED_MODULE_0__["ɵɵelementStart"](13, "dx-data-grid", 33);
+    _angular_core__WEBPACK_IMPORTED_MODULE_0__["ɵɵelement"](14, "dxi-column", 34);
+    _angular_core__WEBPACK_IMPORTED_MODULE_0__["ɵɵelement"](15, "dxi-column", 35);
+    _angular_core__WEBPACK_IMPORTED_MODULE_0__["ɵɵelement"](16, "dxi-column", 36);
+    _angular_core__WEBPACK_IMPORTED_MODULE_0__["ɵɵelement"](17, "dxi-column", 37);
+    _angular_core__WEBPACK_IMPORTED_MODULE_0__["ɵɵelement"](18, "dxi-column", 38);
+    _angular_core__WEBPACK_IMPORTED_MODULE_0__["ɵɵelement"](19, "dxi-column", 39);
+    _angular_core__WEBPACK_IMPORTED_MODULE_0__["ɵɵelement"](20, "dxi-column", 40);
+    _angular_core__WEBPACK_IMPORTED_MODULE_0__["ɵɵelement"](21, "dxi-column", 41);
+    _angular_core__WEBPACK_IMPORTED_MODULE_0__["ɵɵelement"](22, "dxi-column", 42);
+    _angular_core__WEBPACK_IMPORTED_MODULE_0__["ɵɵelement"](23, "dxi-column", 43);
+    _angular_core__WEBPACK_IMPORTED_MODULE_0__["ɵɵtemplate"](24, NominasComponent_div_2_div_6_div_24_Template, 5, 0, "div", 44);
+    _angular_core__WEBPACK_IMPORTED_MODULE_0__["ɵɵelementEnd"]();
+    _angular_core__WEBPACK_IMPORTED_MODULE_0__["ɵɵelementEnd"]();
+    _angular_core__WEBPACK_IMPORTED_MODULE_0__["ɵɵelementEnd"]();
+    _angular_core__WEBPACK_IMPORTED_MODULE_0__["ɵɵelementEnd"]();
+} if (rf & 2) {
+    const ctx_r5 = _angular_core__WEBPACK_IMPORTED_MODULE_0__["ɵɵnextContext"](2);
+    _angular_core__WEBPACK_IMPORTED_MODULE_0__["ɵɵadvance"](13);
+    _angular_core__WEBPACK_IMPORTED_MODULE_0__["ɵɵproperty"]("dataSource", ctx_r5.tablasSalariales)("showBorders", true)("columnAutoWidth", true)("rowAlternationEnabled", true);
+    _angular_core__WEBPACK_IMPORTED_MODULE_0__["ɵɵadvance"](10);
+    _angular_core__WEBPACK_IMPORTED_MODULE_0__["ɵɵproperty"]("width", 140)("allowFiltering", false)("allowSorting", false);
+    _angular_core__WEBPACK_IMPORTED_MODULE_0__["ɵɵadvance"](1);
+    _angular_core__WEBPACK_IMPORTED_MODULE_0__["ɵɵproperty"]("dxTemplateOf", "accionesSalarial");
+} }
+const _c0 = function () { return ["personal", "patronal", "total", "otro"]; };
+function NominasComponent_div_2_div_7_tr_23_Template(rf, ctx) { if (rf & 1) {
+    const _r20 = _angular_core__WEBPACK_IMPORTED_MODULE_0__["ɵɵgetCurrentView"]();
+    _angular_core__WEBPACK_IMPORTED_MODULE_0__["ɵɵelementStart"](0, "tr");
+    _angular_core__WEBPACK_IMPORTED_MODULE_0__["ɵɵelementStart"](1, "td");
+    _angular_core__WEBPACK_IMPORTED_MODULE_0__["ɵɵelementStart"](2, "dx-text-box", 7);
+    _angular_core__WEBPACK_IMPORTED_MODULE_0__["ɵɵlistener"]("valueChange", function NominasComponent_div_2_div_7_tr_23_Template_dx_text_box_valueChange_2_listener($event) { _angular_core__WEBPACK_IMPORTED_MODULE_0__["ɵɵrestoreView"](_r20); const aporte_r17 = ctx.$implicit; return aporte_r17.concepto = $event; });
+    _angular_core__WEBPACK_IMPORTED_MODULE_0__["ɵɵelementEnd"]();
+    _angular_core__WEBPACK_IMPORTED_MODULE_0__["ɵɵelementEnd"]();
+    _angular_core__WEBPACK_IMPORTED_MODULE_0__["ɵɵelementStart"](3, "td");
+    _angular_core__WEBPACK_IMPORTED_MODULE_0__["ɵɵelementStart"](4, "dx-number-box", 62);
+    _angular_core__WEBPACK_IMPORTED_MODULE_0__["ɵɵlistener"]("valueChange", function NominasComponent_div_2_div_7_tr_23_Template_dx_number_box_valueChange_4_listener($event) { _angular_core__WEBPACK_IMPORTED_MODULE_0__["ɵɵrestoreView"](_r20); const aporte_r17 = ctx.$implicit; return aporte_r17.porcentaje = $event; });
+    _angular_core__WEBPACK_IMPORTED_MODULE_0__["ɵɵelementEnd"]();
+    _angular_core__WEBPACK_IMPORTED_MODULE_0__["ɵɵelementEnd"]();
+    _angular_core__WEBPACK_IMPORTED_MODULE_0__["ɵɵelementStart"](5, "td");
+    _angular_core__WEBPACK_IMPORTED_MODULE_0__["ɵɵelementStart"](6, "dx-select-box", 13);
+    _angular_core__WEBPACK_IMPORTED_MODULE_0__["ɵɵlistener"]("valueChange", function NominasComponent_div_2_div_7_tr_23_Template_dx_select_box_valueChange_6_listener($event) { _angular_core__WEBPACK_IMPORTED_MODULE_0__["ɵɵrestoreView"](_r20); const aporte_r17 = ctx.$implicit; return aporte_r17.tipo = $event; });
+    _angular_core__WEBPACK_IMPORTED_MODULE_0__["ɵɵelementEnd"]();
+    _angular_core__WEBPACK_IMPORTED_MODULE_0__["ɵɵelementEnd"]();
+    _angular_core__WEBPACK_IMPORTED_MODULE_0__["ɵɵelementStart"](7, "td", 63);
+    _angular_core__WEBPACK_IMPORTED_MODULE_0__["ɵɵelementStart"](8, "dx-check-box", 7);
+    _angular_core__WEBPACK_IMPORTED_MODULE_0__["ɵɵlistener"]("valueChange", function NominasComponent_div_2_div_7_tr_23_Template_dx_check_box_valueChange_8_listener($event) { _angular_core__WEBPACK_IMPORTED_MODULE_0__["ɵɵrestoreView"](_r20); const aporte_r17 = ctx.$implicit; return aporte_r17.activo = $event; });
+    _angular_core__WEBPACK_IMPORTED_MODULE_0__["ɵɵelementEnd"]();
+    _angular_core__WEBPACK_IMPORTED_MODULE_0__["ɵɵelementEnd"]();
+    _angular_core__WEBPACK_IMPORTED_MODULE_0__["ɵɵelementStart"](9, "td");
+    _angular_core__WEBPACK_IMPORTED_MODULE_0__["ɵɵelementStart"](10, "button", 46);
+    _angular_core__WEBPACK_IMPORTED_MODULE_0__["ɵɵlistener"]("click", function NominasComponent_div_2_div_7_tr_23_Template_button_click_10_listener() { _angular_core__WEBPACK_IMPORTED_MODULE_0__["ɵɵrestoreView"](_r20); const i_r18 = ctx.index; const ctx_r24 = _angular_core__WEBPACK_IMPORTED_MODULE_0__["ɵɵnextContext"](3); return ctx_r24.eliminarAporteIess(i_r18); });
+    _angular_core__WEBPACK_IMPORTED_MODULE_0__["ɵɵtext"](11, " \u00D7 ");
+    _angular_core__WEBPACK_IMPORTED_MODULE_0__["ɵɵelementEnd"]();
+    _angular_core__WEBPACK_IMPORTED_MODULE_0__["ɵɵelementEnd"]();
+    _angular_core__WEBPACK_IMPORTED_MODULE_0__["ɵɵelementEnd"]();
+} if (rf & 2) {
+    const aporte_r17 = ctx.$implicit;
+    _angular_core__WEBPACK_IMPORTED_MODULE_0__["ɵɵadvance"](2);
+    _angular_core__WEBPACK_IMPORTED_MODULE_0__["ɵɵproperty"]("value", aporte_r17.concepto);
+    _angular_core__WEBPACK_IMPORTED_MODULE_0__["ɵɵadvance"](2);
+    _angular_core__WEBPACK_IMPORTED_MODULE_0__["ɵɵproperty"]("value", aporte_r17.porcentaje)("min", 0)("max", 100);
+    _angular_core__WEBPACK_IMPORTED_MODULE_0__["ɵɵadvance"](2);
+    _angular_core__WEBPACK_IMPORTED_MODULE_0__["ɵɵproperty"]("items", _angular_core__WEBPACK_IMPORTED_MODULE_0__["ɵɵpureFunction0"](7, _c0))("value", aporte_r17.tipo);
+    _angular_core__WEBPACK_IMPORTED_MODULE_0__["ɵɵadvance"](2);
+    _angular_core__WEBPACK_IMPORTED_MODULE_0__["ɵɵproperty"]("value", aporte_r17.activo);
+} }
+function NominasComponent_div_2_div_7_tr_45_Template(rf, ctx) { if (rf & 1) {
+    const _r28 = _angular_core__WEBPACK_IMPORTED_MODULE_0__["ɵɵgetCurrentView"]();
+    _angular_core__WEBPACK_IMPORTED_MODULE_0__["ɵɵelementStart"](0, "tr");
+    _angular_core__WEBPACK_IMPORTED_MODULE_0__["ɵɵelementStart"](1, "td");
+    _angular_core__WEBPACK_IMPORTED_MODULE_0__["ɵɵelementStart"](2, "dx-select-box", 64);
+    _angular_core__WEBPACK_IMPORTED_MODULE_0__["ɵɵlistener"]("valueChange", function NominasComponent_div_2_div_7_tr_45_Template_dx_select_box_valueChange_2_listener($event) { _angular_core__WEBPACK_IMPORTED_MODULE_0__["ɵɵrestoreView"](_r28); const fila_r25 = ctx.$implicit; return fila_r25.cargo = $event; })("onValueChanged", function NominasComponent_div_2_div_7_tr_45_Template_dx_select_box_onValueChanged_2_listener($event) { _angular_core__WEBPACK_IMPORTED_MODULE_0__["ɵɵrestoreView"](_r28); const i_r26 = ctx.index; const ctx_r29 = _angular_core__WEBPACK_IMPORTED_MODULE_0__["ɵɵnextContext"](3); return ctx_r29.onCargoDominicalChanged(i_r26, $event); });
+    _angular_core__WEBPACK_IMPORTED_MODULE_0__["ɵɵelementEnd"]();
+    _angular_core__WEBPACK_IMPORTED_MODULE_0__["ɵɵelementEnd"]();
+    _angular_core__WEBPACK_IMPORTED_MODULE_0__["ɵɵelementStart"](3, "td");
+    _angular_core__WEBPACK_IMPORTED_MODULE_0__["ɵɵelementStart"](4, "dx-number-box", 65);
+    _angular_core__WEBPACK_IMPORTED_MODULE_0__["ɵɵlistener"]("valueChange", function NominasComponent_div_2_div_7_tr_45_Template_dx_number_box_valueChange_4_listener($event) { _angular_core__WEBPACK_IMPORTED_MODULE_0__["ɵɵrestoreView"](_r28); const fila_r25 = ctx.$implicit; return fila_r25.valorRangoInferior = $event; });
+    _angular_core__WEBPACK_IMPORTED_MODULE_0__["ɵɵelementEnd"]();
+    _angular_core__WEBPACK_IMPORTED_MODULE_0__["ɵɵelementEnd"]();
+    _angular_core__WEBPACK_IMPORTED_MODULE_0__["ɵɵelementStart"](5, "td");
+    _angular_core__WEBPACK_IMPORTED_MODULE_0__["ɵɵelementStart"](6, "dx-number-box", 65);
+    _angular_core__WEBPACK_IMPORTED_MODULE_0__["ɵɵlistener"]("valueChange", function NominasComponent_div_2_div_7_tr_45_Template_dx_number_box_valueChange_6_listener($event) { _angular_core__WEBPACK_IMPORTED_MODULE_0__["ɵɵrestoreView"](_r28); const fila_r25 = ctx.$implicit; return fila_r25.valorRangoSuperior = $event; });
+    _angular_core__WEBPACK_IMPORTED_MODULE_0__["ɵɵelementEnd"]();
+    _angular_core__WEBPACK_IMPORTED_MODULE_0__["ɵɵelementEnd"]();
+    _angular_core__WEBPACK_IMPORTED_MODULE_0__["ɵɵelementStart"](7, "td");
+    _angular_core__WEBPACK_IMPORTED_MODULE_0__["ɵɵelementStart"](8, "button", 46);
+    _angular_core__WEBPACK_IMPORTED_MODULE_0__["ɵɵlistener"]("click", function NominasComponent_div_2_div_7_tr_45_Template_button_click_8_listener() { _angular_core__WEBPACK_IMPORTED_MODULE_0__["ɵɵrestoreView"](_r28); const i_r26 = ctx.index; const ctx_r32 = _angular_core__WEBPACK_IMPORTED_MODULE_0__["ɵɵnextContext"](3); return ctx_r32.eliminarFilaDominical(i_r26); });
+    _angular_core__WEBPACK_IMPORTED_MODULE_0__["ɵɵtext"](9, " \u00D7 ");
+    _angular_core__WEBPACK_IMPORTED_MODULE_0__["ɵɵelementEnd"]();
+    _angular_core__WEBPACK_IMPORTED_MODULE_0__["ɵɵelementEnd"]();
+    _angular_core__WEBPACK_IMPORTED_MODULE_0__["ɵɵelementEnd"]();
+} if (rf & 2) {
+    const fila_r25 = ctx.$implicit;
+    const ctx_r15 = _angular_core__WEBPACK_IMPORTED_MODULE_0__["ɵɵnextContext"](3);
+    _angular_core__WEBPACK_IMPORTED_MODULE_0__["ɵɵadvance"](2);
+    _angular_core__WEBPACK_IMPORTED_MODULE_0__["ɵɵproperty"]("items", ctx_r15.cargosDisponibles)("value", fila_r25.cargo)("searchEnabled", true);
+    _angular_core__WEBPACK_IMPORTED_MODULE_0__["ɵɵadvance"](2);
+    _angular_core__WEBPACK_IMPORTED_MODULE_0__["ɵɵproperty"]("value", fila_r25.valorRangoInferior)("min", 0);
+    _angular_core__WEBPACK_IMPORTED_MODULE_0__["ɵɵadvance"](2);
+    _angular_core__WEBPACK_IMPORTED_MODULE_0__["ɵɵproperty"]("value", fila_r25.valorRangoSuperior)("min", 0);
+} }
+function NominasComponent_div_2_div_7_tr_64_Template(rf, ctx) { if (rf & 1) {
+    const _r36 = _angular_core__WEBPACK_IMPORTED_MODULE_0__["ɵɵgetCurrentView"]();
+    _angular_core__WEBPACK_IMPORTED_MODULE_0__["ɵɵelementStart"](0, "tr");
+    _angular_core__WEBPACK_IMPORTED_MODULE_0__["ɵɵelementStart"](1, "td");
+    _angular_core__WEBPACK_IMPORTED_MODULE_0__["ɵɵelementStart"](2, "dx-text-box", 7);
+    _angular_core__WEBPACK_IMPORTED_MODULE_0__["ɵɵlistener"]("valueChange", function NominasComponent_div_2_div_7_tr_64_Template_dx_text_box_valueChange_2_listener($event) { _angular_core__WEBPACK_IMPORTED_MODULE_0__["ɵɵrestoreView"](_r36); const cargo_r33 = ctx.$implicit; return cargo_r33.concepto = $event; });
+    _angular_core__WEBPACK_IMPORTED_MODULE_0__["ɵɵelementEnd"]();
+    _angular_core__WEBPACK_IMPORTED_MODULE_0__["ɵɵelementEnd"]();
+    _angular_core__WEBPACK_IMPORTED_MODULE_0__["ɵɵelementStart"](3, "td");
+    _angular_core__WEBPACK_IMPORTED_MODULE_0__["ɵɵelementStart"](4, "dx-date-box", 66);
+    _angular_core__WEBPACK_IMPORTED_MODULE_0__["ɵɵlistener"]("valueChange", function NominasComponent_div_2_div_7_tr_64_Template_dx_date_box_valueChange_4_listener($event) { _angular_core__WEBPACK_IMPORTED_MODULE_0__["ɵɵrestoreView"](_r36); const cargo_r33 = ctx.$implicit; return cargo_r33.fechaLimite = $event; });
+    _angular_core__WEBPACK_IMPORTED_MODULE_0__["ɵɵelementEnd"]();
+    _angular_core__WEBPACK_IMPORTED_MODULE_0__["ɵɵelementEnd"]();
+    _angular_core__WEBPACK_IMPORTED_MODULE_0__["ɵɵelementStart"](5, "td");
+    _angular_core__WEBPACK_IMPORTED_MODULE_0__["ɵɵelementStart"](6, "dx-number-box", 65);
+    _angular_core__WEBPACK_IMPORTED_MODULE_0__["ɵɵlistener"]("valueChange", function NominasComponent_div_2_div_7_tr_64_Template_dx_number_box_valueChange_6_listener($event) { _angular_core__WEBPACK_IMPORTED_MODULE_0__["ɵɵrestoreView"](_r36); const cargo_r33 = ctx.$implicit; return cargo_r33.valor = $event; });
+    _angular_core__WEBPACK_IMPORTED_MODULE_0__["ɵɵelementEnd"]();
+    _angular_core__WEBPACK_IMPORTED_MODULE_0__["ɵɵelementEnd"]();
+    _angular_core__WEBPACK_IMPORTED_MODULE_0__["ɵɵelementStart"](7, "td", 63);
+    _angular_core__WEBPACK_IMPORTED_MODULE_0__["ɵɵelementStart"](8, "dx-check-box", 7);
+    _angular_core__WEBPACK_IMPORTED_MODULE_0__["ɵɵlistener"]("valueChange", function NominasComponent_div_2_div_7_tr_64_Template_dx_check_box_valueChange_8_listener($event) { _angular_core__WEBPACK_IMPORTED_MODULE_0__["ɵɵrestoreView"](_r36); const cargo_r33 = ctx.$implicit; return cargo_r33.activo = $event; });
+    _angular_core__WEBPACK_IMPORTED_MODULE_0__["ɵɵelementEnd"]();
+    _angular_core__WEBPACK_IMPORTED_MODULE_0__["ɵɵelementEnd"]();
+    _angular_core__WEBPACK_IMPORTED_MODULE_0__["ɵɵelementStart"](9, "td");
+    _angular_core__WEBPACK_IMPORTED_MODULE_0__["ɵɵelementStart"](10, "button", 46);
+    _angular_core__WEBPACK_IMPORTED_MODULE_0__["ɵɵlistener"]("click", function NominasComponent_div_2_div_7_tr_64_Template_button_click_10_listener() { _angular_core__WEBPACK_IMPORTED_MODULE_0__["ɵɵrestoreView"](_r36); const i_r34 = ctx.index; const ctx_r40 = _angular_core__WEBPACK_IMPORTED_MODULE_0__["ɵɵnextContext"](3); return ctx_r40.eliminarOtroCargo(i_r34); });
+    _angular_core__WEBPACK_IMPORTED_MODULE_0__["ɵɵtext"](11, " \u00D7 ");
+    _angular_core__WEBPACK_IMPORTED_MODULE_0__["ɵɵelementEnd"]();
+    _angular_core__WEBPACK_IMPORTED_MODULE_0__["ɵɵelementEnd"]();
+    _angular_core__WEBPACK_IMPORTED_MODULE_0__["ɵɵelementEnd"]();
+} if (rf & 2) {
+    const cargo_r33 = ctx.$implicit;
+    _angular_core__WEBPACK_IMPORTED_MODULE_0__["ɵɵadvance"](2);
+    _angular_core__WEBPACK_IMPORTED_MODULE_0__["ɵɵproperty"]("value", cargo_r33.concepto);
+    _angular_core__WEBPACK_IMPORTED_MODULE_0__["ɵɵadvance"](2);
+    _angular_core__WEBPACK_IMPORTED_MODULE_0__["ɵɵproperty"]("value", cargo_r33.fechaLimite)("showClearButton", true);
+    _angular_core__WEBPACK_IMPORTED_MODULE_0__["ɵɵadvance"](2);
+    _angular_core__WEBPACK_IMPORTED_MODULE_0__["ɵɵproperty"]("value", cargo_r33.valor)("min", 0);
+    _angular_core__WEBPACK_IMPORTED_MODULE_0__["ɵɵadvance"](2);
+    _angular_core__WEBPACK_IMPORTED_MODULE_0__["ɵɵproperty"]("value", cargo_r33.activo);
+} }
+function NominasComponent_div_2_div_7_Template(rf, ctx) { if (rf & 1) {
+    const _r42 = _angular_core__WEBPACK_IMPORTED_MODULE_0__["ɵɵgetCurrentView"]();
+    _angular_core__WEBPACK_IMPORTED_MODULE_0__["ɵɵelementStart"](0, "div");
+    _angular_core__WEBPACK_IMPORTED_MODULE_0__["ɵɵelementStart"](1, "div", 47);
+    _angular_core__WEBPACK_IMPORTED_MODULE_0__["ɵɵelementStart"](2, "div", 28);
+    _angular_core__WEBPACK_IMPORTED_MODULE_0__["ɵɵelementStart"](3, "div", 29);
+    _angular_core__WEBPACK_IMPORTED_MODULE_0__["ɵɵtext"](4, " Tablas Maestras Globales ");
+    _angular_core__WEBPACK_IMPORTED_MODULE_0__["ɵɵelementEnd"]();
+    _angular_core__WEBPACK_IMPORTED_MODULE_0__["ɵɵelementStart"](5, "p", 48);
+    _angular_core__WEBPACK_IMPORTED_MODULE_0__["ɵɵtext"](6, " Los l\u00EDmites y valores deben ser modificables desde esta pantalla. ");
+    _angular_core__WEBPACK_IMPORTED_MODULE_0__["ɵɵelementEnd"]();
+    _angular_core__WEBPACK_IMPORTED_MODULE_0__["ɵɵelementStart"](7, "h6", 49);
+    _angular_core__WEBPACK_IMPORTED_MODULE_0__["ɵɵtext"](8, "De aportes IESS");
+    _angular_core__WEBPACK_IMPORTED_MODULE_0__["ɵɵelementEnd"]();
+    _angular_core__WEBPACK_IMPORTED_MODULE_0__["ɵɵelementStart"](9, "div", 50);
+    _angular_core__WEBPACK_IMPORTED_MODULE_0__["ɵɵelementStart"](10, "table", 51);
+    _angular_core__WEBPACK_IMPORTED_MODULE_0__["ɵɵelementStart"](11, "thead");
+    _angular_core__WEBPACK_IMPORTED_MODULE_0__["ɵɵelementStart"](12, "tr");
+    _angular_core__WEBPACK_IMPORTED_MODULE_0__["ɵɵelementStart"](13, "th");
+    _angular_core__WEBPACK_IMPORTED_MODULE_0__["ɵɵtext"](14, "Concepto");
+    _angular_core__WEBPACK_IMPORTED_MODULE_0__["ɵɵelementEnd"]();
+    _angular_core__WEBPACK_IMPORTED_MODULE_0__["ɵɵelementStart"](15, "th", 52);
+    _angular_core__WEBPACK_IMPORTED_MODULE_0__["ɵɵtext"](16, "Porcentaje (%)");
+    _angular_core__WEBPACK_IMPORTED_MODULE_0__["ɵɵelementEnd"]();
+    _angular_core__WEBPACK_IMPORTED_MODULE_0__["ɵɵelementStart"](17, "th", 52);
+    _angular_core__WEBPACK_IMPORTED_MODULE_0__["ɵɵtext"](18, "Tipo");
+    _angular_core__WEBPACK_IMPORTED_MODULE_0__["ɵɵelementEnd"]();
+    _angular_core__WEBPACK_IMPORTED_MODULE_0__["ɵɵelementStart"](19, "th", 53);
+    _angular_core__WEBPACK_IMPORTED_MODULE_0__["ɵɵtext"](20, "Activo");
+    _angular_core__WEBPACK_IMPORTED_MODULE_0__["ɵɵelementEnd"]();
+    _angular_core__WEBPACK_IMPORTED_MODULE_0__["ɵɵelement"](21, "th", 54);
+    _angular_core__WEBPACK_IMPORTED_MODULE_0__["ɵɵelementEnd"]();
+    _angular_core__WEBPACK_IMPORTED_MODULE_0__["ɵɵelementEnd"]();
+    _angular_core__WEBPACK_IMPORTED_MODULE_0__["ɵɵelementStart"](22, "tbody");
+    _angular_core__WEBPACK_IMPORTED_MODULE_0__["ɵɵtemplate"](23, NominasComponent_div_2_div_7_tr_23_Template, 12, 8, "tr", 55);
+    _angular_core__WEBPACK_IMPORTED_MODULE_0__["ɵɵelementEnd"]();
+    _angular_core__WEBPACK_IMPORTED_MODULE_0__["ɵɵelementEnd"]();
+    _angular_core__WEBPACK_IMPORTED_MODULE_0__["ɵɵelementEnd"]();
+    _angular_core__WEBPACK_IMPORTED_MODULE_0__["ɵɵelementStart"](24, "button", 56);
+    _angular_core__WEBPACK_IMPORTED_MODULE_0__["ɵɵlistener"]("click", function NominasComponent_div_2_div_7_Template_button_click_24_listener() { _angular_core__WEBPACK_IMPORTED_MODULE_0__["ɵɵrestoreView"](_r42); const ctx_r41 = _angular_core__WEBPACK_IMPORTED_MODULE_0__["ɵɵnextContext"](2); return ctx_r41.agregarAporteIess(); });
+    _angular_core__WEBPACK_IMPORTED_MODULE_0__["ɵɵtext"](25, " + Agregar concepto IESS ");
+    _angular_core__WEBPACK_IMPORTED_MODULE_0__["ɵɵelementEnd"]();
+    _angular_core__WEBPACK_IMPORTED_MODULE_0__["ɵɵelementStart"](26, "h6", 49);
+    _angular_core__WEBPACK_IMPORTED_MODULE_0__["ɵɵtext"](27, "C\u00E1lculo dominical");
+    _angular_core__WEBPACK_IMPORTED_MODULE_0__["ɵɵelementEnd"]();
+    _angular_core__WEBPACK_IMPORTED_MODULE_0__["ɵɵelementStart"](28, "div", 31);
+    _angular_core__WEBPACK_IMPORTED_MODULE_0__["ɵɵelementStart"](29, "div", 57);
+    _angular_core__WEBPACK_IMPORTED_MODULE_0__["ɵɵelementStart"](30, "label");
+    _angular_core__WEBPACK_IMPORTED_MODULE_0__["ɵɵtext"](31, "L\u00EDmite facturaci\u00F3n ($)");
+    _angular_core__WEBPACK_IMPORTED_MODULE_0__["ɵɵelementEnd"]();
+    _angular_core__WEBPACK_IMPORTED_MODULE_0__["ɵɵelementStart"](32, "dx-number-box", 58);
+    _angular_core__WEBPACK_IMPORTED_MODULE_0__["ɵɵlistener"]("valueChange", function NominasComponent_div_2_div_7_Template_dx_number_box_valueChange_32_listener($event) { _angular_core__WEBPACK_IMPORTED_MODULE_0__["ɵɵrestoreView"](_r42); const ctx_r43 = _angular_core__WEBPACK_IMPORTED_MODULE_0__["ɵɵnextContext"](2); return ctx_r43.configGlobal.calculoDominical.limiteFacturacion = $event; })("onValueChanged", function NominasComponent_div_2_div_7_Template_dx_number_box_onValueChanged_32_listener() { _angular_core__WEBPACK_IMPORTED_MODULE_0__["ɵɵrestoreView"](_r42); const ctx_r44 = _angular_core__WEBPACK_IMPORTED_MODULE_0__["ɵɵnextContext"](2); return ctx_r44.onLimiteFacturacionChanged(); });
+    _angular_core__WEBPACK_IMPORTED_MODULE_0__["ɵɵelementEnd"]();
+    _angular_core__WEBPACK_IMPORTED_MODULE_0__["ɵɵelementEnd"]();
+    _angular_core__WEBPACK_IMPORTED_MODULE_0__["ɵɵelementEnd"]();
+    _angular_core__WEBPACK_IMPORTED_MODULE_0__["ɵɵelementStart"](33, "div", 50);
+    _angular_core__WEBPACK_IMPORTED_MODULE_0__["ɵɵelementStart"](34, "table", 51);
+    _angular_core__WEBPACK_IMPORTED_MODULE_0__["ɵɵelementStart"](35, "thead");
+    _angular_core__WEBPACK_IMPORTED_MODULE_0__["ɵɵelementStart"](36, "tr");
+    _angular_core__WEBPACK_IMPORTED_MODULE_0__["ɵɵelementStart"](37, "th");
+    _angular_core__WEBPACK_IMPORTED_MODULE_0__["ɵɵtext"](38, "Cargo");
+    _angular_core__WEBPACK_IMPORTED_MODULE_0__["ɵɵelementEnd"]();
+    _angular_core__WEBPACK_IMPORTED_MODULE_0__["ɵɵelementStart"](39, "th");
+    _angular_core__WEBPACK_IMPORTED_MODULE_0__["ɵɵtext"](40);
+    _angular_core__WEBPACK_IMPORTED_MODULE_0__["ɵɵelementEnd"]();
+    _angular_core__WEBPACK_IMPORTED_MODULE_0__["ɵɵelementStart"](41, "th");
+    _angular_core__WEBPACK_IMPORTED_MODULE_0__["ɵɵtext"](42);
+    _angular_core__WEBPACK_IMPORTED_MODULE_0__["ɵɵelementEnd"]();
+    _angular_core__WEBPACK_IMPORTED_MODULE_0__["ɵɵelement"](43, "th", 54);
+    _angular_core__WEBPACK_IMPORTED_MODULE_0__["ɵɵelementEnd"]();
+    _angular_core__WEBPACK_IMPORTED_MODULE_0__["ɵɵelementEnd"]();
+    _angular_core__WEBPACK_IMPORTED_MODULE_0__["ɵɵelementStart"](44, "tbody");
+    _angular_core__WEBPACK_IMPORTED_MODULE_0__["ɵɵtemplate"](45, NominasComponent_div_2_div_7_tr_45_Template, 10, 7, "tr", 55);
+    _angular_core__WEBPACK_IMPORTED_MODULE_0__["ɵɵelementEnd"]();
+    _angular_core__WEBPACK_IMPORTED_MODULE_0__["ɵɵelementEnd"]();
+    _angular_core__WEBPACK_IMPORTED_MODULE_0__["ɵɵelementEnd"]();
+    _angular_core__WEBPACK_IMPORTED_MODULE_0__["ɵɵelementStart"](46, "button", 56);
+    _angular_core__WEBPACK_IMPORTED_MODULE_0__["ɵɵlistener"]("click", function NominasComponent_div_2_div_7_Template_button_click_46_listener() { _angular_core__WEBPACK_IMPORTED_MODULE_0__["ɵɵrestoreView"](_r42); const ctx_r45 = _angular_core__WEBPACK_IMPORTED_MODULE_0__["ɵɵnextContext"](2); return ctx_r45.agregarFilaDominical(); });
+    _angular_core__WEBPACK_IMPORTED_MODULE_0__["ɵɵtext"](47, " + Agregar cargo ");
+    _angular_core__WEBPACK_IMPORTED_MODULE_0__["ɵɵelementEnd"]();
+    _angular_core__WEBPACK_IMPORTED_MODULE_0__["ɵɵelementStart"](48, "h6", 49);
+    _angular_core__WEBPACK_IMPORTED_MODULE_0__["ɵɵtext"](49, "Otros cargos");
+    _angular_core__WEBPACK_IMPORTED_MODULE_0__["ɵɵelementEnd"]();
+    _angular_core__WEBPACK_IMPORTED_MODULE_0__["ɵɵelementStart"](50, "div", 50);
+    _angular_core__WEBPACK_IMPORTED_MODULE_0__["ɵɵelementStart"](51, "table", 51);
+    _angular_core__WEBPACK_IMPORTED_MODULE_0__["ɵɵelementStart"](52, "thead");
+    _angular_core__WEBPACK_IMPORTED_MODULE_0__["ɵɵelementStart"](53, "tr");
+    _angular_core__WEBPACK_IMPORTED_MODULE_0__["ɵɵelementStart"](54, "th");
+    _angular_core__WEBPACK_IMPORTED_MODULE_0__["ɵɵtext"](55, "Concepto");
+    _angular_core__WEBPACK_IMPORTED_MODULE_0__["ɵɵelementEnd"]();
+    _angular_core__WEBPACK_IMPORTED_MODULE_0__["ɵɵelementStart"](56, "th");
+    _angular_core__WEBPACK_IMPORTED_MODULE_0__["ɵɵtext"](57, "Fecha l\u00EDmite");
+    _angular_core__WEBPACK_IMPORTED_MODULE_0__["ɵɵelementEnd"]();
+    _angular_core__WEBPACK_IMPORTED_MODULE_0__["ɵɵelementStart"](58, "th", 59);
+    _angular_core__WEBPACK_IMPORTED_MODULE_0__["ɵɵtext"](59, "Valor ($)");
+    _angular_core__WEBPACK_IMPORTED_MODULE_0__["ɵɵelementEnd"]();
+    _angular_core__WEBPACK_IMPORTED_MODULE_0__["ɵɵelementStart"](60, "th", 53);
+    _angular_core__WEBPACK_IMPORTED_MODULE_0__["ɵɵtext"](61, "Activo");
+    _angular_core__WEBPACK_IMPORTED_MODULE_0__["ɵɵelementEnd"]();
+    _angular_core__WEBPACK_IMPORTED_MODULE_0__["ɵɵelement"](62, "th", 54);
+    _angular_core__WEBPACK_IMPORTED_MODULE_0__["ɵɵelementEnd"]();
+    _angular_core__WEBPACK_IMPORTED_MODULE_0__["ɵɵelementEnd"]();
+    _angular_core__WEBPACK_IMPORTED_MODULE_0__["ɵɵelementStart"](63, "tbody");
+    _angular_core__WEBPACK_IMPORTED_MODULE_0__["ɵɵtemplate"](64, NominasComponent_div_2_div_7_tr_64_Template, 12, 6, "tr", 55);
+    _angular_core__WEBPACK_IMPORTED_MODULE_0__["ɵɵelementEnd"]();
+    _angular_core__WEBPACK_IMPORTED_MODULE_0__["ɵɵelementEnd"]();
+    _angular_core__WEBPACK_IMPORTED_MODULE_0__["ɵɵelementEnd"]();
+    _angular_core__WEBPACK_IMPORTED_MODULE_0__["ɵɵelementStart"](65, "button", 60);
+    _angular_core__WEBPACK_IMPORTED_MODULE_0__["ɵɵlistener"]("click", function NominasComponent_div_2_div_7_Template_button_click_65_listener() { _angular_core__WEBPACK_IMPORTED_MODULE_0__["ɵɵrestoreView"](_r42); const ctx_r46 = _angular_core__WEBPACK_IMPORTED_MODULE_0__["ɵɵnextContext"](2); return ctx_r46.agregarOtroCargo(); });
+    _angular_core__WEBPACK_IMPORTED_MODULE_0__["ɵɵtext"](66, " + Agregar otro cargo ");
+    _angular_core__WEBPACK_IMPORTED_MODULE_0__["ɵɵelementEnd"]();
+    _angular_core__WEBPACK_IMPORTED_MODULE_0__["ɵɵelementStart"](67, "div", 61);
+    _angular_core__WEBPACK_IMPORTED_MODULE_0__["ɵɵelement"](68, "div", 57);
+    _angular_core__WEBPACK_IMPORTED_MODULE_0__["ɵɵelementStart"](69, "div", 57);
+    _angular_core__WEBPACK_IMPORTED_MODULE_0__["ɵɵelementStart"](70, "button", 21);
+    _angular_core__WEBPACK_IMPORTED_MODULE_0__["ɵɵlistener"]("click", function NominasComponent_div_2_div_7_Template_button_click_70_listener() { _angular_core__WEBPACK_IMPORTED_MODULE_0__["ɵɵrestoreView"](_r42); const ctx_r47 = _angular_core__WEBPACK_IMPORTED_MODULE_0__["ɵɵnextContext"](2); return ctx_r47.guardarConfigGlobal(); });
+    _angular_core__WEBPACK_IMPORTED_MODULE_0__["ɵɵtext"](71, " Guardar configuraci\u00F3n global ");
+    _angular_core__WEBPACK_IMPORTED_MODULE_0__["ɵɵelementEnd"]();
+    _angular_core__WEBPACK_IMPORTED_MODULE_0__["ɵɵelementEnd"]();
+    _angular_core__WEBPACK_IMPORTED_MODULE_0__["ɵɵelement"](72, "div", 57);
+    _angular_core__WEBPACK_IMPORTED_MODULE_0__["ɵɵelementEnd"]();
+    _angular_core__WEBPACK_IMPORTED_MODULE_0__["ɵɵelementEnd"]();
+    _angular_core__WEBPACK_IMPORTED_MODULE_0__["ɵɵelementEnd"]();
+    _angular_core__WEBPACK_IMPORTED_MODULE_0__["ɵɵelementEnd"]();
+} if (rf & 2) {
+    const ctx_r6 = _angular_core__WEBPACK_IMPORTED_MODULE_0__["ɵɵnextContext"](2);
+    _angular_core__WEBPACK_IMPORTED_MODULE_0__["ɵɵadvance"](23);
+    _angular_core__WEBPACK_IMPORTED_MODULE_0__["ɵɵproperty"]("ngForOf", ctx_r6.configGlobal.aportesIess);
+    _angular_core__WEBPACK_IMPORTED_MODULE_0__["ɵɵadvance"](9);
+    _angular_core__WEBPACK_IMPORTED_MODULE_0__["ɵɵproperty"]("value", ctx_r6.configGlobal.calculoDominical.limiteFacturacion)("min", 0);
+    _angular_core__WEBPACK_IMPORTED_MODULE_0__["ɵɵadvance"](8);
+    _angular_core__WEBPACK_IMPORTED_MODULE_0__["ɵɵtextInterpolate"](ctx_r6.etiquetaRangoInferior);
+    _angular_core__WEBPACK_IMPORTED_MODULE_0__["ɵɵadvance"](2);
+    _angular_core__WEBPACK_IMPORTED_MODULE_0__["ɵɵtextInterpolate"](ctx_r6.etiquetaRangoSuperior);
+    _angular_core__WEBPACK_IMPORTED_MODULE_0__["ɵɵadvance"](3);
+    _angular_core__WEBPACK_IMPORTED_MODULE_0__["ɵɵproperty"]("ngForOf", ctx_r6.configGlobal.calculoDominical.filas);
+    _angular_core__WEBPACK_IMPORTED_MODULE_0__["ɵɵadvance"](19);
+    _angular_core__WEBPACK_IMPORTED_MODULE_0__["ɵɵproperty"]("ngForOf", ctx_r6.configGlobal.otrosCargos);
+} }
+const _c1 = function () { return { style: "text-align: center;" }; };
+function NominasComponent_div_2_Template(rf, ctx) { if (rf & 1) {
+    const _r49 = _angular_core__WEBPACK_IMPORTED_MODULE_0__["ɵɵgetCurrentView"]();
+    _angular_core__WEBPACK_IMPORTED_MODULE_0__["ɵɵelementStart"](0, "div");
+    _angular_core__WEBPACK_IMPORTED_MODULE_0__["ɵɵelement"](1, "br");
+    _angular_core__WEBPACK_IMPORTED_MODULE_0__["ɵɵelement"](2, "br");
+    _angular_core__WEBPACK_IMPORTED_MODULE_0__["ɵɵelementStart"](3, "div", 23);
+    _angular_core__WEBPACK_IMPORTED_MODULE_0__["ɵɵelementStart"](4, "div", 24);
+    _angular_core__WEBPACK_IMPORTED_MODULE_0__["ɵɵelementStart"](5, "dx-select-box", 25);
+    _angular_core__WEBPACK_IMPORTED_MODULE_0__["ɵɵlistener"]("valueChange", function NominasComponent_div_2_Template_dx_select_box_valueChange_5_listener($event) { _angular_core__WEBPACK_IMPORTED_MODULE_0__["ɵɵrestoreView"](_r49); const ctx_r48 = _angular_core__WEBPACK_IMPORTED_MODULE_0__["ɵɵnextContext"](); return ctx_r48.seccionActiva = $event; })("onValueChanged", function NominasComponent_div_2_Template_dx_select_box_onValueChanged_5_listener($event) { _angular_core__WEBPACK_IMPORTED_MODULE_0__["ɵɵrestoreView"](_r49); const ctx_r50 = _angular_core__WEBPACK_IMPORTED_MODULE_0__["ɵɵnextContext"](); return ctx_r50.cambiarSeccion($event); });
+    _angular_core__WEBPACK_IMPORTED_MODULE_0__["ɵɵelementEnd"]();
+    _angular_core__WEBPACK_IMPORTED_MODULE_0__["ɵɵelementEnd"]();
+    _angular_core__WEBPACK_IMPORTED_MODULE_0__["ɵɵelementEnd"]();
+    _angular_core__WEBPACK_IMPORTED_MODULE_0__["ɵɵtemplate"](6, NominasComponent_div_2_div_6_Template, 25, 8, "div", 0);
+    _angular_core__WEBPACK_IMPORTED_MODULE_0__["ɵɵtemplate"](7, NominasComponent_div_2_div_7_Template, 73, 7, "div", 0);
+    _angular_core__WEBPACK_IMPORTED_MODULE_0__["ɵɵelementEnd"]();
+} if (rf & 2) {
+    const ctx_r2 = _angular_core__WEBPACK_IMPORTED_MODULE_0__["ɵɵnextContext"]();
+    _angular_core__WEBPACK_IMPORTED_MODULE_0__["ɵɵadvance"](5);
+    _angular_core__WEBPACK_IMPORTED_MODULE_0__["ɵɵproperty"]("items", ctx_r2.seccionesMenu)("value", ctx_r2.seccionActiva)("inputAttr", _angular_core__WEBPACK_IMPORTED_MODULE_0__["ɵɵpureFunction0"](5, _c1));
+    _angular_core__WEBPACK_IMPORTED_MODULE_0__["ɵɵadvance"](1);
+    _angular_core__WEBPACK_IMPORTED_MODULE_0__["ɵɵproperty"]("ngIf", ctx_r2.seccionActiva === "Tabla Maestra Salarial");
+    _angular_core__WEBPACK_IMPORTED_MODULE_0__["ɵɵadvance"](1);
+    _angular_core__WEBPACK_IMPORTED_MODULE_0__["ɵɵproperty"]("ngIf", ctx_r2.seccionActiva === "Configuraci\u00F3n Global");
+} }
+function NominasComponent_div_3_Template(rf, ctx) { if (rf & 1) {
+    _angular_core__WEBPACK_IMPORTED_MODULE_0__["ɵɵelementStart"](0, "div");
+    _angular_core__WEBPACK_IMPORTED_MODULE_0__["ɵɵelement"](1, "app-nominas-eventos-pagos", 67);
+    _angular_core__WEBPACK_IMPORTED_MODULE_0__["ɵɵelementEnd"]();
+} if (rf & 2) {
+    const ctx_r3 = _angular_core__WEBPACK_IMPORTED_MODULE_0__["ɵɵnextContext"]();
+    _angular_core__WEBPACK_IMPORTED_MODULE_0__["ɵɵadvance"](1);
+    _angular_core__WEBPACK_IMPORTED_MODULE_0__["ɵɵproperty"]("usuarioNombre", ctx_r3.nombreUsuario);
+} }
+function NominasComponent_div_54_tr_13_Template(rf, ctx) { if (rf & 1) {
+    _angular_core__WEBPACK_IMPORTED_MODULE_0__["ɵɵelementStart"](0, "tr");
+    _angular_core__WEBPACK_IMPORTED_MODULE_0__["ɵɵelementStart"](1, "td");
+    _angular_core__WEBPACK_IMPORTED_MODULE_0__["ɵɵtext"](2);
+    _angular_core__WEBPACK_IMPORTED_MODULE_0__["ɵɵelementEnd"]();
+    _angular_core__WEBPACK_IMPORTED_MODULE_0__["ɵɵelementStart"](3, "td");
+    _angular_core__WEBPACK_IMPORTED_MODULE_0__["ɵɵtext"](4);
+    _angular_core__WEBPACK_IMPORTED_MODULE_0__["ɵɵelementEnd"]();
+    _angular_core__WEBPACK_IMPORTED_MODULE_0__["ɵɵelementStart"](5, "td", 71);
+    _angular_core__WEBPACK_IMPORTED_MODULE_0__["ɵɵtext"](6);
+    _angular_core__WEBPACK_IMPORTED_MODULE_0__["ɵɵpipe"](7, "number");
+    _angular_core__WEBPACK_IMPORTED_MODULE_0__["ɵɵelementEnd"]();
+    _angular_core__WEBPACK_IMPORTED_MODULE_0__["ɵɵelementEnd"]();
+} if (rf & 2) {
+    const aporte_r52 = ctx.$implicit;
+    const ctx_r51 = _angular_core__WEBPACK_IMPORTED_MODULE_0__["ɵɵnextContext"](2);
+    _angular_core__WEBPACK_IMPORTED_MODULE_0__["ɵɵadvance"](2);
+    _angular_core__WEBPACK_IMPORTED_MODULE_0__["ɵɵtextInterpolate"](aporte_r52.concepto);
+    _angular_core__WEBPACK_IMPORTED_MODULE_0__["ɵɵadvance"](2);
+    _angular_core__WEBPACK_IMPORTED_MODULE_0__["ɵɵtextInterpolate1"]("", aporte_r52.porcentaje, "%");
+    _angular_core__WEBPACK_IMPORTED_MODULE_0__["ɵɵadvance"](2);
+    _angular_core__WEBPACK_IMPORTED_MODULE_0__["ɵɵtextInterpolate1"](" $", _angular_core__WEBPACK_IMPORTED_MODULE_0__["ɵɵpipeBind2"](7, 3, ctx_r51.calcularAporteIess(aporte_r52), "1.2-2"), " ");
+} }
+function NominasComponent_div_54_Template(rf, ctx) { if (rf & 1) {
+    _angular_core__WEBPACK_IMPORTED_MODULE_0__["ɵɵelementStart"](0, "div", 68);
+    _angular_core__WEBPACK_IMPORTED_MODULE_0__["ɵɵelementStart"](1, "h6", 69);
+    _angular_core__WEBPACK_IMPORTED_MODULE_0__["ɵɵtext"](2, "Vista previa aportes IESS");
+    _angular_core__WEBPACK_IMPORTED_MODULE_0__["ɵɵelementEnd"]();
+    _angular_core__WEBPACK_IMPORTED_MODULE_0__["ɵɵelementStart"](3, "table", 70);
+    _angular_core__WEBPACK_IMPORTED_MODULE_0__["ɵɵelementStart"](4, "thead");
+    _angular_core__WEBPACK_IMPORTED_MODULE_0__["ɵɵelementStart"](5, "tr");
+    _angular_core__WEBPACK_IMPORTED_MODULE_0__["ɵɵelementStart"](6, "th");
+    _angular_core__WEBPACK_IMPORTED_MODULE_0__["ɵɵtext"](7, "Concepto");
+    _angular_core__WEBPACK_IMPORTED_MODULE_0__["ɵɵelementEnd"]();
+    _angular_core__WEBPACK_IMPORTED_MODULE_0__["ɵɵelementStart"](8, "th");
+    _angular_core__WEBPACK_IMPORTED_MODULE_0__["ɵɵtext"](9, "%");
+    _angular_core__WEBPACK_IMPORTED_MODULE_0__["ɵɵelementEnd"]();
+    _angular_core__WEBPACK_IMPORTED_MODULE_0__["ɵɵelementStart"](10, "th");
+    _angular_core__WEBPACK_IMPORTED_MODULE_0__["ɵɵtext"](11, "Aporte ($)");
+    _angular_core__WEBPACK_IMPORTED_MODULE_0__["ɵɵelementEnd"]();
+    _angular_core__WEBPACK_IMPORTED_MODULE_0__["ɵɵelementEnd"]();
+    _angular_core__WEBPACK_IMPORTED_MODULE_0__["ɵɵelementEnd"]();
+    _angular_core__WEBPACK_IMPORTED_MODULE_0__["ɵɵelementStart"](12, "tbody");
+    _angular_core__WEBPACK_IMPORTED_MODULE_0__["ɵɵtemplate"](13, NominasComponent_div_54_tr_13_Template, 8, 6, "tr", 55);
+    _angular_core__WEBPACK_IMPORTED_MODULE_0__["ɵɵelementEnd"]();
+    _angular_core__WEBPACK_IMPORTED_MODULE_0__["ɵɵelementEnd"]();
+    _angular_core__WEBPACK_IMPORTED_MODULE_0__["ɵɵelementEnd"]();
+} if (rf & 2) {
+    const ctx_r4 = _angular_core__WEBPACK_IMPORTED_MODULE_0__["ɵɵnextContext"]();
+    _angular_core__WEBPACK_IMPORTED_MODULE_0__["ɵɵadvance"](13);
+    _angular_core__WEBPACK_IMPORTED_MODULE_0__["ɵɵproperty"]("ngForOf", ctx_r4.configGlobal.aportesIess);
+} }
+class NominasComponent {
+    constructor(_authenService, _nominasService, _userService) {
+        this._authenService = _authenService;
+        this._nominasService = _nominasService;
+        this._userService = _userService;
+        this.seccionesMenu = [
+            "Tabla Maestra Salarial",
+            "Configuración Global",
+            "Eventos de Pagos",
+        ];
+        this.seccionActiva = "Tabla Maestra Salarial";
+        this.nombreUsuario = "";
+        this.mostrarBloqueo = true;
+        this.mostrarLoading = false;
+        this.mensajeLoading = "Cargando...";
+        this.tablasSalariales = [];
+        this.registroSeleccionado = null;
+        this.popupTablaSalarial = false;
+        this.modoEdicion = false;
+        this.periodosPago = ["Semanal", "Quincenal", "Mensual"];
+        /** Roles/cargos del sistema (misma lista que Creación de usuarios) */
+        this.cargosDisponibles = [
+            "Usuario",
+            "Administrador",
+            "Usuario Web",
+            "Supervisor",
+            "Inspector",
+            "Distribuidor",
+            "Bodeguero",
+        ];
+        this.formularioSalarial = this.nuevoRegistroSalarial();
+        this.usuariosSistema = [];
+        this.configGlobal = {
+            aportesIess: [],
+            calculoDominical: {
+                limiteFacturacion: 1000,
+                filas: [],
+            },
+            otrosCargos: [],
+        };
+    }
+    ngOnInit() {
+        this.cargarUsuarioLogueado();
+    }
+    nuevoRegistroSalarial() {
+        return {
+            cedula: "",
+            nombre: "",
+            cargo: "",
+            telefono: "",
+            fechaInicioLabores: new Date(),
+            asignacionSalarial: 0,
+            periodoPago: "Semanal",
+            salarioCalculoVariablesPrestacionales: 0,
+            activo: true,
+            usuarioSistemaId: undefined,
+            usuarioSistemaNombre: "",
+            usuarioSistemaUsername: "",
+            notas: "",
+        };
+    }
+    cargarUsuariosSistema() {
+        this._userService.getUsers().subscribe((res) => {
+            const lista = res;
+            this.usuariosSistema = lista.map((u) => (Object.assign(Object.assign({}, u), { etiquetaUsuario: this.etiquetaUsuarioSistema(u) })));
+        }, () => { });
+    }
+    etiquetaUsuarioSistema(u) {
+        var _a;
+        const rol = typeof u.rol === "string" ? u.rol : ((_a = u.rol) === null || _a === void 0 ? void 0 : _a.name) || "";
+        const login = u.username || u.email || "";
+        return `${u.name || "Sin nombre"}${login ? " — " + login : ""}${rol ? " (" + rol + ")" : ""}`;
+    }
+    onUsuarioSistemaChanged(event) {
+        var _a;
+        if (!((_a = event) === null || _a === void 0 ? void 0 : _a.event)) {
+            return;
+        }
+        const id = event.value;
+        if (!id) {
+            this.formularioSalarial.usuarioSistemaId = undefined;
+            this.formularioSalarial.usuarioSistemaNombre = "";
+            this.formularioSalarial.usuarioSistemaUsername = "";
+            return;
+        }
+        const u = this.usuariosSistema.find((x) => x._id === id);
+        if (u) {
+            this.formularioSalarial.usuarioSistemaId = u._id;
+            this.formularioSalarial.usuarioSistemaNombre = u.name || "";
+            this.formularioSalarial.usuarioSistemaUsername = u.username || "";
+        }
+    }
+    cargarUsuarioLogueado() {
+        let correo = "";
+        if (localStorage.getItem("maily") != "") {
+            correo = localStorage.getItem("maily");
+        }
+        this._authenService.getUserLogueado(correo).subscribe((res) => {
+            var _a, _b;
+            this.usuarioLogueado = res;
+            if ((_b = (_a = this.usuarioLogueado) === null || _a === void 0 ? void 0 : _a[0]) === null || _b === void 0 ? void 0 : _b.name) {
+                this.nombreUsuario = this.usuarioLogueado[0].name;
+            }
+            this.mostrarPopupCodigo();
+        }, () => { });
+    }
+    mostrarPopupCodigo() {
+        sweetalert2__WEBPACK_IMPORTED_MODULE_1___default.a.fire({
+            title: "Código de Seguridad",
+            allowOutsideClick: false,
+            showCancelButton: false,
+            inputAttributes: { autocapitalize: "off" },
+            confirmButtonText: "Ingresar",
+            input: "password",
+        }).then((result) => {
+            if (this.usuarioLogueado[0].codigo == result.value) {
+                this.mostrarBloqueo = false;
+                this.inicializarDatos();
+            }
+            else {
+                sweetalert2__WEBPACK_IMPORTED_MODULE_1___default.a.fire({
+                    title: "Error",
+                    text: "El código ingresado no es el correcto",
+                    icon: "error",
+                    confirmButtonText: "Ok",
+                }).then(() => this.mostrarPopupCodigo());
+            }
+        });
+    }
+    inicializarDatos() {
+        this.cargarUsuariosSistema();
+        this.cargarTablasSalariales();
+        this.cargarConfigGlobal();
+    }
+    cambiarSeccion(event) {
+        this.seccionActiva = event.value;
+    }
+    cargarTablasSalariales() {
+        this.mostrarLoading = true;
+        this._nominasService.getTablasMaestrasSalariales().subscribe((res) => {
+            this.tablasSalariales = res;
+            this.mostrarLoading = false;
+        }, () => {
+            this.mostrarLoading = false;
+            sweetalert2__WEBPACK_IMPORTED_MODULE_1___default.a.fire("Error", "No se pudieron cargar las tablas salariales", "error");
+        });
+    }
+    cargarConfigGlobal() {
+        this._nominasService.getConfigGlobal().subscribe((res) => {
+            this.configGlobal = res;
+            this.normalizarFechasOtrosCargos();
+            this.sincronizarEtiquetasCalculoDominical();
+        }, () => {
+            sweetalert2__WEBPACK_IMPORTED_MODULE_1___default.a.fire("Error", "No se pudo cargar la configuración global", "error");
+        });
+    }
+    /** Formato del monto en encabezados (ej. 1000 → "1.000" o "1000") */
+    formatearLimiteFacturacion(limite) {
+        const valor = Number(limite) || 0;
+        return valor.toLocaleString("es-EC", { maximumFractionDigits: 0 });
+    }
+    /** Etiqueta columna: facturación menor al límite */
+    get etiquetaRangoInferior() {
+        var _a, _b, _c;
+        const limite = (_c = (_b = (_a = this.configGlobal) === null || _a === void 0 ? void 0 : _a.calculoDominical) === null || _b === void 0 ? void 0 : _b.limiteFacturacion, (_c !== null && _c !== void 0 ? _c : 0));
+        return `Rango inferior ($${this.formatearLimiteFacturacion(limite)} > Facturación)`;
+    }
+    /** Etiqueta columna: facturación mayor o igual al límite */
+    get etiquetaRangoSuperior() {
+        var _a, _b, _c;
+        const limite = (_c = (_b = (_a = this.configGlobal) === null || _a === void 0 ? void 0 : _a.calculoDominical) === null || _b === void 0 ? void 0 : _b.limiteFacturacion, (_c !== null && _c !== void 0 ? _c : 0));
+        return `Rango superior ($${this.formatearLimiteFacturacion(limite)} < Facturación)`;
+    }
+    onLimiteFacturacionChanged() {
+        this.sincronizarEtiquetasCalculoDominical();
+    }
+    sincronizarEtiquetasCalculoDominical() {
+        var _a;
+        if (!((_a = this.configGlobal) === null || _a === void 0 ? void 0 : _a.calculoDominical)) {
+            return;
+        }
+        this.configGlobal.calculoDominical.etiquetaRangoInferior =
+            this.etiquetaRangoInferior;
+        this.configGlobal.calculoDominical.etiquetaRangoSuperior =
+            this.etiquetaRangoSuperior;
+    }
+    abrirNuevoRegistro() {
+        this.modoEdicion = false;
+        this.formularioSalarial = this.nuevoRegistroSalarial();
+        this.popupTablaSalarial = true;
+    }
+    abrirEdicion(registro) {
+        this.modoEdicion = true;
+        this.registroSeleccionado = registro;
+        this.formularioSalarial = Object.assign({}, registro);
+        if (registro.fechaInicioLabores) {
+            this.formularioSalarial.fechaInicioLabores = new Date(registro.fechaInicioLabores);
+        }
+        this.popupTablaSalarial = true;
+    }
+    cerrarPopupSalarial() {
+        this.popupTablaSalarial = false;
+        this.registroSeleccionado = null;
+    }
+    guardarTablaSalarial() {
+        var _a, _b;
+        if (!((_a = this.formularioSalarial.cedula) === null || _a === void 0 ? void 0 : _a.trim())) {
+            sweetalert2__WEBPACK_IMPORTED_MODULE_1___default.a.fire("Validación", "La cédula es obligatoria", "warning");
+            return;
+        }
+        if (!((_b = this.formularioSalarial.nombre) === null || _b === void 0 ? void 0 : _b.trim())) {
+            sweetalert2__WEBPACK_IMPORTED_MODULE_1___default.a.fire("Validación", "El nombre es obligatorio", "warning");
+            return;
+        }
+        this.formularioSalarial.cedula = this.formularioSalarial.cedula.trim();
+        this.mostrarLoading = true;
+        const peticion = this.modoEdicion
+            ? this._nominasService.actualizarTablaMaestraSalarial(this.registroSeleccionado._id, this.formularioSalarial)
+            : this._nominasService.crearTablaMaestraSalarial(this.formularioSalarial);
+        peticion.subscribe(() => {
+            this.mostrarLoading = false;
+            sweetalert2__WEBPACK_IMPORTED_MODULE_1___default.a.fire("Éxito", "Tabla maestra salarial guardada", "success");
+            this.cerrarPopupSalarial();
+            this.cargarTablasSalariales();
+        }, (err) => {
+            var _a, _b;
+            this.mostrarLoading = false;
+            const msg = ((_b = (_a = err) === null || _a === void 0 ? void 0 : _a.error) === null || _b === void 0 ? void 0 : _b.mensaje) || "No se pudo guardar el registro";
+            sweetalert2__WEBPACK_IMPORTED_MODULE_1___default.a.fire("Error", msg, "error");
+        });
+    }
+    eliminarTablaSalarial(registro) {
+        sweetalert2__WEBPACK_IMPORTED_MODULE_1___default.a.fire({
+            title: "¿Eliminar tabla maestra?",
+            text: `${registro.nombre} (${registro.cedula})`,
+            icon: "warning",
+            showCancelButton: true,
+            confirmButtonText: "Eliminar",
+            cancelButtonText: "Cancelar",
+        }).then((result) => {
+            if (result.value) {
+                this._nominasService
+                    .eliminarTablaMaestraSalarial(registro._id)
+                    .subscribe(() => {
+                    sweetalert2__WEBPACK_IMPORTED_MODULE_1___default.a.fire("Eliminado", "Registro eliminado", "success");
+                    this.cargarTablasSalariales();
+                }, () => sweetalert2__WEBPACK_IMPORTED_MODULE_1___default.a.fire("Error", "No se pudo eliminar el registro", "error"));
+            }
+        });
+    }
+    calcularAporteIess(aporte) {
+        const base = this.formularioSalarial.salarioCalculoVariablesPrestacionales || 0;
+        return (base * (aporte.porcentaje || 0)) / 100;
+    }
+    normalizarFechasOtrosCargos() {
+        var _a;
+        if (!((_a = this.configGlobal) === null || _a === void 0 ? void 0 : _a.otrosCargos)) {
+            return;
+        }
+        this.configGlobal.otrosCargos.forEach((cargo) => {
+            const legacy = cargo;
+            if (!cargo.fechaLimite &&
+                (legacy.fechaLimiteDia || legacy.fechaLimiteMes)) {
+                const anio = new Date().getFullYear();
+                cargo.fechaLimite = new Date(anio, (legacy.fechaLimiteMes || 1) - 1, legacy.fechaLimiteDia || 1);
+            }
+            else if (cargo.fechaLimite) {
+                cargo.fechaLimite = new Date(cargo.fechaLimite);
+            }
+        });
+    }
+    validarCalculoDominical() {
+        var _a, _b;
+        const filas = ((_b = (_a = this.configGlobal) === null || _a === void 0 ? void 0 : _a.calculoDominical) === null || _b === void 0 ? void 0 : _b.filas) || [];
+        const cargos = filas
+            .map((f) => (f.cargo || "").trim())
+            .filter((c) => !!c);
+        const duplicados = cargos.filter((c, i) => cargos.indexOf(c) !== i);
+        if (duplicados.length) {
+            const unicos = Array.from(new Set(duplicados));
+            return `No puede repetir el mismo cargo en cálculo dominical. Duplicados: ${unicos.join(", ")}`;
+        }
+        return null;
+    }
+    onCargoDominicalChanged(indice, event) {
+        var _a;
+        // Ignorar cambios programáticos (evita bloquear el select al abrir/guardar)
+        if (!((_a = event) === null || _a === void 0 ? void 0 : _a.event)) {
+            return;
+        }
+        const cargo = (event.value || "").trim();
+        if (!cargo) {
+            return;
+        }
+        const indiceDuplicado = this.configGlobal.calculoDominical.filas.findIndex((f, i) => i !== indice && (f.cargo || "").trim() === cargo);
+        if (indiceDuplicado >= 0) {
+            setTimeout(() => {
+                this.configGlobal.calculoDominical.filas[indice].cargo =
+                    event.previousValue || "";
+            });
+            sweetalert2__WEBPACK_IMPORTED_MODULE_1___default.a.fire("Validación", `El cargo "${cargo}" ya está asignado en otra fila.`, "warning");
+        }
+    }
+    guardarConfigGlobal() {
+        this.sincronizarEtiquetasCalculoDominical();
+        const errorDominical = this.validarCalculoDominical();
+        if (errorDominical) {
+            sweetalert2__WEBPACK_IMPORTED_MODULE_1___default.a.fire("Validación", errorDominical, "warning");
+            return;
+        }
+        this.mostrarLoading = true;
+        this._nominasService.guardarConfigGlobal(this.configGlobal).subscribe(() => {
+            this.mostrarLoading = false;
+            sweetalert2__WEBPACK_IMPORTED_MODULE_1___default.a.fire("Éxito", "Configuración global guardada", "success");
+        }, (err) => {
+            var _a, _b;
+            this.mostrarLoading = false;
+            sweetalert2__WEBPACK_IMPORTED_MODULE_1___default.a.fire("Error", ((_b = (_a = err) === null || _a === void 0 ? void 0 : _a.error) === null || _b === void 0 ? void 0 : _b.mensaje) || "No se pudo guardar la configuración", "error");
+        });
+    }
+    restablecerConfigGlobal() {
+        sweetalert2__WEBPACK_IMPORTED_MODULE_1___default.a.fire({
+            title: "¿Restablecer valores por defecto?",
+            text: "Se perderán los cambios en tablas maestras globales",
+            icon: "warning",
+            showCancelButton: true,
+            confirmButtonText: "Restablecer",
+            cancelButtonText: "Cancelar",
+        }).then((result) => {
+            if (result.value) {
+                this._nominasService.restablecerConfigGlobal().subscribe((res) => {
+                    this.configGlobal = res.data;
+                    this.normalizarFechasOtrosCargos();
+                    this.sincronizarEtiquetasCalculoDominical();
+                    sweetalert2__WEBPACK_IMPORTED_MODULE_1___default.a.fire("Listo", "Configuración restablecida", "success");
+                }, () => sweetalert2__WEBPACK_IMPORTED_MODULE_1___default.a.fire("Error", "No se pudo restablecer la configuración", "error"));
+            }
+        });
+    }
+    agregarFilaDominical() {
+        const filas = this.configGlobal.calculoDominical.filas;
+        const cargosUsados = filas
+            .map((f) => (f.cargo || "").trim())
+            .filter((c) => !!c);
+        const cargosLibres = this.cargosDisponibles.filter((c) => !cargosUsados.includes(c));
+        if (cargosLibres.length === 0) {
+            sweetalert2__WEBPACK_IMPORTED_MODULE_1___default.a.fire("Validación", "Ya no hay cargos disponibles para agregar otra fila.", "warning");
+            return;
+        }
+        const fila = {
+            cargo: "",
+            valorRangoInferior: 0,
+            valorRangoSuperior: 0,
+            activo: true,
+        };
+        filas.push(fila);
+    }
+    eliminarFilaDominical(index) {
+        this.configGlobal.calculoDominical.filas.splice(index, 1);
+    }
+    agregarAporteIess() {
+        this.configGlobal.aportesIess.push({
+            concepto: "",
+            porcentaje: 0,
+            tipo: "otro",
+            activo: true,
+            orden: this.configGlobal.aportesIess.length + 1,
+        });
+    }
+    eliminarAporteIess(index) {
+        this.configGlobal.aportesIess.splice(index, 1);
+    }
+    agregarOtroCargo() {
+        this.configGlobal.otrosCargos.push({
+            concepto: "",
+            fechaLimite: null,
+            valor: 0,
+            activo: true,
+            orden: this.configGlobal.otrosCargos.length + 1,
+        });
+    }
+    eliminarOtroCargo(index) {
+        this.configGlobal.otrosCargos.splice(index, 1);
+    }
+}
+NominasComponent.ɵfac = function NominasComponent_Factory(t) { return new (t || NominasComponent)(_angular_core__WEBPACK_IMPORTED_MODULE_0__["ɵɵdirectiveInject"](src_app_servicios_authen_service__WEBPACK_IMPORTED_MODULE_2__["AuthenService"]), _angular_core__WEBPACK_IMPORTED_MODULE_0__["ɵɵdirectiveInject"](src_app_servicios_nominas_service__WEBPACK_IMPORTED_MODULE_3__["NominasService"]), _angular_core__WEBPACK_IMPORTED_MODULE_0__["ɵɵdirectiveInject"](src_app_servicios_user_service__WEBPACK_IMPORTED_MODULE_4__["UserService"])); };
+NominasComponent.ɵcmp = _angular_core__WEBPACK_IMPORTED_MODULE_0__["ɵɵdefineComponent"]({ type: NominasComponent, selectors: [["app-nominas"]], decls: 62, vars: 31, consts: [[4, "ngIf"], ["class", "row", 4, "ngIf"], [3, "visible", "showTitle", "title", "width", "height", "showCloseButton", "visibleChange"], [1, "p-3"], [1, "nominas-titulo-seccion", "text-center", "mb-3"], [1, "row"], [1, "col-md-6", "mb-2"], [3, "value", "valueChange"], [3, "value", "readOnly", "valueChange"], ["placeholder", "Seleccione cargo", 3, "items", "value", "searchEnabled", "valueChange"], ["valueExpr", "_id", "displayExpr", "etiquetaUsuario", "placeholder", "Vincular con usuario (ventas)", 3, "items", "value", "searchEnabled", "showClearButton", "valueChange", "onValueChanged"], [1, "text-muted"], ["type", "date", 3, "value", "valueChange"], [3, "items", "value", "valueChange"], ["format", "#,##0.##", 3, "value", "min", "valueChange"], [1, "col-md-12", "mb-2"], [3, "value", "height", "valueChange"], ["class", "mt-3 p-2 border rounded", 4, "ngIf"], [1, "row", "mt-3"], [1, "col-6"], [1, "btn", "btn-block", "btn-secondary", 3, "click"], [1, "btn", "btn-block", "btn-nomina-primario", 3, "click"], [3, "messagge"], [1, "row", "nominas-menu-superior", "justify-content-md-end"], [1, "col-12", "col-md-5", "px-2"], [3, "items", "value", "inputAttr", "valueChange", "onValueChanged"], [1, "card"], [1, "card-header", "text-center", "font-weight-bold", "text-uppercase"], [1, "card-body"], [1, "nominas-titulo-seccion", "text-center"], [1, "text-muted", "text-center", "mb-3"], [1, "row", "mb-3"], [1, "col-md-4", "offset-md-8", "text-right"], ["keyExpr", "_id", 3, "dataSource", "showBorders", "columnAutoWidth", "rowAlternationEnabled"], ["dataField", "nombre", "caption", "Nombre"], ["dataField", "cedula", "caption", "C\u00E9dula"], ["dataField", "cargo", "caption", "Cargo"], ["dataField", "usuarioSistemaNombre", "caption", "Usuario sistema"], ["dataField", "telefono", "caption", "Tel\u00E9fono"], ["dataField", "fechaInicioLabores", "caption", "Inicio labores", "dataType", "date", "format", "dd/MM/yyyy"], ["dataField", "asignacionSalarial", "caption", "Asignaci\u00F3n", "format", "#,##0.##"], ["dataField", "periodoPago", "caption", "Periodo pago"], ["dataField", "salarioCalculoVariablesPrestacionales", "caption", "Salario var. prest.", "format", "#,##0.##"], ["caption", "Acciones", "cellTemplate", "accionesSalarial", 3, "width", "allowFiltering", "allowSorting"], [4, "dxTemplate", "dxTemplateOf"], [1, "btn", "btn-sm", "btn-primary", "mr-1", 3, "click"], [1, "btn", "btn-sm", "btn-danger", 3, "click"], [1, "card", "mb-3"], [1, "nominas-nota-config", "text-center"], [1, "nominas-subtitulo", "mb-2"], [1, "table-responsive", "mb-2"], [1, "table", "table-bordered", "nominas-tabla-config"], [2, "width", "120px"], [2, "width", "80px"], [2, "width", "60px"], [4, "ngFor", "ngForOf"], [1, "btn", "btn-sm", "btn-secondary", "mb-4", 3, "click"], [1, "col-md-4"], ["format", "#,##0.##", 3, "value", "min", "valueChange", "onValueChanged"], [2, "width", "100px"], [1, "btn", "btn-sm", "btn-secondary", 3, "click"], [1, "row", "mb-4"], ["format", "#0.##", 3, "value", "min", "max", "valueChange"], [1, "text-center"], ["placeholder", "Seleccione cargo", 3, "items", "value", "searchEnabled", "valueChange", "onValueChanged"], [3, "value", "min", "valueChange"], ["type", "date", 3, "value", "showClearButton", "valueChange"], [3, "usuarioNombre"], [1, "mt-3", "p-2", "border", "rounded"], [1, "nominas-subtitulo"], [1, "table", "table-sm", "mb-0"], [1, "nominas-preview-iess"]], template: function NominasComponent_Template(rf, ctx) { if (rf & 1) {
+        _angular_core__WEBPACK_IMPORTED_MODULE_0__["ɵɵtemplate"](0, NominasComponent_div_0_Template, 2, 1, "div", 0);
+        _angular_core__WEBPACK_IMPORTED_MODULE_0__["ɵɵtemplate"](1, NominasComponent_div_1_Template, 1, 0, "div", 1);
+        _angular_core__WEBPACK_IMPORTED_MODULE_0__["ɵɵtemplate"](2, NominasComponent_div_2_Template, 8, 6, "div", 0);
+        _angular_core__WEBPACK_IMPORTED_MODULE_0__["ɵɵtemplate"](3, NominasComponent_div_3_Template, 2, 1, "div", 0);
+        _angular_core__WEBPACK_IMPORTED_MODULE_0__["ɵɵelementStart"](4, "dx-popup", 2);
+        _angular_core__WEBPACK_IMPORTED_MODULE_0__["ɵɵlistener"]("visibleChange", function NominasComponent_Template_dx_popup_visibleChange_4_listener($event) { return ctx.popupTablaSalarial = $event; });
+        _angular_core__WEBPACK_IMPORTED_MODULE_0__["ɵɵelementStart"](5, "div", 3);
+        _angular_core__WEBPACK_IMPORTED_MODULE_0__["ɵɵelementStart"](6, "div", 4);
+        _angular_core__WEBPACK_IMPORTED_MODULE_0__["ɵɵtext"](7, " Salario base legal ");
+        _angular_core__WEBPACK_IMPORTED_MODULE_0__["ɵɵelementEnd"]();
+        _angular_core__WEBPACK_IMPORTED_MODULE_0__["ɵɵelementStart"](8, "div", 5);
+        _angular_core__WEBPACK_IMPORTED_MODULE_0__["ɵɵelementStart"](9, "div", 6);
+        _angular_core__WEBPACK_IMPORTED_MODULE_0__["ɵɵelementStart"](10, "label");
+        _angular_core__WEBPACK_IMPORTED_MODULE_0__["ɵɵtext"](11, "Nombre *");
+        _angular_core__WEBPACK_IMPORTED_MODULE_0__["ɵɵelementEnd"]();
+        _angular_core__WEBPACK_IMPORTED_MODULE_0__["ɵɵelementStart"](12, "dx-text-box", 7);
+        _angular_core__WEBPACK_IMPORTED_MODULE_0__["ɵɵlistener"]("valueChange", function NominasComponent_Template_dx_text_box_valueChange_12_listener($event) { return ctx.formularioSalarial.nombre = $event; });
+        _angular_core__WEBPACK_IMPORTED_MODULE_0__["ɵɵelementEnd"]();
+        _angular_core__WEBPACK_IMPORTED_MODULE_0__["ɵɵelementEnd"]();
+        _angular_core__WEBPACK_IMPORTED_MODULE_0__["ɵɵelementStart"](13, "div", 6);
+        _angular_core__WEBPACK_IMPORTED_MODULE_0__["ɵɵelementStart"](14, "label");
+        _angular_core__WEBPACK_IMPORTED_MODULE_0__["ɵɵtext"](15, "C\u00E9dula *");
+        _angular_core__WEBPACK_IMPORTED_MODULE_0__["ɵɵelementEnd"]();
+        _angular_core__WEBPACK_IMPORTED_MODULE_0__["ɵɵelementStart"](16, "dx-text-box", 8);
+        _angular_core__WEBPACK_IMPORTED_MODULE_0__["ɵɵlistener"]("valueChange", function NominasComponent_Template_dx_text_box_valueChange_16_listener($event) { return ctx.formularioSalarial.cedula = $event; });
+        _angular_core__WEBPACK_IMPORTED_MODULE_0__["ɵɵelementEnd"]();
+        _angular_core__WEBPACK_IMPORTED_MODULE_0__["ɵɵelementEnd"]();
+        _angular_core__WEBPACK_IMPORTED_MODULE_0__["ɵɵelementStart"](17, "div", 6);
+        _angular_core__WEBPACK_IMPORTED_MODULE_0__["ɵɵelementStart"](18, "label");
+        _angular_core__WEBPACK_IMPORTED_MODULE_0__["ɵɵtext"](19, "Cargo");
+        _angular_core__WEBPACK_IMPORTED_MODULE_0__["ɵɵelementEnd"]();
+        _angular_core__WEBPACK_IMPORTED_MODULE_0__["ɵɵelementStart"](20, "dx-select-box", 9);
+        _angular_core__WEBPACK_IMPORTED_MODULE_0__["ɵɵlistener"]("valueChange", function NominasComponent_Template_dx_select_box_valueChange_20_listener($event) { return ctx.formularioSalarial.cargo = $event; });
+        _angular_core__WEBPACK_IMPORTED_MODULE_0__["ɵɵelementEnd"]();
+        _angular_core__WEBPACK_IMPORTED_MODULE_0__["ɵɵelementEnd"]();
+        _angular_core__WEBPACK_IMPORTED_MODULE_0__["ɵɵelementStart"](21, "div", 6);
+        _angular_core__WEBPACK_IMPORTED_MODULE_0__["ɵɵelementStart"](22, "label");
+        _angular_core__WEBPACK_IMPORTED_MODULE_0__["ɵɵtext"](23, "Usuario del sistema");
+        _angular_core__WEBPACK_IMPORTED_MODULE_0__["ɵɵelementEnd"]();
+        _angular_core__WEBPACK_IMPORTED_MODULE_0__["ɵɵelementStart"](24, "dx-select-box", 10);
+        _angular_core__WEBPACK_IMPORTED_MODULE_0__["ɵɵlistener"]("valueChange", function NominasComponent_Template_dx_select_box_valueChange_24_listener($event) { return ctx.formularioSalarial.usuarioSistemaId = $event; })("onValueChanged", function NominasComponent_Template_dx_select_box_onValueChanged_24_listener($event) { return ctx.onUsuarioSistemaChanged($event); });
+        _angular_core__WEBPACK_IMPORTED_MODULE_0__["ɵɵelementEnd"]();
+        _angular_core__WEBPACK_IMPORTED_MODULE_0__["ɵɵelementStart"](25, "small", 11);
+        _angular_core__WEBPACK_IMPORTED_MODULE_0__["ɵɵtext"](26, " Vincula por ");
+        _angular_core__WEBPACK_IMPORTED_MODULE_0__["ɵɵelementStart"](27, "strong");
+        _angular_core__WEBPACK_IMPORTED_MODULE_0__["ɵɵtext"](28, "username");
+        _angular_core__WEBPACK_IMPORTED_MODULE_0__["ɵɵelementEnd"]();
+        _angular_core__WEBPACK_IMPORTED_MODULE_0__["ɵɵtext"](29, " (debe coincidir con facturas y notas de venta del domingo) ");
+        _angular_core__WEBPACK_IMPORTED_MODULE_0__["ɵɵelementEnd"]();
+        _angular_core__WEBPACK_IMPORTED_MODULE_0__["ɵɵelementEnd"]();
+        _angular_core__WEBPACK_IMPORTED_MODULE_0__["ɵɵelementStart"](30, "div", 6);
+        _angular_core__WEBPACK_IMPORTED_MODULE_0__["ɵɵelementStart"](31, "label");
+        _angular_core__WEBPACK_IMPORTED_MODULE_0__["ɵɵtext"](32, "Tel\u00E9fono");
+        _angular_core__WEBPACK_IMPORTED_MODULE_0__["ɵɵelementEnd"]();
+        _angular_core__WEBPACK_IMPORTED_MODULE_0__["ɵɵelementStart"](33, "dx-text-box", 7);
+        _angular_core__WEBPACK_IMPORTED_MODULE_0__["ɵɵlistener"]("valueChange", function NominasComponent_Template_dx_text_box_valueChange_33_listener($event) { return ctx.formularioSalarial.telefono = $event; });
+        _angular_core__WEBPACK_IMPORTED_MODULE_0__["ɵɵelementEnd"]();
+        _angular_core__WEBPACK_IMPORTED_MODULE_0__["ɵɵelementEnd"]();
+        _angular_core__WEBPACK_IMPORTED_MODULE_0__["ɵɵelementStart"](34, "div", 6);
+        _angular_core__WEBPACK_IMPORTED_MODULE_0__["ɵɵelementStart"](35, "label");
+        _angular_core__WEBPACK_IMPORTED_MODULE_0__["ɵɵtext"](36, "Fecha inicio labores");
+        _angular_core__WEBPACK_IMPORTED_MODULE_0__["ɵɵelementEnd"]();
+        _angular_core__WEBPACK_IMPORTED_MODULE_0__["ɵɵelementStart"](37, "dx-date-box", 12);
+        _angular_core__WEBPACK_IMPORTED_MODULE_0__["ɵɵlistener"]("valueChange", function NominasComponent_Template_dx_date_box_valueChange_37_listener($event) { return ctx.formularioSalarial.fechaInicioLabores = $event; });
+        _angular_core__WEBPACK_IMPORTED_MODULE_0__["ɵɵelementEnd"]();
+        _angular_core__WEBPACK_IMPORTED_MODULE_0__["ɵɵelementEnd"]();
+        _angular_core__WEBPACK_IMPORTED_MODULE_0__["ɵɵelementStart"](38, "div", 6);
+        _angular_core__WEBPACK_IMPORTED_MODULE_0__["ɵɵelementStart"](39, "label");
+        _angular_core__WEBPACK_IMPORTED_MODULE_0__["ɵɵtext"](40, "Periodo de pago");
+        _angular_core__WEBPACK_IMPORTED_MODULE_0__["ɵɵelementEnd"]();
+        _angular_core__WEBPACK_IMPORTED_MODULE_0__["ɵɵelementStart"](41, "dx-select-box", 13);
+        _angular_core__WEBPACK_IMPORTED_MODULE_0__["ɵɵlistener"]("valueChange", function NominasComponent_Template_dx_select_box_valueChange_41_listener($event) { return ctx.formularioSalarial.periodoPago = $event; });
+        _angular_core__WEBPACK_IMPORTED_MODULE_0__["ɵɵelementEnd"]();
+        _angular_core__WEBPACK_IMPORTED_MODULE_0__["ɵɵelementEnd"]();
+        _angular_core__WEBPACK_IMPORTED_MODULE_0__["ɵɵelementStart"](42, "div", 6);
+        _angular_core__WEBPACK_IMPORTED_MODULE_0__["ɵɵelementStart"](43, "label");
+        _angular_core__WEBPACK_IMPORTED_MODULE_0__["ɵɵtext"](44, "Asignaci\u00F3n salarial");
+        _angular_core__WEBPACK_IMPORTED_MODULE_0__["ɵɵelementEnd"]();
+        _angular_core__WEBPACK_IMPORTED_MODULE_0__["ɵɵelementStart"](45, "dx-number-box", 14);
+        _angular_core__WEBPACK_IMPORTED_MODULE_0__["ɵɵlistener"]("valueChange", function NominasComponent_Template_dx_number_box_valueChange_45_listener($event) { return ctx.formularioSalarial.asignacionSalarial = $event; });
+        _angular_core__WEBPACK_IMPORTED_MODULE_0__["ɵɵelementEnd"]();
+        _angular_core__WEBPACK_IMPORTED_MODULE_0__["ɵɵelementEnd"]();
+        _angular_core__WEBPACK_IMPORTED_MODULE_0__["ɵɵelementStart"](46, "div", 6);
+        _angular_core__WEBPACK_IMPORTED_MODULE_0__["ɵɵelementStart"](47, "label");
+        _angular_core__WEBPACK_IMPORTED_MODULE_0__["ɵɵtext"](48, "Salario c\u00E1lculo variables prestacionales");
+        _angular_core__WEBPACK_IMPORTED_MODULE_0__["ɵɵelementEnd"]();
+        _angular_core__WEBPACK_IMPORTED_MODULE_0__["ɵɵelementStart"](49, "dx-number-box", 14);
+        _angular_core__WEBPACK_IMPORTED_MODULE_0__["ɵɵlistener"]("valueChange", function NominasComponent_Template_dx_number_box_valueChange_49_listener($event) { return ctx.formularioSalarial.salarioCalculoVariablesPrestacionales = $event; });
+        _angular_core__WEBPACK_IMPORTED_MODULE_0__["ɵɵelementEnd"]();
+        _angular_core__WEBPACK_IMPORTED_MODULE_0__["ɵɵelementEnd"]();
+        _angular_core__WEBPACK_IMPORTED_MODULE_0__["ɵɵelementStart"](50, "div", 15);
+        _angular_core__WEBPACK_IMPORTED_MODULE_0__["ɵɵelementStart"](51, "label");
+        _angular_core__WEBPACK_IMPORTED_MODULE_0__["ɵɵtext"](52, "Notas");
+        _angular_core__WEBPACK_IMPORTED_MODULE_0__["ɵɵelementEnd"]();
+        _angular_core__WEBPACK_IMPORTED_MODULE_0__["ɵɵelementStart"](53, "dx-text-area", 16);
+        _angular_core__WEBPACK_IMPORTED_MODULE_0__["ɵɵlistener"]("valueChange", function NominasComponent_Template_dx_text_area_valueChange_53_listener($event) { return ctx.formularioSalarial.notas = $event; });
+        _angular_core__WEBPACK_IMPORTED_MODULE_0__["ɵɵelementEnd"]();
+        _angular_core__WEBPACK_IMPORTED_MODULE_0__["ɵɵelementEnd"]();
+        _angular_core__WEBPACK_IMPORTED_MODULE_0__["ɵɵelementEnd"]();
+        _angular_core__WEBPACK_IMPORTED_MODULE_0__["ɵɵtemplate"](54, NominasComponent_div_54_Template, 14, 1, "div", 17);
+        _angular_core__WEBPACK_IMPORTED_MODULE_0__["ɵɵelementStart"](55, "div", 18);
+        _angular_core__WEBPACK_IMPORTED_MODULE_0__["ɵɵelementStart"](56, "div", 19);
+        _angular_core__WEBPACK_IMPORTED_MODULE_0__["ɵɵelementStart"](57, "button", 20);
+        _angular_core__WEBPACK_IMPORTED_MODULE_0__["ɵɵlistener"]("click", function NominasComponent_Template_button_click_57_listener() { return ctx.cerrarPopupSalarial(); });
+        _angular_core__WEBPACK_IMPORTED_MODULE_0__["ɵɵtext"](58, " Cancelar ");
+        _angular_core__WEBPACK_IMPORTED_MODULE_0__["ɵɵelementEnd"]();
+        _angular_core__WEBPACK_IMPORTED_MODULE_0__["ɵɵelementEnd"]();
+        _angular_core__WEBPACK_IMPORTED_MODULE_0__["ɵɵelementStart"](59, "div", 19);
+        _angular_core__WEBPACK_IMPORTED_MODULE_0__["ɵɵelementStart"](60, "button", 21);
+        _angular_core__WEBPACK_IMPORTED_MODULE_0__["ɵɵlistener"]("click", function NominasComponent_Template_button_click_60_listener() { return ctx.guardarTablaSalarial(); });
+        _angular_core__WEBPACK_IMPORTED_MODULE_0__["ɵɵtext"](61, " Guardar ");
+        _angular_core__WEBPACK_IMPORTED_MODULE_0__["ɵɵelementEnd"]();
+        _angular_core__WEBPACK_IMPORTED_MODULE_0__["ɵɵelementEnd"]();
+        _angular_core__WEBPACK_IMPORTED_MODULE_0__["ɵɵelementEnd"]();
+        _angular_core__WEBPACK_IMPORTED_MODULE_0__["ɵɵelementEnd"]();
+        _angular_core__WEBPACK_IMPORTED_MODULE_0__["ɵɵelementEnd"]();
+    } if (rf & 2) {
+        _angular_core__WEBPACK_IMPORTED_MODULE_0__["ɵɵproperty"]("ngIf", ctx.mostrarLoading);
+        _angular_core__WEBPACK_IMPORTED_MODULE_0__["ɵɵadvance"](1);
+        _angular_core__WEBPACK_IMPORTED_MODULE_0__["ɵɵproperty"]("ngIf", ctx.mostrarBloqueo);
+        _angular_core__WEBPACK_IMPORTED_MODULE_0__["ɵɵadvance"](1);
+        _angular_core__WEBPACK_IMPORTED_MODULE_0__["ɵɵproperty"]("ngIf", !ctx.mostrarBloqueo);
+        _angular_core__WEBPACK_IMPORTED_MODULE_0__["ɵɵadvance"](1);
+        _angular_core__WEBPACK_IMPORTED_MODULE_0__["ɵɵproperty"]("ngIf", ctx.seccionActiva === "Eventos de Pagos");
+        _angular_core__WEBPACK_IMPORTED_MODULE_0__["ɵɵadvance"](1);
+        _angular_core__WEBPACK_IMPORTED_MODULE_0__["ɵɵproperty"]("visible", ctx.popupTablaSalarial)("showTitle", true)("title", ctx.modoEdicion ? "Editar Tabla Maestra Salarial" : "Nueva Tabla Maestra Salarial")("width", 700)("height", "auto")("showCloseButton", true);
+        _angular_core__WEBPACK_IMPORTED_MODULE_0__["ɵɵadvance"](8);
+        _angular_core__WEBPACK_IMPORTED_MODULE_0__["ɵɵproperty"]("value", ctx.formularioSalarial.nombre);
+        _angular_core__WEBPACK_IMPORTED_MODULE_0__["ɵɵadvance"](4);
+        _angular_core__WEBPACK_IMPORTED_MODULE_0__["ɵɵproperty"]("value", ctx.formularioSalarial.cedula)("readOnly", ctx.modoEdicion);
+        _angular_core__WEBPACK_IMPORTED_MODULE_0__["ɵɵadvance"](4);
+        _angular_core__WEBPACK_IMPORTED_MODULE_0__["ɵɵproperty"]("items", ctx.cargosDisponibles)("value", ctx.formularioSalarial.cargo)("searchEnabled", true);
+        _angular_core__WEBPACK_IMPORTED_MODULE_0__["ɵɵadvance"](4);
+        _angular_core__WEBPACK_IMPORTED_MODULE_0__["ɵɵproperty"]("items", ctx.usuariosSistema)("value", ctx.formularioSalarial.usuarioSistemaId)("searchEnabled", true)("showClearButton", true);
+        _angular_core__WEBPACK_IMPORTED_MODULE_0__["ɵɵadvance"](9);
+        _angular_core__WEBPACK_IMPORTED_MODULE_0__["ɵɵproperty"]("value", ctx.formularioSalarial.telefono);
+        _angular_core__WEBPACK_IMPORTED_MODULE_0__["ɵɵadvance"](4);
+        _angular_core__WEBPACK_IMPORTED_MODULE_0__["ɵɵproperty"]("value", ctx.formularioSalarial.fechaInicioLabores);
+        _angular_core__WEBPACK_IMPORTED_MODULE_0__["ɵɵadvance"](4);
+        _angular_core__WEBPACK_IMPORTED_MODULE_0__["ɵɵproperty"]("items", ctx.periodosPago)("value", ctx.formularioSalarial.periodoPago);
+        _angular_core__WEBPACK_IMPORTED_MODULE_0__["ɵɵadvance"](4);
+        _angular_core__WEBPACK_IMPORTED_MODULE_0__["ɵɵproperty"]("value", ctx.formularioSalarial.asignacionSalarial)("min", 0);
+        _angular_core__WEBPACK_IMPORTED_MODULE_0__["ɵɵadvance"](4);
+        _angular_core__WEBPACK_IMPORTED_MODULE_0__["ɵɵproperty"]("value", ctx.formularioSalarial.salarioCalculoVariablesPrestacionales)("min", 0);
+        _angular_core__WEBPACK_IMPORTED_MODULE_0__["ɵɵadvance"](4);
+        _angular_core__WEBPACK_IMPORTED_MODULE_0__["ɵɵproperty"]("value", ctx.formularioSalarial.notas)("height", 60);
+        _angular_core__WEBPACK_IMPORTED_MODULE_0__["ɵɵadvance"](1);
+        _angular_core__WEBPACK_IMPORTED_MODULE_0__["ɵɵproperty"]("ngIf", ctx.modoEdicion && ctx.formularioSalarial.salarioCalculoVariablesPrestacionales > 0 && (ctx.configGlobal.aportesIess == null ? null : ctx.configGlobal.aportesIess.length));
+    } }, directives: [_angular_common__WEBPACK_IMPORTED_MODULE_5__["NgIf"], devextreme_angular__WEBPACK_IMPORTED_MODULE_6__["DxPopupComponent"], devextreme_angular_ui_text_box__WEBPACK_IMPORTED_MODULE_7__["DxTextBoxComponent"], devextreme_angular__WEBPACK_IMPORTED_MODULE_6__["DxSelectBoxComponent"], devextreme_angular__WEBPACK_IMPORTED_MODULE_6__["DxDateBoxComponent"], devextreme_angular__WEBPACK_IMPORTED_MODULE_6__["DxNumberBoxComponent"], devextreme_angular__WEBPACK_IMPORTED_MODULE_6__["DxTextAreaComponent"], _loading_message_loading_messagge_component__WEBPACK_IMPORTED_MODULE_8__["LoadingMessaggeComponent"], devextreme_angular__WEBPACK_IMPORTED_MODULE_6__["DxDataGridComponent"], devextreme_angular_ui_nested__WEBPACK_IMPORTED_MODULE_9__["DxiColumnComponent"], devextreme_angular_core__WEBPACK_IMPORTED_MODULE_10__["DxTemplateDirective"], _angular_common__WEBPACK_IMPORTED_MODULE_5__["NgForOf"], devextreme_angular_ui_check_box__WEBPACK_IMPORTED_MODULE_11__["DxCheckBoxComponent"], _nominas_eventos_pagos_component__WEBPACK_IMPORTED_MODULE_12__["NominasEventosPagosComponent"]], pipes: [_angular_common__WEBPACK_IMPORTED_MODULE_5__["DecimalPipe"]], styles: [".nominas-titulo-seccion[_ngcontent-%COMP%] {\n  background-color: #fff3cd;\n  color: #c62828;\n  font-weight: bold;\n  text-transform: uppercase;\n  padding: 0.5rem 1rem;\n  margin-bottom: 1rem;\n  border-left: 4px solid #c62828;\n}\n\n.nominas-subtitulo[_ngcontent-%COMP%] {\n  color: #c62828;\n  font-weight: bold;\n  text-transform: uppercase;\n  font-size: 0.95rem;\n}\n\n.nominas-nota-config[_ngcontent-%COMP%] {\n  font-size: 0.85rem;\n  color: #666;\n  font-style: italic;\n  margin-top: 0.5rem;\n}\n\n.nominas-tabla-config[_ngcontent-%COMP%]   th[_ngcontent-%COMP%] {\n  background-color: #f5f5f5;\n  font-size: 0.85rem;\n  vertical-align: middle;\n}\n\n.nominas-preview-iess[_ngcontent-%COMP%] {\n  font-weight: 600;\n  color: #2e7d32;\n}\n\n.nominas-menu-superior[_ngcontent-%COMP%] {\n  margin-bottom: 1rem;\n}\n\n.btn-nomina-primario[_ngcontent-%COMP%] {\n  background-color: #ff5722;\n  border-color: #ff5722;\n  color: #fff;\n}\n\n.btn-nomina-primario[_ngcontent-%COMP%]:hover {\n  background-color: #e64a19;\n  border-color: #e64a19;\n  color: #fff;\n}\n/*# sourceMappingURL=data:application/json;base64,eyJ2ZXJzaW9uIjozLCJzb3VyY2VzIjpbInNyYy9hcHAvcGFnZXMvbm9taW5hcy9DOlxcRklERU5TXFxhbG9qYWJhc2VzMjAyNS9zcmNcXGFwcFxccGFnZXNcXG5vbWluYXNcXG5vbWluYXMuY29tcG9uZW50LnNjc3MiLCJzcmMvYXBwL3BhZ2VzL25vbWluYXMvbm9taW5hcy5jb21wb25lbnQuc2NzcyJdLCJuYW1lcyI6W10sIm1hcHBpbmdzIjoiQUFBQTtFQUNFLHlCQUFBO0VBQ0EsY0FBQTtFQUNBLGlCQUFBO0VBQ0EseUJBQUE7RUFDQSxvQkFBQTtFQUNBLG1CQUFBO0VBQ0EsOEJBQUE7QUNDRjs7QURFQTtFQUNFLGNBQUE7RUFDQSxpQkFBQTtFQUNBLHlCQUFBO0VBQ0Esa0JBQUE7QUNDRjs7QURFQTtFQUNFLGtCQUFBO0VBQ0EsV0FBQTtFQUNBLGtCQUFBO0VBQ0Esa0JBQUE7QUNDRjs7QURFQTtFQUNFLHlCQUFBO0VBQ0Esa0JBQUE7RUFDQSxzQkFBQTtBQ0NGOztBREVBO0VBQ0UsZ0JBQUE7RUFDQSxjQUFBO0FDQ0Y7O0FERUE7RUFDRSxtQkFBQTtBQ0NGOztBREVBO0VBQ0UseUJBQUE7RUFDQSxxQkFBQTtFQUNBLFdBQUE7QUNDRjs7QURFQTtFQUNFLHlCQUFBO0VBQ0EscUJBQUE7RUFDQSxXQUFBO0FDQ0YiLCJmaWxlIjoic3JjL2FwcC9wYWdlcy9ub21pbmFzL25vbWluYXMuY29tcG9uZW50LnNjc3MiLCJzb3VyY2VzQ29udGVudCI6WyIubm9taW5hcy10aXR1bG8tc2VjY2lvbiB7XHJcbiAgYmFja2dyb3VuZC1jb2xvcjogI2ZmZjNjZDtcclxuICBjb2xvcjogI2M2MjgyODtcclxuICBmb250LXdlaWdodDogYm9sZDtcclxuICB0ZXh0LXRyYW5zZm9ybTogdXBwZXJjYXNlO1xyXG4gIHBhZGRpbmc6IDAuNXJlbSAxcmVtO1xyXG4gIG1hcmdpbi1ib3R0b206IDFyZW07XHJcbiAgYm9yZGVyLWxlZnQ6IDRweCBzb2xpZCAjYzYyODI4O1xyXG59XHJcblxyXG4ubm9taW5hcy1zdWJ0aXR1bG8ge1xyXG4gIGNvbG9yOiAjYzYyODI4O1xyXG4gIGZvbnQtd2VpZ2h0OiBib2xkO1xyXG4gIHRleHQtdHJhbnNmb3JtOiB1cHBlcmNhc2U7XHJcbiAgZm9udC1zaXplOiAwLjk1cmVtO1xyXG59XHJcblxyXG4ubm9taW5hcy1ub3RhLWNvbmZpZyB7XHJcbiAgZm9udC1zaXplOiAwLjg1cmVtO1xyXG4gIGNvbG9yOiAjNjY2O1xyXG4gIGZvbnQtc3R5bGU6IGl0YWxpYztcclxuICBtYXJnaW4tdG9wOiAwLjVyZW07XHJcbn1cclxuXHJcbi5ub21pbmFzLXRhYmxhLWNvbmZpZyB0aCB7XHJcbiAgYmFja2dyb3VuZC1jb2xvcjogI2Y1ZjVmNTtcclxuICBmb250LXNpemU6IDAuODVyZW07XHJcbiAgdmVydGljYWwtYWxpZ246IG1pZGRsZTtcclxufVxyXG5cclxuLm5vbWluYXMtcHJldmlldy1pZXNzIHtcclxuICBmb250LXdlaWdodDogNjAwO1xyXG4gIGNvbG9yOiAjMmU3ZDMyO1xyXG59XHJcblxyXG4ubm9taW5hcy1tZW51LXN1cGVyaW9yIHtcclxuICBtYXJnaW4tYm90dG9tOiAxcmVtO1xyXG59XHJcblxyXG4uYnRuLW5vbWluYS1wcmltYXJpbyB7XHJcbiAgYmFja2dyb3VuZC1jb2xvcjogI2ZmNTcyMjtcclxuICBib3JkZXItY29sb3I6ICNmZjU3MjI7XHJcbiAgY29sb3I6ICNmZmY7XHJcbn1cclxuXHJcbi5idG4tbm9taW5hLXByaW1hcmlvOmhvdmVyIHtcclxuICBiYWNrZ3JvdW5kLWNvbG9yOiAjZTY0YTE5O1xyXG4gIGJvcmRlci1jb2xvcjogI2U2NGExOTtcclxuICBjb2xvcjogI2ZmZjtcclxufVxyXG4iLCIubm9taW5hcy10aXR1bG8tc2VjY2lvbiB7XG4gIGJhY2tncm91bmQtY29sb3I6ICNmZmYzY2Q7XG4gIGNvbG9yOiAjYzYyODI4O1xuICBmb250LXdlaWdodDogYm9sZDtcbiAgdGV4dC10cmFuc2Zvcm06IHVwcGVyY2FzZTtcbiAgcGFkZGluZzogMC41cmVtIDFyZW07XG4gIG1hcmdpbi1ib3R0b206IDFyZW07XG4gIGJvcmRlci1sZWZ0OiA0cHggc29saWQgI2M2MjgyODtcbn1cblxuLm5vbWluYXMtc3VidGl0dWxvIHtcbiAgY29sb3I6ICNjNjI4Mjg7XG4gIGZvbnQtd2VpZ2h0OiBib2xkO1xuICB0ZXh0LXRyYW5zZm9ybTogdXBwZXJjYXNlO1xuICBmb250LXNpemU6IDAuOTVyZW07XG59XG5cbi5ub21pbmFzLW5vdGEtY29uZmlnIHtcbiAgZm9udC1zaXplOiAwLjg1cmVtO1xuICBjb2xvcjogIzY2NjtcbiAgZm9udC1zdHlsZTogaXRhbGljO1xuICBtYXJnaW4tdG9wOiAwLjVyZW07XG59XG5cbi5ub21pbmFzLXRhYmxhLWNvbmZpZyB0aCB7XG4gIGJhY2tncm91bmQtY29sb3I6ICNmNWY1ZjU7XG4gIGZvbnQtc2l6ZTogMC44NXJlbTtcbiAgdmVydGljYWwtYWxpZ246IG1pZGRsZTtcbn1cblxuLm5vbWluYXMtcHJldmlldy1pZXNzIHtcbiAgZm9udC13ZWlnaHQ6IDYwMDtcbiAgY29sb3I6ICMyZTdkMzI7XG59XG5cbi5ub21pbmFzLW1lbnUtc3VwZXJpb3Ige1xuICBtYXJnaW4tYm90dG9tOiAxcmVtO1xufVxuXG4uYnRuLW5vbWluYS1wcmltYXJpbyB7XG4gIGJhY2tncm91bmQtY29sb3I6ICNmZjU3MjI7XG4gIGJvcmRlci1jb2xvcjogI2ZmNTcyMjtcbiAgY29sb3I6ICNmZmY7XG59XG5cbi5idG4tbm9taW5hLXByaW1hcmlvOmhvdmVyIHtcbiAgYmFja2dyb3VuZC1jb2xvcjogI2U2NGExOTtcbiAgYm9yZGVyLWNvbG9yOiAjZTY0YTE5O1xuICBjb2xvcjogI2ZmZjtcbn0iXX0= */"] });
+/*@__PURE__*/ (function () { _angular_core__WEBPACK_IMPORTED_MODULE_0__["ɵsetClassMetadata"](NominasComponent, [{
+        type: _angular_core__WEBPACK_IMPORTED_MODULE_0__["Component"],
+        args: [{
+                selector: "app-nominas",
+                templateUrl: "./nominas.component.html",
+                styleUrls: ["./nominas.component.scss"],
+            }]
+    }], function () { return [{ type: src_app_servicios_authen_service__WEBPACK_IMPORTED_MODULE_2__["AuthenService"] }, { type: src_app_servicios_nominas_service__WEBPACK_IMPORTED_MODULE_3__["NominasService"] }, { type: src_app_servicios_user_service__WEBPACK_IMPORTED_MODULE_4__["UserService"] }]; }, null); })();
+
+
+/***/ }),
+
 /***/ "./src/app/pages/orden-compra/orden-compra.component.ts":
 /*!**************************************************************!*\
   !*** ./src/app/pages/orden-compra/orden-compra.component.ts ***!
@@ -74035,34 +77520,38 @@ class RegistrosVentasComponent {
             console.log(this.facturaVeronica);
             console.log(logApiVeronica);
             //TO-DO, DESCOMENTAR LUEGO DE PRUEBAS
-            this._apiVeronicaService.newFactura(this.facturaVeronica).subscribe(res => {
-                var resultado = res;
-                logApiVeronica.objetoResponse = JSON.stringify(res);
-                logApiVeronica.claveAcceso = resultado.result.claveAccesoConsultada;
-                logApiVeronica.resultado = "OK";
-                this._logApiVeronicaService.newLog(logApiVeronica).subscribe(res => {
-                    this.mostrarLoading = false;
-                    sweetalert2__WEBPACK_IMPORTED_MODULE_4___default.a.fire({
-                        title: 'Correcto',
-                        text: 'Factura registrada con éxito',
-                        icon: 'success'
-                    });
-                    this.traerFacturasMensuales();
-                }, err => { });
-            }, err => {
-                logApiVeronica.objetoResponse = JSON.stringify(err);
-                logApiVeronica.claveAcceso = null;
-                logApiVeronica.resultado = "NOK";
-                this._logApiVeronicaService.newLog(logApiVeronica).subscribe(res => {
-                    this.mostrarLoading = false;
-                    sweetalert2__WEBPACK_IMPORTED_MODULE_4___default.a.fire({
-                        title: 'Error',
-                        text: 'Error al establecer coneccion con el SRI',
-                        icon: 'error',
-                        confirmButtonText: 'Ok'
-                    });
-                }, err => { });
-            });
+            /* this._apiVeronicaService.newFactura(this.facturaVeronica).subscribe(
+              res => {  var resultado = res as ResponseVeronicaDto;
+                        logApiVeronica.objetoResponse = JSON.stringify(res)
+                        logApiVeronica.claveAcceso = resultado.result.claveAccesoConsultada
+                        logApiVeronica.resultado = "OK"
+                        this._logApiVeronicaService.newLog(logApiVeronica).subscribe(
+                          res =>{   this.mostrarLoading = false;
+                                    Swal.fire({
+                                      title: 'Correcto',
+                                      text: 'Factura registrada con éxito',
+                                      icon: 'success'
+                                    })
+                                    this.traerFacturasMensuales();
+                                },
+                          err => {  });
+                    },
+              err => {
+                      
+                        logApiVeronica.objetoResponse = JSON.stringify(err);
+                        logApiVeronica.claveAcceso = null;
+                        logApiVeronica.resultado = "NOK"
+                        this._logApiVeronicaService.newLog(logApiVeronica).subscribe(
+                          res =>{   this.mostrarLoading = false;
+                                    Swal.fire({
+                                      title: 'Error',
+                                      text: 'Error al establecer coneccion con el SRI',
+                                      icon: 'error',
+                                      confirmButtonText: 'Ok'
+                                    })
+                                },
+                          err => {  });
+                      });  */
         }, err => {
             sweetalert2__WEBPACK_IMPORTED_MODULE_4___default.a.fire({
                 title: 'Error',
@@ -98032,73 +101521,76 @@ class VentasComponent {
         console.log(logApiVeronica);
         //EMILINAR LUEGO DE PRUEBAS
         //TO-DO
-        /* this.mostrarLoading = false;
-        Swal.fire({
-          title: 'Correcto',
-          text: 'Factura registrada con éxito',
-          icon: 'success',
-          confirmButtonText: 'Ok'
+        this.mostrarLoading = false;
+        sweetalert2__WEBPACK_IMPORTED_MODULE_9___default.a.fire({
+            title: 'Correcto',
+            text: 'Factura registrada con éxito',
+            icon: 'success',
+            confirmButtonText: 'Ok'
         }).then((result) => {
-          if(this.formaPago == "Otros medios Pago" || this.formaPago == "Abonos")
-            this.router.navigate(['/recibo-caja'], { queryParams: { id: this.factura.documento_n , tipo: 1 } });
-          else
-            window.location.reload();
-        })
-    
-        this._logApiVeronicaService.newLog(logApiVeronica).subscribe(
-          res =>{   this.mostrarLoading = false;
-                    Swal.fire({
-                      title: 'Correcto',
-                      text: 'Factura registrada con éxito',
-                      icon: 'success',
-                      confirmButtonText: 'Ok'
-                    }).then((result) => {
-                      if(this.formaPago == "Otros medios Pago" || this.formaPago == "Abonos")
-                        this.router.navigate(['/recibo-caja'], { queryParams: { id: this.factura.documento_n , tipo: 1 } });
-                      else
-                        window.location.reload();
-                    })
-                },
-          err => {  }); */
-        //TO-DO, DESCOMENTAR LUEGO DE PRUEBAS
-        this._apiVeronicaService.newFactura(this.facturaVeronica).subscribe(res => {
-            var resultado = res;
-            logApiVeronica.objetoResponse = JSON.stringify(res);
-            logApiVeronica.claveAcceso = resultado.result.claveAccesoConsultada;
-            logApiVeronica.resultado = "OK";
-            this._logApiVeronicaService.newLog(logApiVeronica).subscribe(res => {
-                this.mostrarLoading = false;
-                sweetalert2__WEBPACK_IMPORTED_MODULE_9___default.a.fire({
-                    title: 'Correcto',
-                    text: 'Factura registrada con éxito',
-                    icon: 'success',
-                    confirmButtonText: 'Ok'
-                }).then((result) => {
-                    if (this.formaPago == "Otros medios Pago" || this.formaPago == "Abonos")
-                        this.router.navigate(['/recibo-caja'], { queryParams: { id: this.factura.documento_n, tipo: 1 } });
-                    else
-                        window.location.reload();
-                });
-            }, err => { });
-        }, err => {
-            logApiVeronica.objetoResponse = JSON.stringify(err);
-            logApiVeronica.claveAcceso = null;
-            logApiVeronica.resultado = "NOK";
-            this._logApiVeronicaService.newLog(logApiVeronica).subscribe(res => {
-                this.mostrarLoading = false;
-                sweetalert2__WEBPACK_IMPORTED_MODULE_9___default.a.fire({
-                    title: 'Error',
-                    text: 'Error al establecer coneccion con el SRI',
-                    icon: 'error',
-                    confirmButtonText: 'Ok'
-                }).then((result) => {
-                    if (this.formaPago == "Otros medios Pago" || this.formaPago == "Abonos")
-                        this.router.navigate(['/recibo-caja'], { queryParams: { id: this.factura.documento_n, tipo: 1 } });
-                    else
-                        window.location.reload();
-                });
-            }, err => { });
+            if (this.formaPago == "Otros medios Pago" || this.formaPago == "Abonos")
+                this.router.navigate(['/recibo-caja'], { queryParams: { id: this.factura.documento_n, tipo: 1 } });
+            else
+                window.location.reload();
         });
+        this._logApiVeronicaService.newLog(logApiVeronica).subscribe(res => {
+            this.mostrarLoading = false;
+            sweetalert2__WEBPACK_IMPORTED_MODULE_9___default.a.fire({
+                title: 'Correcto',
+                text: 'Factura registrada con éxito',
+                icon: 'success',
+                confirmButtonText: 'Ok'
+            }).then((result) => {
+                if (this.formaPago == "Otros medios Pago" || this.formaPago == "Abonos")
+                    this.router.navigate(['/recibo-caja'], { queryParams: { id: this.factura.documento_n, tipo: 1 } });
+                else
+                    window.location.reload();
+            });
+        }, err => { });
+        //TO-DO, DESCOMENTAR LUEGO DE PRUEBAS
+        /* this._apiVeronicaService.newFactura(this.facturaVeronica).subscribe(
+          res => {  var resultado = res as ResponseVeronicaDto;
+                    logApiVeronica.objetoResponse = JSON.stringify(res)
+                    logApiVeronica.claveAcceso = resultado.result.claveAccesoConsultada
+                    logApiVeronica.resultado = "OK"
+                    this._logApiVeronicaService.newLog(logApiVeronica).subscribe(
+                      res =>{   this.mostrarLoading = false;
+                                Swal.fire({
+                                  title: 'Correcto',
+                                  text: 'Factura registrada con éxito',
+                                  icon: 'success',
+                                  confirmButtonText: 'Ok'
+                                }).then((result) => {
+                                  if(this.formaPago == "Otros medios Pago" || this.formaPago == "Abonos")
+                                    this.router.navigate(['/recibo-caja'], { queryParams: { id: this.factura.documento_n , tipo: 1 } });
+                                  else
+                                    window.location.reload();
+                                })
+                            },
+                      err => {  });
+                },
+          err => {
+                  
+                    logApiVeronica.objetoResponse = JSON.stringify(err);
+                    logApiVeronica.claveAcceso = null;
+                    logApiVeronica.resultado = "NOK"
+                    this._logApiVeronicaService.newLog(logApiVeronica).subscribe(
+                      res =>{
+                                this.mostrarLoading = false;
+                                Swal.fire({
+                                  title: 'Error',
+                                  text: 'Error al establecer coneccion con el SRI',
+                                  icon: 'error',
+                                  confirmButtonText: 'Ok'
+                                }).then((result) => {
+                                  if(this.formaPago == "Otros medios Pago" || this.formaPago == "Abonos")
+                                    this.router.navigate(['/recibo-caja'], { queryParams: { id: this.factura.documento_n , tipo: 1 } });
+                                  else
+                                    window.location.reload();
+                                })
+                            },
+                      err => {  });
+                  });  */
     }
     guardarNotaVenta() {
         this.factura.username = this.username;
@@ -101998,6 +105490,157 @@ IngresosService.ɵprov = _angular_core__WEBPACK_IMPORTED_MODULE_0__["ɵɵdefineI
                 providedIn: "root",
             }]
     }], function () { return [{ type: _angular_common_http__WEBPACK_IMPORTED_MODULE_2__["HttpClient"] }, { type: _angular_router__WEBPACK_IMPORTED_MODULE_3__["Router"] }]; }, null); })();
+
+
+/***/ }),
+
+/***/ "./src/app/servicios/nominas.service.ts":
+/*!**********************************************!*\
+  !*** ./src/app/servicios/nominas.service.ts ***!
+  \**********************************************/
+/*! exports provided: NominasService */
+/***/ (function(module, __webpack_exports__, __webpack_require__) {
+
+"use strict";
+__webpack_require__.r(__webpack_exports__);
+/* harmony export (binding) */ __webpack_require__.d(__webpack_exports__, "NominasService", function() { return NominasService; });
+/* harmony import */ var _angular_core__WEBPACK_IMPORTED_MODULE_0__ = __webpack_require__(/*! @angular/core */ "./node_modules/@angular/core/__ivy_ngcc__/fesm2015/core.js");
+/* harmony import */ var src_environments_environment__WEBPACK_IMPORTED_MODULE_1__ = __webpack_require__(/*! src/environments/environment */ "./src/environments/environment.ts");
+/* harmony import */ var _angular_common_http__WEBPACK_IMPORTED_MODULE_2__ = __webpack_require__(/*! @angular/common/http */ "./node_modules/@angular/common/__ivy_ngcc__/fesm2015/http.js");
+
+
+
+
+class NominasService {
+    constructor(http) {
+        this.http = http;
+        this.URL = `${src_environments_environment__WEBPACK_IMPORTED_MODULE_1__["environment"].services.urlServices}/nominas`;
+    }
+    getTablasMaestrasSalariales() {
+        return this.http.get(`${this.URL}/tabla-maestra-salarial`);
+    }
+    getTablaMaestraSalarialPorCedula(cedula) {
+        return this.http.get(`${this.URL}/tabla-maestra-salarial/${cedula}`);
+    }
+    crearTablaMaestraSalarial(registro) {
+        return this.http.post(`${this.URL}/tabla-maestra-salarial`, registro);
+    }
+    actualizarTablaMaestraSalarial(id, registro) {
+        return this.http.put(`${this.URL}/tabla-maestra-salarial/${id}`, registro);
+    }
+    eliminarTablaMaestraSalarial(id) {
+        return this.http.delete(`${this.URL}/tabla-maestra-salarial/${id}`);
+    }
+    getConfigGlobal() {
+        return this.http.get(`${this.URL}/config-global`);
+    }
+    guardarConfigGlobal(config) {
+        return this.http.put(`${this.URL}/config-global`, config);
+    }
+    restablecerConfigGlobal() {
+        return this.http.post(`${this.URL}/config-global/restablecer`, {});
+    }
+    getBeneficiarioInterno(cedula) {
+        return this.http.get(`${this.URL}/beneficiario-interno/${cedula}`);
+    }
+    getBeneficiarioExterno(documento) {
+        return this.http.get(`${this.URL}/beneficiario-externo/${documento}`);
+    }
+    getReglasPago() {
+        return this.http.get(`${this.URL}/reglas-pago`);
+    }
+    getReglaPago(id) {
+        return this.http.get(`${this.URL}/reglas-pago/${id}`);
+    }
+    getProyeccionRegla(id, meses) {
+        const q = meses ? `?meses=${meses}` : "";
+        return this.http.get(`${this.URL}/reglas-pago/${id}/proyeccion${q}`);
+    }
+    vistaPreviaProyeccion(regla) {
+        return this.http.post(`${this.URL}/reglas-pago/vista-previa`, regla);
+    }
+    crearReglaPago(regla) {
+        return this.http.post(`${this.URL}/reglas-pago`, regla);
+    }
+    actualizarReglaPago(id, regla) {
+        return this.http.put(`${this.URL}/reglas-pago/${id}`, regla);
+    }
+    autorizarReglaPago(id) {
+        return this.http.put(`${this.URL}/reglas-pago/${id}/autorizar`, {});
+    }
+    finalizarReglaPago(id) {
+        return this.http.put(`${this.URL}/reglas-pago/${id}/finalizar`, {});
+    }
+    eliminarReglaPago(id) {
+        return this.http.delete(`${this.URL}/reglas-pago/${id}`);
+    }
+    simularDominical(payload) {
+        return this.http.post(`${this.URL}/dominical/simular`, payload);
+    }
+    liquidarDominical(payload) {
+        return this.http.post(`${this.URL}/dominical/liquidar`, payload);
+    }
+    getEventosDominical(fecha, cedula) {
+        let q = "";
+        if (fecha)
+            q += `fecha=${fecha}&`;
+        if (cedula)
+            q += `cedula=${cedula}&`;
+        return this.http.get(`${this.URL}/dominical/eventos?${q}`);
+    }
+    getAjustesPendientesNomina(cedula) {
+        const q = cedula ? `?cedula=${cedula}` : "";
+        return this.http.get(`${this.URL}/dominical/ajustes-pendientes${q}`);
+    }
+    getEventosProgramados(filtros) {
+        var _a, _b, _c, _d, _e;
+        const params = new URLSearchParams();
+        if ((_a = filtros) === null || _a === void 0 ? void 0 : _a.estado)
+            params.set("estado", filtros.estado);
+        if ((_b = filtros) === null || _b === void 0 ? void 0 : _b.reglaId)
+            params.set("reglaId", filtros.reglaId);
+        if ((_c = filtros) === null || _c === void 0 ? void 0 : _c.cedula)
+            params.set("cedula", filtros.cedula);
+        if ((_d = filtros) === null || _d === void 0 ? void 0 : _d.desde)
+            params.set("desde", filtros.desde);
+        if ((_e = filtros) === null || _e === void 0 ? void 0 : _e.hasta)
+            params.set("hasta", filtros.hasta);
+        const q = params.toString();
+        return this.http.get(`${this.URL}/eventos-programados${q ? `?${q}` : ""}`);
+    }
+    ejecutarEventoProgramado(id, payload) {
+        return this.http.put(`${this.URL}/eventos-programados/${id}/ejecutar`, payload);
+    }
+    cancelarEventoProgramado(id, notas) {
+        return this.http.put(`${this.URL}/eventos-programados/${id}/cancelar`, {
+            notas,
+        });
+    }
+    amortizacionPrevia(regla, forzarRegenerar = false) {
+        return this.http.post(`${this.URL}/reglas-pago/amortizacion-previa`, Object.assign(Object.assign({}, regla), { forzarRegenerar }));
+    }
+    getReporteEstadoEmpleado(filtros) {
+        const params = new URLSearchParams();
+        if (filtros.cedula)
+            params.set("cedula", filtros.cedula);
+        if (filtros.centroCosto)
+            params.set("centroCosto", filtros.centroCosto);
+        if (filtros.desde)
+            params.set("desde", filtros.desde);
+        if (filtros.hasta)
+            params.set("hasta", filtros.hasta);
+        const q = params.toString();
+        return this.http.get(`${this.URL}/reporte-estado-empleado${q ? `?${q}` : ""}`);
+    }
+}
+NominasService.ɵfac = function NominasService_Factory(t) { return new (t || NominasService)(_angular_core__WEBPACK_IMPORTED_MODULE_0__["ɵɵinject"](_angular_common_http__WEBPACK_IMPORTED_MODULE_2__["HttpClient"])); };
+NominasService.ɵprov = _angular_core__WEBPACK_IMPORTED_MODULE_0__["ɵɵdefineInjectable"]({ token: NominasService, factory: NominasService.ɵfac, providedIn: "root" });
+/*@__PURE__*/ (function () { _angular_core__WEBPACK_IMPORTED_MODULE_0__["ɵsetClassMetadata"](NominasService, [{
+        type: _angular_core__WEBPACK_IMPORTED_MODULE_0__["Injectable"],
+        args: [{
+                providedIn: "root",
+            }]
+    }], function () { return [{ type: _angular_common_http__WEBPACK_IMPORTED_MODULE_2__["HttpClient"] }]; }, null); })();
 
 
 /***/ }),
@@ -105998,8 +109641,8 @@ const environment = {
         measurementId: "G-338L2LR9XQ"
     },
     services: {
-        //urlServices : "http://143.198.60.33:3000"   //NUEVO SERVIDOR PRUEBAS
-        urlServices: "http://104.131.82.174:3000" //SERVIDOR PRODUCCIÓN
+        urlServices: "http://143.198.60.33:3000" //NUEVO SERVIDOR PRUEBAS
+        //urlServices : "http://104.131.82.174:3000"   //SERVIDOR PRODUCCIÓN
         //urlServices : "http://localhost:3000"   //LOCAL
     }
 };

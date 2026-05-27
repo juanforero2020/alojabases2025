@@ -5,6 +5,7 @@ const {
   crearOrdenDesdeDocumento,
   intentarAnularPorDocumento,
 } = require("../services/entregaBodegaService");
+const dominicalNominaService = require("../services/dominicalNominaService");
 
 router.get("/getFacturas", async (req, res) => {
   const facturas = await Factura.find();
@@ -88,6 +89,17 @@ router.put("/updateEstado/:id/:estado", async (req, res, next) => {
     { $set: { estado: estado } },
     { new: true }
   );
+  if (estado === "ANULADA") {
+    const facturaAnulada = await Factura.findById(id);
+    try {
+      await dominicalNominaService.procesarAjustesPorAnulacionFactura(
+        facturaAnulada,
+        (req.body && req.body.username) || ""
+      );
+    } catch (err) {
+      console.error("Ajuste dominical por anulación:", err.message);
+    }
+  }
   res.json({ status: "factura Updated" });
 });
 
@@ -125,6 +137,17 @@ router.put("/updateEstadoOb/:id/:estado", async (req, res, next) => {
     { $set: { estado: estado, observaciones: req.body.observaciones } },
     { new: true }
   );
+  if (estado === "ANULADA") {
+    const facturaAnulada = await Factura.findById(id);
+    try {
+      await dominicalNominaService.procesarAjustesPorAnulacionFactura(
+        facturaAnulada,
+        (req.body && req.body.username) || ""
+      );
+    } catch (err) {
+      console.error("Ajuste dominical por anulación:", err.message);
+    }
+  }
   res.json({ status: "factura Updated" });
 });
 

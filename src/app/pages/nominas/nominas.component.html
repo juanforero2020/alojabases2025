@@ -1,0 +1,463 @@
+<div *ngIf="mostrarLoading">
+  <app-loading-messagge [messagge]="mensajeLoading"></app-loading-messagge>
+</div>
+
+<div class="row" *ngIf="mostrarBloqueo"></div>
+
+<div *ngIf="!mostrarBloqueo">
+  <br /><br />
+
+  <div class="row nominas-menu-superior justify-content-md-end">
+    <div class="col-12 col-md-5 px-2">
+      <dx-select-box
+        [items]="seccionesMenu"
+        [(value)]="seccionActiva"
+        (onValueChanged)="cambiarSeccion($event)"
+        [inputAttr]="{ style: 'text-align: center;' }"
+      ></dx-select-box>
+    </div>
+  </div>
+
+  <!-- TABLA MAESTRA SALARIAL (por trabajador) -->
+  <div *ngIf="seccionActiva === 'Tabla Maestra Salarial'">
+    <div class="card">
+      <h5 class="card-header text-center font-weight-bold text-uppercase">
+        Motor de Reglas — Nóminas
+      </h5>
+      <div class="card-body">
+        <div class="nominas-titulo-seccion text-center">
+          Tabla Maestra Salarial
+        </div>
+        <p class="text-muted text-center mb-3">
+          Asignación única por trabajador. Base para cálculo de aportes, pagos y
+          descuentos del motor de reglas.
+        </p>
+
+        <div class="row mb-3">
+          <div class="col-md-4 offset-md-8 text-right">
+            <button
+              class="btn btn-block btn-nomina-primario"
+              (click)="abrirNuevoRegistro()"
+            >
+              + Nuevo trabajador
+            </button>
+          </div>
+        </div>
+
+        <dx-data-grid
+          [dataSource]="tablasSalariales"
+          [showBorders]="true"
+          [columnAutoWidth]="true"
+          [rowAlternationEnabled]="true"
+          keyExpr="_id"
+        >
+          <dxi-column dataField="nombre" caption="Nombre"></dxi-column>
+          <dxi-column dataField="cedula" caption="Cédula"></dxi-column>
+          <dxi-column dataField="cargo" caption="Cargo"></dxi-column>
+          <dxi-column
+            dataField="usuarioSistemaNombre"
+            caption="Usuario sistema"
+          ></dxi-column>
+          <dxi-column dataField="telefono" caption="Teléfono"></dxi-column>
+          <dxi-column
+            dataField="fechaInicioLabores"
+            caption="Inicio labores"
+            dataType="date"
+            format="dd/MM/yyyy"
+          ></dxi-column>
+          <dxi-column
+            dataField="asignacionSalarial"
+            caption="Asignación"
+            format="#,##0.##"
+          ></dxi-column>
+          <dxi-column dataField="periodoPago" caption="Periodo pago"></dxi-column>
+          <dxi-column
+            dataField="salarioCalculoVariablesPrestacionales"
+            caption="Salario var. prest."
+            format="#,##0.##"
+          ></dxi-column>
+          <dxi-column
+            caption="Acciones"
+            cellTemplate="accionesSalarial"
+            [width]="140"
+            [allowFiltering]="false"
+            [allowSorting]="false"
+          ></dxi-column>
+
+          <div *dxTemplate="let data of 'accionesSalarial'">
+            <button
+              class="btn btn-sm btn-primary mr-1"
+              (click)="abrirEdicion(data.data)"
+            >
+              Editar
+            </button>
+            <button
+              class="btn btn-sm btn-danger"
+              (click)="eliminarTablaSalarial(data.data)"
+            >
+              Eliminar
+            </button>
+          </div>
+        </dx-data-grid>
+      </div>
+    </div>
+  </div>
+
+  <!-- CONFIGURACIÓN GLOBAL -->
+  <div *ngIf="seccionActiva === 'Configuración Global'">
+    <div class="card mb-3">
+      <div class="card-body">
+        <div class="nominas-titulo-seccion text-center">
+          Tablas Maestras Globales
+        </div>
+        <p class="nominas-nota-config text-center">
+          Los límites y valores deben ser modificables desde esta pantalla.
+        </p>
+
+        
+
+        <!-- APORTES IESS -->
+        <h6 class="nominas-subtitulo mb-2">De aportes IESS</h6>
+        <div class="table-responsive mb-2">
+          <table class="table table-bordered nominas-tabla-config">
+            <thead>
+              <tr>
+                <th>Concepto</th>
+                <th style="width: 120px">Porcentaje (%)</th>
+                <th style="width: 120px">Tipo</th>
+                <th style="width: 80px">Activo</th>
+                <th style="width: 60px"></th>
+              </tr>
+            </thead>
+            <tbody>
+              <tr *ngFor="let aporte of configGlobal.aportesIess; let i = index">
+                <td>
+                  <dx-text-box [(value)]="aporte.concepto"></dx-text-box>
+                </td>
+                <td>
+                  <dx-number-box
+                    [(value)]="aporte.porcentaje"
+                    [min]="0"
+                    [max]="100"
+                    format="#0.##"
+                  ></dx-number-box>
+                </td>
+                <td>
+                  <dx-select-box
+                    [items]="['personal', 'patronal', 'total', 'otro']"
+                    [(value)]="aporte.tipo"
+                  ></dx-select-box>
+                </td>
+                <td class="text-center">
+                  <dx-check-box [(value)]="aporte.activo"></dx-check-box>
+                </td>
+                <td>
+                  <button
+                    class="btn btn-sm btn-danger"
+                    (click)="eliminarAporteIess(i)"
+                  >
+                    ×
+                  </button>
+                </td>
+              </tr>
+            </tbody>
+          </table>
+        </div>
+        <button class="btn btn-sm btn-secondary mb-4" (click)="agregarAporteIess()">
+          + Agregar concepto IESS
+        </button>
+
+        <!-- CÁLCULO DOMINICAL -->
+        <h6 class="nominas-subtitulo mb-2">Cálculo dominical</h6>
+        <div class="row mb-3">
+          <div class="col-md-4">
+            <label>Límite facturación ($)</label>
+            <dx-number-box
+              [(value)]="configGlobal.calculoDominical.limiteFacturacion"
+              [min]="0"
+              format="#,##0.##"
+              (onValueChanged)="onLimiteFacturacionChanged()"
+            ></dx-number-box>
+          </div>
+        </div>
+        <div class="table-responsive mb-2">
+          <table class="table table-bordered nominas-tabla-config">
+            <thead>
+              <tr>
+                <th>Cargo</th>
+                <th>{{ etiquetaRangoInferior }}</th>
+                <th>{{ etiquetaRangoSuperior }}</th>
+                <th style="width: 60px"></th>
+              </tr>
+            </thead>
+            <tbody>
+              <tr
+                *ngFor="
+                  let fila of configGlobal.calculoDominical.filas;
+                  let i = index
+                "
+              >
+                <td>
+                  <dx-select-box
+                    [items]="cargosDisponibles"
+                    [(value)]="fila.cargo"
+                    [searchEnabled]="true"
+                    placeholder="Seleccione cargo"
+                    (onValueChanged)="onCargoDominicalChanged(i, $event)"
+                  ></dx-select-box>
+                </td>
+                <td>
+                  <dx-number-box
+                    [(value)]="fila.valorRangoInferior"
+                    [min]="0"
+                  ></dx-number-box>
+                </td>
+                <td>
+                  <dx-number-box
+                    [(value)]="fila.valorRangoSuperior"
+                    [min]="0"
+                  ></dx-number-box>
+                </td>
+                <td>
+                  <button
+                    class="btn btn-sm btn-danger"
+                    (click)="eliminarFilaDominical(i)"
+                  >
+                    ×
+                  </button>
+                </td>
+              </tr>
+            </tbody>
+          </table>
+        </div>
+        <button
+          class="btn btn-sm btn-secondary mb-4"
+          (click)="agregarFilaDominical()"
+        >
+          + Agregar cargo
+        </button>
+
+        <!-- OTROS CARGOS -->
+        <h6 class="nominas-subtitulo mb-2">Otros cargos</h6>
+        <div class="table-responsive mb-2">
+          <table class="table table-bordered nominas-tabla-config">
+            <thead>
+              <tr>
+                <th>Concepto</th>
+                <th>Fecha límite</th>
+                <th style="width: 100px">Valor ($)</th>
+                <th style="width: 80px">Activo</th>
+                <th style="width: 60px"></th>
+              </tr>
+            </thead>
+            <tbody>
+              <tr *ngFor="let cargo of configGlobal.otrosCargos; let i = index">
+                <td>
+                  <dx-text-box [(value)]="cargo.concepto"></dx-text-box>
+                </td>
+                <td>
+                  <dx-date-box
+                    [(value)]="cargo.fechaLimite"
+                    type="date"
+                    [showClearButton]="true"
+                  ></dx-date-box>
+                </td>
+                <td>
+                  <dx-number-box [(value)]="cargo.valor" [min]="0"></dx-number-box>
+                </td>
+                <td class="text-center">
+                  <dx-check-box [(value)]="cargo.activo"></dx-check-box>
+                </td>
+                <td>
+                  <button
+                    class="btn btn-sm btn-danger"
+                    (click)="eliminarOtroCargo(i)"
+                  >
+                    ×
+                  </button>
+                </td>
+              </tr>
+            </tbody>
+          </table>
+        </div>
+        <button class="btn btn-sm btn-secondary" (click)="agregarOtroCargo()">
+          + Agregar otro cargo
+        </button>
+
+        <div class="row mb-4">
+          <div class="col-md-4"></div>
+          <div class="col-md-4">
+            <button
+              class="btn btn-block btn-nomina-primario"
+              (click)="guardarConfigGlobal()"
+            >
+              Guardar configuración global
+            </button>
+          </div>
+          <div class="col-md-4"></div>
+          <!-- <div class="col-md-6">
+            <button
+              class="btn btn-block btn-outline-secondary"
+              (click)="restablecerConfigGlobal()"
+            >
+              Restablecer valores por defecto
+            </button>
+          </div> -->
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- EVENTOS DE PAGOS -->
+<div *ngIf="seccionActiva === 'Eventos de Pagos'">
+  <app-nominas-eventos-pagos
+    [usuarioNombre]="nombreUsuario"
+  ></app-nominas-eventos-pagos>
+</div>
+
+<!-- Popup formulario tabla maestra salarial -->
+<dx-popup
+  [(visible)]="popupTablaSalarial"
+  [showTitle]="true"
+  [title]="
+    modoEdicion
+      ? 'Editar Tabla Maestra Salarial'
+      : 'Nueva Tabla Maestra Salarial'
+  "
+  [width]="700"
+  [height]="'auto'"
+  [showCloseButton]="true"
+>
+  <div class="p-3">
+    <div class="nominas-titulo-seccion text-center mb-3">
+      Salario base legal
+    </div>
+
+    <div class="row">
+      <div class="col-md-6 mb-2">
+        <label>Nombre *</label>
+        <dx-text-box [(value)]="formularioSalarial.nombre"></dx-text-box>
+      </div>
+      <div class="col-md-6 mb-2">
+        <label>Cédula *</label>
+        <dx-text-box
+          [(value)]="formularioSalarial.cedula"
+          [readOnly]="modoEdicion"
+        ></dx-text-box>
+      </div>
+      <div class="col-md-6 mb-2">
+        <label>Cargo</label>
+        <dx-select-box
+          [items]="cargosDisponibles"
+          [(value)]="formularioSalarial.cargo"
+          [searchEnabled]="true"
+          placeholder="Seleccione cargo"
+        ></dx-select-box>
+      </div>
+      <div class="col-md-6 mb-2">
+        <label>Usuario del sistema</label>
+        <dx-select-box
+          [items]="usuariosSistema"
+          [(value)]="formularioSalarial.usuarioSistemaId"
+          valueExpr="_id"
+          displayExpr="etiquetaUsuario"
+          [searchEnabled]="true"
+          [showClearButton]="true"
+          placeholder="Vincular con usuario (ventas)"
+          (onValueChanged)="onUsuarioSistemaChanged($event)"
+        ></dx-select-box>
+        <small class="text-muted">
+          Vincula por <strong>username</strong> (debe coincidir con facturas y notas de venta del domingo)
+        </small>
+      </div>
+      <div class="col-md-6 mb-2">
+        <label>Teléfono</label>
+        <dx-text-box [(value)]="formularioSalarial.telefono"></dx-text-box>
+      </div>
+      <div class="col-md-6 mb-2">
+        <label>Fecha inicio labores</label>
+        <dx-date-box
+          [(value)]="formularioSalarial.fechaInicioLabores"
+          type="date"
+        ></dx-date-box>
+      </div>
+      <div class="col-md-6 mb-2">
+        <label>Periodo de pago</label>
+        <dx-select-box
+          [items]="periodosPago"
+          [(value)]="formularioSalarial.periodoPago"
+        ></dx-select-box>
+      </div>
+      <div class="col-md-6 mb-2">
+        <label>Asignación salarial</label>
+        <dx-number-box
+          [(value)]="formularioSalarial.asignacionSalarial"
+          [min]="0"
+          format="#,##0.##"
+        ></dx-number-box>
+      </div>
+      <div class="col-md-6 mb-2">
+        <label>Salario cálculo variables prestacionales</label>
+        <dx-number-box
+          [(value)]="
+            formularioSalarial.salarioCalculoVariablesPrestacionales
+          "
+          [min]="0"
+          format="#,##0.##"
+        ></dx-number-box>
+      </div>
+      <div class="col-md-12 mb-2">
+        <label>Notas</label>
+        <dx-text-area [(value)]="formularioSalarial.notas" [height]="60"></dx-text-area>
+      </div>
+    </div>
+
+    <div
+      class="mt-3 p-2 border rounded"
+      *ngIf="
+        modoEdicion &&
+        formularioSalarial.salarioCalculoVariablesPrestacionales > 0 &&
+        configGlobal.aportesIess?.length
+      "
+    >
+      <h6 class="nominas-subtitulo">Vista previa aportes IESS</h6>
+      <table class="table table-sm mb-0">
+        <thead>
+          <tr>
+            <th>Concepto</th>
+            <th>%</th>
+            <th>Aporte ($)</th>
+          </tr>
+        </thead>
+        <tbody>
+          <tr *ngFor="let aporte of configGlobal.aportesIess">
+            <td>{{ aporte.concepto }}</td>
+            <td>{{ aporte.porcentaje }}%</td>
+            <td class="nominas-preview-iess">
+              ${{
+                calcularAporteIess(aporte) | number : "1.2-2"
+              }}
+            </td>
+          </tr>
+        </tbody>
+      </table>
+    </div>
+
+    <div class="row mt-3">
+      <div class="col-6">
+        <button class="btn btn-block btn-secondary" (click)="cerrarPopupSalarial()">
+          Cancelar
+        </button>
+      </div>
+      <div class="col-6">
+        <button
+          class="btn btn-block btn-nomina-primario"
+          (click)="guardarTablaSalarial()"
+        >
+          Guardar
+        </button>
+      </div>
+    </div>
+  </div>
+</dx-popup>

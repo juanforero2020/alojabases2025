@@ -499,6 +499,10 @@ export const navigationAdmin = [
         text: "Novedades Personal",
         path: "",
       },
+      {
+        text: "Nóminas",
+        path: "/nominas",
+      },
     ],
   },
   {
@@ -766,6 +770,10 @@ export const navigationSupervisor = [
       {
         text: "Novedades Personal",
         path: "",
+      },
+      {
+        text: "Nóminas",
+        path: "/nominas",
       },
     ],
   },

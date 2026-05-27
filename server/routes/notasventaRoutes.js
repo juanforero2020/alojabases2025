@@ -5,6 +5,7 @@ const {
   crearOrdenDesdeDocumento,
   intentarAnularPorDocumento,
 } = require("../services/entregaBodegaService");
+const dominicalNominaService = require("../services/dominicalNominaService");
 
 router.get("/getNotasVenta", async (req, res) => {
   const notasVenta = await NotasVenta.find();
@@ -81,6 +82,17 @@ router.put("/updateEstado/:id/:estado", async (req, res, next) => {
     { $set: { estado: estado } },
     { new: true }
   );
+  if (estado === "ANULADA") {
+    const notaAnulada = await NotasVenta.findById(id);
+    try {
+      await dominicalNominaService.procesarAjustesPorAnulacionFactura(
+        notaAnulada,
+        (req.body && req.body.username) || ""
+      );
+    } catch (err) {
+      console.error("Ajuste dominical por anulación nota:", err.message);
+    }
+  }
   res.json({ status: "factura Updated" });
 });
 
@@ -117,6 +129,17 @@ router.put("/updateEstadoObs/:id/:estado", async (req, res, next) => {
     { $set: { estado: estado, observaciones: req.body.observaciones } },
     { new: true }
   );
+  if (estado === "ANULADA") {
+    const notaAnulada = await NotasVenta.findById(id);
+    try {
+      await dominicalNominaService.procesarAjustesPorAnulacionFactura(
+        notaAnulada,
+        (req.body && req.body.username) || ""
+      );
+    } catch (err) {
+      console.error("Ajuste dominical por anulación nota:", err.message);
+    }
+  }
   res.json({ status: "factura Updated" });
 });
 

@@ -72,6 +72,7 @@ import { DescuentoComponent } from "./pages/descuentos/descuentos.component";
 import { IvaComponent } from "./pages/iva/iva.component";
 import { ConfiguracionPresentacionComponent } from "./pages/configuracion-presentacion/configuracion-presentacion.component";
 import { GestionEntregasBodegaComponent } from "./pages/gestion-entregas-bodega/gestion-entregas-bodega.component";
+import { NominasComponent } from "./pages/nominas/nominas.component";
 
 const routes: Routes = [
   {
@@ -379,6 +380,11 @@ const routes: Routes = [
   {
     path: "stock-locales",
     component: StockLocalesComponent,
+    canActivate: [AuthGuardService],
+  },
+  {
+    path: "nominas",
+    component: NominasComponent,
     canActivate: [AuthGuardService],
   },
   {

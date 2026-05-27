@@ -1,0 +1,866 @@
+<div class="card mb-3">
+  <div class="card-body">
+    <div class="eventos-pagos-titulo text-center">
+      Activación reglas de pagos
+    </div>
+    <p class="text-muted text-center small mb-3" *ngIf="esTipoA">
+      Tipo A — Pagos cíclicos ejecutados automáticamente (nómina, dominical, etc.)
+    </p>
+    <p class="text-muted text-center small mb-3" *ngIf="esTipoB">
+      Tipo B — Deudas programadas (arriendos, préstamos, tarjetas). Se cargan en calendario y el encargado ejecuta en la fecha.
+    </p>
+
+    <div class="row eventos-formulario">
+      <div class="col-md-4 mb-3">
+        <label class="form-label">Tipo regla</label>
+        <dx-select-box
+          [items]="tiposRegla"
+          [(value)]="formulario.tipoRegla"
+          (onValueChanged)="onTipoReglaChanged()"
+          [disabled]="formulario.estadoRegla === 'Autorizada'"
+        ></dx-select-box>
+      </div>
+      <div class="col-md-4 mb-3">
+        <label class="form-label">Tipo beneficiario</label>
+        <dx-select-box
+          [items]="tiposBeneficiario"
+          [(value)]="formulario.tipoBeneficiario"
+          (onValueChanged)="onTipoBeneficiarioChanged()"
+          [disabled]="esDominical"
+        ></dx-select-box>
+      </div>
+      <div class="col-md-4 mb-3">
+        <label class="form-label">Cédula beneficiario</label>
+        <div class="d-flex">
+          <dx-text-box
+            class="flex-grow-1"
+            [(value)]="formulario.cedulaBeneficiario"
+          ></dx-text-box>
+          <button
+            class="btn btn-sm btn-nomina-primario ml-2"
+            type="button"
+            (click)="buscarBeneficiario()"
+          >
+            Buscar
+          </button>
+        </div>
+      </div>
+      <div class="col-md-4 mb-3">
+        <label class="form-label">Nombre</label>
+        <dx-text-box
+          [(value)]="formulario.nombreBeneficiario"
+          [readOnly]="true"
+        ></dx-text-box>
+      </div>
+
+      <div class="col-md-4 mb-3">
+        <label class="form-label">Transacción nómina</label>
+        <dx-select-box
+          *ngIf="esTipoA"
+          [items]="transaccionesNominaA"
+          [(value)]="formulario.transaccionNomina"
+        ></dx-select-box>
+        <dx-select-box
+          *ngIf="esTipoB"
+          [items]="transaccionesNominaB"
+          [(value)]="formulario.transaccionNomina"
+        ></dx-select-box>
+      </div>
+
+      <!-- Campos Tipo A -->
+      <ng-container *ngIf="esTipoA">
+        <div class="col-md-4 mb-3">
+          <label class="form-label">Fuente</label>
+          <dx-select-box
+            [items]="fuentesMontoA"
+            [(value)]="formulario.fuente"
+            (onValueChanged)="onFuenteChanged()"
+          ></dx-select-box>
+          <small class="text-muted" *ngIf="formulario.fuente === 'TMS' && !esDominical">
+            Monto desde Tabla Maestra Salarial (asignación salarial)
+          </small>
+          <small class="text-muted" *ngIf="esDominical">
+            Fuente: facturación del domingo (ventas − devoluciones del día)
+          </small>
+        </div>
+        <div class="col-md-4 mb-3">
+          <label class="form-label">Frecuencia</label>
+          <dx-select-box
+            [items]="frecuenciasA"
+            [(value)]="formulario.frecuencia"
+            (onValueChanged)="onFrecuenciaChanged()"
+          ></dx-select-box>
+        </div>
+        <div class="col-md-4 mb-3">
+          <label class="form-label">Parámetro</label>
+          <dx-select-box
+            [items]="parametrosActuales"
+            [(value)]="formulario.parametro"
+          ></dx-select-box>
+        </div>
+        <div class="col-md-4 mb-3">
+          <label class="form-label">Vigencia de la regla</label>
+          <dx-select-box
+            [items]="vigenciasReglaA"
+            [(value)]="formulario.vigenciaRegla"
+          ></dx-select-box>
+        </div>
+        <div class="col-md-4 mb-3">
+          <label class="form-label">Monto ($)</label>
+          <div class="eventos-monto-display" *ngIf="esDominical">
+            <span *ngIf="montoDominicalPreview() !== null">
+              {{ montoDominicalPreview() | number : "1.2-2" }}
+            </span>
+            <span *ngIf="montoDominicalPreview() === null" class="text-muted small">
+              Simule liquidación
+            </span>
+          </div>
+          <div
+            class="eventos-monto-display"
+            *ngIf="
+              !esDominical &&
+              formulario.tipoBeneficiario === 'Interno' &&
+              formulario.fuente === 'TMS'
+            "
+          >
+            {{ formulario.monto | number : "1.2-2" }}
+          </div>
+          <dx-number-box
+            *ngIf="
+              !esDominical &&
+              (formulario.tipoBeneficiario === 'Externo' ||
+                formulario.fuente !== 'TMS')
+            "
+            [(value)]="formulario.monto"
+            [min]="0"
+            format="#,##0.##"
+          ></dx-number-box>
+          <small class="text-muted" *ngIf="esDominical && beneficiario">
+            Cargo TMS: {{ formulario.cargoNomina }} — tarifa según cálculo dominical
+          </small>
+          <small
+            class="text-muted"
+            *ngIf="beneficiario && formulario.fuente === 'TMS' && !esDominical"
+          >
+            TMS: asignación {{ beneficiario.asignacionSalarial | number : "1.2-2" }}
+          </small>
+        </div>
+      </ng-container>
+
+      <!-- Campos Tipo B -->
+      <ng-container *ngIf="esTipoB">
+        <div class="col-md-4 mb-3">
+          <label class="form-label">Centro de costo</label>
+          <dx-select-box
+            [items]="nombresCentrosCosto"
+            [(value)]="formulario.centroCosto"
+            [searchEnabled]="true"
+            placeholder="Raíz de la deuda / trazabilidad"
+          ></dx-select-box>
+          <small class="text-muted">Identifica la deuda particular para consolidar información</small>
+        </div>
+        <div class="col-md-4 mb-3">
+          <label class="form-label">Fuente</label>
+          <dx-text-box [(value)]="formulario.fuente" [readOnly]="true"></dx-text-box>
+          <small class="text-muted">Manual — sin cálculo del sistema</small>
+        </div>
+        <div class="col-md-4 mb-3">
+          <label class="form-label">Frecuencia</label>
+          <dx-select-box
+            [items]="frecuenciasB"
+            [(value)]="formulario.frecuencia"
+            (onValueChanged)="onFrecuenciaChanged()"
+          ></dx-select-box>
+        </div>
+        <div class="col-md-4 mb-3">
+          <label class="form-label">Cuotas</label>
+          <dx-number-box
+            [(value)]="formulario.cuotas"
+            [min]="1"
+            format="#0"
+            [readOnly]="formulario.modalidadMonto === 'Periodico' && formulario.vigenciaRegla === 'Indefinido' && !esAnual"
+            (onValueChanged)="onDatosAmortizacionChanged()"
+          ></dx-number-box>
+          <small class="text-muted" *ngIf="formulario.modalidadMonto === 'Finito'">
+            Número de pagos hasta saldar la deuda
+          </small>
+        </div>
+        <div class="col-md-4 mb-3">
+          <label class="form-label">Parámetro</label>
+          <dx-select-box
+            [items]="parametrosActuales"
+            [(value)]="formulario.parametro"
+            (onValueChanged)="sincronizarParametroDiaMes(); onDatosAmortizacionChanged()"
+          ></dx-select-box>
+          <div class="mt-2" *ngIf="formulario.frecuencia === 'Mensual'">
+            <label class="small">Día del mes</label>
+            <dx-number-box
+              [(value)]="formulario.diaDelMes"
+              [min]="1"
+              [max]="31"
+              format="#0"
+              (onValueChanged)="sincronizarParametroDiaMes()"
+            ></dx-number-box>
+          </div>
+          <div class="mt-2" *ngIf="esAnual">
+            <label class="small">Fecha referencia anual (mes inicio)</label>
+            <dx-date-box
+              [(value)]="formulario.fechaReferenciaAnual"
+              type="date"
+              (onValueChanged)="onDatosAmortizacionChanged()"
+            ></dx-date-box>
+            <div class="row mt-2">
+              <div class="col-6">
+                <label class="small">Día inicio ventana</label>
+                <dx-number-box
+                  [(value)]="formulario.diaInicioVentana"
+                  [min]="1"
+                  [max]="31"
+                  format="#0"
+                  (onValueChanged)="onDatosAmortizacionChanged()"
+                ></dx-number-box>
+              </div>
+              <div class="col-6">
+                <label class="small">Día límite ventana</label>
+                <dx-number-box
+                  [(value)]="formulario.diaLimiteVentana"
+                  [min]="1"
+                  [max]="31"
+                  format="#0"
+                  (onValueChanged)="onDatosAmortizacionChanged()"
+                ></dx-number-box>
+              </div>
+            </div>
+          </div>
+        </div>
+        <div class="col-md-4 mb-3">
+          <label class="form-label">Vigencia de la regla</label>
+          <dx-select-box
+            [items]="vigenciasReglaB"
+            [(value)]="formulario.vigenciaRegla"
+            (onValueChanged)="onVigenciaTipoBChanged()"
+          ></dx-select-box>
+        </div>
+        <div class="col-md-4 mb-3" *ngIf="!usaAmortizacion">
+          <label class="form-label">Monto</label>
+          <dx-select-box
+            [items]="modalidadesMontoB"
+            [(value)]="formulario.modalidadMonto"
+            (onValueChanged)="onModalidadMontoChanged()"
+          ></dx-select-box>
+          <small class="text-muted d-block" *ngIf="formulario.modalidadMonto === 'Periodico'">
+            Cuota fija recurrente (ej. arriendo $650/mes, sin monto total)
+          </small>
+          <small class="text-muted d-block" *ngIf="formulario.modalidadMonto === 'Finito'">
+            Deuda con monto total que termina al completar cuotas
+          </small>
+        </div>
+        <div
+          class="col-md-4 mb-3"
+          *ngIf="usaAmortizacion || formulario.modalidadMonto === 'Finito'"
+        >
+          <label class="form-label">Monto total ($)</label>
+          <dx-number-box
+            [(value)]="formulario.montoTotalDeuda"
+            [min]="0"
+            format="#,##0.##"
+            (onValueChanged)="onDatosAmortizacionChanged()"
+          ></dx-number-box>
+        </div>
+        <div class="col-md-4 mb-3" *ngIf="!usaAmortizacion">
+          <label class="form-label">Cuota evento ($)</label>
+          <dx-number-box
+            [(value)]="formulario.cuotaEvento"
+            [min]="0"
+            format="#,##0.##"
+          ></dx-number-box>
+        </div>
+        <div class="col-md-4 mb-3" *ngIf="usaAmortizacion">
+          <label class="form-label">Cuota evento ($)</label>
+          <dx-text-box
+            [value]="(formulario.cuotaEvento | number : '1.2-2') || ''"
+            [readOnly]="true"
+          ></dx-text-box>
+          <small class="text-muted">Calculada desde amortización (1ª cuota)</small>
+        </div>
+        <div class="col-md-4 mb-3 d-flex align-items-end" *ngIf="usaAmortizacion">
+          <button
+            type="button"
+            class="btn btn-outline-primary btn-block"
+            (click)="generarAmortizacion(true)"
+          >
+            Recalcular tabla
+          </button>
+        </div>
+      </ng-container>
+    </div>
+
+    <!-- Tabla amortización Tipo B -->
+    <div class="row" *ngIf="esTipoB && usaAmortizacion && tablaAmortizacion.length">
+      <div class="col-12 mb-3">
+        <h6 class="font-weight-bold">Tabla de amortización de pago</h6>
+        <p class="small text-muted mb-2">
+          Puede ajustar fechas y valores de cada cuota. La suma de valores no debe superar el monto total.
+          El pago puede ser parcial o total en uno o varios abonos.
+        </p>
+        <div class="table-responsive">
+          <table class="table table-sm table-bordered amortizacion-tabla">
+            <thead>
+              <tr>
+                <th>Cuota</th>
+                <th>Fecha mín.</th>
+                <th>Fecha máx.</th>
+                <th>Valor ($)</th>
+              </tr>
+            </thead>
+            <tbody>
+              <tr *ngFor="let fila of tablaAmortizacion; let i = index">
+                <td>{{ fila.numeroCuota }}</td>
+                <td style="min-width: 150px">
+                  <dx-date-box
+                    [(value)]="tablaAmortizacion[i].fechaMin"
+                    type="date"
+                    (onValueChanged)="onAmortizacionChanged()"
+                  ></dx-date-box>
+                </td>
+                <td style="min-width: 150px">
+                  <dx-date-box
+                    [(value)]="tablaAmortizacion[i].fechaMax"
+                    type="date"
+                    (onValueChanged)="onAmortizacionChanged()"
+                  ></dx-date-box>
+                </td>
+                <td style="width: 140px">
+                  <dx-number-box
+                    [(value)]="tablaAmortizacion[i].monto"
+                    [min]="0"
+                    format="#,##0.##"
+                    (onValueChanged)="onAmortizacionChanged()"
+                  ></dx-number-box>
+                </td>
+              </tr>
+            </tbody>
+            <tfoot>
+              <tr>
+                <td colspan="3" class="text-right font-weight-bold">Suma cuotas</td>
+                <td class="font-weight-bold">
+                  {{ sumaAmortizacion | number : "1.2-2" }}
+                  / {{ formulario.montoTotalDeuda | number : "1.2-2" }}
+                </td>
+              </tr>
+            </tfoot>
+          </table>
+        </div>
+        <div
+          class="alert alert-danger py-1 small mb-0"
+          *ngIf="validacionAmortizacion && !validacionAmortizacion.ok"
+        >
+          {{ validacionAmortizacion.mensaje }}
+        </div>
+        <div
+          class="alert alert-success py-1 small mb-0"
+          *ngIf="validacionAmortizacion?.ok && validacionAmortizacion.pendiente > 0"
+        >
+          Distribuido ${{ validacionAmortizacion.suma | number : "1.2-2" }} —
+          pendiente por asignar: ${{ validacionAmortizacion.pendiente | number : "1.2-2" }}
+        </div>
+      </div>
+    </div>
+
+    <div class="row mt-2">
+      <div class="col-md-3 mb-2">
+        <button class="btn btn-block btn-secondary" (click)="limpiarFormulario()">
+          Nuevo
+        </button>
+      </div>
+      <div class="col-md-3 mb-2">
+        <button
+          class="btn btn-block btn-nomina-primario"
+          (click)="guardarRegla()"
+          [disabled]="formulario.estadoRegla === 'Autorizada'"
+        >
+          Guardar borrador
+        </button>
+      </div>
+      <div class="col-md-3 mb-2">
+        <button
+          class="btn btn-block btn-success"
+          (click)="autorizarRegla()"
+          [disabled]="!reglaSeleccionada?._id"
+        >
+          Autorizar evento
+        </button>
+      </div>
+      <div class="col-md-3 mb-2">
+        <button
+          class="btn btn-block btn-outline-primary"
+          (click)="verProyeccion(formulario)"
+          [disabled]="
+            (esTipoA && !esDominical && !formulario.monto) ||
+            (esTipoB && !usaAmortizacion && !formulario.cuotaEvento) ||
+            (esTipoB && usaAmortizacion && !formulario.montoTotalDeuda)
+          "
+        >
+          Vista previa
+        </button>
+      </div>
+    </div>
+
+    <div
+      class="alert alert-warning mt-2 mb-0"
+      *ngIf="beneficiario?.estadoEmpleado === 'INACTIVO'"
+    >
+      Empleado <strong>INACTIVO</strong>: los pagos cesan al finalizar el contrato.
+    </div>
+  </div>
+</div>
+
+<!-- Pagos programados Tipo B -->
+<div class="card mb-3" *ngIf="esTipoB || eventosProgramados.length">
+  <div class="card-body">
+    <h6 class="font-weight-bold text-center mb-3">
+      Pagos programados — ejecución manual (Tipo B)
+    </h6>
+    <p class="text-muted small text-center">
+      Los eventos se cargan al autorizar la regla. El encargado registra el pago en finanzas cuando corresponde la fecha.
+    </p>
+    <div class="row mb-3">
+      <div class="col-md-4">
+        <label>Filtrar estado</label>
+        <dx-select-box
+          [items]="estadosEventoFiltro"
+          [(value)]="filtroEventosEstado"
+          (onValueChanged)="cargarEventosProgramados()"
+        ></dx-select-box>
+      </div>
+      <div class="col-md-4 d-flex align-items-end">
+        <button
+          class="btn btn-outline-primary btn-block"
+          type="button"
+          (click)="cargarEventosProgramados()"
+        >
+          Actualizar listado
+        </button>
+      </div>
+    </div>
+    <table class="table table-sm table-bordered" *ngIf="eventosProgramados.length">
+      <thead>
+        <tr>
+          <th>Ventana</th>
+          <th>Beneficiario</th>
+          <th>Transacción</th>
+          <th>Centro costo</th>
+          <th>Cuota</th>
+          <th>Programado</th>
+          <th>Pagado</th>
+          <th>Saldo</th>
+          <th>Estado</th>
+          <th></th>
+        </tr>
+      </thead>
+      <tbody>
+        <tr *ngFor="let ev of eventosProgramados">
+          <td class="small">
+            <span *ngIf="ev.fechaMin && ev.fechaMax">
+              {{ ev.fechaMin | date : "dd/MM/yy" }} — {{ ev.fechaMax | date : "dd/MM/yy" }}
+            </span>
+            <span *ngIf="!ev.fechaMin">{{ ev.fechaProgramada | date : "dd/MM/yyyy" }}</span>
+          </td>
+          <td>{{ ev.nombreBeneficiario }}</td>
+          <td>{{ ev.transaccionNomina }}</td>
+          <td>{{ ev.centroCosto }}</td>
+          <td>{{ ev.numeroCuota }}/{{ ev.totalCuotas }}</td>
+          <td>{{ ev.monto | number : "1.2-2" }}</td>
+          <td>{{ ev.montoPagado || 0 | number : "1.2-2" }}</td>
+          <td>{{ saldoPendienteEvento(ev) | number : "1.2-2" }}</td>
+          <td>
+            <span
+              class="badge"
+              [class.badge-warning]="ev.estado === 'Pendiente'"
+              [class.badge-info]="ev.estado === 'Parcial'"
+              [class.badge-success]="ev.estado === 'Ejecutado'"
+              [class.badge-secondary]="ev.estado === 'Cancelado'"
+            >
+              {{ ev.estado }}
+            </span>
+          </td>
+          <td>
+            <button
+              class="btn btn-sm btn-success"
+              *ngIf="puedeEjecutarEvento(ev)"
+              (click)="ejecutarEventoProgramado(ev)"
+            >
+              Pagar
+            </button>
+            <span
+              class="text-muted small"
+              *ngIf="(ev.estado === 'Pendiente' || ev.estado === 'Parcial') && !puedeEjecutarEvento(ev)"
+            >
+              Fuera de ventana
+            </span>
+          </td>
+        </tr>
+      </tbody>
+    </table>
+    <p class="text-muted small mb-0" *ngIf="!eventosProgramados.length">
+      No hay eventos programados. Autorice una regla tipo B para generarlos.
+    </p>
+  </div>
+</div>
+
+<!-- LIQUIDACIÓN DOMINICAL -->
+<div class="card mb-3" *ngIf="esDominical || simulacionDominical">
+  <div class="card-body">
+    <div class="eventos-pagos-titulo text-center">Liquidación pago dominical</div>
+    <p class="text-muted small text-center">
+      Facturación neta del domingo = ventas del día − devoluciones del mismo día.
+      Si es ≥ límite (config. global), aplica rango superior; si no, rango inferior.
+    </p>
+    <div class="row align-items-end mb-3">
+      <div class="col-md-4">
+        <label>Fecha (domingo)</label>
+        <dx-date-box
+          [(value)]="fechaDominicalLiquidacion"
+          type="date"
+        ></dx-date-box>
+      </div>
+      <div class="col-md-4">
+        <button
+          class="btn btn-block btn-outline-primary"
+          (click)="simularPagoDominical()"
+        >
+          Simular / calcular montos
+        </button>
+      </div>
+      <div class="col-md-4">
+        <button
+          class="btn btn-block btn-nomina-primario"
+          (click)="liquidarPagoDominical()"
+        >
+          Liquidar y registrar en finanzas
+        </button>
+      </div>
+    </div>
+
+    <div class="alert alert-info" *ngIf="simulacionDominical">
+      <strong>Facturación neta del domingo (tienda):</strong>
+      ${{ simulacionDominical.facturacion.facturacionNeta | number : "1.2-2" }}
+      (facturas + notas ${{
+        (simulacionDominical.facturacion.facturacionBruta || 0) | number : "1.2-2"
+      }}
+      − devoluciones ${{
+        simulacionDominical.facturacion.devoluciones | number : "1.2-2"
+      }})
+      · {{ simulacionDominical.facturacion.cantidadFacturas || 0 }} facturas,
+      {{ simulacionDominical.facturacion.cantidadNotas || 0 }} notas de venta
+      · Límite: ${{ simulacionDominical.limiteFacturacion | number : "1.0-0" }}
+      <br />
+    </div>
+
+    <table
+      class="table table-bordered table-sm"
+      *ngIf="simulacionDominical?.liquidaciones?.length"
+    >
+      <thead>
+        <tr>
+          <th>Trabajador</th>
+          <th>Usuario (username)</th>
+          <th>Fact. tienda</th>
+          <th>Fact. trabajador</th>
+          <th>Cargo</th>
+          <th>Rango</th>
+          <th>Monto</th>
+          <th>Ajustes pend.</th>
+          <th>Neto a pagar</th>
+          <th></th>
+        </tr>
+      </thead>
+      <tbody>
+        <tr *ngFor="let liq of simulacionDominical.liquidaciones">
+          <td>{{ liq.nombre }}</td>
+          <td>{{ liq.usuarioSistemaUsername || liq.usuarioSistemaNombre || "—" }}</td>
+          <td>{{ liq.facturacionNetaTienda | number : "1.2-2" }}</td>
+          <td>
+            <span *ngIf="liq.vinculadoUsuario">{{
+              liq.facturacionNetaTrabajador | number : "1.2-2"
+            }}</span>
+            <span *ngIf="!liq.vinculadoUsuario" class="text-warning small"
+              >Sin vincular TMS</span
+            >
+          </td>
+          <td>{{ liq.cargo }}</td>
+          <td>
+            <span *ngIf="!liq.error">{{ liq.rangoAplicado }}</span>
+            <span *ngIf="liq.error" class="text-danger">{{ liq.error }}</span>
+          </td>
+          <td>{{ liq.montoBruto | number : "1.2-2" }}</td>
+          <td>{{ liq.ajustesPendientes | number : "1.2-2" }}</td>
+          <td>{{ liq.montoNeto | number : "1.2-2" }}</td>
+          <td>
+            <span class="badge badge-success" *ngIf="liq.yaLiquidado">Pagado</span>
+          </td>
+        </tr>
+      </tbody>
+    </table>
+  </div>
+</div>
+
+<div class="card mb-3" *ngIf="ajustesPendientes.length">
+  <div class="card-body">
+    <h6 class="font-weight-bold text-danger">
+      Ajustes pendientes (por anulación de facturas)
+    </h6>
+    <p class="small text-muted">
+      Se descontarán automáticamente en la próxima liquidación de nómina/dominical.
+    </p>
+    <table class="table table-sm table-bordered">
+      <thead>
+        <tr>
+          <th>Trabajador</th>
+          <th>Domingo</th>
+          <th>Debitar ($)</th>
+          <th>Motivo</th>
+        </tr>
+      </thead>
+      <tbody>
+        <tr *ngFor="let aj of ajustesPendientes">
+          <td>{{ aj.nombreBeneficiario }}</td>
+          <td>{{ aj.fechaDominical | date : "dd/MM/yyyy" }}</td>
+          <td class="text-danger font-weight-bold">
+            {{ aj.montoAjuste | number : "1.2-2" }}
+          </td>
+          <td class="small">{{ aj.motivo }}</td>
+        </tr>
+      </tbody>
+    </table>
+  </div>
+</div>
+
+<!-- Proyección calendario (imagen 2) -->
+<div class="card mb-3" *ngIf="proyeccionVista?.meses?.length">
+  <div class="card-body">
+    <h6 class="text-center font-weight-bold text-uppercase mb-3">
+      Proyección de pagos — {{ proyeccionVista.etiquetaFila }}
+    </h6>
+    <div class="table-responsive">
+      <table class="proyeccion-tabla">
+        <thead>
+          <tr>
+            <th class="fila-etiqueta"></th>
+            <th
+              *ngFor="let mes of proyeccionVista.meses; let mi = index"
+              [attr.colspan]="mes.ocurrencias.length"
+              [ngClass]="claseMes(mi)"
+              class="mes-header"
+            >
+              {{ mes.mes }}
+            </th>
+          </tr>
+          <tr>
+            <th class="fila-etiqueta"></th>
+            <ng-container *ngFor="let mes of proyeccionVista.meses">
+              <th
+                class="fecha-header"
+                *ngFor="let oc of mes.ocurrencias"
+              >
+                {{ oc.etiqueta }}
+              </th>
+            </ng-container>
+          </tr>
+        </thead>
+        <tbody>
+          <tr>
+            <td class="fila-etiqueta">{{ proyeccionVista.etiquetaFila }}</td>
+            <ng-container *ngFor="let mes of proyeccionVista.meses">
+              <td class="celda-monto" *ngFor="let oc of mes.ocurrencias">
+                {{ oc.monto | number : "1.0-0" }}
+              </td>
+            </ng-container>
+          </tr>
+        </tbody>
+      </table>
+    </div>
+  </div>
+</div>
+
+<!-- Listado de reglas -->
+<div class="card">
+  <div class="card-body">
+    <h6 class="font-weight-bold mb-3">Reglas de pago registradas</h6>
+    <dx-data-grid
+      [dataSource]="reglas"
+      [showBorders]="true"
+      [columnAutoWidth]="true"
+      keyExpr="_id"
+    >
+      <dxi-column dataField="tipoRegla" caption="Tipo" [width]="60"></dxi-column>
+      <dxi-column dataField="nombreBeneficiario" caption="Beneficiario"></dxi-column>
+      <dxi-column dataField="cedulaBeneficiario" caption="Cédula"></dxi-column>
+      <dxi-column dataField="centroCosto" caption="Centro costo"></dxi-column>
+      <dxi-column dataField="transaccionNomina" caption="Transacción"></dxi-column>
+      <dxi-column dataField="frecuencia" caption="Frecuencia"></dxi-column>
+      <dxi-column dataField="parametro" caption="Parámetro"></dxi-column>
+      <dxi-column dataField="monto" caption="Monto" format="#,##0.##"></dxi-column>
+      <dxi-column dataField="estadoRegla" caption="Estado"></dxi-column>
+      <dxi-column
+        caption="Acciones"
+        cellTemplate="accionesRegla"
+        [width]="220"
+      ></dxi-column>
+      <div *dxTemplate="let d of 'accionesRegla'">
+        <button class="btn btn-sm btn-primary mr-1" (click)="editarRegla(d.data)">
+          Ver
+        </button>
+        <button
+          class="btn btn-sm btn-info mr-1"
+          (click)="verProyeccion(d.data)"
+        >
+          Calendario
+        </button>
+        <button
+          class="btn btn-sm btn-warning mr-1"
+          *ngIf="d.data.estadoRegla === 'Autorizada'"
+          (click)="finalizarRegla(d.data)"
+        >
+          Finalizar
+        </button>
+        <button
+          class="btn btn-sm btn-danger"
+          *ngIf="d.data.estadoRegla !== 'Autorizada'"
+          (click)="eliminarRegla(d.data)"
+        >
+          ×
+        </button>
+      </div>
+    </dx-data-grid>
+  </div>
+</div>
+
+<!-- Reporte estado empleado / centro de costo -->
+<div class="card mb-3">
+  <div class="card-body">
+    <h6 class="font-weight-bold text-center mb-3">
+      Consulta de pagos por empleado (centro de costo)
+    </h6>
+    <p class="text-muted small text-center">
+      Detalle de lo pagado a un empleado o centro de costo en un rango de fechas (Tipo B).
+    </p>
+    <div class="row align-items-end mb-3">
+      <div class="col-md-3 mb-2">
+        <label>Cédula empleado</label>
+        <dx-text-box [(value)]="reporteCedula"></dx-text-box>
+      </div>
+      <div class="col-md-3 mb-2">
+        <label>Centro de costo</label>
+        <dx-select-box
+          [items]="nombresCentrosCosto"
+          [(value)]="reporteCentroCosto"
+          [searchEnabled]="true"
+          [showClearButton]="true"
+        ></dx-select-box>
+      </div>
+      <div class="col-md-2 mb-2">
+        <label>Desde</label>
+        <dx-date-box [(value)]="reporteDesde" type="date"></dx-date-box>
+      </div>
+      <div class="col-md-2 mb-2">
+        <label>Hasta</label>
+        <dx-date-box [(value)]="reporteHasta" type="date"></dx-date-box>
+      </div>
+      <div class="col-md-2 mb-2">
+        <button
+          class="btn btn-nomina-primario btn-block"
+          type="button"
+          (click)="consultarReporteEstado()"
+        >
+          Consultar
+        </button>
+      </div>
+    </div>
+    <button
+      class="btn btn-sm btn-link mb-2"
+      type="button"
+      (click)="usarBeneficiarioEnReporte()"
+    >
+      Usar beneficiario del formulario
+    </button>
+
+    <div *ngIf="reporteEstado">
+      <div class="row mb-3">
+        <div class="col-md-4">
+          <div class="border rounded p-2 text-center">
+            <div class="small text-muted">Programado</div>
+            <strong>${{ reporteEstado.totalProgramado | number : "1.2-2" }}</strong>
+          </div>
+        </div>
+        <div class="col-md-4">
+          <div class="border rounded p-2 text-center">
+            <div class="small text-muted">Pagado</div>
+            <strong class="text-success">${{ reporteEstado.totalPagado | number : "1.2-2" }}</strong>
+          </div>
+        </div>
+        <div class="col-md-4">
+          <div class="border rounded p-2 text-center">
+            <div class="small text-muted">Pendiente</div>
+            <strong class="text-warning">${{ reporteEstado.totalPendiente | number : "1.2-2" }}</strong>
+          </div>
+        </div>
+      </div>
+
+      <table
+        class="table table-sm table-bordered mb-3"
+        *ngIf="reporteEstado.porTransaccion.length"
+      >
+        <thead>
+          <tr>
+            <th>Transacción</th>
+            <th>Centro costo</th>
+            <th>Cuotas</th>
+            <th>Programado</th>
+            <th>Pagado</th>
+            <th>Pendiente</th>
+          </tr>
+        </thead>
+        <tbody>
+          <tr *ngFor="let t of reporteEstado.porTransaccion">
+            <td>{{ t.transaccionNomina }}</td>
+            <td>{{ t.centroCosto }}</td>
+            <td>{{ t.cuotas }}</td>
+            <td>{{ t.programado | number : "1.2-2" }}</td>
+            <td>{{ t.pagado | number : "1.2-2" }}</td>
+            <td>{{ t.pendiente | number : "1.2-2" }}</td>
+          </tr>
+        </tbody>
+      </table>
+
+      <table class="table table-sm table-bordered" *ngIf="reporteEstado.eventos.length">
+        <thead>
+          <tr>
+            <th>Cuota</th>
+            <th>Transacción</th>
+            <th>Ventana</th>
+            <th>Programado</th>
+            <th>Pagado</th>
+            <th>Estado</th>
+          </tr>
+        </thead>
+        <tbody>
+          <tr *ngFor="let ev of reporteEstado.eventos">
+            <td>{{ ev.numeroCuota }}/{{ ev.totalCuotas }}</td>
+            <td>{{ ev.transaccionNomina }}</td>
+            <td class="small">
+              <span *ngIf="ev.fechaMin">{{ ev.fechaMin | date : "dd/MM/yy" }} — {{ ev.fechaMax | date : "dd/MM/yy" }}</span>
+              <span *ngIf="!ev.fechaMin">{{ ev.fechaProgramada | date : "dd/MM/yyyy" }}</span>
+            </td>
+            <td>{{ ev.monto | number : "1.2-2" }}</td>
+            <td>{{ ev.montoPagado || 0 | number : "1.2-2" }}</td>
+            <td>{{ ev.estado }}</td>
+          </tr>
+        </tbody>
+      </table>
+      <p class="text-muted small mb-0" *ngIf="!reporteEstado.eventos.length">
+        Sin movimientos en el rango seleccionado.
+      </p>
+    </div>
+  </div>
+</div>

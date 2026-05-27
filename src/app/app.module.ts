@@ -117,6 +117,8 @@ import { DescuentoComponent } from "./pages/descuentos/descuentos.component";
 import { IvaComponent } from './pages/iva/iva.component';
 import { ConfiguracionPresentacionComponent } from './pages/configuracion-presentacion/configuracion-presentacion.component';
 import { GestionEntregasBodegaComponent } from "./pages/gestion-entregas-bodega/gestion-entregas-bodega.component";
+import { NominasComponent } from "./pages/nominas/nominas.component";
+import { NominasEventosPagosComponent } from "./pages/nominas/nominas-eventos-pagos.component";
 
 @NgModule({
   declarations: [
@@ -183,7 +185,9 @@ import { GestionEntregasBodegaComponent } from "./pages/gestion-entregas-bodega/
     CargaMasivaComponent,
     IvaComponent,
     ConfiguracionPresentacionComponent,
-    GestionEntregasBodegaComponent
+    GestionEntregasBodegaComponent,
+    NominasComponent,
+    NominasEventosPagosComponent
   ],
   imports: [
     BrowserModule,

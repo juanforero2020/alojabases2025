@@ -1,0 +1,216 @@
+import { Injectable } from "@angular/core";
+import { HttpClient } from "@angular/common/http";
+import { environment } from "src/environments/environment";
+import {
+  AjusteNominaPendiente,
+  BeneficiarioNomina,
+  EventoPagoDominical,
+  EventoPagoProgramado,
+  FilaAmortizacion,
+  NominaConfigGlobal,
+  ProyeccionPagoNomina,
+  ReglaPagoNomina,
+  ReporteEstadoEmpleado,
+  SimulacionDominical,
+  TablaMaestraSalarial,
+} from "../pages/nominas/nominas";
+
+@Injectable({
+  providedIn: "root",
+})
+export class NominasService {
+  private URL = `${environment.services.urlServices}/nominas`;
+
+  constructor(public http: HttpClient) {}
+
+  getTablasMaestrasSalariales() {
+    return this.http.get<TablaMaestraSalarial[]>(
+      `${this.URL}/tabla-maestra-salarial`
+    );
+  }
+
+  getTablaMaestraSalarialPorCedula(cedula: string) {
+    return this.http.get<TablaMaestraSalarial>(
+      `${this.URL}/tabla-maestra-salarial/${cedula}`
+    );
+  }
+
+  crearTablaMaestraSalarial(registro: TablaMaestraSalarial) {
+    return this.http.post(`${this.URL}/tabla-maestra-salarial`, registro);
+  }
+
+  actualizarTablaMaestraSalarial(
+    id: string,
+    registro: Partial<TablaMaestraSalarial>
+  ) {
+    return this.http.put(`${this.URL}/tabla-maestra-salarial/${id}`, registro);
+  }
+
+  eliminarTablaMaestraSalarial(id: string) {
+    return this.http.delete(`${this.URL}/tabla-maestra-salarial/${id}`);
+  }
+
+  getConfigGlobal() {
+    return this.http.get<NominaConfigGlobal>(`${this.URL}/config-global`);
+  }
+
+  guardarConfigGlobal(config: NominaConfigGlobal) {
+    return this.http.put(`${this.URL}/config-global`, config);
+  }
+
+  restablecerConfigGlobal() {
+    return this.http.post(`${this.URL}/config-global/restablecer`, {});
+  }
+
+  getBeneficiarioInterno(cedula: string) {
+    return this.http.get<BeneficiarioNomina>(
+      `${this.URL}/beneficiario-interno/${cedula}`
+    );
+  }
+
+  getBeneficiarioExterno(documento: string) {
+    return this.http.get<BeneficiarioNomina>(
+      `${this.URL}/beneficiario-externo/${documento}`
+    );
+  }
+
+  getReglasPago() {
+    return this.http.get<ReglaPagoNomina[]>(`${this.URL}/reglas-pago`);
+  }
+
+  getReglaPago(id: string) {
+    return this.http.get<ReglaPagoNomina>(`${this.URL}/reglas-pago/${id}`);
+  }
+
+  getProyeccionRegla(id: string, meses?: number) {
+    const q = meses ? `?meses=${meses}` : "";
+    return this.http.get<ProyeccionPagoNomina>(
+      `${this.URL}/reglas-pago/${id}/proyeccion${q}`
+    );
+  }
+
+  vistaPreviaProyeccion(regla: ReglaPagoNomina) {
+    return this.http.post<ProyeccionPagoNomina>(
+      `${this.URL}/reglas-pago/vista-previa`,
+      regla
+    );
+  }
+
+  crearReglaPago(regla: ReglaPagoNomina) {
+    return this.http.post(`${this.URL}/reglas-pago`, regla);
+  }
+
+  actualizarReglaPago(id: string, regla: Partial<ReglaPagoNomina>) {
+    return this.http.put(`${this.URL}/reglas-pago/${id}`, regla);
+  }
+
+  autorizarReglaPago(id: string) {
+    return this.http.put(`${this.URL}/reglas-pago/${id}/autorizar`, {});
+  }
+
+  finalizarReglaPago(id: string) {
+    return this.http.put(`${this.URL}/reglas-pago/${id}/finalizar`, {});
+  }
+
+  eliminarReglaPago(id: string) {
+    return this.http.delete(`${this.URL}/reglas-pago/${id}`);
+  }
+
+  simularDominical(payload: {
+    fecha: Date | string;
+    sucursal?: string;
+    cedula?: string;
+  }) {
+    return this.http.post<SimulacionDominical>(
+      `${this.URL}/dominical/simular`,
+      payload
+    );
+  }
+
+  liquidarDominical(payload: {
+    fecha: Date | string;
+    sucursal?: string;
+    cedula?: string;
+    usuario?: string;
+    aplicarAjustes?: boolean;
+  }) {
+    return this.http.post(`${this.URL}/dominical/liquidar`, payload);
+  }
+
+  getEventosDominical(fecha?: string, cedula?: string) {
+    let q = "";
+    if (fecha) q += `fecha=${fecha}&`;
+    if (cedula) q += `cedula=${cedula}&`;
+    return this.http.get<EventoPagoDominical[]>(
+      `${this.URL}/dominical/eventos?${q}`
+    );
+  }
+
+  getAjustesPendientesNomina(cedula?: string) {
+    const q = cedula ? `?cedula=${cedula}` : "";
+    return this.http.get<AjusteNominaPendiente[]>(
+      `${this.URL}/dominical/ajustes-pendientes${q}`
+    );
+  }
+
+  getEventosProgramados(filtros?: {
+    estado?: string;
+    reglaId?: string;
+    cedula?: string;
+    desde?: string;
+    hasta?: string;
+  }) {
+    const params = new URLSearchParams();
+    if (filtros?.estado) params.set("estado", filtros.estado);
+    if (filtros?.reglaId) params.set("reglaId", filtros.reglaId);
+    if (filtros?.cedula) params.set("cedula", filtros.cedula);
+    if (filtros?.desde) params.set("desde", filtros.desde);
+    if (filtros?.hasta) params.set("hasta", filtros.hasta);
+    const q = params.toString();
+    return this.http.get<EventoPagoProgramado[]>(
+      `${this.URL}/eventos-programados${q ? `?${q}` : ""}`
+    );
+  }
+
+  ejecutarEventoProgramado(
+    id: string,
+    payload: { usuario?: string; sucursal?: string; notas?: string; monto?: number }
+  ) {
+    return this.http.put(`${this.URL}/eventos-programados/${id}/ejecutar`, payload);
+  }
+
+  cancelarEventoProgramado(id: string, notas?: string) {
+    return this.http.put(`${this.URL}/eventos-programados/${id}/cancelar`, {
+      notas,
+    });
+  }
+
+  amortizacionPrevia(regla: ReglaPagoNomina, forzarRegenerar = false) {
+    return this.http.post<{
+      tabla: FilaAmortizacion[];
+      total: number;
+      validacion: { ok: boolean; mensaje?: string; suma?: number; pendiente?: number };
+      cuotaEvento: number;
+    }>(`${this.URL}/reglas-pago/amortizacion-previa`, {
+      ...regla,
+      forzarRegenerar,
+    });
+  }
+
+  getReporteEstadoEmpleado(filtros: {
+    cedula?: string;
+    centroCosto?: string;
+    desde?: string;
+    hasta?: string;
+  }) {
+    const params = new URLSearchParams();
+    if (filtros.cedula) params.set("cedula", filtros.cedula);
+    if (filtros.centroCosto) params.set("centroCosto", filtros.centroCosto);
+    if (filtros.desde) params.set("desde", filtros.desde);
+    if (filtros.hasta) params.set("hasta", filtros.hasta);
+    const q = params.toString();
+    return this.http.get<ReporteEstadoEmpleado>(
+      `${this.URL}/reporte-estado-empleado${q ? `?${q}` : ""}`
+    );
+  }
+}
