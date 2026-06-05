@@ -5,6 +5,7 @@ import {
   AjusteNominaPendiente,
   BeneficiarioNomina,
   EventoPagoDominical,
+  DesgloseDescuentosEvento,
   EventoPagoProgramado,
   FilaAmortizacion,
   NominaConfigGlobal,
@@ -157,6 +158,9 @@ export class NominasService {
     estado?: string;
     reglaId?: string;
     cedula?: string;
+    transaccionNomina?: string;
+    tipoRegla?: string;
+    conDescuento?: "si" | "no";
     desde?: string;
     hasta?: string;
   }) {
@@ -164,11 +168,24 @@ export class NominasService {
     if (filtros?.estado) params.set("estado", filtros.estado);
     if (filtros?.reglaId) params.set("reglaId", filtros.reglaId);
     if (filtros?.cedula) params.set("cedula", filtros.cedula);
+    if (filtros?.transaccionNomina) {
+      params.set("transaccion", filtros.transaccionNomina);
+    }
+    if (filtros?.tipoRegla) params.set("tipoRegla", filtros.tipoRegla);
+    if (filtros?.conDescuento) {
+      params.set("conDescuento", filtros.conDescuento);
+    }
     if (filtros?.desde) params.set("desde", filtros.desde);
     if (filtros?.hasta) params.set("hasta", filtros.hasta);
     const q = params.toString();
     return this.http.get<EventoPagoProgramado[]>(
       `${this.URL}/eventos-programados${q ? `?${q}` : ""}`
+    );
+  }
+
+  getDesgloseDescuentosEvento(eventoId: string) {
+    return this.http.get<DesgloseDescuentosEvento>(
+      `${this.URL}/eventos-programados/${eventoId}/desglose-descuentos`
     );
   }
 
@@ -183,6 +200,23 @@ export class NominasService {
     return this.http.put(`${this.URL}/eventos-programados/${id}/cancelar`, {
       notas,
     });
+  }
+
+  getReglasPagoAsociables(cedula: string) {
+    return this.http.get<ReglaPagoNomina[]>(
+      `${this.URL}/reglas-pago-asociables/${cedula}`
+    );
+  }
+
+  descuentoPrevia(regla: ReglaPagoNomina) {
+    return this.http.post<{
+      tabla: FilaAmortizacion[];
+      total: number;
+      cuotaEvento: number;
+      cuotasValores: number[];
+      montoBrutoPago: number;
+      cuotaNetaEjemplo: number;
+    }>(`${this.URL}/reglas-pago/descuento-previa`, regla);
   }
 
   amortizacionPrevia(regla: ReglaPagoNomina, forzarRegenerar = false) {

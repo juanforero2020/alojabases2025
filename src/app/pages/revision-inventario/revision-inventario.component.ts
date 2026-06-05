@@ -216,18 +216,18 @@ export class RevionInventarioComponent implements OnInit {
     this.listadoRevisiones = [];
     this._revisionInventarioService.getRevisionesIniciadas().subscribe(res => {
       this.listadoRevisiones = res as controlInventario[];
-      if(this.idRevision != "0"){
+      //if(this.idRevision != "0"){
         var revision = this.listadoRevisiones.find(element=> element.idDocumento == Number(this.idRevision))
         if(revision != null){
           this.revisionIniciada = revision
           this.nota.descripcion = this.revisionIniciada.notas;
           this.CuentaActualizar = this.revisionIniciada;
           this.traerRevisionesInventarioProductosPorId()
-        }
+        /* }
         else{
           this.bloquearboton = true;
           this.mostrarMensajeGenerico(2,"El proceso de revision ha culminado")
-        }
+        } */
           
       }
       this.separarRevisiones()
@@ -1311,6 +1311,10 @@ opcionRadioTipos(e){
       this.invetarioProd.ultimaFechaCompra = element2.ultimaFechaCompra;
       this.invetarioProd.notas = element2.notas;
       this.invetarioProd.execute = false;
+
+      console.log(contCajas)
+      console.log(contPiezas)
+      console.log(this.invetarioProd)
       if (this.invetarioProd.producto.PRODUCTO == nombreProducto)
         this.invetarioP.push(this.invetarioProd);
 
@@ -1328,6 +1332,7 @@ opcionRadioTipos(e){
 
   
   transformarM2(indice) {
+    console.log(this.invetarioP)
     this.invetarioP.forEach((element) => {
       element.cantidadM2 = parseFloat((element.producto.M2 * element.cantidadCajas +(element.cantidadPiezas * element.producto.M2) /element.producto.P_CAJA).toFixed(2));
       element.cantidadM2b2 = parseFloat((element.producto.M2 * element.cantidadCajas2 +(element.cantidadPiezas2 * element.producto.M2) / element.producto.P_CAJA).toFixed(2));
@@ -1335,6 +1340,7 @@ opcionRadioTipos(e){
       element.totalb1 = parseFloat((element.cantidadM2 * element.producto.precio).toFixed(2));
       element.totalb2 = parseFloat((element.cantidadM2b2 * element.producto.precio).toFixed(2));
       element.totalb3 = parseFloat((element.cantidadM2b3 * element.producto.precio).toFixed(2));
+      console.log(element)
     });
     this.cambiarValores();
     this.controlarInventario(indice);
@@ -1422,6 +1428,8 @@ opcionRadioTipos(e){
       this.productoRevisado.resultado = "OK"
 
     this.mostrarLoading = false;
+
+    console.log(this.productoRevisado)
   }
 
 

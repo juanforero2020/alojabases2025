@@ -119,6 +119,8 @@ import { ConfiguracionPresentacionComponent } from './pages/configuracion-presen
 import { GestionEntregasBodegaComponent } from "./pages/gestion-entregas-bodega/gestion-entregas-bodega.component";
 import { NominasComponent } from "./pages/nominas/nominas.component";
 import { NominasEventosPagosComponent } from "./pages/nominas/nominas-eventos-pagos.component";
+import { NominasConsultaPagosComponent } from "./pages/nominas/nominas-consulta-pagos.component";
+import { NominasPagosProgramadosComponent } from "./pages/nominas/nominas-pagos-programados.component";
 
 @NgModule({
   declarations: [
@@ -187,7 +189,9 @@ import { NominasEventosPagosComponent } from "./pages/nominas/nominas-eventos-pa
     ConfiguracionPresentacionComponent,
     GestionEntregasBodegaComponent,
     NominasComponent,
-    NominasEventosPagosComponent
+    NominasEventosPagosComponent,
+    NominasConsultaPagosComponent,
+    NominasPagosProgramadosComponent
   ],
   imports: [
     BrowserModule,

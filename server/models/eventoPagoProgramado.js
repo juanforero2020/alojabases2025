@@ -29,6 +29,13 @@ const EventoPagoProgramadoSchema = new Schema(
     fechaMin: { type: Date, required: false },
     fechaMax: { type: Date, required: false },
     monto: { type: Number, required: true, default: 0 },
+    montoBruto: { type: Number, required: false },
+    montoDescuento: { type: Number, default: 0 },
+    reglaDescuentoId: {
+      type: Schema.Types.ObjectId,
+      ref: "ReglaPagoNomina",
+      required: false,
+    },
     montoPagado: { type: Number, default: 0 },
     centroCosto: { type: String, required: false },
     transaccionNomina: { type: String, required: false },

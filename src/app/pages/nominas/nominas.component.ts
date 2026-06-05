@@ -22,6 +22,8 @@ export class NominasComponent implements OnInit {
     "Tabla Maestra Salarial",
     "Configuración Global",
     "Eventos de Pagos",
+    "Pagos Programados",
+    "Consulta de Pagos",
   ];
   seccionActiva = "Tabla Maestra Salarial";
 

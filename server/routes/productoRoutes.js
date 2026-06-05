@@ -105,6 +105,7 @@ router.put('/updateProductoCatalogo/:id', async (req, res,next) => {
         M2:req.body.M2,P_CAJA:req.body.P_CAJA,
         porcentaje_ganancia:req.body.porcentaje_ganancia,
         CASA: req.body.CASA,
+        UNIDAD: req.body.UNIDAD,
         precio:req.body.precio,ESTADO:req.body.ESTADO}}, {new: true});
     res.json({status: 'Actualización Exitosa'});
 })

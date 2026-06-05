@@ -163,7 +163,295 @@
         </div>
     </dx-popup>
 
-    <div class="row">  
+    <div class="row mb-3">
+        <div class="col-md-12">
+            <div class="dx-card responsive-paddings">
+                <h5>Indicador - Caja Menor</h5>
+                <p class="text-muted">
+                    Resumen de cierres diarios de caja menor (últimos {{ diasIndicadorCajaMenor }} días).
+                    <strong>Faltante &gt; $1.00</strong> (resultado menor a −$1.00) y <strong>Sobrante &gt; $1.00</strong> (resultado mayor a $1.00).
+                </p>
+                <div *ngIf="cargandoIndicadoresCajaMenor" class="loading-wrap">
+                    <dx-load-indicator [visible]="true" height="32" width="32"></dx-load-indicator>
+                    <span>Cargando indicadores de caja menor…</span>
+                </div>
+                <ng-container *ngIf="!cargandoIndicadoresCajaMenor">
+                    <div class="row text-center">
+                        <div class="col-md-3">
+                            <div
+                                class="mini-kpi mini-kpi-clickable"
+                                role="button"
+                                tabindex="0"
+                                (click)="abrirDetalleIndicadorCajaMenor('todas')"
+                                (keyup.enter)="abrirDetalleIndicadorCajaMenor('todas')"
+                                (keyup.space)="$event.preventDefault(); abrirDetalleIndicadorCajaMenor('todas')"
+                                title="Ver detalle día a día de todas las cajas"
+                            >
+                                <div class="mini-kpi-title">Registros</div>
+                                <div class="mini-kpi-value">{{ indicadoresCajaMenor.total }}</div>
+                            </div>
+                        </div>
+                        <div class="col-md-3">
+                            <div
+                                class="mini-kpi mini-kpi-clickable"
+                                role="button"
+                                tabindex="0"
+                                (click)="abrirDetalleIndicadorCajaMenor('cerradas')"
+                                (keyup.enter)="abrirDetalleIndicadorCajaMenor('cerradas')"
+                                (keyup.space)="$event.preventDefault(); abrirDetalleIndicadorCajaMenor('cerradas')"
+                                title="Ver cajas cerradas"
+                            >
+                                <div class="mini-kpi-title">Cerradas</div>
+                                <div class="mini-kpi-value">{{ indicadoresCajaMenor.cerradas }}</div>
+                            </div>
+                        </div>
+                        <div class="col-md-3">
+                            <div
+                                class="mini-kpi mini-kpi-clickable"
+                                role="button"
+                                tabindex="0"
+                                (click)="abrirDetalleIndicadorCajaMenor('abiertas')"
+                                (keyup.enter)="abrirDetalleIndicadorCajaMenor('abiertas')"
+                                (keyup.space)="$event.preventDefault(); abrirDetalleIndicadorCajaMenor('abiertas')"
+                                title="Ver cajas abiertas"
+                            >
+                                <div class="mini-kpi-title">Abiertas</div>
+                                <div class="mini-kpi-value">{{ indicadoresCajaMenor.abiertas }}</div>
+                            </div>
+                        </div>
+                        <div class="col-md-3">
+                            <div class="mini-kpi">
+                                <div class="mini-kpi-title">Cuadradas (OK)</div>
+                                <div class="mini-kpi-value">{{ indicadoresCajaMenor.cuadradas }}</div>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="row text-center mt-2">
+                        <div class="col-md-6">
+                            <div
+                                class="mini-kpi mini-kpi-alert mini-kpi-faltantes mini-kpi-clickable"
+                                role="button"
+                                tabindex="0"
+                                (click)="abrirDetalleIndicadorCajaMenor('faltantes')"
+                                (keyup.enter)="abrirDetalleIndicadorCajaMenor('faltantes')"
+                                (keyup.space)="$event.preventDefault(); abrirDetalleIndicadorCajaMenor('faltantes')"
+                                title="Ver cajas con faltante mayor a $1.00 (resultado menor a −$1.00)"
+                            >
+                                <div class="mini-kpi-title">Faltante &gt; $1.00</div>
+                                <div class="mini-kpi-subtitle">Resultado &lt; −$1.00 · prioridad</div>
+                                <div class="mini-kpi-value">{{ indicadoresCajaMenor.faltantes }}</div>
+                            </div>
+                        </div>
+                        <div class="col-md-6">
+                            <div
+                                class="mini-kpi mini-kpi-alert mini-kpi-sobrante-mas-uno mini-kpi-clickable"
+                                role="button"
+                                tabindex="0"
+                                (click)="abrirDetalleIndicadorCajaMenor('sobrante-mas-uno')"
+                                (keyup.enter)="abrirDetalleIndicadorCajaMenor('sobrante-mas-uno')"
+                                (keyup.space)="$event.preventDefault(); abrirDetalleIndicadorCajaMenor('sobrante-mas-uno')"
+                                title="Ver cajas con sobrante mayor a $1.00"
+                            >
+                                <div class="mini-kpi-title">Sobrante &gt; $1.00</div>
+                                <div class="mini-kpi-subtitle">Resultado mayor a $1.00 · prioridad</div>
+                                <div class="mini-kpi-value">{{ indicadoresCajaMenor.sobranteMasUno }}</div>
+                            </div>
+                        </div>
+                    </div>
+                    <div *ngIf="errorIndicadoresCajaMenor" class="error-wrap mt-2">
+                        <span>No se pudieron cargar los indicadores de caja menor.</span>
+                        <dx-button text="Reintentar" type="default" (onClick)="cargarIndicadoresCajaMenor()"></dx-button>
+                    </div>
+                </ng-container>
+            </div>
+        </div>
+    </div>
+
+    <dx-popup
+        [width]="anchoPopupIndicadores"
+        [height]="altoPopupIndicadores"
+        [showTitle]="true"
+        [title]="tituloPopupCajaMenor"
+        [closeOnOutsideClick]="true"
+        [showCloseButton]="true"
+        [dragEnabled]="false"
+        [(visible)]="popupCajaMenorVisible"
+        (onHidden)="onPopupCajaMenorCerrado()"
+    >
+        <div *dxTemplate="let data of 'content'" class="popup-indicadores-entregas">
+            <div class="popup-indicadores-scroll">
+                <p class="text-muted small mb-2" *ngIf="tipoDetalleCajaMenorActivo !== 'faltantes' && tipoDetalleCajaMenorActivo !== 'sobrante-mas-uno'">
+                    Detalle referencial por día; incluye sucursal, estado del cierre y resultado calculado.
+                </p>
+                <p class="text-muted small mb-2" *ngIf="tipoDetalleCajaMenorActivo === 'faltantes'">
+                    Solo cajas con faltante mayor a $1.00 (resultado menor a −$1.00), por ejemplo −$1.07.
+                </p>
+                <p class="text-muted small mb-2" *ngIf="tipoDetalleCajaMenorActivo === 'sobrante-mas-uno'">
+                    Solo cajas con sobrante mayor a $1.00 en el periodo consultado.
+                </p>
+                <div *ngIf="detalleCajaMenorFiltrado.length === 0" class="text-muted">
+                    No hay registros en esta categoría.
+                </div>
+                <div *ngFor="let c of detalleCajaMenorFiltrado" class="detalle-orden-card detalle-caja-menor">
+                    <div class="detalle-orden-linea detalle-caja-menor-fila-principal">
+                        <strong>{{ formatearFechaCajaMenor(c.fecha) }}</strong>
+                        <span class="caja-estado-badge" [class.caja-estado-cerrada]="esCajaCerrada(c)" [class.caja-estado-abierta]="!esCajaCerrada(c)">
+                            {{ etiquetaEstadoCajaMenor(c) }}
+                        </span>
+                    </div>
+                    <div class="detalle-orden-linea small text-muted">
+                        Sucursal: {{ c.sucursal || '—' }}
+                        <span *ngIf="c.idDocumento"> · Doc. #{{ c.idDocumento }}</span>
+                        <span *ngIf="c.estadoCaja"> · {{ c.estadoCaja }}</span>
+                    </div>
+                    <div class="detalle-orden-linea small">
+                        Resultado:
+                        <strong [ngClass]="claseResultadoCajaMenor(c)">{{ formatearResultadoCajaMenor(c.resultado) }}</strong>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </dx-popup>
+
+    <div class="row mb-3">
+        <div class="col-md-12">
+            <div class="dx-card responsive-paddings">
+                <h5>Indicador - Órdenes de Compra</h5>
+                <p class="text-muted">
+                    Solicitudes y órdenes aprobadas de los últimos {{ diasIndicadorOrdenCompra }} días
+                    (abierto, parcial y completo). No incluye rechazadas.
+                </p>
+                <div *ngIf="cargandoIndicadoresOrdenCompra" class="loading-wrap">
+                    <dx-load-indicator [visible]="true" height="32" width="32"></dx-load-indicator>
+                    <span>Cargando indicadores de órdenes de compra…</span>
+                </div>
+                <ng-container *ngIf="!cargandoIndicadoresOrdenCompra">
+                    <div class="row text-center">
+                        <div class="col-6 col-md">
+                            <div
+                                class="mini-kpi mini-kpi-clickable"
+                                role="button"
+                                tabindex="0"
+                                (click)="abrirDetalleIndicadorOrdenCompra('todas')"
+                                (keyup.enter)="abrirDetalleIndicadorOrdenCompra('todas')"
+                                (keyup.space)="$event.preventDefault(); abrirDetalleIndicadorOrdenCompra('todas')"
+                                title="Ver todas las órdenes visibles del periodo"
+                            >
+                                <div class="mini-kpi-title">Total</div>
+                                <div class="mini-kpi-value">{{ indicadoresOrdenCompra.total }}</div>
+                            </div>
+                        </div>
+                        <div class="col-6 col-md">
+                            <div
+                                class="mini-kpi mini-kpi-clickable"
+                                role="button"
+                                tabindex="0"
+                                (click)="abrirDetalleIndicadorOrdenCompra('solicitudes')"
+                                (keyup.enter)="abrirDetalleIndicadorOrdenCompra('solicitudes')"
+                                (keyup.space)="$event.preventDefault(); abrirDetalleIndicadorOrdenCompra('solicitudes')"
+                                title="Ver solicitudes pendientes de aprobación"
+                            >
+                                <div class="mini-kpi-title">Solicitudes</div>
+                                <div class="mini-kpi-value">{{ indicadoresOrdenCompra.solicitudes }}</div>
+                            </div>
+                        </div>
+                        <div class="col-6 col-md">
+                            <div
+                                class="mini-kpi mini-kpi-clickable"
+                                role="button"
+                                tabindex="0"
+                                (click)="abrirDetalleIndicadorOrdenCompra('abierto')"
+                                (keyup.enter)="abrirDetalleIndicadorOrdenCompra('abierto')"
+                                (keyup.space)="$event.preventDefault(); abrirDetalleIndicadorOrdenCompra('abierto')"
+                                title="Ver órdenes abiertas"
+                            >
+                                <div class="mini-kpi-title">Abierto</div>
+                                <div class="mini-kpi-value">{{ indicadoresOrdenCompra.abierto }}</div>
+                            </div>
+                        </div>
+                        <div class="col-6 col-md">
+                            <div
+                                class="mini-kpi mini-kpi-clickable"
+                                role="button"
+                                tabindex="0"
+                                (click)="abrirDetalleIndicadorOrdenCompra('parcial')"
+                                (keyup.enter)="abrirDetalleIndicadorOrdenCompra('parcial')"
+                                (keyup.space)="$event.preventDefault(); abrirDetalleIndicadorOrdenCompra('parcial')"
+                                title="Ver órdenes con ingreso parcial"
+                            >
+                                <div class="mini-kpi-title">Parcial</div>
+                                <div class="mini-kpi-value">{{ indicadoresOrdenCompra.parcial }}</div>
+                            </div>
+                        </div>
+                        <div class="col-6 col-md">
+                            <div
+                                class="mini-kpi mini-kpi-clickable"
+                                role="button"
+                                tabindex="0"
+                                (click)="abrirDetalleIndicadorOrdenCompra('completo')"
+                                (keyup.enter)="abrirDetalleIndicadorOrdenCompra('completo')"
+                                (keyup.space)="$event.preventDefault(); abrirDetalleIndicadorOrdenCompra('completo')"
+                                title="Ver órdenes completas"
+                            >
+                                <div class="mini-kpi-title">Completo</div>
+                                <div class="mini-kpi-value">{{ indicadoresOrdenCompra.completo }}</div>
+                            </div>
+                        </div>
+                    </div>
+                    <div *ngIf="errorIndicadoresOrdenCompra" class="error-wrap mt-2">
+                        <span>No se pudieron cargar los indicadores de órdenes de compra.</span>
+                        <dx-button text="Reintentar" type="default" (onClick)="cargarIndicadoresOrdenCompra()"></dx-button>
+                    </div>
+                </ng-container>
+            </div>
+        </div>
+    </div>
+
+    <dx-popup
+        [width]="anchoPopupIndicadores"
+        [height]="altoPopupIndicadores"
+        [showTitle]="true"
+        [title]="tituloPopupOrdenCompra"
+        [closeOnOutsideClick]="true"
+        [showCloseButton]="true"
+        [dragEnabled]="false"
+        [(visible)]="popupOrdenCompraVisible"
+        (onHidden)="onPopupOrdenCompraCerrado()"
+    >
+        <div *dxTemplate="let data of 'content'" class="popup-indicadores-entregas">
+            <div class="popup-indicadores-scroll">
+                <p class="text-muted small mb-2">
+                    Detalle referencial de los últimos {{ diasIndicadorOrdenCompra }} días; incluye solicitud, proveedor, estado y total.
+                </p>
+                <div *ngIf="detalleOrdenCompraFiltrado.length === 0" class="text-muted">
+                    No hay registros en esta categoría.
+                </div>
+                <div *ngFor="let o of detalleOrdenCompraFiltrado" class="detalle-orden-card detalle-orden-compra">
+                    <div class="detalle-orden-linea detalle-caja-menor-fila-principal">
+                        <strong>{{ formatearFechaOrdenCompra(o.fecha) }}</strong>
+                        <span class="caja-estado-badge" [ngClass]="claseEstadoOrdenCompra(o)">
+                            {{ etiquetaEstadoOrdenCompra(o) }}
+                        </span>
+                    </div>
+                    <div class="detalle-orden-linea small text-muted">
+                        Solicitud #{{ o.documento || '—' }}
+                        <span *ngIf="esOrdenAprobada(o)"> · Orden #{{ o.n_orden }}</span>
+                        <span> · {{ nombreSucursalOrdenCompra(o) }}</span>
+                    </div>
+                    <div class="detalle-orden-linea small">
+                        Proveedor: {{ nombreProveedorOrdenCompra(o) }}
+                        <span *ngIf="o.tipo" class="text-muted"> · {{ o.tipo }}</span>
+                    </div>
+                    <div class="detalle-orden-linea small">
+                        Total:
+                        <strong>{{ formatearTotalOrdenCompra(o.total) }}</strong>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </dx-popup>
+
+    <div class="row">
         <div class="col-md-12">
             <div class="dx-card responsive-paddings stock-minimo-card">
                 <h5>Productos bajo stock mínimo</h5>

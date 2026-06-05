@@ -1,0 +1,135 @@
+<div class="card mb-3">
+  <div class="card-body">
+    <div class="consulta-pagos-titulo text-center">
+      Consulta de pagos por empleado (centro de costo)
+    </div>
+    <p class="text-muted text-center mb-3">
+      Detalle de pagos programados y ejecutados (tipo A, B y descuentos aplicados) por cédula o centro de costo.
+      Si consulta por <strong>cédula</strong>, no use centro de costo al mismo tiempo.
+    </p>
+    <div class="row align-items-end mb-3">
+      <div class="col-md-3 mb-2">
+        <label>Cédula empleado</label>
+        <dx-text-box [(value)]="reporteCedula"></dx-text-box>
+      </div>
+      <div class="col-md-3 mb-2">
+        <label>Centro de costo</label>
+        <dx-select-box
+          [items]="nombresCentrosCosto"
+          [(value)]="reporteCentroCosto"
+          [searchEnabled]="true"
+          [showClearButton]="true"
+        ></dx-select-box>
+      </div>
+      <div class="col-md-2 mb-2">
+        <label>Desde</label>
+        <dx-date-box [(value)]="reporteDesde" type="date"></dx-date-box>
+      </div>
+      <div class="col-md-2 mb-2">
+        <label>Hasta</label>
+        <dx-date-box [(value)]="reporteHasta" type="date"></dx-date-box>
+      </div>
+      <div class="col-md-2 mb-2">
+        <button
+          class="btn btn-nomina-primario btn-block"
+          type="button"
+          (click)="consultarReporteEstado()"
+        >
+          Consultar
+        </button>
+      </div>
+    </div>
+
+    <div *ngIf="reporteEstado">
+      <div class="row mb-3">
+        <div class="col-md-4">
+          <div class="border rounded p-2 text-center">
+            <div class="small text-muted">Programado</div>
+            <strong>${{ reporteEstado.totalProgramado | number : "1.2-2" }}</strong>
+          </div>
+        </div>
+        <div class="col-md-4">
+          <div class="border rounded p-2 text-center">
+            <div class="small text-muted">Pagado</div>
+            <strong class="text-success">${{ reporteEstado.totalPagado | number : "1.2-2" }}</strong>
+          </div>
+        </div>
+        <div class="col-md-4">
+          <div class="border rounded p-2 text-center">
+            <div class="small text-muted">Pendiente</div>
+            <strong class="text-warning">${{ reporteEstado.totalPendiente | number : "1.2-2" }}</strong>
+          </div>
+        </div>
+      </div>
+
+      <table
+        class="table table-sm table-bordered mb-3"
+        *ngIf="reporteEstado.porTransaccion.length"
+      >
+        <thead>
+          <tr>
+            <th>Transacción</th>
+            <th>Centro costo</th>
+            <th>Cuotas</th>
+            <th>Programado</th>
+            <th>Pagado</th>
+            <th>Pendiente</th>
+          </tr>
+        </thead>
+        <tbody>
+          <tr *ngFor="let t of reporteEstado.porTransaccion">
+            <td>{{ t.transaccionNomina }}</td>
+            <td>{{ t.centroCosto }}</td>
+            <td>{{ t.cuotas }}</td>
+            <td>{{ t.programado | number : "1.2-2" }}</td>
+            <td>{{ t.pagado | number : "1.2-2" }}</td>
+            <td>{{ t.pendiente | number : "1.2-2" }}</td>
+          </tr>
+        </tbody>
+      </table>
+
+      <table class="table table-sm table-bordered" *ngIf="reporteEstado.eventos.length">
+        <thead>
+          <tr>
+            <th>Cuota</th>
+            <th>Transacción</th>
+            <th>Ventana / programado</th>
+            <th>Ejecutado</th>
+            <th>Bruto</th>
+            <th>Desc.</th>
+            <th>Neto prog.</th>
+            <th>Pagado</th>
+            <th>Estado</th>
+          </tr>
+        </thead>
+        <tbody>
+          <tr *ngFor="let ev of reporteEstado.eventos">
+            <td>{{ ev.numeroCuota }}/{{ ev.totalCuotas }}</td>
+            <td>{{ ev.transaccionNomina }}</td>
+            <td class="small">
+              <span *ngIf="ev.fechaMin">{{ ev.fechaMin | date : "dd/MM/yy" }} — {{ ev.fechaMax | date : "dd/MM/yy" }}</span>
+              <span *ngIf="!ev.fechaMin">{{ ev.fechaProgramada | date : "dd/MM/yyyy" }}</span>
+            </td>
+            <td class="small">
+              {{ ev.fechaEjecucion ? (ev.fechaEjecucion | date : "dd/MM/yyyy") : "—" }}
+            </td>
+            <td>
+              <span *ngIf="ev.montoBruto">{{ ev.montoBruto | number : "1.2-2" }}</span>
+              <span *ngIf="!ev.montoBruto" class="text-muted">—</span>
+            </td>
+            <td class="text-danger">
+              <span *ngIf="ev.montoDescuento">−{{ ev.montoDescuento | number : "1.2-2" }}</span>
+              <span *ngIf="!ev.montoDescuento" class="text-muted">—</span>
+            </td>
+            <td>{{ ev.monto | number : "1.2-2" }}</td>
+            <td>{{ (ev.montoPagado || 0) | number : "1.2-2" }}</td>
+            <td>{{ ev.estado }}</td>
+          </tr>
+        </tbody>
+      </table>
+      <p class="text-muted small mb-0" *ngIf="!reporteEstado.eventos.length">
+        Sin movimientos en el rango seleccionado.
+      </p>
+    </div>
+  </div>
+</div>

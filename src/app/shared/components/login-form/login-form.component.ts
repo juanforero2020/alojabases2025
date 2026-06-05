@@ -1,4 +1,4 @@
-import { Component, NgModule, OnInit } from '@angular/core';
+import { Component, NgModule, OnInit, ViewChild } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { RouterModule, Router } from '@angular/router';
 
@@ -7,7 +7,7 @@ import { DxButtonModule } from 'devextreme-angular/ui/button';
 import { DxCheckBoxModule } from 'devextreme-angular/ui/check-box';
 import { DxTextBoxModule } from 'devextreme-angular/ui/text-box';
 import { DxValidatorModule } from 'devextreme-angular/ui/validator';
-import { DxValidationGroupModule } from 'devextreme-angular/ui/validation-group';
+import { DxValidationGroupModule, DxValidationGroupComponent } from 'devextreme-angular/ui/validation-group';
 import { AngularFireModule } from 'angularfire2';
 import { environment } from 'src/environments/environment';
 import { AngularFirestoreModule } from 'angularfire2/firestore';
@@ -23,6 +23,8 @@ import { AuthenService } from 'src/app/servicios/authen.service';
   styleUrls: ['./login-form.component.scss']
 })
 export class LoginFormComponent implements OnInit {
+  @ViewChild('validateLogin') validateLogin: DxValidationGroupComponent;
+
   login = '';
   password = '';
 
@@ -56,7 +58,26 @@ export class LoginFormComponent implements OnInit {
   }
 
   signIn(e) {
-    this.authService.logIn(this.login, this.password);
+    const result = this.validateLogin?.instance.validate();
+    if (result && !result.isValid) {
+      return;
+    }
+
+    this.isError = false;
+    this.loginError = '';
+
+    this.authService.logIn(this.login, this.password).subscribe({
+      error: (error) => {
+        this.isError = true;
+        if (error.status === 401) {
+          this.loginError = 'Credenciales incorrectas. Verifique su usuario y contraseña.';
+        } else if (error.status === 404) {
+          this.loginError = 'El usuario se encuentra bloqueado.';
+        } else {
+          this.loginError = 'No se pudo iniciar sesión. Intente nuevamente.';
+        }
+      }
+    });
   }
 
 }

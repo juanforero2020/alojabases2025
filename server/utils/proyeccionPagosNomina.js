@@ -195,8 +195,46 @@ function construirProyeccion(regla, opciones = {}) {
   return agruparProyeccionPorMes(fechas, monto, etiqueta);
 }
 
+function construirProyeccionConEventos(regla, opciones = {}) {
+  const monto = Number(regla.monto) || 0;
+  const esVariable =
+    !!regla.montoVariable ||
+    normalizarTexto(regla.frecuencia) === "dominical";
+  const fechas = generarFechasPorRegla(regla, opciones);
+  const totalCuotas = fechas.length;
+  const centroCosto =
+    (regla.centroCosto || "").trim() ||
+    (regla.nombreBeneficiario || "").trim() ||
+    "";
+  const eventos = fechas.map((fecha, index) => ({
+    fechaProgramada: fecha,
+    fechaMin: fecha,
+    fechaMax: fecha,
+    monto: esVariable ? 0 : monto,
+    numeroCuota: index + 1,
+    totalCuotas,
+    centroCosto,
+    transaccionNomina: regla.transaccionNomina,
+    estado: "Pendiente",
+  }));
+  const etiqueta =
+    regla.transaccionNomina ||
+    `Nómina ${regla.frecuencia || ""}`.trim();
+  const proyeccionBase = agruparProyeccionPorMes(
+    fechas,
+    esVariable ? 0 : monto,
+    etiqueta
+  );
+  return {
+    ...proyeccionBase,
+    tipoRegla: "A",
+    eventos,
+  };
+}
+
 module.exports = {
   construirProyeccion,
+  construirProyeccionConEventos,
   generarFechasPorRegla,
   etiquetaFechaCorta,
 };

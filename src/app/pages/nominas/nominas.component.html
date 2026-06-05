@@ -316,6 +316,18 @@
   ></app-nominas-eventos-pagos>
 </div>
 
+<!-- PAGOS PROGRAMADOS -->
+<div *ngIf="seccionActiva === 'Pagos Programados'">
+  <app-nominas-pagos-programados
+    [usuarioNombre]="nombreUsuario"
+  ></app-nominas-pagos-programados>
+</div>
+
+<!-- CONSULTA DE PAGOS -->
+<div *ngIf="seccionActiva === 'Consulta de Pagos'">
+  <app-nominas-consulta-pagos></app-nominas-consulta-pagos>
+</div>
+
 <!-- Popup formulario tabla maestra salarial -->
 <dx-popup
   [(visible)]="popupTablaSalarial"

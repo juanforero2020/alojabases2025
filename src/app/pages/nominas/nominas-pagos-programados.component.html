@@ -1,0 +1,202 @@
+<div class="card mb-3">
+  <div class="card-body">
+    <div class="pagos-programados-titulo text-center">
+      Pagos programados — ejecución manual
+    </div>
+    <p class="text-muted text-center mb-3">
+      Eventos tipo A y B generados al autorizar una regla. Los descuentos tipo C reducen el monto neto en los pagos de la regla A asociada. El encargado debe registrar el pago para que aparezca en transacciones financieras.
+    </p>
+
+    <div class="row mb-2 pagos-filtros">
+      <div class="col-md-3 col-lg-2 mb-2">
+        <label>Estado</label>
+        <dx-select-box
+          [items]="estadosEventoFiltro"
+          [(value)]="filtroEventosEstado"
+          (onValueChanged)="onFiltroSelectChanged($event)"
+        ></dx-select-box>
+      </div>
+      <div class="col-md-3 col-lg-2 mb-2">
+        <label>Tipo regla</label>
+        <dx-select-box
+          [items]="tiposReglaFiltro"
+          [(value)]="filtroTipoRegla"
+          (onValueChanged)="onFiltroSelectChanged($event)"
+        ></dx-select-box>
+      </div>
+      <div class="col-md-3 col-lg-2 mb-2">
+        <label>Descuentos</label>
+        <dx-select-box
+          [items]="opcionesConDescuento"
+          displayExpr="etiqueta"
+          valueExpr="valor"
+          [(value)]="filtroConDescuento"
+          (onValueChanged)="onFiltroSelectChanged($event)"
+        ></dx-select-box>
+      </div>
+      <div class="col-md-6 col-lg-3 mb-2">
+        <label>Transacción</label>
+        <dx-select-box
+          [items]="transaccionesFiltro"
+          [(value)]="filtroTransaccion"
+          [searchEnabled]="true"
+          [showClearButton]="true"
+          (onValueChanged)="onTransaccionChanged($event)"
+        ></dx-select-box>
+      </div>
+      <div class="col-md-6 col-lg-3 mb-2">
+        <label>Beneficiario (Tabla Maestra Salarial)</label>
+        <dx-select-box
+          [items]="beneficiariosFiltro"
+          displayExpr="etiquetaDisplay"
+          valueExpr="cedula"
+          [(value)]="filtroCedulaBeneficiario"
+          [searchEnabled]="true"
+          [showClearButton]="true"
+          placeholder="Todos los empleados"
+          [disabled]="cargandoBeneficiarios"
+          (onValueChanged)="onBeneficiarioChanged($event)"
+        ></dx-select-box>
+      </div>
+      <div class="col-md-3 col-lg-2 mb-2">
+        <label>Desde</label>
+        <dx-date-box
+          [(value)]="fechaDesde"
+          type="date"
+          [showClearButton]="true"
+          (onValueChanged)="onFiltroSelectChanged($event)"
+        ></dx-date-box>
+      </div>
+      <div class="col-md-3 col-lg-2 mb-2">
+        <label>Hasta</label>
+        <dx-date-box
+          [(value)]="fechaHasta"
+          type="date"
+          [showClearButton]="true"
+          (onValueChanged)="onFiltroSelectChanged($event)"
+        ></dx-date-box>
+      </div>
+      <div class="col-md-6 col-lg-4 mb-2 d-flex align-items-end">
+        <button
+          class="btn btn-outline-primary mr-2"
+          type="button"
+          (click)="cargarEventosProgramados()"
+        >
+          Actualizar
+        </button>
+        <button
+          class="btn btn-outline-secondary"
+          type="button"
+          (click)="limpiarFiltros()"
+        >
+          Limpiar filtros
+        </button>
+      </div>
+    </div>
+
+    <p class="text-muted small mb-2">
+      <span *ngIf="eventosProgramados.length">
+        {{ eventosProgramados.length }} registro(s).
+      </span>
+      <span *ngIf="eventosProgramados.length"> · </span>
+      Haga clic en el monto de <strong>Descuento</strong> (en rojo) para ver el detalle por concepto.
+    </p>
+
+    <div class="table-responsive" *ngIf="eventosProgramados.length">
+      <table class="table table-sm table-bordered pagos-programados-tabla">
+        <thead>
+          <tr>
+            <th>Tipo</th>
+            <th>Ventana</th>
+            <th>Beneficiario</th>
+            <th>Transacción</th>
+            <th>Centro costo</th>
+            <th>Cuota</th>
+            <th>Programado</th>
+            <th>Descuento</th>
+            <th>Pagado</th>
+            <th>Saldo</th>
+            <th>Estado</th>
+            <th></th>
+          </tr>
+        </thead>
+        <tbody>
+          <tr *ngFor="let ev of eventosProgramados">
+            <td>{{ etiquetaTipo(ev) }}</td>
+            <td class="small">
+              <span *ngIf="ev.fechaMin && ev.fechaMax">
+                {{ ev.fechaMin | date : "dd/MM/yy" }} — {{ ev.fechaMax | date : "dd/MM/yy" }}
+              </span>
+              <span *ngIf="!ev.fechaMin">{{ ev.fechaProgramada | date : "dd/MM/yyyy" }}</span>
+            </td>
+            <td>
+              <span class="d-block">{{ ev.nombreBeneficiario }}</span>
+              <span class="text-muted small" *ngIf="ev.cedulaBeneficiario">{{ ev.cedulaBeneficiario }}</span>
+            </td>
+            <td>{{ ev.transaccionNomina }}</td>
+            <td>{{ ev.centroCosto }}</td>
+            <td>{{ ev.numeroCuota }}/{{ ev.totalCuotas }}</td>
+            <td>
+              <span *ngIf="esMontoVariable(ev)" class="text-muted">Variable</span>
+              <span *ngIf="!esMontoVariable(ev)">
+                <span *ngIf="ev.montoBruto" class="text-muted small d-block">
+                  Bruto {{ ev.montoBruto | number : "1.2-2" }}
+                </span>
+                {{ ev.monto | number : "1.2-2" }}
+              </span>
+            </td>
+            <td>
+              <button
+                *ngIf="tieneDescuento(ev)"
+                type="button"
+                class="btn btn-link btn-sm p-0 text-danger descuento-detalle-btn"
+                (click)="verDesgloseDescuentos(ev)"
+                title="Ver desglose de descuentos"
+              >
+                −{{ ev.montoDescuento | number : "1.2-2" }}
+              </button>
+              <span *ngIf="!tieneDescuento(ev)" class="text-muted">—</span>
+            </td>
+            <td>{{ ev.montoPagado || 0 | number : "1.2-2" }}</td>
+            <td>
+              <span *ngIf="esMontoVariable(ev) && (ev.estado === 'Pendiente' || ev.estado === 'Parcial')" class="text-muted">—</span>
+              <span *ngIf="!(esMontoVariable(ev) && (ev.estado === 'Pendiente' || ev.estado === 'Parcial'))">
+                {{ saldoPendienteEvento(ev) | number : "1.2-2" }}
+              </span>
+            </td>
+            <td>
+              <span
+                class="badge"
+                [class.badge-warning]="ev.estado === 'Pendiente'"
+                [class.badge-info]="ev.estado === 'Parcial'"
+                [class.badge-success]="ev.estado === 'Ejecutado'"
+                [class.badge-secondary]="ev.estado === 'Cancelado'"
+              >
+                {{ ev.estado }}
+              </span>
+            </td>
+            <td>
+              <button
+                class="btn btn-sm btn-success"
+                *ngIf="puedeEjecutarEvento(ev)"
+                (click)="ejecutarEventoProgramado(ev)"
+              >
+                Pagar
+              </button>
+              <span
+                class="text-muted small"
+                *ngIf="(ev.estado === 'Pendiente' || ev.estado === 'Parcial') && !puedeEjecutarEvento(ev)"
+              >
+                Fuera de fecha
+              </span>
+            </td>
+          </tr>
+        </tbody>
+      </table>
+    </div>
+
+    <p class="text-muted small mb-0" *ngIf="!eventosProgramados.length">
+      No hay eventos con los filtros seleccionados. Autorice una regla de pago (tipo A o B) o ajuste los filtros.
+    </p>
+  </div>
+</div>

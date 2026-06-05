@@ -9,6 +9,11 @@
     <p class="text-muted text-center small mb-3" *ngIf="esTipoB">
       Tipo B — Deudas programadas (arriendos, préstamos, tarjetas). Se cargan en calendario y el encargado ejecuta en la fecha.
     </p>
+    <p class="text-muted text-center small mb-3" *ngIf="esTipoC">
+      Tipo C — Descuentos. No genera pagos: reduce el monto neto de la regla de pago tipo A asociada.
+      <span *ngIf="esSeguridadSocial"> Seguridad social: 4 cuotas en las primeras 4 semanas de cada mes.</span>
+      <span *ngIf="esDescuentosGenerales"> Otros descuentos: valor único o por cuotas, con concepto y semana de aplicación.</span>
+    </p>
 
     <div class="row eventos-formulario">
       <div class="col-md-4 mb-3">
@@ -26,7 +31,7 @@
           [items]="tiposBeneficiario"
           [(value)]="formulario.tipoBeneficiario"
           (onValueChanged)="onTipoBeneficiarioChanged()"
-          [disabled]="esDominical"
+          [disabled]="esDominical || esTipoC"
         ></dx-select-box>
       </div>
       <div class="col-md-4 mb-3">
@@ -64,6 +69,12 @@
           *ngIf="esTipoB"
           [items]="transaccionesNominaB"
           [(value)]="formulario.transaccionNomina"
+        ></dx-select-box>
+        <dx-select-box
+          *ngIf="esTipoC"
+          [items]="transaccionesNominaC"
+          [(value)]="formulario.transaccionNomina"
+          (onValueChanged)="onTransaccionTipoCChanged()"
         ></dx-select-box>
       </div>
 
@@ -293,6 +304,220 @@
           </button>
         </div>
       </ng-container>
+
+      <!-- Campos Tipo C — descuentos -->
+      <ng-container *ngIf="esTipoC">
+        <div class="col-md-8 mb-3">
+          <label class="form-label">Regla de pago asociada (tipo A autorizada)</label>
+          <dx-select-box
+            [items]="reglasPagoAsociables"
+            displayExpr="etiquetaDisplay"
+            valueExpr="_id"
+            [(value)]="formulario.reglaPagoAsociadaId"
+            (onValueChanged)="onReglaAsociadaSeleccionChanged($event)"
+            [disabled]="!reglasPagoAsociables.length"
+            [searchEnabled]="true"
+            placeholder="Busque el beneficiario y seleccione la nómina"
+          ></dx-select-box>
+          <small class="text-muted" *ngIf="!reglasPagoAsociables.length && formulario.cedulaBeneficiario">
+            No hay reglas tipo A autorizadas para este empleado. Autorice primero la asignación de nómina.
+          </small>
+          <small class="text-muted" *ngIf="reglaPagoAsociadaSeleccionada">
+            Pago base: ${{ montoBrutoReglaAsociada | number : "1.2-2" }} ·
+            {{ reglaPagoAsociadaSeleccionada.frecuencia }} · {{ reglaPagoAsociadaSeleccionada.parametro }}
+          </small>
+        </div>
+        <!-- Descuentos generales (roturas, multas, etc.) -->
+        <ng-container *ngIf="esDescuentosGenerales">
+          <div class="col-md-4 mb-3">
+            <label class="form-label">Concepto del descuento</label>
+            <dx-select-box
+              [items]="conceptosDescuento"
+              [(value)]="formulario.conceptoDescuento"
+            ></dx-select-box>
+          </div>
+          <div class="col-md-4 mb-3">
+            <label class="form-label">Modalidad</label>
+            <dx-select-box
+              [items]="modalidadesDescuento"
+              [(value)]="formulario.modalidadDescuento"
+              (onValueChanged)="onModalidadDescuentoChanged()"
+            ></dx-select-box>
+            <small class="text-muted">Valor único en un pago o repartido en cuotas</small>
+          </div>
+          <div class="col-md-4 mb-3">
+            <label class="form-label">Monto total descuento ($)</label>
+            <dx-number-box
+              [(value)]="formulario.montoTotalDeuda"
+              [min]="0"
+              format="#,##0.##"
+              (onValueChanged)="onMontoDescuentoChanged()"
+            ></dx-number-box>
+          </div>
+          <div class="col-md-4 mb-3" *ngIf="esDescuentoPorCuota">
+            <label class="form-label">Número de cuotas</label>
+            <dx-number-box
+              [(value)]="formulario.cuotas"
+              [min]="2"
+              [max]="52"
+              format="#0"
+              (onValueChanged)="onCuotasDescuentoChanged()"
+            ></dx-number-box>
+          </div>
+          <div class="col-md-4 mb-3">
+            <label class="form-label">Cuota por pago ($)</label>
+            <div class="eventos-monto-display">
+              {{ cuotaDescuentoCalculada | number : "1.2-2" }}
+            </div>
+            <small class="text-muted" *ngIf="!esDescuentoPorCuota">Monto único en el pago seleccionado</small>
+            <small class="text-muted" *ngIf="esDescuentoPorCuota">Total ÷ número de cuotas</small>
+          </div>
+          <div class="col-md-4 mb-3">
+            <label class="form-label">Semana de aplicación</label>
+            <dx-select-box
+              [items]="opcionesSemanaAplicacion"
+              [(value)]="formulario.semanaAplicacion"
+              (onValueChanged)="onSemanaAplicacionChanged()"
+            ></dx-select-box>
+          </div>
+          <div class="col-md-4 mb-3" *ngIf="esSemanaEspecifica">
+            <label class="form-label">Fecha de la semana</label>
+            <dx-date-box
+              [(value)]="formulario.fechaAplicacionDescuento"
+              type="date"
+              (onValueChanged)="onFechaAplicacionDescuentoChanged()"
+            ></dx-date-box>
+            <small class="text-muted">Seleccione cualquier día de la semana en que aplicará el descuento</small>
+          </div>
+        </ng-container>
+
+        <div class="col-md-4 mb-3" *ngIf="esSeguridadSocial">
+          <label class="form-label">Fuente</label>
+          <dx-select-box
+            [items]="fuentesMontoA"
+            [(value)]="formulario.fuente"
+            [readOnly]="true"
+          ></dx-select-box>
+          <small class="text-muted">
+            Base TMS × % aporte personal (Config. Global IESS)
+          </small>
+        </div>
+        <div class="col-md-8 mb-3" *ngIf="esSeguridadSocial && beneficiario">
+          <label class="form-label">Cálculo aporte personal (descuento mensual)</label>
+          <table class="table table-sm table-bordered mb-0">
+            <thead>
+              <tr>
+                <th>Concepto</th>
+                <th>Base TMS ($)</th>
+                <th>%</th>
+                <th>Descuento mensual ($)</th>
+              </tr>
+            </thead>
+            <tbody>
+              <tr>
+                <td>{{ conceptoAportePersonal }}</td>
+                <td>{{ montoBaseCalculoIess | number : "1.2-2" }}</td>
+                <td>{{ porcentajeAportePersonal | number : "1.2-2" }}%</td>
+                <td class="text-success font-weight-bold">
+                  {{ formulario.montoTotalDeuda | number : "1.2-2" }}
+                </td>
+              </tr>
+            </tbody>
+          </table>
+          <small class="text-muted">
+            Igual que la vista previa IESS en Tabla Maestra Salarial: base × porcentaje configurado.
+          </small>
+        </div>
+        <ng-container *ngIf="esSeguridadSocial">
+          <div class="col-md-4 mb-3">
+            <label class="form-label">Cuotas (fijas)</label>
+            <dx-number-box
+              [value]="cuotasSegSocial"
+              [readOnly]="true"
+              format="#0"
+            ></dx-number-box>
+            <small class="text-muted">4 cuotas — primeras 4 semanas de cada mes</small>
+          </div>
+          <div class="col-md-4 mb-3">
+            <label class="form-label">Cuota por semana ($)</label>
+            <div class="eventos-monto-display">
+              {{ cuotaDescuentoSegSocial | number : "1.2-2" }}
+            </div>
+            <small class="text-muted">Descuento mensual ÷ 4</small>
+          </div>
+          <div class="col-md-12 mb-2" *ngIf="reglaPagoAsociadaSeleccionada && cuotaDescuentoSegSocial > 0">
+            <div class="alert alert-info py-2 mb-0 small">
+              <strong>Ejemplo de liquidación semanal (con descuento):</strong>
+              ${{ montoBrutoReglaAsociada | number : "1.2-2" }} (pago) −
+              ${{ cuotaDescuentoSegSocial | number : "1.2-2" }} (seg. social) =
+              <strong>${{ ejemploNetoSemanal | number : "1.2-2" }}</strong> neto a pagar.
+              En la 5.ª semana del mes (si aplica) no se descuenta seguro social.
+            </div>
+          </div>
+        </ng-container>
+        <div class="col-md-12 mb-2" *ngIf="esDescuentosGenerales && reglaPagoAsociadaSeleccionada && cuotaDescuentoCalculada > 0">
+          <div class="alert alert-info py-2 mb-0 small">
+            <strong>{{ formulario.conceptoDescuento }}</strong> —
+            {{ formulario.modalidadDescuento }} de
+            ${{ formulario.montoTotalDeuda | number : "1.2-2" }}.
+            Aplicación: <strong>{{ formulario.semanaAplicacion }}</strong>
+            <span *ngIf="esSemanaEspecifica && formulario.fechaAplicacionDescuento">
+              (semana del {{ formulario.fechaAplicacionDescuento | date : "dd/MM/yyyy" }})
+            </span>.
+            Sobre pago base ${{ montoBrutoReglaAsociada | number : "1.2-2" }}.
+          </div>
+        </div>
+        <div class="col-md-4 mb-3 d-flex align-items-end">
+          <button
+            type="button"
+            class="btn btn-outline-primary btn-block"
+            (click)="generarTablaDescuento(true)"
+            [disabled]="
+              !formulario.reglaPagoAsociadaId ||
+              (esDescuentosGenerales && esSemanaEspecifica && !formulario.fechaAplicacionDescuento)
+            "
+          >
+            {{ esDescuentosGenerales ? "Ver fechas de aplicación" : "Ver cuotas por semana" }}
+          </button>
+        </div>
+      </ng-container>
+    </div>
+
+    <!-- Tabla cuotas descuento Tipo C -->
+    <div class="row" *ngIf="esTipoC && tablaAmortizacion.length">
+      <div class="col-12 mb-3">
+        <h6 class="font-weight-bold">{{ tituloTablaDescuento }}</h6>
+        <p class="small text-muted mb-2" *ngIf="esSeguridadSocial">
+          Solo las primeras 4 semanas de cada mes aplican el descuento. La suma mensual equivale al monto total del TMS.
+        </p>
+        <p class="small text-muted mb-2" *ngIf="esDescuentosGenerales">
+          Fechas de pago de la regla A en las que se aplicará el descuento según la semana y modalidad elegidas.
+        </p>
+        <div class="table-responsive">
+          <table class="table table-sm table-bordered amortizacion-tabla">
+            <thead>
+              <tr>
+                <th>Cuota mes</th>
+                <th>Fecha pago</th>
+                <th>Descuento ($)</th>
+                <th *ngIf="montoBrutoReglaAsociada">Neto a liquidar ($)</th>
+              </tr>
+            </thead>
+            <tbody>
+              <tr *ngFor="let fila of tablaAmortizacion">
+                <td>
+                  {{ fila.numeroCuota }}/{{ esSeguridadSocial ? cuotasSegSocial : (formulario.cuotas || 1) }}
+                </td>
+                <td>{{ fila.fechaMin | date : "dd/MM/yyyy" }}</td>
+                <td>{{ fila.monto | number : "1.2-2" }}</td>
+                <td *ngIf="montoBrutoReglaAsociada">
+                  {{ (montoBrutoReglaAsociada - fila.monto) | number : "1.2-2" }}
+                </td>
+              </tr>
+            </tbody>
+          </table>
+        </div>
+      </div>
     </div>
 
     <!-- Tabla amortización Tipo B -->
@@ -398,7 +623,13 @@
           [disabled]="
             (esTipoA && !esDominical && !formulario.monto) ||
             (esTipoB && !usaAmortizacion && !formulario.cuotaEvento) ||
-            (esTipoB && usaAmortizacion && !formulario.montoTotalDeuda)
+            (esTipoB && usaAmortizacion && !formulario.montoTotalDeuda) ||
+            (esTipoC &&
+              (!formulario.reglaPagoAsociadaId ||
+                !formulario.montoTotalDeuda ||
+                (esDescuentosGenerales &&
+                  (!formulario.conceptoDescuento ||
+                    (esSemanaEspecifica && !formulario.fechaAplicacionDescuento)))))
           "
         >
           Vista previa
@@ -412,99 +643,6 @@
     >
       Empleado <strong>INACTIVO</strong>: los pagos cesan al finalizar el contrato.
     </div>
-  </div>
-</div>
-
-<!-- Pagos programados Tipo B -->
-<div class="card mb-3" *ngIf="esTipoB || eventosProgramados.length">
-  <div class="card-body">
-    <h6 class="font-weight-bold text-center mb-3">
-      Pagos programados — ejecución manual (Tipo B)
-    </h6>
-    <p class="text-muted small text-center">
-      Los eventos se cargan al autorizar la regla. El encargado registra el pago en finanzas cuando corresponde la fecha.
-    </p>
-    <div class="row mb-3">
-      <div class="col-md-4">
-        <label>Filtrar estado</label>
-        <dx-select-box
-          [items]="estadosEventoFiltro"
-          [(value)]="filtroEventosEstado"
-          (onValueChanged)="cargarEventosProgramados()"
-        ></dx-select-box>
-      </div>
-      <div class="col-md-4 d-flex align-items-end">
-        <button
-          class="btn btn-outline-primary btn-block"
-          type="button"
-          (click)="cargarEventosProgramados()"
-        >
-          Actualizar listado
-        </button>
-      </div>
-    </div>
-    <table class="table table-sm table-bordered" *ngIf="eventosProgramados.length">
-      <thead>
-        <tr>
-          <th>Ventana</th>
-          <th>Beneficiario</th>
-          <th>Transacción</th>
-          <th>Centro costo</th>
-          <th>Cuota</th>
-          <th>Programado</th>
-          <th>Pagado</th>
-          <th>Saldo</th>
-          <th>Estado</th>
-          <th></th>
-        </tr>
-      </thead>
-      <tbody>
-        <tr *ngFor="let ev of eventosProgramados">
-          <td class="small">
-            <span *ngIf="ev.fechaMin && ev.fechaMax">
-              {{ ev.fechaMin | date : "dd/MM/yy" }} — {{ ev.fechaMax | date : "dd/MM/yy" }}
-            </span>
-            <span *ngIf="!ev.fechaMin">{{ ev.fechaProgramada | date : "dd/MM/yyyy" }}</span>
-          </td>
-          <td>{{ ev.nombreBeneficiario }}</td>
-          <td>{{ ev.transaccionNomina }}</td>
-          <td>{{ ev.centroCosto }}</td>
-          <td>{{ ev.numeroCuota }}/{{ ev.totalCuotas }}</td>
-          <td>{{ ev.monto | number : "1.2-2" }}</td>
-          <td>{{ ev.montoPagado || 0 | number : "1.2-2" }}</td>
-          <td>{{ saldoPendienteEvento(ev) | number : "1.2-2" }}</td>
-          <td>
-            <span
-              class="badge"
-              [class.badge-warning]="ev.estado === 'Pendiente'"
-              [class.badge-info]="ev.estado === 'Parcial'"
-              [class.badge-success]="ev.estado === 'Ejecutado'"
-              [class.badge-secondary]="ev.estado === 'Cancelado'"
-            >
-              {{ ev.estado }}
-            </span>
-          </td>
-          <td>
-            <button
-              class="btn btn-sm btn-success"
-              *ngIf="puedeEjecutarEvento(ev)"
-              (click)="ejecutarEventoProgramado(ev)"
-            >
-              Pagar
-            </button>
-            <span
-              class="text-muted small"
-              *ngIf="(ev.estado === 'Pendiente' || ev.estado === 'Parcial') && !puedeEjecutarEvento(ev)"
-            >
-              Fuera de ventana
-            </span>
-          </td>
-        </tr>
-      </tbody>
-    </table>
-    <p class="text-muted small mb-0" *ngIf="!eventosProgramados.length">
-      No hay eventos programados. Autorice una regla tipo B para generarlos.
-    </p>
   </div>
 </div>
 
@@ -672,8 +810,19 @@
           <tr>
             <td class="fila-etiqueta">{{ proyeccionVista.etiquetaFila }}</td>
             <ng-container *ngFor="let mes of proyeccionVista.meses">
-              <td class="celda-monto" *ngFor="let oc of mes.ocurrencias">
+              <td
+                class="celda-monto"
+                *ngFor="let oc of mes.ocurrencias"
+                [title]="oc.montoDescuento ? 'Bruto: ' + oc.montoBruto + ' − Desc: ' + oc.montoDescuento : ''"
+              >
                 {{ oc.monto | number : "1.0-0" }}
+                <span
+                  class="d-block text-muted"
+                  style="font-size: 0.65rem"
+                  *ngIf="oc.montoDescuento"
+                >
+                  −{{ oc.montoDescuento | number : "1.0-0" }}
+                </span>
               </td>
             </ng-container>
           </tr>
@@ -733,134 +882,5 @@
         </button>
       </div>
     </dx-data-grid>
-  </div>
-</div>
-
-<!-- Reporte estado empleado / centro de costo -->
-<div class="card mb-3">
-  <div class="card-body">
-    <h6 class="font-weight-bold text-center mb-3">
-      Consulta de pagos por empleado (centro de costo)
-    </h6>
-    <p class="text-muted small text-center">
-      Detalle de lo pagado a un empleado o centro de costo en un rango de fechas (Tipo B).
-    </p>
-    <div class="row align-items-end mb-3">
-      <div class="col-md-3 mb-2">
-        <label>Cédula empleado</label>
-        <dx-text-box [(value)]="reporteCedula"></dx-text-box>
-      </div>
-      <div class="col-md-3 mb-2">
-        <label>Centro de costo</label>
-        <dx-select-box
-          [items]="nombresCentrosCosto"
-          [(value)]="reporteCentroCosto"
-          [searchEnabled]="true"
-          [showClearButton]="true"
-        ></dx-select-box>
-      </div>
-      <div class="col-md-2 mb-2">
-        <label>Desde</label>
-        <dx-date-box [(value)]="reporteDesde" type="date"></dx-date-box>
-      </div>
-      <div class="col-md-2 mb-2">
-        <label>Hasta</label>
-        <dx-date-box [(value)]="reporteHasta" type="date"></dx-date-box>
-      </div>
-      <div class="col-md-2 mb-2">
-        <button
-          class="btn btn-nomina-primario btn-block"
-          type="button"
-          (click)="consultarReporteEstado()"
-        >
-          Consultar
-        </button>
-      </div>
-    </div>
-    <button
-      class="btn btn-sm btn-link mb-2"
-      type="button"
-      (click)="usarBeneficiarioEnReporte()"
-    >
-      Usar beneficiario del formulario
-    </button>
-
-    <div *ngIf="reporteEstado">
-      <div class="row mb-3">
-        <div class="col-md-4">
-          <div class="border rounded p-2 text-center">
-            <div class="small text-muted">Programado</div>
-            <strong>${{ reporteEstado.totalProgramado | number : "1.2-2" }}</strong>
-          </div>
-        </div>
-        <div class="col-md-4">
-          <div class="border rounded p-2 text-center">
-            <div class="small text-muted">Pagado</div>
-            <strong class="text-success">${{ reporteEstado.totalPagado | number : "1.2-2" }}</strong>
-          </div>
-        </div>
-        <div class="col-md-4">
-          <div class="border rounded p-2 text-center">
-            <div class="small text-muted">Pendiente</div>
-            <strong class="text-warning">${{ reporteEstado.totalPendiente | number : "1.2-2" }}</strong>
-          </div>
-        </div>
-      </div>
-
-      <table
-        class="table table-sm table-bordered mb-3"
-        *ngIf="reporteEstado.porTransaccion.length"
-      >
-        <thead>
-          <tr>
-            <th>Transacción</th>
-            <th>Centro costo</th>
-            <th>Cuotas</th>
-            <th>Programado</th>
-            <th>Pagado</th>
-            <th>Pendiente</th>
-          </tr>
-        </thead>
-        <tbody>
-          <tr *ngFor="let t of reporteEstado.porTransaccion">
-            <td>{{ t.transaccionNomina }}</td>
-            <td>{{ t.centroCosto }}</td>
-            <td>{{ t.cuotas }}</td>
-            <td>{{ t.programado | number : "1.2-2" }}</td>
-            <td>{{ t.pagado | number : "1.2-2" }}</td>
-            <td>{{ t.pendiente | number : "1.2-2" }}</td>
-          </tr>
-        </tbody>
-      </table>
-
-      <table class="table table-sm table-bordered" *ngIf="reporteEstado.eventos.length">
-        <thead>
-          <tr>
-            <th>Cuota</th>
-            <th>Transacción</th>
-            <th>Ventana</th>
-            <th>Programado</th>
-            <th>Pagado</th>
-            <th>Estado</th>
-          </tr>
-        </thead>
-        <tbody>
-          <tr *ngFor="let ev of reporteEstado.eventos">
-            <td>{{ ev.numeroCuota }}/{{ ev.totalCuotas }}</td>
-            <td>{{ ev.transaccionNomina }}</td>
-            <td class="small">
-              <span *ngIf="ev.fechaMin">{{ ev.fechaMin | date : "dd/MM/yy" }} — {{ ev.fechaMax | date : "dd/MM/yy" }}</span>
-              <span *ngIf="!ev.fechaMin">{{ ev.fechaProgramada | date : "dd/MM/yyyy" }}</span>
-            </td>
-            <td>{{ ev.monto | number : "1.2-2" }}</td>
-            <td>{{ ev.montoPagado || 0 | number : "1.2-2" }}</td>
-            <td>{{ ev.estado }}</td>
-          </tr>
-        </tbody>
-      </table>
-      <p class="text-muted small mb-0" *ngIf="!reporteEstado.eventos.length">
-        Sin movimientos en el rango seleccionado.
-      </p>
-    </div>
   </div>
 </div>

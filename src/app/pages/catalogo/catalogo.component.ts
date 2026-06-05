@@ -1206,6 +1206,7 @@ _handleReaderLoaded(readerEvt) {
             nuevoProducto.REFERENCIA = this.catalogo2.REFERENCIA
             nuevoProducto.nombre_comercial = this.catalogo2.NOMBRE_COMERCIAL
             nuevoProducto.APLICACION = this.catalogo2.APLICACION
+            nuevoProducto.UNIDAD = this.catalogo2.UNIDAD
             nuevoProducto.M2 = this.catalogo2.M2
             nuevoProducto.P_CAJA = this.catalogo2.P_CAJA
             nuevoProducto.porcentaje_ganancia = this.catalogo2.porcentaje_ganancia

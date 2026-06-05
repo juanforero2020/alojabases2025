@@ -8,6 +8,15 @@ const { construirProyeccion } = require("../utils/proyeccionPagosNomina");
 const { construirProyeccionTipoB } = require("../utils/proyeccionPagosTipoB");
 const dominicalNominaService = require("../services/dominicalNominaService");
 const tipoBNominaService = require("../services/tipoBNominaService");
+const tipoANominaService = require("../services/tipoANominaService");
+const tipoCNominaService = require("../services/tipoCNominaService");
+const {
+  construirProyeccionTipoC,
+  recalcularDescuentosEnEventos,
+  montoDescuentoReglaCEnEvento,
+  esDescuentosGenerales,
+} = require("../utils/proyeccionPagosTipoC");
+const { calcularMontoSegSocialDesdeBase } = require("../utils/aporteIessNomina");
 const EventoPagoDominical = require("../models/eventoPagoDominical");
 const EventoPagoProgramado = require("../models/eventoPagoProgramado");
 const AjusteNominaPendiente = require("../models/ajusteNominaPendiente");
@@ -306,6 +315,8 @@ router.get("/beneficiario-interno/:cedula", async (req, res) => {
       mensaje: "No existe en Tabla Maestra Salarial",
     });
   }
+  const base = registro.salarioCalculoVariablesPrestacionales || 0;
+  const calcIess = await calcularMontoSegSocialDesdeBase(base);
   res.json({
     tipoBeneficiario: "Interno",
     cedula: registro.cedula,
@@ -314,8 +325,10 @@ router.get("/beneficiario-interno/:cedula", async (req, res) => {
     activo: registro.activo !== false,
     estadoEmpleado: registro.activo === false ? "INACTIVO" : "ACTIVO",
     asignacionSalarial: registro.asignacionSalarial || 0,
-    salarioCalculoVariablesPrestacionales:
-      registro.salarioCalculoVariablesPrestacionales || 0,
+    salarioCalculoVariablesPrestacionales: calcIess.montoBase,
+    montoSeguridadSocial: calcIess.monto,
+    porcentajeAportePersonal: calcIess.porcentaje,
+    conceptoAportePersonal: calcIess.concepto,
     periodoPago: registro.periodoPago,
     tablaMaestraSalarialId: registro._id,
     cargoNomina: registro.cargo,
@@ -364,24 +377,96 @@ router.get("/reglas-pago/:id/proyeccion", async (req, res) => {
     return res.status(404).json({ mensaje: "Regla no encontrada" });
   }
   const meses = Number(req.query.meses) || regla.mesesProyeccion || 3;
-  const proyeccion =
-    regla.tipoRegla === "B"
-      ? construirProyeccionTipoB(regla.toObject(), { mesesProyeccion: meses })
-      : construirProyeccion(regla.toObject(), { mesesProyeccion: meses });
+  let proyeccion;
+  if (regla.tipoRegla === "B") {
+    proyeccion = construirProyeccionTipoB(regla.toObject(), {
+      mesesProyeccion: meses,
+    });
+  } else if (regla.tipoRegla === "C") {
+    const reglaA = regla.reglaPagoAsociadaId
+      ? await ReglaPagoNomina.findById(regla.reglaPagoAsociadaId)
+      : null;
+    proyeccion = construirProyeccionTipoC(regla.toObject(), {
+      mesesProyeccion: meses,
+      reglaAsociada: reglaA ? reglaA.toObject() : null,
+    });
+  } else {
+    proyeccion = construirProyeccion(regla.toObject(), { mesesProyeccion: meses });
+  }
   res.json(proyeccion);
 });
 
 router.post("/reglas-pago/vista-previa", async (req, res) => {
   try {
-    const proyeccion =
-      req.body.tipoRegla === "B"
-        ? construirProyeccionTipoB(req.body, {
-            mesesProyeccion: req.body.mesesProyeccion || 12,
-          })
-        : construirProyeccion(req.body, {
-            mesesProyeccion: req.body.mesesProyeccion || 3,
-          });
+    let proyeccion;
+    if (req.body.tipoRegla === "B") {
+      proyeccion = construirProyeccionTipoB(req.body, {
+        mesesProyeccion: req.body.mesesProyeccion || 12,
+      });
+    } else if (req.body.tipoRegla === "C") {
+      const reglaC = await tipoCNominaService.normalizarReglaTipoC(req.body);
+      const reglaA = reglaC.reglaPagoAsociadaId
+        ? await ReglaPagoNomina.findById(reglaC.reglaPagoAsociadaId)
+        : null;
+      proyeccion = construirProyeccionTipoC(reglaC, {
+        mesesProyeccion: req.body.mesesProyeccion || 3,
+        reglaAsociada: reglaA ? reglaA.toObject() : null,
+      });
+    } else {
+      proyeccion = construirProyeccion(req.body, {
+        mesesProyeccion: req.body.mesesProyeccion || 3,
+      });
+    }
     res.json(proyeccion);
+  } catch (err) {
+    res.status(400).json({ mensaje: err.message });
+  }
+});
+
+router.get("/reglas-pago-asociables/:cedula", async (req, res) => {
+  try {
+    const lista = await tipoCNominaService.listarReglasPagoAsociables(
+      req.params.cedula
+    );
+    res.json(lista);
+  } catch (err) {
+    res.status(400).json({ mensaje: err.message });
+  }
+});
+
+router.post("/reglas-pago/descuento-previa", async (req, res) => {
+  try {
+    const regla = await tipoCNominaService.normalizarReglaTipoC(req.body);
+    let reglaA = null;
+    if (req.body.reglaPagoAsociadaId) {
+      reglaA = await ReglaPagoNomina.findById(req.body.reglaPagoAsociadaId);
+    }
+    const esGeneral = require("../utils/proyeccionPagosTipoC").esDescuentosGenerales(
+      regla.transaccionNomina
+    );
+    const resultado = esGeneral
+      ? tipoCNominaService.generarTablaDescuentoGeneral(regla, {
+          mesesProyeccion: req.body.mesesProyeccion || 6,
+          reglaAsociada: reglaA ? reglaA.toObject() : regla,
+        })
+      : tipoCNominaService.generarTablaCuotasSegSocial(regla, {
+          mesesProyeccion: req.body.mesesProyeccion || 3,
+          reglaAsociada: reglaA ? reglaA.toObject() : regla,
+        });
+    const montoBruto = reglaA ? Number(reglaA.monto) || 0 : 0;
+    res.json({
+      tabla: resultado.tabla,
+      total: resultado.total,
+      cuotaEvento: resultado.cuotaEvento,
+      cuotasValores: resultado.cuotasValores,
+      montoBrutoPago: montoBruto,
+      montoBaseTms: regla.montoBaseTms,
+      porcentajeAportePersonal: regla.porcentajeAportePersonal,
+      cuotaNetaEjemplo: Math.max(
+        0,
+        Math.round((montoBruto - resultado.cuotaEvento) * 100) / 100
+      ),
+    });
   } catch (err) {
     res.status(400).json({ mensaje: err.message });
   }
@@ -401,8 +486,16 @@ router.post("/reglas-pago/amortizacion-previa", async (req, res) => {
   }
 });
 
-function prepararBodyReglaPago(body, validar = false) {
+async function prepararBodyReglaPago(body, validar = false) {
   const doc = { ...body };
+  if (doc.tipoRegla === "C") {
+    const normalizado = await tipoCNominaService.normalizarReglaTipoC(doc);
+    if (validar) {
+      const msg = tipoCNominaService.validarReglaTipoC(normalizado);
+      if (msg) throw new Error(msg);
+    }
+    return normalizado;
+  }
   if (doc.tipoRegla === "B") {
     const normalizado = tipoBNominaService.normalizarReglaTipoB(doc);
     if (validar) {
@@ -422,7 +515,10 @@ function prepararBodyReglaPago(body, validar = false) {
 
 router.post("/reglas-pago", async (req, res) => {
   try {
-    const body = prepararBodyReglaPago({ ...req.body, estadoRegla: "Borrador" });
+    const body = await prepararBodyReglaPago({
+      ...req.body,
+      estadoRegla: "Borrador",
+    });
     const regla = new ReglaPagoNomina(body);
     await regla.save();
     res.json({ status: "Regla creada", data: regla });
@@ -442,7 +538,7 @@ router.put("/reglas-pago/:id", async (req, res) => {
         mensaje: "No se puede editar una regla ya autorizada",
       });
     }
-    const body = prepararBodyReglaPago({ ...req.body });
+    const body = await prepararBodyReglaPago({ ...req.body });
     const actualizado = await ReglaPagoNomina.findByIdAndUpdate(
       req.params.id,
       { $set: body },
@@ -486,40 +582,78 @@ router.put("/reglas-pago/:id/autorizar", async (req, res) => {
       });
     }
 
-    if (regla.frecuencia === "Dominical") {
-      regla.montoVariable = true;
-      regla.fuente = "FACTURACION_DOMINICAL";
+    if (regla.tipoRegla === "C") {
+      const msg = await tipoCNominaService.validarReglaTipoCCompleta(regla);
+      if (msg) return res.status(400).json({ mensaje: msg });
+      const meses = regla.mesesProyeccion || 3;
+      const { proyeccion, eventosActualizados, cuotaDescuento } =
+        await tipoCNominaService.generarEventosProgramados(regla, {
+          mesesProyeccion: meses,
+        });
+      regla.estadoRegla = "Autorizada";
+      regla.fechaAutorizacion = new Date();
+      regla.proyeccion = proyeccion;
+      regla.cuotaEvento = cuotaDescuento;
+      await regla.save();
+      return res.json({
+        status:
+          "Regla tipo C autorizada — descuentos aplicados a pagos programados",
+        data: regla,
+        eventosActualizados,
+        cuotaDescuento,
+      });
     }
+
     const meses = regla.mesesProyeccion || 3;
-    const proyeccion =
-      regla.frecuencia === "Dominical"
-        ? {
-            etiquetaFila: "Pago dominical (monto variable)",
-            meses: [],
-          }
-        : construirProyeccion(regla.toObject(), {
-            mesesProyeccion: meses,
-          });
+    const { proyeccion, eventos } =
+      await tipoANominaService.generarEventosProgramados(regla, {
+        mesesProyeccion: meses,
+      });
     regla.estadoRegla = "Autorizada";
     regla.fechaAutorizacion = new Date();
     regla.proyeccion = proyeccion;
     await regla.save();
-    res.json({ status: "Regla autorizada", data: regla });
+    return res.json({
+      status: "Regla tipo A autorizada — eventos pendientes de ejecución",
+      data: regla,
+      eventosGenerados: eventos.length,
+    });
   } catch (err) {
     res.status(400).json({ mensaje: err.message });
   }
 });
 
 router.put("/reglas-pago/:id/finalizar", async (req, res) => {
-  const regla = await ReglaPagoNomina.findByIdAndUpdate(
-    req.params.id,
-    { $set: { estadoRegla: "Finalizada" } },
-    { new: true }
-  );
-  if (!regla) {
-    return res.status(404).json({ mensaje: "Regla no encontrada" });
+  try {
+    const regla = await ReglaPagoNomina.findById(req.params.id);
+    if (!regla) {
+      return res.status(404).json({ mensaje: "Regla no encontrada" });
+    }
+    if (regla.estadoRegla !== "Autorizada") {
+      return res.status(400).json({
+        mensaje: "Solo se pueden finalizar reglas autorizadas",
+      });
+    }
+    regla.estadoRegla = "Finalizada";
+    await regla.save();
+    let eventosEliminados = 0;
+    if (regla.tipoRegla === "C") {
+      eventosEliminados = await tipoCNominaService.quitarDescuentosRegla(
+        regla._id
+      );
+    } else {
+      eventosEliminados = await tipoBNominaService.eliminarEventosNoPagadosRegla(
+        regla._id
+      );
+    }
+    res.json({
+      status: "Regla finalizada",
+      data: regla,
+      eventosEliminados,
+    });
+  } catch (err) {
+    res.status(400).json({ mensaje: err.message });
   }
-  res.json({ status: "Regla finalizada", data: regla });
 });
 
 router.delete("/reglas-pago/:id", async (req, res) => {
@@ -532,8 +666,11 @@ router.delete("/reglas-pago/:id", async (req, res) => {
       mensaje: "No se puede eliminar una regla autorizada. Finalícela primero.",
     });
   }
+  const eventosEliminados = await tipoBNominaService.eliminarEventosNoPagadosRegla(
+    regla._id
+  );
   await ReglaPagoNomina.findByIdAndRemove(req.params.id);
-  res.json({ status: "Regla eliminada" });
+  res.json({ status: "Regla eliminada", eventosEliminados });
 });
 
 // --- Pago dominical (facturación del día - devoluciones) ---
@@ -598,26 +735,140 @@ router.get("/dominical/ajustes-pendientes", async (req, res) => {
 
 router.get("/eventos-programados", async (req, res) => {
   const filtro = {};
+  const condicionesExtra = [];
   if (req.query.estado) filtro.estado = req.query.estado;
   if (req.query.reglaId) filtro.reglaPagoId = req.query.reglaId;
   if (req.query.cedula) filtro.cedulaBeneficiario = req.query.cedula;
+  if (req.query.transaccion) filtro.transaccionNomina = req.query.transaccion;
+  if (req.query.tipoRegla) filtro.tipoRegla = req.query.tipoRegla;
+  if (req.query.conDescuento === "si") {
+    condicionesExtra.push({ montoDescuento: { $gt: 0 } });
+  } else if (req.query.conDescuento === "no") {
+    condicionesExtra.push({
+      $or: [
+        { montoDescuento: { $exists: false } },
+        { montoDescuento: null },
+        { montoDescuento: { $lte: 0 } },
+      ],
+    });
+  }
   if (req.query.desde || req.query.hasta) {
-    filtro.fechaProgramada = {};
-    if (req.query.desde) {
-      const d = new Date(req.query.desde);
-      d.setHours(0, 0, 0, 0);
-      filtro.fechaProgramada.$gte = d;
-    }
-    if (req.query.hasta) {
-      const h = new Date(req.query.hasta);
-      h.setHours(23, 59, 59, 999);
-      filtro.fechaProgramada.$lte = h;
+    const partesDesde = String(req.query.desde || "").slice(0, 10).split("-").map(Number);
+    const partesHasta = String(req.query.hasta || "").slice(0, 10).split("-").map(Number);
+    const desde =
+      partesDesde.length >= 3 && !partesDesde.some(Number.isNaN)
+        ? new Date(partesDesde[0], partesDesde[1] - 1, partesDesde[2])
+        : req.query.desde
+        ? new Date(req.query.desde)
+        : null;
+    const hasta =
+      partesHasta.length >= 3 && !partesHasta.some(Number.isNaN)
+        ? new Date(partesHasta[0], partesHasta[1] - 1, partesHasta[2])
+        : req.query.hasta
+        ? new Date(req.query.hasta)
+        : null;
+    if (desde) desde.setHours(0, 0, 0, 0);
+    if (hasta) hasta.setHours(23, 59, 59, 999);
+    const rango = {};
+    if (desde) rango.$gte = desde;
+    if (hasta) rango.$lte = hasta;
+    condicionesExtra.push({
+      $or: [
+        { fechaProgramada: rango },
+        { fechaEjecucion: rango },
+        { "pagosParciales.fecha": rango },
+      ],
+    });
+  }
+  if (condicionesExtra.length) {
+    filtro.$and = condicionesExtra;
+  }
+  const eventosPrevios = await EventoPagoProgramado.find(filtro)
+    .select("reglaPagoId")
+    .lean();
+  const idsReglaA = [
+    ...new Set(
+      eventosPrevios.map((e) => String(e.reglaPagoId)).filter(Boolean)
+    ),
+  ];
+  for (const idReglaA of idsReglaA) {
+    const nDesc = await ReglaPagoNomina.countDocuments({
+      reglaPagoAsociadaId: idReglaA,
+      tipoRegla: "C",
+      estadoRegla: "Autorizada",
+    });
+    if (nDesc > 0) {
+      const reglaA = await ReglaPagoNomina.findById(idReglaA);
+      if (reglaA) {
+        await recalcularDescuentosEnEventos(reglaA);
+      }
     }
   }
+
   const eventos = await EventoPagoProgramado.find(filtro)
-    .populate("reglaPagoId", "transaccionNomina centroCosto estadoRegla")
+    .populate(
+      "reglaPagoId",
+      "transaccionNomina centroCosto estadoRegla frecuencia montoVariable tipoRegla"
+    )
     .sort({ fechaProgramada: 1 });
   res.send(eventos);
+});
+
+function etiquetaReglaDescuento(reglaC) {
+  if (esDescuentosGenerales(reglaC.transaccionNomina)) {
+    return reglaC.conceptoDescuento || reglaC.transaccionNomina || "Descuento";
+  }
+  return "Seguridad social (aporte personal)";
+}
+
+router.get("/eventos-programados/:id/desglose-descuentos", async (req, res) => {
+  try {
+    const evento = await EventoPagoProgramado.findById(req.params.id);
+    if (!evento) {
+      return res.status(404).json({ mensaje: "Evento no encontrado" });
+    }
+    const reglaA = await ReglaPagoNomina.findById(evento.reglaPagoId);
+    if (!reglaA || reglaA.tipoRegla !== "A") {
+      return res.json({
+        montoBruto: evento.montoBruto,
+        montoDescuento: Number(evento.montoDescuento) || 0,
+        montoNeto: Number(evento.monto) || 0,
+        lineas: [],
+        total: 0,
+      });
+    }
+    const reglasC = await ReglaPagoNomina.find({
+      reglaPagoAsociadaId: reglaA._id,
+      tipoRegla: "C",
+      estadoRegla: "Autorizada",
+    }).lean();
+    const todosEventos = await EventoPagoProgramado.find({
+      reglaPagoId: reglaA._id,
+    }).sort({ fechaProgramada: 1 });
+    const lineas = [];
+    for (const reglaC of reglasC) {
+      const monto = montoDescuentoReglaCEnEvento(reglaC, evento, todosEventos);
+      if (monto > 0) {
+        lineas.push({
+          reglaDescuentoId: reglaC._id,
+          transaccionNomina: reglaC.transaccionNomina,
+          conceptoDescuento: reglaC.conceptoDescuento || null,
+          etiqueta: etiquetaReglaDescuento(reglaC),
+          monto: Math.round(monto * 100) / 100,
+        });
+      }
+    }
+    const total = lineas.reduce((s, l) => s + l.monto, 0);
+    res.json({
+      montoBruto: evento.montoBruto,
+      montoDescuento: Number(evento.montoDescuento) || 0,
+      montoNeto: Number(evento.monto) || 0,
+      lineas,
+      total: Math.round(total * 100) / 100,
+    });
+  } catch (err) {
+    res.status(400).json({ mensaje: err.message });
+  }
 });
 
 router.put("/eventos-programados/:id/ejecutar", async (req, res) => {

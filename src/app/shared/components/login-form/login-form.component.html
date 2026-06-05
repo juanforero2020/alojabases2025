@@ -37,6 +37,10 @@
             </dx-validator>
         </dx-text-box>
     </div>
+
+    <div class="login-error" *ngIf="isError">
+        {{ loginError }}
+    </div>
    
     <div class="dx-field">
         <dx-button type="default" text="Iniciar sesion"  width="100%" (onClick)="signIn($event)"></dx-button>

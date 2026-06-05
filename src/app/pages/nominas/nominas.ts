@@ -57,6 +57,9 @@ export interface BeneficiarioNomina {
   estadoEmpleado?: string;
   asignacionSalarial?: number;
   salarioCalculoVariablesPrestacionales?: number;
+  montoSeguridadSocial?: number;
+  porcentajeAportePersonal?: number;
+  conceptoAportePersonal?: string;
   periodoPago?: string;
   tablaMaestraSalarialId?: string;
   proveedorId?: string;
@@ -66,6 +69,9 @@ export interface OcurrenciaPagoProyectada {
   fecha: Date | string;
   etiqueta: string;
   monto: number;
+  montoBruto?: number;
+  montoDescuento?: number;
+  montoNeto?: number;
   estado?: string;
 }
 
@@ -149,9 +155,21 @@ export interface FilaAmortizacion {
   monto: number;
 }
 
+/** Regla tipo A listada para vincular descuentos tipo C */
+export type ReglaPagoAsociable = ReglaPagoNomina & { etiquetaDisplay?: string };
+
 export interface ReglaPagoNomina {
   _id?: string;
-  tipoRegla?: "A" | "B";
+  tipoRegla?: "A" | "B" | "C";
+  esDescuento?: boolean;
+  reglaPagoAsociadaId?: string;
+  montoBaseTms?: number;
+  porcentajeAportePersonal?: number;
+  /** Tipo C — Descuentos (no seg. social) */
+  modalidadDescuento?: "Por cuota" | "Valor unico";
+  conceptoDescuento?: string;
+  semanaAplicacion?: "Esta semana" | "Semana especifica";
+  fechaAplicacionDescuento?: Date | string;
   tipoBeneficiario: "Interno" | "Externo";
   cedulaBeneficiario: string;
   nombreBeneficiario?: string;
@@ -191,9 +209,41 @@ export interface ReglaPagoNomina {
   createdAt?: string;
 }
 
+export interface LineaDesgloseDescuento {
+  reglaDescuentoId?: string;
+  transaccionNomina?: string;
+  conceptoDescuento?: string | null;
+  etiqueta: string;
+  monto: number;
+}
+
+export interface DesgloseDescuentosEvento {
+  montoBruto?: number;
+  montoDescuento: number;
+  montoNeto: number;
+  lineas: LineaDesgloseDescuento[];
+  total: number;
+}
+
+export interface BeneficiarioFiltroPagos {
+  cedula: string;
+  nombre: string;
+  etiquetaDisplay: string;
+}
+
 export interface EventoPagoProgramado {
   _id?: string;
-  reglaPagoId?: string;
+  reglaPagoId?:
+    | string
+    | {
+        _id?: string;
+        transaccionNomina?: string;
+        centroCosto?: string;
+        estadoRegla?: string;
+        frecuencia?: string;
+        montoVariable?: boolean;
+        tipoRegla?: string;
+      };
   tipoRegla?: string;
   numeroCuota: number;
   totalCuotas: number;
@@ -201,6 +251,9 @@ export interface EventoPagoProgramado {
   fechaMin?: Date | string;
   fechaMax?: Date | string;
   monto: number;
+  montoBruto?: number;
+  montoDescuento?: number;
+  reglaDescuentoId?: string;
   montoPagado?: number;
   centroCosto?: string;
   transaccionNomina?: string;

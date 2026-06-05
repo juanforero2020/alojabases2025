@@ -36,7 +36,13 @@ const FilaAmortizacionSchema = new Schema(
 
 const ReglaPagoNominaSchema = new Schema(
   {
-    tipoRegla: { type: String, enum: ["A", "B"], default: "A" },
+    tipoRegla: { type: String, enum: ["A", "B", "C"], default: "A" },
+    esDescuento: { type: Boolean, default: false },
+    reglaPagoAsociadaId: {
+      type: Schema.Types.ObjectId,
+      ref: "ReglaPagoNomina",
+      required: false,
+    },
     tipoBeneficiario: {
       type: String,
       enum: ["Interno", "Externo"],
@@ -74,6 +80,20 @@ const ReglaPagoNominaSchema = new Schema(
       type: String,
       default: "asignacionSalarial",
     },
+    montoBaseTms: { type: Number, required: false },
+    porcentajeAportePersonal: { type: Number, required: false },
+    modalidadDescuento: {
+      type: String,
+      enum: ["Por cuota", "Valor unico"],
+      required: false,
+    },
+    conceptoDescuento: { type: String, required: false },
+    semanaAplicacion: {
+      type: String,
+      enum: ["Esta semana", "Semana especifica"],
+      required: false,
+    },
+    fechaAplicacionDescuento: { type: Date, required: false },
     estadoRegla: {
       type: String,
       enum: ["Borrador", "Autorizada", "Finalizada"],

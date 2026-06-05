@@ -892,7 +892,7 @@ export class CajaMenorComponent implements OnInit {
         widths: ["35%", "10%", "10%", "10%", "25%", "10%"],
         alignment: "center",
         fontSize: 7,
-        headerRows: 2,
+        headerRows: 1,
         body: [
           [
             { text: "Cliente", style: "tableHeader2", fontSize: 7,},

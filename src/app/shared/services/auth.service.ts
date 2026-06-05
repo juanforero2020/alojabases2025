@@ -4,6 +4,8 @@ import { AngularFireAuth } from  "@angular/fire/auth";
 import { User } from  'firebase';
 import { AuthenService } from 'src/app/servicios/authen.service';
 import { InactivityService } from './inactivity.service';
+import { Observable } from 'rxjs';
+import { tap } from 'rxjs/operators';
 
 @Injectable()
 export class AuthService {
@@ -36,28 +38,18 @@ export class AuthService {
     })
   }
 
-  async logIn(login: string, password: string) {
-     this.user2.email=login
-    this.user2.password=password
-    try{
-      this.authenService.signIn(this.user2)
-        .subscribe(
-          res => {
-            localStorage.setItem('token', res.token);
-            this.loggedIn = true;
-            localStorage.setItem("logged", this.loggedIn.toString())
-            this.inactivityService.startWatching(() => this.logOut(true));
-            this.router.navigate(['/']);
-          },
-          error => {
-           if(error.status == 401)
-            alert("Credenciales incorrectas")
-           else if(error.status == 404)
-            alert("El usuario se encuentra bloqueado")
-          }
-        ); 
-    }catch(e){}
-    
+  logIn(login: string, password: string): Observable<{ token: string }> {
+    this.user2.email = login;
+    this.user2.password = password;
+    return this.authenService.signIn(this.user2).pipe(
+      tap(res => {
+        localStorage.setItem('token', res.token);
+        this.loggedIn = true;
+        localStorage.setItem('logged', this.loggedIn.toString());
+        this.inactivityService.startWatching(() => this.logOut(true));
+        this.router.navigate(['/']);
+      })
+    );
   }
 
 

@@ -1,0 +1,25 @@
+.pagos-programados-titulo {
+  background-color: #fff3cd;
+  color: #c62828;
+  font-weight: bold;
+  text-transform: uppercase;
+  padding: 0.5rem 1rem;
+  margin-bottom: 1rem;
+  border-left: 4px solid #c62828;
+}
+
+.pagos-filtros label {
+  font-size: 0.85rem;
+  font-weight: 600;
+  margin-bottom: 0.25rem;
+}
+
+.descuento-detalle-btn {
+  font-weight: 600;
+  text-decoration: underline dotted;
+  cursor: pointer;
+
+  &:hover {
+    text-decoration: underline;
+  }
+}

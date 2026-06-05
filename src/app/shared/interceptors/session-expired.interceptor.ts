@@ -42,7 +42,8 @@ export class SessionExpiredInterceptor implements HttpInterceptor {
     return next.handle(req).pipe(
       catchError((err: HttpErrorResponse) => {
         const hasToken = !!localStorage.getItem('token');
-        const isOwnBackend401 = err.status === 401 && hasToken && !isExternalApi;
+        const isOwnBackend401 =
+          err.status === 401 && hasToken && !isExternalApi && !isLoginOrRegister;
         if (isOwnBackend401) {
           this.authService.logOut(true);
           this.router.navigate(['/login-form']);

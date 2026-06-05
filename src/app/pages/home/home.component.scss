@@ -147,6 +147,41 @@
   box-shadow: 0 4px 12px rgba(200, 80, 90, 0.15);
 }
 
+.mini-kpi-faltantes {
+  border-color: #c62828;
+  background: linear-gradient(180deg, #fff5f5 0%, #ffebee 100%);
+
+  .mini-kpi-value {
+    color: #b71c1c;
+  }
+}
+
+.mini-kpi-sobrante-mas-uno {
+  border-color: #1565c0;
+  background: linear-gradient(180deg, #f5f9ff 0%, #e3f2fd 100%);
+
+  .mini-kpi-value {
+    color: #0d47a1;
+  }
+}
+
+.mini-kpi-subtitle {
+  font-size: 11px;
+  color: #888;
+  margin-top: 2px;
+  line-height: 1.2;
+}
+
+.caja-resultado-faltante-destacado {
+  color: #b71c1c;
+  font-weight: 700;
+}
+
+.caja-resultado-sobrante-mas-uno {
+  color: #0d47a1;
+  font-weight: 700;
+}
+
 .popup-indicadores-entregas {
   min-height: 200px;
   box-sizing: border-box;
@@ -224,4 +259,108 @@
 
 .detalle-compromiso-lista li {
   margin-bottom: 0.2rem;
+}
+
+.loading-wrap {
+  display: flex;
+  align-items: center;
+  gap: 0.75rem;
+  padding: 0.5rem 0;
+  flex-wrap: wrap;
+}
+
+.error-wrap {
+  display: flex;
+  align-items: center;
+  gap: 0.75rem;
+  padding: 0.5rem 0;
+  flex-wrap: wrap;
+  color: #c00;
+}
+
+.detalle-caja-menor-fila-principal {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 0.5rem;
+  flex-wrap: wrap;
+}
+
+.caja-estado-badge {
+  font-size: 0.75rem;
+  font-weight: 600;
+  padding: 0.15rem 0.55rem;
+  border-radius: 999px;
+  text-transform: uppercase;
+  letter-spacing: 0.02em;
+}
+
+.caja-estado-cerrada {
+  background: #e8f5e9;
+  color: #2e7d32;
+}
+
+.caja-estado-abierta {
+  background: #fff3e0;
+  color: #e65100;
+}
+
+.caja-resultado-ok {
+  color: #2e7d32;
+}
+
+.caja-resultado-sobrante {
+  color: #1565c0;
+}
+
+.caja-resultado-faltante {
+  color: #c62828;
+}
+
+.detalle-caja-menor {
+  border-left: 3px solid #ff5722;
+}
+
+.detalle-orden-compra {
+  border-left: 3px solid #1565c0;
+}
+
+.orden-estado-solicitud {
+  background: #e3f2fd;
+  color: #1565c0;
+}
+
+.orden-estado-abierto {
+  background: #fff3e0;
+  color: #e65100;
+}
+
+.orden-estado-parcial {
+  background: #fff8e1;
+  color: #f57f17;
+}
+
+.orden-estado-completo {
+  background: #e8f5e9;
+  color: #2e7d32;
+}
+
+.orden-estado-pendiente {
+  background: #fff3e0;
+  color: #e65100;
+}
+
+.orden-estado-aprobada {
+  background: #e8f5e9;
+  color: #2e7d32;
+}
+
+.orden-estado-rechazada {
+  background: #ffebee;
+  color: #c62828;
+}
+
+.orden-estado-otro {
+  background: #eceff1;
+  color: #546e7a;
 }
