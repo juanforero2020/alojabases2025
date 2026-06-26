@@ -236,6 +236,7 @@ export interface BeneficiarioFiltroPagos {
   etiquetaDisplay: string;
 }
 
+
 export interface EventoPagoProgramado {
   _id?: string;
   reglaPagoId?:
@@ -274,6 +275,16 @@ export interface EventoPagoProgramado {
   autorizadoFueraPlazoPor?: string;
   fechaAutorizacionFueraPlazo?: Date | string;
   notas?: string;
+}
+
+/** Fila enriquecida para dx-data-grid (filtros y exportación Excel). */
+export interface EventoPagoProgramadoFila extends EventoPagoProgramado {
+  rangoFechas?: string;
+  cuotaDisplay?: string;
+  programadoExport?: number | null;
+  descuentoExport?: number;
+  saldoExport?: number | null;
+  mensajePago?: string | null;
 }
 
 export interface PagoParcialNomina {

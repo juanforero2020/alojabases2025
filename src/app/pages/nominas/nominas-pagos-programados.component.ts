@@ -9,6 +9,7 @@ import {
   BeneficiarioFiltroPagos,
   DesgloseDescuentosEvento,
   EventoPagoProgramado,
+  EventoPagoProgramadoFila,
   TablaMaestraSalarial,
 } from "./nominas";
 
@@ -21,7 +22,8 @@ export class NominasPagosProgramadosComponent implements OnInit {
   @Input() usuarioNombre = "";
   @Input() esAdministrador = false;
 
-  eventosProgramados: EventoPagoProgramado[] = [];
+  eventosProgramados: EventoPagoProgramadoFila[] = [];
+  nombreArchivoExport = "Pagos_Programados";
   filtroEventosEstado = "Pendiente";
   filtroTransaccion = "Todos";
   filtroTipoRegla = "Todos";
@@ -178,7 +180,9 @@ export class NominasPagosProgramadosComponent implements OnInit {
       })
       .subscribe(
         (res) => {
-          this.eventosProgramados = res;
+          this.eventosProgramados = (res || []).map((ev) =>
+            this.enriquecerEventoParaGrid(ev)
+          );
           this.actualizarOpcionesTransaccion(res);
           this.cargandoEventos = false;
         },
@@ -187,6 +191,61 @@ export class NominasPagosProgramadosComponent implements OnInit {
           this.cargandoEventos = false;
         }
       );
+  }
+
+  private enriquecerEventoParaGrid(
+    ev: EventoPagoProgramado
+  ): EventoPagoProgramadoFila {
+    const variable = this.esMontoVariable(ev);
+    const saldoOculto =
+      variable && (ev.estado === "Pendiente" || ev.estado === "Parcial");
+
+    return {
+      ...ev,
+      rangoFechas: this.textoRangoFechas(ev),
+      cuotaDisplay: `${ev.numeroCuota}/${ev.totalCuotas}`,
+      programadoExport: variable ? null : Number(ev.monto) || 0,
+      descuentoExport: Number(ev.montoDescuento) || 0,
+      saldoExport: saldoOculto ? null : this.saldoPendienteEvento(ev),
+      mensajePago: this.mensajeEstadoPago(ev),
+    };
+  }
+
+  textoRangoFechas(ev: EventoPagoProgramado): string {
+    if (ev.fechaMin && ev.fechaMax) {
+      const min = new Date(ev.fechaMin).toLocaleDateString("es-EC", {
+        day: "2-digit",
+        month: "2-digit",
+        year: "2-digit",
+      });
+      const max = new Date(ev.fechaMax).toLocaleDateString("es-EC", {
+        day: "2-digit",
+        month: "2-digit",
+        year: "2-digit",
+      });
+      return `${min} — ${max}`;
+    }
+    return new Date(ev.fechaProgramada).toLocaleDateString("es-EC");
+  }
+
+  onExportingPagos(e: {
+    component: {
+      beginUpdate: () => void;
+      columnOption: (field: string, option: string, value?: boolean) => void;
+    };
+  }) {
+    e.component.beginUpdate();
+    e.component.columnOption("mensajePago", "visible", true);
+  }
+
+  onExportedPagos(e: {
+    component: {
+      columnOption: (field: string, option: string, value?: boolean) => void;
+      endUpdate: () => void;
+    };
+  }) {
+    e.component.columnOption("mensajePago", "visible", false);
+    e.component.endUpdate();
   }
 
   actualizarOpcionesTransaccion(eventos: EventoPagoProgramado[]) {

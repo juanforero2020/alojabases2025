@@ -97,7 +97,7 @@
 
     <p class="text-muted small mb-2">
       <span *ngIf="!cargandoEventos && eventosProgramados.length">
-        {{ eventosProgramados.length }} registro(s).
+        {{ eventosProgramados.length }} registro(s) cargado(s). Use la fila de filtros bajo cada columna o el buscador para refinar.
       </span>
       <span *ngIf="!cargandoEventos && eventosProgramados.length"> · </span>
       Haga clic en el monto de <strong>Descuento</strong> (en rojo) para ver el detalle por concepto.
@@ -108,123 +108,219 @@
       <p class="text-muted mt-3 mb-0">Cargando pagos programados…</p>
     </div>
 
-    <div class="table-responsive" *ngIf="!cargandoEventos && eventosProgramados.length">
-      <table class="table table-sm table-bordered pagos-programados-tabla">
-        <thead>
-          <tr>
-            <th>Tipo</th>
-            <th>Rango de fechas</th>
-            <th>Beneficiario</th>
-            <th>Transacción</th>
-            <th>Centro costo</th>
-            <th>Cuota</th>
-            <th>Programado</th>
-            <th>Descuento</th>
-            <th>Pagado</th>
-            <th>Saldo</th>
-            <th>Estado</th>
-            <th>Comprobante</th>
-            <th></th>
-          </tr>
-        </thead>
-        <tbody>
-          <tr *ngFor="let ev of eventosProgramados">
-            <td>{{ etiquetaTipo(ev) }}</td>
-            <td class="small">
-              <span *ngIf="ev.fechaMin && ev.fechaMax">
-                {{ ev.fechaMin | date : "dd/MM/yy" }} — {{ ev.fechaMax | date : "dd/MM/yy" }}
-              </span>
-              <span *ngIf="!ev.fechaMin">{{ ev.fechaProgramada | date : "dd/MM/yyyy" }}</span>
-            </td>
-            <td>
-              <span class="d-block">{{ ev.nombreBeneficiario }}</span>
-              <span class="text-muted small" *ngIf="ev.cedulaBeneficiario">{{ ev.cedulaBeneficiario }}</span>
-            </td>
-            <td>{{ ev.transaccionNomina }}</td>
-            <td>{{ ev.centroCosto }}</td>
-            <td>{{ ev.numeroCuota }}/{{ ev.totalCuotas }}</td>
-            <td>
-              <span *ngIf="esMontoVariable(ev)" class="text-muted">Variable</span>
-              <span *ngIf="!esMontoVariable(ev)">
-                <span *ngIf="ev.montoBruto" class="text-muted small d-block">
-                  Bruto {{ ev.montoBruto | number : "1.2-2" }}
-                </span>
-                {{ ev.monto | number : "1.2-2" }}
-              </span>
-            </td>
-            <td>
-              <button
-                *ngIf="tieneDescuento(ev)"
-                type="button"
-                class="btn btn-link btn-sm p-0 text-danger descuento-detalle-btn"
-                (click)="verDesgloseDescuentos(ev)"
-                title="Ver desglose de descuentos"
-              >
-                −{{ ev.montoDescuento | number : "1.2-2" }}
-              </button>
-              <span *ngIf="!tieneDescuento(ev)" class="text-muted">—</span>
-            </td>
-            <td>{{ ev.montoPagado || 0 | number : "1.2-2" }}</td>
-            <td>
-              <span *ngIf="esMontoVariable(ev) && (ev.estado === 'Pendiente' || ev.estado === 'Parcial')" class="text-muted">—</span>
-              <span *ngIf="!(esMontoVariable(ev) && (ev.estado === 'Pendiente' || ev.estado === 'Parcial'))">
-                {{ saldoPendienteEvento(ev) | number : "1.2-2" }}
-              </span>
-            </td>
-            <td>
-              <span
-                class="badge"
-                [class.badge-warning]="ev.estado === 'Pendiente'"
-                [class.badge-info]="ev.estado === 'Parcial'"
-                [class.badge-success]="ev.estado === 'Ejecutado'"
-                [class.badge-secondary]="ev.estado === 'Cancelado'"
-              >
-                {{ ev.estado }}
-              </span>
-            </td>
-            <td class="text-center">
-              <button
-                type="button"
-                class="btn btn-sm btn-outline-primary comprobante-pago-btn"
-                [disabled]="!ev._id || generandoComprobanteId === ev._id"
-                (click)="descargarComprobantePago(ev)"
-                title="Descargar comprobante de pago (PDF)"
-              >
-                <span *ngIf="generandoComprobanteId !== ev._id">PDF</span>
-                <span *ngIf="generandoComprobanteId === ev._id">…</span>
-              </button>
-            </td>
-            <td>
-              <button
-                class="btn btn-sm btn-warning mb-1"
-                *ngIf="puedeAutorizarFueraPlazo(ev)"
-                (click)="autorizarPagoFueraPlazo(ev)"
-              >
-                Autorizar
-              </button>
-              <button
-                class="btn btn-sm btn-success"
-                *ngIf="puedeEjecutarEvento(ev)"
-                (click)="ejecutarEventoProgramado(ev)"
-              >
-                Pagar
-              </button>
-              <span
-                class="small"
-                [class.text-muted]="mensajeEstadoPago(ev) === 'Fuera de fecha'"
-                [class.pagos-programados-espera-autorizacion]="mensajeEstadoPago(ev) === 'En espera de autorización'"
-                *ngIf="mensajeEstadoPago(ev) as mensajePago"
-              >
-                {{ mensajePago }}
-              </span>
-            </td>
-          </tr>
-        </tbody>
-      </table>
-    </div>
+    <dx-data-grid
+      *ngIf="!cargandoEventos"
+      id="gridPagosProgramados"
+      class="pagos-programados-grid"
+      [dataSource]="eventosProgramados"
+      [showBorders]="true"
+      [columnAutoWidth]="true"
+      [rowAlternationEnabled]="true"
+      keyExpr="_id"
+      noDataText="No hay eventos con los filtros seleccionados. Autorice una regla de pago (tipo A o B) o ajuste los filtros."
+      (onExporting)="onExportingPagos($event)"
+      (onExported)="onExportedPagos($event)"
+    >
+      <dxo-filter-row [visible]="true"></dxo-filter-row>
+      <dxo-header-filter [visible]="true"></dxo-header-filter>
+      <dxo-search-panel
+        [visible]="true"
+        [width]="260"
+        placeholder="Buscar en todas las columnas…"
+      ></dxo-search-panel>
+      <dxo-export
+        [enabled]="true"
+        [fileName]="nombreArchivoExport"
+        [allowExportSelectedData]="true"
+      ></dxo-export>
 
-    <p class="text-muted small mb-0" *ngIf="!cargandoEventos && !eventosProgramados.length">
-      No hay eventos con los filtros seleccionados. Autorice una regla de pago (tipo A o B) o ajuste los filtros.
-    </p>
+      <dxi-column
+        dataField="tipoRegla"
+        caption="Tipo"
+        [width]="55"
+      ></dxi-column>
+      <dxi-column
+        dataField="rangoFechas"
+        caption="Rango de fechas"
+        [width]="130"
+      ></dxi-column>
+      <dxi-column
+        dataField="nombreBeneficiario"
+        caption="Beneficiario"
+        [minWidth]="140"
+      ></dxi-column>
+      <dxi-column
+        dataField="cedulaBeneficiario"
+        caption="Cédula"
+        [width]="110"
+      ></dxi-column>
+      <dxi-column
+        dataField="transaccionNomina"
+        caption="Transacción"
+        [minWidth]="120"
+      ></dxi-column>
+      <dxi-column
+        dataField="centroCosto"
+        caption="Centro costo"
+        [minWidth]="110"
+      ></dxi-column>
+      <dxi-column
+        dataField="cuotaDisplay"
+        caption="Cuota"
+        [width]="75"
+        [allowFiltering]="false"
+      ></dxi-column>
+      <dxi-column
+        dataField="programadoExport"
+        caption="Programado"
+        dataType="number"
+        format="#,##0.00"
+        [width]="105"
+        cellTemplate="programadoCell"
+      ></dxi-column>
+      <dxi-column
+        dataField="descuentoExport"
+        caption="Descuento"
+        dataType="number"
+        [width]="100"
+        cellTemplate="descuentoCell"
+        [allowExporting]="true"
+      ></dxi-column>
+      <dxi-column
+        dataField="montoPagado"
+        caption="Pagado"
+        dataType="number"
+        format="#,##0.00"
+        [width]="95"
+      ></dxi-column>
+      <dxi-column
+        dataField="saldoExport"
+        caption="Saldo"
+        dataType="number"
+        format="#,##0.00"
+        [width]="95"
+        cellTemplate="saldoCell"
+      ></dxi-column>
+      <dxi-column
+        dataField="estado"
+        caption="Estado"
+        [width]="100"
+        cellTemplate="estadoCell"
+      ></dxi-column>
+      <dxi-column
+        dataField="mensajePago"
+        caption="Notas plazo"
+        [visible]="false"
+      ></dxi-column>
+      <dxi-column
+        caption="Comprobante"
+        [width]="105"
+        [allowFiltering]="false"
+        [allowSorting]="false"
+        [allowExporting]="false"
+        cellTemplate="comprobanteCell"
+      ></dxi-column>
+      <dxi-column
+        caption="Acciones"
+        [width]="130"
+        [allowFiltering]="false"
+        [allowSorting]="false"
+        [allowExporting]="false"
+        cellTemplate="accionesCell"
+      ></dxi-column>
+
+      <div *dxTemplate="let d of 'programadoCell'">
+        <span *ngIf="esMontoVariable(d.data)" class="text-muted">Variable</span>
+        <span *ngIf="!esMontoVariable(d.data)">
+          <span *ngIf="d.data.montoBruto" class="text-muted small d-block">
+            Bruto {{ d.data.montoBruto | number : "1.2-2" }}
+          </span>
+          {{ d.data.monto | number : "1.2-2" }}
+        </span>
+      </div>
+
+      <div *dxTemplate="let d of 'descuentoCell'">
+        <button
+          *ngIf="tieneDescuento(d.data)"
+          type="button"
+          class="btn btn-link btn-sm p-0 text-danger descuento-detalle-btn"
+          (click)="verDesgloseDescuentos(d.data)"
+          title="Ver desglose de descuentos"
+        >
+          −{{ d.data.montoDescuento | number : "1.2-2" }}
+        </button>
+        <span *ngIf="!tieneDescuento(d.data)" class="text-muted">—</span>
+      </div>
+
+      <div *dxTemplate="let d of 'saldoCell'">
+        <span
+          *ngIf="esMontoVariable(d.data) && (d.data.estado === 'Pendiente' || d.data.estado === 'Parcial')"
+          class="text-muted"
+        >—</span>
+        <span
+          *ngIf="!(esMontoVariable(d.data) && (d.data.estado === 'Pendiente' || d.data.estado === 'Parcial'))"
+        >
+          {{ saldoPendienteEvento(d.data) | number : "1.2-2" }}
+        </span>
+      </div>
+
+      <div *dxTemplate="let d of 'estadoCell'">
+        <span
+          class="badge"
+          [class.badge-warning]="d.data.estado === 'Pendiente'"
+          [class.badge-info]="d.data.estado === 'Parcial'"
+          [class.badge-success]="d.data.estado === 'Ejecutado'"
+          [class.badge-secondary]="d.data.estado === 'Cancelado'"
+        >
+          {{ d.data.estado }}
+        </span>
+      </div>
+
+      <div *dxTemplate="let d of 'comprobanteCell'">
+        <button
+          type="button"
+          class="btn btn-sm btn-outline-primary comprobante-pago-btn"
+          [disabled]="!d.data._id || generandoComprobanteId === d.data._id"
+          (click)="descargarComprobantePago(d.data)"
+          title="Descargar comprobante de pago (PDF)"
+        >
+          <span *ngIf="generandoComprobanteId !== d.data._id">PDF</span>
+          <span *ngIf="generandoComprobanteId === d.data._id">…</span>
+        </button>
+      </div>
+
+      <div *dxTemplate="let d of 'accionesCell'">
+        <button
+          class="btn btn-sm btn-warning mb-1 d-block"
+          *ngIf="puedeAutorizarFueraPlazo(d.data)"
+          (click)="autorizarPagoFueraPlazo(d.data)"
+        >
+          Autorizar
+        </button>
+        <button
+          class="btn btn-sm btn-success mb-1 d-block"
+          *ngIf="puedeEjecutarEvento(d.data)"
+          (click)="ejecutarEventoProgramado(d.data)"
+        >
+          Pagar
+        </button>
+        <span
+          class="small d-block"
+          [class.text-muted]="d.data.mensajePago === 'Fuera de fecha'"
+          [class.pagos-programados-espera-autorizacion]="d.data.mensajePago === 'En espera de autorización'"
+          *ngIf="d.data.mensajePago"
+        >
+          {{ d.data.mensajePago }}
+        </span>
+      </div>
+
+      <dxo-scrolling columnRenderingMode="virtual"></dxo-scrolling>
+      <dxo-paging [pageSize]="15"></dxo-paging>
+      <dxo-pager
+        [showPageSizeSelector]="true"
+        [allowedPageSizes]="[10, 15, 25, 50]"
+        [showInfo]="true"
+      ></dxo-pager>
+    </dx-data-grid>
   </div>
 </div>
