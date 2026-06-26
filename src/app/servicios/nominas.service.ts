@@ -196,6 +196,13 @@ export class NominasService {
     return this.http.put(`${this.URL}/eventos-programados/${id}/ejecutar`, payload);
   }
 
+  autorizarEventoFueraPlazo(id: string, payload: { usuario?: string }) {
+    return this.http.put(
+      `${this.URL}/eventos-programados/${id}/autorizar-fuera-plazo`,
+      payload
+    );
+  }
+
   cancelarEventoProgramado(id: string, notas?: string) {
     return this.http.put(`${this.URL}/eventos-programados/${id}/cancelar`, {
       notas,
@@ -216,6 +223,7 @@ export class NominasService {
       cuotasValores: number[];
       montoBrutoPago: number;
       cuotaNetaEjemplo: number;
+      validacionDescuento?: { ok: boolean; mensaje?: string };
     }>(`${this.URL}/reglas-pago/descuento-previa`, regla);
   }
 

@@ -48,3 +48,34 @@
   border-color: #e64a19;
   color: #fff;
 }
+
+:host ::ng-deep .popup-tabla-salarial-overlay .dx-popup-content {
+  max-height: calc(90vh - 3.5rem);
+  overflow: hidden;
+  padding: 0;
+}
+
+.popup-tabla-salarial-body {
+  display: flex;
+  flex-direction: column;
+  max-height: calc(90vh - 3.5rem);
+  width: 100%;
+  max-width: 100%;
+  min-width: 0;
+  box-sizing: border-box;
+}
+
+.popup-tabla-salarial-scroll {
+  flex: 1 1 auto;
+  min-height: 0;
+  overflow-y: auto;
+  overflow-x: hidden;
+  -webkit-overflow-scrolling: touch;
+}
+
+.popup-tabla-salarial-footer {
+  flex: 0 0 auto;
+  border-top: 1px solid #dee2e6;
+  background: #fff;
+  padding-top: 0.75rem;
+}

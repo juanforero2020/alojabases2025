@@ -153,6 +153,11 @@ export interface FilaAmortizacion {
   fechaMin: Date | string;
   fechaMax: Date | string;
   monto: number;
+  montoBrutoPago?: number;
+  descuentoExistente?: number;
+  descuentoNuevo?: number;
+  netoProyectado?: number;
+  descuentoValido?: boolean;
 }
 
 /** Regla tipo A listada para vincular descuentos tipo C */
@@ -265,6 +270,9 @@ export interface EventoPagoProgramado {
   transaccionFinancieraId?: string;
   ejecutadoPor?: string;
   fechaEjecucion?: Date | string;
+  pagoFueraPlazoAutorizado?: boolean;
+  autorizadoFueraPlazoPor?: string;
+  fechaAutorizacionFueraPlazo?: Date | string;
   notas?: string;
 }
 

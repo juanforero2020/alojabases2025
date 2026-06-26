@@ -23,3 +23,21 @@
     text-decoration: underline;
   }
 }
+
+.pagos-programados-loading {
+  min-height: 180px;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+}
+
+.pagos-programados-espera-autorizacion {
+  color: #e65100;
+  font-weight: 600;
+}
+
+.comprobante-pago-btn {
+  min-width: 3.25rem;
+  font-weight: 600;
+}

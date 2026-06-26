@@ -6,6 +6,8 @@ import { CajaMenor } from '../cajaMenor/caja-menor';
 import { OrdenesCompraService } from 'src/app/servicios/ordenes-compra.service';
 import { OrdenDeCompra } from '../compras/compra';
 import { objDate } from '../transacciones/transacciones';
+import { AuthenService } from 'src/app/servicios/authen.service';
+import { user } from '../user/user';
 
 export type TipoDetalleIndicadorEntrega =
   | "abiertas"
@@ -75,7 +77,8 @@ export class HomeComponent implements OnInit {
   tipoDetalleOrdenCompraActivo: TipoDetalleIndicadorOrdenCompra | null = null;
   detalleOrdenCompraFiltrado: OrdenDeCompra[] = [];
   versionSistema = "1.1.3";
-  ultimaFechaActualizacion = "04/06/2026 16:00";
+  ultimaFechaActualizacion = "15/06/2026 16:00";
+  esAsesorComercial = false;
 
   popupIndicadoresVisible = false;
   tituloPopupIndicadores = "";
@@ -97,15 +100,32 @@ export class HomeComponent implements OnInit {
     private stockMinimoData: StockMinimoDataService,
     private entregasBodegaService: EntregasBodegaService,
     private cajaMenorService: CajaMenorService,
-    private ordenesCompraService: OrdenesCompraService
+    private ordenesCompraService: OrdenesCompraService,
+    private _authenService: AuthenService
   ) {}
 
   ngOnInit(): void {
     this.actualizarTamanoPopupIndicadores();
-    this.cargarProductosBajoMinimo();
-    this.cargarIndicadoresEntregas();
-    this.cargarIndicadoresCajaMenor();
-    this.cargarIndicadoresOrdenCompra();
+    this.cargarUsuarioLogueado();
+  }
+
+  cargarUsuarioLogueado(): void {
+    let correo = "";
+    if (localStorage.getItem("maily") != '') {
+      correo = localStorage.getItem("maily");
+    }
+
+    this._authenService.getUserLogueado(correo).subscribe(res => {
+      const usuario = res as user;
+      const usuarioLogueado = usuario[0];
+      this.esAsesorComercial = usuarioLogueado.rol?.toString() == "Asesor Comercial";
+      if (!this.esAsesorComercial) {
+        this.cargarProductosBajoMinimo();
+        this.cargarIndicadoresEntregas();
+        this.cargarIndicadoresCajaMenor();
+        this.cargarIndicadoresOrdenCompra();
+      }
+    });
   }
 
   @HostListener('window:resize')

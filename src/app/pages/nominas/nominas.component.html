@@ -7,7 +7,7 @@
 <div *ngIf="!mostrarBloqueo">
   <br /><br />
 
-  <div class="row nominas-menu-superior justify-content-md-end">
+  <div class="row nominas-menu-superior justify-content-md-end" *ngIf="esAdministrador">
     <div class="col-12 col-md-5 px-2">
       <dx-select-box
         [items]="seccionesMenu"
@@ -320,6 +320,7 @@
 <div *ngIf="seccionActiva === 'Pagos Programados'">
   <app-nominas-pagos-programados
     [usuarioNombre]="nombreUsuario"
+    [esAdministrador]="esAdministrador"
   ></app-nominas-pagos-programados>
 </div>
 
@@ -338,10 +339,13 @@
       : 'Nueva Tabla Maestra Salarial'
   "
   [width]="700"
+  [maxHeight]="'90vh'"
   [height]="'auto'"
   [showCloseButton]="true"
+  [elementAttr]="{ class: 'popup-tabla-salarial-overlay' }"
 >
-  <div class="p-3">
+  <div *dxTemplate="let data of 'content'" class="popup-tabla-salarial-body">
+    <div class="popup-tabla-salarial-scroll p-3">
     <div class="nominas-titulo-seccion text-center mb-3">
       Salario base legal
     </div>
@@ -455,20 +459,23 @@
         </tbody>
       </table>
     </div>
+    </div>
 
-    <div class="row mt-3">
-      <div class="col-6">
-        <button class="btn btn-block btn-secondary" (click)="cerrarPopupSalarial()">
-          Cancelar
-        </button>
-      </div>
-      <div class="col-6">
-        <button
-          class="btn btn-block btn-nomina-primario"
-          (click)="guardarTablaSalarial()"
-        >
-          Guardar
-        </button>
+    <div class="popup-tabla-salarial-footer px-3 pb-3">
+      <div class="row mt-0">
+        <div class="col-6">
+          <button class="btn btn-block btn-secondary" (click)="cerrarPopupSalarial()">
+            Cancelar
+          </button>
+        </div>
+        <div class="col-6">
+          <button
+            class="btn btn-block btn-nomina-primario"
+            (click)="guardarTablaSalarial()"
+          >
+            Guardar
+          </button>
+        </div>
       </div>
     </div>
   </div>

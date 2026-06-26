@@ -26,6 +26,7 @@ export class NominasComponent implements OnInit {
     "Consulta de Pagos",
   ];
   seccionActiva = "Tabla Maestra Salarial";
+  esAdministrador = false;
 
   usuarioLogueado: user;
   nombreUsuario = "";
@@ -143,6 +144,12 @@ export class NominasComponent implements OnInit {
         this.usuarioLogueado = res as user;
         if (this.usuarioLogueado?.[0]?.name) {
           this.nombreUsuario = this.usuarioLogueado[0].name;
+        }
+        this.esAdministrador =
+          this.usuarioLogueado[0].rol?.toString() === "Administrador";
+        if (!this.esAdministrador) {
+          this.seccionActiva = "Pagos Programados";
+          this.seccionesMenu = ["Pagos Programados"];
         }
         this.mostrarPopupCodigo();
       },

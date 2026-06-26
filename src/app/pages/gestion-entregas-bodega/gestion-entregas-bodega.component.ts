@@ -826,6 +826,97 @@ export class GestionEntregasBodegaComponent implements OnInit, OnDestroy {
     return String(v);
   }
 
+  private firmaLineaPdf(label: string): any {
+    return {
+      stack: [
+        {
+          table: {
+            widths: ["*"],
+            body: [[{ text: " ", border: [false, false, false, true], margin: [0, 20, 0, 0] }]],
+          },
+          layout: {
+            hLineWidth: (i: number) => (i === 1 ? 0.5 : 0),
+            vLineWidth: () => 0,
+            paddingLeft: () => 0,
+            paddingRight: () => 0,
+            paddingTop: () => 0,
+            paddingBottom: () => 0,
+          },
+        },
+        { text: label, fontSize: 8, alignment: "center", margin: [0, 2, 0, 0] },
+      ],
+    };
+  }
+
+  private buildPiePaginaOrdenEntregaPdf(): any {
+    return {
+      unbreakable: true,
+      stack: [
+        {
+          columns: [
+            { width: "50%", stack: [this.firmaLineaPdf("Fecha Retiro")] },
+            { width: "50%", text: "" },
+          ],
+          columnGap: 20,
+        },
+        {
+          columns: [
+            { width: "50%", stack: [this.firmaLineaPdf("Funcionario Bodega")] },
+            { width: "50%", stack: [this.firmaLineaPdf("Cliente")] },
+          ],
+          columnGap: 20,
+          margin: [0, 8, 0, 0],
+        },
+        {
+          columns: [
+            { width: "50%", stack: [this.firmaLineaPdf("Cedula No:")] },
+            { width: "50%", stack: [this.firmaLineaPdf("Cedula No:")] },
+          ],
+          columnGap: 20,
+          margin: [0, 8, 0, 10],
+        },
+        {
+          table: {
+            widths: ["*"],
+            body: [
+              [
+                {
+                  text: [
+                    { text: "NOTAS IMPORTANTES REQUISITO PARA EL DESPACHO: ", bold: true },
+                    { text: "Recepción Conforme: ", bold: true },
+                    {
+                      text:
+                        "El cliente (o la persona autorizada por este) declara recibir a entera satisfacción el material detallado en este documento, en las cantidades, tonos y condiciones pactadas en la factura. ",
+                    },
+                    { text: "2. Revisión y Entrega de Mercadería: ", bold: true },
+                    {
+                      text:
+                        "El cliente tiene el derecho de exigir la revisión detallada de todos los productos que le sean entregados; las cantidades exactas a recibir se encuentran debidamente relacionadas en la factura correspondiente, donde el cliente podrá visualizar el detalle tanto en cajas como en piezas. Es obligación estricta del bodeguero realizar dicha revisión visual y conteo junto al cliente, comprobando y garantizando que la mercadería se encuentra en perfecto estado antes de su despacho. Una vez que la mercadería ha sido entregada y se encuentre fuera de las instalaciones de la bodega, no se aceptarán reclamaciones ni devoluciones por daños físicos, roturas o piezas faltantes. ",
+                    },
+                    { text: "3. Material Instalado: BAJO NINGUNA CIRCUNSTANCIA ", bold: true },
+                    {
+                      text:
+                        "se aceptarán reclamos, devoluciones ni cambios de material que ya haya sido instalado, pegado o cortado en obra. Es responsabilidad del comprador verificar lotes, tonos y calibres antes de su instalación.",
+                    },
+                  ],
+                  fontSize: 7,
+                  alignment: "justify",
+                  margin: [6, 6, 6, 6],
+                },
+              ],
+            ],
+          },
+          layout: {
+            hLineWidth: () => 0.5,
+            vLineWidth: () => 0.5,
+            hLineColor: () => "#000000",
+            vLineColor: () => "#000000",
+          },
+        },
+      ],
+    };
+  }
+
   private buildDocumentDefinitionSimplePdf(o: any): any {
     const items = Array.isArray(o?.items) ? o.items : [];
     const bodyItems: any[] = [
@@ -864,7 +955,7 @@ export class GestionEntregasBodegaComponent implements OnInit, OnDestroy {
     return {
       pageSize: "A4",
       pageOrientation: "portrait",
-      pageMargins: [32, 36, 32, 36],
+      pageMargins: [32, 36, 32, 255],
       content: [
         { text: "DOCUMENTO VENTA / ORDEN DE ENTREGA", style: "header" },
         {
@@ -904,6 +995,15 @@ export class GestionEntregasBodegaComponent implements OnInit, OnDestroy {
           layout: "lightHorizontalLines",
         },
       ],
+      footer: (currentPage: number, pageCount: number) => {
+        if (currentPage !== pageCount) {
+          return null;
+        }
+        return {
+          margin: [32, 4, 32, 0],
+          ...this.buildPiePaginaOrdenEntregaPdf(),
+        };
+      },
       styles: {
         header: { fontSize: 13, bold: true, alignment: "center" },
         subheader: { fontSize: 11, bold: true, alignment: "center" },

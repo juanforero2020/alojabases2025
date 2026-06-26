@@ -1,8 +1,13 @@
 import { Component, Input, OnInit } from "@angular/core";
+import pdfMake from "pdfmake/build/pdfmake";
+import { DatosConfiguracionService } from "src/app/servicios/datosConfiguracion.service";
 import { NominasService } from "src/app/servicios/nominas.service";
+import { ParametrizacionesService } from "src/app/servicios/parametrizaciones.service";
 import Swal from "sweetalert2";
+import { parametrizacionsuc } from "../parametrizacion/parametrizacion";
 import {
   BeneficiarioFiltroPagos,
+  DesgloseDescuentosEvento,
   EventoPagoProgramado,
   TablaMaestraSalarial,
 } from "./nominas";
@@ -14,6 +19,7 @@ import {
 })
 export class NominasPagosProgramadosComponent implements OnInit {
   @Input() usuarioNombre = "";
+  @Input() esAdministrador = false;
 
   eventosProgramados: EventoPagoProgramado[] = [];
   filtroEventosEstado = "Pendiente";
@@ -40,12 +46,36 @@ export class NominasPagosProgramadosComponent implements OnInit {
   ];
   beneficiariosFiltro: BeneficiarioFiltroPagos[] = [];
   cargandoBeneficiarios = false;
+  cargandoEventos = true;
+  generandoComprobanteId: string | null = null;
+  imagenLogotipo = "";
+  parametrizaciones: parametrizacionsuc[] = [];
+  parametrizacionSucu: parametrizacionsuc;
 
-  constructor(private _nominasService: NominasService) {}
+  constructor(
+    private _nominasService: NominasService,
+    private _parametrizacionService: ParametrizacionesService,
+    private _configuracionService: DatosConfiguracionService
+  ) {}
 
   ngOnInit() {
     this.cargarBeneficiariosTms();
     this.cargarEventosProgramados();
+    this.cargarDatosPdf();
+  }
+
+  cargarDatosPdf() {
+    this._parametrizacionService.getParametrizacion().subscribe((res) => {
+      this.parametrizaciones = res as parametrizacionsuc[];
+      if (this.parametrizaciones.length) {
+        this.parametrizacionSucu = this.parametrizaciones[0];
+      }
+    });
+    this._configuracionService.getDatosConfiguracion().subscribe((res) => {
+      if (res?.[0]?.urlImage) {
+        this.imagenLogotipo = res[0].urlImage;
+      }
+    });
   }
 
   cargarBeneficiariosTms() {
@@ -135,6 +165,7 @@ export class NominasPagosProgramadosComponent implements OnInit {
     const desde = this.formatoFechaApi(this.fechaDesde);
     const hasta = this.formatoFechaApi(this.fechaHasta);
 
+    this.cargandoEventos = true;
     this._nominasService
       .getEventosProgramados({
         estado,
@@ -149,8 +180,12 @@ export class NominasPagosProgramadosComponent implements OnInit {
         (res) => {
           this.eventosProgramados = res;
           this.actualizarOpcionesTransaccion(res);
+          this.cargandoEventos = false;
         },
-        () => {}
+        () => {
+          this.eventosProgramados = [];
+          this.cargandoEventos = false;
+        }
       );
   }
 
@@ -301,6 +336,44 @@ export class NominasPagosProgramadosComponent implements OnInit {
     });
   }
 
+  autorizarPagoFueraPlazo(ev: EventoPagoProgramado) {
+    const ventana =
+      ev.fechaMin && ev.fechaMax
+        ? `${new Date(ev.fechaMin).toLocaleDateString("es-EC")} — ${new Date(ev.fechaMax).toLocaleDateString("es-EC")}`
+        : new Date(ev.fechaProgramada).toLocaleDateString("es-EC");
+
+    Swal.fire({
+      title: "Autorizar pago fuera de plazo",
+      html: `¿Habilitar el pago para <strong>${ev.nombreBeneficiario}</strong>?<br/>
+        Ventana vencida: ${ventana}<br/>
+        <span class="text-muted">Los usuarios podrán registrar el pago; no se ejecutará automáticamente.</span>`,
+      icon: "question",
+      showCancelButton: true,
+      confirmButtonText: "Autorizar",
+      cancelButtonText: "Cancelar",
+    }).then((result) => {
+      if (!result.value || !ev._id) return;
+      this._nominasService
+        .autorizarEventoFueraPlazo(ev._id, { usuario: this.usuarioNombre })
+        .subscribe(
+          () => {
+            Swal.fire(
+              "Autorizado",
+              "El pago quedó habilitado para que los usuarios lo registren.",
+              "success"
+            );
+            this.cargarEventosProgramados();
+          },
+          (err) =>
+            Swal.fire(
+              "Error",
+              err?.error?.mensaje || "No se pudo autorizar",
+              "error"
+            )
+        );
+    });
+  }
+
   private registrarPago(eventoId: string, monto?: number) {
     this._nominasService
       .ejecutarEventoProgramado(eventoId, {
@@ -333,17 +406,414 @@ export class NominasPagosProgramadosComponent implements OnInit {
     if (!this.esMontoVariable(ev) && this.saldoPendienteEvento(ev) <= 0) {
       return false;
     }
-    const hoy = new Date();
-    hoy.setHours(0, 0, 0, 0);
-    if (ev.fechaMin) {
-      const min = new Date(ev.fechaMin);
-      min.setHours(0, 0, 0, 0);
-      if (hoy < min) return false;
-    } else {
-      const fecha = new Date(ev.fechaProgramada);
-      fecha.setHours(0, 0, 0, 0);
-      if (hoy < fecha) return false;
+    if (this.estaAntesDeVentana(ev)) return false;
+    if (this.estaDespuesDeVentana(ev) && !this.estaAutorizadoFueraPlazo(ev)) {
+      return false;
     }
     return true;
+  }
+
+  puedeAutorizarFueraPlazo(ev: EventoPagoProgramado): boolean {
+    if (!this.esAdministrador) return false;
+    if (ev.estado !== "Pendiente" && ev.estado !== "Parcial") return false;
+    if (!this.estaDespuesDeVentana(ev)) return false;
+    return !this.estaAutorizadoFueraPlazo(ev);
+  }
+
+  mensajeEstadoPago(ev: EventoPagoProgramado): string | null {
+    if (ev.estado !== "Pendiente" && ev.estado !== "Parcial") return null;
+    if (this.puedeEjecutarEvento(ev) || this.puedeAutorizarFueraPlazo(ev)) {
+      return null;
+    }
+    if (this.estaAntesDeVentana(ev)) return "Fuera de fecha";
+    if (this.estaDespuesDeVentana(ev) && !this.estaAutorizadoFueraPlazo(ev)) {
+      return "En espera de autorización";
+    }
+    return null;
+  }
+
+  estaAutorizadoFueraPlazo(ev: EventoPagoProgramado): boolean {
+    return !!ev.pagoFueraPlazoAutorizado;
+  }
+
+  private inicioDia(fecha: Date | string): Date {
+    const d = new Date(fecha);
+    d.setHours(0, 0, 0, 0);
+    return d;
+  }
+
+  private hoyInicio(): Date {
+    return this.inicioDia(new Date());
+  }
+
+  estaAntesDeVentana(ev: EventoPagoProgramado): boolean {
+    const hoy = this.hoyInicio();
+    if (ev.fechaMin) {
+      return hoy < this.inicioDia(ev.fechaMin);
+    }
+    if (ev.fechaProgramada) {
+      return hoy < this.inicioDia(ev.fechaProgramada);
+    }
+    return false;
+  }
+
+  estaDespuesDeVentana(ev: EventoPagoProgramado): boolean {
+    const hoy = this.hoyInicio();
+    if (ev.fechaMax) {
+      return hoy > this.inicioDia(ev.fechaMax);
+    }
+    if (!ev.fechaMin && ev.fechaProgramada) {
+      return hoy > this.inicioDia(ev.fechaProgramada);
+    }
+    return false;
+  }
+
+  descargarComprobantePago(ev: EventoPagoProgramado) {
+    if (!ev._id) return;
+    this.generandoComprobanteId = ev._id;
+    this._nominasService.getDesgloseDescuentosEvento(ev._id).subscribe(
+      (desglose) => {
+        try {
+          this.generarPdfComprobante(ev, desglose);
+        } catch {
+          Swal.fire("Error", "No se pudo generar el comprobante PDF", "error");
+        } finally {
+          this.generandoComprobanteId = null;
+        }
+      },
+      (err) => {
+        this.generandoComprobanteId = null;
+        Swal.fire(
+          "Error",
+          err?.error?.mensaje || "No se pudo cargar el detalle del pago",
+          "error"
+        );
+      }
+    );
+  }
+
+  private generarPdfComprobante(
+    ev: EventoPagoProgramado,
+    desglose: DesgloseDescuentosEvento
+  ) {
+    if (!this.parametrizacionSucu && this.parametrizaciones.length) {
+      this.parametrizacionSucu = this.parametrizaciones[0];
+    }
+    const documentDefinition = this.getDocumentDefinitionComprobante(ev, desglose);
+    const cedula = (ev.cedulaBeneficiario || "sin-cedula").replace(/\s/g, "");
+    const fecha = new Date(ev.fechaProgramada);
+    const fechaStr = `${fecha.getFullYear()}${String(fecha.getMonth() + 1).padStart(2, "0")}${String(fecha.getDate()).padStart(2, "0")}`;
+    const nombreArchivo = `Comprobante_Pago_Nomina_${cedula}_${fechaStr}`;
+
+    pdfMake.createPdf(documentDefinition).download(nombreArchivo, () => {
+      Swal.fire({
+        title: "Comprobante generado",
+        text: "El PDF se descargó correctamente",
+        icon: "success",
+        confirmButtonText: "Ok",
+      });
+    });
+  }
+
+  private formatoMonedaPdf(valor: number): string {
+    return `$${Number(valor || 0).toFixed(2)}`;
+  }
+
+  private formatoFechaPdf(fecha: Date | string | undefined): string {
+    if (!fecha) return "—";
+    return new Date(fecha).toLocaleDateString("es-EC");
+  }
+
+  private ventanaPagoTexto(ev: EventoPagoProgramado): string {
+    if (ev.fechaMin && ev.fechaMax) {
+      return `${this.formatoFechaPdf(ev.fechaMin)} — ${this.formatoFechaPdf(ev.fechaMax)}`;
+    }
+    return this.formatoFechaPdf(ev.fechaProgramada);
+  }
+
+  private filasDescuentosPdf(desglose: DesgloseDescuentosEvento) {
+    const lineas = desglose.lineas || [];
+    if (lineas.length) {
+      return lineas.map((l) => [
+        { text: `Descuento: ${l.etiqueta}`, style: "detalleConcepto" },
+        {
+          text: `−${this.formatoMonedaPdf(l.monto)}`,
+          style: "detalleMontoDescuento",
+          alignment: "right",
+        },
+      ]);
+    }
+    const totalDesc = Number(desglose.montoDescuento || desglose.total) || 0;
+    if (totalDesc > 0) {
+      return [
+        [
+          { text: "Descuentos aplicados", style: "detalleConcepto" },
+          {
+            text: `−${this.formatoMonedaPdf(totalDesc)}`,
+            style: "detalleMontoDescuento",
+            alignment: "right",
+          },
+        ],
+      ];
+    }
+    return [];
+  }
+
+  private getDocumentDefinitionComprobante(
+    ev: EventoPagoProgramado,
+    desglose: DesgloseDescuentosEvento
+  ) {
+    const sucu = this.parametrizacionSucu;
+    const variable = this.esMontoVariable(ev);
+    const bruto =
+      desglose.montoBruto != null
+        ? Number(desglose.montoBruto)
+        : Number(ev.montoBruto) ||
+          Number(ev.monto) + (Number(desglose.total) || Number(ev.montoDescuento) || 0);
+    const totalDescuentos =
+      Number(desglose.montoDescuento || desglose.total || ev.montoDescuento) || 0;
+    const neto = variable
+      ? Number(ev.monto) || 0
+      : Number(desglose.montoNeto ?? ev.monto) || 0;
+    const pagado = Number(ev.montoPagado) || 0;
+    const saldo = this.saldoPendienteEvento(ev);
+    const filasDescuentos = this.filasDescuentosPdf(desglose);
+    const filasLiquidacion: unknown[][] = [
+      [
+        { text: "Pago bruto", style: "detalleConcepto", bold: true },
+        {
+          text: variable ? "Variable" : this.formatoMonedaPdf(bruto),
+          style: "detalleMonto",
+          alignment: "right",
+        },
+      ],
+      ...filasDescuentos,
+    ];
+
+    if (totalDescuentos > 0) {
+      filasLiquidacion.push([
+        { text: "Total descuentos", style: "detalleConcepto", bold: true },
+        {
+          text: `−${this.formatoMonedaPdf(totalDescuentos)}`,
+          style: "detalleMontoDescuento",
+          alignment: "right",
+        },
+      ]);
+    }
+
+    filasLiquidacion.push([
+      { text: "NETO A PAGAR", style: "detalleNeto", bold: true },
+      {
+        text: variable && neto <= 0 ? "Por calcular" : this.formatoMonedaPdf(neto),
+        style: "detalleNetoMonto",
+        alignment: "right",
+        bold: true,
+      },
+    ]);
+
+    if (pagado > 0 || ev.estado === "Parcial" || ev.estado === "Ejecutado") {
+      filasLiquidacion.push(
+        [
+          { text: "Pagado", style: "detalleConcepto" },
+          {
+            text: this.formatoMonedaPdf(pagado),
+            style: "detalleMonto",
+            alignment: "right",
+          },
+        ],
+        [
+          { text: "Saldo pendiente", style: "detalleConcepto", bold: true },
+          {
+            text: variable && saldo <= 0 ? "—" : this.formatoMonedaPdf(saldo),
+            style: "detalleMonto",
+            alignment: "right",
+            bold: true,
+          },
+        ]
+      );
+    }
+
+    const refDoc = (ev._id || "").slice(-8).toUpperCase();
+    const fechaEmision = new Date().toLocaleString("es-EC");
+    const encabezadoLogo = this.imagenLogotipo
+      ? [
+          {
+            columns: [
+              {
+                image: this.imagenLogotipo,
+                width: 90,
+                margin: [0, 0, 0, 0],
+              },
+              { width: "*", text: " " },
+            ],
+          },
+        ]
+      : [];
+
+    return {
+      pageSize: "A4",
+      pageOrientation: "portrait",
+      content: [
+        ...encabezadoLogo,
+        {
+          columns: [
+            {
+              width: "*",
+              text: "COMPROBANTE DE PAGO — NÓMINA",
+              bold: true,
+              fontSize: 16,
+            },
+            {
+              width: 160,
+              text: `REF. ${refDoc}`,
+              color: "#c62828",
+              bold: true,
+              fontSize: 12,
+              alignment: "right",
+            },
+          ],
+          margin: [0, 0, 0, 10],
+        },
+        {
+          style: "tableExample",
+          table: {
+            widths: [110, "*", 110, "*"],
+            body: [
+              [
+                { text: "Beneficiario", style: "labelCampo" },
+                { text: ev.nombreBeneficiario || "—", style: "valorCampo" },
+                { text: "Cédula", style: "labelCampo" },
+                { text: ev.cedulaBeneficiario || "—", style: "valorCampo" },
+              ],
+              [
+                { text: "Transacción", style: "labelCampo" },
+                { text: ev.transaccionNomina || "—", style: "valorCampo" },
+                { text: "Centro de costo", style: "labelCampo" },
+                { text: ev.centroCosto || "—", style: "valorCampo" },
+              ],
+              [
+                { text: "Tipo regla", style: "labelCampo" },
+                { text: this.etiquetaTipo(ev), style: "valorCampo" },
+                { text: "Cuota", style: "labelCampo" },
+                {
+                  text: `${ev.numeroCuota}/${ev.totalCuotas}`,
+                  style: "valorCampo",
+                },
+              ],
+              [
+                { text: "Período / fecha", style: "labelCampo" },
+                { text: this.ventanaPagoTexto(ev), style: "valorCampo" },
+                { text: "Estado", style: "labelCampo" },
+                { text: ev.estado || "—", style: "valorCampo" },
+              ],
+              [
+                { text: "Fecha emisión", style: "labelCampo" },
+                { text: fechaEmision, style: "valorCampo" },
+                { text: "Usuario", style: "labelCampo" },
+                { text: this.usuarioNombre || "—", style: "valorCampo" },
+              ],
+            ],
+          },
+          layout: {
+            hLineWidth: () => 0.5,
+            vLineWidth: () => 0.5,
+            hLineColor: () => "#cccccc",
+            vLineColor: () => "#cccccc",
+          },
+        },
+        {
+          text: "Detalle de liquidación",
+          style: "subtituloSeccion",
+          margin: [0, 8, 0, 6],
+        },
+        {
+          table: {
+            headerRows: 1,
+            widths: ["*", 120],
+            body: [
+              [
+                { text: "Concepto", style: "tableHeader", fillColor: "#f5f5f5" },
+                {
+                  text: "Monto (US$)",
+                  style: "tableHeader",
+                  alignment: "right",
+                  fillColor: "#f5f5f5",
+                },
+              ],
+              ...filasLiquidacion,
+            ],
+          },
+          layout: {
+            hLineWidth: (i: number, node: { table: { body: unknown[] } }) =>
+              i === 0 || i === node.table.body.length ? 1 : 0.5,
+            vLineWidth: () => 0.5,
+            hLineColor: () => "#cccccc",
+            vLineColor: () => "#cccccc",
+          },
+        },
+        ...(variable
+          ? [
+              {
+                text: "Nota: el monto es variable y se calcula al registrar el pago (p. ej. pago dominical).",
+                fontSize: 8,
+                italics: true,
+                color: "#666666",
+                margin: [0, 10, 0, 0],
+              },
+            ]
+          : []),
+        {
+          text: "Documento informativo de liquidación de pago programado. No sustituye comprobantes tributarios.",
+          fontSize: 7,
+          color: "#888888",
+          alignment: "center",
+          margin: [0, 24, 0, 0],
+        },
+      ],
+      styles: {
+        tableExample: {
+          margin: [0, 0, 0, 8],
+        },
+        labelCampo: {
+          fontSize: 8,
+          bold: true,
+          fillColor: "#fafafa",
+        },
+        valorCampo: {
+          fontSize: 8,
+        },
+        subtituloSeccion: {
+          fontSize: 11,
+          bold: true,
+        },
+        tableHeader: {
+          fontSize: 9,
+          bold: true,
+        },
+        detalleConcepto: {
+          fontSize: 9,
+          margin: [4, 3, 0, 3],
+        },
+        detalleMonto: {
+          fontSize: 9,
+          margin: [0, 3, 4, 3],
+        },
+        detalleMontoDescuento: {
+          fontSize: 9,
+          color: "#c62828",
+          margin: [0, 3, 4, 3],
+        },
+        detalleNeto: {
+          fontSize: 10,
+          fillColor: "#fff8e1",
+          margin: [4, 4, 0, 4],
+        },
+        detalleNetoMonto: {
+          fontSize: 10,
+          fillColor: "#fff8e1",
+          margin: [0, 4, 4, 4],
+        },
+      },
+    };
   }
 }

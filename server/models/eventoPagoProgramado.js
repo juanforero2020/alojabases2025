@@ -55,6 +55,9 @@ const EventoPagoProgramadoSchema = new Schema(
     },
     ejecutadoPor: { type: String, required: false },
     fechaEjecucion: { type: Date, required: false },
+    pagoFueraPlazoAutorizado: { type: Boolean, default: false },
+    autorizadoFueraPlazoPor: { type: String, required: false },
+    fechaAutorizacionFueraPlazo: { type: Date, required: false },
     notas: { type: String, required: false },
   },
   { timestamps: true }

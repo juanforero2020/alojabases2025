@@ -140,6 +140,16 @@ export const navigation = [
     icon: "home",
   },
   {
+    text: "Recurso Humano",
+    icon: "fa fa-users",
+    items: [
+      {
+        text: "Nóminas",
+        path: "/nominas",
+      },
+    ],
+  },
+  {
     text: "Operaciones",
     icon: "fa fa-spinner",
     items: [
@@ -903,4 +913,22 @@ export const navigationBodeguero = [
   },
   {},
   {},
+];
+
+export const navigationAsesorComercial = [
+  {
+    text: "Home",
+    path: "/home",
+    icon: "home",
+  },
+  {
+    text: "Comercial",
+    icon: "fa fa-check-circle-o",
+    items: [
+      {
+        text: "Clientes",
+        path: "/clientes",
+      },
+    ],
+  }
 ];

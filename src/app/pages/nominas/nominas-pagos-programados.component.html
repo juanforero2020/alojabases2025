@@ -80,6 +80,7 @@
         <button
           class="btn btn-outline-primary mr-2"
           type="button"
+          [disabled]="cargandoEventos"
           (click)="cargarEventosProgramados()"
         >
           Actualizar
@@ -95,19 +96,24 @@
     </div>
 
     <p class="text-muted small mb-2">
-      <span *ngIf="eventosProgramados.length">
+      <span *ngIf="!cargandoEventos && eventosProgramados.length">
         {{ eventosProgramados.length }} registro(s).
       </span>
-      <span *ngIf="eventosProgramados.length"> · </span>
+      <span *ngIf="!cargandoEventos && eventosProgramados.length"> · </span>
       Haga clic en el monto de <strong>Descuento</strong> (en rojo) para ver el detalle por concepto.
     </p>
 
-    <div class="table-responsive" *ngIf="eventosProgramados.length">
+    <div class="pagos-programados-loading text-center py-5" *ngIf="cargandoEventos">
+      <dx-load-indicator [visible]="true" height="48" width="48"></dx-load-indicator>
+      <p class="text-muted mt-3 mb-0">Cargando pagos programados…</p>
+    </div>
+
+    <div class="table-responsive" *ngIf="!cargandoEventos && eventosProgramados.length">
       <table class="table table-sm table-bordered pagos-programados-tabla">
         <thead>
           <tr>
             <th>Tipo</th>
-            <th>Ventana</th>
+            <th>Rango de fechas</th>
             <th>Beneficiario</th>
             <th>Transacción</th>
             <th>Centro costo</th>
@@ -117,6 +123,7 @@
             <th>Pagado</th>
             <th>Saldo</th>
             <th>Estado</th>
+            <th>Comprobante</th>
             <th></th>
           </tr>
         </thead>
@@ -175,7 +182,26 @@
                 {{ ev.estado }}
               </span>
             </td>
+            <td class="text-center">
+              <button
+                type="button"
+                class="btn btn-sm btn-outline-primary comprobante-pago-btn"
+                [disabled]="!ev._id || generandoComprobanteId === ev._id"
+                (click)="descargarComprobantePago(ev)"
+                title="Descargar comprobante de pago (PDF)"
+              >
+                <span *ngIf="generandoComprobanteId !== ev._id">PDF</span>
+                <span *ngIf="generandoComprobanteId === ev._id">…</span>
+              </button>
+            </td>
             <td>
+              <button
+                class="btn btn-sm btn-warning mb-1"
+                *ngIf="puedeAutorizarFueraPlazo(ev)"
+                (click)="autorizarPagoFueraPlazo(ev)"
+              >
+                Autorizar
+              </button>
               <button
                 class="btn btn-sm btn-success"
                 *ngIf="puedeEjecutarEvento(ev)"
@@ -184,10 +210,12 @@
                 Pagar
               </button>
               <span
-                class="text-muted small"
-                *ngIf="(ev.estado === 'Pendiente' || ev.estado === 'Parcial') && !puedeEjecutarEvento(ev)"
+                class="small"
+                [class.text-muted]="mensajeEstadoPago(ev) === 'Fuera de fecha'"
+                [class.pagos-programados-espera-autorizacion]="mensajeEstadoPago(ev) === 'En espera de autorización'"
+                *ngIf="mensajeEstadoPago(ev) as mensajePago"
               >
-                Fuera de fecha
+                {{ mensajePago }}
               </span>
             </td>
           </tr>
@@ -195,7 +223,7 @@
       </table>
     </div>
 
-    <p class="text-muted small mb-0" *ngIf="!eventosProgramados.length">
+    <p class="text-muted small mb-0" *ngIf="!cargandoEventos && !eventosProgramados.length">
       No hay eventos con los filtros seleccionados. Autorice una regla de pago (tipo A o B) o ajuste los filtros.
     </p>
   </div>

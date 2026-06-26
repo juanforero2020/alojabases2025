@@ -81,6 +81,7 @@ export class VentasComponent implements OnInit {
     'Cancelado',
     'Abonos',
     'Otros medios Pago',
+    'Crédito Aliado',
   ];
 
   mostrarLoading = false;
@@ -1643,7 +1644,7 @@ cambiarestado(e,i:number){
       })
 
       generacion.then((data) => {
-        if(this.formaPago == "Otros medios Pago" || this.formaPago == "Abonos")
+        if(this.formaPago == "Otros medios Pago" || this.formaPago == "Abonos" || this.formaPago == "Crédito Aliado")
           this.router.navigate(['/recibo-caja'], { queryParams: { id: this.factura.documento_n , tipo: 1 } });
         else
           window.location.reload();
@@ -1668,7 +1669,7 @@ cambiarestado(e,i:number){
       })
 
       generacion.then((data) => {
-        if(this.formaPago == "Otros medios Pago" || this.formaPago == "Abonos")
+        if(this.formaPago == "Otros medios Pago" || this.formaPago == "Abonos" || this.formaPago == "Crédito Aliado")
           this.router.navigate(['/recibo-caja'], { queryParams: { id: this.factura.documento_n , tipo: 2 } });
         else
           window.location.reload();
@@ -3272,7 +3273,7 @@ cambiarestado(e,i:number){
     //*************FORMA DE PAGO*********** */
     var pago = new PagosModel();
     pago.total = Number(this.factura.total.toFixed(2))
-    pago.formaPago = this.formaPago == "Otros medios Pago" ? "20" : "01";
+    pago.formaPago = this.formaPago == "Otros medios Pago" || this.formaPago == "Crédito Aliado" ? "20" : "01";
     this.facturaVeronica.pagos.push(pago);
 
 
@@ -3317,7 +3318,7 @@ cambiarestado(e,i:number){
       icon: 'success',
       confirmButtonText: 'Ok'
     }).then((result) => {
-      if(this.formaPago == "Otros medios Pago" || this.formaPago == "Abonos")
+      if(this.formaPago == "Otros medios Pago" || this.formaPago == "Abonos" || this.formaPago == "Crédito Aliado")
         this.router.navigate(['/recibo-caja'], { queryParams: { id: this.factura.documento_n , tipo: 1 } });
       else
         window.location.reload();
@@ -3331,7 +3332,7 @@ cambiarestado(e,i:number){
                   icon: 'success',
                   confirmButtonText: 'Ok'
                 }).then((result) => {
-                  if(this.formaPago == "Otros medios Pago" || this.formaPago == "Abonos")
+                  if(this.formaPago == "Otros medios Pago" || this.formaPago == "Crédito Aliado" || this.formaPago == "Abonos")
                     this.router.navigate(['/recibo-caja'], { queryParams: { id: this.factura.documento_n , tipo: 1 } });
                   else
                     window.location.reload();
@@ -3354,7 +3355,7 @@ cambiarestado(e,i:number){
                               icon: 'success',
                               confirmButtonText: 'Ok'
                             }).then((result) => {
-                              if(this.formaPago == "Otros medios Pago" || this.formaPago == "Abonos")
+                              if(this.formaPago == "Otros medios Pago" || this.formaPago == "Abonos" || this.formaPago == "Crédito Aliado")
                                 this.router.navigate(['/recibo-caja'], { queryParams: { id: this.factura.documento_n , tipo: 1 } });
                               else
                                 window.location.reload();
@@ -3376,7 +3377,7 @@ cambiarestado(e,i:number){
                               icon: 'error',
                               confirmButtonText: 'Ok'
                             }).then((result) => {
-                              if(this.formaPago == "Otros medios Pago" || this.formaPago == "Abonos")
+                              if(this.formaPago == "Otros medios Pago" || this.formaPago == "Abonos" || this.formaPago == "Crédito Aliado")
                                 this.router.navigate(['/recibo-caja'], { queryParams: { id: this.factura.documento_n , tipo: 1 } });
                               else
                                 window.location.reload();

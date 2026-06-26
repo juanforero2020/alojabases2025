@@ -26,7 +26,25 @@
                 <div id="read" style="display: block;text-align: center;">
                     <br>
                     <h4>Clientes</h4>
-                    <dx-data-grid id="gridContainer" [dataSource]="clientes"
+                    <!-- Tabla simplificada para Asesor Comercial -->
+                    <dx-data-grid *ngIf="esAsesorComercial" id="gridContainerAsesor" [dataSource]="clientes"
+                     [showBorders]="true">
+                        <dxo-filter-row [visible]="true"></dxo-filter-row>
+                        <dxo-search-panel [visible]="true" [width]="240" placeholder="Buscar..."></dxo-search-panel>
+                        <dxi-column dataField="cliente_nombre" caption="Nombre"></dxi-column>
+                        <dxi-column dataField="celular" caption="Celular"></dxi-column>
+                        <dxi-column dataField="direccion" caption="Dirección"></dxi-column>
+                        <dxi-column dataField="tventa" caption="Tipo Cliente"></dxi-column>
+                        <dxi-column type="buttons" dataField="bt1" caption="Acciones" width="10%">
+                            <dxi-button hint="Editar" icon="fa fa-pencil-square-o" [onClick]="mostrarUpdateUser"></dxi-button>
+                        </dxi-column>
+                        <dxo-paging [pageSize]="5"></dxo-paging>
+                        <dxo-pager [showPageSizeSelector]="true" [allowedPageSizes]="[5, 10, 20]" [showInfo]="true">
+                        </dxo-pager>
+                    </dx-data-grid>
+
+                    <!-- Tabla completa para otros roles -->
+                    <dx-data-grid *ngIf="!esAsesorComercial" id="gridContainer" [dataSource]="clientes"
                     (onExporting)="onExporting($event)"
                     (onExported)="onExported($event)"
                      [showBorders]="true">
@@ -70,7 +88,7 @@
 
                 <div id="new" style="display: none;">
                     <div style="text-align: center;" class="newr">
-                        <h4>Registrar Nuevo Cliente</h4>
+                        <h4>{{ esAsesorComercial && cliente._id ? 'Editar Cliente' : 'Registrar Nuevo Cliente' }}</h4>
                         <!-- <img class="img-responsive" src="../../../assets/img/brand/grupos.png" alt=""> -->
                         <div>
                             <form #f="ngForm" (ngSubmit)="register(f)">
@@ -78,6 +96,47 @@
                                 <div class="row">
                                     <div class="col-md-2"></div>
                                     <div class="col-md-8">
+
+                                        <!-- Formulario simplificado para Asesor Comercial (solo edición) -->
+                                        <ng-container *ngIf="esAsesorComercial && cliente._id">
+                                            <div class="row espacio">
+                                                <div class="col-md-4" style="text-align: left;">Nombre</div>
+                                                <div class="col-md-8">
+                                                    <dx-text-box [(value)]="cliente.cliente_nombre" [readOnly]="false"></dx-text-box>
+                                                </div>
+                                            </div>
+                                            <div class="row espacio">
+                                                <div class="col-md-4" style="text-align: left;">Celular</div>
+                                                <div class="col-md-8">
+                                                    <dx-text-box [(value)]="cliente.celular" [readOnly]="false"></dx-text-box>
+                                                </div>
+                                            </div>
+                                            <div class="row espacio">
+                                                <div class="col-md-4" style="text-align: left;">Dirección</div>
+                                                <div class="col-md-8">
+                                                    <dx-text-box [(value)]="cliente.direccion" [readOnly]="false"></dx-text-box>
+                                                </div>
+                                            </div>
+                                            <div class="row espacio">
+                                                <div class="col-md-4" style="text-align: left;">Tipo de Cliente</div>
+                                                <div class="col-md-8">
+                                                    <dx-select-box [items]="tiposClientes" [(value)]="cliente.tventa" [readOnly]="false"
+                                                        [disabled]="false"></dx-select-box>
+                                                </div>
+                                            </div>
+                                            <div class="col-md-12">
+                                                <div class="row">
+                                                    <div class="col-md-3"></div>
+                                                    <div class="col-md-6">
+                                                        <button class="btn btn-block btn-success espacio">Actualizar Cliente</button>
+                                                    </div>
+                                                    <div class="col-md-3"></div>
+                                                </div>
+                                            </div>
+                                        </ng-container>
+
+                                        <!-- Formulario completo para otros roles o registro de Asesor Comercial -->
+                                        <ng-container *ngIf="!esAsesorComercial || !cliente._id">
                                         <div class="row espacio">
                                             <div class="col-md-12" style="text-align: left;margin-bottom: 1em; background-color: #c2c2c2;"><h6>Datos básicos</h6></div>
                 
@@ -188,6 +247,7 @@
                                                  <div class="col-md-3"></div>
                                              </div>
                                          </div>
+                                        </ng-container>
                                         
                                     </div>
                                     <div class="col-md-2"></div>

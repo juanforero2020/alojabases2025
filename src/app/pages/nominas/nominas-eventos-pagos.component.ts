@@ -97,6 +97,12 @@ export class NominasEventosPagosComponent implements OnInit {
   tablaAmortizacion: FilaAmortizacion[] = [];
   amortizacionEditadaManual = false;
   validacionAmortizacion: { ok: boolean; mensaje?: string; suma?: number; pendiente?: number } | null = null;
+  validacionDescuentoTipoC: {
+    ok: boolean;
+    mensaje?: string;
+    cuotaMaxima?: number;
+    montoBruto?: number;
+  } | null = null;
   configGlobal: NominaConfigGlobal | null = null;
 
   constructor(
@@ -174,6 +180,20 @@ export class NominasEventosPagosComponent implements OnInit {
 
   get montoBrutoReglaAsociada(): number {
     return this.reglaPagoAsociadaSeleccionada?.monto || 0;
+  }
+
+  get descuentoTipoCInvalido(): boolean {
+    return !!(
+      this.esTipoC &&
+      this.validacionDescuentoTipoC &&
+      !this.validacionDescuentoTipoC.ok
+    );
+  }
+
+  get hayDescuentosExistentesEnTabla(): boolean {
+    return this.tablaAmortizacion.some(
+      (f) => (Number(f.descuentoExistente) || 0) > 0
+    );
   }
 
   get cuotaDescuentoSegSocial(): number {
@@ -437,6 +457,142 @@ export class NominasEventosPagosComponent implements OnInit {
     }));
   }
 
+  private redondear2(n: number): number {
+    return Math.round((Number(n) || 0) * 100) / 100;
+  }
+
+  distribuirEnCuotasDescuento(total: number, n: number): number[] {
+    const t = this.redondear2(total);
+    const cuotas: number[] = [];
+    let acum = 0;
+    for (let i = 0; i < n; i++) {
+      const c = i === n - 1 ? this.redondear2(t - acum) : this.redondear2(t / n);
+      cuotas.push(c);
+      acum = this.redondear2(acum + c);
+    }
+    return cuotas;
+  }
+
+  obtenerMontosCuotaDescuento(): number[] {
+    if (!this.esTipoC) return [];
+    const total = Number(this.formulario.montoTotalDeuda) || 0;
+    if (!total) return [];
+
+    if (this.tablaAmortizacion.length) {
+      return this.tablaAmortizacion.map((f) => Number(f.monto) || 0);
+    }
+
+    if (this.esSeguridadSocial) {
+      return [this.cuotaDescuentoSegSocial];
+    }
+
+    const n =
+      this.formulario.modalidadDescuento === "Por cuota"
+        ? Math.max(1, Number(this.formulario.cuotas) || 1)
+        : 1;
+    return this.distribuirEnCuotasDescuento(total, n);
+  }
+
+  validarDescuentoVsPagoBruto(): boolean {
+    if (!this.esTipoC) {
+      this.validacionDescuentoTipoC = null;
+      return true;
+    }
+
+    const filasInvalidas = this.tablaAmortizacion.filter(
+      (f) => f.descuentoValido === false
+    );
+    if (filasInvalidas.length) {
+      const f = filasInvalidas[0];
+      const fecha = new Date(f.fechaMin).toLocaleDateString("es-EC");
+      const bruto = Number(f.montoBrutoPago) || this.montoBrutoReglaAsociada;
+      const existente = Number(f.descuentoExistente) || 0;
+      const nuevo = Number(f.descuentoNuevo ?? f.monto) || 0;
+      this.validacionDescuentoTipoC = {
+        ok: false,
+        mensaje:
+          filasInvalidas.length === 1
+            ? `En ${fecha}: pago $${bruto.toFixed(2)}, ya descontado $${existente.toFixed(2)} + nuevo $${nuevo.toFixed(2)} supera lo disponible. Reduzca el monto, use más cuotas o revise descuentos autorizados.`
+            : `En ${filasInvalidas.length} fechas el descuento supera lo disponible (ej. ${fecha}: ya descontado $${existente.toFixed(2)} + nuevo $${nuevo.toFixed(2)} sobre pago $${bruto.toFixed(2)}).`,
+        montoBruto: bruto,
+      };
+      return false;
+    }
+
+    const bruto = this.montoBrutoReglaAsociada;
+    if (!bruto || bruto <= 0) {
+      this.validacionDescuentoTipoC = null;
+      return true;
+    }
+
+    const montos = this.obtenerMontosCuotaDescuento();
+    if (!montos.length) {
+      this.validacionDescuentoTipoC = null;
+      return true;
+    }
+
+    const cuotaMax = Math.max(...montos.map((m) => this.redondear2(m)));
+    if (cuotaMax > bruto + 0.009) {
+      const total = Number(this.formulario.montoTotalDeuda) || 0;
+      const cuotasMinimas = Math.max(2, Math.ceil(total / bruto));
+      let sugerencia =
+        "Reduzca el monto del descuento o distribúyalo en más cuotas.";
+      if (this.esDescuentosGenerales) {
+        if (this.formulario.modalidadDescuento !== "Por cuota") {
+          sugerencia = `Use modalidad "Por cuota" con al menos ${cuotasMinimas} cuotas, o reduzca el monto total.`;
+        } else {
+          sugerencia = `Cada cuota debe ser como máximo $${bruto.toFixed(2)}. Aumente las cuotas (mínimo sugerido: ${cuotasMinimas}) o reduzca el monto total.`;
+        }
+      }
+
+      this.validacionDescuentoTipoC = {
+        ok: false,
+        mensaje: `El descuento por pago ($${cuotaMax.toFixed(
+          2
+        )}) no puede superar lo que se recibe ($${bruto.toFixed(
+          2
+        )}). ${sugerencia}`,
+        cuotaMaxima: cuotaMax,
+        montoBruto: bruto,
+      };
+      return false;
+    }
+
+    this.validacionDescuentoTipoC = {
+      ok: true,
+      cuotaMaxima: cuotaMax,
+      montoBruto: bruto,
+    };
+    return true;
+  }
+
+  netoLiquidarFila(fila: FilaAmortizacion): number {
+    if (fila.netoProyectado != null) {
+      return this.redondear2(fila.netoProyectado);
+    }
+    return this.redondear2(
+      this.montoBrutoReglaAsociada - (Number(fila.monto) || 0)
+    );
+  }
+
+  filaDescuentoExcedeBruto(fila: FilaAmortizacion): boolean {
+    if (fila.descuentoValido === false) return true;
+    if (fila.descuentoValido === true) return false;
+    const bruto = Number(fila.montoBrutoPago) || this.montoBrutoReglaAsociada;
+    if (!bruto) return false;
+    return (Number(fila.monto) || 0) > bruto + 0.009;
+  }
+
+  descuentoNuevoFila(fila: FilaAmortizacion): number {
+    return fila.descuentoNuevo != null ? fila.descuentoNuevo : fila.monto;
+  }
+
+  brutoFilaDescuento(fila: FilaAmortizacion): number {
+    return fila.montoBrutoPago != null
+      ? fila.montoBrutoPago
+      : this.montoBrutoReglaAsociada;
+  }
+
   validarAmortizacionLocal() {
     const total = Number(this.formulario.montoTotalDeuda) || 0;
     const suma = Math.round(this.sumaAmortizacion * 100) / 100;
@@ -628,6 +784,9 @@ export class NominasEventosPagosComponent implements OnInit {
     this.formulario.monto = this.formulario.montoTotalDeuda || 0;
     this.formulario.cuotaEvento = this.cuotaDescuentoCalculada;
     this.generarTablaDescuento(true);
+    if (!this.formulario.reglaPagoAsociadaId) {
+      this.validarDescuentoVsPagoBruto();
+    }
   }
 
   aplicarMontoSegSocialDesdeTms() {
@@ -686,8 +845,15 @@ export class NominasEventosPagosComponent implements OnInit {
             pendiente: 0,
           };
           this.formulario.tablaAmortizacion = [...this.tablaAmortizacion];
+          if (res.validacionDescuento) {
+            this.validacionDescuentoTipoC = res.validacionDescuento;
+          } else {
+            this.validarDescuentoVsPagoBruto();
+          }
         },
-        () => {}
+        () => {
+          this.validacionDescuentoTipoC = null;
+        }
       );
   }
 
@@ -855,6 +1021,7 @@ export class NominasEventosPagosComponent implements OnInit {
     this.tablaAmortizacion = [];
     this.amortizacionEditadaManual = false;
     this.validacionAmortizacion = null;
+    this.validacionDescuentoTipoC = null;
     this.reglasPagoAsociables = [];
     this.actualizarParametrosPorFrecuencia();
   }
@@ -963,6 +1130,15 @@ export class NominasEventosPagosComponent implements OnInit {
         this.aplicarMontoSegSocialDesdeTms();
       }
       this.formulario.tablaAmortizacion = [...this.tablaAmortizacion];
+      if (!this.validarDescuentoVsPagoBruto()) {
+        Swal.fire(
+          "Validación",
+          this.validacionDescuentoTipoC?.mensaje ||
+            "El descuento no puede superar el pago bruto de la regla asociada.",
+          "warning"
+        );
+        return;
+      }
     } else if (this.esTipoB) {
       if (!this.formulario.centroCosto?.trim()) {
         Swal.fire(
@@ -1107,6 +1283,15 @@ export class NominasEventosPagosComponent implements OnInit {
       );
       return;
     }
+    if (this.esTipoC && !this.validarDescuentoVsPagoBruto()) {
+      Swal.fire(
+        "Validación",
+        this.validacionDescuentoTipoC?.mensaje ||
+          "El descuento no puede superar el pago bruto de la regla asociada.",
+        "warning"
+      );
+      return;
+    }
     if (
       this.formulario.tipoBeneficiario === "Interno" &&
       this.formulario.empleadoActivo === false
@@ -1203,6 +1388,7 @@ export class NominasEventosPagosComponent implements OnInit {
           .getReglasPagoAsociables(regla.cedulaBeneficiario)
           .subscribe((res) => {
             this.reglasPagoAsociables = this.mapearReglasAsociables(res);
+            this.validarDescuentoVsPagoBruto();
           });
         this.buscarBeneficiario();
       }
@@ -1225,6 +1411,7 @@ export class NominasEventosPagosComponent implements OnInit {
       if (regla.cedulaBeneficiario) {
         this.buscarBeneficiario();
       }
+      this.validarDescuentoVsPagoBruto();
       return;
     }
     if (regla.tipoRegla === "B" && !regla.cuotaEvento) {

@@ -11,6 +11,7 @@ const {
   generarTablaDescuentoGeneral,
   cuotaSegSocial,
   distribuirEnCuotas,
+  evaluarDescuentoTipoCVsEventos,
 } = require("../utils/proyeccionPagosTipoC");
 const {
   calcularMontoSegSocialParaRegla,
@@ -112,6 +113,35 @@ async function validarReglaPagoAsociada(reglaC) {
   return null;
 }
 
+function validarCuotaDescuentoVsBruto(reglaC, montoBrutoPago) {
+  const bruto = redondear2(montoBrutoPago || 0);
+  if (!bruto) return null;
+
+  const total = redondear2(reglaC.montoTotalDeuda || reglaC.monto || 0);
+  let cuotaMax = 0;
+
+  if (esDescuentosGenerales(reglaC.transaccionNomina)) {
+    const n =
+      reglaC.modalidadDescuento === "Por cuota"
+        ? Math.max(1, Number(reglaC.cuotas) || 1)
+        : 1;
+    const partes = distribuirEnCuotas(total, n);
+    cuotaMax = Math.max(...partes, 0);
+  } else {
+    cuotaMax = cuotaSegSocial(total);
+  }
+
+  if (cuotaMax > bruto + 0.009) {
+    return `El descuento por pago ($${cuotaMax.toFixed(
+      2
+    )}) no puede superar el pago bruto de la regla asociada ($${bruto.toFixed(
+      2
+    )}). Reduzca el monto o distribúyalo en más cuotas.`;
+  }
+
+  return null;
+}
+
 function validarReglaTipoC(regla) {
   if (regla.tipoBeneficiario !== "Interno") {
     return "Los descuentos de nómina solo aplican a beneficiarios internos";
@@ -152,7 +182,24 @@ function validarReglaTipoC(regla) {
 async function validarReglaTipoCCompleta(regla) {
   const msgBase = validarReglaTipoC(regla);
   if (msgBase) return msgBase;
-  return validarReglaPagoAsociada(regla);
+  const msgAsoc = await validarReglaPagoAsociada(regla);
+  if (msgAsoc) return msgAsoc;
+
+  const reglaA = await ReglaPagoNomina.findById(regla.reglaPagoAsociadaId);
+  if (reglaA) {
+    const normalizado = await normalizarReglaTipoC(regla);
+    const msgCuota = validarCuotaDescuentoVsBruto(normalizado, reglaA.monto);
+    if (msgCuota) return msgCuota;
+
+    const evaluacion = await evaluarDescuentoTipoCVsEventos(normalizado, {
+      reglaA: reglaA.toObject ? reglaA.toObject() : reglaA,
+      reglaNormalizada: normalizado,
+      excluirReglaCId: regla._id,
+    });
+    if (!evaluacion.ok) return evaluacion.mensaje;
+  }
+
+  return null;
 }
 
 async function listarReglasPagoAsociables(cedula) {
@@ -206,6 +253,7 @@ async function generarEventosProgramados(regla, opciones = {}) {
 module.exports = {
   normalizarReglaTipoC,
   validarReglaTipoC,
+  validarCuotaDescuentoVsBruto,
   validarReglaTipoCCompleta,
   listarReglasPagoAsociables,
   generarEventosProgramados,

@@ -401,6 +401,153 @@ async function quitarDescuentosRegla(reglaCId) {
   return actualizados;
 }
 
+function mismaFechaCalendario(a, b) {
+  const da = new Date(a);
+  const db = new Date(b);
+  da.setHours(0, 0, 0, 0);
+  db.setHours(0, 0, 0, 0);
+  return da.getTime() === db.getTime();
+}
+
+async function evaluarDescuentoTipoCVsEventos(reglaC, opciones = {}) {
+  const reglaA = opciones.reglaA;
+  if (!reglaA || !reglaA._id) {
+    return { ok: true, filas: [], mensaje: null };
+  }
+
+  const reglaNorm = opciones.reglaNormalizada || reglaC;
+  const excluirReglaCId = opciones.excluirReglaCId || reglaC._id || null;
+  const brutoNomina = redondear2(reglaA.monto || 0);
+
+  const eventos = await EventoPagoProgramado.find({
+    reglaPagoId: reglaA._id,
+    estado: { $in: ["Pendiente", "Parcial"] },
+  }).sort({ fechaProgramada: 1 });
+
+  const filtroReglas = {
+    reglaPagoAsociadaId: reglaA._id,
+    tipoRegla: "C",
+    estadoRegla: "Autorizada",
+  };
+  if (excluirReglaCId) {
+    filtroReglas._id = { $ne: excluirReglaCId };
+  }
+  const reglasCExistentes = await ReglaPagoNomina.find(filtroReglas).lean();
+
+  const conflictos = [];
+  const filas = [];
+
+  const procesarFecha = (fechaRef, descNuevo) => {
+    const descNuevoR = redondear2(descNuevo);
+    if (descNuevoR <= 0) return;
+
+    const evento = eventos.find((e) =>
+      mismaFechaCalendario(e.fechaProgramada, fechaRef)
+    );
+
+    const bruto = evento
+      ? evento.montoBruto != null
+        ? redondear2(evento.montoBruto)
+        : brutoNomina
+      : brutoNomina;
+
+    if (!bruto) return;
+
+    let descExistente = 0;
+    if (evento) {
+      for (const reglaEx of reglasCExistentes) {
+        descExistente = redondear2(
+          descExistente +
+            montoDescuentoReglaCEnEvento(reglaEx, evento, eventos)
+        );
+      }
+    }
+
+    const totalDesc = redondear2(descExistente + descNuevoR);
+    const netoProyectado = redondear2(bruto - totalDesc);
+    const fila = {
+      fechaMin: new Date(fechaRef),
+      bruto,
+      descuentoExistente: descExistente,
+      descuentoNuevo: descNuevoR,
+      totalDescuento: totalDesc,
+      netoProyectado,
+      descuentoValido: totalDesc <= bruto + 0.009,
+    };
+    filas.push(fila);
+    if (!fila.descuentoValido) conflictos.push(fila);
+  };
+
+  if (opciones.tabla && opciones.tabla.length) {
+    for (const filaTabla of opciones.tabla) {
+      procesarFecha(filaTabla.fechaMin, filaTabla.monto);
+    }
+  } else {
+    for (const evento of eventos) {
+      const descNuevo = montoDescuentoReglaCEnEvento(
+        reglaNorm,
+        evento,
+        eventos
+      );
+      if (descNuevo > 0) {
+        procesarFecha(evento.fechaProgramada, descNuevo);
+      }
+    }
+  }
+
+  if (!conflictos.length) {
+    return { ok: true, filas, mensaje: null };
+  }
+
+  const detalle = conflictos
+    .slice(0, 3)
+    .map((c) => {
+      const f = new Date(c.fechaMin).toLocaleDateString("es-EC");
+      return `${f}: pago $${c.bruto.toFixed(2)}, ya descontado $${c.descuentoExistente.toFixed(2)} + nuevo $${c.descuentoNuevo.toFixed(2)}`;
+    })
+    .join("; ");
+
+  return {
+    ok: false,
+    filas,
+    mensaje: `En ${conflictos.length} fecha(s) el descuento supera lo disponible. ${detalle}${
+      conflictos.length > 3 ? "…" : ""
+    }. Reduzca el monto, use más cuotas o revise descuentos ya autorizados.`,
+    conflictos,
+  };
+}
+
+function enriquecerTablaDescuentoEvaluacion(tabla, evaluacion, montoBrutoFallback) {
+  const brutoFb = redondear2(montoBrutoFallback || 0);
+
+  return (tabla || []).map((fila) => {
+    const match = (evaluacion.filas || []).find((e) =>
+      mismaFechaCalendario(e.fechaMin, fila.fechaMin)
+    );
+    if (match) {
+      return {
+        ...fila,
+        montoBrutoPago: match.bruto,
+        descuentoExistente: match.descuentoExistente,
+        descuentoNuevo: match.descuentoNuevo,
+        netoProyectado: match.netoProyectado,
+        descuentoValido: match.descuentoValido,
+      };
+    }
+    const bruto = brutoFb;
+    const nuevo = redondear2(fila.monto);
+    const netoProyectado = redondear2(bruto - nuevo);
+    return {
+      ...fila,
+      montoBrutoPago: bruto,
+      descuentoExistente: 0,
+      descuentoNuevo: nuevo,
+      netoProyectado,
+      descuentoValido: netoProyectado >= -0.009,
+    };
+  });
+}
+
 module.exports = {
   CUOTAS_SEG_SOCIAL,
   esTransaccionSeguridadSocial,
@@ -417,4 +564,6 @@ module.exports = {
   cargarReglaAsociada,
   mapaPrimerasCuatroSemanasDelMes,
   fechaReferenciaAplicacion,
+  evaluarDescuentoTipoCVsEventos,
+  enriquecerTablaDescuentoEvaluacion,
 };

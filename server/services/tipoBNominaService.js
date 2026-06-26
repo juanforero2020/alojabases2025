@@ -188,6 +188,45 @@ async function generarEventosProgramados(regla, opciones = {}) {
   return { proyeccion, eventos: creados };
 }
 
+function inicioDiaNomina(fecha) {
+  const d = new Date(fecha);
+  d.setHours(0, 0, 0, 0);
+  return d;
+}
+
+function eventoVentanaVencida(evento) {
+  const hoy = inicioDiaNomina(new Date());
+  if (evento.fechaMax) {
+    return hoy > inicioDiaNomina(evento.fechaMax);
+  }
+  if (!evento.fechaMin && evento.fechaProgramada) {
+    return hoy > inicioDiaNomina(evento.fechaProgramada);
+  }
+  return false;
+}
+
+async function autorizarEventoFueraPlazo(eventoId, opciones = {}) {
+  const evento = await EventoPagoProgramado.findById(eventoId);
+  if (!evento) throw new Error("Evento programado no encontrado");
+  if (evento.estado !== "Pendiente" && evento.estado !== "Parcial") {
+    throw new Error("Solo se pueden autorizar eventos pendientes o parciales");
+  }
+  if (!eventoVentanaVencida(evento)) {
+    throw new Error(
+      "La ventana de pago aún no ha vencido; no requiere autorización"
+    );
+  }
+  if (evento.pagoFueraPlazoAutorizado) {
+    throw new Error("Este pago ya fue autorizado fuera de plazo");
+  }
+
+  evento.pagoFueraPlazoAutorizado = true;
+  evento.autorizadoFueraPlazoPor = opciones.usuario || "";
+  evento.fechaAutorizacionFueraPlazo = new Date();
+  await evento.save();
+  return evento;
+}
+
 async function ejecutarEventoProgramado(eventoId, opciones = {}) {
   const evento = await EventoPagoProgramado.findById(eventoId);
   if (!evento) throw new Error("Evento programado no encontrado");
@@ -488,6 +527,7 @@ module.exports = {
   generarEventosProgramados,
   eliminarEventosNoPagadosRegla,
   ejecutarEventoProgramado,
+  autorizarEventoFueraPlazo,
   reporteEstadoEmpleado,
   resolverCuentaDesdeSubCuenta,
   SUB_CUENTA_PAGO,

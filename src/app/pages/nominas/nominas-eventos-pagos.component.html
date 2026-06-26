@@ -366,11 +366,20 @@
           </div>
           <div class="col-md-4 mb-3">
             <label class="form-label">Cuota por pago ($)</label>
-            <div class="eventos-monto-display">
+            <div
+              class="eventos-monto-display"
+              [class.text-danger]="descuentoTipoCInvalido"
+            >
               {{ cuotaDescuentoCalculada | number : "1.2-2" }}
             </div>
             <small class="text-muted" *ngIf="!esDescuentoPorCuota">Monto único en el pago seleccionado</small>
             <small class="text-muted" *ngIf="esDescuentoPorCuota">Total ÷ número de cuotas</small>
+            <small
+              class="text-danger d-block"
+              *ngIf="descuentoTipoCInvalido && montoBrutoReglaAsociada"
+            >
+              Máximo por pago: ${{ montoBrutoReglaAsociada | number : "1.2-2" }}
+            </small>
           </div>
           <div class="col-md-4 mb-3">
             <label class="form-label">Semana de aplicación</label>
@@ -492,15 +501,24 @@
         </p>
         <p class="small text-muted mb-2" *ngIf="esDescuentosGenerales">
           Fechas de pago de la regla A en las que se aplicará el descuento según la semana y modalidad elegidas.
+          Se consideran los descuentos ya autorizados en cada fecha.
         </p>
+        <div
+          class="alert alert-warning py-2 small mb-2"
+          *ngIf="validacionDescuentoTipoC && !validacionDescuentoTipoC.ok"
+        >
+          {{ validacionDescuentoTipoC.mensaje }}
+        </div>
         <div class="table-responsive">
           <table class="table table-sm table-bordered amortizacion-tabla">
             <thead>
               <tr>
                 <th>Cuota mes</th>
                 <th>Fecha pago</th>
-                <th>Descuento ($)</th>
-                <th *ngIf="montoBrutoReglaAsociada">Neto a liquidar ($)</th>
+                <th *ngIf="hayDescuentosExistentesEnTabla">Ya descontado ($)</th>
+                <th>Descuento nuevo ($)</th>
+                <th *ngIf="montoBrutoReglaAsociada">Pago bruto ($)</th>
+                <th *ngIf="montoBrutoReglaAsociada">Neto proyectado ($)</th>
               </tr>
             </thead>
             <tbody>
@@ -509,9 +527,19 @@
                   {{ fila.numeroCuota }}/{{ esSeguridadSocial ? cuotasSegSocial : (formulario.cuotas || 1) }}
                 </td>
                 <td>{{ fila.fechaMin | date : "dd/MM/yyyy" }}</td>
-                <td>{{ fila.monto | number : "1.2-2" }}</td>
+                <td *ngIf="hayDescuentosExistentesEnTabla" class="text-danger">
+                  {{ (fila.descuentoExistente || 0) | number : "1.2-2" }}
+                </td>
+                <td>{{ descuentoNuevoFila(fila) | number : "1.2-2" }}</td>
                 <td *ngIf="montoBrutoReglaAsociada">
-                  {{ (montoBrutoReglaAsociada - fila.monto) | number : "1.2-2" }}
+                  {{ brutoFilaDescuento(fila) | number : "1.2-2" }}
+                </td>
+                <td
+                  *ngIf="montoBrutoReglaAsociada"
+                  [class.text-danger]="filaDescuentoExcedeBruto(fila)"
+                  [class.font-weight-bold]="filaDescuentoExcedeBruto(fila)"
+                >
+                  {{ netoLiquidarFila(fila) | number : "1.2-2" }}
                 </td>
               </tr>
             </tbody>
@@ -602,7 +630,7 @@
         <button
           class="btn btn-block btn-nomina-primario"
           (click)="guardarRegla()"
-          [disabled]="formulario.estadoRegla === 'Autorizada'"
+          [disabled]="formulario.estadoRegla === 'Autorizada' || descuentoTipoCInvalido"
         >
           Guardar borrador
         </button>
@@ -611,7 +639,7 @@
         <button
           class="btn btn-block btn-success"
           (click)="autorizarRegla()"
-          [disabled]="!reglaSeleccionada?._id"
+          [disabled]="!reglaSeleccionada?._id || descuentoTipoCInvalido"
         >
           Autorizar evento
         </button>

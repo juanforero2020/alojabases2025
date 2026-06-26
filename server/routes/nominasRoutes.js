@@ -454,8 +454,35 @@ router.post("/reglas-pago/descuento-previa", async (req, res) => {
           reglaAsociada: reglaA ? reglaA.toObject() : regla,
         });
     const montoBruto = reglaA ? Number(reglaA.monto) || 0 : 0;
+    const evaluacion = reglaA
+      ? await require("../utils/proyeccionPagosTipoC").evaluarDescuentoTipoCVsEventos(
+          regla,
+          {
+            reglaA: reglaA.toObject ? reglaA.toObject() : reglaA,
+            reglaNormalizada: regla,
+            excluirReglaCId: req.body._id,
+            tabla: resultado.tabla,
+          }
+        )
+      : { ok: true, filas: [], mensaje: null };
+    const {
+      enriquecerTablaDescuentoEvaluacion,
+    } = require("../utils/proyeccionPagosTipoC");
+    const tablaEnriquecida = enriquecerTablaDescuentoEvaluacion(
+      resultado.tabla,
+      evaluacion,
+      montoBruto
+    );
+  const validacionBruto = reglaA
+      ? tipoCNominaService.validarCuotaDescuentoVsBruto(regla, montoBruto)
+      : null;
+    const validacionDescuento = !evaluacion.ok
+      ? { ok: false, mensaje: evaluacion.mensaje }
+      : validacionBruto
+      ? { ok: false, mensaje: validacionBruto }
+      : { ok: true };
     res.json({
-      tabla: resultado.tabla,
+      tabla: tablaEnriquecida,
       total: resultado.total,
       cuotaEvento: resultado.cuotaEvento,
       cuotasValores: resultado.cuotasValores,
@@ -466,6 +493,7 @@ router.post("/reglas-pago/descuento-previa", async (req, res) => {
         0,
         Math.round((montoBruto - resultado.cuotaEvento) * 100) / 100
       ),
+      validacionDescuento,
     });
   } catch (err) {
     res.status(400).json({ mensaje: err.message });
@@ -865,6 +893,21 @@ router.get("/eventos-programados/:id/desglose-descuentos", async (req, res) => {
       montoNeto: Number(evento.monto) || 0,
       lineas,
       total: Math.round(total * 100) / 100,
+    });
+  } catch (err) {
+    res.status(400).json({ mensaje: err.message });
+  }
+});
+
+router.put("/eventos-programados/:id/autorizar-fuera-plazo", async (req, res) => {
+  try {
+    const evento = await tipoBNominaService.autorizarEventoFueraPlazo(
+      req.params.id,
+      { usuario: req.body.usuario }
+    );
+    res.json({
+      status: "Pago habilitado para ejecución fuera de plazo",
+      data: evento,
     });
   } catch (err) {
     res.status(400).json({ mensaje: err.message });
