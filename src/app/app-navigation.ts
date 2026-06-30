@@ -46,6 +46,10 @@ export const navigation = [
         text: "Devoluciones",
         path: "/devoluciones",
       },
+      {
+        text: "Clientes",
+        path: "/clientes",
+      },
       
     ],
   },

@@ -81,6 +81,19 @@ function agregarMeses(fecha, meses) {
   return d;
 }
 
+function generarFechasDiario(desde, hasta) {
+  const fechas = [];
+  const actual = new Date(desde);
+  actual.setHours(0, 0, 0, 0);
+  const limite = new Date(hasta);
+  limite.setHours(23, 59, 59, 999);
+  while (actual <= limite) {
+    fechas.push(new Date(actual));
+    actual.setDate(actual.getDate() + 1);
+  }
+  return fechas;
+}
+
 function generarFechasSemanal(desde, hasta, parametro) {
   const dia = diaSemanaDesdeParametro(parametro);
   const fechas = [];
@@ -147,7 +160,9 @@ function generarFechasPorRegla(regla, opciones = {}) {
   const frecuencia = normalizarTexto(regla.frecuencia);
   let fechas = [];
 
-  if (frecuencia === "semanal") {
+  if (frecuencia === "diario") {
+    fechas = generarFechasDiario(desde, hasta);
+  } else if (frecuencia === "semanal") {
     fechas = generarFechasSemanal(desde, hasta, regla.parametro);
   } else if (frecuencia === "dominical") {
     fechas = generarFechasDominical(desde, hasta);

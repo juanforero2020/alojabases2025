@@ -3293,7 +3293,7 @@ cambiarestado(e,i:number){
       this.facturaVeronica.campoAdicional.push(campoAdicional3)
     }
     if(this.factura?.observaciones == " ")
-        this.factura.observaciones = "Sin observaciones"
+        this.factura.observaciones = this.formaPago == "Crédito Aliado" ? "CRÉDITO ALIADO SAG" : "Sin observaciones"
 
     var campoAdicional4 = new CampoAdicionalModel();
     campoAdicional4.nombre = "Nota" 
@@ -4063,7 +4063,7 @@ cambiarestado(e,i:number){
 
   generarCuentaPorCobrar(idRecibo){
     var cliente = this.factura.cliente.cliente_nombre
-    if(this.formaPago == "Pendiente de Pago"){
+    if(this.formaPago == "Pendiente de Pago" || this.formaPago == "Crédito Aliado"){
       var cuentaPorCobrar = new CuentaPorCobrar();
       cuentaPorCobrar.fecha = new Date();
       cuentaPorCobrar.sucursal = this.factura.sucursal;
@@ -4071,8 +4071,8 @@ cambiarestado(e,i:number){
       var ultimo = cliente.slice(-1);
       if(ultimo == " ")
         cliente = cliente.substring(0, cliente.length-1);
-      cuentaPorCobrar.cliente = cliente;
-      cuentaPorCobrar.rucCliente = this.factura.cliente.ruc;
+      cuentaPorCobrar.cliente = this.formaPago == "Crédito Aliado" ? "Cooperativa El Sagrario" : cliente;
+      cuentaPorCobrar.rucCliente = this.formaPago == "Crédito Aliado" ? "1890037646001" : this.factura.cliente.ruc;
       cuentaPorCobrar.rCajaId = "RC"+idRecibo;
       cuentaPorCobrar.documentoVenta = this.factura.documento_n.toString();
       cuentaPorCobrar.numDocumento = "";

@@ -3,7 +3,13 @@ import { NominasService } from "src/app/servicios/nominas.service";
 import { CentroCostoService } from "src/app/servicios/centro-costo.service";
 import { CentroCosto } from "../administracion-cuentas/administracion-cuenta";
 import Swal from "sweetalert2";
-import { ReporteEstadoEmpleado } from "./nominas";
+import {
+  BeneficiarioFiltroPagos,
+  ReporteEstadoEmpleado,
+  TablaMaestraSalarial,
+} from "./nominas";
+import { mostrarErrorNominaApi } from "./nominas-alert.util";
+import { fechaCalendarioParam } from "./nominas-fecha.util";
 
 @Component({
   selector: "app-nominas-consulta-pagos",
@@ -12,7 +18,10 @@ import { ReporteEstadoEmpleado } from "./nominas";
 })
 export class NominasConsultaPagosComponent implements OnInit {
   nombresCentrosCosto: string[] = [];
+  beneficiariosFiltro: BeneficiarioFiltroPagos[] = [];
+  cargandoBeneficiarios = false;
 
+  reporteCedulaSeleccionada: string | null = null;
   reporteCedula = "";
   reporteCentroCosto = "";
   reporteDesde: Date = new Date(new Date().getFullYear(), 0, 1);
@@ -26,6 +35,51 @@ export class NominasConsultaPagosComponent implements OnInit {
 
   ngOnInit() {
     this.cargarCentrosCosto();
+    this.cargarBeneficiariosTms();
+  }
+
+  cargarBeneficiariosTms() {
+    this.cargandoBeneficiarios = true;
+    this._nominasService.getTablasMaestrasSalariales().subscribe(
+      (lista) => {
+        this.beneficiariosFiltro = this.mapearBeneficiariosFiltro(lista);
+        this.cargandoBeneficiarios = false;
+      },
+      () => {
+        this.beneficiariosFiltro = [];
+        this.cargandoBeneficiarios = false;
+      }
+    );
+  }
+
+  mapearBeneficiariosFiltro(
+    lista: TablaMaestraSalarial[]
+  ): BeneficiarioFiltroPagos[] {
+    return (lista || [])
+      .filter((r) => r.activo !== false && r.cedula?.trim())
+      .map((r) => ({
+        cedula: r.cedula.trim(),
+        nombre: (r.nombre || "").trim(),
+        etiquetaDisplay: `${(r.nombre || "").trim()} — ${r.cedula.trim()}`,
+      }))
+      .sort((a, b) => a.nombre.localeCompare(b.nombre, "es"));
+  }
+
+  onEmpleadoChanged(event: { value?: string | null; event?: Event }) {
+    if (event?.event === undefined) return;
+    this.reporteCedulaSeleccionada = event.value || null;
+    this.reporteCedula = this.reporteCedulaSeleccionada || "";
+    if (this.reporteCedula) {
+      this.reporteCentroCosto = "";
+    }
+  }
+
+  onCentroCostoChanged(event: { value?: string; event?: Event }) {
+    if (event?.event === undefined) return;
+    if (event.value) {
+      this.reporteCedulaSeleccionada = null;
+      this.reporteCedula = "";
+    }
   }
 
   cargarCentrosCosto() {
@@ -39,10 +93,7 @@ export class NominasConsultaPagosComponent implements OnInit {
   }
 
   private fechaLocalParam(fecha: Date): string {
-    const y = fecha.getFullYear();
-    const m = String(fecha.getMonth() + 1).padStart(2, "0");
-    const d = String(fecha.getDate()).padStart(2, "0");
-    return `${y}-${m}-${d}`;
+    return fechaCalendarioParam(fecha) || "";
   }
 
   consultarReporteEstado() {
@@ -51,7 +102,7 @@ export class NominasConsultaPagosComponent implements OnInit {
     if (!cedula && !centroCosto) {
       Swal.fire(
         "Validación",
-        "Indique la cédula del empleado o el centro de costo",
+        "Seleccione un empleado o indique el centro de costo",
         "warning"
       );
       return;
@@ -75,11 +126,7 @@ export class NominasConsultaPagosComponent implements OnInit {
           this.reporteEstado = normalizado;
         },
         (err) =>
-          Swal.fire(
-            "Error",
-            err?.error?.mensaje || "No se pudo consultar",
-            "error"
-          )
+          mostrarErrorNominaApi("Error", err, "No se pudo consultar")
       );
   }
 }

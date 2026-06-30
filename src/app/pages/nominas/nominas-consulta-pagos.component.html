@@ -4,21 +4,32 @@
       Consulta de pagos por empleado (centro de costo)
     </div>
     <p class="text-muted text-center mb-3">
-      Detalle de pagos programados y ejecutados (tipo A, B y descuentos aplicados) por cédula o centro de costo.
-      Si consulta por <strong>cédula</strong>, no use centro de costo al mismo tiempo.
+      Detalle de pagos programados y ejecutados (tipo A, B y descuentos aplicados) por empleado o centro de costo.
+      Si consulta por <strong>empleado</strong>, no use centro de costo al mismo tiempo.
     </p>
     <div class="row align-items-end mb-3">
-      <div class="col-md-3 mb-2">
-        <label>Cédula empleado</label>
-        <dx-text-box [(value)]="reporteCedula"></dx-text-box>
+      <div class="col-md-4 mb-2">
+        <label>Empleado</label>
+        <dx-select-box
+          [items]="beneficiariosFiltro"
+          displayExpr="etiquetaDisplay"
+          valueExpr="cedula"
+          [(value)]="reporteCedulaSeleccionada"
+          [searchEnabled]="true"
+          [showClearButton]="true"
+          placeholder="Buscar por nombre o cédula"
+          [disabled]="cargandoBeneficiarios"
+          (onValueChanged)="onEmpleadoChanged($event)"
+        ></dx-select-box>
       </div>
-      <div class="col-md-3 mb-2">
+      <div class="col-md-2 mb-2">
         <label>Centro de costo</label>
         <dx-select-box
           [items]="nombresCentrosCosto"
           [(value)]="reporteCentroCosto"
           [searchEnabled]="true"
           [showClearButton]="true"
+          (onValueChanged)="onCentroCostoChanged($event)"
         ></dx-select-box>
       </div>
       <div class="col-md-2 mb-2">

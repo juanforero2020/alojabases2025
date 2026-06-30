@@ -4,3 +4,13 @@
     font-weight: bold;
     font-size: 40px;
 }
+
+/* Alertas de error en módulo nóminas: por encima de popups DevExtreme */
+body .swal2-container.swal-nomina-sobre-popup {
+    z-index: 2147483646 !important;
+    position: fixed !important;
+    inset: 0 !important;
+    display: flex !important;
+    align-items: center !important;
+    justify-content: center !important;
+}

@@ -11,6 +11,8 @@ import {
   OtroCargoNomina,
   TablaMaestraSalarial,
 } from "./nominas";
+import { mostrarErrorNominaApi } from "./nominas-alert.util";
+import { fechaCalendarioLocal } from "./nominas-fecha.util";
 
 @Component({
   selector: "app-nominas",
@@ -39,7 +41,7 @@ export class NominasComponent implements OnInit {
   popupTablaSalarial = false;
   modoEdicion = false;
 
-  periodosPago = ["Semanal", "Quincenal", "Mensual"];
+  periodosPago = ["Diario", "Semanal", "Quincenal", "Mensual"];
 
   /** Roles/cargos del sistema (misma lista que Creación de usuarios) */
   cargosDisponibles: string[] = [
@@ -199,7 +201,11 @@ export class NominasComponent implements OnInit {
       },
       () => {
         this.mostrarLoading = false;
-        Swal.fire("Error", "No se pudieron cargar las tablas salariales", "error");
+        mostrarErrorNominaApi(
+          "Error",
+          null,
+          "No se pudieron cargar las tablas salariales"
+        );
       }
     );
   }
@@ -212,7 +218,11 @@ export class NominasComponent implements OnInit {
         this.sincronizarEtiquetasCalculoDominical();
       },
       () => {
-        Swal.fire("Error", "No se pudo cargar la configuración global", "error");
+        mostrarErrorNominaApi(
+          "Error",
+          null,
+          "No se pudo cargar la configuración global"
+        );
       }
     );
   }
@@ -266,9 +276,9 @@ export class NominasComponent implements OnInit {
     this.registroSeleccionado = registro;
     this.formularioSalarial = { ...registro };
     if (registro.fechaInicioLabores) {
-      this.formularioSalarial.fechaInicioLabores = new Date(
+      this.formularioSalarial.fechaInicioLabores = fechaCalendarioLocal(
         registro.fechaInicioLabores
-      );
+      ) as Date;
     }
     this.popupTablaSalarial = true;
   }
@@ -290,6 +300,7 @@ export class NominasComponent implements OnInit {
 
     this.formularioSalarial.cedula = this.formularioSalarial.cedula.trim();
 
+    this.mensajeLoading = "Guardando...";
     this.mostrarLoading = true;
     const peticion = this.modoEdicion
       ? this._nominasService.actualizarTablaMaestraSalarial(
@@ -307,9 +318,11 @@ export class NominasComponent implements OnInit {
       },
       (err) => {
         this.mostrarLoading = false;
-        const msg =
-          err?.error?.mensaje || "No se pudo guardar el registro";
-        Swal.fire("Error", msg, "error");
+        mostrarErrorNominaApi(
+          "Error al guardar",
+          err,
+          "No se pudo guardar el registro"
+        );
       }
     );
   }
@@ -331,8 +344,12 @@ export class NominasComponent implements OnInit {
               Swal.fire("Eliminado", "Registro eliminado", "success");
               this.cargarTablasSalariales();
             },
-            () =>
-              Swal.fire("Error", "No se pudo eliminar el registro", "error")
+            (err) =>
+              mostrarErrorNominaApi(
+                "Error",
+                err,
+                "No se pudo eliminar el registro"
+              )
           );
       }
     });
@@ -365,7 +382,7 @@ export class NominasComponent implements OnInit {
           legacy.fechaLimiteDia || 1
         );
       } else if (cargo.fechaLimite) {
-        cargo.fechaLimite = new Date(cargo.fechaLimite);
+        cargo.fechaLimite = fechaCalendarioLocal(cargo.fechaLimite) as Date;
       }
     });
   }
@@ -428,10 +445,10 @@ export class NominasComponent implements OnInit {
       },
       (err) => {
         this.mostrarLoading = false;
-        Swal.fire(
+        mostrarErrorNominaApi(
           "Error",
-          err?.error?.mensaje || "No se pudo guardar la configuración",
-          "error"
+          err,
+          "No se pudo guardar la configuración"
         );
       }
     );
@@ -454,8 +471,12 @@ export class NominasComponent implements OnInit {
             this.sincronizarEtiquetasCalculoDominical();
             Swal.fire("Listo", "Configuración restablecida", "success");
           },
-          () =>
-            Swal.fire("Error", "No se pudo restablecer la configuración", "error")
+          (err) =>
+            mostrarErrorNominaApi(
+              "Error",
+              err,
+              "No se pudo restablecer la configuración"
+            )
         );
       }
     });

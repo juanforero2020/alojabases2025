@@ -280,9 +280,9 @@
         <button
           type="button"
           class="btn btn-sm btn-outline-primary comprobante-pago-btn"
-          [disabled]="!d.data._id || generandoComprobanteId === d.data._id"
+          [disabled]="!puedeDescargarComprobantePago(d.data) || generandoComprobanteId === d.data._id"
           (click)="descargarComprobantePago(d.data)"
-          title="Descargar comprobante de pago (PDF)"
+          [title]="tituloComprobantePago(d.data)"
         >
           <span *ngIf="generandoComprobanteId !== d.data._id">PDF</span>
           <span *ngIf="generandoComprobanteId === d.data._id">…</span>

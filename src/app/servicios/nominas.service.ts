@@ -1,6 +1,18 @@
 import { Injectable } from "@angular/core";
 import { HttpClient } from "@angular/common/http";
+import { map } from "rxjs/operators";
 import { environment } from "src/environments/environment";
+import {
+  normalizarAjusteNomina,
+  normalizarEventoDominical,
+  normalizarEventoPagoProgramado,
+  normalizarNominaConfigGlobal,
+  normalizarProyeccionPago,
+  normalizarReglaPagoNomina,
+  normalizarReporteEstadoEmpleado,
+  normalizarTablaAmortizacion,
+  normalizarTablaMaestraSalarial,
+} from "../pages/nominas/nominas-fecha.util";
 import {
   AjusteNominaPendiente,
   BeneficiarioNomina,
@@ -25,15 +37,15 @@ export class NominasService {
   constructor(public http: HttpClient) {}
 
   getTablasMaestrasSalariales() {
-    return this.http.get<TablaMaestraSalarial[]>(
-      `${this.URL}/tabla-maestra-salarial`
-    );
+    return this.http
+      .get<TablaMaestraSalarial[]>(`${this.URL}/tabla-maestra-salarial`)
+      .pipe(map((lista) => (lista || []).map(normalizarTablaMaestraSalarial)));
   }
 
   getTablaMaestraSalarialPorCedula(cedula: string) {
-    return this.http.get<TablaMaestraSalarial>(
-      `${this.URL}/tabla-maestra-salarial/${cedula}`
-    );
+    return this.http
+      .get<TablaMaestraSalarial>(`${this.URL}/tabla-maestra-salarial/${cedula}`)
+      .pipe(map((registro) => normalizarTablaMaestraSalarial(registro)));
   }
 
   crearTablaMaestraSalarial(registro: TablaMaestraSalarial) {
@@ -52,7 +64,9 @@ export class NominasService {
   }
 
   getConfigGlobal() {
-    return this.http.get<NominaConfigGlobal>(`${this.URL}/config-global`);
+    return this.http
+      .get<NominaConfigGlobal>(`${this.URL}/config-global`)
+      .pipe(map((config) => normalizarNominaConfigGlobal(config)));
   }
 
   guardarConfigGlobal(config: NominaConfigGlobal) {
@@ -76,25 +90,30 @@ export class NominasService {
   }
 
   getReglasPago() {
-    return this.http.get<ReglaPagoNomina[]>(`${this.URL}/reglas-pago`);
+    return this.http
+      .get<ReglaPagoNomina[]>(`${this.URL}/reglas-pago`)
+      .pipe(map((lista) => (lista || []).map(normalizarReglaPagoNomina)));
   }
 
   getReglaPago(id: string) {
-    return this.http.get<ReglaPagoNomina>(`${this.URL}/reglas-pago/${id}`);
+    return this.http
+      .get<ReglaPagoNomina>(`${this.URL}/reglas-pago/${id}`)
+      .pipe(map((regla) => normalizarReglaPagoNomina(regla)));
   }
 
   getProyeccionRegla(id: string, meses?: number) {
     const q = meses ? `?meses=${meses}` : "";
-    return this.http.get<ProyeccionPagoNomina>(
-      `${this.URL}/reglas-pago/${id}/proyeccion${q}`
-    );
+    return this.http
+      .get<ProyeccionPagoNomina>(
+        `${this.URL}/reglas-pago/${id}/proyeccion${q}`
+      )
+      .pipe(map((proyeccion) => normalizarProyeccionPago(proyeccion)));
   }
 
   vistaPreviaProyeccion(regla: ReglaPagoNomina) {
-    return this.http.post<ProyeccionPagoNomina>(
-      `${this.URL}/reglas-pago/vista-previa`,
-      regla
-    );
+    return this.http
+      .post<ProyeccionPagoNomina>(`${this.URL}/reglas-pago/vista-previa`, regla)
+      .pipe(map((proyeccion) => normalizarProyeccionPago(proyeccion)));
   }
 
   crearReglaPago(regla: ReglaPagoNomina) {
@@ -142,16 +161,18 @@ export class NominasService {
     let q = "";
     if (fecha) q += `fecha=${fecha}&`;
     if (cedula) q += `cedula=${cedula}&`;
-    return this.http.get<EventoPagoDominical[]>(
-      `${this.URL}/dominical/eventos?${q}`
-    );
+    return this.http
+      .get<EventoPagoDominical[]>(`${this.URL}/dominical/eventos?${q}`)
+      .pipe(map((lista) => (lista || []).map(normalizarEventoDominical)));
   }
 
   getAjustesPendientesNomina(cedula?: string) {
     const q = cedula ? `?cedula=${cedula}` : "";
-    return this.http.get<AjusteNominaPendiente[]>(
-      `${this.URL}/dominical/ajustes-pendientes${q}`
-    );
+    return this.http
+      .get<AjusteNominaPendiente[]>(
+        `${this.URL}/dominical/ajustes-pendientes${q}`
+      )
+      .pipe(map((lista) => (lista || []).map(normalizarAjusteNomina)));
   }
 
   getEventosProgramados(filtros?: {
@@ -178,9 +199,11 @@ export class NominasService {
     if (filtros?.desde) params.set("desde", filtros.desde);
     if (filtros?.hasta) params.set("hasta", filtros.hasta);
     const q = params.toString();
-    return this.http.get<EventoPagoProgramado[]>(
-      `${this.URL}/eventos-programados${q ? `?${q}` : ""}`
-    );
+    return this.http
+      .get<EventoPagoProgramado[]>(
+        `${this.URL}/eventos-programados${q ? `?${q}` : ""}`
+      )
+      .pipe(map((lista) => (lista || []).map(normalizarEventoPagoProgramado)));
   }
 
   getDesgloseDescuentosEvento(eventoId: string) {
@@ -210,33 +233,52 @@ export class NominasService {
   }
 
   getReglasPagoAsociables(cedula: string) {
-    return this.http.get<ReglaPagoNomina[]>(
-      `${this.URL}/reglas-pago-asociables/${cedula}`
-    );
+    return this.http
+      .get<ReglaPagoNomina[]>(`${this.URL}/reglas-pago-asociables/${cedula}`)
+      .pipe(map((lista) => (lista || []).map(normalizarReglaPagoNomina)));
   }
 
   descuentoPrevia(regla: ReglaPagoNomina) {
-    return this.http.post<{
-      tabla: FilaAmortizacion[];
-      total: number;
-      cuotaEvento: number;
-      cuotasValores: number[];
-      montoBrutoPago: number;
-      cuotaNetaEjemplo: number;
-      validacionDescuento?: { ok: boolean; mensaje?: string };
-    }>(`${this.URL}/reglas-pago/descuento-previa`, regla);
+    return this.http
+      .post<{
+        tabla: FilaAmortizacion[];
+        total: number;
+        cuotaEvento: number;
+        cuotasValores: number[];
+        montoBrutoPago: number;
+        cuotaNetaEjemplo: number;
+        validacionDescuento?: { ok: boolean; mensaje?: string };
+      }>(`${this.URL}/reglas-pago/descuento-previa`, regla)
+      .pipe(
+        map((res) => ({
+          ...res,
+          tabla: normalizarTablaAmortizacion(res.tabla),
+        }))
+      );
   }
 
   amortizacionPrevia(regla: ReglaPagoNomina, forzarRegenerar = false) {
-    return this.http.post<{
-      tabla: FilaAmortizacion[];
-      total: number;
-      validacion: { ok: boolean; mensaje?: string; suma?: number; pendiente?: number };
-      cuotaEvento: number;
-    }>(`${this.URL}/reglas-pago/amortizacion-previa`, {
-      ...regla,
-      forzarRegenerar,
-    });
+    return this.http
+      .post<{
+        tabla: FilaAmortizacion[];
+        total: number;
+        validacion: {
+          ok: boolean;
+          mensaje?: string;
+          suma?: number;
+          pendiente?: number;
+        };
+        cuotaEvento: number;
+      }>(`${this.URL}/reglas-pago/amortizacion-previa`, {
+        ...regla,
+        forzarRegenerar,
+      })
+      .pipe(
+        map((res) => ({
+          ...res,
+          tabla: normalizarTablaAmortizacion(res.tabla),
+        }))
+      );
   }
 
   getReporteEstadoEmpleado(filtros: {
@@ -251,8 +293,10 @@ export class NominasService {
     if (filtros.desde) params.set("desde", filtros.desde);
     if (filtros.hasta) params.set("hasta", filtros.hasta);
     const q = params.toString();
-    return this.http.get<ReporteEstadoEmpleado>(
-      `${this.URL}/reporte-estado-empleado${q ? `?${q}` : ""}`
-    );
+    return this.http
+      .get<ReporteEstadoEmpleado>(
+        `${this.URL}/reporte-estado-empleado${q ? `?${q}` : ""}`
+      )
+      .pipe(map((reporte) => normalizarReporteEstadoEmpleado(reporte)));
   }
 }

@@ -11,7 +11,7 @@ const TablaMaestraSalarialSchema = new Schema(
     asignacionSalarial: { type: Number, required: false, default: 0 },
     periodoPago: {
       type: String,
-      enum: ["Semanal", "Quincenal", "Mensual"],
+      enum: ["Diario", "Semanal", "Quincenal", "Mensual"],
       default: "Semanal",
     },
     salarioCalculoVariablesPrestacionales: {

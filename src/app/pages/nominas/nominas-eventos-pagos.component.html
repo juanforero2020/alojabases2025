@@ -863,13 +863,25 @@
 <!-- Listado de reglas -->
 <div class="card">
   <div class="card-body">
-    <h6 class="font-weight-bold mb-3">Reglas de pago registradas</h6>
+    <h6 class="font-weight-bold mb-3">REGLAS DE PAGO REGISTRADAS</h6>
     <dx-data-grid
       [dataSource]="reglas"
       [showBorders]="true"
       [columnAutoWidth]="true"
       keyExpr="_id"
     >
+    <dxo-filter-row [visible]="true"></dxo-filter-row>
+    <dxo-header-filter [visible]="true"></dxo-header-filter>
+    <dxo-search-panel
+      [visible]="true"
+      [width]="260"
+      placeholder="Buscar en todas las columnas…"
+    ></dxo-search-panel>
+    <dxo-export
+      [enabled]="true"
+      [fileName]="nombreArchivoExport"
+      [allowExportSelectedData]="true"
+    ></dxo-export>
       <dxi-column dataField="tipoRegla" caption="Tipo" [width]="60"></dxi-column>
       <dxi-column dataField="nombreBeneficiario" caption="Beneficiario"></dxi-column>
       <dxi-column dataField="cedulaBeneficiario" caption="Cédula"></dxi-column>

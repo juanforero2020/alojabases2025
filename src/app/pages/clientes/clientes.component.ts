@@ -75,7 +75,7 @@ export class ClientesComponent implements OnInit {
   locales:Sucursal[]=[]
   mensaje:string=""
   mostrarBloqueo = true;
-  esAsesorComercial = false;
+  esUsuario = false;
   menu1: string[] = [
     "Usuario",
     "Administrador"
@@ -103,7 +103,7 @@ export class ClientesComponent implements OnInit {
           res => {
             var usuario = res as user;
             this.usuarioLogueado = usuario[0];
-            this.esAsesorComercial = this.usuarioLogueado.rol?.toString() == "Asesor Comercial";
+            this.esUsuario = this.usuarioLogueado.rol?.toString() == "Usuario";
             this.mostrarPopupCodigo();
           }
         )

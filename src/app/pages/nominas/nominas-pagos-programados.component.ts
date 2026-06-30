@@ -12,6 +12,12 @@ import {
   EventoPagoProgramadoFila,
   TablaMaestraSalarial,
 } from "./nominas";
+import { mostrarErrorNominaApi } from "./nominas-alert.util";
+import {
+  fechaCalendarioParam,
+  formatoFechaCalendarioNomina,
+  inicioDiaCalendarioNomina,
+} from "./nominas-fecha.util";
 
 @Component({
   selector: "app-nominas-pagos-programados",
@@ -138,12 +144,7 @@ export class NominasPagosProgramadosComponent implements OnInit {
   }
 
   private formatoFechaApi(fecha: Date | null): string | undefined {
-    if (!fecha) return undefined;
-    const d = new Date(fecha);
-    const y = d.getFullYear();
-    const m = String(d.getMonth() + 1).padStart(2, "0");
-    const day = String(d.getDate()).padStart(2, "0");
-    return `${y}-${m}-${day}`;
+    return fechaCalendarioParam(fecha);
   }
 
   cargarEventosProgramados() {
@@ -213,19 +214,19 @@ export class NominasPagosProgramadosComponent implements OnInit {
 
   textoRangoFechas(ev: EventoPagoProgramado): string {
     if (ev.fechaMin && ev.fechaMax) {
-      const min = new Date(ev.fechaMin).toLocaleDateString("es-EC", {
+      const min = formatoFechaCalendarioNomina(ev.fechaMin, {
         day: "2-digit",
         month: "2-digit",
         year: "2-digit",
       });
-      const max = new Date(ev.fechaMax).toLocaleDateString("es-EC", {
+      const max = formatoFechaCalendarioNomina(ev.fechaMax, {
         day: "2-digit",
         month: "2-digit",
         year: "2-digit",
       });
       return `${min} — ${max}`;
     }
-    return new Date(ev.fechaProgramada).toLocaleDateString("es-EC");
+    return formatoFechaCalendarioNomina(ev.fechaProgramada);
   }
 
   onExportingPagos(e: {
@@ -289,7 +290,7 @@ export class NominasPagosProgramadosComponent implements OnInit {
           html: `
             <p class="text-left mb-2 small text-muted">
               <strong>${ev.nombreBeneficiario}</strong><br/>
-              ${new Date(ev.fechaProgramada).toLocaleDateString("es-EC")}
+              ${formatoFechaCalendarioNomina(ev.fechaProgramada)}
             </p>
             <table class="table table-sm table-bordered mb-2">
               <thead><tr><th>Concepto</th><th>Monto</th></tr></thead>
@@ -312,11 +313,7 @@ export class NominasPagosProgramadosComponent implements OnInit {
         });
       },
       (err) =>
-        Swal.fire(
-          "Error",
-          err?.error?.mensaje || "No se pudo cargar el desglose",
-          "error"
-        )
+        mostrarErrorNominaApi("Error", err, "No se pudo cargar el desglose")
     );
   }
 
@@ -351,8 +348,8 @@ export class NominasPagosProgramadosComponent implements OnInit {
     const saldo = this.saldoPendienteEvento(ev);
     const ventana =
       ev.fechaMin && ev.fechaMax
-        ? `${new Date(ev.fechaMin).toLocaleDateString("es-EC")} — ${new Date(ev.fechaMax).toLocaleDateString("es-EC")}`
-        : new Date(ev.fechaProgramada).toLocaleDateString("es-EC");
+        ? `${formatoFechaCalendarioNomina(ev.fechaMin)} — ${formatoFechaCalendarioNomina(ev.fechaMax)}`
+        : formatoFechaCalendarioNomina(ev.fechaProgramada);
     const lineaDesc = this.tieneDescuento(ev)
       ? `Bruto: $${Number(ev.montoBruto || ev.monto).toFixed(2)} − Desc.: $${Number(ev.montoDescuento || 0).toFixed(2)}<br/>`
       : "";
@@ -398,8 +395,8 @@ export class NominasPagosProgramadosComponent implements OnInit {
   autorizarPagoFueraPlazo(ev: EventoPagoProgramado) {
     const ventana =
       ev.fechaMin && ev.fechaMax
-        ? `${new Date(ev.fechaMin).toLocaleDateString("es-EC")} — ${new Date(ev.fechaMax).toLocaleDateString("es-EC")}`
-        : new Date(ev.fechaProgramada).toLocaleDateString("es-EC");
+        ? `${formatoFechaCalendarioNomina(ev.fechaMin)} — ${formatoFechaCalendarioNomina(ev.fechaMax)}`
+        : formatoFechaCalendarioNomina(ev.fechaProgramada);
 
     Swal.fire({
       title: "Autorizar pago fuera de plazo",
@@ -424,11 +421,7 @@ export class NominasPagosProgramadosComponent implements OnInit {
             this.cargarEventosProgramados();
           },
           (err) =>
-            Swal.fire(
-              "Error",
-              err?.error?.mensaje || "No se pudo autorizar",
-              "error"
-            )
+            mostrarErrorNominaApi("Error", err, "No se pudo autorizar")
         );
     });
   }
@@ -452,11 +445,7 @@ export class NominasPagosProgramadosComponent implements OnInit {
           this.cargarEventosProgramados();
         },
         (err) =>
-          Swal.fire(
-            "Error",
-            err?.error?.mensaje || "No se pudo ejecutar",
-            "error"
-          )
+          mostrarErrorNominaApi("Error", err, "No se pudo ejecutar")
       );
   }
 
@@ -496,9 +485,7 @@ export class NominasPagosProgramadosComponent implements OnInit {
   }
 
   private inicioDia(fecha: Date | string): Date {
-    const d = new Date(fecha);
-    d.setHours(0, 0, 0, 0);
-    return d;
+    return inicioDiaCalendarioNomina(fecha);
   }
 
   private hoyInicio(): Date {
@@ -516,6 +503,23 @@ export class NominasPagosProgramadosComponent implements OnInit {
     return false;
   }
 
+  puedeDescargarComprobantePago(ev: EventoPagoProgramado): boolean {
+    if (!ev?._id) {
+      return false;
+    }
+    return !this.estaAntesDeVentana(ev);
+  }
+
+  tituloComprobantePago(ev: EventoPagoProgramado): string {
+    if (this.puedeDescargarComprobantePago(ev)) {
+      return "Descargar comprobante de pago (PDF)";
+    }
+    if (this.estaAntesDeVentana(ev)) {
+      return "Comprobante no disponible: el pago está fuera de fecha";
+    }
+    return "Comprobante no disponible";
+  }
+
   estaDespuesDeVentana(ev: EventoPagoProgramado): boolean {
     const hoy = this.hoyInicio();
     if (ev.fechaMax) {
@@ -528,24 +532,28 @@ export class NominasPagosProgramadosComponent implements OnInit {
   }
 
   descargarComprobantePago(ev: EventoPagoProgramado) {
-    if (!ev._id) return;
+    if (!this.puedeDescargarComprobantePago(ev)) return;
     this.generandoComprobanteId = ev._id;
     this._nominasService.getDesgloseDescuentosEvento(ev._id).subscribe(
       (desglose) => {
         try {
           this.generarPdfComprobante(ev, desglose);
         } catch {
-          Swal.fire("Error", "No se pudo generar el comprobante PDF", "error");
+          mostrarErrorNominaApi(
+            "Error",
+            null,
+            "No se pudo generar el comprobante PDF"
+          );
         } finally {
           this.generandoComprobanteId = null;
         }
       },
       (err) => {
         this.generandoComprobanteId = null;
-        Swal.fire(
+        mostrarErrorNominaApi(
           "Error",
-          err?.error?.mensaje || "No se pudo cargar el detalle del pago",
-          "error"
+          err,
+          "No se pudo cargar el detalle del pago"
         );
       }
     );
@@ -560,7 +568,7 @@ export class NominasPagosProgramadosComponent implements OnInit {
     }
     const documentDefinition = this.getDocumentDefinitionComprobante(ev, desglose);
     const cedula = (ev.cedulaBeneficiario || "sin-cedula").replace(/\s/g, "");
-    const fecha = new Date(ev.fechaProgramada);
+    const fecha = inicioDiaCalendarioNomina(ev.fechaProgramada);
     const fechaStr = `${fecha.getFullYear()}${String(fecha.getMonth() + 1).padStart(2, "0")}${String(fecha.getDate()).padStart(2, "0")}`;
     const nombreArchivo = `Comprobante_Pago_Nomina_${cedula}_${fechaStr}`;
 
@@ -579,8 +587,7 @@ export class NominasPagosProgramadosComponent implements OnInit {
   }
 
   private formatoFechaPdf(fecha: Date | string | undefined): string {
-    if (!fecha) return "—";
-    return new Date(fecha).toLocaleDateString("es-EC");
+    return formatoFechaCalendarioNomina(fecha);
   }
 
   private ventanaPagoTexto(ev: EventoPagoProgramado): string {

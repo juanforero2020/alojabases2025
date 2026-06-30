@@ -48,7 +48,7 @@ export class SessionExpiredInterceptor implements HttpInterceptor {
           this.authService.logOut(true);
           this.router.navigate(['/login-form']);
         }
-        return throwError(() => err);
+        return throwError(err);
       })
     );
   }

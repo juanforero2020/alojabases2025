@@ -16,6 +16,15 @@ import {
   ReglaPagoNomina,
   SimulacionDominical,
 } from "./nominas";
+import { mostrarErrorNominaApi } from "./nominas-alert.util";
+import {
+  fechaCalendarioLocal,
+  fechaCalendarioParam,
+  formatoFechaCalendarioNomina,
+  inicioDiaCalendarioNomina,
+  normalizarReglaPagoNomina,
+  normalizarTablaAmortizacion,
+} from "./nominas-fecha.util";
 
 @Component({
   selector: "app-nominas-eventos-pagos",
@@ -24,6 +33,7 @@ import {
 })
 export class NominasEventosPagosComponent implements OnInit {
   @Input() usuarioNombre = "";
+  nombreArchivoExport = "Reglas_Pago_Registradas";
 
   tiposRegla = ["A", "B", "C"];
   transaccionesNominaC = ["Pago Seguridad Social", "Descuentos"];
@@ -50,14 +60,14 @@ export class NominasEventosPagosComponent implements OnInit {
     /* "Préstamos recibidos",
     "Tarjetas de crédito"*/
     "Comisiones por ventas",
-    "Bono de navidad",
+    "Bono",
     "Décimo tercer sueldo",
     "Décimo cuarto sueldo",
     "Vacaciones",
   ];
   fuentesMontoA = ["TMS"];
-  frecuenciasA = ["Semanal", "Dominical", "Quincenal", "Mensual"];
-  frecuenciasB = ["Unica", "Semanal", "Quincenal", "Mensual", "Anual"];
+  frecuenciasA = ["Diario", "Semanal", "Dominical", "Quincenal", "Mensual"];
+  frecuenciasB = ["Unica", "Diario", "Semanal", "Quincenal", "Mensual", "Anual"];
   vigenciasReglaA = ["Finalizacion Contrato"];
   vigenciasReglaB = ["Indefinido", "Numero de cuotas", "Unica vez"];
   modalidadesMontoB = ["Periodico", "Finito"];
@@ -450,11 +460,7 @@ export class NominasEventosPagosComponent implements OnInit {
   normalizarFechasAmortizacion(
     tabla: FilaAmortizacion[] = []
   ): FilaAmortizacion[] {
-    return tabla.map((f) => ({
-      ...f,
-      fechaMin: f.fechaMin ? new Date(f.fechaMin) : f.fechaMin,
-      fechaMax: f.fechaMax ? new Date(f.fechaMax) : f.fechaMax,
-    }));
+    return normalizarTablaAmortizacion(tabla);
   }
 
   private redondear2(n: number): number {
@@ -504,7 +510,7 @@ export class NominasEventosPagosComponent implements OnInit {
     );
     if (filasInvalidas.length) {
       const f = filasInvalidas[0];
-      const fecha = new Date(f.fechaMin).toLocaleDateString("es-EC");
+      const fecha = formatoFechaCalendarioNomina(f.fechaMin);
       const bruto = Number(f.montoBrutoPago) || this.montoBrutoReglaAsociada;
       const existente = Number(f.descuentoExistente) || 0;
       const nuevo = Number(f.descuentoNuevo ?? f.monto) || 0;
@@ -598,8 +604,8 @@ export class NominasEventosPagosComponent implements OnInit {
     const suma = Math.round(this.sumaAmortizacion * 100) / 100;
 
     for (const fila of this.tablaAmortizacion) {
-      const min = fila.fechaMin ? new Date(fila.fechaMin) : null;
-      const max = fila.fechaMax ? new Date(fila.fechaMax) : null;
+      const min = fila.fechaMin ? inicioDiaCalendarioNomina(fila.fechaMin) : null;
+      const max = fila.fechaMax ? inicioDiaCalendarioNomina(fila.fechaMax) : null;
       if (min && max && min > max) {
         this.validacionAmortizacion = {
           ok: false,
@@ -895,12 +901,21 @@ export class NominasEventosPagosComponent implements OnInit {
         case "Unica":
           this.parametrosActuales = ["Fecha unica"];
           break;
+        case "Diario":
+          this.parametrosActuales = ["Todos los dias"];
+          break;
         default:
           this.parametrosActuales = this.parametrosSemanal;
       }
       return;
     }
     switch (this.formulario.frecuencia) {
+      case "Diario":
+        this.parametrosActuales = ["Todos los dias"];
+        if (!this.formulario.parametro) {
+          this.formulario.parametro = "Todos los dias";
+        }
+        break;
       case "Dominical":
         this.parametrosActuales = this.parametrosDominical;
         this.formulario.tipoBeneficiario = "Interno";
@@ -966,6 +981,7 @@ export class NominasEventosPagosComponent implements OnInit {
           this.aplicarMontoDesdeTms();
           if (res.periodoPago && !this.modoEdicion) {
             const mapa: Record<string, ReglaPagoNomina["frecuencia"]> = {
+              Diario: "Diario",
               Semanal: "Semanal",
               Quincenal: "Quincenal",
               Mensual: "Mensual",
@@ -988,10 +1004,10 @@ export class NominasEventosPagosComponent implements OnInit {
       (err) => {
         this.beneficiario = null;
         this.formulario.nombreBeneficiario = "";
-        Swal.fire(
+        mostrarErrorNominaApi(
           "No encontrado",
-          err?.error?.mensaje || "Beneficiario no registrado",
-          "error"
+          err,
+          "Beneficiario no registrado"
         );
       }
     );
@@ -1253,22 +1269,17 @@ export class NominasEventosPagosComponent implements OnInit {
         Swal.fire("Éxito", "Regla guardada en borrador", "success");
         this.cargarReglas();
         if (res?.data?._id) {
-          this.reglaSeleccionada = res.data;
-          this.formulario = { ...res.data };
-          if (res.data.tablaAmortizacion?.length) {
-            this.tablaAmortizacion = this.normalizarFechasAmortizacion(
-              res.data.tablaAmortizacion
-            );
+          const regla = normalizarReglaPagoNomina(res.data);
+          this.reglaSeleccionada = regla;
+          this.formulario = { ...regla };
+          if (regla.tablaAmortizacion?.length) {
+            this.tablaAmortizacion = [...regla.tablaAmortizacion];
           }
           this.modoEdicion = true;
         }
       },
       (err) => {
-        Swal.fire(
-          "Error",
-          err?.error?.mensaje || "No se pudo guardar la regla",
-          "error"
-        );
+        mostrarErrorNominaApi("Error", err, "No se pudo guardar la regla");
       }
     );
   }
@@ -1342,11 +1353,7 @@ export class NominasEventosPagosComponent implements OnInit {
           this.cargarReglas();
         },
         (err) => {
-          Swal.fire(
-            "Error",
-            err?.error?.mensaje || "No se pudo autorizar",
-            "error"
-          );
+          mostrarErrorNominaApi("Error", err, "No se pudo autorizar");
         }
       );
     });
@@ -1364,7 +1371,12 @@ export class NominasEventosPagosComponent implements OnInit {
           (res) => {
             this.proyeccionVista = res;
           },
-          () => Swal.fire("Error", "No se pudo calcular la proyección", "error")
+          () =>
+            mostrarErrorNominaApi(
+              "Error",
+              null,
+              "No se pudo calcular la proyección"
+            )
         );
       return;
     }
@@ -1372,7 +1384,12 @@ export class NominasEventosPagosComponent implements OnInit {
       (res) => {
         this.proyeccionVista = res;
       },
-      () => Swal.fire("Error", "No se pudo calcular la proyección", "error")
+      () =>
+        mostrarErrorNominaApi(
+          "Error",
+          null,
+          "No se pudo calcular la proyección"
+        )
     );
   }
 
@@ -1403,9 +1420,9 @@ export class NominasEventosPagosComponent implements OnInit {
         ? this.normalizarFechasAmortizacion([...regla.tablaAmortizacion])
         : [];
       if (regla.fechaAplicacionDescuento) {
-        this.formulario.fechaAplicacionDescuento = new Date(
+        this.formulario.fechaAplicacionDescuento = fechaCalendarioLocal(
           regla.fechaAplicacionDescuento
-        );
+        ) as Date;
       }
       this.actualizarParametrosPorFrecuencia();
       if (regla.cedulaBeneficiario) {
@@ -1450,7 +1467,7 @@ export class NominasEventosPagosComponent implements OnInit {
           this.cargarReglas();
         },
         (err) =>
-          Swal.fire("Error", err?.error?.mensaje || "No se pudo eliminar", "error")
+          mostrarErrorNominaApi("Error", err, "No se pudo eliminar")
       );
     });
   }
@@ -1482,11 +1499,7 @@ export class NominasEventosPagosComponent implements OnInit {
           this.cargarReglas();
         },
         (err) =>
-          Swal.fire(
-            "Error",
-            err?.error?.mensaje || "No se pudo finalizar",
-            "error"
-          )
+          mostrarErrorNominaApi("Error", err, "No se pudo finalizar")
       );
     });
   }
@@ -1524,11 +1537,7 @@ export class NominasEventosPagosComponent implements OnInit {
           }
         },
         (err) =>
-          Swal.fire(
-            "Error",
-            err?.error?.mensaje || "No se pudo simular",
-            "error"
-          )
+          mostrarErrorNominaApi("Error", err, "No se pudo simular")
       );
   }
 
@@ -1556,17 +1565,13 @@ export class NominasEventosPagosComponent implements OnInit {
             this.cargarEventosDominical();
           },
           (err) =>
-            Swal.fire(
-              "Error",
-              err?.error?.mensaje || "No se pudo liquidar",
-              "error"
-            )
+            mostrarErrorNominaApi("Error", err, "No se pudo liquidar")
         );
     });
   }
 
   cargarEventosDominical() {
-    const f = this.fechaDominicalLiquidacion.toISOString().slice(0, 10);
+    const f = fechaCalendarioParam(this.fechaDominicalLiquidacion);
     this._nominasService.getEventosDominical(f).subscribe(
       (res) => (this.eventosDominical = res),
       () => {}

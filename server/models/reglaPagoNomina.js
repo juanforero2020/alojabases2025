@@ -55,7 +55,7 @@ const ReglaPagoNominaSchema = new Schema(
     fuente: { type: String, default: "TMS" },
     frecuencia: {
       type: String,
-      enum: ["Unica", "Semanal", "Dominical", "Quincenal", "Mensual", "Anual"],
+      enum: ["Unica", "Diario", "Semanal", "Dominical", "Quincenal", "Mensual", "Anual"],
       required: true,
     },
     parametro: { type: String, required: false },

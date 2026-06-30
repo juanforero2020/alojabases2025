@@ -26,8 +26,8 @@
                 <div id="read" style="display: block;text-align: center;">
                     <br>
                     <h4>Clientes</h4>
-                    <!-- Tabla simplificada para Asesor Comercial -->
-                    <dx-data-grid *ngIf="esAsesorComercial" id="gridContainerAsesor" [dataSource]="clientes"
+                    <!-- Tabla simplificada para Usuario -->
+                    <dx-data-grid *ngIf="esUsuario" id="gridContainerUsuario" [dataSource]="clientes"
                      [showBorders]="true">
                         <dxo-filter-row [visible]="true"></dxo-filter-row>
                         <dxo-search-panel [visible]="true" [width]="240" placeholder="Buscar..."></dxo-search-panel>
@@ -44,7 +44,7 @@
                     </dx-data-grid>
 
                     <!-- Tabla completa para otros roles -->
-                    <dx-data-grid *ngIf="!esAsesorComercial" id="gridContainer" [dataSource]="clientes"
+                    <dx-data-grid *ngIf="!esUsuario" id="gridContainer" [dataSource]="clientes"
                     (onExporting)="onExporting($event)"
                     (onExported)="onExported($event)"
                      [showBorders]="true">
@@ -88,7 +88,7 @@
 
                 <div id="new" style="display: none;">
                     <div style="text-align: center;" class="newr">
-                        <h4>{{ esAsesorComercial && cliente._id ? 'Editar Cliente' : 'Registrar Nuevo Cliente' }}</h4>
+                        <h4>{{ esUsuario && cliente._id ? 'Editar Cliente' : 'Registrar Nuevo Cliente' }}</h4>
                         <!-- <img class="img-responsive" src="../../../assets/img/brand/grupos.png" alt=""> -->
                         <div>
                             <form #f="ngForm" (ngSubmit)="register(f)">
@@ -97,8 +97,8 @@
                                     <div class="col-md-2"></div>
                                     <div class="col-md-8">
 
-                                        <!-- Formulario simplificado para Asesor Comercial (solo edición) -->
-                                        <ng-container *ngIf="esAsesorComercial && cliente._id">
+                                        <!-- Formulario simplificado para Usuario (solo edición) -->
+                                        <ng-container *ngIf="esUsuario && cliente._id">
                                             <div class="row espacio">
                                                 <div class="col-md-4" style="text-align: left;">Nombre</div>
                                                 <div class="col-md-8">
@@ -135,8 +135,8 @@
                                             </div>
                                         </ng-container>
 
-                                        <!-- Formulario completo para otros roles o registro de Asesor Comercial -->
-                                        <ng-container *ngIf="!esAsesorComercial || !cliente._id">
+                                        <!-- Formulario completo para otros roles o registro de Usuario -->
+                                        <ng-container *ngIf="!esUsuario || !cliente._id">
                                         <div class="row espacio">
                                             <div class="col-md-12" style="text-align: left;margin-bottom: 1em; background-color: #c2c2c2;"><h6>Datos básicos</h6></div>
                 

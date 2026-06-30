@@ -6,7 +6,7 @@ export interface TablaMaestraSalarial {
   telefono?: string;
   fechaInicioLabores?: Date | string;
   asignacionSalarial?: number;
-  periodoPago?: "Semanal" | "Quincenal" | "Mensual";
+  periodoPago?: "Diario" | "Semanal" | "Quincenal" | "Mensual";
   salarioCalculoVariablesPrestacionales?: number;
   activo?: boolean;
   usuarioSistemaId?: string;
@@ -183,6 +183,7 @@ export interface ReglaPagoNomina {
   fuente: string;
   frecuencia:
     | "Unica"
+    | "Diario"
     | "Semanal"
     | "Dominical"
     | "Quincenal"
