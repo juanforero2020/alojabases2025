@@ -63,13 +63,52 @@ export function inicioDiaCalendarioNomina(fecha: Date | string): Date {
   return d instanceof Date ? d : new Date(fecha);
 }
 
+export function mismoDiaCalendarioNomina(
+  a: Date | string | null | undefined,
+  b: Date | string | null | undefined
+): boolean {
+  if (!a || !b) return false;
+  const da = fechaCalendarioLocal(a);
+  const db = fechaCalendarioLocal(b);
+  if (!da || !db) return false;
+  return da.getTime() === db.getTime();
+}
+
+export function textoFechaPagoNomina(
+  ev: {
+    fechaMin?: Date | string;
+    fechaMax?: Date | string;
+    fechaProgramada?: Date | string;
+  },
+  opciones: Intl.DateTimeFormatOptions = {
+    day: "2-digit",
+    month: "2-digit",
+    year: "numeric",
+  }
+): string {
+  if (ev.fechaMin && ev.fechaMax) {
+    if (mismoDiaCalendarioNomina(ev.fechaMin, ev.fechaMax)) {
+      return formatoFechaCalendarioNomina(ev.fechaMin, opciones);
+    }
+    return `${formatoFechaCalendarioNomina(
+      ev.fechaMin,
+      opciones
+    )} — ${formatoFechaCalendarioNomina(ev.fechaMax, opciones)}`;
+  }
+  if (ev.fechaMin) {
+    return formatoFechaCalendarioNomina(ev.fechaMin, opciones);
+  }
+  return formatoFechaCalendarioNomina(ev.fechaProgramada, opciones);
+}
+
 export function normalizarFilaAmortizacion(
   fila: FilaAmortizacion
 ): FilaAmortizacion {
+  const fecha = fechaCalendarioLocal(fila.fechaMin || fila.fechaMax) as Date;
   return {
     ...fila,
-    fechaMin: fechaCalendarioLocal(fila.fechaMin) as Date,
-    fechaMax: fechaCalendarioLocal(fila.fechaMax) as Date,
+    fechaMin: fecha,
+    fechaMax: fecha,
   };
 }
 
@@ -82,8 +121,11 @@ export function normalizarTablaAmortizacion(
 export function normalizarEventoPagoProgramado(
   ev: EventoPagoProgramado
 ): EventoPagoProgramado {
+  const estado =
+    (ev.estado as string) === "Cancelado" ? "Anulado" : ev.estado;
   return {
     ...ev,
+    estado,
     fechaProgramada: fechaCalendarioLocal(ev.fechaProgramada) as Date,
     fechaMin: ev.fechaMin
       ? (fechaCalendarioLocal(ev.fechaMin) as Date)

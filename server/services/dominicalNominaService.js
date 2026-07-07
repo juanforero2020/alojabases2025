@@ -4,6 +4,7 @@ const Devoluciones = require("../models/devoluciones");
 const TablaMaestraSalarial = require("../models/tablaMaestraSalarial");
 const NominaConfigGlobal = require("../models/nominaConfigGlobal");
 const ReglaPagoNomina = require("../models/reglaPagoNomina");
+const EventoPagoProgramado = require("../models/eventoPagoProgramado");
 const EventoPagoDominical = require("../models/eventoPagoDominical");
 const AjusteNominaPendiente = require("../models/ajusteNominaPendiente");
 const TransaccionFinanciera = require("../models/transaccionFinanciera");
@@ -36,6 +37,22 @@ function normalizarCargoDominical(cargo) {
   return (cargo || "").toString().trim().toUpperCase();
 }
 
+/** Bodeguero: umbral según ventas de la tienda. Demás cargos: ventas del trabajador. */
+function usaFacturacionTiendaPorCargo(cargo) {
+  return normalizarCargoDominical(cargo) === "BODEGUERO";
+}
+
+function resolverFacturacionNetaCalculoDominical(
+  cargo,
+  facturacionNetaTienda,
+  facturacionTrab = {}
+) {
+  if (usaFacturacionTiendaPorCargo(cargo)) {
+    return Number(facturacionNetaTienda) || 0;
+  }
+  return Number(facturacionTrab.facturacionNetaTrabajador) || 0;
+}
+
 function rangoDiaCalendario(fecha) {
   const inicio = new Date(fecha);
   inicio.setHours(0, 0, 0, 0);
@@ -44,8 +61,77 @@ function rangoDiaCalendario(fecha) {
   return { inicio, fin };
 }
 
-function esDomingo(fecha) {
-  return new Date(fecha).getDay() === 0;
+function esTransaccionDominical(transaccion) {
+  const t = normalizarTexto(transaccion);
+  return t === "dominical" || t.includes("pago dominical");
+}
+
+function filtroReglasDominicalAutorizadas(extra = {}) {
+  return {
+    estadoRegla: "Autorizada",
+    tipoRegla: "A",
+    tipoBeneficiario: "Interno",
+    empleadoActivo: { $ne: false },
+    $or: [
+      { frecuencia: "Dominical" },
+      { transaccionNomina: /^dominical$/i },
+      { transaccionNomina: /pago dominical/i },
+    ],
+    ...extra,
+  };
+}
+
+function rangoFechaProgramada(fecha) {
+  const inicio = new Date(fecha);
+  inicio.setHours(0, 0, 0, 0);
+  const fin = new Date(fecha);
+  fin.setHours(23, 59, 59, 999);
+  return { inicio, fin };
+}
+
+async function buscarEventoProgramadoPendiente(reglaId, fechaDom) {
+  if (!reglaId) return null;
+  const { inicio, fin } = rangoFechaProgramada(fechaDom);
+  return EventoPagoProgramado.findOne({
+    reglaPagoId: reglaId,
+    estado: { $in: ["Pendiente", "Parcial"] },
+    fechaProgramada: { $gte: inicio, $lte: fin },
+  });
+}
+
+async function marcarEventoProgramadoDominicalLiquidado(
+  item,
+  fechaDom,
+  opciones,
+  itemResult
+) {
+  const evento = await buscarEventoProgramadoPendiente(item.reglaId, fechaDom);
+  if (!evento) return null;
+
+  const montoBruto = Number(item.montoBruto) || 0;
+  const montoNeto = Number(itemResult.montoNeto) || 0;
+  const txId = itemResult.transaccion?._id;
+
+  evento.monto = montoBruto;
+  evento.montoPagado = montoNeto;
+  evento.estado = "Ejecutado";
+  evento.transaccionFinancieraId = txId || evento.transaccionFinancieraId;
+  evento.ejecutadoPor = opciones.usuario || "";
+  evento.fechaEjecucion = new Date();
+
+  if (txId) {
+    evento.pagosParciales = evento.pagosParciales || [];
+    evento.pagosParciales.push({
+      monto: montoNeto,
+      fecha: new Date(),
+      transaccionFinancieraId: txId,
+      ejecutadoPor: opciones.usuario || "",
+      notas: "Liquidación dominical masiva",
+    });
+  }
+
+  await evento.save();
+  return evento;
 }
 
 function inicioSemanaDomingo(fecha) {
@@ -54,6 +140,10 @@ function inicioSemanaDomingo(fecha) {
   const dia = d.getDay();
   d.setDate(d.getDate() - dia);
   return d;
+}
+
+function esDomingo(fecha) {
+  return new Date(fecha).getDay() === 0;
 }
 
 async function obtenerConfigGlobal() {
@@ -265,12 +355,9 @@ async function simularLiquidacionDominical(fecha, opciones = {}) {
     fechaDom,
     opciones.sucursal
   );
-  const reglas = await ReglaPagoNomina.find({
-    frecuencia: "Dominical",
-    estadoRegla: "Autorizada",
-    tipoBeneficiario: "Interno",
-    empleadoActivo: { $ne: false },
-  }).lean();
+  const reglas = await ReglaPagoNomina.find(
+    filtroReglasDominicalAutorizadas()
+  ).lean();
 
   const liquidaciones = [];
   for (const regla of reglas) {
@@ -287,14 +374,28 @@ async function simularLiquidacionDominical(fecha, opciones = {}) {
         tms,
         opciones.sucursal
       );
-      const tarifa = calcularMontoPorCargo(
+      const facturacionParaCalculo = resolverFacturacionNetaCalculoDominical(
         cargo,
         facturacion.facturacionNeta,
+        facturacionTrab
+      );
+      const tarifa = calcularMontoPorCargo(
+        cargo,
+        facturacionParaCalculo,
         config.calculoDominical
       );
       const ajustesPendientes = await sumarAjustesPendientes(
         regla.cedulaBeneficiario
       );
+      const eventoProgramado = await buscarEventoProgramadoPendiente(
+        regla._id,
+        fechaDom
+      );
+      const yaLiquidado = !!(await EventoPagoDominical.findOne({
+        fechaDominical: facturacion.fecha,
+        cedulaBeneficiario: regla.cedulaBeneficiario,
+        estado: "Pagado",
+      }));
       liquidaciones.push({
         reglaId: regla._id,
         cedula: regla.cedulaBeneficiario,
@@ -304,16 +405,17 @@ async function simularLiquidacionDominical(fecha, opciones = {}) {
         usuarioSistemaUsername: tms?.usuarioSistemaUsername || "",
         facturacionNetaTienda: facturacion.facturacionNeta,
         facturacionNetaTrabajador: facturacionTrab.facturacionNetaTrabajador,
+        facturacionNetaCalculo: facturacionParaCalculo,
+        baseCalculo: usaFacturacionTiendaPorCargo(cargo) ? "tienda" : "trabajador",
         vinculadoUsuario: facturacionTrab.vinculadoUsuario,
         ...tarifa,
         montoBruto: tarifa.monto,
         ajustesPendientes,
         montoNeto: Math.max(0, tarifa.monto - ajustesPendientes),
-        yaLiquidado: !!(await EventoPagoDominical.findOne({
-          fechaDominical: facturacion.fecha,
-          cedulaBeneficiario: regla.cedulaBeneficiario,
-          estado: "Pagado",
-        })),
+        yaLiquidado,
+        eventoProgramadoPendiente: !!eventoProgramado,
+        eventoProgramadoId: eventoProgramado?._id,
+        sinEventoProgramado: !eventoProgramado && !yaLiquidado,
       });
     } catch (err) {
       liquidaciones.push({
@@ -331,10 +433,20 @@ async function simularLiquidacionDominical(fecha, opciones = {}) {
   delete facturacionResumen.notas;
   delete facturacionResumen.devolucionesLista;
 
+  const pendientesLiquidar = liquidaciones.filter(
+    (l) => !l.error && !l.yaLiquidado
+  ).length;
+  const conEventoProgramado = liquidaciones.filter(
+    (l) => l.eventoProgramadoPendiente
+  ).length;
+
   return {
     facturacion: facturacionResumen,
     limiteFacturacion: config.calculoDominical?.limiteFacturacion,
     liquidaciones,
+    reglasActivas: reglas.length,
+    pendientesLiquidar,
+    conEventoProgramado,
     esDomingo: esDomingo(fecha),
     fechaDomingoUsada: fechaDom,
   };
@@ -392,7 +504,7 @@ async function liquidarDominical(fecha, opciones = {}) {
         tipoPago: "Egreso",
         subCuenta: SUB_CUENTA_PAGO,
         tipoTransaccion: TIPO_PAGO,
-        notas: `Pago dominical ${fechaDom.toISOString().slice(0, 10)}. Facturación neta $${simulacion.facturacion.facturacionNeta}. Rango ${item.rangoAplicado}.`,
+        notas: `Pago dominical ${fechaDom.toISOString().slice(0, 10)}. Facturación base cálculo $${item.facturacionNetaCalculo ?? simulacion.facturacion.facturacionNeta}. Rango ${item.rangoAplicado}.`,
         isContabilizada: false,
       });
     }
@@ -405,7 +517,8 @@ async function liquidarDominical(fecha, opciones = {}) {
       reglaPagoId: item.reglaId,
       facturacionBruta: simulacion.facturacion.facturacionBruta,
       devolucionesDia: simulacion.facturacion.devoluciones,
-      facturacionNeta: simulacion.facturacion.facturacionNeta,
+      facturacionNeta:
+        item.facturacionNetaCalculo ?? simulacion.facturacion.facturacionNeta,
       limiteFacturacion: item.limiteFacturacion,
       valorRangoAplicado:
         item.rangoAplicado === "superior"
@@ -415,16 +528,33 @@ async function liquidarDominical(fecha, opciones = {}) {
       montoPagado: montoBruto,
       montoAjustesAplicados: ajustesAplicados,
       montoNetoPagado: montoNeto,
-      transaccionPagoId: txPago._id,
+      transaccionPagoId: txPago?._id,
       estado: "Pagado",
       sucursal: opciones.sucursal || "",
       liquidadoPor: opciones.usuario || "",
     });
     await evento.save();
-    resultados.push({ ...item, evento, transaccion: txPago, montoNeto });
+    const eventoProgramado = await marcarEventoProgramadoDominicalLiquidado(
+      item,
+      fechaDom,
+      opciones,
+      { ...item, evento, transaccion: txPago, montoNeto }
+    );
+    resultados.push({
+      ...item,
+      evento,
+      transaccion: txPago,
+      montoNeto,
+      eventoProgramado,
+    });
   }
 
-  return { simulacion, resultados };
+  const liquidados = resultados.filter((r) => r.evento && !r.error).length;
+  const omitidos = resultados.filter(
+    (r) => r.error || r.yaLiquidado
+  ).length;
+
+  return { simulacion, resultados, liquidados, omitidos };
 }
 
 async function aplicarAjustesPendientes(cedula, fechaAplicacion, usuario) {
@@ -479,9 +609,21 @@ async function procesarAjustesPorAnulacionFactura(factura, usuario) {
   const ajustesGenerados = [];
 
   for (const evento of eventos) {
-    const tarifa = calcularMontoPorCargo(
+    const tms = await TablaMaestraSalarial.findOne({
+      cedula: evento.cedulaBeneficiario,
+    }).lean();
+    const facturacionTrab = await calcularFacturacionTrabajadorDia(
+      fechaDom,
+      tms
+    );
+    const facturacionParaCalculo = resolverFacturacionNetaCalculoDominical(
       evento.cargo,
       facturacion.facturacionNeta,
+      facturacionTrab
+    );
+    const tarifa = calcularMontoPorCargo(
+      evento.cargo,
+      facturacionParaCalculo,
       config.calculoDominical
     );
     const montoCorrecto = tarifa.monto;
@@ -503,11 +645,11 @@ async function procesarAjustesPorAnulacionFactura(factura, usuario) {
         eventoPagoDominicalId: evento._id,
         facturaAnuladaId: factura._id,
         facturacionAnterior: evento.facturacionNeta,
-        facturacionNueva: facturacion.facturacionNeta,
+        facturacionNueva: facturacionParaCalculo,
         montoPagadoAnterior: montoPagado,
         montoCorrecto,
         montoAjuste: diferencia,
-        motivo: `Anulación factura ${factura.documento_n || factura._id}. Facturación dominical bajó de $${evento.facturacionNeta} a $${facturacion.facturacionNeta}. Se debitará $${diferencia} en el próximo pago.`,
+        motivo: `Anulación factura ${factura.documento_n || factura._id}. Facturación para cálculo bajó de $${evento.facturacionNeta} a $${facturacionParaCalculo}. Se debitará $${diferencia} en el próximo pago.`,
       });
       await ajuste.save();
       ajustesGenerados.push(ajuste);
@@ -529,6 +671,8 @@ module.exports = {
   parseFechaDocumento,
   esFechaEnDia,
   calcularMontoPorCargo,
+  resolverFacturacionNetaCalculoDominical,
+  usaFacturacionTiendaPorCargo,
   simularLiquidacionDominical,
   liquidarDominical,
   procesarAjustesPorAnulacionFactura,

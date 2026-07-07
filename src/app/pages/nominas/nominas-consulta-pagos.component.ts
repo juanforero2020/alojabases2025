@@ -9,7 +9,7 @@ import {
   TablaMaestraSalarial,
 } from "./nominas";
 import { mostrarErrorNominaApi } from "./nominas-alert.util";
-import { fechaCalendarioParam } from "./nominas-fecha.util";
+import { fechaCalendarioParam, textoFechaPagoNomina } from "./nominas-fecha.util";
 
 @Component({
   selector: "app-nominas-consulta-pagos",
@@ -27,6 +27,14 @@ export class NominasConsultaPagosComponent implements OnInit {
   reporteDesde: Date = new Date(new Date().getFullYear(), 0, 1);
   reporteHasta: Date = new Date();
   reporteEstado: ReporteEstadoEmpleado | null = null;
+
+  textoFechaPago = textoFechaPagoNomina;
+
+  /** Calendario compacto para evitar solapamiento en pantallas anchas */
+  opcionesCalendarioCompacto = {
+    width: 240,
+    elementAttr: { class: "consulta-pagos-calendario-compacto" },
+  };
 
   constructor(
     private _nominasService: NominasService,

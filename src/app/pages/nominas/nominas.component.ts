@@ -25,6 +25,7 @@ export class NominasComponent implements OnInit {
     "Configuración Global",
     "Eventos de Pagos",
     "Pagos Programados",
+    "Liquidación Dominical",
     "Consulta de Pagos",
   ];
   seccionActiva = "Tabla Maestra Salarial";
@@ -151,7 +152,7 @@ export class NominasComponent implements OnInit {
           this.usuarioLogueado[0].rol?.toString() === "Administrador";
         if (!this.esAdministrador) {
           this.seccionActiva = "Pagos Programados";
-          this.seccionesMenu = ["Pagos Programados"];
+          this.seccionesMenu = ["Pagos Programados", "Liquidación Dominical"];
         }
         this.mostrarPopupCodigo();
       },

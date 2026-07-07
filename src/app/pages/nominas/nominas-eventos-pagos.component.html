@@ -64,11 +64,13 @@
           *ngIf="esTipoA"
           [items]="transaccionesNominaA"
           [(value)]="formulario.transaccionNomina"
+          (onValueChanged)="onTransaccionNominaAChanged($event)"
         ></dx-select-box>
         <dx-select-box
           *ngIf="esTipoB"
           [items]="transaccionesNominaB"
           [(value)]="formulario.transaccionNomina"
+          (onValueChanged)="onTransaccionNominaBChanged($event)"
         ></dx-select-box>
         <dx-select-box
           *ngIf="esTipoC"
@@ -97,10 +99,14 @@
         <div class="col-md-4 mb-3">
           <label class="form-label">Frecuencia</label>
           <dx-select-box
-            [items]="frecuenciasA"
+            [items]="frecuenciasDisponiblesTipoA"
             [(value)]="formulario.frecuencia"
+            [readOnly]="esDominical"
             (onValueChanged)="onFrecuenciaChanged()"
           ></dx-select-box>
+          <small class="text-muted" *ngIf="esDominical">
+            La frecuencia dominical aplica solo a la transacción Dominical.
+          </small>
         </div>
         <div class="col-md-4 mb-3">
           <label class="form-label">Parámetro</label>
@@ -119,12 +125,7 @@
         <div class="col-md-4 mb-3">
           <label class="form-label">Monto ($)</label>
           <div class="eventos-monto-display" *ngIf="esDominical">
-            <span *ngIf="montoDominicalPreview() !== null">
-              {{ montoDominicalPreview() | number : "1.2-2" }}
-            </span>
-            <span *ngIf="montoDominicalPreview() === null" class="text-muted small">
-              Simule liquidación
-            </span>
+            <span class="text-muted small">Variable — se calcula al liquidar el domingo</span>
           </div>
           <div
             class="eventos-monto-display"
@@ -147,7 +148,8 @@
             format="#,##0.##"
           ></dx-number-box>
           <small class="text-muted" *ngIf="esDominical && beneficiario">
-            Cargo TMS: {{ formulario.cargoNomina }} — tarifa según cálculo dominical
+            Cargo TMS: {{ formulario.cargoNomina }} — tarifa según cálculo dominical.
+            La liquidación se realiza en el menú <strong>Liquidación Dominical</strong>.
           </small>
           <small
             class="text-muted"
@@ -214,34 +216,15 @@
             ></dx-number-box>
           </div>
           <div class="mt-2" *ngIf="esAnual">
-            <label class="small">Fecha referencia anual (mes inicio)</label>
+            <label class="small">{{ etiquetaFechaReferenciaAnual }}</label>
             <dx-date-box
               [(value)]="formulario.fechaReferenciaAnual"
               type="date"
-              (onValueChanged)="onDatosAmortizacionChanged()"
+              (onValueChanged)="onFechaReferenciaAnualChanged()"
             ></dx-date-box>
-            <div class="row mt-2">
-              <div class="col-6">
-                <label class="small">Día inicio ventana</label>
-                <dx-number-box
-                  [(value)]="formulario.diaInicioVentana"
-                  [min]="1"
-                  [max]="31"
-                  format="#0"
-                  (onValueChanged)="onDatosAmortizacionChanged()"
-                ></dx-number-box>
-              </div>
-              <div class="col-6">
-                <label class="small">Día límite ventana</label>
-                <dx-number-box
-                  [(value)]="formulario.diaLimiteVentana"
-                  [min]="1"
-                  [max]="31"
-                  format="#0"
-                  (onValueChanged)="onDatosAmortizacionChanged()"
-                ></dx-number-box>
-              </div>
-            </div>
+            <small class="text-muted d-block" *ngIf="(formulario.cuotas || 1) > 1">
+              Se usa para generar la 1ª cuota; luego puede ajustar cada fecha en la tabla.
+            </small>
           </div>
         </div>
         <div class="col-md-4 mb-3">
@@ -334,7 +317,17 @@
             <dx-select-box
               [items]="conceptosDescuento"
               [(value)]="formulario.conceptoDescuento"
+              (onValueChanged)="onConceptoDescuentoChanged()"
             ></dx-select-box>
+          </div>
+          <div class="col-md-4 mb-3" *ngIf="esConceptoOtros">
+            <label class="form-label">Motivo del descuento</label>
+            <dx-text-box
+              [(value)]="conceptoDescuentoOtro"
+              placeholder="Describa la causa del descuento"
+              [maxLength]="200"
+            ></dx-text-box>
+            <small class="text-muted">Se guardará como «Otros - su descripción»</small>
           </div>
           <div class="col-md-4 mb-3">
             <label class="form-label">Modalidad</label>
@@ -466,7 +459,7 @@
         </ng-container>
         <div class="col-md-12 mb-2" *ngIf="esDescuentosGenerales && reglaPagoAsociadaSeleccionada && cuotaDescuentoCalculada > 0">
           <div class="alert alert-info py-2 mb-0 small">
-            <strong>{{ formulario.conceptoDescuento }}</strong> —
+            <strong>{{ conceptoDescuentoTexto }}</strong> —
             {{ formulario.modalidadDescuento }} de
             ${{ formulario.montoTotalDeuda | number : "1.2-2" }}.
             Aplicación: <strong>{{ formulario.semanaAplicacion }}</strong>
@@ -553,16 +546,14 @@
       <div class="col-12 mb-3">
         <h6 class="font-weight-bold">Tabla de amortización de pago</h6>
         <p class="small text-muted mb-2">
-          Puede ajustar fechas y valores de cada cuota. La suma de valores no debe superar el monto total.
-          El pago puede ser parcial o total en uno o varios abonos.
+          Ajuste la fecha de pago y el valor de cada cuota. La suma de valores no debe superar el monto total.
         </p>
         <div class="table-responsive">
           <table class="table table-sm table-bordered amortizacion-tabla">
             <thead>
               <tr>
                 <th>Cuota</th>
-                <th>Fecha mín.</th>
-                <th>Fecha máx.</th>
+                <th>Fecha de pago</th>
                 <th>Valor ($)</th>
               </tr>
             </thead>
@@ -573,14 +564,7 @@
                   <dx-date-box
                     [(value)]="tablaAmortizacion[i].fechaMin"
                     type="date"
-                    (onValueChanged)="onAmortizacionChanged()"
-                  ></dx-date-box>
-                </td>
-                <td style="min-width: 150px">
-                  <dx-date-box
-                    [(value)]="tablaAmortizacion[i].fechaMax"
-                    type="date"
-                    (onValueChanged)="onAmortizacionChanged()"
+                    (onValueChanged)="onFechaPagoAmortizacionChanged(i)"
                   ></dx-date-box>
                 </td>
                 <td style="width: 140px">
@@ -595,7 +579,7 @@
             </tbody>
             <tfoot>
               <tr>
-                <td colspan="3" class="text-right font-weight-bold">Suma cuotas</td>
+                <td colspan="2" class="text-right font-weight-bold">Suma cuotas</td>
                 <td class="font-weight-bold">
                   {{ sumaAmortizacion | number : "1.2-2" }}
                   / {{ formulario.montoTotalDeuda | number : "1.2-2" }}
@@ -657,6 +641,7 @@
                 !formulario.montoTotalDeuda ||
                 (esDescuentosGenerales &&
                   (!formulario.conceptoDescuento ||
+                    (esConceptoOtros && !conceptoDescuentoOtro?.trim()) ||
                     (esSemanaEspecifica && !formulario.fechaAplicacionDescuento)))))
           "
         >
@@ -671,134 +656,6 @@
     >
       Empleado <strong>INACTIVO</strong>: los pagos cesan al finalizar el contrato.
     </div>
-  </div>
-</div>
-
-<!-- LIQUIDACIÓN DOMINICAL -->
-<div class="card mb-3" *ngIf="esDominical || simulacionDominical">
-  <div class="card-body">
-    <div class="eventos-pagos-titulo text-center">Liquidación pago dominical</div>
-    <p class="text-muted small text-center">
-      Facturación neta del domingo = ventas del día − devoluciones del mismo día.
-      Si es ≥ límite (config. global), aplica rango superior; si no, rango inferior.
-    </p>
-    <div class="row align-items-end mb-3">
-      <div class="col-md-4">
-        <label>Fecha (domingo)</label>
-        <dx-date-box
-          [(value)]="fechaDominicalLiquidacion"
-          type="date"
-        ></dx-date-box>
-      </div>
-      <div class="col-md-4">
-        <button
-          class="btn btn-block btn-outline-primary"
-          (click)="simularPagoDominical()"
-        >
-          Simular / calcular montos
-        </button>
-      </div>
-      <div class="col-md-4">
-        <button
-          class="btn btn-block btn-nomina-primario"
-          (click)="liquidarPagoDominical()"
-        >
-          Liquidar y registrar en finanzas
-        </button>
-      </div>
-    </div>
-
-    <div class="alert alert-info" *ngIf="simulacionDominical">
-      <strong>Facturación neta del domingo (tienda):</strong>
-      ${{ simulacionDominical.facturacion.facturacionNeta | number : "1.2-2" }}
-      (facturas + notas ${{
-        (simulacionDominical.facturacion.facturacionBruta || 0) | number : "1.2-2"
-      }}
-      − devoluciones ${{
-        simulacionDominical.facturacion.devoluciones | number : "1.2-2"
-      }})
-      · {{ simulacionDominical.facturacion.cantidadFacturas || 0 }} facturas,
-      {{ simulacionDominical.facturacion.cantidadNotas || 0 }} notas de venta
-      · Límite: ${{ simulacionDominical.limiteFacturacion | number : "1.0-0" }}
-      <br />
-    </div>
-
-    <table
-      class="table table-bordered table-sm"
-      *ngIf="simulacionDominical?.liquidaciones?.length"
-    >
-      <thead>
-        <tr>
-          <th>Trabajador</th>
-          <th>Usuario (username)</th>
-          <th>Fact. tienda</th>
-          <th>Fact. trabajador</th>
-          <th>Cargo</th>
-          <th>Rango</th>
-          <th>Monto</th>
-          <th>Ajustes pend.</th>
-          <th>Neto a pagar</th>
-          <th></th>
-        </tr>
-      </thead>
-      <tbody>
-        <tr *ngFor="let liq of simulacionDominical.liquidaciones">
-          <td>{{ liq.nombre }}</td>
-          <td>{{ liq.usuarioSistemaUsername || liq.usuarioSistemaNombre || "—" }}</td>
-          <td>{{ liq.facturacionNetaTienda | number : "1.2-2" }}</td>
-          <td>
-            <span *ngIf="liq.vinculadoUsuario">{{
-              liq.facturacionNetaTrabajador | number : "1.2-2"
-            }}</span>
-            <span *ngIf="!liq.vinculadoUsuario" class="text-warning small"
-              >Sin vincular TMS</span
-            >
-          </td>
-          <td>{{ liq.cargo }}</td>
-          <td>
-            <span *ngIf="!liq.error">{{ liq.rangoAplicado }}</span>
-            <span *ngIf="liq.error" class="text-danger">{{ liq.error }}</span>
-          </td>
-          <td>{{ liq.montoBruto | number : "1.2-2" }}</td>
-          <td>{{ liq.ajustesPendientes | number : "1.2-2" }}</td>
-          <td>{{ liq.montoNeto | number : "1.2-2" }}</td>
-          <td>
-            <span class="badge badge-success" *ngIf="liq.yaLiquidado">Pagado</span>
-          </td>
-        </tr>
-      </tbody>
-    </table>
-  </div>
-</div>
-
-<div class="card mb-3" *ngIf="ajustesPendientes.length">
-  <div class="card-body">
-    <h6 class="font-weight-bold text-danger">
-      Ajustes pendientes (por anulación de facturas)
-    </h6>
-    <p class="small text-muted">
-      Se descontarán automáticamente en la próxima liquidación de nómina/dominical.
-    </p>
-    <table class="table table-sm table-bordered">
-      <thead>
-        <tr>
-          <th>Trabajador</th>
-          <th>Domingo</th>
-          <th>Debitar ($)</th>
-          <th>Motivo</th>
-        </tr>
-      </thead>
-      <tbody>
-        <tr *ngFor="let aj of ajustesPendientes">
-          <td>{{ aj.nombreBeneficiario }}</td>
-          <td>{{ aj.fechaDominical | date : "dd/MM/yyyy" }}</td>
-          <td class="text-danger font-weight-bold">
-            {{ aj.montoAjuste | number : "1.2-2" }}
-          </td>
-          <td class="small">{{ aj.motivo }}</td>
-        </tr>
-      </tbody>
-    </table>
   </div>
 </div>
 

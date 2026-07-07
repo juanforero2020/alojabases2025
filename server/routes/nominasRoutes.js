@@ -532,10 +532,21 @@ async function prepararBodyReglaPago(body, validar = false) {
     }
     return normalizado;
   }
-  if (doc.frecuencia === "Dominical") {
+  const transaccionNorm = (doc.transaccionNomina || "")
+    .toString()
+    .trim()
+    .toLowerCase()
+    .normalize("NFD")
+    .replace(/[\u0300-\u036f]/g, "");
+  const esDominical =
+    doc.frecuencia === "Dominical" ||
+    transaccionNorm === "dominical" ||
+    transaccionNorm.includes("pago dominical");
+  if (esDominical) {
     doc.montoVariable = true;
     doc.fuente = "FACTURACION_DOMINICAL";
-    doc.transaccionNomina = doc.transaccionNomina || "Pago dominical";
+    doc.frecuencia = "Dominical";
+    doc.transaccionNomina = "Dominical";
     doc.monto = 0;
   }
   return doc;
@@ -764,7 +775,12 @@ router.get("/dominical/ajustes-pendientes", async (req, res) => {
 router.get("/eventos-programados", async (req, res) => {
   const filtro = {};
   const condicionesExtra = [];
-  if (req.query.estado) filtro.estado = req.query.estado;
+  if (req.query.estado) {
+    filtro.estado =
+      req.query.estado === "Anulado"
+        ? { $in: ["Anulado", "Cancelado"] }
+        : req.query.estado;
+  }
   if (req.query.reglaId) filtro.reglaPagoId = req.query.reglaId;
   if (req.query.cedula) filtro.cedulaBeneficiario = req.query.cedula;
   if (req.query.transaccion) filtro.transaccionNomina = req.query.transaccion;
@@ -934,7 +950,7 @@ router.put("/eventos-programados/:id/ejecutar", async (req, res) => {
   }
 });
 
-router.put("/eventos-programados/:id/cancelar", async (req, res) => {
+router.put("/eventos-programados/:id/anular", async (req, res) => {
   try {
     const evento = await EventoPagoProgramado.findById(req.params.id);
     if (!evento) {
@@ -942,13 +958,18 @@ router.put("/eventos-programados/:id/cancelar", async (req, res) => {
     }
     if (evento.estado === "Ejecutado") {
       return res.status(400).json({
-        mensaje: "No se puede cancelar un pago ya ejecutado",
+        mensaje: "No se puede anular un pago ya ejecutado",
       });
     }
-    evento.estado = "Cancelado";
+    if (evento.estado === "Anulado" || evento.estado === "Cancelado") {
+      return res.status(400).json({
+        mensaje: "Este pago ya está anulado",
+      });
+    }
+    evento.estado = "Anulado";
     evento.notas = req.body.notas || evento.notas;
     await evento.save();
-    res.json({ status: "Evento cancelado", data: evento });
+    res.json({ status: "Evento anulado", data: evento });
   } catch (err) {
     res.status(400).json({ mensaje: err.message });
   }

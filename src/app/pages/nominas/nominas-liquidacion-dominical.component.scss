@@ -1,0 +1,28 @@
+.liquidacion-dominical-titulo {
+  background-color: #e3f2fd;
+  color: #1565c0;
+  font-weight: bold;
+  text-transform: uppercase;
+  padding: 0.5rem 1rem;
+  margin-bottom: 1rem;
+  border-left: 4px solid #1565c0;
+}
+
+.btn-nomina-primario {
+  background-color: #ff5722;
+  border-color: #ff5722;
+  color: #fff;
+}
+
+.btn-nomina-primario:hover:not(:disabled) {
+  color: #fff;
+  background-color: #e64a19;
+}
+
+.btn-nomina-primario:disabled {
+  opacity: 0.65;
+}
+
+.liquidacion-dominical-loading {
+  min-height: 120px;
+}

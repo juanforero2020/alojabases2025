@@ -98,7 +98,11 @@ export interface SimulacionDominical {
   };
   limiteFacturacion: number;
   liquidaciones: LiquidacionDominicalItem[];
+  reglasActivas?: number;
+  pendientesLiquidar?: number;
+  conEventoProgramado?: number;
   esDomingo: boolean;
+  fechaDomingoUsada?: Date | string;
 }
 
 export interface LiquidacionDominicalItem {
@@ -109,6 +113,8 @@ export interface LiquidacionDominicalItem {
   usuarioSistemaNombre?: string;
   facturacionNetaTienda?: number;
   facturacionNetaTrabajador?: number;
+  facturacionNetaCalculo?: number;
+  baseCalculo?: "tienda" | "trabajador";
   vinculadoUsuario?: boolean;
   monto?: number;
   montoBruto?: number;
@@ -119,6 +125,9 @@ export interface LiquidacionDominicalItem {
   valorRangoInferior?: number;
   valorRangoSuperior?: number;
   yaLiquidado?: boolean;
+  eventoProgramadoPendiente?: boolean;
+  sinEventoProgramado?: boolean;
+  eventoProgramadoId?: string;
   error?: string;
 }
 
@@ -267,7 +276,7 @@ export interface EventoPagoProgramado {
   cedulaBeneficiario?: string;
   nombreBeneficiario?: string;
   modalidadMonto?: string;
-  estado?: "Pendiente" | "Parcial" | "Ejecutado" | "Cancelado";
+  estado?: "Pendiente" | "Parcial" | "Ejecutado" | "Anulado";
   pagosParciales?: PagoParcialNomina[];
   transaccionFinancieraId?: string;
   ejecutadoPor?: string;

@@ -90,7 +90,17 @@ async function validarReglaPagoAsociada(reglaC) {
   if (reglaA.cedulaBeneficiario !== reglaC.cedulaBeneficiario) {
     return "La regla asociada debe pertenecer al mismo beneficiario";
   }
-  if (reglaA.frecuencia === "Dominical") {
+  const transaccionA = (reglaA.transaccionNomina || "")
+    .toString()
+    .trim()
+    .toLowerCase()
+    .normalize("NFD")
+    .replace(/[\u0300-\u036f]/g, "");
+  if (
+    reglaA.frecuencia === "Dominical" ||
+    transaccionA === "dominical" ||
+    transaccionA.includes("pago dominical")
+  ) {
     return "No se puede aplicar descuento de seguridad social a reglas de pago dominical";
   }
   if (!reglaA.monto || reglaA.monto <= 0) {

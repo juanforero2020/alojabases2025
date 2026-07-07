@@ -240,7 +240,7 @@
         </button>
 
         <!-- OTROS CARGOS -->
-        <h6 class="nominas-subtitulo mb-2">Otros cargos</h6>
+       <!--  <h6 class="nominas-subtitulo mb-2">Otros cargos</h6>
         <div class="table-responsive mb-2">
           <table class="table table-bordered nominas-tabla-config">
             <thead>
@@ -285,7 +285,7 @@
         <button class="btn btn-sm btn-secondary" (click)="agregarOtroCargo()">
           + Agregar otro cargo
         </button>
-
+ -->
         <div class="row mb-4">
           <div class="col-md-4"></div>
           <div class="col-md-4">
@@ -324,6 +324,13 @@
     [usuarioNombre]="nombreUsuario"
     [esAdministrador]="esAdministrador"
   ></app-nominas-pagos-programados>
+</div>
+
+<!-- LIQUIDACIÓN DOMINICAL -->
+<div *ngIf="seccionActiva === 'Liquidación Dominical'">
+  <app-nominas-liquidacion-dominical
+    [usuarioNombre]="nombreUsuario"
+  ></app-nominas-liquidacion-dominical>
 </div>
 
 <!-- CONSULTA DE PAGOS -->

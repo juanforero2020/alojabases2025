@@ -226,8 +226,8 @@ export class NominasService {
     );
   }
 
-  cancelarEventoProgramado(id: string, notas?: string) {
-    return this.http.put(`${this.URL}/eventos-programados/${id}/cancelar`, {
+  anularEventoProgramado(id: string, notas?: string) {
+    return this.http.put(`${this.URL}/eventos-programados/${id}/anular`, {
       notas,
     });
   }

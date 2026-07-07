@@ -44,7 +44,7 @@ const EventoPagoProgramadoSchema = new Schema(
     modalidadMonto: { type: String, default: "Periodico" },
     estado: {
       type: String,
-      enum: ["Pendiente", "Parcial", "Ejecutado", "Cancelado"],
+      enum: ["Pendiente", "Parcial", "Ejecutado", "Anulado"],
       default: "Pendiente",
     },
     pagosParciales: { type: [PagoParcialSchema], default: [] },

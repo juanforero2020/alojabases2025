@@ -1,0 +1,167 @@
+<div class="card mb-3">
+  <div class="card-body">
+    <div class="liquidacion-dominical-titulo text-center">
+      Liquidación dominical — procesamiento masivo
+    </div>
+    <p class="text-muted text-center mb-3">
+      Busca automáticamente a todos los trabajadores con regla tipo A
+      <strong>Dominical</strong> autorizada. Para vendedores y usuarios el rango de pago
+      se determina con las <strong>ventas de ese trabajador</strong> en el domingo; para
+      bodegueros se usa la facturación neta de la tienda.
+      Los eventos programados del domingo quedan marcados como ejecutados.
+    </p>
+
+    <div class="row align-items-end mb-3 liquidacion-dominical-acciones">
+      <div class="col-md-4 mb-2">
+        <label>Fecha (domingo)</label>
+        <dx-date-box [(value)]="fechaDominical" type="date"></dx-date-box>
+      </div>
+      <div class="col-md-4 mb-2">
+        <button
+          class="btn btn-block btn-outline-primary"
+          type="button"
+          [disabled]="cargandoSimulacion || liquidando"
+          (click)="simularLiquidacion()"
+        >
+          {{ cargandoSimulacion ? "Calculando…" : "Calcular liquidación" }}
+        </button>
+      </div>
+      <div class="col-md-4 mb-2">
+        <button
+          class="btn btn-block btn-nomina-primario"
+          type="button"
+          [disabled]="cargandoSimulacion || liquidando || !simulacion"
+          (click)="liquidarTodos()"
+        >
+          {{ liquidando ? "Liquidando…" : "Liquidar todos" }}
+        </button>
+      </div>
+    </div>
+
+    <p class="text-muted small mb-2" *ngIf="simulacion">
+      Domingo usado: <strong>{{ textoFechaDomingo() }}</strong>
+      · Reglas activas: {{ simulacion.reglasActivas || 0 }}
+      · Pendientes de liquidar: {{ simulacion.pendientesLiquidar || 0 }}
+      · Con evento programado: {{ simulacion.conEventoProgramado || 0 }}
+    </p>
+
+    <div class="alert alert-info" *ngIf="simulacion">
+      <strong>Facturación neta del domingo (tienda):</strong>
+      ${{ simulacion.facturacion.facturacionNeta | number : "1.2-2" }}
+      (facturas + notas ${{
+        (simulacion.facturacion.facturacionBruta || 0) | number : "1.2-2"
+      }}
+      − devoluciones ${{
+        simulacion.facturacion.devoluciones | number : "1.2-2"
+      }})
+      · {{ simulacion.facturacion.cantidadFacturas || 0 }} facturas,
+      {{ simulacion.facturacion.cantidadNotas || 0 }} notas
+      · Límite: ${{ simulacion.limiteFacturacion | number : "1.0-0" }}
+    </div>
+
+    <div
+      class="liquidacion-dominical-loading text-center py-4"
+      *ngIf="cargandoSimulacion"
+    >
+      <dx-load-indicator [visible]="true" height="40" width="40"></dx-load-indicator>
+      <p class="text-muted mt-2 mb-0">Consultando reglas y facturación…</p>
+    </div>
+
+    <div class="table-responsive" *ngIf="simulacion?.liquidaciones?.length && !cargandoSimulacion">
+      <table class="table table-bordered table-sm table-hover mb-0">
+        <thead>
+          <tr>
+            <th>Trabajador</th>
+            <th>Usuario</th>
+            <th>Cargo</th>
+            <th>Fact. tienda</th>
+            <th>Fact. trabajador</th>
+            <th>Base cálculo</th>
+            <th>Rango</th>
+            <th>Monto</th>
+            <th>Ajustes</th>
+            <th>Neto</th>
+            <th>Evento prog.</th>
+            <th>Estado</th>
+          </tr>
+        </thead>
+        <tbody>
+          <tr *ngFor="let liq of simulacion.liquidaciones">
+            <td>{{ liq.nombre }}</td>
+            <td>{{ liq.usuarioSistemaUsername || liq.usuarioSistemaNombre || "—" }}</td>
+            <td>{{ liq.cargo }}</td>
+            <td>{{ liq.facturacionNetaTienda | number : "1.2-2" }}</td>
+            <td>
+              <span *ngIf="liq.baseCalculo === 'trabajador'">{{
+                liq.facturacionNetaTrabajador | number : "1.2-2"
+              }}</span>
+              <span *ngIf="liq.baseCalculo === 'tienda'" class="text-muted">—</span>
+            </td>
+            <td>
+              <span *ngIf="liq.baseCalculo === 'tienda'" class="small">Tienda</span>
+              <span *ngIf="liq.baseCalculo === 'trabajador'" class="small">
+                Trabajador (${{ liq.facturacionNetaCalculo | number : "1.2-2" }})
+              </span>
+            </td>
+            <td>
+              <span *ngIf="!liq.error">{{ liq.rangoAplicado }}</span>
+              <span *ngIf="liq.error" class="text-danger small">{{ liq.error }}</span>
+            </td>
+            <td>{{ liq.montoBruto | number : "1.2-2" }}</td>
+            <td class="text-danger">{{ liq.ajustesPendientes | number : "1.2-2" }}</td>
+            <td class="font-weight-bold">{{ liq.montoNeto | number : "1.2-2" }}</td>
+            <td>
+              <span class="badge badge-primary" *ngIf="liq.eventoProgramadoPendiente">Pendiente</span>
+              <span class="badge badge-secondary" *ngIf="liq.sinEventoProgramado">Sin evento</span>
+              <span class="text-muted" *ngIf="liq.yaLiquidado">—</span>
+            </td>
+            <td>
+              <span class="badge badge-success" *ngIf="liq.yaLiquidado">Liquidado</span>
+              <span class="badge badge-warning" *ngIf="!liq.yaLiquidado && !liq.error && liq.eventoProgramadoPendiente">Por liquidar</span>
+              <span class="badge badge-light border" *ngIf="!liq.yaLiquidado && !liq.error && !liq.eventoProgramadoPendiente && !liq.sinEventoProgramado">Listo</span>
+              <span class="badge badge-danger" *ngIf="liq.error">Error</span>
+            </td>
+          </tr>
+        </tbody>
+      </table>
+    </div>
+
+    <p
+      class="text-muted text-center mb-0 mt-3"
+      *ngIf="simulacion && !simulacion.liquidaciones?.length && !cargandoSimulacion"
+    >
+      No hay reglas dominicales autorizadas para procesar.
+    </p>
+  </div>
+</div>
+
+<div class="card mb-3" *ngIf="ajustesPendientes.length">
+  <div class="card-body">
+    <h6 class="font-weight-bold text-danger">
+      Ajustes pendientes (por anulación de facturas)
+    </h6>
+    <p class="small text-muted mb-2">
+      Se descontarán automáticamente en la próxima liquidación dominical.
+    </p>
+    <table class="table table-sm table-bordered mb-0">
+      <thead>
+        <tr>
+          <th>Trabajador</th>
+          <th>Domingo</th>
+          <th>Debitar ($)</th>
+          <th>Motivo</th>
+        </tr>
+      </thead>
+      <tbody>
+        <tr *ngFor="let aj of ajustesPendientes">
+          <td>{{ aj.nombreBeneficiario }}</td>
+          <td>{{ aj.fechaDominical | date : "dd/MM/yyyy" }}</td>
+          <td class="text-danger font-weight-bold">
+            {{ aj.montoAjuste | number : "1.2-2" }}
+          </td>
+          <td class="small">{{ aj.motivo }}</td>
+        </tr>
+      </tbody>
+    </table>
+  </div>
+</div>

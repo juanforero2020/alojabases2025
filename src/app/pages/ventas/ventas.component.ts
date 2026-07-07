@@ -3735,7 +3735,7 @@ cambiarestado(e,i:number){
                 this.transaccion.producto=element.producto.PRODUCTO
                 this.transaccion.cajas=Math.trunc((element.cantidad+0.01) / element.producto.M2);
                 this.transaccion.piezas=(Math.trunc((element.cantidad+0.01) *element.producto.P_CAJA / element.producto.M2) - (Math.trunc((element.cantidad+0.01) / element.producto.M2) * element.producto.P_CAJA));
-                this.transaccion.observaciones=this.factura.observaciones
+                this.transaccion.observaciones=this.formaPago == "Crédito Aliado" ? "CRÉDITO ALIADO SAG" + this.factura.observaciones : this.factura.observaciones
                 this.transaccion.tipo_transaccion="venta-fact"
                 this.transaccion.movimiento=-1
                 this.transaccion.usu_autorizado=this.factura.username
@@ -3814,7 +3814,7 @@ cambiarestado(e,i:number){
       this.transaccion.producto = element.producto.PRODUCTO
       this.transaccion.cajas = proV.cantidad * element.cantidad
       this.transaccion.piezas = 0;
-      this.transaccion.observaciones = this.factura.observaciones
+      this.transaccion.observaciones = this.formaPago == "Crédito Aliado" ? "CRÉDITO ALIADO SAG" + this.factura.observaciones : this.factura.observaciones
       this.transaccion.tipo_transaccion = this.factura.tipoDocumento == "Factura" ? "venta-fact" : "venta-not"
       this.transaccion.movimiento = -1
       this.transaccion.usu_autorizado = this.factura.username
@@ -3966,7 +3966,7 @@ cambiarestado(e,i:number){
                 this.transaccion.cantM2=element.cantidad
                 this.transaccion.cajas=Math.trunc((element.cantidad+0.01) / element.producto.M2)
                 this.transaccion.piezas=(Math.trunc((element.cantidad+0.01) *element.producto.P_CAJA / element.producto.M2) - (Math.trunc((element.cantidad+0.01) / element.producto.M2) * element.producto.P_CAJA));
-                this.transaccion.observaciones = this.factura.observaciones
+                this.transaccion.observaciones = this.formaPago == "Crédito Aliado" ? "CRÉDITO ALIADO SAG" + this.factura.observaciones : this.factura.observaciones
                 this.transaccion.tipo_transaccion = "venta-not"
                 this.transaccion.movimiento = -1
                 this.transaccion.usu_autorizado = this.factura.username

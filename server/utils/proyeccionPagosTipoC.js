@@ -151,6 +151,8 @@ function generarTablaDescuentoGeneral(regla, opciones = {}) {
     fechasObjetivo = fechas.filter((f) => mismaSemanaCalendario(f, fechaRef));
     if (!fechasObjetivo.length) {
       fechasObjetivo = fechas.slice(0, 1);
+    } else {
+      fechasObjetivo = fechasObjetivo.slice(0, 1);
     }
   } else {
     fechasObjetivo = fechas.slice(0, nCuotas);
@@ -198,6 +200,8 @@ function seleccionarEventosDescuentoGeneral(reglaC, eventos) {
       candidatos = lista
         .filter((e) => new Date(e.fechaProgramada) >= inicioRef)
         .slice(0, 1);
+    } else {
+      candidatos = candidatos.slice(0, 1);
     }
   } else {
     candidatos = lista
@@ -235,13 +239,31 @@ function montoDescuentoReglaCEnEvento(reglaC, evento, todosEventos) {
   return montoDescuentoSegSocialEnEvento(reglaC, evento, todosEventos);
 }
 
+function reglaCPlain(regla) {
+  if (!regla) return null;
+  return typeof regla.toObject === "function" ? regla.toObject() : { ...regla };
+}
+
+function incluirReglaCAdicional(reglasC, reglaCAdicional) {
+  if (!reglaCAdicional) return reglasC;
+  const idExtra = reglaCAdicional._id ? String(reglaCAdicional._id) : null;
+  if (idExtra && reglasC.some((r) => String(r._id) === idExtra)) {
+    return reglasC;
+  }
+  return [...reglasC, reglaCAdicional];
+}
+
 /** Suma todos los descuentos tipo C autorizados sobre los eventos de la regla A. */
-async function recalcularDescuentosEnEventos(reglaA) {
-  const reglasC = await ReglaPagoNomina.find({
-    reglaPagoAsociadaId: reglaA._id,
-    tipoRegla: "C",
-    estadoRegla: "Autorizada",
-  }).lean();
+async function recalcularDescuentosEnEventos(reglaA, opciones = {}) {
+  const reglaCAdicional = reglaCPlain(opciones.reglaCAdicional);
+  const reglasC = incluirReglaCAdicional(
+    await ReglaPagoNomina.find({
+      reglaPagoAsociadaId: reglaA._id,
+      tipoRegla: "C",
+      estadoRegla: "Autorizada",
+    }).lean(),
+    reglaCAdicional
+  );
 
   const eventos = await EventoPagoProgramado.find({
     reglaPagoId: reglaA._id,
@@ -250,7 +272,10 @@ async function recalcularDescuentosEnEventos(reglaA) {
 
   const montoBrutoNomina = redondear2(reglaA.monto || 0);
   let actualizados = 0;
+  let eventosConDescuento = 0;
+  let eventosConDescuentoRegla = 0;
   let cuotaDescReferencia = 0;
+  let cuotaDescRegla = 0;
 
   for (const evento of eventos) {
     const bruto =
@@ -274,6 +299,18 @@ async function recalcularDescuentosEnEventos(reglaA) {
       }
     }
 
+    if (reglaCAdicional) {
+      const descRegla = montoDescuentoReglaCEnEvento(
+        reglaCAdicional,
+        evento,
+        eventos
+      );
+      if (descRegla > 0) {
+        eventosConDescuentoRegla += 1;
+        if (!cuotaDescRegla) cuotaDescRegla = descRegla;
+      }
+    }
+
     evento.montoBruto = bruto;
     evento.montoDescuento = descTotal;
     evento.monto = redondear2(Math.max(0, bruto - descTotal));
@@ -283,13 +320,20 @@ async function recalcularDescuentosEnEventos(reglaA) {
       evento.monto = bruto;
       evento.montoBruto = null;
       evento.reglaDescuentoId = null;
+    } else {
+      eventosConDescuento += 1;
     }
 
     await evento.save();
     actualizados += 1;
   }
 
-  return { actualizados, cuotaDesc: cuotaDescReferencia };
+  return {
+    actualizados,
+    eventosConDescuento,
+    eventosConDescuentoRegla,
+    cuotaDesc: cuotaDescRegla || cuotaDescReferencia,
+  };
 }
 
 function construirProyeccionTipoC(regla, opciones = {}) {
@@ -389,7 +433,17 @@ async function cargarReglaAsociada(reglaC) {
 }
 
 async function aplicarDescuentosEnEventos(reglaC, reglaA) {
-  return recalcularDescuentosEnEventos(reglaA);
+  const resultado = await recalcularDescuentosEnEventos(reglaA, {
+    reglaCAdicional: reglaC,
+  });
+  const actualizados =
+    reglaC != null
+      ? resultado.eventosConDescuentoRegla
+      : resultado.eventosConDescuento;
+  return {
+    actualizados,
+    cuotaDesc: resultado.cuotaDesc,
+  };
 }
 
 async function quitarDescuentosRegla(reglaCId) {

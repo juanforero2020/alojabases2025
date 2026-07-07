@@ -121,6 +121,7 @@ import { NominasComponent } from "./pages/nominas/nominas.component";
 import { NominasEventosPagosComponent } from "./pages/nominas/nominas-eventos-pagos.component";
 import { NominasConsultaPagosComponent } from "./pages/nominas/nominas-consulta-pagos.component";
 import { NominasPagosProgramadosComponent } from "./pages/nominas/nominas-pagos-programados.component";
+import { NominasLiquidacionDominicalComponent } from "./pages/nominas/nominas-liquidacion-dominical.component";
 
 @NgModule({
   declarations: [
@@ -191,7 +192,8 @@ import { NominasPagosProgramadosComponent } from "./pages/nominas/nominas-pagos-
     NominasComponent,
     NominasEventosPagosComponent,
     NominasConsultaPagosComponent,
-    NominasPagosProgramadosComponent
+    NominasPagosProgramadosComponent,
+    NominasLiquidacionDominicalComponent
   ],
   imports: [
     BrowserModule,

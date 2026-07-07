@@ -7,8 +7,8 @@
       Detalle de pagos programados y ejecutados (tipo A, B y descuentos aplicados) por empleado o centro de costo.
       Si consulta por <strong>empleado</strong>, no use centro de costo al mismo tiempo.
     </p>
-    <div class="row align-items-end mb-3">
-      <div class="col-md-4 mb-2">
+    <div class="row consulta-pagos-filtros align-items-end mb-3">
+      <div class="col-12 col-lg-4 mb-2 consulta-pagos-filtro-empleado">
         <label>Empleado</label>
         <dx-select-box
           [items]="beneficiariosFiltro"
@@ -22,7 +22,7 @@
           (onValueChanged)="onEmpleadoChanged($event)"
         ></dx-select-box>
       </div>
-      <div class="col-md-2 mb-2">
+      <div class="col-6 col-sm-4 col-lg-2 mb-2 consulta-pagos-filtro-centro">
         <label>Centro de costo</label>
         <dx-select-box
           [items]="nombresCentrosCosto"
@@ -32,15 +32,23 @@
           (onValueChanged)="onCentroCostoChanged($event)"
         ></dx-select-box>
       </div>
-      <div class="col-md-2 mb-2">
+      <div class="col-6 col-sm-4 col-lg-2 mb-2 consulta-pagos-fecha-campo">
         <label>Desde</label>
-        <dx-date-box [(value)]="reporteDesde" type="date"></dx-date-box>
+        <dx-date-box
+          [(value)]="reporteDesde"
+          type="date"
+          [calendarOptions]="opcionesCalendarioCompacto"
+        ></dx-date-box>
       </div>
-      <div class="col-md-2 mb-2">
+      <div class="col-6 col-sm-4 col-lg-2 mb-2 consulta-pagos-fecha-campo">
         <label>Hasta</label>
-        <dx-date-box [(value)]="reporteHasta" type="date"></dx-date-box>
+        <dx-date-box
+          [(value)]="reporteHasta"
+          type="date"
+          [calendarOptions]="opcionesCalendarioCompacto"
+        ></dx-date-box>
       </div>
-      <div class="col-md-2 mb-2">
+      <div class="col-6 col-sm-4 col-lg-2 mb-2 consulta-pagos-filtro-boton">
         <button
           class="btn btn-nomina-primario btn-block"
           type="button"
@@ -117,10 +125,7 @@
           <tr *ngFor="let ev of reporteEstado.eventos">
             <td>{{ ev.numeroCuota }}/{{ ev.totalCuotas }}</td>
             <td>{{ ev.transaccionNomina }}</td>
-            <td class="small">
-              <span *ngIf="ev.fechaMin">{{ ev.fechaMin | date : "dd/MM/yy" }} — {{ ev.fechaMax | date : "dd/MM/yy" }}</span>
-              <span *ngIf="!ev.fechaMin">{{ ev.fechaProgramada | date : "dd/MM/yyyy" }}</span>
-            </td>
+            <td class="small">{{ textoFechaPago(ev) }}</td>
             <td class="small">
               {{ ev.fechaEjecucion ? (ev.fechaEjecucion | date : "dd/MM/yyyy") : "—" }}
             </td>

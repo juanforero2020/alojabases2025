@@ -17,6 +17,7 @@ import {
   fechaCalendarioParam,
   formatoFechaCalendarioNomina,
   inicioDiaCalendarioNomina,
+  textoFechaPagoNomina,
 } from "./nominas-fecha.util";
 
 @Component({
@@ -43,7 +44,7 @@ export class NominasPagosProgramadosComponent implements OnInit {
     "Pendiente",
     "Parcial",
     "Ejecutado",
-    "Cancelado",
+    "Anulado",
     "Todos",
   ];
   tiposReglaFiltro = ["Todos", "A", "B"];
@@ -213,20 +214,11 @@ export class NominasPagosProgramadosComponent implements OnInit {
   }
 
   textoRangoFechas(ev: EventoPagoProgramado): string {
-    if (ev.fechaMin && ev.fechaMax) {
-      const min = formatoFechaCalendarioNomina(ev.fechaMin, {
-        day: "2-digit",
-        month: "2-digit",
-        year: "2-digit",
-      });
-      const max = formatoFechaCalendarioNomina(ev.fechaMax, {
-        day: "2-digit",
-        month: "2-digit",
-        year: "2-digit",
-      });
-      return `${min} — ${max}`;
-    }
-    return formatoFechaCalendarioNomina(ev.fechaProgramada);
+    return textoFechaPagoNomina(ev, {
+      day: "2-digit",
+      month: "2-digit",
+      year: "2-digit",
+    });
   }
 
   onExportingPagos(e: {
@@ -317,6 +309,16 @@ export class NominasPagosProgramadosComponent implements OnInit {
     );
   }
 
+  esPagoDominical(ev: EventoPagoProgramado): boolean {
+    const t = (ev.transaccionNomina || "").trim().toLowerCase();
+    if (t === "dominical" || t.includes("pago dominical")) return true;
+    const regla = ev.reglaPagoId;
+    if (regla && typeof regla === "object" && regla.frecuencia === "Dominical") {
+      return true;
+    }
+    return false;
+  }
+
   esMontoVariable(ev: EventoPagoProgramado): boolean {
     if (ev.modalidadMonto === "Variable") return true;
     const regla = ev.reglaPagoId;
@@ -346,10 +348,7 @@ export class NominasPagosProgramadosComponent implements OnInit {
   ejecutarEventoProgramado(ev: EventoPagoProgramado) {
     const variable = this.esMontoVariable(ev);
     const saldo = this.saldoPendienteEvento(ev);
-    const ventana =
-      ev.fechaMin && ev.fechaMax
-        ? `${formatoFechaCalendarioNomina(ev.fechaMin)} — ${formatoFechaCalendarioNomina(ev.fechaMax)}`
-        : formatoFechaCalendarioNomina(ev.fechaProgramada);
+    const ventana = textoFechaPagoNomina(ev);
     const lineaDesc = this.tieneDescuento(ev)
       ? `Bruto: $${Number(ev.montoBruto || ev.monto).toFixed(2)} − Desc.: $${Number(ev.montoDescuento || 0).toFixed(2)}<br/>`
       : "";
@@ -360,7 +359,7 @@ export class NominasPagosProgramadosComponent implements OnInit {
         html: `<strong>${ev.nombreBeneficiario}</strong><br/>
           Tipo ${this.etiquetaTipo(ev)} · ${ev.transaccionNomina}<br/>
           Cuota ${ev.numeroCuota}/${ev.totalCuotas}<br/>
-          Ventana: ${ventana}<br/>
+          Fecha de pago: ${ventana}<br/>
           <span class="text-muted">El monto se calculará al confirmar (p. ej. pago dominical).</span>`,
         icon: "question",
         showCancelButton: true,
@@ -378,7 +377,7 @@ export class NominasPagosProgramadosComponent implements OnInit {
       html: `<strong>${ev.nombreBeneficiario}</strong><br/>
         Tipo ${this.etiquetaTipo(ev)} · ${ev.transaccionNomina}<br/>
         Cuota ${ev.numeroCuota}/${ev.totalCuotas}<br/>
-        Ventana: ${ventana}<br/>
+        Fecha de pago: ${ventana}<br/>
         ${lineaDesc}
         Programado (neto): $${Number(ev.monto).toFixed(2)} · Pagado: $${Number(ev.montoPagado || 0).toFixed(2)}<br/>
         <strong>Monto a registrar: $${saldo.toFixed(2)}</strong>`,
@@ -393,10 +392,7 @@ export class NominasPagosProgramadosComponent implements OnInit {
   }
 
   autorizarPagoFueraPlazo(ev: EventoPagoProgramado) {
-    const ventana =
-      ev.fechaMin && ev.fechaMax
-        ? `${formatoFechaCalendarioNomina(ev.fechaMin)} — ${formatoFechaCalendarioNomina(ev.fechaMax)}`
-        : formatoFechaCalendarioNomina(ev.fechaProgramada);
+    const ventana = textoFechaPagoNomina(ev);
 
     Swal.fire({
       title: "Autorizar pago fuera de plazo",
@@ -450,6 +446,7 @@ export class NominasPagosProgramadosComponent implements OnInit {
   }
 
   puedeEjecutarEvento(ev: EventoPagoProgramado): boolean {
+    if (this.esPagoDominical(ev)) return false;
     if (ev.estado !== "Pendiente" && ev.estado !== "Parcial") return false;
     if (!this.esMontoVariable(ev) && this.saldoPendienteEvento(ev) <= 0) {
       return false;
@@ -468,8 +465,46 @@ export class NominasPagosProgramadosComponent implements OnInit {
     return !this.estaAutorizadoFueraPlazo(ev);
   }
 
+  puedeAnularEvento(ev: EventoPagoProgramado): boolean {
+    return ev.estado === "Pendiente" || ev.estado === "Parcial";
+  }
+
+  anularEventoProgramado(ev: EventoPagoProgramado) {
+    const ventana = textoFechaPagoNomina(ev);
+
+    Swal.fire({
+      title: "Anular pago programado",
+      html: `¿Anular el pago de <strong>${ev.nombreBeneficiario}</strong>?<br/>
+        Tipo ${this.etiquetaTipo(ev)} · ${ev.transaccionNomina}<br/>
+        Cuota ${ev.numeroCuota}/${ev.totalCuotas} · Fecha de pago: ${ventana}<br/>
+        <span class="text-muted">El evento quedará anulado y no podrá ejecutarse.</span>`,
+      icon: "warning",
+      showCancelButton: true,
+      confirmButtonText: "Anular",
+      cancelButtonText: "Cerrar",
+      confirmButtonColor: "#dc3545",
+    }).then((result) => {
+      if (!result.value || !ev._id) return;
+      this._nominasService.anularEventoProgramado(ev._id).subscribe(
+        () => {
+          Swal.fire(
+            "Anulado",
+            "El pago programado quedó anulado.",
+            "success"
+          );
+          this.cargarEventosProgramados();
+        },
+        (err) =>
+          mostrarErrorNominaApi("Error", err, "No se pudo anular el pago")
+      );
+    });
+  }
+
   mensajeEstadoPago(ev: EventoPagoProgramado): string | null {
     if (ev.estado !== "Pendiente" && ev.estado !== "Parcial") return null;
+    if (this.esPagoDominical(ev)) {
+      return "Liquidar en Liquidación Dominical";
+    }
     if (this.puedeEjecutarEvento(ev) || this.puedeAutorizarFueraPlazo(ev)) {
       return null;
     }
@@ -504,18 +539,19 @@ export class NominasPagosProgramadosComponent implements OnInit {
   }
 
   puedeDescargarComprobantePago(ev: EventoPagoProgramado): boolean {
-    if (!ev?._id) {
-      return false;
-    }
-    return !this.estaAntesDeVentana(ev);
+    return !!ev?._id && this.puedeEjecutarEvento(ev);
   }
 
   tituloComprobantePago(ev: EventoPagoProgramado): string {
     if (this.puedeDescargarComprobantePago(ev)) {
       return "Descargar comprobante de pago (PDF)";
     }
-    if (this.estaAntesDeVentana(ev)) {
+    const estadoPago = this.mensajeEstadoPago(ev);
+    if (estadoPago === "Fuera de fecha") {
       return "Comprobante no disponible: el pago está fuera de fecha";
+    }
+    if (estadoPago === "En espera de autorización") {
+      return "Comprobante no disponible: en espera de autorización";
     }
     return "Comprobante no disponible";
   }
@@ -591,10 +627,7 @@ export class NominasPagosProgramadosComponent implements OnInit {
   }
 
   private ventanaPagoTexto(ev: EventoPagoProgramado): string {
-    if (ev.fechaMin && ev.fechaMax) {
-      return `${this.formatoFechaPdf(ev.fechaMin)} — ${this.formatoFechaPdf(ev.fechaMax)}`;
-    }
-    return this.formatoFechaPdf(ev.fechaProgramada);
+    return textoFechaPagoNomina(ev);
   }
 
   private filasDescuentosPdf(desglose: DesgloseDescuentosEvento) {

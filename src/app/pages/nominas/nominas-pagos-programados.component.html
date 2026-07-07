@@ -141,7 +141,7 @@
       ></dxi-column>
       <dxi-column
         dataField="rangoFechas"
-        caption="Rango de fechas"
+        caption="Fecha de pago"
         [width]="130"
       ></dxi-column>
       <dxi-column
@@ -270,7 +270,7 @@
           [class.badge-warning]="d.data.estado === 'Pendiente'"
           [class.badge-info]="d.data.estado === 'Parcial'"
           [class.badge-success]="d.data.estado === 'Ejecutado'"
-          [class.badge-secondary]="d.data.estado === 'Cancelado'"
+          [class.badge-secondary]="d.data.estado === 'Anulado'"
         >
           {{ d.data.estado }}
         </span>
@@ -303,6 +303,13 @@
           (click)="ejecutarEventoProgramado(d.data)"
         >
           Pagar
+        </button>
+        <button
+          class="btn btn-sm btn-danger mb-1 d-block"
+          *ngIf="puedeAnularEvento(d.data)"
+          (click)="anularEventoProgramado(d.data)"
+        >
+          Anular
         </button>
         <span
           class="small d-block"

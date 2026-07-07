@@ -233,8 +233,8 @@ async function ejecutarEventoProgramado(eventoId, opciones = {}) {
   if (evento.estado === "Ejecutado") {
     throw new Error("Esta cuota ya fue pagada en su totalidad");
   }
-  if (evento.estado === "Cancelado") {
-    throw new Error("Este evento está cancelado");
+  if (evento.estado === "Anulado" || evento.estado === "Cancelado") {
+    throw new Error("Este evento está anulado");
   }
 
   const regla = await ReglaPagoNomina.findById(evento.reglaPagoId);

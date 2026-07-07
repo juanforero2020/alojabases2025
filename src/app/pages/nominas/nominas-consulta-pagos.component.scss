@@ -18,3 +18,40 @@
   color: #fff;
   background-color: #e64a19;
 }
+
+.consulta-pagos-filtros {
+  @media (min-width: 1200px) {
+    flex-wrap: nowrap;
+  }
+}
+
+.consulta-pagos-fecha-campo {
+  flex: 0 0 auto;
+  max-width: 100%;
+
+  @media (min-width: 992px) {
+    max-width: 155px;
+  }
+
+  @media (min-width: 1400px) {
+    max-width: 138px;
+  }
+}
+
+.consulta-pagos-filtro-boton {
+  @media (min-width: 992px) {
+    max-width: 130px;
+  }
+}
+
+:host ::ng-deep .consulta-pagos-fecha-campo {
+  .dx-datebox {
+    width: 100%;
+    max-width: 138px;
+  }
+
+  .dx-texteditor-input {
+    font-size: 0.85rem;
+    padding: 5px 8px;
+  }
+}

@@ -63,15 +63,19 @@ function generarTablaAmortizacion(regla, opciones = {}) {
 
   if (
     existente.length === cuotas &&
-    existente.every((f) => f.fechaMin && f.fechaMax && f.monto >= 0) &&
+    existente.every((f) => (f.fechaMin || f.fechaMax) && f.monto >= 0) &&
     !opciones.forzarRegenerar
   ) {
-    return existente.map((f, i) => ({
-      numeroCuota: f.numeroCuota || i + 1,
-      fechaMin: new Date(f.fechaMin),
-      fechaMax: new Date(f.fechaMax),
-      monto: redondear2(f.monto),
-    }));
+    return existente.map((f, i) => {
+      const fecha = new Date(f.fechaMin || f.fechaMax);
+      fecha.setHours(0, 0, 0, 0);
+      return {
+        numeroCuota: f.numeroCuota || i + 1,
+        fechaMin: new Date(fecha),
+        fechaMax: new Date(fecha),
+        monto: redondear2(f.monto),
+      };
+    });
   }
 
   const base = regla.fechaReferenciaAnual
@@ -79,28 +83,22 @@ function generarTablaAmortizacion(regla, opciones = {}) {
     : new Date();
   base.setHours(0, 0, 0, 0);
 
-  const diaInicio =
-    regla.diaInicioVentana ||
-    (regla.frecuencia === "Anual" ? base.getDate() : 2) ||
-    2;
-  const diaLimite = regla.diaLimiteVentana || Math.min(31, diaInicio + 3);
-
+  const diaPago = base.getDate();
   const mesInicio = base.getMonth();
   const anioInicio = base.getFullYear();
   const montoBase = cuotas > 0 ? redondear2(montoTotal / cuotas) : 0;
   const filas = [];
 
   for (let i = 0; i < cuotas; i++) {
-    const fechaMin = fechaConDiaMes(anioInicio, mesInicio + i, diaInicio);
-    const fechaMax = fechaConDiaMes(anioInicio, mesInicio + i, diaLimite);
+    const fechaPago = fechaConDiaMes(anioInicio, mesInicio + i, diaPago);
     let monto = montoBase;
     if (i === cuotas - 1) {
       monto = redondear2(montoTotal - montoBase * (cuotas - 1));
     }
     filas.push({
       numeroCuota: i + 1,
-      fechaMin,
-      fechaMax,
+      fechaMin: fechaPago,
+      fechaMax: fechaPago,
       monto,
     });
   }
@@ -112,12 +110,10 @@ function validarTablaAmortizacion(tabla, montoTotal) {
     return { ok: false, mensaje: "La tabla de amortización está vacía" };
   }
   for (const fila of tabla) {
-    const min = fila.fechaMin ? new Date(fila.fechaMin) : null;
-    const max = fila.fechaMax ? new Date(fila.fechaMax) : null;
-    if (min && max && min > max) {
+    if (!fila.fechaMin && !fila.fechaMax) {
       return {
         ok: false,
-        mensaje: `Cuota ${fila.numeroCuota}: la fecha mínima no puede ser posterior a la fecha máxima`,
+        mensaje: `Cuota ${fila.numeroCuota}: indique la fecha de pago`,
       };
     }
   }

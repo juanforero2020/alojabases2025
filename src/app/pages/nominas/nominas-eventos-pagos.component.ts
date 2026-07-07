@@ -4,24 +4,19 @@ import { CentroCostoService } from "src/app/servicios/centro-costo.service";
 import { CentroCosto } from "../administracion-cuentas/administracion-cuenta";
 import Swal from "sweetalert2";
 import {
-  AjusteNominaPendiente,
   AporteIess,
   BeneficiarioNomina,
-  EventoPagoDominical,
   FilaAmortizacion,
-  LiquidacionDominicalItem,
   NominaConfigGlobal,
   ProyeccionPagoNomina,
   ReglaPagoAsociable,
   ReglaPagoNomina,
-  SimulacionDominical,
 } from "./nominas";
 import { mostrarErrorNominaApi } from "./nominas-alert.util";
 import {
   fechaCalendarioLocal,
   fechaCalendarioParam,
   formatoFechaCalendarioNomina,
-  inicioDiaCalendarioNomina,
   normalizarReglaPagoNomina,
   normalizarTablaAmortizacion,
 } from "./nominas-fecha.util";
@@ -45,15 +40,12 @@ export class NominasEventosPagosComponent implements OnInit {
     "Multas",
     "Otros",
   ];
+  readonly prefijoConceptoOtros = "Otros - ";
+  conceptoDescuentoOtro = "";
   opcionesSemanaAplicacion = ["Esta semana", "Semana especifica"];
   readonly cuotasSegSocial = 4;
   tiposBeneficiario = ["Interno", "Externo"];
-  transaccionesNominaA = [
-    "Asignacion nomina",
-    /* "Anticipo nomina",
-    "Pago extra",
-    "Comision", */
-  ];
+  transaccionesNominaA = ["Asignacion nomina", "Dominical"];
   transaccionesNominaB = [
     "Arriendos",  
     "Pagos puntuales", 
@@ -65,8 +57,14 @@ export class NominasEventosPagosComponent implements OnInit {
     "Décimo cuarto sueldo",
     "Vacaciones",
   ];
+  readonly transaccionesBeneficiosAnuales = [
+    "Décimo tercer sueldo",
+    "Décimo cuarto sueldo",
+    "Vacaciones",
+  ];
   fuentesMontoA = ["TMS"];
-  frecuenciasA = ["Diario", "Semanal", "Dominical", "Quincenal", "Mensual"];
+  frecuenciasAsignacionNomina = ["Diario", "Semanal", "Quincenal", "Mensual"];
+  frecuenciasDominical = ["Dominical"];
   frecuenciasB = ["Unica", "Diario", "Semanal", "Quincenal", "Mensual", "Anual"];
   vigenciasReglaA = ["Finalizacion Contrato"];
   vigenciasReglaB = ["Indefinido", "Numero de cuotas", "Unica vez"];
@@ -100,10 +98,6 @@ export class NominasEventosPagosComponent implements OnInit {
 
   formulario: ReglaPagoNomina = this.nuevaRegla();
 
-  fechaDominicalLiquidacion: Date = this.ultimoDomingo();
-  simulacionDominical: SimulacionDominical | null = null;
-  ajustesPendientes: AjusteNominaPendiente[] = [];
-  eventosDominical: EventoPagoDominical[] = [];
   tablaAmortizacion: FilaAmortizacion[] = [];
   amortizacionEditadaManual = false;
   validacionAmortizacion: { ok: boolean; mensaje?: string; suma?: number; pendiente?: number } | null = null;
@@ -159,6 +153,19 @@ export class NominasEventosPagosComponent implements OnInit {
 
   get esSemanaEspecifica(): boolean {
     return this.formulario.semanaAplicacion === "Semana especifica";
+  }
+
+  get esConceptoOtros(): boolean {
+    return this.formulario.conceptoDescuento === "Otros";
+  }
+
+  get conceptoDescuentoTexto(): string {
+    const base = this.formulario.conceptoDescuento || "";
+    if (base === "Otros") {
+      const detalle = this.conceptoDescuentoOtro.trim();
+      return detalle ? `${this.prefijoConceptoOtros}${detalle}` : "Otros";
+    }
+    return base;
   }
 
   get cuotaDescuentoCalculada(): number {
@@ -246,11 +253,82 @@ export class NominasEventosPagosComponent implements OnInit {
   }
 
   get esDominical(): boolean {
-    return this.esTipoA && this.formulario.frecuencia === "Dominical";
+    return this.esTipoA && this.esTransaccionDominical(this.formulario.transaccionNomina);
+  }
+
+  get frecuenciasDisponiblesTipoA(): string[] {
+    return this.esDominical
+      ? this.frecuenciasDominical
+      : this.frecuenciasAsignacionNomina;
+  }
+
+  private esTransaccionDominical(transaccion?: string): boolean {
+    const t = (transaccion || "").trim().toLowerCase();
+    return t === "dominical" || t.includes("pago dominical");
+  }
+
+  private normalizarTransaccionNominaA(transaccion?: string): string {
+    if (this.esTransaccionDominical(transaccion)) {
+      return "Dominical";
+    }
+    return transaccion || "Asignacion nomina";
+  }
+
+  private aplicarConfigDominical(): void {
+    this.formulario.frecuencia = "Dominical";
+    this.formulario.tipoBeneficiario = "Interno";
+    this.formulario.fuente = "FACTURACION_DOMINICAL";
+    this.formulario.parametro = "Los domingos";
+    this.formulario.montoVariable = true;
+    this.formulario.monto = 0;
+    this.parametrosActuales = this.parametrosDominical;
+  }
+
+  private aplicarConfigAsignacionNomina(): void {
+    if (this.formulario.frecuencia === "Dominical") {
+      this.formulario.frecuencia = "Semanal";
+    }
+    if (this.formulario.fuente === "FACTURACION_DOMINICAL") {
+      this.formulario.fuente = "TMS";
+    }
+    this.formulario.montoVariable = false;
+    if (
+      !this.formulario.parametro ||
+      this.formulario.parametro === "Los domingos"
+    ) {
+      this.formulario.parametro = "Los sabados";
+    }
+    this.actualizarParametrosPorFrecuencia();
+    this.aplicarMontoDesdeTms();
+  }
+
+  onTransaccionNominaAChanged(event?: { event?: Event }): void {
+    if (event && !event.event) return;
+    if (this.esDominical) {
+      this.aplicarConfigDominical();
+    } else {
+      this.aplicarConfigAsignacionNomina();
+    }
   }
 
   get esAnual(): boolean {
     return this.esTipoB && this.formulario.frecuencia === "Anual";
+  }
+
+  get esTransaccionBeneficiosAnuales(): boolean {
+    return (
+      this.esTipoB &&
+      this.transaccionesBeneficiosAnuales.includes(
+        this.formulario.transaccionNomina || ""
+      )
+    );
+  }
+
+  get etiquetaFechaReferenciaAnual(): string {
+    if ((Number(this.formulario.cuotas) || 1) === 1) {
+      return "Fecha de pago";
+    }
+    return "Fecha referencia (mes y día de la 1ª cuota)";
   }
 
   get usaAmortizacion(): boolean {
@@ -272,7 +350,6 @@ export class NominasEventosPagosComponent implements OnInit {
 
   ngOnInit() {
     this.cargarReglas();
-    this.cargarAjustesPendientes();
     this.cargarCentrosCosto();
     this.cargarConfigGlobal();
     this.actualizarParametrosPorFrecuencia();
@@ -318,13 +395,6 @@ export class NominasEventosPagosComponent implements OnInit {
       },
       () => {}
     );
-  }
-
-  ultimoDomingo(): Date {
-    const d = new Date();
-    d.setDate(d.getDate() - d.getDay());
-    d.setHours(0, 0, 0, 0);
-    return d;
   }
 
   nuevaRegla(): ReglaPagoNomina {
@@ -384,8 +454,6 @@ export class NominasEventosPagosComponent implements OnInit {
       parametro: "El dia x del mes",
       diaDelMes: 1,
       fechaReferenciaAnual: hoy,
-      diaInicioVentana: 2,
-      diaLimiteVentana: 5,
       vigenciaRegla: "Indefinido",
       cuotas: 1,
       cuotaEvento: 0,
@@ -401,6 +469,7 @@ export class NominasEventosPagosComponent implements OnInit {
   onTipoReglaChanged() {
     const cedula = this.formulario.cedulaBeneficiario;
     const nombre = this.formulario.nombreBeneficiario;
+    this.conceptoDescuentoOtro = "";
     if (this.formulario.tipoRegla === "B") {
       this.formulario = this.nuevaReglaTipoB();
     } else if (this.formulario.tipoRegla === "C") {
@@ -418,6 +487,26 @@ export class NominasEventosPagosComponent implements OnInit {
     if (this.formulario.cedulaBeneficiario) {
       this.buscarBeneficiario();
     }
+  }
+
+  onTransaccionNominaBChanged(event?: { event?: Event }): void {
+    if (event && !event.event) return;
+    if (!this.esTransaccionBeneficiosAnuales) return;
+    this.formulario.frecuencia = "Anual";
+    this.formulario.vigenciaRegla = "Unica vez";
+    this.formulario.modalidadMonto = "Finito";
+    this.formulario.cuotas = 1;
+    this.formulario.parametro = this.parametrosAnualB[0];
+    if (!this.formulario.fechaReferenciaAnual) {
+      this.formulario.fechaReferenciaAnual = new Date();
+    }
+    this.actualizarParametrosPorFrecuencia();
+    this.amortizacionEditadaManual = false;
+    this.generarAmortizacion(true);
+  }
+
+  onFechaReferenciaAnualChanged(): void {
+    this.onDatosAmortizacionChanged();
   }
 
   onModalidadMontoChanged() {
@@ -442,6 +531,9 @@ export class NominasEventosPagosComponent implements OnInit {
       this.generarAmortizacion(true);
     } else if (this.formulario.vigenciaRegla === "Unica vez") {
       this.formulario.modalidadMonto = "Finito";
+      if (this.esTransaccionBeneficiosAnuales) {
+        this.formulario.cuotas = 1;
+      }
       this.generarAmortizacion(true);
     }
   }
@@ -450,6 +542,13 @@ export class NominasEventosPagosComponent implements OnInit {
     if (this.usaAmortizacion && !this.amortizacionEditadaManual) {
       this.generarAmortizacion(true);
     }
+  }
+
+  onFechaPagoAmortizacionChanged(indice: number): void {
+    const fila = this.tablaAmortizacion[indice];
+    if (!fila?.fechaMin) return;
+    fila.fechaMax = fila.fechaMin;
+    this.onAmortizacionChanged();
   }
 
   onAmortizacionChanged() {
@@ -604,17 +703,20 @@ export class NominasEventosPagosComponent implements OnInit {
     const suma = Math.round(this.sumaAmortizacion * 100) / 100;
 
     for (const fila of this.tablaAmortizacion) {
-      const min = fila.fechaMin ? inicioDiaCalendarioNomina(fila.fechaMin) : null;
-      const max = fila.fechaMax ? inicioDiaCalendarioNomina(fila.fechaMax) : null;
-      if (min && max && min > max) {
+      if (!fila.fechaMin && !fila.fechaMax) {
         this.validacionAmortizacion = {
           ok: false,
-          mensaje: `Cuota ${fila.numeroCuota}: la fecha mínima no puede ser posterior a la fecha máxima`,
+          mensaje: `Cuota ${fila.numeroCuota}: indique la fecha de pago`,
           suma,
           pendiente: Math.max(0, total - suma),
         };
         this.formulario.tablaAmortizacion = [...this.tablaAmortizacion];
         return;
+      }
+      if (fila.fechaMin) {
+        fila.fechaMax = fila.fechaMin;
+      } else if (fila.fechaMax) {
+        fila.fechaMin = fila.fechaMax;
       }
     }
 
@@ -739,6 +841,37 @@ export class NominasEventosPagosComponent implements OnInit {
       this.formulario.parametro = regla.parametro;
     }
     this.generarTablaDescuento(true);
+  }
+
+  onConceptoDescuentoChanged() {
+    if (!this.esConceptoOtros) {
+      this.conceptoDescuentoOtro = "";
+    }
+  }
+
+  private sincronizarConceptoDescuentoDesdeValorGuardado(
+    valor?: string | null
+  ) {
+    const guardado = (valor || "").trim();
+    if (guardado.startsWith(this.prefijoConceptoOtros)) {
+      this.formulario.conceptoDescuento = "Otros";
+      this.conceptoDescuentoOtro = guardado
+        .slice(this.prefijoConceptoOtros.length)
+        .trim();
+      return;
+    }
+    if (this.conceptosDescuento.includes(guardado)) {
+      this.formulario.conceptoDescuento = guardado;
+    }
+    this.conceptoDescuentoOtro = "";
+  }
+
+  private prepararConceptoDescuentoParaGuardar() {
+    if (!this.esDescuentosGenerales || !this.esConceptoOtros) return;
+    const detalle = this.conceptoDescuentoOtro.trim();
+    this.formulario.conceptoDescuento = detalle
+      ? `${this.prefijoConceptoOtros}${detalle}`
+      : "Otros";
   }
 
   onTransaccionTipoCChanged() {
@@ -874,7 +1007,11 @@ export class NominasEventosPagosComponent implements OnInit {
         if (!this.formulario.fechaReferenciaAnual) {
           this.formulario.fechaReferenciaAnual = new Date();
         }
-        if (!this.formulario.cuotas || this.formulario.cuotas < 1) {
+        if (this.esTransaccionBeneficiosAnuales) {
+          if (!this.formulario.cuotas || this.formulario.cuotas < 1) {
+            this.formulario.cuotas = 1;
+          }
+        } else if (!this.formulario.cuotas || this.formulario.cuotas < 1) {
           this.formulario.cuotas = 4;
         }
       }
@@ -918,12 +1055,9 @@ export class NominasEventosPagosComponent implements OnInit {
         break;
       case "Dominical":
         this.parametrosActuales = this.parametrosDominical;
-        this.formulario.tipoBeneficiario = "Interno";
-        this.formulario.fuente = "FACTURACION_DOMINICAL";
-        this.formulario.transaccionNomina = "Pago dominical";
-        this.formulario.parametro = "Los domingos";
-        this.formulario.montoVariable = true;
-        this.formulario.monto = 0;
+        if (!this.formulario.parametro) {
+          this.formulario.parametro = "Los domingos";
+        }
         break;
       case "Quincenal":
         this.parametrosActuales = this.parametrosQuincenal;
@@ -1030,6 +1164,7 @@ export class NominasEventosPagosComponent implements OnInit {
 
   limpiarFormulario() {
     this.formulario = this.nuevaRegla();
+    this.conceptoDescuentoOtro = "";
     this.beneficiario = null;
     this.modoEdicion = false;
     this.reglaSeleccionada = null;
@@ -1084,6 +1219,14 @@ export class NominasEventosPagosComponent implements OnInit {
       if (this.esDescuentosGenerales) {
         if (!this.formulario.conceptoDescuento) {
           Swal.fire("Validación", "Seleccione el concepto del descuento", "warning");
+          return;
+        }
+        if (this.esConceptoOtros && !this.conceptoDescuentoOtro.trim()) {
+          Swal.fire(
+            "Validación",
+            "Indique el motivo o causa del descuento",
+            "warning"
+          );
           return;
         }
         if (!this.formulario.modalidadDescuento) {
@@ -1168,7 +1311,9 @@ export class NominasEventosPagosComponent implements OnInit {
       if (this.esAnual && !this.formulario.fechaReferenciaAnual) {
         Swal.fire(
           "Validación",
-          "Indique la fecha de referencia anual (mes de inicio de pagos)",
+          (Number(this.formulario.cuotas) || 1) === 1
+            ? "Indique la fecha de pago"
+            : "Indique la fecha de referencia para calcular las cuotas",
           "warning"
         );
         return;
@@ -1252,6 +1397,8 @@ export class NominasEventosPagosComponent implements OnInit {
       return;
     }
 
+    this.prepararConceptoDescuentoParaGuardar();
+
     const payload: ReglaPagoNomina = {
       ...this.formulario,
       creadoPor: this.usuarioNombre,
@@ -1272,6 +1419,9 @@ export class NominasEventosPagosComponent implements OnInit {
           const regla = normalizarReglaPagoNomina(res.data);
           this.reglaSeleccionada = regla;
           this.formulario = { ...regla };
+          this.sincronizarConceptoDescuentoDesdeValorGuardado(
+            regla.conceptoDescuento
+          );
           if (regla.tablaAmortizacion?.length) {
             this.tablaAmortizacion = [...regla.tablaAmortizacion];
           }
@@ -1317,14 +1467,14 @@ export class NominasEventosPagosComponent implements OnInit {
 
     const textoAutorizar = this.esTipoC
       ? this.esDescuentosGenerales
-        ? `Se aplicará descuento (${this.formulario.conceptoDescuento || ""}, ${this.formulario.modalidadDescuento || ""}) en ${this.formulario.semanaAplicacion === "Esta semana" ? "la semana actual" : "la semana indicada"} sobre la regla de pago asociada. Monto total: $${(this.formulario.montoTotalDeuda || 0).toFixed(2)}.`
+        ? `Se aplicará descuento (${this.conceptoDescuentoTexto || ""}, ${this.formulario.modalidadDescuento || ""}) en ${this.formulario.semanaAplicacion === "Esta semana" ? "la semana actual" : "la semana indicada"} sobre la regla de pago asociada. Monto total: $${(this.formulario.montoTotalDeuda || 0).toFixed(2)}.`
         : `Se aplicará descuento de seguridad social ($${this.cuotaDescuentoSegSocial.toFixed(2)}/semana en las 4 primeras semanas de cada mes) sobre la regla de pago asociada. Ejemplo: $${this.montoBrutoReglaAsociada.toFixed(2)} − $${this.cuotaDescuentoSegSocial.toFixed(2)} = $${this.ejemploNetoSemanal.toFixed(2)} neto a liquidar.`
       : this.esTipoB
       ? this.usaAmortizacion
         ? `Se programarán ${this.formulario.cuotas} cuotas por un total de $${this.formulario.montoTotalDeuda} (ejecución manual, parcial o total).`
         : `Se programarán pagos ${this.formulario.frecuencia.toLowerCase()} de $${this.formulario.cuotaEvento} (ejecución manual por el encargado).`
       : this.esDominical
-      ? `Se programarán pagos dominicales (monto variable). Deberá ejecutarlos manualmente en Pagos Programados.`
+      ? `Se programarán pagos dominicales (monto variable). La liquidación del domingo se realiza en el menú Liquidación Dominical.`
       : `Se programarán pagos ${this.formulario.frecuencia.toLowerCase()} de $${this.formulario.monto} (ejecución manual por el encargado).`;
 
     Swal.fire({
@@ -1397,6 +1547,19 @@ export class NominasEventosPagosComponent implements OnInit {
     if (regla.estadoRegla === "Autorizada") {
       this.reglaSeleccionada = regla;
       this.formulario = { ...regla };
+      if (regla.tipoRegla === "C") {
+        this.sincronizarConceptoDescuentoDesdeValorGuardado(
+          regla.conceptoDescuento
+        );
+      }
+      if (!regla.tipoRegla || regla.tipoRegla === "A") {
+        this.formulario.transaccionNomina = this.normalizarTransaccionNominaA(
+          regla.transaccionNomina
+        );
+        if (this.esDominical) {
+          this.aplicarConfigDominical();
+        }
+      }
       this.tablaAmortizacion = regla.tablaAmortizacion
         ? this.normalizarFechasAmortizacion([...regla.tablaAmortizacion])
         : [];
@@ -1416,6 +1579,9 @@ export class NominasEventosPagosComponent implements OnInit {
     this.reglaSeleccionada = regla;
     this.formulario = { ...regla };
     if (regla.tipoRegla === "C") {
+      this.sincronizarConceptoDescuentoDesdeValorGuardado(
+        regla.conceptoDescuento
+      );
       this.tablaAmortizacion = regla.tablaAmortizacion
         ? this.normalizarFechasAmortizacion([...regla.tablaAmortizacion])
         : [];
@@ -1437,8 +1603,16 @@ export class NominasEventosPagosComponent implements OnInit {
     this.tablaAmortizacion = regla.tablaAmortizacion
       ? this.normalizarFechasAmortizacion([...regla.tablaAmortizacion])
       : [];
+    this.formulario.transaccionNomina = this.normalizarTransaccionNominaA(
+      regla.transaccionNomina
+    );
+    if (this.esDominical) {
+      this.aplicarConfigDominical();
+    }
     this.amortizacionEditadaManual = this.tablaAmortizacion.length > 0;
-    this.actualizarParametrosPorFrecuencia();
+    if (!this.esDominical) {
+      this.actualizarParametrosPorFrecuencia();
+    }
     if (this.usaAmortizacion && !this.tablaAmortizacion.length) {
       this.generarAmortizacion(true);
     } else if (this.tablaAmortizacion.length) {
@@ -1510,88 +1684,5 @@ export class NominasEventosPagosComponent implements OnInit {
 
   claseMes(indice: number): string {
     return indice % 2 === 0 ? "mes-mayo" : "mes-junio";
-  }
-
-  cargarAjustesPendientes() {
-    this._nominasService.getAjustesPendientesNomina().subscribe(
-      (res) => (this.ajustesPendientes = res),
-      () => {}
-    );
-  }
-
-  simularPagoDominical() {
-    this._nominasService
-      .simularDominical({
-        fecha: this.fechaDominicalLiquidacion,
-        cedula: this.formulario.cedulaBeneficiario || undefined,
-      })
-      .subscribe(
-        (res) => {
-          this.simulacionDominical = res;
-          if (!res.esDomingo) {
-            Swal.fire(
-              "Aviso",
-              "La fecha seleccionada no es domingo; se usará el domingo de esa semana para el cálculo.",
-              "info"
-            );
-          }
-        },
-        (err) =>
-          mostrarErrorNominaApi("Error", err, "No se pudo simular")
-      );
-  }
-
-  liquidarPagoDominical() {
-    Swal.fire({
-      title: "¿Liquidar pago dominical?",
-      text: "Se registrarán transacciones financieras y se aplicarán ajustes pendientes.",
-      icon: "question",
-      showCancelButton: true,
-      confirmButtonText: "Liquidar",
-    }).then((result) => {
-      if (!result.value) return;
-      this._nominasService
-        .liquidarDominical({
-          fecha: this.fechaDominicalLiquidacion,
-          usuario: this.usuarioNombre,
-          cedula: this.formulario.cedulaBeneficiario || undefined,
-          aplicarAjustes: true,
-        })
-        .subscribe(
-          () => {
-            Swal.fire("Listo", "Liquidación dominical registrada", "success");
-            this.simularPagoDominical();
-            this.cargarAjustesPendientes();
-            this.cargarEventosDominical();
-          },
-          (err) =>
-            mostrarErrorNominaApi("Error", err, "No se pudo liquidar")
-        );
-    });
-  }
-
-  cargarEventosDominical() {
-    const f = fechaCalendarioParam(this.fechaDominicalLiquidacion);
-    this._nominasService.getEventosDominical(f).subscribe(
-      (res) => (this.eventosDominical = res),
-      () => {}
-    );
-  }
-
-  montoDominicalPreview(): number | null {
-    if (!this.simulacionDominical?.liquidaciones?.length) return null;
-    const cedula = this.formulario.cedulaBeneficiario;
-    const item = this.simulacionDominical.liquidaciones.find(
-      (l) => !cedula || l.cedula === cedula
-    );
-    return item?.montoBruto ?? item?.monto ?? null;
-  }
-
-  liquidacionActual(): LiquidacionDominicalItem | undefined {
-    if (!this.simulacionDominical) return undefined;
-    const cedula = this.formulario.cedulaBeneficiario;
-    return this.simulacionDominical.liquidaciones.find(
-      (l) => !cedula || l.cedula === cedula
-    );
   }
 }
