@@ -163,6 +163,12 @@ function validarReglaTipoC(regla) {
   if (!esTransaccionSeguridadSocial(regla.transaccionNomina) && !esDescuentosGenerales(regla.transaccionNomina)) {
     return "Transacción no válida para regla tipo C";
   }
+  if (
+    esTransaccionSeguridadSocial(regla.transaccionNomina) &&
+    !regla.fechaInicioPagos
+  ) {
+    return "Indique la fecha desde la que iniciará el pago de seguridad social";
+  }
   if (esDescuentosGenerales(regla.transaccionNomina)) {
     if (!regla.conceptoDescuento) {
       return "Seleccione el concepto del descuento";

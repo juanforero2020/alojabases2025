@@ -95,6 +95,10 @@ export class NominasService {
       .pipe(map((lista) => (lista || []).map(normalizarReglaPagoNomina)));
   }
 
+  getConceptosDescuento() {
+    return this.http.get<string[]>(`${this.URL}/conceptos-descuento`);
+  }
+
   getReglaPago(id: string) {
     return this.http
       .get<ReglaPagoNomina>(`${this.URL}/reglas-pago/${id}`)
@@ -126,6 +130,21 @@ export class NominasService {
 
   autorizarReglaPago(id: string) {
     return this.http.put(`${this.URL}/reglas-pago/${id}/autorizar`, {});
+  }
+
+  extenderEventosReglaPago(
+    id: string,
+    payload?: { cantidadCuotas?: number }
+  ) {
+    return this.http.put<{
+      status: string;
+      data: {
+        eventosGenerados: number;
+        totalCuotas: number;
+        cuotaDesde: number;
+        cuotaHasta: number;
+      };
+    }>(`${this.URL}/reglas-pago/${id}/extender-eventos`, payload || {});
   }
 
   finalizarReglaPago(id: string) {

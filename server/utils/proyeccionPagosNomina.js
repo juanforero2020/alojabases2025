@@ -150,6 +150,8 @@ function generarFechasPorRegla(regla, opciones = {}) {
   const meses = opciones.mesesProyeccion || 3;
   const desde = opciones.fechaDesde
     ? new Date(opciones.fechaDesde)
+    : regla.fechaInicioPagos
+    ? new Date(regla.fechaInicioPagos)
     : new Date();
   desde.setHours(0, 0, 0, 0);
   const hasta = opciones.fechaHasta

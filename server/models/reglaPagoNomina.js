@@ -61,6 +61,7 @@ const ReglaPagoNominaSchema = new Schema(
     parametro: { type: String, required: false },
     diaDelMes: { type: Number, required: false },
     fechaReferenciaAnual: { type: Date, required: false },
+    fechaInicioPagos: { type: Date, required: false },
     diaInicioVentana: { type: Number, default: 2 },
     diaLimiteVentana: { type: Number, default: 5 },
     vigenciaRegla: { type: String, default: "Finalizacion Contrato" },

@@ -33,13 +33,13 @@ export class NominasEventosPagosComponent implements OnInit {
   tiposRegla = ["A", "B", "C"];
   transaccionesNominaC = ["Pago Seguridad Social", "Descuentos"];
   modalidadesDescuento = ["Por cuota", "Valor unico"];
-  conceptosDescuento = [
+  private readonly conceptosDescuentoIniciales = [
     "Por roturas",
     "Inasistencias a laborar",
     "Pérdidas o daños",
     "Multas",
-    "Otros",
   ];
+  conceptosDescuento = [...this.conceptosDescuentoIniciales, "Otros"];
   readonly prefijoConceptoOtros = "Otros - ";
   conceptoDescuentoOtro = "";
   opcionesSemanaAplicacion = ["Esta semana", "Semana especifica"];
@@ -163,7 +163,7 @@ export class NominasEventosPagosComponent implements OnInit {
     const base = this.formulario.conceptoDescuento || "";
     if (base === "Otros") {
       const detalle = this.conceptoDescuentoOtro.trim();
-      return detalle ? `${this.prefijoConceptoOtros}${detalle}` : "Otros";
+      return detalle || "Otros";
     }
     return base;
   }
@@ -282,6 +282,23 @@ export class NominasEventosPagosComponent implements OnInit {
     this.formulario.montoVariable = true;
     this.formulario.monto = 0;
     this.parametrosActuales = this.parametrosDominical;
+    if (!this.formulario.fechaInicioPagos) {
+      this.formulario.fechaInicioPagos = this.siguienteDomingo(new Date());
+    }
+  }
+
+  private siguienteDomingo(fecha: Date): Date {
+    const domingo = new Date(fecha);
+    domingo.setHours(0, 0, 0, 0);
+    const diasHastaDomingo = (7 - domingo.getDay()) % 7;
+    domingo.setDate(domingo.getDate() + diasHastaDomingo);
+    return domingo;
+  }
+
+  get fechaInicioDominicalEsDomingo(): boolean {
+    if (!this.formulario.fechaInicioPagos) return false;
+    const fecha = new Date(this.formulario.fechaInicioPagos);
+    return !Number.isNaN(fecha.getTime()) && fecha.getDay() === 0;
   }
 
   private aplicarConfigAsignacionNomina(): void {
@@ -292,6 +309,7 @@ export class NominasEventosPagosComponent implements OnInit {
       this.formulario.fuente = "TMS";
     }
     this.formulario.montoVariable = false;
+    this.formulario.fechaInicioPagos = undefined;
     if (
       !this.formulario.parametro ||
       this.formulario.parametro === "Los domingos"
@@ -328,7 +346,7 @@ export class NominasEventosPagosComponent implements OnInit {
     if ((Number(this.formulario.cuotas) || 1) === 1) {
       return "Fecha de pago";
     }
-    return "Fecha referencia (mes y día de la 1ª cuota)";
+    return "Fecha de inicio (1ª cuota)";
   }
 
   get usaAmortizacion(): boolean {
@@ -336,8 +354,9 @@ export class NominasEventosPagosComponent implements OnInit {
       this.esTipoB &&
       (this.formulario.frecuencia === "Anual" ||
         this.formulario.vigenciaRegla === "Unica vez" ||
-        (this.formulario.modalidadMonto === "Finito" &&
-          this.formulario.parametro === "Limite Fecha"))
+        this.formulario.modalidadMonto === "Finito" ||
+        !!(this.formulario.tablaAmortizacion &&
+          this.formulario.tablaAmortizacion.length))
     );
   }
 
@@ -350,9 +369,36 @@ export class NominasEventosPagosComponent implements OnInit {
 
   ngOnInit() {
     this.cargarReglas();
+    this.cargarConceptosDescuento();
     this.cargarCentrosCosto();
     this.cargarConfigGlobal();
     this.actualizarParametrosPorFrecuencia();
+  }
+
+  cargarConceptosDescuento() {
+    this._nominasService.getConceptosDescuento().subscribe(
+      (lista) => {
+        const conceptos = Array.from(
+          new Set(
+            (lista || [])
+              .map((concepto) => (concepto || "").trim())
+              .filter((concepto) => concepto && concepto !== "Otros")
+          )
+        );
+        this.conceptosDescuento = [
+          ...(conceptos.length
+            ? conceptos
+            : this.conceptosDescuentoIniciales),
+          "Otros",
+        ];
+      },
+      () => {
+        this.conceptosDescuento = [
+          ...this.conceptosDescuentoIniciales,
+          "Otros",
+        ];
+      }
+    );
   }
 
   cargarConfigGlobal() {
@@ -425,6 +471,7 @@ export class NominasEventosPagosComponent implements OnInit {
       fuente: "TMS",
       frecuencia: "Semanal",
       parametro: "Los sabados",
+      fechaInicioPagos: new Date(),
       vigenciaRegla: "Finalizacion Contrato",
       cuotas: this.cuotasSegSocial,
       cuotaEvento: 0,
@@ -517,6 +564,10 @@ export class NominasEventosPagosComponent implements OnInit {
       this.formulario.montoTotalDeuda = 0;
       this.tablaAmortizacion = [];
     } else {
+      if (!this.formulario.fechaReferenciaAnual) {
+        this.formulario.fechaReferenciaAnual = new Date();
+      }
+      this.amortizacionEditadaManual = false;
       this.generarAmortizacion(true);
     }
   }
@@ -528,12 +579,20 @@ export class NominasEventosPagosComponent implements OnInit {
       }
     } else if (this.formulario.vigenciaRegla === "Numero de cuotas") {
       this.formulario.modalidadMonto = "Finito";
+      if (!this.formulario.fechaReferenciaAnual) {
+        this.formulario.fechaReferenciaAnual = new Date();
+      }
+      this.amortizacionEditadaManual = false;
       this.generarAmortizacion(true);
     } else if (this.formulario.vigenciaRegla === "Unica vez") {
       this.formulario.modalidadMonto = "Finito";
       if (this.esTransaccionBeneficiosAnuales) {
         this.formulario.cuotas = 1;
       }
+      if (!this.formulario.fechaReferenciaAnual) {
+        this.formulario.fechaReferenciaAnual = new Date();
+      }
+      this.amortizacionEditadaManual = false;
       this.generarAmortizacion(true);
     }
   }
@@ -853,6 +912,11 @@ export class NominasEventosPagosComponent implements OnInit {
     valor?: string | null
   ) {
     const guardado = (valor || "").trim();
+    if (this.conceptosDescuento.includes(guardado)) {
+      this.formulario.conceptoDescuento = guardado;
+      this.conceptoDescuentoOtro = "";
+      return;
+    }
     if (guardado.startsWith(this.prefijoConceptoOtros)) {
       this.formulario.conceptoDescuento = "Otros";
       this.conceptoDescuentoOtro = guardado
@@ -860,18 +924,26 @@ export class NominasEventosPagosComponent implements OnInit {
         .trim();
       return;
     }
-    if (this.conceptosDescuento.includes(guardado)) {
-      this.formulario.conceptoDescuento = guardado;
-    }
     this.conceptoDescuentoOtro = "";
   }
 
   private prepararConceptoDescuentoParaGuardar() {
     if (!this.esDescuentosGenerales || !this.esConceptoOtros) return;
     const detalle = this.conceptoDescuentoOtro.trim();
-    this.formulario.conceptoDescuento = detalle
-      ? `${this.prefijoConceptoOtros}${detalle}`
-      : "Otros";
+    if (!detalle) {
+      this.formulario.conceptoDescuento = "Otros";
+      return;
+    }
+    const nuevoConcepto = detalle;
+    if (!this.conceptosDescuento.includes(nuevoConcepto)) {
+      const otrosIndex = this.conceptosDescuento.indexOf("Otros");
+      this.conceptosDescuento.splice(
+        otrosIndex >= 0 ? otrosIndex : this.conceptosDescuento.length,
+        0,
+        nuevoConcepto
+      );
+    }
+    this.formulario.conceptoDescuento = nuevoConcepto;
   }
 
   onTransaccionTipoCChanged() {
@@ -888,6 +960,9 @@ export class NominasEventosPagosComponent implements OnInit {
     } else if (this.esSeguridadSocial) {
       this.formulario.fuente = "TMS";
       this.formulario.cuotas = this.cuotasSegSocial;
+      if (!this.formulario.fechaInicioPagos) {
+        this.formulario.fechaInicioPagos = new Date();
+      }
       this.aplicarMontoSegSocialDesdeTms();
     }
     this.generarTablaDescuento(true);
@@ -912,6 +987,10 @@ export class NominasEventosPagosComponent implements OnInit {
   }
 
   onFechaAplicacionDescuentoChanged() {
+    this.generarTablaDescuento(true);
+  }
+
+  onFechaInicioSeguridadSocialChanged() {
     this.generarTablaDescuento(true);
   }
 
@@ -952,6 +1031,10 @@ export class NominasEventosPagosComponent implements OnInit {
       return;
     }
     if (!this.formulario.reglaPagoAsociadaId) {
+      this.tablaAmortizacion = [];
+      return;
+    }
+    if (this.esSeguridadSocial && !this.formulario.fechaInicioPagos) {
       this.tablaAmortizacion = [];
       return;
     }
@@ -1014,6 +1097,11 @@ export class NominasEventosPagosComponent implements OnInit {
         } else if (!this.formulario.cuotas || this.formulario.cuotas < 1) {
           this.formulario.cuotas = 4;
         }
+      } else if (
+        this.formulario.modalidadMonto === "Finito" &&
+        !this.formulario.fechaReferenciaAnual
+      ) {
+        this.formulario.fechaReferenciaAnual = new Date();
       }
       this.sincronizarParametroDiaMes();
       this.amortizacionEditadaManual = false;
@@ -1207,6 +1295,14 @@ export class NominasEventosPagosComponent implements OnInit {
         );
         return;
       }
+      if (this.esSeguridadSocial && !this.formulario.fechaInicioPagos) {
+        Swal.fire(
+          "Validación",
+          "Indique la fecha desde la que iniciará el pago de seguridad social",
+          "warning"
+        );
+        return;
+      }
       const total = Number(this.formulario.montoTotalDeuda) || 0;
       if (!total || total <= 0) {
         Swal.fire(
@@ -1308,12 +1404,12 @@ export class NominasEventosPagosComponent implements OnInit {
         return;
       }
       this.sincronizarParametroDiaMes();
-      if (this.esAnual && !this.formulario.fechaReferenciaAnual) {
+      if (this.usaAmortizacion && !this.formulario.fechaReferenciaAnual) {
         Swal.fire(
           "Validación",
           (Number(this.formulario.cuotas) || 1) === 1
             ? "Indique la fecha de pago"
-            : "Indique la fecha de referencia para calcular las cuotas",
+            : "Indique la fecha de inicio de la primera cuota",
           "warning"
         );
         return;
@@ -1386,6 +1482,14 @@ export class NominasEventosPagosComponent implements OnInit {
       (!this.formulario.monto || this.formulario.monto <= 0)
     ) {
       Swal.fire("Validación", "El monto debe ser mayor a cero", "warning");
+      return;
+    }
+    if (this.esDominical && !this.fechaInicioDominicalEsDomingo) {
+      Swal.fire(
+        "Validación",
+        "Seleccione el domingo desde el que iniciarán los pagos dominicales",
+        "warning"
+      );
       return;
     }
     if (this.esDominical && this.formulario.tipoBeneficiario !== "Interno") {
@@ -1624,6 +1728,8 @@ export class NominasEventosPagosComponent implements OnInit {
   }
 
   eliminarRegla(regla: ReglaPagoNomina) {
+    if (!regla._id) return;
+    const reglaId = regla._id;
     Swal.fire({
       title: "¿Eliminar regla?",
       text: regla.nombreBeneficiario,
@@ -1632,7 +1738,7 @@ export class NominasEventosPagosComponent implements OnInit {
       confirmButtonText: "Eliminar",
     }).then((result) => {
       if (!result.value) return;
-      this._nominasService.eliminarReglaPago(regla._id).subscribe(
+      this._nominasService.eliminarReglaPago(reglaId).subscribe(
         () => {
           Swal.fire("Eliminada", "", "success");
           if (this.reglaSeleccionada?._id === regla._id) {
@@ -1647,6 +1753,8 @@ export class NominasEventosPagosComponent implements OnInit {
   }
 
   finalizarRegla(regla: ReglaPagoNomina) {
+    if (!regla._id) return;
+    const reglaId = regla._id;
     const textoFinalizar =
       regla.tipoRegla === "C"
         ? "Se quitará el descuento de los pagos programados pendientes de la regla asociada. Los pagos ya ejecutados no se modifican."
@@ -1660,7 +1768,7 @@ export class NominasEventosPagosComponent implements OnInit {
       cancelButtonText: "Cancelar",
     }).then((result) => {
       if (!result.value) return;
-      this._nominasService.finalizarReglaPago(regla._id).subscribe(
+      this._nominasService.finalizarReglaPago(reglaId).subscribe(
         (res: any) => {
           const n = res?.eventosEliminados ?? 0;
           Swal.fire(

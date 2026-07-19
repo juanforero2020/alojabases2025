@@ -201,6 +201,7 @@ export interface ReglaPagoNomina {
   parametro?: string;
   diaDelMes?: number;
   fechaReferenciaAnual?: Date | string;
+  fechaInicioPagos?: Date | string;
   diaInicioVentana?: number;
   diaLimiteVentana?: number;
   vigenciaRegla?: string;

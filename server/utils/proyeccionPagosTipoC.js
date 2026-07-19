@@ -107,7 +107,7 @@ function generarTablaCuotasSegSocial(regla, opciones = {}) {
   const reglaRef = opciones.reglaAsociada || regla;
   const fechas = generarFechasPorRegla(reglaRef, {
     mesesProyeccion: opciones.mesesProyeccion || 3,
-    fechaDesde: opciones.fechaDesde,
+    fechaDesde: opciones.fechaDesde || regla.fechaInicioPagos,
     fechaHasta: opciones.fechaHasta,
   });
   const indicePorFecha = mapaPrimerasCuatroSemanasDelMes(fechas);
@@ -217,7 +217,18 @@ function seleccionarEventosDescuentoGeneral(reglaC, eventos) {
 
 function montoDescuentoSegSocialEnEvento(reglaC, evento, todosEventos) {
   const cuotaDesc = cuotaSegSocial(reglaC.montoTotalDeuda || reglaC.monto || 0);
-  const fechas = (todosEventos || []).map((e) => e.fechaProgramada);
+  const inicio = reglaC.fechaInicioPagos
+    ? new Date(reglaC.fechaInicioPagos)
+    : null;
+  if (inicio) {
+    inicio.setHours(0, 0, 0, 0);
+    const fechaEvento = new Date(evento.fechaProgramada);
+    fechaEvento.setHours(0, 0, 0, 0);
+    if (fechaEvento < inicio) return 0;
+  }
+  const fechas = (todosEventos || [])
+    .map((e) => e.fechaProgramada)
+    .filter((fecha) => !inicio || new Date(fecha) >= inicio);
   const indicePorFecha = mapaPrimerasCuatroSemanasDelMes(fechas);
   return debeAplicarDescuentoEnFecha(evento.fechaProgramada, indicePorFecha)
     ? cuotaDesc
@@ -357,7 +368,12 @@ function construirProyeccionTipoC(regla, opciones = {}) {
             : 1)
       )
     : cuotaSegSocial(regla.montoTotalDeuda || regla.monto || 0);
-  const fechas = generarFechasPorRegla(reglaAsociada, opciones);
+  const fechas = generarFechasPorRegla(reglaAsociada, {
+    ...opciones,
+    fechaDesde:
+      opciones.fechaDesde ||
+      (!esGeneral ? regla.fechaInicioPagos : undefined),
+  });
   const indicePorFecha = esGeneral
     ? null
     : mapaPrimerasCuatroSemanasDelMes(fechas);

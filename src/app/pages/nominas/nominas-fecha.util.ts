@@ -163,6 +163,9 @@ export function normalizarReglaPagoNomina(
     fechaReferenciaAnual: regla.fechaReferenciaAnual
       ? (fechaCalendarioLocal(regla.fechaReferenciaAnual) as Date)
       : regla.fechaReferenciaAnual,
+    fechaInicioPagos: regla.fechaInicioPagos
+      ? (fechaCalendarioLocal(regla.fechaInicioPagos) as Date)
+      : regla.fechaInicioPagos,
     fechaAutorizacion: regla.fechaAutorizacion
       ? (fechaCalendarioLocal(regla.fechaAutorizacion) as Date)
       : regla.fechaAutorizacion,

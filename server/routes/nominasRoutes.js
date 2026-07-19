@@ -3,6 +3,7 @@ const router = Router();
 const TablaMaestraSalarial = require("../models/tablaMaestraSalarial");
 const NominaConfigGlobal = require("../models/nominaConfigGlobal");
 const ReglaPagoNomina = require("../models/reglaPagoNomina");
+const ConceptoDescuentoNomina = require("../models/conceptoDescuentoNomina");
 const Proveedor = require("../models/proveedor");
 const { construirProyeccion } = require("../utils/proyeccionPagosNomina");
 const { construirProyeccionTipoB } = require("../utils/proyeccionPagosTipoB");
@@ -22,6 +23,54 @@ const EventoPagoProgramado = require("../models/eventoPagoProgramado");
 const AjusteNominaPendiente = require("../models/ajusteNominaPendiente");
 
 const CONFIG_CLAVE = "principal";
+const CONCEPTOS_DESCUENTO_INICIALES = [
+  "Por roturas",
+  "Inasistencias a laborar",
+  "Pérdidas o daños",
+  "Multas",
+];
+const PREFIJO_CONCEPTO_OTROS = "Otros - ";
+
+function escaparRegex(texto) {
+  return texto.replace(/[.*+?^${}()|[\]\\]/g, "\\$&");
+}
+
+async function guardarConceptoDescuento(nombre, creadoPor) {
+  const valor = (nombre || "").toString().trim().replace(/\s+/g, " ");
+  if (!valor || valor === "Otros") return null;
+
+  const existente = await ConceptoDescuentoNomina.findOne({
+    nombre: new RegExp(`^${escaparRegex(valor)}$`, "i"),
+  });
+  if (existente) {
+    if (!existente.activo) {
+      existente.activo = true;
+      await existente.save();
+    }
+    return existente;
+  }
+
+  return new ConceptoDescuentoNomina({
+    nombre: valor,
+    activo: true,
+    creadoPor: (creadoPor || "").toString().trim(),
+  }).save();
+}
+
+async function guardarConceptoOtrosDeRegla(regla) {
+  const concepto = (regla?.conceptoDescuento || "").toString().trim();
+  if (
+    regla?.tipoRegla === "C" &&
+    esDescuentosGenerales(regla.transaccionNomina) &&
+    concepto &&
+    concepto !== "Otros"
+  ) {
+    const nombre = concepto.startsWith(PREFIJO_CONCEPTO_OTROS)
+      ? concepto.slice(PREFIJO_CONCEPTO_OTROS.length).trim()
+      : concepto;
+    await guardarConceptoDescuento(nombre, regla.creadoPor);
+  }
+}
 
 function formatearLimiteFacturacion(limite) {
   const valor = Number(limite) || 0;
@@ -358,6 +407,39 @@ router.get("/beneficiario-externo/:documento", async (req, res) => {
 
 // --- Reglas de pago tipo A (eventos periódicos) ---
 
+router.get("/conceptos-descuento", async (req, res) => {
+  try {
+    for (const nombre of CONCEPTOS_DESCUENTO_INICIALES) {
+      await guardarConceptoDescuento(nombre, "Sistema");
+    }
+
+    const conceptos = await ConceptoDescuentoNomina.find({ activo: true })
+      .sort({ nombre: 1 })
+      .lean();
+    const nombres = Array.from(
+      new Set(
+        conceptos.map((concepto) =>
+          concepto.nombre.startsWith(PREFIJO_CONCEPTO_OTROS)
+            ? concepto.nombre.slice(PREFIJO_CONCEPTO_OTROS.length).trim()
+            : concepto.nombre
+        )
+      )
+    );
+    const ordenados = [
+      ...CONCEPTOS_DESCUENTO_INICIALES.filter((nombre) =>
+        nombres.includes(nombre)
+      ),
+      ...nombres.filter(
+        (nombre) => !CONCEPTOS_DESCUENTO_INICIALES.includes(nombre)
+      ),
+      "Otros",
+    ];
+    res.json(ordenados);
+  } catch (err) {
+    res.status(400).json({ mensaje: err.message });
+  }
+});
+
 router.get("/reglas-pago", async (req, res) => {
   const reglas = await ReglaPagoNomina.find().sort({ createdAt: -1 });
   res.send(reglas);
@@ -560,6 +642,7 @@ router.post("/reglas-pago", async (req, res) => {
     });
     const regla = new ReglaPagoNomina(body);
     await regla.save();
+    await guardarConceptoOtrosDeRegla(regla);
     res.json({ status: "Regla creada", data: regla });
   } catch (err) {
     res.status(400).json({ mensaje: err.message });
@@ -583,6 +666,7 @@ router.put("/reglas-pago/:id", async (req, res) => {
       { $set: body },
       { new: true, runValidators: true }
     );
+    await guardarConceptoOtrosDeRegla(actualizado);
     res.json({ status: "Regla actualizada", data: actualizado });
   } catch (err) {
     res.status(400).json({ mensaje: err.message });
@@ -656,6 +740,25 @@ router.put("/reglas-pago/:id/autorizar", async (req, res) => {
       status: "Regla tipo A autorizada — eventos pendientes de ejecución",
       data: regla,
       eventosGenerados: eventos.length,
+    });
+  } catch (err) {
+    res.status(400).json({ mensaje: err.message });
+  }
+});
+
+router.put("/reglas-pago/:id/extender-eventos", async (req, res) => {
+  try {
+    const cantidadCuotas =
+      req.body?.cantidadCuotas != null
+        ? Number(req.body.cantidadCuotas)
+        : undefined;
+    const resultado = await tipoANominaService.extenderEventosProgramados(
+      req.params.id,
+      { cantidadCuotas }
+    );
+    res.json({
+      status: `Se generaron ${resultado.eventosGenerados} pagos programados adicionales`,
+      data: resultado,
     });
   } catch (err) {
     res.status(400).json({ mensaje: err.message });

@@ -55,3 +55,17 @@
     padding: 5px 8px;
   }
 }
+
+.consulta-pagos-eventos-grid {
+  margin-top: 0.5rem;
+}
+
+.descuento-detalle-btn {
+  font-weight: 600;
+  text-decoration: underline dotted;
+  cursor: pointer;
+
+  &:hover {
+    text-decoration: underline;
+  }
+}

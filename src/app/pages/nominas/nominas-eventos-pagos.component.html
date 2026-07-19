@@ -115,6 +115,19 @@
             [(value)]="formulario.parametro"
           ></dx-select-box>
         </div>
+        <div class="col-md-4 mb-3" *ngIf="esDominical">
+          <label class="form-label">Domingo de inicio</label>
+          <dx-date-box
+            [(value)]="formulario.fechaInicioPagos"
+            type="date"
+          ></dx-date-box>
+          <small class="text-muted d-block" *ngIf="fechaInicioDominicalEsDomingo">
+            Los pagos dominicales se generarán desde esta fecha.
+          </small>
+          <small class="text-danger d-block" *ngIf="!fechaInicioDominicalEsDomingo">
+            Seleccione una fecha que corresponda a domingo.
+          </small>
+        </div>
         <div class="col-md-4 mb-3">
           <label class="form-label">Vigencia de la regla</label>
           <dx-select-box
@@ -205,7 +218,7 @@
             [(value)]="formulario.parametro"
             (onValueChanged)="sincronizarParametroDiaMes(); onDatosAmortizacionChanged()"
           ></dx-select-box>
-          <div class="mt-2" *ngIf="formulario.frecuencia === 'Mensual'">
+          <div class="mt-2" *ngIf="formulario.frecuencia === 'Mensual' && !usaAmortizacion">
             <label class="small">Día del mes</label>
             <dx-number-box
               [(value)]="formulario.diaDelMes"
@@ -215,7 +228,7 @@
               (onValueChanged)="sincronizarParametroDiaMes()"
             ></dx-number-box>
           </div>
-          <div class="mt-2" *ngIf="esAnual">
+          <div class="mt-2" *ngIf="usaAmortizacion">
             <label class="small">{{ etiquetaFechaReferenciaAnual }}</label>
             <dx-date-box
               [(value)]="formulario.fechaReferenciaAnual"
@@ -223,7 +236,7 @@
               (onValueChanged)="onFechaReferenciaAnualChanged()"
             ></dx-date-box>
             <small class="text-muted d-block" *ngIf="(formulario.cuotas || 1) > 1">
-              Se usa para generar la 1ª cuota; luego puede ajustar cada fecha en la tabla.
+              Define la 1ª cuota; luego puede editar cada fecha en la tabla de amortización.
             </small>
           </div>
         </div>
@@ -317,6 +330,7 @@
             <dx-select-box
               [items]="conceptosDescuento"
               [(value)]="formulario.conceptoDescuento"
+              [searchEnabled]="true"
               (onValueChanged)="onConceptoDescuentoChanged()"
             ></dx-select-box>
           </div>
@@ -327,7 +341,7 @@
               placeholder="Describa la causa del descuento"
               [maxLength]="200"
             ></dx-text-box>
-            <small class="text-muted">Se guardará como «Otros - su descripción»</small>
+            <small class="text-muted">El nombre quedará disponible en el catálogo de descuentos</small>
           </div>
           <div class="col-md-4 mb-3">
             <label class="form-label">Modalidad</label>
@@ -393,6 +407,18 @@
           </div>
         </ng-container>
 
+        <div class="col-md-4 mb-3" *ngIf="esSeguridadSocial">
+          <label class="form-label">Fecha de inicio</label>
+          <dx-date-box
+            [(value)]="formulario.fechaInicioPagos"
+            type="date"
+            (onValueChanged)="onFechaInicioSeguridadSocialChanged()"
+          ></dx-date-box>
+          <small class="text-muted">
+            El descuento se aplicará desde el primer pago programado disponible
+            a partir de esta fecha.
+          </small>
+        </div>
         <div class="col-md-4 mb-3" *ngIf="esSeguridadSocial">
           <label class="form-label">Fuente</label>
           <dx-select-box

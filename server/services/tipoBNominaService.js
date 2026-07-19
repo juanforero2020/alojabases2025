@@ -13,10 +13,16 @@ const {
   esReglaAmortizacion,
   montoTotalRegla,
 } = require("../utils/proyeccionPagosTipoB");
+const {
+  montoDescuentoReglaCEnEvento,
+  esDescuentosGenerales,
+} = require("../utils/proyeccionPagosTipoC");
 
 const SUB_CUENTA_PAGO = "1.5.4 Pagos extras";
+const SUB_CUENTA_DESCUENTO = "1.5.7 Descuentos";
 const TIPO_TRANSACCION = "PAGO_NOMINA_TIPO_B";
 const TIPO_TRANSACCION_A = "PAGO_NOMINA_TIPO_A";
+const TIPO_TRANSACCION_DESCUENTO = "DESCUENTO_NOMINA";
 
 function esEventoMontoVariable(evento, regla) {
   return (
@@ -110,6 +116,10 @@ function validarReglaTipoB(regla) {
 
   if (regla.frecuencia === "Anual" && !regla.fechaReferenciaAnual) {
     return "Indique la fecha de referencia anual (inicio del periodo de pago)";
+  }
+
+  if (esReglaAmortizacion(regla) && !regla.fechaReferenciaAnual) {
+    return "Indique la fecha de inicio de la primera cuota";
   }
 
   if (esReglaAmortizacion(regla)) {
@@ -270,31 +280,73 @@ async function ejecutarEventoProgramado(eventoId, opciones = {}) {
 
   const { cuenta, tipoCuenta } = await resolverCuentaDesdeSubCuenta(subCuenta);
 
+  const montoYaPagado = Number(evento.montoPagado) || 0;
+  const montoDescuento = redondear2(Number(evento.montoDescuento) || 0);
+  const pagoCompletaCuota = montoPagar >= montoPendiente - 0.01;
+  const separarDescuentos = pagoCompletaCuota && montoDescuento > 0.009;
+
+  const montoBruto = redondear2(
+    Number(evento.montoBruto) ||
+      Number(evento.monto) + montoDescuento ||
+      montoPagar
+  );
+
+  const valorSalida = separarDescuentos
+    ? redondear2(montoBruto - montoYaPagado)
+    : montoPagar;
+
   const fechaContable = new Date();
-  const tx = new TransaccionFinanciera({
+  const baseTx = {
     fecha: new Date(),
     fechaContable,
     sucursal: opciones.sucursal || "matriz",
     cliente: evento.nombreBeneficiario,
     beneficiario: evento.nombreBeneficiario,
     cedula: evento.cedulaBeneficiario,
-    valor: montoPagar,
+    centroCosto: evento.centroCosto,
+    isContabilizada: true,
+  };
+
+  const notasPago =
+    opciones.notas ||
+    (separarDescuentos
+      ? `${evento.transaccionNomina || "Pago programado"} — cuota ${evento.numeroCuota}/${evento.totalCuotas}. Bruto: $${montoBruto.toFixed(2)}`
+      : `${evento.transaccionNomina || "Pago programado"} — cuota ${evento.numeroCuota}/${evento.totalCuotas}${
+          montoPagar < montoPendiente ? " (pago parcial)" : ""
+        }. Centro costo: ${evento.centroCosto || ""}.`);
+
+  const tx = new TransaccionFinanciera({
+    ...baseTx,
+    valor: valorSalida,
     tipoPago: "Egreso",
     cuenta,
     tipoCuenta,
     subCuenta,
     tipoTransaccion,
-    centroCosto: evento.centroCosto,
-    notas:
-      opciones.notas ||
-      `${evento.transaccionNomina || "Pago programado"} — cuota ${evento.numeroCuota}/${evento.totalCuotas}${montoPagar < montoPendiente ? " (pago parcial)" : ""}${
-        (Number(evento.montoDescuento) || 0) > 0
-          ? `. Bruto: $${Number(evento.montoBruto || evento.monto).toFixed(2)} − desc.: $${Number(evento.montoDescuento).toFixed(2)}`
-          : ""
-      }. Centro costo: ${evento.centroCosto || ""}.`,
-    isContabilizada: true,
+    notas: notasPago,
   });
   await tx.save();
+
+  const transaccionesDescuento = [];
+  if (separarDescuentos) {
+    const lineas = await obtenerLineasDescuentoEvento(evento, regla);
+    const cuentaDesc = await resolverCuentaDesdeSubCuenta(SUB_CUENTA_DESCUENTO);
+    for (const linea of lineas) {
+      if (!(linea.monto > 0.009)) continue;
+      const txDesc = new TransaccionFinanciera({
+        ...baseTx,
+        valor: redondear2(linea.monto),
+        tipoPago: "Ingreso",
+        cuenta: cuentaDesc.cuenta || cuenta,
+        tipoCuenta: "Ingresos",
+        subCuenta: SUB_CUENTA_DESCUENTO,
+        tipoTransaccion: TIPO_TRANSACCION_DESCUENTO,
+        notas: linea.etiqueta || "Descuento",
+      });
+      await txDesc.save();
+      transaccionesDescuento.push(txDesc);
+    }
+  }
 
   evento.pagosParciales = evento.pagosParciales || [];
   evento.pagosParciales.push({
@@ -305,7 +357,7 @@ async function ejecutarEventoProgramado(eventoId, opciones = {}) {
     notas: opciones.notas,
   });
 
-  evento.montoPagado = redondear2((Number(evento.montoPagado) || 0) + montoPagar);
+  evento.montoPagado = redondear2(montoYaPagado + montoPagar);
   evento.transaccionFinancieraId = tx._id;
   evento.ejecutadoPor = opciones.usuario || "";
   evento.fechaEjecucion = new Date();
@@ -332,12 +384,75 @@ async function ejecutarEventoProgramado(eventoId, opciones = {}) {
     await regla.save();
   }
 
+  const puedeExtender = tipoANominaService.puedeOfrecerExtension(
+    evento,
+    regla,
+    pendientesRegla
+  );
+
   return {
     evento,
     transaccion: tx,
+    transaccionesDescuento,
     montoPagado: montoPagar,
     saldoPendiente: redondear2(Number(evento.monto) - evento.montoPagado),
+    puedeExtender,
+    reglaPagoId: String(regla._id),
+    cuotasExtension: puedeExtender
+      ? tipoANominaService.CUOTAS_EXTENSION_ASIGNACION
+      : 0,
   };
+}
+
+function etiquetaReglaDescuento(reglaC) {
+  if (esDescuentosGenerales(reglaC.transaccionNomina)) {
+    return reglaC.conceptoDescuento || reglaC.transaccionNomina || "Descuento";
+  }
+  return "Seguridad social (aporte personal)";
+}
+
+async function obtenerLineasDescuentoEvento(evento, reglaA) {
+  const montoDescuento = redondear2(Number(evento.montoDescuento) || 0);
+  if (montoDescuento <= 0) return [];
+
+  if (!reglaA || reglaA.tipoRegla !== "A") {
+    return [
+      {
+        etiqueta: "Descuento",
+        monto: montoDescuento,
+      },
+    ];
+  }
+
+  const reglasC = await ReglaPagoNomina.find({
+    reglaPagoAsociadaId: reglaA._id,
+    tipoRegla: "C",
+    estadoRegla: "Autorizada",
+  }).lean();
+
+  const todosEventos = await EventoPagoProgramado.find({
+    reglaPagoId: reglaA._id,
+  }).sort({ fechaProgramada: 1 });
+
+  const lineas = [];
+  for (const reglaC of reglasC) {
+    const monto = montoDescuentoReglaCEnEvento(reglaC, evento, todosEventos);
+    if (monto > 0) {
+      lineas.push({
+        etiqueta: etiquetaReglaDescuento(reglaC),
+        monto: redondear2(monto),
+      });
+    }
+  }
+
+  if (!lineas.length && montoDescuento > 0) {
+    lineas.push({
+      etiqueta: "Descuento",
+      monto: montoDescuento,
+    });
+  }
+
+  return lineas;
 }
 
 function redondear2(n) {

@@ -32,6 +32,7 @@
                         <dxo-filter-row [visible]="true"></dxo-filter-row>
                         <dxo-search-panel [visible]="true" [width]="240" placeholder="Buscar..."></dxo-search-panel>
                         <dxi-column dataField="cliente_nombre" caption="Nombre"></dxi-column>
+                        <dxi-column dataField="ruc" caption="Cédula"></dxi-column>
                         <dxi-column dataField="celular" caption="Celular"></dxi-column>
                         <dxi-column dataField="direccion" caption="Dirección"></dxi-column>
                         <dxi-column dataField="tventa" caption="Tipo Cliente"></dxi-column>
@@ -103,6 +104,12 @@
                                                 <div class="col-md-4" style="text-align: left;">Nombre</div>
                                                 <div class="col-md-8">
                                                     <dx-text-box [(value)]="cliente.cliente_nombre" [readOnly]="false"></dx-text-box>
+                                                </div>
+                                            </div>
+                                            <div class="row espacio">
+                                                <div class="col-md-4" style="text-align: left;">Cédula / RUC</div>
+                                                <div class="col-md-8"> 
+                                                    <dx-text-box [(value)]="cliente.ruc" [readOnly]="false"></dx-text-box>
                                                 </div>
                                             </div>
                                             <div class="row espacio">

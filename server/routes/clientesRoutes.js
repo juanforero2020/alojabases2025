@@ -81,6 +81,7 @@ router.put('/updateClienteDataContacto/:id', async (req, res,next) => {
     const newCliente ={ 
         direccion:req.body.direccion,
         celular: req.body.celular,
+        ruc: req.body.ruc,
         correo:req.body.correo};
     await Cliente.findByIdAndUpdate(id, {$set: newCliente}, {new: true});
     res.json({status: 'Actualización Exitosa'}); 

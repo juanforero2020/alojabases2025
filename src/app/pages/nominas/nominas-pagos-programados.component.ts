@@ -431,18 +431,71 @@ export class NominasPagosProgramadosComponent implements OnInit {
       .subscribe(
         (res: any) => {
           const parcial = res?.data?.saldoPendiente > 0;
+          const puedeExtender = !!res?.data?.puedeExtender;
+          const reglaPagoId = res?.data?.reglaPagoId;
+          const cuotasExtension = Number(res?.data?.cuotasExtension) || 14;
+
           Swal.fire(
             parcial ? "Pago parcial registrado" : "Pago completo registrado",
             parcial
               ? `Saldo pendiente: $${res.data.saldoPendiente}`
               : "Pago registrado en finanzas",
             "success"
-          );
-          this.cargarEventosProgramados();
+          ).then(() => {
+            if (!parcial && puedeExtender && reglaPagoId) {
+              this.confirmarExtensionPagos(reglaPagoId, cuotasExtension);
+            } else {
+              this.cargarEventosProgramados();
+            }
+          });
         },
         (err) =>
           mostrarErrorNominaApi("Error", err, "No se pudo ejecutar")
       );
+  }
+
+  private confirmarExtensionPagos(
+    reglaPagoId: string,
+    cantidadCuotas: number
+  ) {
+    Swal.fire({
+      title: "Extender pagos programados",
+      html: `Ha completado la última cuota de <strong>Asignación nómina</strong>.<br/><br/>
+        ¿Desea generar <strong>${cantidadCuotas} pagos programados</strong> adicionales
+        con la misma frecuencia y monto?`,
+      icon: "question",
+      showCancelButton: true,
+      confirmButtonText: `Sí, generar ${cantidadCuotas} más`,
+      cancelButtonText: "No, por ahora",
+    }).then((result) => {
+      if (!result.value) {
+        this.cargarEventosProgramados();
+        return;
+      }
+      this._nominasService
+        .extenderEventosReglaPago(reglaPagoId, { cantidadCuotas })
+        .subscribe(
+          (res) => {
+            const n = res?.data?.eventosGenerados || cantidadCuotas;
+            const desde = res?.data?.cuotaDesde;
+            const hasta = res?.data?.cuotaHasta;
+            Swal.fire(
+              "Pagos extendidos",
+              `Se generaron ${n} pagos programados (cuotas ${desde}–${hasta}).`,
+              "success"
+            );
+            this.cargarEventosProgramados();
+          },
+          (err) => {
+            mostrarErrorNominaApi(
+              "Error",
+              err,
+              "No se pudieron generar los pagos adicionales"
+            );
+            this.cargarEventosProgramados();
+          }
+        );
+    });
   }
 
   puedeEjecutarEvento(ev: EventoPagoProgramado): boolean {

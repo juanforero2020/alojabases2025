@@ -40,9 +40,76 @@ function esReglaAmortizacion(regla) {
   return (
     regla.frecuencia === "Anual" ||
     regla.vigenciaRegla === "Unica vez" ||
-    (regla.modalidadMonto === "Finito" &&
-      regla.parametro === "Limite Fecha") ||
+    regla.modalidadMonto === "Finito" ||
     (regla.tablaAmortizacion && regla.tablaAmortizacion.length > 0)
+  );
+}
+
+function diaSemanaDesdeParametro(parametro) {
+  const texto = (parametro || "")
+    .toString()
+    .trim()
+    .toLowerCase()
+    .normalize("NFD")
+    .replace(/[\u0300-\u036f]/g, "")
+    .replace(/^los\s+/, "");
+  const mapa = {
+    domingo: 0,
+    lunes: 1,
+    martes: 2,
+    miercoles: 3,
+    jueves: 4,
+    viernes: 5,
+    sabado: 6,
+  };
+  if (mapa[texto] !== undefined) return mapa[texto];
+  for (const [clave, valor] of Object.entries(mapa)) {
+    if (texto.includes(clave)) return valor;
+  }
+  return null;
+}
+
+function siguienteDiaSemana(fecha, diaSemana) {
+  const d = new Date(fecha);
+  d.setHours(0, 0, 0, 0);
+  const diff = (diaSemana - d.getDay() + 7) % 7;
+  d.setDate(d.getDate() + diff);
+  return d;
+}
+
+/** Genera la fecha de cada cuota según frecuencia, partiendo de la fecha de inicio. */
+function fechaCuotaAmortizacion(inicio, indice, frecuencia) {
+  const base = new Date(inicio);
+  base.setHours(0, 0, 0, 0);
+  const f = (frecuencia || "Mensual").toLowerCase();
+
+  if (f === "diario") {
+    const d = new Date(base);
+    d.setDate(base.getDate() + indice);
+    return d;
+  }
+  if (f === "semanal") {
+    const d = new Date(base);
+    d.setDate(base.getDate() + indice * 7);
+    return d;
+  }
+  if (f === "quincenal") {
+    const d = new Date(base);
+    d.setDate(base.getDate() + indice * 15);
+    return d;
+  }
+  if (f === "anual") {
+    return fechaConDiaMes(
+      base.getFullYear() + indice,
+      base.getMonth(),
+      base.getDate()
+    );
+  }
+  // Mensual, Unica u otras: mismo día del mes, mes a mes
+  return fechaConDiaMes(
+    base.getFullYear(),
+    base.getMonth() + indice,
+    base.getDate()
   );
 }
 
@@ -83,14 +150,11 @@ function generarTablaAmortizacion(regla, opciones = {}) {
     : new Date();
   base.setHours(0, 0, 0, 0);
 
-  const diaPago = base.getDate();
-  const mesInicio = base.getMonth();
-  const anioInicio = base.getFullYear();
   const montoBase = cuotas > 0 ? redondear2(montoTotal / cuotas) : 0;
   const filas = [];
 
   for (let i = 0; i < cuotas; i++) {
-    const fechaPago = fechaConDiaMes(anioInicio, mesInicio + i, diaPago);
+    const fechaPago = fechaCuotaAmortizacion(base, i, regla.frecuencia);
     let monto = montoBase;
     if (i === cuotas - 1) {
       monto = redondear2(montoTotal - montoBase * (cuotas - 1));
@@ -184,6 +248,29 @@ function generarFechasTipoB(regla, opciones = {}) {
     return fechas;
   }
 
+  if (frecuencia === "semanal") {
+    const diaSemana = diaSemanaDesdeParametro(regla.parametro);
+    let primera = new Date(inicio);
+    if (diaSemana != null) {
+      primera = siguienteDiaSemana(inicio, diaSemana);
+    }
+    for (let i = 0; i < total; i++) {
+      const f = new Date(primera);
+      f.setDate(primera.getDate() + i * 7);
+      fechas.push(f);
+    }
+    return fechas;
+  }
+
+  if (frecuencia === "diario") {
+    for (let i = 0; i < total; i++) {
+      const f = new Date(inicio);
+      f.setDate(inicio.getDate() + i);
+      fechas.push(f);
+    }
+    return fechas;
+  }
+
   let cursor = new Date(inicio.getFullYear(), inicio.getMonth(), dia);
   if (cursor < inicio) {
     cursor = agregarMeses(cursor, 1);
@@ -199,10 +286,6 @@ function generarFechasTipoB(regla, opciones = {}) {
       fechas.push(
         fechaConDiaMes(base.getFullYear(), base.getMonth(), quincena)
       );
-    } else if (frecuencia === "semanal") {
-      const f = new Date(cursor);
-      f.setDate(f.getDate() + i * 7);
-      fechas.push(f);
     } else {
       const f = new Date(cursor.getFullYear(), cursor.getMonth() + i, 1);
       fechas.push(fechaConDiaMes(f.getFullYear(), f.getMonth(), dia));
