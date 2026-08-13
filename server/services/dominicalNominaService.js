@@ -8,9 +8,11 @@ const EventoPagoProgramado = require("../models/eventoPagoProgramado");
 const EventoPagoDominical = require("../models/eventoPagoDominical");
 const AjusteNominaPendiente = require("../models/ajusteNominaPendiente");
 const TransaccionFinanciera = require("../models/transaccionFinanciera");
+const Cuenta = require("../models/cuentas");
 
 const CONFIG_CLAVE = "principal";
-const SUB_CUENTA_PAGO = "1.5.4 Pagos extras";
+const CUENTA_PAGO = "1.7 GASTOS OPERACIONALES";
+const SUB_CUENTA_PAGO = "1.7.1 Nominas";
 const SUB_CUENTA_DESCUENTO = "1.5.7 Descuentos";
 const TIPO_PAGO = "PAGO_DOMINICAL";
 const TIPO_AJUSTE = "AJUSTE_DOMINICAL_ANULACION";
@@ -466,6 +468,17 @@ async function crearTransaccionFinanciera(datos) {
   return tx;
 }
 
+async function resolverCuentaPagoDominical() {
+  const cuentaDoc = await Cuenta.findOne({
+    nombre: { $regex: /^1\.7\s+GASTOS OPERACIONALES/i },
+  });
+  return {
+    cuenta: cuentaDoc?.nombre || CUENTA_PAGO,
+    tipoCuenta: cuentaDoc?.tipoCuenta || "Salidas",
+    subCuenta: SUB_CUENTA_PAGO,
+  };
+}
+
 async function liquidarDominical(fecha, opciones = {}) {
   const fechaNormalizada = inicioSemanaDomingo(fecha);
   const simulacion = await simularLiquidacionDominical(
@@ -493,19 +506,22 @@ async function liquidarDominical(fecha, opciones = {}) {
 
     let txPago = null;
     if (montoNeto > 0) {
+      const cuentaPago = await resolverCuentaPagoDominical();
       txPago = await crearTransaccionFinanciera({
         fecha: new Date(),
         fechaContable: fechaDom,
-        sucursal: opciones.sucursal || "",
+        sucursal: opciones.sucursal || "matriz",
         cliente: item.nombre,
         beneficiario: item.nombre,
         cedula: item.cedula,
         valor: montoNeto,
         tipoPago: "Egreso",
-        subCuenta: SUB_CUENTA_PAGO,
+        cuenta: cuentaPago.cuenta,
+        tipoCuenta: cuentaPago.tipoCuenta,
+        subCuenta: cuentaPago.subCuenta,
         tipoTransaccion: TIPO_PAGO,
         notas: `Pago dominical ${fechaDom.toISOString().slice(0, 10)}. Facturación base cálculo $${item.facturacionNetaCalculo ?? simulacion.facturacion.facturacionNeta}. Rango ${item.rangoAplicado}.`,
-        isContabilizada: false,
+        isContabilizada: true,
       });
     }
 

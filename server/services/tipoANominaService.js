@@ -136,6 +136,7 @@ function subCuentaTipoA(transaccionNomina) {
   const t = normalizarTexto(transaccionNomina);
   if (t.includes("anticipo")) return "1.5.3 Anticipos nomina";
   if (t.includes("asignacion")) return "1.5.2 Nominas";
+  if (t.includes("dominical")) return "1.7.1 Nominas";
   return "1.5.4 Pagos extras";
 }
 

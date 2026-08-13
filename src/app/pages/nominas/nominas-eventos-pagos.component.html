@@ -115,17 +115,21 @@
             [(value)]="formulario.parametro"
           ></dx-select-box>
         </div>
-        <div class="col-md-4 mb-3" *ngIf="esDominical">
-          <label class="form-label">Domingo de inicio</label>
+        <div class="col-md-4 mb-3">
+          <label class="form-label">{{ etiquetaFechaInicioTipoA }}</label>
           <dx-date-box
             [(value)]="formulario.fechaInicioPagos"
             type="date"
           ></dx-date-box>
-          <small class="text-muted d-block" *ngIf="fechaInicioDominicalEsDomingo">
+          <small class="text-muted d-block" *ngIf="esDominical && fechaInicioDominicalEsDomingo">
             Los pagos dominicales se generarán desde esta fecha.
           </small>
-          <small class="text-danger d-block" *ngIf="!fechaInicioDominicalEsDomingo">
+          <small class="text-danger d-block" *ngIf="esDominical && !fechaInicioDominicalEsDomingo">
             Seleccione una fecha que corresponda a domingo.
+          </small>
+          <small class="text-muted d-block" *ngIf="!esDominical">
+            Los pagos se programarán desde esta fecha. Si olvidó activar la regla,
+            elija el día de pago anterior para incluirlo aunque quede con atraso.
           </small>
         </div>
         <div class="col-md-4 mb-3">
@@ -238,7 +242,21 @@
             <small class="text-muted d-block" *ngIf="(formulario.cuotas || 1) > 1">
               Define la 1ª cuota; luego puede editar cada fecha en la tabla de amortización.
             </small>
+            <small class="text-muted d-block">
+              Puede elegir una fecha anterior si olvidó activar la regla; el pago quedará pendiente aunque sea con atraso.
+            </small>
           </div>
+        </div>
+        <div class="col-md-4 mb-3" *ngIf="!usaAmortizacion">
+          <label class="form-label">Fecha de inicio del cálculo</label>
+          <dx-date-box
+            [(value)]="formulario.fechaInicioPagos"
+            type="date"
+          ></dx-date-box>
+          <small class="text-muted d-block">
+            Los pagos se programarán desde esta fecha. Si olvidó activar la regla,
+            elija el día de pago anterior para incluirlo aunque quede con atraso.
+          </small>
         </div>
         <div class="col-md-4 mb-3">
           <label class="form-label">Vigencia de la regla</label>

@@ -114,12 +114,20 @@ function validarReglaTipoB(regla) {
     return "El centro de costo es obligatorio para reglas tipo B";
   }
 
-  if (regla.frecuencia === "Anual" && !regla.fechaReferenciaAnual) {
+  if (regla.frecuencia === "Anual" && !regla.fechaReferenciaAnual && !regla.fechaInicioPagos) {
     return "Indique la fecha de referencia anual (inicio del periodo de pago)";
   }
 
-  if (esReglaAmortizacion(regla) && !regla.fechaReferenciaAnual) {
+  if (esReglaAmortizacion(regla) && !regla.fechaReferenciaAnual && !regla.fechaInicioPagos) {
     return "Indique la fecha de inicio de la primera cuota";
+  }
+
+  if (
+    !esReglaAmortizacion(regla) &&
+    !regla.fechaInicioPagos &&
+    !regla.fechaReferenciaAnual
+  ) {
+    return "Indique la fecha desde la que se calcularán los pagos";
   }
 
   if (esReglaAmortizacion(regla)) {
@@ -281,19 +289,22 @@ async function ejecutarEventoProgramado(eventoId, opciones = {}) {
   const { cuenta, tipoCuenta } = await resolverCuentaDesdeSubCuenta(subCuenta);
 
   const montoYaPagado = Number(evento.montoPagado) || 0;
-  const montoDescuento = redondear2(Number(evento.montoDescuento) || 0);
   const pagoCompletaCuota = montoPagar >= montoPendiente - 0.01;
+  const lineasDescuento = pagoCompletaCuota
+    ? await obtenerLineasDescuentoEvento(evento, regla)
+    : [];
+  const montoDescuento = redondear2(
+    lineasDescuento.reduce((s, l) => s + (Number(l.monto) || 0), 0)
+  );
   const separarDescuentos = pagoCompletaCuota && montoDescuento > 0.009;
 
   const montoBruto = redondear2(
-    Number(evento.montoBruto) ||
-      Number(evento.monto) + montoDescuento ||
-      montoPagar
+    evento.montoBruto != null && Number(evento.montoBruto) > 0
+      ? Number(evento.montoBruto)
+      : (Number(evento.monto) || 0) + montoDescuento || montoPagar
   );
 
-  const valorSalida = separarDescuentos
-    ? redondear2(montoBruto - montoYaPagado)
-    : montoPagar;
+  const valorSalida = montoPagar;
 
   const fechaContable = new Date();
   const baseTx = {
@@ -310,7 +321,7 @@ async function ejecutarEventoProgramado(eventoId, opciones = {}) {
   const notasPago =
     opciones.notas ||
     (separarDescuentos
-      ? `${evento.transaccionNomina || "Pago programado"} — cuota ${evento.numeroCuota}/${evento.totalCuotas}. Bruto: $${montoBruto.toFixed(2)}`
+      ? `${evento.transaccionNomina || "Pago programado"} — cuota ${evento.numeroCuota}/${evento.totalCuotas}. Neto pagado: $${montoPagar.toFixed(2)} (bruto $${montoBruto.toFixed(2)} − descuentos $${montoDescuento.toFixed(2)}).`
       : `${evento.transaccionNomina || "Pago programado"} — cuota ${evento.numeroCuota}/${evento.totalCuotas}${
           montoPagar < montoPendiente ? " (pago parcial)" : ""
         }. Centro costo: ${evento.centroCosto || ""}.`);
@@ -327,26 +338,9 @@ async function ejecutarEventoProgramado(eventoId, opciones = {}) {
   });
   await tx.save();
 
-  const transaccionesDescuento = [];
-  if (separarDescuentos) {
-    const lineas = await obtenerLineasDescuentoEvento(evento, regla);
-    const cuentaDesc = await resolverCuentaDesdeSubCuenta(SUB_CUENTA_DESCUENTO);
-    for (const linea of lineas) {
-      if (!(linea.monto > 0.009)) continue;
-      const txDesc = new TransaccionFinanciera({
-        ...baseTx,
-        valor: redondear2(linea.monto),
-        tipoPago: "Ingreso",
-        cuenta: cuentaDesc.cuenta || cuenta,
-        tipoCuenta: "Ingresos",
-        subCuenta: SUB_CUENTA_DESCUENTO,
-        tipoTransaccion: TIPO_TRANSACCION_DESCUENTO,
-        notas: linea.etiqueta || "Descuento",
-      });
-      await txDesc.save();
-      transaccionesDescuento.push(txDesc);
-    }
-  }
+  const transaccionesDescuento = separarDescuentos
+    ? await registrarTransaccionesDescuento(baseTx, lineasDescuento, cuenta)
+    : [];
 
   evento.pagosParciales = evento.pagosParciales || [];
   evento.pagosParciales.push({
@@ -411,17 +405,44 @@ function etiquetaReglaDescuento(reglaC) {
   return "Seguridad social (aporte personal)";
 }
 
+function montoDescuentoEvento(evento) {
+  const descGuardado = redondear2(Number(evento.montoDescuento) || 0);
+  const bruto =
+    evento.montoBruto != null ? redondear2(Number(evento.montoBruto)) : 0;
+  const neto = redondear2(Number(evento.monto) || 0);
+  const descPorDiferencia = bruto > neto + 0.009 ? redondear2(bruto - neto) : 0;
+  return Math.max(descGuardado, descPorDiferencia);
+}
+
+async function registrarTransaccionesDescuento(baseTx, lineas, cuentaPago) {
+  const creadas = [];
+  const cuentaDesc = await resolverCuentaDesdeSubCuenta(SUB_CUENTA_DESCUENTO);
+  for (const linea of lineas || []) {
+    const monto = redondear2(linea.monto);
+    if (!(monto > 0.009)) continue;
+    const txDesc = new TransaccionFinanciera({
+      ...baseTx,
+      valor: monto,
+      tipoPago: "Ingreso",
+      cuenta: cuentaDesc.cuenta || cuentaPago,
+      tipoCuenta: "Ingresos",
+      subCuenta: SUB_CUENTA_DESCUENTO,
+      tipoTransaccion: TIPO_TRANSACCION_DESCUENTO,
+      notas: `Descuento nómina — ${linea.etiqueta || "Descuento"}`,
+    });
+    await txDesc.save();
+    creadas.push(txDesc);
+  }
+  return creadas;
+}
+
 async function obtenerLineasDescuentoEvento(evento, reglaA) {
-  const montoDescuento = redondear2(Number(evento.montoDescuento) || 0);
-  if (montoDescuento <= 0) return [];
+  const montoDescuento = montoDescuentoEvento(evento);
 
   if (!reglaA || reglaA.tipoRegla !== "A") {
-    return [
-      {
-        etiqueta: "Descuento",
-        monto: montoDescuento,
-      },
-    ];
+    return montoDescuento > 0
+      ? [{ etiqueta: "Descuento", monto: montoDescuento }]
+      : [];
   }
 
   const reglasC = await ReglaPagoNomina.find({
@@ -445,10 +466,18 @@ async function obtenerLineasDescuentoEvento(evento, reglaA) {
     }
   }
 
+  const sumaLineas = redondear2(
+    lineas.reduce((s, l) => s + (Number(l.monto) || 0), 0)
+  );
   if (!lineas.length && montoDescuento > 0) {
     lineas.push({
       etiqueta: "Descuento",
       monto: montoDescuento,
+    });
+  } else if (montoDescuento > sumaLineas + 0.009) {
+    lineas.push({
+      etiqueta: "Descuento",
+      monto: redondear2(montoDescuento - sumaLineas),
     });
   }
 
@@ -464,6 +493,13 @@ async function resolverCuentaDesdeSubCuenta(subCuentaNombre) {
   const nombre = (subCuentaNombre || "").trim();
   if (!nombre) return fallback;
 
+  const cuentaFijaPorSubcuenta = {
+    "1.7.1 Nominas": {
+      cuenta: "1.7 GASTOS OPERACIONALES",
+      tipoCuenta: "Salidas",
+    },
+  };
+
   const sub = await SubCuenta.findOne({ nombre });
   if (sub?.id_cuenta) {
     const cuentaDoc = await Cuenta.findById(sub.id_cuenta);
@@ -473,6 +509,17 @@ async function resolverCuentaDesdeSubCuenta(subCuentaNombre) {
         tipoCuenta: cuentaDoc.tipoCuenta || "Salidas",
       };
     }
+  }
+
+  if (cuentaFijaPorSubcuenta[nombre]) {
+    const fija = cuentaFijaPorSubcuenta[nombre];
+    const cuentaDoc = await Cuenta.findOne({
+      nombre: { $regex: new RegExp(`^${fija.cuenta.replace(/[.*+?^${}()|[\]\\]/g, "\\$&")}`, "i") },
+    });
+    return {
+      cuenta: cuentaDoc?.nombre || fija.cuenta,
+      tipoCuenta: cuentaDoc?.tipoCuenta || fija.tipoCuenta,
+    };
   }
 
   const prefijoMatch = nombre.match(/^(\d+\.\d+)/);

@@ -147,6 +147,8 @@ function generarTablaAmortizacion(regla, opciones = {}) {
 
   const base = regla.fechaReferenciaAnual
     ? new Date(regla.fechaReferenciaAnual)
+    : regla.fechaInicioPagos
+    ? new Date(regla.fechaInicioPagos)
     : new Date();
   base.setHours(0, 0, 0, 0);
 
@@ -231,6 +233,8 @@ function generarFechasTipoB(regla, opciones = {}) {
   const dia = extraerDiaDelMes(regla.parametro, regla.diaDelMes);
   const inicio = opciones.fechaInicio
     ? new Date(opciones.fechaInicio)
+    : regla.fechaInicioPagos
+    ? new Date(regla.fechaInicioPagos)
     : regla.fechaReferenciaAnual
     ? new Date(regla.fechaReferenciaAnual)
     : new Date();

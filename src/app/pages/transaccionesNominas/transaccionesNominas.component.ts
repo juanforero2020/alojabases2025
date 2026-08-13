@@ -133,7 +133,7 @@ export class TransaccionesNominasComponent implements OnInit {
     this.valorNominas = 0;
     this.resultado = 0;
     this.listaTransacciones.forEach(element =>{
-      if(element.subCuenta == "1.5.2 Nominas"){
+      if(element.subCuenta == "1.5.2 Nominas" || element.subCuenta == "1.7.1 Nominas"){
         this.valorNominas = element.valor + this.valorNominas;
       }else if(element.subCuenta == "1.5.3 Anticipos nomina"){
         this.valorAnticipos = element.valor + this.valorAnticipos;

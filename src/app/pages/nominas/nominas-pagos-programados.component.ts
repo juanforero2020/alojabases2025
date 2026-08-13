@@ -434,12 +434,23 @@ export class NominasPagosProgramadosComponent implements OnInit {
           const puedeExtender = !!res?.data?.puedeExtender;
           const reglaPagoId = res?.data?.reglaPagoId;
           const cuotasExtension = Number(res?.data?.cuotasExtension) || 14;
+          const descuentos = res?.data?.transaccionesDescuento || [];
+          const nDesc = descuentos.length;
+          const totalDesc = descuentos.reduce(
+            (s, t) => s + (Number(t.valor) || 0),
+            0
+          );
+          const detalleDesc = nDesc
+            ? ` Se registraron ${nDesc} transacción(es) de descuento por $${totalDesc.toFixed(
+                2
+              )} (subcuenta 1.5.7 Descuentos).`
+            : "";
 
           Swal.fire(
             parcial ? "Pago parcial registrado" : "Pago completo registrado",
             parcial
               ? `Saldo pendiente: $${res.data.saldoPendiente}`
-              : "Pago registrado en finanzas",
+              : `Pago registrado en finanzas.${detalleDesc}`,
             "success"
           ).then(() => {
             if (!parcial && puedeExtender && reglaPagoId) {
