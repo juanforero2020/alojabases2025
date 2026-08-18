@@ -34,6 +34,7 @@ import { EntregasPComponent } from "./pages/entregas-p/entregas-p.component";
 import { ParametrizacionComponent } from "./pages/parametrizacion/parametrizacion.component";
 import { UserComponent } from "./pages/user/user.component";
 import { ClientesComponent } from "./pages/clientes/clientes.component";
+import { AdminProveedoresComponent } from "./pages/admin-proveedores/admin-proveedores.component";
 import { ControlPreciosComponent } from "./pages/control-precios/control-precios.component";
 import { CalculadorasComponent } from "./pages/calculadora/calculadora.component";
 import { AuditoriasComponent } from "./pages/auditorias/auditorias.component";
@@ -196,6 +197,12 @@ const routes: Routes = [
     canActivate: [AuthGuardService],
     data: { roles: ["Administrador"] },
     component: ClientesComponent,
+  },
+  {
+    path: "admin-proveedores",
+    canActivate: [AuthGuardService],
+    data: { roles: ["Administrador"] },
+    component: AdminProveedoresComponent,
   },
   {
     path: "precios",

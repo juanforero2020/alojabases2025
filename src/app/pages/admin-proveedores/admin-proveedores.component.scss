@@ -1,0 +1,72 @@
+.proveedores-titulo-seccion {
+  background-color: #fff3cd;
+  color: #c62828;
+  font-weight: bold;
+  text-transform: uppercase;
+  padding: 0.5rem 1rem;
+  margin-bottom: 1rem;
+  border-left: 4px solid #c62828;
+}
+
+.proveedores-formulario .form-label {
+  font-weight: 600;
+  font-size: 0.85rem;
+  margin-bottom: 0.25rem;
+}
+
+.proveedores-kpi {
+  border: 1px solid #dee2e6;
+  border-radius: 4px;
+  padding: 0.65rem 0.75rem;
+  text-align: center;
+  background: #fff;
+}
+
+.proveedores-kpi strong {
+  font-size: 1.25rem;
+  color: #c62828;
+}
+
+.btn-proveedor-primario {
+  background-color: #ff5722;
+  border-color: #ff5722;
+  color: #fff;
+}
+
+.btn-proveedor-primario:hover,
+.btn-proveedor-primario:focus {
+  background-color: #e64a19;
+  border-color: #e64a19;
+  color: #fff;
+}
+
+:host ::ng-deep .popup-proveedor-overlay .dx-popup-content {
+  max-height: calc(90vh - 3.5rem);
+  overflow: hidden;
+  padding: 0;
+}
+
+.popup-proveedor-body {
+  display: flex;
+  flex-direction: column;
+  max-height: calc(90vh - 3.5rem);
+  width: 100%;
+  max-width: 100%;
+  min-width: 0;
+  box-sizing: border-box;
+}
+
+.popup-proveedor-scroll {
+  flex: 1 1 auto;
+  min-height: 0;
+  overflow-y: auto;
+  overflow-x: hidden;
+  -webkit-overflow-scrolling: touch;
+}
+
+.popup-proveedor-footer {
+  flex: 0 0 auto;
+  border-top: 1px solid #dee2e6;
+  background: #fff;
+  padding-top: 0.75rem;
+}

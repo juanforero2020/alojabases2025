@@ -46,17 +46,15 @@ export class NominasEventosPagosComponent implements OnInit {
   readonly cuotasSegSocial = 4;
   tiposBeneficiario = ["Interno", "Externo"];
   transaccionesNominaA = ["Asignacion nomina", "Dominical"];
-  transaccionesNominaB = [
-    "Arriendos",  
-    "Pagos puntuales", 
-    /* "Préstamos recibidos",
-    "Tarjetas de crédito"*/
+  readonly transaccionesNominaBInterno = [
     "Comisiones por ventas",
     "Bono",
     "Décimo tercer sueldo",
     "Décimo cuarto sueldo",
+    "Pagos puntuales",
     "Vacaciones",
   ];
+  readonly transaccionesNominaBExterno = ["Arriendos"];
   readonly transaccionesBeneficiosAnuales = [
     "Décimo tercer sueldo",
     "Décimo cuarto sueldo",
@@ -116,6 +114,18 @@ export class NominasEventosPagosComponent implements OnInit {
 
   get esTipoB(): boolean {
     return this.formulario.tipoRegla === "B";
+  }
+
+  get transaccionesNominaBDisponibles(): string[] {
+    const conceptos =
+      this.formulario.tipoBeneficiario === "Externo"
+        ? this.transaccionesNominaBExterno
+        : this.transaccionesNominaBInterno;
+    const actual = (this.formulario.transaccionNomina || "").trim();
+    if (actual && !conceptos.includes(actual)) {
+      return [...conceptos, actual];
+    }
+    return conceptos;
   }
 
   get esTipoC(): boolean {
@@ -866,6 +876,36 @@ export class NominasEventosPagosComponent implements OnInit {
     this.formulario.monto = 0;
     this.reglasPagoAsociables = [];
     this.formulario.reglaPagoAsociadaId = undefined;
+    this.aplicarConceptosTipoBPorBeneficiario();
+  }
+
+  private aplicarConceptosTipoBPorBeneficiario(): void {
+    if (!this.esTipoB) return;
+    const disponibles =
+      this.formulario.tipoBeneficiario === "Externo"
+        ? this.transaccionesNominaBExterno
+        : this.transaccionesNominaBInterno;
+    const actual = (this.formulario.transaccionNomina || "").trim();
+    if (disponibles.includes(actual)) return;
+
+    this.formulario.transaccionNomina = disponibles[0] || "";
+    if (this.esTransaccionBeneficiosAnuales) {
+      this.formulario.frecuencia = "Anual";
+      this.formulario.vigenciaRegla = "Unica vez";
+      this.formulario.modalidadMonto = "Finito";
+      this.formulario.cuotas = 1;
+      this.formulario.parametro = this.parametrosAnualB[0];
+      this.asegurarFechaReferenciaTipoB();
+    } else {
+      this.formulario.frecuencia = "Mensual";
+      this.formulario.parametro = "El dia x del mes";
+      this.formulario.diaDelMes = this.formulario.diaDelMes || 1;
+      this.formulario.vigenciaRegla = "Indefinido";
+      this.formulario.modalidadMonto = "Periodico";
+    }
+    this.actualizarParametrosPorFrecuencia();
+    this.amortizacionEditadaManual = false;
+    this.generarAmortizacion(true);
   }
 
   etiquetaReglaAsociable(regla: ReglaPagoNomina): string {

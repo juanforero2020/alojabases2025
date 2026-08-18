@@ -1,0 +1,169 @@
+<div *ngIf="mostrarLoading">
+  <app-loading-messagge [messagge]="mensajeLoading"></app-loading-messagge>
+</div>
+
+<div class="row" *ngIf="mostrarBloqueo"></div>
+
+<div *ngIf="!mostrarBloqueo">
+  <br /><br />
+
+  <div class="card">
+    <h5 class="card-header text-center font-weight-bold text-uppercase">
+      Administración de Proveedores
+    </h5>
+    <div class="card-body">
+      <div class="proveedores-titulo-seccion text-center">
+        Catálogo de Proveedores
+      </div>
+      <p class="text-muted text-center mb-3">
+        Registro y mantenimiento de proveedores. Base para órdenes de compra,
+        facturas y pagos.
+      </p>
+
+      <!-- <div class="row mb-3 proveedores-resumen">
+        <div class="col-md-4 mb-2">
+          <div class="proveedores-kpi">
+            <div class="small text-muted">Total registrados</div>
+            <strong>{{ proveedores.length }}</strong>
+          </div>
+        </div>
+        <div class="col-md-4 mb-2">
+          <div class="proveedores-kpi">
+            <div class="small text-muted">Con RUC</div>
+            <strong>{{ totalConRuc }}</strong>
+          </div>
+        </div>
+        <div class="col-md-4 mb-2">
+          <div class="proveedores-kpi">
+            <div class="small text-muted">Con contacto</div>
+            <strong>{{ totalConContacto }}</strong>
+          </div>
+        </div>
+      </div> -->
+
+      <div class="row mb-3">
+        <div class="col-md-4 offset-md-8 text-right">
+          <button class="btn btn-block btn-proveedor-primario" (click)="abrirNuevo()">
+            + Nuevo proveedor
+          </button>
+        </div>
+      </div>
+
+      <dx-data-grid
+        [dataSource]="proveedores"
+        [showBorders]="true"
+        [columnAutoWidth]="true"
+        [rowAlternationEnabled]="true"
+        keyExpr="_id"
+        (onExporting)="onExporting($event)"
+        (onExported)="onExported($event)"
+      >
+        <dxo-filter-row [visible]="true"></dxo-filter-row>
+        <dxo-header-filter [visible]="true"></dxo-header-filter>
+        <dxo-search-panel [visible]="true" [width]="240" placeholder="Buscar..."></dxo-search-panel>
+        <dxo-export [enabled]="true" fileName="proveedores" [allowExportSelectedData]="true"></dxo-export>
+        <dxi-column dataField="_id" caption="ID" [visible]="false"></dxi-column>
+        <dxi-column dataField="nombre_proveedor" caption="Nombre"></dxi-column>
+        <dxi-column dataField="ruc" caption="RUC"></dxi-column>
+        <dxi-column dataField="direccion" caption="Dirección"></dxi-column>
+        <dxi-column dataField="celular" caption="Celular"></dxi-column>
+        <dxi-column dataField="contacto" caption="Contacto"></dxi-column>
+        <dxi-column
+          caption="Acciones"
+          cellTemplate="accionesProveedor"
+          [width]="160"
+          [allowFiltering]="false"
+          [allowSorting]="false"
+        ></dxi-column>
+
+        <div *dxTemplate="let data of 'accionesProveedor'">
+          <button class="btn btn-sm btn-primary mr-1" (click)="abrirEdicion(data.data)">
+            Editar
+          </button>
+          <button class="btn btn-sm btn-danger" (click)="eliminarProveedor(data.data)">
+            Eliminar
+          </button>
+        </div>
+
+        <dxo-paging [pageSize]="8"></dxo-paging>
+        <dxo-pager
+          [showPageSizeSelector]="true"
+          [allowedPageSizes]="[8, 12, 20]"
+          [showInfo]="true"
+        ></dxo-pager>
+      </dx-data-grid>
+    </div>
+  </div>
+</div>
+
+<dx-popup
+  [(visible)]="popupVisible"
+  [showTitle]="true"
+  [title]="esEdicion ? 'Editar proveedor' : 'Nuevo proveedor'"
+  [width]="700"
+  [maxHeight]="'90vh'"
+  [height]="'auto'"
+  [showCloseButton]="true"
+  [elementAttr]="{ class: 'popup-proveedor-overlay' }"
+>
+  <div *dxTemplate="let data of 'content'" class="popup-proveedor-body">
+    <div class="popup-proveedor-scroll p-3">
+      <div class="proveedores-titulo-seccion text-center mb-3">
+        Datos del proveedor
+      </div>
+
+      <div class="row proveedores-formulario">
+        <div class="col-md-6 mb-3">
+          <label class="form-label">Nombre *</label>
+          <dx-text-box
+            [(value)]="proveedor.nombre_proveedor"
+            placeholder="Nombre o razón social"
+          ></dx-text-box>
+        </div>
+        <div class="col-md-6 mb-3">
+          <label class="form-label">RUC</label>
+          <dx-text-box
+            [(value)]="proveedor.ruc"
+            placeholder="Número de RUC"
+          ></dx-text-box>
+        </div>
+        <div class="col-md-12 mb-3">
+          <label class="form-label">Dirección</label>
+          <dx-text-box
+            [(value)]="proveedor.direccion"
+            placeholder="Dirección fiscal o comercial"
+          ></dx-text-box>
+        </div>
+        <div class="col-md-6 mb-3">
+          <label class="form-label">Celular</label>
+          <dx-text-box
+            [(value)]="proveedor.celular"
+            placeholder="Teléfono de contacto"
+          ></dx-text-box>
+        </div>
+        <div class="col-md-6 mb-3">
+          <label class="form-label">Contacto</label>
+          <dx-text-box
+            [(value)]="proveedor.contacto"
+            placeholder="Persona de contacto"
+          ></dx-text-box>
+        </div>
+      </div>
+    </div>
+
+    <div class="popup-proveedor-footer px-3 pb-3">
+      <div class="row mt-0">
+        <div class="col-6">
+          <button class="btn btn-block btn-secondary" (click)="cerrarPopup()">
+            Cancelar
+          </button>
+        </div>
+        <div class="col-6">
+          <button class="btn btn-block btn-proveedor-primario" (click)="guardarProveedor()">
+            Guardar
+          </button>
+        </div>
+      </div>
+    </div>
+  </div>
+</dx-popup>

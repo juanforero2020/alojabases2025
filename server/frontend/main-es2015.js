@@ -189,7 +189,7 @@ const navigation = [
         icon: "fa fa-users",
         items: [
             {
-                text: "Nóminas",
+                text: "Administración Llaves CyP",
                 path: "/nominas",
             },
         ],
@@ -448,6 +448,10 @@ const navigationAdmin = [
                 path: "/clientes",
             },
             {
+                text: "Proveedores",
+                path: "/admin-proveedores",
+            },
+            {
                 text: "Bodegas",
                 path: "/bodegas",
             },
@@ -552,7 +556,7 @@ const navigationAdmin = [
                 path: "",
             },
             {
-                text: "Nóminas",
+                text: "Administración Llaves CyP",
                 path: "/nominas",
             },
         ],
@@ -733,6 +737,10 @@ const navigationSupervisor = [
                 text: "Clientes",
                 path: "/clientes",
             },
+            {
+                text: "Proveedores",
+                path: "/admin-proveedores",
+            },
         ],
     },
     {
@@ -822,7 +830,7 @@ const navigationSupervisor = [
                 path: "",
             },
             {
-                text: "Nóminas",
+                text: "Administración Llaves CyP",
                 path: "/nominas",
             },
         ],
@@ -1007,44 +1015,46 @@ __webpack_require__.r(__webpack_exports__);
 /* harmony import */ var _pages_parametrizacion_parametrizacion_component__WEBPACK_IMPORTED_MODULE_24__ = __webpack_require__(/*! ./pages/parametrizacion/parametrizacion.component */ "./src/app/pages/parametrizacion/parametrizacion.component.ts");
 /* harmony import */ var _pages_user_user_component__WEBPACK_IMPORTED_MODULE_25__ = __webpack_require__(/*! ./pages/user/user.component */ "./src/app/pages/user/user.component.ts");
 /* harmony import */ var _pages_clientes_clientes_component__WEBPACK_IMPORTED_MODULE_26__ = __webpack_require__(/*! ./pages/clientes/clientes.component */ "./src/app/pages/clientes/clientes.component.ts");
-/* harmony import */ var _pages_control_precios_control_precios_component__WEBPACK_IMPORTED_MODULE_27__ = __webpack_require__(/*! ./pages/control-precios/control-precios.component */ "./src/app/pages/control-precios/control-precios.component.ts");
-/* harmony import */ var _pages_calculadora_calculadora_component__WEBPACK_IMPORTED_MODULE_28__ = __webpack_require__(/*! ./pages/calculadora/calculadora.component */ "./src/app/pages/calculadora/calculadora.component.ts");
-/* harmony import */ var _pages_auditorias_auditorias_component__WEBPACK_IMPORTED_MODULE_29__ = __webpack_require__(/*! ./pages/auditorias/auditorias.component */ "./src/app/pages/auditorias/auditorias.component.ts");
-/* harmony import */ var _pages_bodegas_bodegas_component__WEBPACK_IMPORTED_MODULE_30__ = __webpack_require__(/*! ./pages/bodegas/bodegas.component */ "./src/app/pages/bodegas/bodegas.component.ts");
-/* harmony import */ var _pages_auditoria_cl_auditoria_cl_component__WEBPACK_IMPORTED_MODULE_31__ = __webpack_require__(/*! ./pages/auditoria-cl/auditoria-cl.component */ "./src/app/pages/auditoria-cl/auditoria-cl.component.ts");
-/* harmony import */ var _pages_generar_qr_generar_qr_component__WEBPACK_IMPORTED_MODULE_32__ = __webpack_require__(/*! ./pages/generar-qr/generar-qr.component */ "./src/app/pages/generar-qr/generar-qr.component.ts");
-/* harmony import */ var _pages_info_productos_info_productos_component__WEBPACK_IMPORTED_MODULE_33__ = __webpack_require__(/*! ./pages/info-productos/info-productos.component */ "./src/app/pages/info-productos/info-productos.component.ts");
-/* harmony import */ var _pages_consultas_consultas_component__WEBPACK_IMPORTED_MODULE_34__ = __webpack_require__(/*! ./pages/consultas/consultas.component */ "./src/app/pages/consultas/consultas.component.ts");
-/* harmony import */ var _pages_auditorias_auditoria2_auditoria2_component__WEBPACK_IMPORTED_MODULE_35__ = __webpack_require__(/*! ./pages/auditorias/auditoria2/auditoria2.component */ "./src/app/pages/auditorias/auditoria2/auditoria2.component.ts");
-/* harmony import */ var _pages_auditorias_aud_tabla_aud_tabla_component__WEBPACK_IMPORTED_MODULE_36__ = __webpack_require__(/*! ./pages/auditorias/aud-tabla/aud-tabla.component */ "./src/app/pages/auditorias/aud-tabla/aud-tabla.component.ts");
-/* harmony import */ var _pages_consultas_grupo_consultas_grupo_component__WEBPACK_IMPORTED_MODULE_37__ = __webpack_require__(/*! ./pages/consultas-grupo/consultas-grupo.component */ "./src/app/pages/consultas-grupo/consultas-grupo.component.ts");
-/* harmony import */ var _pages_indicadores_indicadores_component__WEBPACK_IMPORTED_MODULE_38__ = __webpack_require__(/*! ./pages/indicadores/indicadores.component */ "./src/app/pages/indicadores/indicadores.component.ts");
-/* harmony import */ var _pages_reportes_reporte_detallado_reporte_detallado_component__WEBPACK_IMPORTED_MODULE_39__ = __webpack_require__(/*! ./pages/reportes/reporte-detallado/reporte-detallado.component */ "./src/app/pages/reportes/reporte-detallado/reporte-detallado.component.ts");
-/* harmony import */ var _pages_reportes_reporte_global_reporte_global_component__WEBPACK_IMPORTED_MODULE_40__ = __webpack_require__(/*! ./pages/reportes/reporte-global/reporte-global.component */ "./src/app/pages/reportes/reporte-global/reporte-global.component.ts");
-/* harmony import */ var _pages_reportes_ingreso_diario_ingreso_diario_component__WEBPACK_IMPORTED_MODULE_41__ = __webpack_require__(/*! ./pages/reportes/ingreso-diario/ingreso-diario.component */ "./src/app/pages/reportes/ingreso-diario/ingreso-diario.component.ts");
-/* harmony import */ var _pages_administracion_cuentas_administracion_cuentas_component__WEBPACK_IMPORTED_MODULE_42__ = __webpack_require__(/*! ./pages/administracion-cuentas/administracion-cuentas.component */ "./src/app/pages/administracion-cuentas/administracion-cuentas.component.ts");
-/* harmony import */ var _pages_cajaMenor_caja_menor_component__WEBPACK_IMPORTED_MODULE_43__ = __webpack_require__(/*! ./pages/cajaMenor/caja-menor.component */ "./src/app/pages/cajaMenor/caja-menor.component.ts");
-/* harmony import */ var _pages_reciboCaja_recibo_caja_component__WEBPACK_IMPORTED_MODULE_44__ = __webpack_require__(/*! ./pages/reciboCaja/recibo-caja.component */ "./src/app/pages/reciboCaja/recibo-caja.component.ts");
-/* harmony import */ var _pages_transaccionesFinancieras_transaccionesFinancieras_component__WEBPACK_IMPORTED_MODULE_45__ = __webpack_require__(/*! ./pages/transaccionesFinancieras/transaccionesFinancieras.component */ "./src/app/pages/transaccionesFinancieras/transaccionesFinancieras.component.ts");
-/* harmony import */ var _pages_comprobante_pago_comprobante_pago_component__WEBPACK_IMPORTED_MODULE_46__ = __webpack_require__(/*! ./pages/comprobante-pago/comprobante-pago.component */ "./src/app/pages/comprobante-pago/comprobante-pago.component.ts");
-/* harmony import */ var _pages_comprobante_pago_proveedores_comprobante_pago_proveedores_component__WEBPACK_IMPORTED_MODULE_47__ = __webpack_require__(/*! ./pages/comprobante-pago-proveedores/comprobante-pago-proveedores.component */ "./src/app/pages/comprobante-pago-proveedores/comprobante-pago-proveedores.component.ts");
-/* harmony import */ var _pages_cuentasPorPagar_cuentasPorPagar_component__WEBPACK_IMPORTED_MODULE_48__ = __webpack_require__(/*! ./pages/cuentasPorPagar/cuentasPorPagar.component */ "./src/app/pages/cuentasPorPagar/cuentasPorPagar.component.ts");
-/* harmony import */ var _pages_cuentasPorCobrar_cuentasPorCobrar_component__WEBPACK_IMPORTED_MODULE_49__ = __webpack_require__(/*! ./pages/cuentasPorCobrar/cuentasPorCobrar.component */ "./src/app/pages/cuentasPorCobrar/cuentasPorCobrar.component.ts");
-/* harmony import */ var _pages_prestamos_prestamos_component__WEBPACK_IMPORTED_MODULE_50__ = __webpack_require__(/*! ./pages/prestamos/prestamos.component */ "./src/app/pages/prestamos/prestamos.component.ts");
-/* harmony import */ var _pages_registro_facturas_registro_facturas_component__WEBPACK_IMPORTED_MODULE_51__ = __webpack_require__(/*! ./pages/registro-facturas/registro-facturas.component */ "./src/app/pages/registro-facturas/registro-facturas.component.ts");
-/* harmony import */ var _pages_base_pagos_proveedores_base_pagos_proveedores_component__WEBPACK_IMPORTED_MODULE_52__ = __webpack_require__(/*! ./pages/base-pagos-proveedores/base-pagos-proveedores.component */ "./src/app/pages/base-pagos-proveedores/base-pagos-proveedores.component.ts");
-/* harmony import */ var _pages_transaccionesNominas_transaccionesNominas_component__WEBPACK_IMPORTED_MODULE_53__ = __webpack_require__(/*! ./pages/transaccionesNominas/transaccionesNominas.component */ "./src/app/pages/transaccionesNominas/transaccionesNominas.component.ts");
-/* harmony import */ var _pages_revision_inventario_revision_inventario_component__WEBPACK_IMPORTED_MODULE_54__ = __webpack_require__(/*! ./pages/revision-inventario/revision-inventario.component */ "./src/app/pages/revision-inventario/revision-inventario.component.ts");
-/* harmony import */ var _pages_stock_minimo_stock_minimo_component__WEBPACK_IMPORTED_MODULE_55__ = __webpack_require__(/*! ./pages/stock-minimo/stock-minimo.component */ "./src/app/pages/stock-minimo/stock-minimo.component.ts");
-/* harmony import */ var _pages_stock_locales_stock_locales_component__WEBPACK_IMPORTED_MODULE_56__ = __webpack_require__(/*! ./pages/stock-locales/stock-locales.component */ "./src/app/pages/stock-locales/stock-locales.component.ts");
-/* harmony import */ var _pages_ventas_copy_ventas_nuevo_component__WEBPACK_IMPORTED_MODULE_57__ = __webpack_require__(/*! ./pages/ventas copy/ventas-nuevo.component */ "./src/app/pages/ventas copy/ventas-nuevo.component.ts");
-/* harmony import */ var _pages_control_unidades_control_unidades_component__WEBPACK_IMPORTED_MODULE_58__ = __webpack_require__(/*! ./pages/control-unidades/control-unidades.component */ "./src/app/pages/control-unidades/control-unidades.component.ts");
-/* harmony import */ var _pages_carga_masiva_carga_masiva_component__WEBPACK_IMPORTED_MODULE_59__ = __webpack_require__(/*! ./pages/carga-masiva/carga-masiva.component */ "./src/app/pages/carga-masiva/carga-masiva.component.ts");
-/* harmony import */ var _pages_descuentos_descuentos_component__WEBPACK_IMPORTED_MODULE_60__ = __webpack_require__(/*! ./pages/descuentos/descuentos.component */ "./src/app/pages/descuentos/descuentos.component.ts");
-/* harmony import */ var _pages_iva_iva_component__WEBPACK_IMPORTED_MODULE_61__ = __webpack_require__(/*! ./pages/iva/iva.component */ "./src/app/pages/iva/iva.component.ts");
-/* harmony import */ var _pages_configuracion_presentacion_configuracion_presentacion_component__WEBPACK_IMPORTED_MODULE_62__ = __webpack_require__(/*! ./pages/configuracion-presentacion/configuracion-presentacion.component */ "./src/app/pages/configuracion-presentacion/configuracion-presentacion.component.ts");
-/* harmony import */ var _pages_gestion_entregas_bodega_gestion_entregas_bodega_component__WEBPACK_IMPORTED_MODULE_63__ = __webpack_require__(/*! ./pages/gestion-entregas-bodega/gestion-entregas-bodega.component */ "./src/app/pages/gestion-entregas-bodega/gestion-entregas-bodega.component.ts");
-/* harmony import */ var _pages_nominas_nominas_component__WEBPACK_IMPORTED_MODULE_64__ = __webpack_require__(/*! ./pages/nominas/nominas.component */ "./src/app/pages/nominas/nominas.component.ts");
+/* harmony import */ var _pages_admin_proveedores_admin_proveedores_component__WEBPACK_IMPORTED_MODULE_27__ = __webpack_require__(/*! ./pages/admin-proveedores/admin-proveedores.component */ "./src/app/pages/admin-proveedores/admin-proveedores.component.ts");
+/* harmony import */ var _pages_control_precios_control_precios_component__WEBPACK_IMPORTED_MODULE_28__ = __webpack_require__(/*! ./pages/control-precios/control-precios.component */ "./src/app/pages/control-precios/control-precios.component.ts");
+/* harmony import */ var _pages_calculadora_calculadora_component__WEBPACK_IMPORTED_MODULE_29__ = __webpack_require__(/*! ./pages/calculadora/calculadora.component */ "./src/app/pages/calculadora/calculadora.component.ts");
+/* harmony import */ var _pages_auditorias_auditorias_component__WEBPACK_IMPORTED_MODULE_30__ = __webpack_require__(/*! ./pages/auditorias/auditorias.component */ "./src/app/pages/auditorias/auditorias.component.ts");
+/* harmony import */ var _pages_bodegas_bodegas_component__WEBPACK_IMPORTED_MODULE_31__ = __webpack_require__(/*! ./pages/bodegas/bodegas.component */ "./src/app/pages/bodegas/bodegas.component.ts");
+/* harmony import */ var _pages_auditoria_cl_auditoria_cl_component__WEBPACK_IMPORTED_MODULE_32__ = __webpack_require__(/*! ./pages/auditoria-cl/auditoria-cl.component */ "./src/app/pages/auditoria-cl/auditoria-cl.component.ts");
+/* harmony import */ var _pages_generar_qr_generar_qr_component__WEBPACK_IMPORTED_MODULE_33__ = __webpack_require__(/*! ./pages/generar-qr/generar-qr.component */ "./src/app/pages/generar-qr/generar-qr.component.ts");
+/* harmony import */ var _pages_info_productos_info_productos_component__WEBPACK_IMPORTED_MODULE_34__ = __webpack_require__(/*! ./pages/info-productos/info-productos.component */ "./src/app/pages/info-productos/info-productos.component.ts");
+/* harmony import */ var _pages_consultas_consultas_component__WEBPACK_IMPORTED_MODULE_35__ = __webpack_require__(/*! ./pages/consultas/consultas.component */ "./src/app/pages/consultas/consultas.component.ts");
+/* harmony import */ var _pages_auditorias_auditoria2_auditoria2_component__WEBPACK_IMPORTED_MODULE_36__ = __webpack_require__(/*! ./pages/auditorias/auditoria2/auditoria2.component */ "./src/app/pages/auditorias/auditoria2/auditoria2.component.ts");
+/* harmony import */ var _pages_auditorias_aud_tabla_aud_tabla_component__WEBPACK_IMPORTED_MODULE_37__ = __webpack_require__(/*! ./pages/auditorias/aud-tabla/aud-tabla.component */ "./src/app/pages/auditorias/aud-tabla/aud-tabla.component.ts");
+/* harmony import */ var _pages_consultas_grupo_consultas_grupo_component__WEBPACK_IMPORTED_MODULE_38__ = __webpack_require__(/*! ./pages/consultas-grupo/consultas-grupo.component */ "./src/app/pages/consultas-grupo/consultas-grupo.component.ts");
+/* harmony import */ var _pages_indicadores_indicadores_component__WEBPACK_IMPORTED_MODULE_39__ = __webpack_require__(/*! ./pages/indicadores/indicadores.component */ "./src/app/pages/indicadores/indicadores.component.ts");
+/* harmony import */ var _pages_reportes_reporte_detallado_reporte_detallado_component__WEBPACK_IMPORTED_MODULE_40__ = __webpack_require__(/*! ./pages/reportes/reporte-detallado/reporte-detallado.component */ "./src/app/pages/reportes/reporte-detallado/reporte-detallado.component.ts");
+/* harmony import */ var _pages_reportes_reporte_global_reporte_global_component__WEBPACK_IMPORTED_MODULE_41__ = __webpack_require__(/*! ./pages/reportes/reporte-global/reporte-global.component */ "./src/app/pages/reportes/reporte-global/reporte-global.component.ts");
+/* harmony import */ var _pages_reportes_ingreso_diario_ingreso_diario_component__WEBPACK_IMPORTED_MODULE_42__ = __webpack_require__(/*! ./pages/reportes/ingreso-diario/ingreso-diario.component */ "./src/app/pages/reportes/ingreso-diario/ingreso-diario.component.ts");
+/* harmony import */ var _pages_administracion_cuentas_administracion_cuentas_component__WEBPACK_IMPORTED_MODULE_43__ = __webpack_require__(/*! ./pages/administracion-cuentas/administracion-cuentas.component */ "./src/app/pages/administracion-cuentas/administracion-cuentas.component.ts");
+/* harmony import */ var _pages_cajaMenor_caja_menor_component__WEBPACK_IMPORTED_MODULE_44__ = __webpack_require__(/*! ./pages/cajaMenor/caja-menor.component */ "./src/app/pages/cajaMenor/caja-menor.component.ts");
+/* harmony import */ var _pages_reciboCaja_recibo_caja_component__WEBPACK_IMPORTED_MODULE_45__ = __webpack_require__(/*! ./pages/reciboCaja/recibo-caja.component */ "./src/app/pages/reciboCaja/recibo-caja.component.ts");
+/* harmony import */ var _pages_transaccionesFinancieras_transaccionesFinancieras_component__WEBPACK_IMPORTED_MODULE_46__ = __webpack_require__(/*! ./pages/transaccionesFinancieras/transaccionesFinancieras.component */ "./src/app/pages/transaccionesFinancieras/transaccionesFinancieras.component.ts");
+/* harmony import */ var _pages_comprobante_pago_comprobante_pago_component__WEBPACK_IMPORTED_MODULE_47__ = __webpack_require__(/*! ./pages/comprobante-pago/comprobante-pago.component */ "./src/app/pages/comprobante-pago/comprobante-pago.component.ts");
+/* harmony import */ var _pages_comprobante_pago_proveedores_comprobante_pago_proveedores_component__WEBPACK_IMPORTED_MODULE_48__ = __webpack_require__(/*! ./pages/comprobante-pago-proveedores/comprobante-pago-proveedores.component */ "./src/app/pages/comprobante-pago-proveedores/comprobante-pago-proveedores.component.ts");
+/* harmony import */ var _pages_cuentasPorPagar_cuentasPorPagar_component__WEBPACK_IMPORTED_MODULE_49__ = __webpack_require__(/*! ./pages/cuentasPorPagar/cuentasPorPagar.component */ "./src/app/pages/cuentasPorPagar/cuentasPorPagar.component.ts");
+/* harmony import */ var _pages_cuentasPorCobrar_cuentasPorCobrar_component__WEBPACK_IMPORTED_MODULE_50__ = __webpack_require__(/*! ./pages/cuentasPorCobrar/cuentasPorCobrar.component */ "./src/app/pages/cuentasPorCobrar/cuentasPorCobrar.component.ts");
+/* harmony import */ var _pages_prestamos_prestamos_component__WEBPACK_IMPORTED_MODULE_51__ = __webpack_require__(/*! ./pages/prestamos/prestamos.component */ "./src/app/pages/prestamos/prestamos.component.ts");
+/* harmony import */ var _pages_registro_facturas_registro_facturas_component__WEBPACK_IMPORTED_MODULE_52__ = __webpack_require__(/*! ./pages/registro-facturas/registro-facturas.component */ "./src/app/pages/registro-facturas/registro-facturas.component.ts");
+/* harmony import */ var _pages_base_pagos_proveedores_base_pagos_proveedores_component__WEBPACK_IMPORTED_MODULE_53__ = __webpack_require__(/*! ./pages/base-pagos-proveedores/base-pagos-proveedores.component */ "./src/app/pages/base-pagos-proveedores/base-pagos-proveedores.component.ts");
+/* harmony import */ var _pages_transaccionesNominas_transaccionesNominas_component__WEBPACK_IMPORTED_MODULE_54__ = __webpack_require__(/*! ./pages/transaccionesNominas/transaccionesNominas.component */ "./src/app/pages/transaccionesNominas/transaccionesNominas.component.ts");
+/* harmony import */ var _pages_revision_inventario_revision_inventario_component__WEBPACK_IMPORTED_MODULE_55__ = __webpack_require__(/*! ./pages/revision-inventario/revision-inventario.component */ "./src/app/pages/revision-inventario/revision-inventario.component.ts");
+/* harmony import */ var _pages_stock_minimo_stock_minimo_component__WEBPACK_IMPORTED_MODULE_56__ = __webpack_require__(/*! ./pages/stock-minimo/stock-minimo.component */ "./src/app/pages/stock-minimo/stock-minimo.component.ts");
+/* harmony import */ var _pages_stock_locales_stock_locales_component__WEBPACK_IMPORTED_MODULE_57__ = __webpack_require__(/*! ./pages/stock-locales/stock-locales.component */ "./src/app/pages/stock-locales/stock-locales.component.ts");
+/* harmony import */ var _pages_ventas_copy_ventas_nuevo_component__WEBPACK_IMPORTED_MODULE_58__ = __webpack_require__(/*! ./pages/ventas copy/ventas-nuevo.component */ "./src/app/pages/ventas copy/ventas-nuevo.component.ts");
+/* harmony import */ var _pages_control_unidades_control_unidades_component__WEBPACK_IMPORTED_MODULE_59__ = __webpack_require__(/*! ./pages/control-unidades/control-unidades.component */ "./src/app/pages/control-unidades/control-unidades.component.ts");
+/* harmony import */ var _pages_carga_masiva_carga_masiva_component__WEBPACK_IMPORTED_MODULE_60__ = __webpack_require__(/*! ./pages/carga-masiva/carga-masiva.component */ "./src/app/pages/carga-masiva/carga-masiva.component.ts");
+/* harmony import */ var _pages_descuentos_descuentos_component__WEBPACK_IMPORTED_MODULE_61__ = __webpack_require__(/*! ./pages/descuentos/descuentos.component */ "./src/app/pages/descuentos/descuentos.component.ts");
+/* harmony import */ var _pages_iva_iva_component__WEBPACK_IMPORTED_MODULE_62__ = __webpack_require__(/*! ./pages/iva/iva.component */ "./src/app/pages/iva/iva.component.ts");
+/* harmony import */ var _pages_configuracion_presentacion_configuracion_presentacion_component__WEBPACK_IMPORTED_MODULE_63__ = __webpack_require__(/*! ./pages/configuracion-presentacion/configuracion-presentacion.component */ "./src/app/pages/configuracion-presentacion/configuracion-presentacion.component.ts");
+/* harmony import */ var _pages_gestion_entregas_bodega_gestion_entregas_bodega_component__WEBPACK_IMPORTED_MODULE_64__ = __webpack_require__(/*! ./pages/gestion-entregas-bodega/gestion-entregas-bodega.component */ "./src/app/pages/gestion-entregas-bodega/gestion-entregas-bodega.component.ts");
+/* harmony import */ var _pages_nominas_nominas_component__WEBPACK_IMPORTED_MODULE_65__ = __webpack_require__(/*! ./pages/nominas/nominas.component */ "./src/app/pages/nominas/nominas.component.ts");
+
 
 
 
@@ -1140,12 +1150,12 @@ const routes = [
     },
     {
         path: "ventas-nuevo",
-        component: _pages_ventas_copy_ventas_nuevo_component__WEBPACK_IMPORTED_MODULE_57__["VentasNuevoComponent"],
+        component: _pages_ventas_copy_ventas_nuevo_component__WEBPACK_IMPORTED_MODULE_58__["VentasNuevoComponent"],
         canActivate: [_shared_services__WEBPACK_IMPORTED_MODULE_4__["AuthGuardService"]],
     },
     {
         path: "descuentos",
-        component: _pages_descuentos_descuentos_component__WEBPACK_IMPORTED_MODULE_60__["DescuentoComponent"],
+        component: _pages_descuentos_descuentos_component__WEBPACK_IMPORTED_MODULE_61__["DescuentoComponent"],
         canActivate: [_shared_services__WEBPACK_IMPORTED_MODULE_4__["AuthGuardService"]],
     },
     {
@@ -1170,7 +1180,7 @@ const routes = [
     },
     {
         path: "gestion-entregas-bodega",
-        component: _pages_gestion_entregas_bodega_gestion_entregas_bodega_component__WEBPACK_IMPORTED_MODULE_63__["GestionEntregasBodegaComponent"],
+        component: _pages_gestion_entregas_bodega_gestion_entregas_bodega_component__WEBPACK_IMPORTED_MODULE_64__["GestionEntregasBodegaComponent"],
         canActivate: [_shared_services__WEBPACK_IMPORTED_MODULE_4__["AuthGuardService"]],
     },
     {
@@ -1180,17 +1190,17 @@ const routes = [
     },
     {
         path: "calculadora",
-        component: _pages_calculadora_calculadora_component__WEBPACK_IMPORTED_MODULE_28__["CalculadorasComponent"],
+        component: _pages_calculadora_calculadora_component__WEBPACK_IMPORTED_MODULE_29__["CalculadorasComponent"],
         canActivate: [_shared_services__WEBPACK_IMPORTED_MODULE_4__["AuthGuardService"]],
     },
     {
         path: "consultas",
-        component: _pages_consultas_consultas_component__WEBPACK_IMPORTED_MODULE_34__["ConsultasComponent"],
+        component: _pages_consultas_consultas_component__WEBPACK_IMPORTED_MODULE_35__["ConsultasComponent"],
         canActivate: [_shared_services__WEBPACK_IMPORTED_MODULE_4__["AuthGuardService"]],
     },
     {
         path: "consultas-grupo",
-        component: _pages_consultas_grupo_consultas_grupo_component__WEBPACK_IMPORTED_MODULE_37__["ConsultasGrupoComponent"],
+        component: _pages_consultas_grupo_consultas_grupo_component__WEBPACK_IMPORTED_MODULE_38__["ConsultasGrupoComponent"],
         canActivate: [_shared_services__WEBPACK_IMPORTED_MODULE_4__["AuthGuardService"]],
     },
     {
@@ -1203,25 +1213,25 @@ const routes = [
         path: "menu-indicadores",
         canActivate: [_shared_services__WEBPACK_IMPORTED_MODULE_4__["AuthGuardService"]],
         data: { roles: ["Administrador"] },
-        component: _pages_indicadores_indicadores_component__WEBPACK_IMPORTED_MODULE_38__["IndicadoresComponent"],
+        component: _pages_indicadores_indicadores_component__WEBPACK_IMPORTED_MODULE_39__["IndicadoresComponent"],
     },
     {
         path: "reporte-detallado",
         canActivate: [_shared_services__WEBPACK_IMPORTED_MODULE_4__["AuthGuardService"]],
         data: { roles: ["Administrador"] },
-        component: _pages_reportes_reporte_detallado_reporte_detallado_component__WEBPACK_IMPORTED_MODULE_39__["ReporteDetalladoComponent"],
+        component: _pages_reportes_reporte_detallado_reporte_detallado_component__WEBPACK_IMPORTED_MODULE_40__["ReporteDetalladoComponent"],
     },
     {
         path: "reporte-global",
         canActivate: [_shared_services__WEBPACK_IMPORTED_MODULE_4__["AuthGuardService"]],
         data: { roles: ["Administrador"] },
-        component: _pages_reportes_reporte_global_reporte_global_component__WEBPACK_IMPORTED_MODULE_40__["ReporteGlobalComponent"],
+        component: _pages_reportes_reporte_global_reporte_global_component__WEBPACK_IMPORTED_MODULE_41__["ReporteGlobalComponent"],
     },
     {
         path: "ingreso-diario",
         canActivate: [_shared_services__WEBPACK_IMPORTED_MODULE_4__["AuthGuardService"]],
         data: { roles: ["Administrador"] },
-        component: _pages_reportes_ingreso_diario_ingreso_diario_component__WEBPACK_IMPORTED_MODULE_41__["IngresoDiarioComponent"],
+        component: _pages_reportes_ingreso_diario_ingreso_diario_component__WEBPACK_IMPORTED_MODULE_42__["IngresoDiarioComponent"],
     },
     {
         path: "usuarios",
@@ -1236,28 +1246,34 @@ const routes = [
         component: _pages_clientes_clientes_component__WEBPACK_IMPORTED_MODULE_26__["ClientesComponent"],
     },
     {
+        path: "admin-proveedores",
+        canActivate: [_shared_services__WEBPACK_IMPORTED_MODULE_4__["AuthGuardService"]],
+        data: { roles: ["Administrador"] },
+        component: _pages_admin_proveedores_admin_proveedores_component__WEBPACK_IMPORTED_MODULE_27__["AdminProveedoresComponent"],
+    },
+    {
         path: "precios",
         canActivate: [_shared_services__WEBPACK_IMPORTED_MODULE_4__["AuthGuardService"]],
         data: { roles: ["Administrador"] },
-        component: _pages_control_precios_control_precios_component__WEBPACK_IMPORTED_MODULE_27__["ControlPreciosComponent"],
+        component: _pages_control_precios_control_precios_component__WEBPACK_IMPORTED_MODULE_28__["ControlPreciosComponent"],
     },
     {
         path: "iva",
         canActivate: [_shared_services__WEBPACK_IMPORTED_MODULE_4__["AuthGuardService"]],
         data: { roles: ["Administrador"] },
-        component: _pages_iva_iva_component__WEBPACK_IMPORTED_MODULE_61__["IvaComponent"],
+        component: _pages_iva_iva_component__WEBPACK_IMPORTED_MODULE_62__["IvaComponent"],
     },
     {
         path: "control-unidades",
         canActivate: [_shared_services__WEBPACK_IMPORTED_MODULE_4__["AuthGuardService"]],
         data: { roles: ["Administrador"] },
-        component: _pages_control_unidades_control_unidades_component__WEBPACK_IMPORTED_MODULE_58__["ControlUnidadesComponent"],
+        component: _pages_control_unidades_control_unidades_component__WEBPACK_IMPORTED_MODULE_59__["ControlUnidadesComponent"],
     },
     {
         path: "configuracion-presentacion",
         canActivate: [_shared_services__WEBPACK_IMPORTED_MODULE_4__["AuthGuardService"]],
         data: { roles: ["Administrador"] },
-        component: _pages_configuracion_presentacion_configuracion_presentacion_component__WEBPACK_IMPORTED_MODULE_62__["ConfiguracionPresentacionComponent"],
+        component: _pages_configuracion_presentacion_configuracion_presentacion_component__WEBPACK_IMPORTED_MODULE_63__["ConfiguracionPresentacionComponent"],
     },
     {
         path: "proveedores",
@@ -1271,7 +1287,7 @@ const routes = [
     },
     {
         path: "carga-masiva",
-        component: _pages_carga_masiva_carga_masiva_component__WEBPACK_IMPORTED_MODULE_59__["CargaMasivaComponent"],
+        component: _pages_carga_masiva_carga_masiva_component__WEBPACK_IMPORTED_MODULE_60__["CargaMasivaComponent"],
         canActivate: [_shared_services__WEBPACK_IMPORTED_MODULE_4__["AuthGuardService"]],
     },
     {
@@ -1296,57 +1312,57 @@ const routes = [
     },
     {
         path: "registros-facturas",
-        component: _pages_registro_facturas_registro_facturas_component__WEBPACK_IMPORTED_MODULE_51__["RegistroFacturasComponent"],
+        component: _pages_registro_facturas_registro_facturas_component__WEBPACK_IMPORTED_MODULE_52__["RegistroFacturasComponent"],
         canActivate: [_shared_services__WEBPACK_IMPORTED_MODULE_4__["AuthGuardService"]],
     },
     {
         path: "administracion-cuentas",
-        component: _pages_administracion_cuentas_administracion_cuentas_component__WEBPACK_IMPORTED_MODULE_42__["AdministracionCuentasComponent"],
+        component: _pages_administracion_cuentas_administracion_cuentas_component__WEBPACK_IMPORTED_MODULE_43__["AdministracionCuentasComponent"],
         canActivate: [_shared_services__WEBPACK_IMPORTED_MODULE_4__["AuthGuardService"]],
     },
     {
         path: "caja-menor",
-        component: _pages_cajaMenor_caja_menor_component__WEBPACK_IMPORTED_MODULE_43__["CajaMenorComponent"],
+        component: _pages_cajaMenor_caja_menor_component__WEBPACK_IMPORTED_MODULE_44__["CajaMenorComponent"],
         canActivate: [_shared_services__WEBPACK_IMPORTED_MODULE_4__["AuthGuardService"]],
     },
     {
         path: "recibo-caja",
-        component: _pages_reciboCaja_recibo_caja_component__WEBPACK_IMPORTED_MODULE_44__["ReciboCajaComponent"],
+        component: _pages_reciboCaja_recibo_caja_component__WEBPACK_IMPORTED_MODULE_45__["ReciboCajaComponent"],
         canActivate: [_shared_services__WEBPACK_IMPORTED_MODULE_4__["AuthGuardService"]],
     },
     {
         path: "comprobante-pago",
-        component: _pages_comprobante_pago_comprobante_pago_component__WEBPACK_IMPORTED_MODULE_46__["ComprobantePagoComponent"],
+        component: _pages_comprobante_pago_comprobante_pago_component__WEBPACK_IMPORTED_MODULE_47__["ComprobantePagoComponent"],
         canActivate: [_shared_services__WEBPACK_IMPORTED_MODULE_4__["AuthGuardService"]],
     },
     {
         path: "agenda-financiera",
-        component: _pages_base_pagos_proveedores_base_pagos_proveedores_component__WEBPACK_IMPORTED_MODULE_52__["BasePagoProveedoresComponent"],
+        component: _pages_base_pagos_proveedores_base_pagos_proveedores_component__WEBPACK_IMPORTED_MODULE_53__["BasePagoProveedoresComponent"],
         canActivate: [_shared_services__WEBPACK_IMPORTED_MODULE_4__["AuthGuardService"]],
     },
     {
         path: "comprobante-pago-proveedores",
-        component: _pages_comprobante_pago_proveedores_comprobante_pago_proveedores_component__WEBPACK_IMPORTED_MODULE_47__["ComprobantePagoProveedoresComponent"],
+        component: _pages_comprobante_pago_proveedores_comprobante_pago_proveedores_component__WEBPACK_IMPORTED_MODULE_48__["ComprobantePagoProveedoresComponent"],
         canActivate: [_shared_services__WEBPACK_IMPORTED_MODULE_4__["AuthGuardService"]],
     },
     {
         path: "cuentas-porCobrar",
-        component: _pages_cuentasPorCobrar_cuentasPorCobrar_component__WEBPACK_IMPORTED_MODULE_49__["CuentaPorCobrarComponent"],
+        component: _pages_cuentasPorCobrar_cuentasPorCobrar_component__WEBPACK_IMPORTED_MODULE_50__["CuentaPorCobrarComponent"],
         canActivate: [_shared_services__WEBPACK_IMPORTED_MODULE_4__["AuthGuardService"]],
     },
     {
         path: "cuentas-porPagar",
-        component: _pages_cuentasPorPagar_cuentasPorPagar_component__WEBPACK_IMPORTED_MODULE_48__["CuentaPorPagarComponent"],
+        component: _pages_cuentasPorPagar_cuentasPorPagar_component__WEBPACK_IMPORTED_MODULE_49__["CuentaPorPagarComponent"],
         canActivate: [_shared_services__WEBPACK_IMPORTED_MODULE_4__["AuthGuardService"]],
     },
     {
         path: "transacciones-financieras",
-        component: _pages_transaccionesFinancieras_transaccionesFinancieras_component__WEBPACK_IMPORTED_MODULE_45__["TransaccionesFinancierasComponent"],
+        component: _pages_transaccionesFinancieras_transaccionesFinancieras_component__WEBPACK_IMPORTED_MODULE_46__["TransaccionesFinancierasComponent"],
         canActivate: [_shared_services__WEBPACK_IMPORTED_MODULE_4__["AuthGuardService"]],
     },
     {
         path: "transacciones-nominas",
-        component: _pages_transaccionesNominas_transaccionesNominas_component__WEBPACK_IMPORTED_MODULE_53__["TransaccionesNominasComponent"],
+        component: _pages_transaccionesNominas_transaccionesNominas_component__WEBPACK_IMPORTED_MODULE_54__["TransaccionesNominasComponent"],
         canActivate: [_shared_services__WEBPACK_IMPORTED_MODULE_4__["AuthGuardService"]],
     },
     {
@@ -1356,7 +1372,7 @@ const routes = [
     },
     {
         path: "prestamos",
-        component: _pages_prestamos_prestamos_component__WEBPACK_IMPORTED_MODULE_50__["PrestamosComponent"],
+        component: _pages_prestamos_prestamos_component__WEBPACK_IMPORTED_MODULE_51__["PrestamosComponent"],
         canActivate: [_shared_services__WEBPACK_IMPORTED_MODULE_4__["AuthGuardService"]],
     },
     {
@@ -1371,57 +1387,57 @@ const routes = [
     },
     {
         path: "info-productos/:id",
-        component: _pages_info_productos_info_productos_component__WEBPACK_IMPORTED_MODULE_33__["InfoProductosComponent"],
+        component: _pages_info_productos_info_productos_component__WEBPACK_IMPORTED_MODULE_34__["InfoProductosComponent"],
         canActivate: [_shared_services__WEBPACK_IMPORTED_MODULE_4__["AuthGuardService"]],
     },
     {
         path: "bodegas",
-        component: _pages_bodegas_bodegas_component__WEBPACK_IMPORTED_MODULE_30__["BodegasComponent"],
+        component: _pages_bodegas_bodegas_component__WEBPACK_IMPORTED_MODULE_31__["BodegasComponent"],
         canActivate: [_shared_services__WEBPACK_IMPORTED_MODULE_4__["AuthGuardService"]],
     },
     {
         path: "auditorias",
-        component: _pages_auditorias_auditorias_component__WEBPACK_IMPORTED_MODULE_29__["AuditoriasComponent"],
+        component: _pages_auditorias_auditorias_component__WEBPACK_IMPORTED_MODULE_30__["AuditoriasComponent"],
         canActivate: [_shared_services__WEBPACK_IMPORTED_MODULE_4__["AuthGuardService"]],
     },
     {
         path: "auditorias/novedades",
-        component: _pages_auditorias_auditoria2_auditoria2_component__WEBPACK_IMPORTED_MODULE_35__["Auditoria2Component"],
+        component: _pages_auditorias_auditoria2_auditoria2_component__WEBPACK_IMPORTED_MODULE_36__["Auditoria2Component"],
         canActivate: [_shared_services__WEBPACK_IMPORTED_MODULE_4__["AuthGuardService"]],
     },
     {
         path: "auditorias/tabla",
-        component: _pages_auditorias_aud_tabla_aud_tabla_component__WEBPACK_IMPORTED_MODULE_36__["AudTablaComponent"],
+        component: _pages_auditorias_aud_tabla_aud_tabla_component__WEBPACK_IMPORTED_MODULE_37__["AudTablaComponent"],
         canActivate: [_shared_services__WEBPACK_IMPORTED_MODULE_4__["AuthGuardService"]],
     },
     {
         path: "auditorias2",
-        component: _pages_auditoria_cl_auditoria_cl_component__WEBPACK_IMPORTED_MODULE_31__["AuditoriaClComponent"],
+        component: _pages_auditoria_cl_auditoria_cl_component__WEBPACK_IMPORTED_MODULE_32__["AuditoriaClComponent"],
         canActivate: [_shared_services__WEBPACK_IMPORTED_MODULE_4__["AuthGuardService"]],
     },
     {
         path: "revision-inventario/:id",
-        component: _pages_revision_inventario_revision_inventario_component__WEBPACK_IMPORTED_MODULE_54__["RevionInventarioComponent"],
+        component: _pages_revision_inventario_revision_inventario_component__WEBPACK_IMPORTED_MODULE_55__["RevionInventarioComponent"],
         canActivate: [_shared_services__WEBPACK_IMPORTED_MODULE_4__["AuthGuardService"]],
     },
     {
         path: "generador-qr",
-        component: _pages_generar_qr_generar_qr_component__WEBPACK_IMPORTED_MODULE_32__["GenerarQRComponent"],
+        component: _pages_generar_qr_generar_qr_component__WEBPACK_IMPORTED_MODULE_33__["GenerarQRComponent"],
         canActivate: [_shared_services__WEBPACK_IMPORTED_MODULE_4__["AuthGuardService"]],
     },
     {
         path: "stock-minimo",
-        component: _pages_stock_minimo_stock_minimo_component__WEBPACK_IMPORTED_MODULE_55__["StockMinimoComponent"],
+        component: _pages_stock_minimo_stock_minimo_component__WEBPACK_IMPORTED_MODULE_56__["StockMinimoComponent"],
         canActivate: [_shared_services__WEBPACK_IMPORTED_MODULE_4__["AuthGuardService"]],
     },
     {
         path: "stock-locales",
-        component: _pages_stock_locales_stock_locales_component__WEBPACK_IMPORTED_MODULE_56__["StockLocalesComponent"],
+        component: _pages_stock_locales_stock_locales_component__WEBPACK_IMPORTED_MODULE_57__["StockLocalesComponent"],
         canActivate: [_shared_services__WEBPACK_IMPORTED_MODULE_4__["AuthGuardService"]],
     },
     {
         path: "nominas",
-        component: _pages_nominas_nominas_component__WEBPACK_IMPORTED_MODULE_64__["NominasComponent"],
+        component: _pages_nominas_nominas_component__WEBPACK_IMPORTED_MODULE_65__["NominasComponent"],
         canActivate: [_shared_services__WEBPACK_IMPORTED_MODULE_4__["AuthGuardService"]],
     },
     {
@@ -1638,55 +1654,57 @@ __webpack_require__.r(__webpack_exports__);
 /* harmony import */ var _shared_interceptors_session_expired_interceptor__WEBPACK_IMPORTED_MODULE_33__ = __webpack_require__(/*! ./shared/interceptors/session-expired.interceptor */ "./src/app/shared/interceptors/session-expired.interceptor.ts");
 /* harmony import */ var _pages_user_user_component__WEBPACK_IMPORTED_MODULE_34__ = __webpack_require__(/*! ./pages/user/user.component */ "./src/app/pages/user/user.component.ts");
 /* harmony import */ var _pages_clientes_clientes_component__WEBPACK_IMPORTED_MODULE_35__ = __webpack_require__(/*! ./pages/clientes/clientes.component */ "./src/app/pages/clientes/clientes.component.ts");
-/* harmony import */ var _pages_calculadora_calculadora_component__WEBPACK_IMPORTED_MODULE_36__ = __webpack_require__(/*! ./pages/calculadora/calculadora.component */ "./src/app/pages/calculadora/calculadora.component.ts");
-/* harmony import */ var _pages_control_precios_control_precios_component__WEBPACK_IMPORTED_MODULE_37__ = __webpack_require__(/*! ./pages/control-precios/control-precios.component */ "./src/app/pages/control-precios/control-precios.component.ts");
-/* harmony import */ var _pages_auditorias_auditorias_component__WEBPACK_IMPORTED_MODULE_38__ = __webpack_require__(/*! ./pages/auditorias/auditorias.component */ "./src/app/pages/auditorias/auditorias.component.ts");
-/* harmony import */ var _pages_bodegas_bodegas_component__WEBPACK_IMPORTED_MODULE_39__ = __webpack_require__(/*! ./pages/bodegas/bodegas.component */ "./src/app/pages/bodegas/bodegas.component.ts");
-/* harmony import */ var _pages_auditoria_cl_auditoria_cl_component__WEBPACK_IMPORTED_MODULE_40__ = __webpack_require__(/*! ./pages/auditoria-cl/auditoria-cl.component */ "./src/app/pages/auditoria-cl/auditoria-cl.component.ts");
-/* harmony import */ var angularx_qrcode__WEBPACK_IMPORTED_MODULE_41__ = __webpack_require__(/*! angularx-qrcode */ "./node_modules/angularx-qrcode/__ivy_ngcc__/fesm2015/angularx-qrcode.js");
-/* harmony import */ var _pages_generar_qr_generar_qr_component__WEBPACK_IMPORTED_MODULE_42__ = __webpack_require__(/*! ./pages/generar-qr/generar-qr.component */ "./src/app/pages/generar-qr/generar-qr.component.ts");
-/* harmony import */ var _pages_info_productos_info_productos_component__WEBPACK_IMPORTED_MODULE_43__ = __webpack_require__(/*! ./pages/info-productos/info-productos.component */ "./src/app/pages/info-productos/info-productos.component.ts");
-/* harmony import */ var _pages_consultas_consultas_component__WEBPACK_IMPORTED_MODULE_44__ = __webpack_require__(/*! ./pages/consultas/consultas.component */ "./src/app/pages/consultas/consultas.component.ts");
-/* harmony import */ var _pages_auditorias_auditoria2_auditoria2_component__WEBPACK_IMPORTED_MODULE_45__ = __webpack_require__(/*! ./pages/auditorias/auditoria2/auditoria2.component */ "./src/app/pages/auditorias/auditoria2/auditoria2.component.ts");
-/* harmony import */ var _pages_auditorias_aud_tabla_aud_tabla_component__WEBPACK_IMPORTED_MODULE_46__ = __webpack_require__(/*! ./pages/auditorias/aud-tabla/aud-tabla.component */ "./src/app/pages/auditorias/aud-tabla/aud-tabla.component.ts");
-/* harmony import */ var _pages_consultas_grupo_consultas_grupo_component__WEBPACK_IMPORTED_MODULE_47__ = __webpack_require__(/*! ./pages/consultas-grupo/consultas-grupo.component */ "./src/app/pages/consultas-grupo/consultas-grupo.component.ts");
-/* harmony import */ var _pages_indicadores_indicadores_component__WEBPACK_IMPORTED_MODULE_48__ = __webpack_require__(/*! ./pages/indicadores/indicadores.component */ "./src/app/pages/indicadores/indicadores.component.ts");
-/* harmony import */ var _pages_loading_loading_component__WEBPACK_IMPORTED_MODULE_49__ = __webpack_require__(/*! ./pages/loading/loading.component */ "./src/app/pages/loading/loading.component.ts");
-/* harmony import */ var _pages_reportes_reporte_detallado_reporte_detallado_component__WEBPACK_IMPORTED_MODULE_50__ = __webpack_require__(/*! ./pages/reportes/reporte-detallado/reporte-detallado.component */ "./src/app/pages/reportes/reporte-detallado/reporte-detallado.component.ts");
-/* harmony import */ var _pages_reportes_reporte_global_reporte_global_component__WEBPACK_IMPORTED_MODULE_51__ = __webpack_require__(/*! ./pages/reportes/reporte-global/reporte-global.component */ "./src/app/pages/reportes/reporte-global/reporte-global.component.ts");
-/* harmony import */ var _pages_reportes_ingreso_diario_ingreso_diario_component__WEBPACK_IMPORTED_MODULE_52__ = __webpack_require__(/*! ./pages/reportes/ingreso-diario/ingreso-diario.component */ "./src/app/pages/reportes/ingreso-diario/ingreso-diario.component.ts");
-/* harmony import */ var _pages_administracion_cuentas_administracion_cuentas_component__WEBPACK_IMPORTED_MODULE_53__ = __webpack_require__(/*! ./pages/administracion-cuentas/administracion-cuentas.component */ "./src/app/pages/administracion-cuentas/administracion-cuentas.component.ts");
-/* harmony import */ var _pages_cajaMenor_caja_menor_component__WEBPACK_IMPORTED_MODULE_54__ = __webpack_require__(/*! ./pages/cajaMenor/caja-menor.component */ "./src/app/pages/cajaMenor/caja-menor.component.ts");
-/* harmony import */ var _pages_reciboCaja_recibo_caja_component__WEBPACK_IMPORTED_MODULE_55__ = __webpack_require__(/*! ./pages/reciboCaja/recibo-caja.component */ "./src/app/pages/reciboCaja/recibo-caja.component.ts");
-/* harmony import */ var _pages_transaccionesFinancieras_transaccionesFinancieras_component__WEBPACK_IMPORTED_MODULE_56__ = __webpack_require__(/*! ./pages/transaccionesFinancieras/transaccionesFinancieras.component */ "./src/app/pages/transaccionesFinancieras/transaccionesFinancieras.component.ts");
-/* harmony import */ var _pages_comprobante_pago_comprobante_pago_component__WEBPACK_IMPORTED_MODULE_57__ = __webpack_require__(/*! ./pages/comprobante-pago/comprobante-pago.component */ "./src/app/pages/comprobante-pago/comprobante-pago.component.ts");
-/* harmony import */ var _pages_loading_message_loading_messagge_component__WEBPACK_IMPORTED_MODULE_58__ = __webpack_require__(/*! ./pages/loading-message/loading-messagge.component */ "./src/app/pages/loading-message/loading-messagge.component.ts");
-/* harmony import */ var _pages_comprobante_pago_proveedores_comprobante_pago_proveedores_component__WEBPACK_IMPORTED_MODULE_59__ = __webpack_require__(/*! ./pages/comprobante-pago-proveedores/comprobante-pago-proveedores.component */ "./src/app/pages/comprobante-pago-proveedores/comprobante-pago-proveedores.component.ts");
-/* harmony import */ var devextreme_angular_ui_nested__WEBPACK_IMPORTED_MODULE_60__ = __webpack_require__(/*! devextreme-angular/ui/nested */ "./node_modules/devextreme-angular/__ivy_ngcc__/fesm2015/devextreme-angular-ui-nested.js");
-/* harmony import */ var _pages_cuentasPorPagar_cuentasPorPagar_component__WEBPACK_IMPORTED_MODULE_61__ = __webpack_require__(/*! ./pages/cuentasPorPagar/cuentasPorPagar.component */ "./src/app/pages/cuentasPorPagar/cuentasPorPagar.component.ts");
-/* harmony import */ var _pages_cuentasPorCobrar_cuentasPorCobrar_component__WEBPACK_IMPORTED_MODULE_62__ = __webpack_require__(/*! ./pages/cuentasPorCobrar/cuentasPorCobrar.component */ "./src/app/pages/cuentasPorCobrar/cuentasPorCobrar.component.ts");
-/* harmony import */ var _pages_prestamos_prestamos_component__WEBPACK_IMPORTED_MODULE_63__ = __webpack_require__(/*! ./pages/prestamos/prestamos.component */ "./src/app/pages/prestamos/prestamos.component.ts");
-/* harmony import */ var _pages_reciboCaja_reciboCaja_prestamos_recibo_caja_prestamos_component__WEBPACK_IMPORTED_MODULE_64__ = __webpack_require__(/*! ./pages/reciboCaja/reciboCaja-prestamos/recibo-caja-prestamos.component */ "./src/app/pages/reciboCaja/reciboCaja-prestamos/recibo-caja-prestamos.component.ts");
-/* harmony import */ var _pages_registro_facturas_registro_facturas_component__WEBPACK_IMPORTED_MODULE_65__ = __webpack_require__(/*! ./pages/registro-facturas/registro-facturas.component */ "./src/app/pages/registro-facturas/registro-facturas.component.ts");
-/* harmony import */ var _pages_comprobante_pago_proveedores_directo_comprobante_pago_proveedores_directo_component__WEBPACK_IMPORTED_MODULE_66__ = __webpack_require__(/*! ./pages/comprobante-pago-proveedores-directo/comprobante-pago-proveedores-directo.component */ "./src/app/pages/comprobante-pago-proveedores-directo/comprobante-pago-proveedores-directo.component.ts");
-/* harmony import */ var _pages_base_pagos_proveedores_base_pagos_proveedores_component__WEBPACK_IMPORTED_MODULE_67__ = __webpack_require__(/*! ./pages/base-pagos-proveedores/base-pagos-proveedores.component */ "./src/app/pages/base-pagos-proveedores/base-pagos-proveedores.component.ts");
-/* harmony import */ var _pages_gestion_pago_cheques_gestion_pago_cheques_component__WEBPACK_IMPORTED_MODULE_68__ = __webpack_require__(/*! ./pages/gestion-pago-cheques/gestion-pago-cheques.component */ "./src/app/pages/gestion-pago-cheques/gestion-pago-cheques.component.ts");
-/* harmony import */ var _pages_transaccionesNominas_transaccionesNominas_component__WEBPACK_IMPORTED_MODULE_69__ = __webpack_require__(/*! ./pages/transaccionesNominas/transaccionesNominas.component */ "./src/app/pages/transaccionesNominas/transaccionesNominas.component.ts");
-/* harmony import */ var _pages_revision_inventario_revision_inventario_component__WEBPACK_IMPORTED_MODULE_70__ = __webpack_require__(/*! ./pages/revision-inventario/revision-inventario.component */ "./src/app/pages/revision-inventario/revision-inventario.component.ts");
-/* harmony import */ var _pages_stock_minimo_stock_minimo_component__WEBPACK_IMPORTED_MODULE_71__ = __webpack_require__(/*! ./pages/stock-minimo/stock-minimo.component */ "./src/app/pages/stock-minimo/stock-minimo.component.ts");
-/* harmony import */ var _pages_stock_locales_stock_locales_component__WEBPACK_IMPORTED_MODULE_72__ = __webpack_require__(/*! ./pages/stock-locales/stock-locales.component */ "./src/app/pages/stock-locales/stock-locales.component.ts");
-/* harmony import */ var _pages_ventas_copy_ventas_nuevo_component__WEBPACK_IMPORTED_MODULE_73__ = __webpack_require__(/*! ./pages/ventas copy/ventas-nuevo.component */ "./src/app/pages/ventas copy/ventas-nuevo.component.ts");
-/* harmony import */ var _pages_control_unidades_control_unidades_component__WEBPACK_IMPORTED_MODULE_74__ = __webpack_require__(/*! ./pages/control-unidades/control-unidades.component */ "./src/app/pages/control-unidades/control-unidades.component.ts");
-/* harmony import */ var _pages_carga_masiva_carga_masiva_component__WEBPACK_IMPORTED_MODULE_75__ = __webpack_require__(/*! ./pages/carga-masiva/carga-masiva.component */ "./src/app/pages/carga-masiva/carga-masiva.component.ts");
-/* harmony import */ var _pages_descuentos_descuentos_component__WEBPACK_IMPORTED_MODULE_76__ = __webpack_require__(/*! ./pages/descuentos/descuentos.component */ "./src/app/pages/descuentos/descuentos.component.ts");
-/* harmony import */ var _pages_iva_iva_component__WEBPACK_IMPORTED_MODULE_77__ = __webpack_require__(/*! ./pages/iva/iva.component */ "./src/app/pages/iva/iva.component.ts");
-/* harmony import */ var _pages_configuracion_presentacion_configuracion_presentacion_component__WEBPACK_IMPORTED_MODULE_78__ = __webpack_require__(/*! ./pages/configuracion-presentacion/configuracion-presentacion.component */ "./src/app/pages/configuracion-presentacion/configuracion-presentacion.component.ts");
-/* harmony import */ var _pages_gestion_entregas_bodega_gestion_entregas_bodega_component__WEBPACK_IMPORTED_MODULE_79__ = __webpack_require__(/*! ./pages/gestion-entregas-bodega/gestion-entregas-bodega.component */ "./src/app/pages/gestion-entregas-bodega/gestion-entregas-bodega.component.ts");
-/* harmony import */ var _pages_nominas_nominas_component__WEBPACK_IMPORTED_MODULE_80__ = __webpack_require__(/*! ./pages/nominas/nominas.component */ "./src/app/pages/nominas/nominas.component.ts");
-/* harmony import */ var _pages_nominas_nominas_eventos_pagos_component__WEBPACK_IMPORTED_MODULE_81__ = __webpack_require__(/*! ./pages/nominas/nominas-eventos-pagos.component */ "./src/app/pages/nominas/nominas-eventos-pagos.component.ts");
-/* harmony import */ var _pages_nominas_nominas_consulta_pagos_component__WEBPACK_IMPORTED_MODULE_82__ = __webpack_require__(/*! ./pages/nominas/nominas-consulta-pagos.component */ "./src/app/pages/nominas/nominas-consulta-pagos.component.ts");
-/* harmony import */ var _pages_nominas_nominas_pagos_programados_component__WEBPACK_IMPORTED_MODULE_83__ = __webpack_require__(/*! ./pages/nominas/nominas-pagos-programados.component */ "./src/app/pages/nominas/nominas-pagos-programados.component.ts");
-/* harmony import */ var _pages_nominas_nominas_liquidacion_dominical_component__WEBPACK_IMPORTED_MODULE_84__ = __webpack_require__(/*! ./pages/nominas/nominas-liquidacion-dominical.component */ "./src/app/pages/nominas/nominas-liquidacion-dominical.component.ts");
+/* harmony import */ var _pages_admin_proveedores_admin_proveedores_component__WEBPACK_IMPORTED_MODULE_36__ = __webpack_require__(/*! ./pages/admin-proveedores/admin-proveedores.component */ "./src/app/pages/admin-proveedores/admin-proveedores.component.ts");
+/* harmony import */ var _pages_calculadora_calculadora_component__WEBPACK_IMPORTED_MODULE_37__ = __webpack_require__(/*! ./pages/calculadora/calculadora.component */ "./src/app/pages/calculadora/calculadora.component.ts");
+/* harmony import */ var _pages_control_precios_control_precios_component__WEBPACK_IMPORTED_MODULE_38__ = __webpack_require__(/*! ./pages/control-precios/control-precios.component */ "./src/app/pages/control-precios/control-precios.component.ts");
+/* harmony import */ var _pages_auditorias_auditorias_component__WEBPACK_IMPORTED_MODULE_39__ = __webpack_require__(/*! ./pages/auditorias/auditorias.component */ "./src/app/pages/auditorias/auditorias.component.ts");
+/* harmony import */ var _pages_bodegas_bodegas_component__WEBPACK_IMPORTED_MODULE_40__ = __webpack_require__(/*! ./pages/bodegas/bodegas.component */ "./src/app/pages/bodegas/bodegas.component.ts");
+/* harmony import */ var _pages_auditoria_cl_auditoria_cl_component__WEBPACK_IMPORTED_MODULE_41__ = __webpack_require__(/*! ./pages/auditoria-cl/auditoria-cl.component */ "./src/app/pages/auditoria-cl/auditoria-cl.component.ts");
+/* harmony import */ var angularx_qrcode__WEBPACK_IMPORTED_MODULE_42__ = __webpack_require__(/*! angularx-qrcode */ "./node_modules/angularx-qrcode/__ivy_ngcc__/fesm2015/angularx-qrcode.js");
+/* harmony import */ var _pages_generar_qr_generar_qr_component__WEBPACK_IMPORTED_MODULE_43__ = __webpack_require__(/*! ./pages/generar-qr/generar-qr.component */ "./src/app/pages/generar-qr/generar-qr.component.ts");
+/* harmony import */ var _pages_info_productos_info_productos_component__WEBPACK_IMPORTED_MODULE_44__ = __webpack_require__(/*! ./pages/info-productos/info-productos.component */ "./src/app/pages/info-productos/info-productos.component.ts");
+/* harmony import */ var _pages_consultas_consultas_component__WEBPACK_IMPORTED_MODULE_45__ = __webpack_require__(/*! ./pages/consultas/consultas.component */ "./src/app/pages/consultas/consultas.component.ts");
+/* harmony import */ var _pages_auditorias_auditoria2_auditoria2_component__WEBPACK_IMPORTED_MODULE_46__ = __webpack_require__(/*! ./pages/auditorias/auditoria2/auditoria2.component */ "./src/app/pages/auditorias/auditoria2/auditoria2.component.ts");
+/* harmony import */ var _pages_auditorias_aud_tabla_aud_tabla_component__WEBPACK_IMPORTED_MODULE_47__ = __webpack_require__(/*! ./pages/auditorias/aud-tabla/aud-tabla.component */ "./src/app/pages/auditorias/aud-tabla/aud-tabla.component.ts");
+/* harmony import */ var _pages_consultas_grupo_consultas_grupo_component__WEBPACK_IMPORTED_MODULE_48__ = __webpack_require__(/*! ./pages/consultas-grupo/consultas-grupo.component */ "./src/app/pages/consultas-grupo/consultas-grupo.component.ts");
+/* harmony import */ var _pages_indicadores_indicadores_component__WEBPACK_IMPORTED_MODULE_49__ = __webpack_require__(/*! ./pages/indicadores/indicadores.component */ "./src/app/pages/indicadores/indicadores.component.ts");
+/* harmony import */ var _pages_loading_loading_component__WEBPACK_IMPORTED_MODULE_50__ = __webpack_require__(/*! ./pages/loading/loading.component */ "./src/app/pages/loading/loading.component.ts");
+/* harmony import */ var _pages_reportes_reporte_detallado_reporte_detallado_component__WEBPACK_IMPORTED_MODULE_51__ = __webpack_require__(/*! ./pages/reportes/reporte-detallado/reporte-detallado.component */ "./src/app/pages/reportes/reporte-detallado/reporte-detallado.component.ts");
+/* harmony import */ var _pages_reportes_reporte_global_reporte_global_component__WEBPACK_IMPORTED_MODULE_52__ = __webpack_require__(/*! ./pages/reportes/reporte-global/reporte-global.component */ "./src/app/pages/reportes/reporte-global/reporte-global.component.ts");
+/* harmony import */ var _pages_reportes_ingreso_diario_ingreso_diario_component__WEBPACK_IMPORTED_MODULE_53__ = __webpack_require__(/*! ./pages/reportes/ingreso-diario/ingreso-diario.component */ "./src/app/pages/reportes/ingreso-diario/ingreso-diario.component.ts");
+/* harmony import */ var _pages_administracion_cuentas_administracion_cuentas_component__WEBPACK_IMPORTED_MODULE_54__ = __webpack_require__(/*! ./pages/administracion-cuentas/administracion-cuentas.component */ "./src/app/pages/administracion-cuentas/administracion-cuentas.component.ts");
+/* harmony import */ var _pages_cajaMenor_caja_menor_component__WEBPACK_IMPORTED_MODULE_55__ = __webpack_require__(/*! ./pages/cajaMenor/caja-menor.component */ "./src/app/pages/cajaMenor/caja-menor.component.ts");
+/* harmony import */ var _pages_reciboCaja_recibo_caja_component__WEBPACK_IMPORTED_MODULE_56__ = __webpack_require__(/*! ./pages/reciboCaja/recibo-caja.component */ "./src/app/pages/reciboCaja/recibo-caja.component.ts");
+/* harmony import */ var _pages_transaccionesFinancieras_transaccionesFinancieras_component__WEBPACK_IMPORTED_MODULE_57__ = __webpack_require__(/*! ./pages/transaccionesFinancieras/transaccionesFinancieras.component */ "./src/app/pages/transaccionesFinancieras/transaccionesFinancieras.component.ts");
+/* harmony import */ var _pages_comprobante_pago_comprobante_pago_component__WEBPACK_IMPORTED_MODULE_58__ = __webpack_require__(/*! ./pages/comprobante-pago/comprobante-pago.component */ "./src/app/pages/comprobante-pago/comprobante-pago.component.ts");
+/* harmony import */ var _pages_loading_message_loading_messagge_component__WEBPACK_IMPORTED_MODULE_59__ = __webpack_require__(/*! ./pages/loading-message/loading-messagge.component */ "./src/app/pages/loading-message/loading-messagge.component.ts");
+/* harmony import */ var _pages_comprobante_pago_proveedores_comprobante_pago_proveedores_component__WEBPACK_IMPORTED_MODULE_60__ = __webpack_require__(/*! ./pages/comprobante-pago-proveedores/comprobante-pago-proveedores.component */ "./src/app/pages/comprobante-pago-proveedores/comprobante-pago-proveedores.component.ts");
+/* harmony import */ var devextreme_angular_ui_nested__WEBPACK_IMPORTED_MODULE_61__ = __webpack_require__(/*! devextreme-angular/ui/nested */ "./node_modules/devextreme-angular/__ivy_ngcc__/fesm2015/devextreme-angular-ui-nested.js");
+/* harmony import */ var _pages_cuentasPorPagar_cuentasPorPagar_component__WEBPACK_IMPORTED_MODULE_62__ = __webpack_require__(/*! ./pages/cuentasPorPagar/cuentasPorPagar.component */ "./src/app/pages/cuentasPorPagar/cuentasPorPagar.component.ts");
+/* harmony import */ var _pages_cuentasPorCobrar_cuentasPorCobrar_component__WEBPACK_IMPORTED_MODULE_63__ = __webpack_require__(/*! ./pages/cuentasPorCobrar/cuentasPorCobrar.component */ "./src/app/pages/cuentasPorCobrar/cuentasPorCobrar.component.ts");
+/* harmony import */ var _pages_prestamos_prestamos_component__WEBPACK_IMPORTED_MODULE_64__ = __webpack_require__(/*! ./pages/prestamos/prestamos.component */ "./src/app/pages/prestamos/prestamos.component.ts");
+/* harmony import */ var _pages_reciboCaja_reciboCaja_prestamos_recibo_caja_prestamos_component__WEBPACK_IMPORTED_MODULE_65__ = __webpack_require__(/*! ./pages/reciboCaja/reciboCaja-prestamos/recibo-caja-prestamos.component */ "./src/app/pages/reciboCaja/reciboCaja-prestamos/recibo-caja-prestamos.component.ts");
+/* harmony import */ var _pages_registro_facturas_registro_facturas_component__WEBPACK_IMPORTED_MODULE_66__ = __webpack_require__(/*! ./pages/registro-facturas/registro-facturas.component */ "./src/app/pages/registro-facturas/registro-facturas.component.ts");
+/* harmony import */ var _pages_comprobante_pago_proveedores_directo_comprobante_pago_proveedores_directo_component__WEBPACK_IMPORTED_MODULE_67__ = __webpack_require__(/*! ./pages/comprobante-pago-proveedores-directo/comprobante-pago-proveedores-directo.component */ "./src/app/pages/comprobante-pago-proveedores-directo/comprobante-pago-proveedores-directo.component.ts");
+/* harmony import */ var _pages_base_pagos_proveedores_base_pagos_proveedores_component__WEBPACK_IMPORTED_MODULE_68__ = __webpack_require__(/*! ./pages/base-pagos-proveedores/base-pagos-proveedores.component */ "./src/app/pages/base-pagos-proveedores/base-pagos-proveedores.component.ts");
+/* harmony import */ var _pages_gestion_pago_cheques_gestion_pago_cheques_component__WEBPACK_IMPORTED_MODULE_69__ = __webpack_require__(/*! ./pages/gestion-pago-cheques/gestion-pago-cheques.component */ "./src/app/pages/gestion-pago-cheques/gestion-pago-cheques.component.ts");
+/* harmony import */ var _pages_transaccionesNominas_transaccionesNominas_component__WEBPACK_IMPORTED_MODULE_70__ = __webpack_require__(/*! ./pages/transaccionesNominas/transaccionesNominas.component */ "./src/app/pages/transaccionesNominas/transaccionesNominas.component.ts");
+/* harmony import */ var _pages_revision_inventario_revision_inventario_component__WEBPACK_IMPORTED_MODULE_71__ = __webpack_require__(/*! ./pages/revision-inventario/revision-inventario.component */ "./src/app/pages/revision-inventario/revision-inventario.component.ts");
+/* harmony import */ var _pages_stock_minimo_stock_minimo_component__WEBPACK_IMPORTED_MODULE_72__ = __webpack_require__(/*! ./pages/stock-minimo/stock-minimo.component */ "./src/app/pages/stock-minimo/stock-minimo.component.ts");
+/* harmony import */ var _pages_stock_locales_stock_locales_component__WEBPACK_IMPORTED_MODULE_73__ = __webpack_require__(/*! ./pages/stock-locales/stock-locales.component */ "./src/app/pages/stock-locales/stock-locales.component.ts");
+/* harmony import */ var _pages_ventas_copy_ventas_nuevo_component__WEBPACK_IMPORTED_MODULE_74__ = __webpack_require__(/*! ./pages/ventas copy/ventas-nuevo.component */ "./src/app/pages/ventas copy/ventas-nuevo.component.ts");
+/* harmony import */ var _pages_control_unidades_control_unidades_component__WEBPACK_IMPORTED_MODULE_75__ = __webpack_require__(/*! ./pages/control-unidades/control-unidades.component */ "./src/app/pages/control-unidades/control-unidades.component.ts");
+/* harmony import */ var _pages_carga_masiva_carga_masiva_component__WEBPACK_IMPORTED_MODULE_76__ = __webpack_require__(/*! ./pages/carga-masiva/carga-masiva.component */ "./src/app/pages/carga-masiva/carga-masiva.component.ts");
+/* harmony import */ var _pages_descuentos_descuentos_component__WEBPACK_IMPORTED_MODULE_77__ = __webpack_require__(/*! ./pages/descuentos/descuentos.component */ "./src/app/pages/descuentos/descuentos.component.ts");
+/* harmony import */ var _pages_iva_iva_component__WEBPACK_IMPORTED_MODULE_78__ = __webpack_require__(/*! ./pages/iva/iva.component */ "./src/app/pages/iva/iva.component.ts");
+/* harmony import */ var _pages_configuracion_presentacion_configuracion_presentacion_component__WEBPACK_IMPORTED_MODULE_79__ = __webpack_require__(/*! ./pages/configuracion-presentacion/configuracion-presentacion.component */ "./src/app/pages/configuracion-presentacion/configuracion-presentacion.component.ts");
+/* harmony import */ var _pages_gestion_entregas_bodega_gestion_entregas_bodega_component__WEBPACK_IMPORTED_MODULE_80__ = __webpack_require__(/*! ./pages/gestion-entregas-bodega/gestion-entregas-bodega.component */ "./src/app/pages/gestion-entregas-bodega/gestion-entregas-bodega.component.ts");
+/* harmony import */ var _pages_nominas_nominas_component__WEBPACK_IMPORTED_MODULE_81__ = __webpack_require__(/*! ./pages/nominas/nominas.component */ "./src/app/pages/nominas/nominas.component.ts");
+/* harmony import */ var _pages_nominas_nominas_eventos_pagos_component__WEBPACK_IMPORTED_MODULE_82__ = __webpack_require__(/*! ./pages/nominas/nominas-eventos-pagos.component */ "./src/app/pages/nominas/nominas-eventos-pagos.component.ts");
+/* harmony import */ var _pages_nominas_nominas_consulta_pagos_component__WEBPACK_IMPORTED_MODULE_83__ = __webpack_require__(/*! ./pages/nominas/nominas-consulta-pagos.component */ "./src/app/pages/nominas/nominas-consulta-pagos.component.ts");
+/* harmony import */ var _pages_nominas_nominas_pagos_programados_component__WEBPACK_IMPORTED_MODULE_84__ = __webpack_require__(/*! ./pages/nominas/nominas-pagos-programados.component */ "./src/app/pages/nominas/nominas-pagos-programados.component.ts");
+/* harmony import */ var _pages_nominas_nominas_liquidacion_dominical_component__WEBPACK_IMPORTED_MODULE_85__ = __webpack_require__(/*! ./pages/nominas/nominas-liquidacion-dominical.component */ "./src/app/pages/nominas/nominas-liquidacion-dominical.component.ts");
+
 
 
 
@@ -1820,7 +1838,7 @@ AppModule.ɵinj = _angular_core__WEBPACK_IMPORTED_MODULE_1__["ɵɵdefineInjector
             devextreme_angular__WEBPACK_IMPORTED_MODULE_11__["DxCheckBoxModule"],
             devextreme_angular__WEBPACK_IMPORTED_MODULE_11__["DxScrollViewModule"],
             devextreme_angular__WEBPACK_IMPORTED_MODULE_11__["DxNumberBoxModule"],
-            angularx_qrcode__WEBPACK_IMPORTED_MODULE_41__["QRCodeModule"],
+            angularx_qrcode__WEBPACK_IMPORTED_MODULE_42__["QRCodeModule"],
             devextreme_angular__WEBPACK_IMPORTED_MODULE_11__["DxPopupModule"],
             devextreme_angular__WEBPACK_IMPORTED_MODULE_11__["DxDateBoxModule"],
             devextreme_angular__WEBPACK_IMPORTED_MODULE_11__["DxAutocompleteModule"],
@@ -1829,7 +1847,7 @@ AppModule.ɵinj = _angular_core__WEBPACK_IMPORTED_MODULE_1__["ɵɵdefineInjector
             devextreme_angular__WEBPACK_IMPORTED_MODULE_11__["DxValidatorModule"],
             devextreme_angular__WEBPACK_IMPORTED_MODULE_11__["DxTemplateModule"],
             devextreme_angular__WEBPACK_IMPORTED_MODULE_11__["DxTextAreaModule"],
-            devextreme_angular_ui_nested__WEBPACK_IMPORTED_MODULE_60__["DxoToolbarModule"],
+            devextreme_angular_ui_nested__WEBPACK_IMPORTED_MODULE_61__["DxoToolbarModule"],
             angular_alert_module__WEBPACK_IMPORTED_MODULE_17__["AlertsModule"].forRoot(),
             devextreme_angular__WEBPACK_IMPORTED_MODULE_11__["DxRadioGroupModule"],
             devextreme_angular__WEBPACK_IMPORTED_MODULE_11__["DxMenuModule"],
@@ -1858,54 +1876,55 @@ AppModule.ɵinj = _angular_core__WEBPACK_IMPORTED_MODULE_1__["ɵɵdefineInjector
         _pages_entregas_p_entregas_p_component__WEBPACK_IMPORTED_MODULE_31__["EntregasPComponent"],
         _pages_user_user_component__WEBPACK_IMPORTED_MODULE_34__["UserComponent"],
         _pages_clientes_clientes_component__WEBPACK_IMPORTED_MODULE_35__["ClientesComponent"],
-        _pages_calculadora_calculadora_component__WEBPACK_IMPORTED_MODULE_36__["CalculadorasComponent"],
-        _pages_control_precios_control_precios_component__WEBPACK_IMPORTED_MODULE_37__["ControlPreciosComponent"],
-        _pages_control_unidades_control_unidades_component__WEBPACK_IMPORTED_MODULE_74__["ControlUnidadesComponent"],
-        _pages_auditorias_auditorias_component__WEBPACK_IMPORTED_MODULE_38__["AuditoriasComponent"],
-        _pages_bodegas_bodegas_component__WEBPACK_IMPORTED_MODULE_39__["BodegasComponent"],
-        _pages_auditoria_cl_auditoria_cl_component__WEBPACK_IMPORTED_MODULE_40__["AuditoriaClComponent"],
-        _pages_generar_qr_generar_qr_component__WEBPACK_IMPORTED_MODULE_42__["GenerarQRComponent"],
-        _pages_info_productos_info_productos_component__WEBPACK_IMPORTED_MODULE_43__["InfoProductosComponent"],
-        _pages_consultas_consultas_component__WEBPACK_IMPORTED_MODULE_44__["ConsultasComponent"],
-        _pages_auditorias_auditoria2_auditoria2_component__WEBPACK_IMPORTED_MODULE_45__["Auditoria2Component"],
-        _pages_auditorias_aud_tabla_aud_tabla_component__WEBPACK_IMPORTED_MODULE_46__["AudTablaComponent"],
-        _pages_consultas_grupo_consultas_grupo_component__WEBPACK_IMPORTED_MODULE_47__["ConsultasGrupoComponent"],
-        _pages_indicadores_indicadores_component__WEBPACK_IMPORTED_MODULE_48__["IndicadoresComponent"],
-        _pages_loading_loading_component__WEBPACK_IMPORTED_MODULE_49__["LoadingComponent"],
-        _pages_reportes_reporte_detallado_reporte_detallado_component__WEBPACK_IMPORTED_MODULE_50__["ReporteDetalladoComponent"],
-        _pages_reportes_reporte_global_reporte_global_component__WEBPACK_IMPORTED_MODULE_51__["ReporteGlobalComponent"],
-        _pages_reportes_ingreso_diario_ingreso_diario_component__WEBPACK_IMPORTED_MODULE_52__["IngresoDiarioComponent"],
-        _pages_administracion_cuentas_administracion_cuentas_component__WEBPACK_IMPORTED_MODULE_53__["AdministracionCuentasComponent"],
-        _pages_cajaMenor_caja_menor_component__WEBPACK_IMPORTED_MODULE_54__["CajaMenorComponent"],
-        _pages_reciboCaja_recibo_caja_component__WEBPACK_IMPORTED_MODULE_55__["ReciboCajaComponent"],
-        _pages_cuentasPorCobrar_cuentasPorCobrar_component__WEBPACK_IMPORTED_MODULE_62__["CuentaPorCobrarComponent"],
-        _pages_transaccionesFinancieras_transaccionesFinancieras_component__WEBPACK_IMPORTED_MODULE_56__["TransaccionesFinancierasComponent"],
-        _pages_comprobante_pago_comprobante_pago_component__WEBPACK_IMPORTED_MODULE_57__["ComprobantePagoComponent"],
-        _pages_loading_message_loading_messagge_component__WEBPACK_IMPORTED_MODULE_58__["LoadingMessaggeComponent"],
-        _pages_comprobante_pago_proveedores_comprobante_pago_proveedores_component__WEBPACK_IMPORTED_MODULE_59__["ComprobantePagoProveedoresComponent"],
-        _pages_cuentasPorPagar_cuentasPorPagar_component__WEBPACK_IMPORTED_MODULE_61__["CuentaPorPagarComponent"],
-        _pages_prestamos_prestamos_component__WEBPACK_IMPORTED_MODULE_63__["PrestamosComponent"],
-        _pages_descuentos_descuentos_component__WEBPACK_IMPORTED_MODULE_76__["DescuentoComponent"],
-        _pages_reciboCaja_reciboCaja_prestamos_recibo_caja_prestamos_component__WEBPACK_IMPORTED_MODULE_64__["ReciboCajaPrestamosComponent"],
-        _pages_reciboCaja_reciboCaja_prestamos_recibo_caja_prestamos_component__WEBPACK_IMPORTED_MODULE_64__["ReciboCajaPrestamosComponent"],
-        _pages_registro_facturas_registro_facturas_component__WEBPACK_IMPORTED_MODULE_65__["RegistroFacturasComponent"],
-        _pages_comprobante_pago_proveedores_directo_comprobante_pago_proveedores_directo_component__WEBPACK_IMPORTED_MODULE_66__["ComprobantePagoProveedoresDirectoComponent"],
-        _pages_base_pagos_proveedores_base_pagos_proveedores_component__WEBPACK_IMPORTED_MODULE_67__["BasePagoProveedoresComponent"],
-        _pages_gestion_pago_cheques_gestion_pago_cheques_component__WEBPACK_IMPORTED_MODULE_68__["GestionPagoChequesComponent"],
-        _pages_transaccionesNominas_transaccionesNominas_component__WEBPACK_IMPORTED_MODULE_69__["TransaccionesNominasComponent"],
-        _pages_revision_inventario_revision_inventario_component__WEBPACK_IMPORTED_MODULE_70__["RevionInventarioComponent"],
-        _pages_stock_minimo_stock_minimo_component__WEBPACK_IMPORTED_MODULE_71__["StockMinimoComponent"],
-        _pages_stock_locales_stock_locales_component__WEBPACK_IMPORTED_MODULE_72__["StockLocalesComponent"],
-        _pages_ventas_copy_ventas_nuevo_component__WEBPACK_IMPORTED_MODULE_73__["VentasNuevoComponent"],
-        _pages_carga_masiva_carga_masiva_component__WEBPACK_IMPORTED_MODULE_75__["CargaMasivaComponent"],
-        _pages_iva_iva_component__WEBPACK_IMPORTED_MODULE_77__["IvaComponent"],
-        _pages_configuracion_presentacion_configuracion_presentacion_component__WEBPACK_IMPORTED_MODULE_78__["ConfiguracionPresentacionComponent"],
-        _pages_gestion_entregas_bodega_gestion_entregas_bodega_component__WEBPACK_IMPORTED_MODULE_79__["GestionEntregasBodegaComponent"],
-        _pages_nominas_nominas_component__WEBPACK_IMPORTED_MODULE_80__["NominasComponent"],
-        _pages_nominas_nominas_eventos_pagos_component__WEBPACK_IMPORTED_MODULE_81__["NominasEventosPagosComponent"],
-        _pages_nominas_nominas_consulta_pagos_component__WEBPACK_IMPORTED_MODULE_82__["NominasConsultaPagosComponent"],
-        _pages_nominas_nominas_pagos_programados_component__WEBPACK_IMPORTED_MODULE_83__["NominasPagosProgramadosComponent"],
-        _pages_nominas_nominas_liquidacion_dominical_component__WEBPACK_IMPORTED_MODULE_84__["NominasLiquidacionDominicalComponent"]], imports: [_angular_platform_browser__WEBPACK_IMPORTED_MODULE_0__["BrowserModule"],
+        _pages_admin_proveedores_admin_proveedores_component__WEBPACK_IMPORTED_MODULE_36__["AdminProveedoresComponent"],
+        _pages_calculadora_calculadora_component__WEBPACK_IMPORTED_MODULE_37__["CalculadorasComponent"],
+        _pages_control_precios_control_precios_component__WEBPACK_IMPORTED_MODULE_38__["ControlPreciosComponent"],
+        _pages_control_unidades_control_unidades_component__WEBPACK_IMPORTED_MODULE_75__["ControlUnidadesComponent"],
+        _pages_auditorias_auditorias_component__WEBPACK_IMPORTED_MODULE_39__["AuditoriasComponent"],
+        _pages_bodegas_bodegas_component__WEBPACK_IMPORTED_MODULE_40__["BodegasComponent"],
+        _pages_auditoria_cl_auditoria_cl_component__WEBPACK_IMPORTED_MODULE_41__["AuditoriaClComponent"],
+        _pages_generar_qr_generar_qr_component__WEBPACK_IMPORTED_MODULE_43__["GenerarQRComponent"],
+        _pages_info_productos_info_productos_component__WEBPACK_IMPORTED_MODULE_44__["InfoProductosComponent"],
+        _pages_consultas_consultas_component__WEBPACK_IMPORTED_MODULE_45__["ConsultasComponent"],
+        _pages_auditorias_auditoria2_auditoria2_component__WEBPACK_IMPORTED_MODULE_46__["Auditoria2Component"],
+        _pages_auditorias_aud_tabla_aud_tabla_component__WEBPACK_IMPORTED_MODULE_47__["AudTablaComponent"],
+        _pages_consultas_grupo_consultas_grupo_component__WEBPACK_IMPORTED_MODULE_48__["ConsultasGrupoComponent"],
+        _pages_indicadores_indicadores_component__WEBPACK_IMPORTED_MODULE_49__["IndicadoresComponent"],
+        _pages_loading_loading_component__WEBPACK_IMPORTED_MODULE_50__["LoadingComponent"],
+        _pages_reportes_reporte_detallado_reporte_detallado_component__WEBPACK_IMPORTED_MODULE_51__["ReporteDetalladoComponent"],
+        _pages_reportes_reporte_global_reporte_global_component__WEBPACK_IMPORTED_MODULE_52__["ReporteGlobalComponent"],
+        _pages_reportes_ingreso_diario_ingreso_diario_component__WEBPACK_IMPORTED_MODULE_53__["IngresoDiarioComponent"],
+        _pages_administracion_cuentas_administracion_cuentas_component__WEBPACK_IMPORTED_MODULE_54__["AdministracionCuentasComponent"],
+        _pages_cajaMenor_caja_menor_component__WEBPACK_IMPORTED_MODULE_55__["CajaMenorComponent"],
+        _pages_reciboCaja_recibo_caja_component__WEBPACK_IMPORTED_MODULE_56__["ReciboCajaComponent"],
+        _pages_cuentasPorCobrar_cuentasPorCobrar_component__WEBPACK_IMPORTED_MODULE_63__["CuentaPorCobrarComponent"],
+        _pages_transaccionesFinancieras_transaccionesFinancieras_component__WEBPACK_IMPORTED_MODULE_57__["TransaccionesFinancierasComponent"],
+        _pages_comprobante_pago_comprobante_pago_component__WEBPACK_IMPORTED_MODULE_58__["ComprobantePagoComponent"],
+        _pages_loading_message_loading_messagge_component__WEBPACK_IMPORTED_MODULE_59__["LoadingMessaggeComponent"],
+        _pages_comprobante_pago_proveedores_comprobante_pago_proveedores_component__WEBPACK_IMPORTED_MODULE_60__["ComprobantePagoProveedoresComponent"],
+        _pages_cuentasPorPagar_cuentasPorPagar_component__WEBPACK_IMPORTED_MODULE_62__["CuentaPorPagarComponent"],
+        _pages_prestamos_prestamos_component__WEBPACK_IMPORTED_MODULE_64__["PrestamosComponent"],
+        _pages_descuentos_descuentos_component__WEBPACK_IMPORTED_MODULE_77__["DescuentoComponent"],
+        _pages_reciboCaja_reciboCaja_prestamos_recibo_caja_prestamos_component__WEBPACK_IMPORTED_MODULE_65__["ReciboCajaPrestamosComponent"],
+        _pages_reciboCaja_reciboCaja_prestamos_recibo_caja_prestamos_component__WEBPACK_IMPORTED_MODULE_65__["ReciboCajaPrestamosComponent"],
+        _pages_registro_facturas_registro_facturas_component__WEBPACK_IMPORTED_MODULE_66__["RegistroFacturasComponent"],
+        _pages_comprobante_pago_proveedores_directo_comprobante_pago_proveedores_directo_component__WEBPACK_IMPORTED_MODULE_67__["ComprobantePagoProveedoresDirectoComponent"],
+        _pages_base_pagos_proveedores_base_pagos_proveedores_component__WEBPACK_IMPORTED_MODULE_68__["BasePagoProveedoresComponent"],
+        _pages_gestion_pago_cheques_gestion_pago_cheques_component__WEBPACK_IMPORTED_MODULE_69__["GestionPagoChequesComponent"],
+        _pages_transaccionesNominas_transaccionesNominas_component__WEBPACK_IMPORTED_MODULE_70__["TransaccionesNominasComponent"],
+        _pages_revision_inventario_revision_inventario_component__WEBPACK_IMPORTED_MODULE_71__["RevionInventarioComponent"],
+        _pages_stock_minimo_stock_minimo_component__WEBPACK_IMPORTED_MODULE_72__["StockMinimoComponent"],
+        _pages_stock_locales_stock_locales_component__WEBPACK_IMPORTED_MODULE_73__["StockLocalesComponent"],
+        _pages_ventas_copy_ventas_nuevo_component__WEBPACK_IMPORTED_MODULE_74__["VentasNuevoComponent"],
+        _pages_carga_masiva_carga_masiva_component__WEBPACK_IMPORTED_MODULE_76__["CargaMasivaComponent"],
+        _pages_iva_iva_component__WEBPACK_IMPORTED_MODULE_78__["IvaComponent"],
+        _pages_configuracion_presentacion_configuracion_presentacion_component__WEBPACK_IMPORTED_MODULE_79__["ConfiguracionPresentacionComponent"],
+        _pages_gestion_entregas_bodega_gestion_entregas_bodega_component__WEBPACK_IMPORTED_MODULE_80__["GestionEntregasBodegaComponent"],
+        _pages_nominas_nominas_component__WEBPACK_IMPORTED_MODULE_81__["NominasComponent"],
+        _pages_nominas_nominas_eventos_pagos_component__WEBPACK_IMPORTED_MODULE_82__["NominasEventosPagosComponent"],
+        _pages_nominas_nominas_consulta_pagos_component__WEBPACK_IMPORTED_MODULE_83__["NominasConsultaPagosComponent"],
+        _pages_nominas_nominas_pagos_programados_component__WEBPACK_IMPORTED_MODULE_84__["NominasPagosProgramadosComponent"],
+        _pages_nominas_nominas_liquidacion_dominical_component__WEBPACK_IMPORTED_MODULE_85__["NominasLiquidacionDominicalComponent"]], imports: [_angular_platform_browser__WEBPACK_IMPORTED_MODULE_0__["BrowserModule"],
         _layouts__WEBPACK_IMPORTED_MODULE_3__["SideNavOuterToolbarModule"],
         _layouts__WEBPACK_IMPORTED_MODULE_3__["SideNavInnerToolbarModule"],
         _layouts__WEBPACK_IMPORTED_MODULE_3__["SingleCardModule"],
@@ -1931,14 +1950,14 @@ AppModule.ɵinj = _angular_core__WEBPACK_IMPORTED_MODULE_1__["ɵɵdefineInjector
         devextreme_angular__WEBPACK_IMPORTED_MODULE_11__["DxCheckBoxModule"],
         devextreme_angular__WEBPACK_IMPORTED_MODULE_11__["DxScrollViewModule"],
         devextreme_angular__WEBPACK_IMPORTED_MODULE_11__["DxNumberBoxModule"],
-        angularx_qrcode__WEBPACK_IMPORTED_MODULE_41__["QRCodeModule"],
+        angularx_qrcode__WEBPACK_IMPORTED_MODULE_42__["QRCodeModule"],
         devextreme_angular__WEBPACK_IMPORTED_MODULE_11__["DxPopupModule"],
         devextreme_angular__WEBPACK_IMPORTED_MODULE_11__["DxDateBoxModule"],
         devextreme_angular__WEBPACK_IMPORTED_MODULE_11__["DxAutocompleteModule"], angularfire2__WEBPACK_IMPORTED_MODULE_12__["AngularFireModule"], angularfire2_firestore__WEBPACK_IMPORTED_MODULE_13__["AngularFirestoreModule"],
         devextreme_angular__WEBPACK_IMPORTED_MODULE_11__["DxValidatorModule"],
         devextreme_angular__WEBPACK_IMPORTED_MODULE_11__["DxTemplateModule"],
         devextreme_angular__WEBPACK_IMPORTED_MODULE_11__["DxTextAreaModule"],
-        devextreme_angular_ui_nested__WEBPACK_IMPORTED_MODULE_60__["DxoToolbarModule"], angular_alert_module__WEBPACK_IMPORTED_MODULE_17__["AlertsModule"], devextreme_angular__WEBPACK_IMPORTED_MODULE_11__["DxRadioGroupModule"],
+        devextreme_angular_ui_nested__WEBPACK_IMPORTED_MODULE_61__["DxoToolbarModule"], angular_alert_module__WEBPACK_IMPORTED_MODULE_17__["AlertsModule"], devextreme_angular__WEBPACK_IMPORTED_MODULE_11__["DxRadioGroupModule"],
         devextreme_angular__WEBPACK_IMPORTED_MODULE_11__["DxMenuModule"],
         devextreme_angular__WEBPACK_IMPORTED_MODULE_11__["DxTemplateModule"],
         devextreme_angular__WEBPACK_IMPORTED_MODULE_11__["DxTagBoxModule"],
@@ -1968,54 +1987,55 @@ AppModule.ɵinj = _angular_core__WEBPACK_IMPORTED_MODULE_1__["ɵɵdefineInjector
                     _pages_entregas_p_entregas_p_component__WEBPACK_IMPORTED_MODULE_31__["EntregasPComponent"],
                     _pages_user_user_component__WEBPACK_IMPORTED_MODULE_34__["UserComponent"],
                     _pages_clientes_clientes_component__WEBPACK_IMPORTED_MODULE_35__["ClientesComponent"],
-                    _pages_calculadora_calculadora_component__WEBPACK_IMPORTED_MODULE_36__["CalculadorasComponent"],
-                    _pages_control_precios_control_precios_component__WEBPACK_IMPORTED_MODULE_37__["ControlPreciosComponent"],
-                    _pages_control_unidades_control_unidades_component__WEBPACK_IMPORTED_MODULE_74__["ControlUnidadesComponent"],
-                    _pages_auditorias_auditorias_component__WEBPACK_IMPORTED_MODULE_38__["AuditoriasComponent"],
-                    _pages_bodegas_bodegas_component__WEBPACK_IMPORTED_MODULE_39__["BodegasComponent"],
-                    _pages_auditoria_cl_auditoria_cl_component__WEBPACK_IMPORTED_MODULE_40__["AuditoriaClComponent"],
-                    _pages_generar_qr_generar_qr_component__WEBPACK_IMPORTED_MODULE_42__["GenerarQRComponent"],
-                    _pages_info_productos_info_productos_component__WEBPACK_IMPORTED_MODULE_43__["InfoProductosComponent"],
-                    _pages_consultas_consultas_component__WEBPACK_IMPORTED_MODULE_44__["ConsultasComponent"],
-                    _pages_auditorias_auditoria2_auditoria2_component__WEBPACK_IMPORTED_MODULE_45__["Auditoria2Component"],
-                    _pages_auditorias_aud_tabla_aud_tabla_component__WEBPACK_IMPORTED_MODULE_46__["AudTablaComponent"],
-                    _pages_consultas_grupo_consultas_grupo_component__WEBPACK_IMPORTED_MODULE_47__["ConsultasGrupoComponent"],
-                    _pages_indicadores_indicadores_component__WEBPACK_IMPORTED_MODULE_48__["IndicadoresComponent"],
-                    _pages_loading_loading_component__WEBPACK_IMPORTED_MODULE_49__["LoadingComponent"],
-                    _pages_reportes_reporte_detallado_reporte_detallado_component__WEBPACK_IMPORTED_MODULE_50__["ReporteDetalladoComponent"],
-                    _pages_reportes_reporte_global_reporte_global_component__WEBPACK_IMPORTED_MODULE_51__["ReporteGlobalComponent"],
-                    _pages_reportes_ingreso_diario_ingreso_diario_component__WEBPACK_IMPORTED_MODULE_52__["IngresoDiarioComponent"],
-                    _pages_administracion_cuentas_administracion_cuentas_component__WEBPACK_IMPORTED_MODULE_53__["AdministracionCuentasComponent"],
-                    _pages_cajaMenor_caja_menor_component__WEBPACK_IMPORTED_MODULE_54__["CajaMenorComponent"],
-                    _pages_reciboCaja_recibo_caja_component__WEBPACK_IMPORTED_MODULE_55__["ReciboCajaComponent"],
-                    _pages_cuentasPorCobrar_cuentasPorCobrar_component__WEBPACK_IMPORTED_MODULE_62__["CuentaPorCobrarComponent"],
-                    _pages_transaccionesFinancieras_transaccionesFinancieras_component__WEBPACK_IMPORTED_MODULE_56__["TransaccionesFinancierasComponent"],
-                    _pages_comprobante_pago_comprobante_pago_component__WEBPACK_IMPORTED_MODULE_57__["ComprobantePagoComponent"],
-                    _pages_loading_message_loading_messagge_component__WEBPACK_IMPORTED_MODULE_58__["LoadingMessaggeComponent"],
-                    _pages_comprobante_pago_proveedores_comprobante_pago_proveedores_component__WEBPACK_IMPORTED_MODULE_59__["ComprobantePagoProveedoresComponent"],
-                    _pages_cuentasPorPagar_cuentasPorPagar_component__WEBPACK_IMPORTED_MODULE_61__["CuentaPorPagarComponent"],
-                    _pages_prestamos_prestamos_component__WEBPACK_IMPORTED_MODULE_63__["PrestamosComponent"],
-                    _pages_descuentos_descuentos_component__WEBPACK_IMPORTED_MODULE_76__["DescuentoComponent"],
-                    _pages_reciboCaja_reciboCaja_prestamos_recibo_caja_prestamos_component__WEBPACK_IMPORTED_MODULE_64__["ReciboCajaPrestamosComponent"],
-                    _pages_reciboCaja_reciboCaja_prestamos_recibo_caja_prestamos_component__WEBPACK_IMPORTED_MODULE_64__["ReciboCajaPrestamosComponent"],
-                    _pages_registro_facturas_registro_facturas_component__WEBPACK_IMPORTED_MODULE_65__["RegistroFacturasComponent"],
-                    _pages_comprobante_pago_proveedores_directo_comprobante_pago_proveedores_directo_component__WEBPACK_IMPORTED_MODULE_66__["ComprobantePagoProveedoresDirectoComponent"],
-                    _pages_base_pagos_proveedores_base_pagos_proveedores_component__WEBPACK_IMPORTED_MODULE_67__["BasePagoProveedoresComponent"],
-                    _pages_gestion_pago_cheques_gestion_pago_cheques_component__WEBPACK_IMPORTED_MODULE_68__["GestionPagoChequesComponent"],
-                    _pages_transaccionesNominas_transaccionesNominas_component__WEBPACK_IMPORTED_MODULE_69__["TransaccionesNominasComponent"],
-                    _pages_revision_inventario_revision_inventario_component__WEBPACK_IMPORTED_MODULE_70__["RevionInventarioComponent"],
-                    _pages_stock_minimo_stock_minimo_component__WEBPACK_IMPORTED_MODULE_71__["StockMinimoComponent"],
-                    _pages_stock_locales_stock_locales_component__WEBPACK_IMPORTED_MODULE_72__["StockLocalesComponent"],
-                    _pages_ventas_copy_ventas_nuevo_component__WEBPACK_IMPORTED_MODULE_73__["VentasNuevoComponent"],
-                    _pages_carga_masiva_carga_masiva_component__WEBPACK_IMPORTED_MODULE_75__["CargaMasivaComponent"],
-                    _pages_iva_iva_component__WEBPACK_IMPORTED_MODULE_77__["IvaComponent"],
-                    _pages_configuracion_presentacion_configuracion_presentacion_component__WEBPACK_IMPORTED_MODULE_78__["ConfiguracionPresentacionComponent"],
-                    _pages_gestion_entregas_bodega_gestion_entregas_bodega_component__WEBPACK_IMPORTED_MODULE_79__["GestionEntregasBodegaComponent"],
-                    _pages_nominas_nominas_component__WEBPACK_IMPORTED_MODULE_80__["NominasComponent"],
-                    _pages_nominas_nominas_eventos_pagos_component__WEBPACK_IMPORTED_MODULE_81__["NominasEventosPagosComponent"],
-                    _pages_nominas_nominas_consulta_pagos_component__WEBPACK_IMPORTED_MODULE_82__["NominasConsultaPagosComponent"],
-                    _pages_nominas_nominas_pagos_programados_component__WEBPACK_IMPORTED_MODULE_83__["NominasPagosProgramadosComponent"],
-                    _pages_nominas_nominas_liquidacion_dominical_component__WEBPACK_IMPORTED_MODULE_84__["NominasLiquidacionDominicalComponent"]
+                    _pages_admin_proveedores_admin_proveedores_component__WEBPACK_IMPORTED_MODULE_36__["AdminProveedoresComponent"],
+                    _pages_calculadora_calculadora_component__WEBPACK_IMPORTED_MODULE_37__["CalculadorasComponent"],
+                    _pages_control_precios_control_precios_component__WEBPACK_IMPORTED_MODULE_38__["ControlPreciosComponent"],
+                    _pages_control_unidades_control_unidades_component__WEBPACK_IMPORTED_MODULE_75__["ControlUnidadesComponent"],
+                    _pages_auditorias_auditorias_component__WEBPACK_IMPORTED_MODULE_39__["AuditoriasComponent"],
+                    _pages_bodegas_bodegas_component__WEBPACK_IMPORTED_MODULE_40__["BodegasComponent"],
+                    _pages_auditoria_cl_auditoria_cl_component__WEBPACK_IMPORTED_MODULE_41__["AuditoriaClComponent"],
+                    _pages_generar_qr_generar_qr_component__WEBPACK_IMPORTED_MODULE_43__["GenerarQRComponent"],
+                    _pages_info_productos_info_productos_component__WEBPACK_IMPORTED_MODULE_44__["InfoProductosComponent"],
+                    _pages_consultas_consultas_component__WEBPACK_IMPORTED_MODULE_45__["ConsultasComponent"],
+                    _pages_auditorias_auditoria2_auditoria2_component__WEBPACK_IMPORTED_MODULE_46__["Auditoria2Component"],
+                    _pages_auditorias_aud_tabla_aud_tabla_component__WEBPACK_IMPORTED_MODULE_47__["AudTablaComponent"],
+                    _pages_consultas_grupo_consultas_grupo_component__WEBPACK_IMPORTED_MODULE_48__["ConsultasGrupoComponent"],
+                    _pages_indicadores_indicadores_component__WEBPACK_IMPORTED_MODULE_49__["IndicadoresComponent"],
+                    _pages_loading_loading_component__WEBPACK_IMPORTED_MODULE_50__["LoadingComponent"],
+                    _pages_reportes_reporte_detallado_reporte_detallado_component__WEBPACK_IMPORTED_MODULE_51__["ReporteDetalladoComponent"],
+                    _pages_reportes_reporte_global_reporte_global_component__WEBPACK_IMPORTED_MODULE_52__["ReporteGlobalComponent"],
+                    _pages_reportes_ingreso_diario_ingreso_diario_component__WEBPACK_IMPORTED_MODULE_53__["IngresoDiarioComponent"],
+                    _pages_administracion_cuentas_administracion_cuentas_component__WEBPACK_IMPORTED_MODULE_54__["AdministracionCuentasComponent"],
+                    _pages_cajaMenor_caja_menor_component__WEBPACK_IMPORTED_MODULE_55__["CajaMenorComponent"],
+                    _pages_reciboCaja_recibo_caja_component__WEBPACK_IMPORTED_MODULE_56__["ReciboCajaComponent"],
+                    _pages_cuentasPorCobrar_cuentasPorCobrar_component__WEBPACK_IMPORTED_MODULE_63__["CuentaPorCobrarComponent"],
+                    _pages_transaccionesFinancieras_transaccionesFinancieras_component__WEBPACK_IMPORTED_MODULE_57__["TransaccionesFinancierasComponent"],
+                    _pages_comprobante_pago_comprobante_pago_component__WEBPACK_IMPORTED_MODULE_58__["ComprobantePagoComponent"],
+                    _pages_loading_message_loading_messagge_component__WEBPACK_IMPORTED_MODULE_59__["LoadingMessaggeComponent"],
+                    _pages_comprobante_pago_proveedores_comprobante_pago_proveedores_component__WEBPACK_IMPORTED_MODULE_60__["ComprobantePagoProveedoresComponent"],
+                    _pages_cuentasPorPagar_cuentasPorPagar_component__WEBPACK_IMPORTED_MODULE_62__["CuentaPorPagarComponent"],
+                    _pages_prestamos_prestamos_component__WEBPACK_IMPORTED_MODULE_64__["PrestamosComponent"],
+                    _pages_descuentos_descuentos_component__WEBPACK_IMPORTED_MODULE_77__["DescuentoComponent"],
+                    _pages_reciboCaja_reciboCaja_prestamos_recibo_caja_prestamos_component__WEBPACK_IMPORTED_MODULE_65__["ReciboCajaPrestamosComponent"],
+                    _pages_reciboCaja_reciboCaja_prestamos_recibo_caja_prestamos_component__WEBPACK_IMPORTED_MODULE_65__["ReciboCajaPrestamosComponent"],
+                    _pages_registro_facturas_registro_facturas_component__WEBPACK_IMPORTED_MODULE_66__["RegistroFacturasComponent"],
+                    _pages_comprobante_pago_proveedores_directo_comprobante_pago_proveedores_directo_component__WEBPACK_IMPORTED_MODULE_67__["ComprobantePagoProveedoresDirectoComponent"],
+                    _pages_base_pagos_proveedores_base_pagos_proveedores_component__WEBPACK_IMPORTED_MODULE_68__["BasePagoProveedoresComponent"],
+                    _pages_gestion_pago_cheques_gestion_pago_cheques_component__WEBPACK_IMPORTED_MODULE_69__["GestionPagoChequesComponent"],
+                    _pages_transaccionesNominas_transaccionesNominas_component__WEBPACK_IMPORTED_MODULE_70__["TransaccionesNominasComponent"],
+                    _pages_revision_inventario_revision_inventario_component__WEBPACK_IMPORTED_MODULE_71__["RevionInventarioComponent"],
+                    _pages_stock_minimo_stock_minimo_component__WEBPACK_IMPORTED_MODULE_72__["StockMinimoComponent"],
+                    _pages_stock_locales_stock_locales_component__WEBPACK_IMPORTED_MODULE_73__["StockLocalesComponent"],
+                    _pages_ventas_copy_ventas_nuevo_component__WEBPACK_IMPORTED_MODULE_74__["VentasNuevoComponent"],
+                    _pages_carga_masiva_carga_masiva_component__WEBPACK_IMPORTED_MODULE_76__["CargaMasivaComponent"],
+                    _pages_iva_iva_component__WEBPACK_IMPORTED_MODULE_78__["IvaComponent"],
+                    _pages_configuracion_presentacion_configuracion_presentacion_component__WEBPACK_IMPORTED_MODULE_79__["ConfiguracionPresentacionComponent"],
+                    _pages_gestion_entregas_bodega_gestion_entregas_bodega_component__WEBPACK_IMPORTED_MODULE_80__["GestionEntregasBodegaComponent"],
+                    _pages_nominas_nominas_component__WEBPACK_IMPORTED_MODULE_81__["NominasComponent"],
+                    _pages_nominas_nominas_eventos_pagos_component__WEBPACK_IMPORTED_MODULE_82__["NominasEventosPagosComponent"],
+                    _pages_nominas_nominas_consulta_pagos_component__WEBPACK_IMPORTED_MODULE_83__["NominasConsultaPagosComponent"],
+                    _pages_nominas_nominas_pagos_programados_component__WEBPACK_IMPORTED_MODULE_84__["NominasPagosProgramadosComponent"],
+                    _pages_nominas_nominas_liquidacion_dominical_component__WEBPACK_IMPORTED_MODULE_85__["NominasLiquidacionDominicalComponent"]
                 ],
                 imports: [
                     _angular_platform_browser__WEBPACK_IMPORTED_MODULE_0__["BrowserModule"],
@@ -2044,7 +2064,7 @@ AppModule.ɵinj = _angular_core__WEBPACK_IMPORTED_MODULE_1__["ɵɵdefineInjector
                     devextreme_angular__WEBPACK_IMPORTED_MODULE_11__["DxCheckBoxModule"],
                     devextreme_angular__WEBPACK_IMPORTED_MODULE_11__["DxScrollViewModule"],
                     devextreme_angular__WEBPACK_IMPORTED_MODULE_11__["DxNumberBoxModule"],
-                    angularx_qrcode__WEBPACK_IMPORTED_MODULE_41__["QRCodeModule"],
+                    angularx_qrcode__WEBPACK_IMPORTED_MODULE_42__["QRCodeModule"],
                     devextreme_angular__WEBPACK_IMPORTED_MODULE_11__["DxPopupModule"],
                     devextreme_angular__WEBPACK_IMPORTED_MODULE_11__["DxDateBoxModule"],
                     devextreme_angular__WEBPACK_IMPORTED_MODULE_11__["DxAutocompleteModule"],
@@ -2053,7 +2073,7 @@ AppModule.ɵinj = _angular_core__WEBPACK_IMPORTED_MODULE_1__["ɵɵdefineInjector
                     devextreme_angular__WEBPACK_IMPORTED_MODULE_11__["DxValidatorModule"],
                     devextreme_angular__WEBPACK_IMPORTED_MODULE_11__["DxTemplateModule"],
                     devextreme_angular__WEBPACK_IMPORTED_MODULE_11__["DxTextAreaModule"],
-                    devextreme_angular_ui_nested__WEBPACK_IMPORTED_MODULE_60__["DxoToolbarModule"],
+                    devextreme_angular_ui_nested__WEBPACK_IMPORTED_MODULE_61__["DxoToolbarModule"],
                     angular_alert_module__WEBPACK_IMPORTED_MODULE_17__["AlertsModule"].forRoot(),
                     devextreme_angular__WEBPACK_IMPORTED_MODULE_11__["DxRadioGroupModule"],
                     devextreme_angular__WEBPACK_IMPORTED_MODULE_11__["DxMenuModule"],
@@ -2624,6 +2644,395 @@ SingleCardModule.ɵinj = _angular_core__WEBPACK_IMPORTED_MODULE_0__["ɵɵdefineI
                 declarations: [SingleCardComponent]
             }]
     }], null, null); })();
+
+
+/***/ }),
+
+/***/ "./src/app/pages/admin-proveedores/admin-proveedores.component.ts":
+/*!************************************************************************!*\
+  !*** ./src/app/pages/admin-proveedores/admin-proveedores.component.ts ***!
+  \************************************************************************/
+/*! exports provided: AdminProveedoresComponent */
+/***/ (function(module, __webpack_exports__, __webpack_require__) {
+
+"use strict";
+__webpack_require__.r(__webpack_exports__);
+/* harmony export (binding) */ __webpack_require__.d(__webpack_exports__, "AdminProveedoresComponent", function() { return AdminProveedoresComponent; });
+/* harmony import */ var _angular_core__WEBPACK_IMPORTED_MODULE_0__ = __webpack_require__(/*! @angular/core */ "./node_modules/@angular/core/__ivy_ngcc__/fesm2015/core.js");
+/* harmony import */ var sweetalert2__WEBPACK_IMPORTED_MODULE_1__ = __webpack_require__(/*! sweetalert2 */ "./node_modules/sweetalert2/dist/sweetalert2.all.js");
+/* harmony import */ var sweetalert2__WEBPACK_IMPORTED_MODULE_1___default = /*#__PURE__*/__webpack_require__.n(sweetalert2__WEBPACK_IMPORTED_MODULE_1__);
+/* harmony import */ var _compras_compra__WEBPACK_IMPORTED_MODULE_2__ = __webpack_require__(/*! ../compras/compra */ "./src/app/pages/compras/compra.ts");
+/* harmony import */ var src_app_servicios_proveedores_service__WEBPACK_IMPORTED_MODULE_3__ = __webpack_require__(/*! src/app/servicios/proveedores.service */ "./src/app/servicios/proveedores.service.ts");
+/* harmony import */ var src_app_servicios_authen_service__WEBPACK_IMPORTED_MODULE_4__ = __webpack_require__(/*! src/app/servicios/authen.service */ "./src/app/servicios/authen.service.ts");
+/* harmony import */ var _angular_common__WEBPACK_IMPORTED_MODULE_5__ = __webpack_require__(/*! @angular/common */ "./node_modules/@angular/common/__ivy_ngcc__/fesm2015/common.js");
+/* harmony import */ var devextreme_angular__WEBPACK_IMPORTED_MODULE_6__ = __webpack_require__(/*! devextreme-angular */ "./node_modules/devextreme-angular/__ivy_ngcc__/fesm2015/devextreme-angular.js");
+/* harmony import */ var devextreme_angular_core__WEBPACK_IMPORTED_MODULE_7__ = __webpack_require__(/*! devextreme-angular/core */ "./node_modules/devextreme-angular/__ivy_ngcc__/fesm2015/devextreme-angular-core.js");
+/* harmony import */ var _loading_message_loading_messagge_component__WEBPACK_IMPORTED_MODULE_8__ = __webpack_require__(/*! ../loading-message/loading-messagge.component */ "./src/app/pages/loading-message/loading-messagge.component.ts");
+/* harmony import */ var devextreme_angular_ui_nested__WEBPACK_IMPORTED_MODULE_9__ = __webpack_require__(/*! devextreme-angular/ui/nested */ "./node_modules/devextreme-angular/__ivy_ngcc__/fesm2015/devextreme-angular-ui-nested.js");
+/* harmony import */ var devextreme_angular_ui_text_box__WEBPACK_IMPORTED_MODULE_10__ = __webpack_require__(/*! devextreme-angular/ui/text-box */ "./node_modules/devextreme-angular/__ivy_ngcc__/fesm2015/devextreme-angular-ui-text-box.js");
+
+
+
+
+
+
+
+
+
+
+
+
+function AdminProveedoresComponent_div_0_Template(rf, ctx) { if (rf & 1) {
+    _angular_core__WEBPACK_IMPORTED_MODULE_0__["ɵɵelementStart"](0, "div");
+    _angular_core__WEBPACK_IMPORTED_MODULE_0__["ɵɵelement"](1, "app-loading-messagge", 4);
+    _angular_core__WEBPACK_IMPORTED_MODULE_0__["ɵɵelementEnd"]();
+} if (rf & 2) {
+    const ctx_r0 = _angular_core__WEBPACK_IMPORTED_MODULE_0__["ɵɵnextContext"]();
+    _angular_core__WEBPACK_IMPORTED_MODULE_0__["ɵɵadvance"](1);
+    _angular_core__WEBPACK_IMPORTED_MODULE_0__["ɵɵproperty"]("messagge", ctx_r0.mensajeLoading);
+} }
+function AdminProveedoresComponent_div_1_Template(rf, ctx) { if (rf & 1) {
+    _angular_core__WEBPACK_IMPORTED_MODULE_0__["ɵɵelement"](0, "div", 5);
+} }
+function AdminProveedoresComponent_div_2_div_27_Template(rf, ctx) { if (rf & 1) {
+    const _r7 = _angular_core__WEBPACK_IMPORTED_MODULE_0__["ɵɵgetCurrentView"]();
+    _angular_core__WEBPACK_IMPORTED_MODULE_0__["ɵɵelementStart"](0, "div");
+    _angular_core__WEBPACK_IMPORTED_MODULE_0__["ɵɵelementStart"](1, "button", 28);
+    _angular_core__WEBPACK_IMPORTED_MODULE_0__["ɵɵlistener"]("click", function AdminProveedoresComponent_div_2_div_27_Template_button_click_1_listener() { _angular_core__WEBPACK_IMPORTED_MODULE_0__["ɵɵrestoreView"](_r7); const data_r5 = ctx.$implicit; const ctx_r6 = _angular_core__WEBPACK_IMPORTED_MODULE_0__["ɵɵnextContext"](2); return ctx_r6.abrirEdicion(data_r5.data); });
+    _angular_core__WEBPACK_IMPORTED_MODULE_0__["ɵɵtext"](2, " Editar ");
+    _angular_core__WEBPACK_IMPORTED_MODULE_0__["ɵɵelementEnd"]();
+    _angular_core__WEBPACK_IMPORTED_MODULE_0__["ɵɵelementStart"](3, "button", 29);
+    _angular_core__WEBPACK_IMPORTED_MODULE_0__["ɵɵlistener"]("click", function AdminProveedoresComponent_div_2_div_27_Template_button_click_3_listener() { _angular_core__WEBPACK_IMPORTED_MODULE_0__["ɵɵrestoreView"](_r7); const data_r5 = ctx.$implicit; const ctx_r8 = _angular_core__WEBPACK_IMPORTED_MODULE_0__["ɵɵnextContext"](2); return ctx_r8.eliminarProveedor(data_r5.data); });
+    _angular_core__WEBPACK_IMPORTED_MODULE_0__["ɵɵtext"](4, " Eliminar ");
+    _angular_core__WEBPACK_IMPORTED_MODULE_0__["ɵɵelementEnd"]();
+    _angular_core__WEBPACK_IMPORTED_MODULE_0__["ɵɵelementEnd"]();
+} }
+const _c0 = function () { return [8, 12, 20]; };
+function AdminProveedoresComponent_div_2_Template(rf, ctx) { if (rf & 1) {
+    const _r10 = _angular_core__WEBPACK_IMPORTED_MODULE_0__["ɵɵgetCurrentView"]();
+    _angular_core__WEBPACK_IMPORTED_MODULE_0__["ɵɵelementStart"](0, "div");
+    _angular_core__WEBPACK_IMPORTED_MODULE_0__["ɵɵelement"](1, "br");
+    _angular_core__WEBPACK_IMPORTED_MODULE_0__["ɵɵelement"](2, "br");
+    _angular_core__WEBPACK_IMPORTED_MODULE_0__["ɵɵelementStart"](3, "div", 6);
+    _angular_core__WEBPACK_IMPORTED_MODULE_0__["ɵɵelementStart"](4, "h5", 7);
+    _angular_core__WEBPACK_IMPORTED_MODULE_0__["ɵɵtext"](5, " Administraci\u00F3n de Proveedores ");
+    _angular_core__WEBPACK_IMPORTED_MODULE_0__["ɵɵelementEnd"]();
+    _angular_core__WEBPACK_IMPORTED_MODULE_0__["ɵɵelementStart"](6, "div", 8);
+    _angular_core__WEBPACK_IMPORTED_MODULE_0__["ɵɵelementStart"](7, "div", 9);
+    _angular_core__WEBPACK_IMPORTED_MODULE_0__["ɵɵtext"](8, " Cat\u00E1logo de Proveedores ");
+    _angular_core__WEBPACK_IMPORTED_MODULE_0__["ɵɵelementEnd"]();
+    _angular_core__WEBPACK_IMPORTED_MODULE_0__["ɵɵelementStart"](9, "p", 10);
+    _angular_core__WEBPACK_IMPORTED_MODULE_0__["ɵɵtext"](10, " Registro y mantenimiento de proveedores. Base para \u00F3rdenes de compra, facturas y pagos. ");
+    _angular_core__WEBPACK_IMPORTED_MODULE_0__["ɵɵelementEnd"]();
+    _angular_core__WEBPACK_IMPORTED_MODULE_0__["ɵɵelementStart"](11, "div", 11);
+    _angular_core__WEBPACK_IMPORTED_MODULE_0__["ɵɵelementStart"](12, "div", 12);
+    _angular_core__WEBPACK_IMPORTED_MODULE_0__["ɵɵelementStart"](13, "button", 13);
+    _angular_core__WEBPACK_IMPORTED_MODULE_0__["ɵɵlistener"]("click", function AdminProveedoresComponent_div_2_Template_button_click_13_listener() { _angular_core__WEBPACK_IMPORTED_MODULE_0__["ɵɵrestoreView"](_r10); const ctx_r9 = _angular_core__WEBPACK_IMPORTED_MODULE_0__["ɵɵnextContext"](); return ctx_r9.abrirNuevo(); });
+    _angular_core__WEBPACK_IMPORTED_MODULE_0__["ɵɵtext"](14, " + Nuevo proveedor ");
+    _angular_core__WEBPACK_IMPORTED_MODULE_0__["ɵɵelementEnd"]();
+    _angular_core__WEBPACK_IMPORTED_MODULE_0__["ɵɵelementEnd"]();
+    _angular_core__WEBPACK_IMPORTED_MODULE_0__["ɵɵelementEnd"]();
+    _angular_core__WEBPACK_IMPORTED_MODULE_0__["ɵɵelementStart"](15, "dx-data-grid", 14);
+    _angular_core__WEBPACK_IMPORTED_MODULE_0__["ɵɵlistener"]("onExporting", function AdminProveedoresComponent_div_2_Template_dx_data_grid_onExporting_15_listener($event) { _angular_core__WEBPACK_IMPORTED_MODULE_0__["ɵɵrestoreView"](_r10); const ctx_r11 = _angular_core__WEBPACK_IMPORTED_MODULE_0__["ɵɵnextContext"](); return ctx_r11.onExporting($event); })("onExported", function AdminProveedoresComponent_div_2_Template_dx_data_grid_onExported_15_listener($event) { _angular_core__WEBPACK_IMPORTED_MODULE_0__["ɵɵrestoreView"](_r10); const ctx_r12 = _angular_core__WEBPACK_IMPORTED_MODULE_0__["ɵɵnextContext"](); return ctx_r12.onExported($event); });
+    _angular_core__WEBPACK_IMPORTED_MODULE_0__["ɵɵelement"](16, "dxo-filter-row", 15);
+    _angular_core__WEBPACK_IMPORTED_MODULE_0__["ɵɵelement"](17, "dxo-header-filter", 15);
+    _angular_core__WEBPACK_IMPORTED_MODULE_0__["ɵɵelement"](18, "dxo-search-panel", 16);
+    _angular_core__WEBPACK_IMPORTED_MODULE_0__["ɵɵelement"](19, "dxo-export", 17);
+    _angular_core__WEBPACK_IMPORTED_MODULE_0__["ɵɵelement"](20, "dxi-column", 18);
+    _angular_core__WEBPACK_IMPORTED_MODULE_0__["ɵɵelement"](21, "dxi-column", 19);
+    _angular_core__WEBPACK_IMPORTED_MODULE_0__["ɵɵelement"](22, "dxi-column", 20);
+    _angular_core__WEBPACK_IMPORTED_MODULE_0__["ɵɵelement"](23, "dxi-column", 21);
+    _angular_core__WEBPACK_IMPORTED_MODULE_0__["ɵɵelement"](24, "dxi-column", 22);
+    _angular_core__WEBPACK_IMPORTED_MODULE_0__["ɵɵelement"](25, "dxi-column", 23);
+    _angular_core__WEBPACK_IMPORTED_MODULE_0__["ɵɵelement"](26, "dxi-column", 24);
+    _angular_core__WEBPACK_IMPORTED_MODULE_0__["ɵɵtemplate"](27, AdminProveedoresComponent_div_2_div_27_Template, 5, 0, "div", 25);
+    _angular_core__WEBPACK_IMPORTED_MODULE_0__["ɵɵelement"](28, "dxo-paging", 26);
+    _angular_core__WEBPACK_IMPORTED_MODULE_0__["ɵɵelement"](29, "dxo-pager", 27);
+    _angular_core__WEBPACK_IMPORTED_MODULE_0__["ɵɵelementEnd"]();
+    _angular_core__WEBPACK_IMPORTED_MODULE_0__["ɵɵelementEnd"]();
+    _angular_core__WEBPACK_IMPORTED_MODULE_0__["ɵɵelementEnd"]();
+    _angular_core__WEBPACK_IMPORTED_MODULE_0__["ɵɵelementEnd"]();
+} if (rf & 2) {
+    const ctx_r2 = _angular_core__WEBPACK_IMPORTED_MODULE_0__["ɵɵnextContext"]();
+    _angular_core__WEBPACK_IMPORTED_MODULE_0__["ɵɵadvance"](15);
+    _angular_core__WEBPACK_IMPORTED_MODULE_0__["ɵɵproperty"]("dataSource", ctx_r2.proveedores)("showBorders", true)("columnAutoWidth", true)("rowAlternationEnabled", true);
+    _angular_core__WEBPACK_IMPORTED_MODULE_0__["ɵɵadvance"](1);
+    _angular_core__WEBPACK_IMPORTED_MODULE_0__["ɵɵproperty"]("visible", true);
+    _angular_core__WEBPACK_IMPORTED_MODULE_0__["ɵɵadvance"](1);
+    _angular_core__WEBPACK_IMPORTED_MODULE_0__["ɵɵproperty"]("visible", true);
+    _angular_core__WEBPACK_IMPORTED_MODULE_0__["ɵɵadvance"](1);
+    _angular_core__WEBPACK_IMPORTED_MODULE_0__["ɵɵproperty"]("visible", true)("width", 240);
+    _angular_core__WEBPACK_IMPORTED_MODULE_0__["ɵɵadvance"](1);
+    _angular_core__WEBPACK_IMPORTED_MODULE_0__["ɵɵproperty"]("enabled", true)("allowExportSelectedData", true);
+    _angular_core__WEBPACK_IMPORTED_MODULE_0__["ɵɵadvance"](1);
+    _angular_core__WEBPACK_IMPORTED_MODULE_0__["ɵɵproperty"]("visible", false);
+    _angular_core__WEBPACK_IMPORTED_MODULE_0__["ɵɵadvance"](6);
+    _angular_core__WEBPACK_IMPORTED_MODULE_0__["ɵɵproperty"]("width", 160)("allowFiltering", false)("allowSorting", false);
+    _angular_core__WEBPACK_IMPORTED_MODULE_0__["ɵɵadvance"](1);
+    _angular_core__WEBPACK_IMPORTED_MODULE_0__["ɵɵproperty"]("dxTemplateOf", "accionesProveedor");
+    _angular_core__WEBPACK_IMPORTED_MODULE_0__["ɵɵadvance"](1);
+    _angular_core__WEBPACK_IMPORTED_MODULE_0__["ɵɵproperty"]("pageSize", 8);
+    _angular_core__WEBPACK_IMPORTED_MODULE_0__["ɵɵadvance"](1);
+    _angular_core__WEBPACK_IMPORTED_MODULE_0__["ɵɵproperty"]("showPageSizeSelector", true)("allowedPageSizes", _angular_core__WEBPACK_IMPORTED_MODULE_0__["ɵɵpureFunction0"](19, _c0))("showInfo", true);
+} }
+function AdminProveedoresComponent_div_4_Template(rf, ctx) { if (rf & 1) {
+    const _r15 = _angular_core__WEBPACK_IMPORTED_MODULE_0__["ɵɵgetCurrentView"]();
+    _angular_core__WEBPACK_IMPORTED_MODULE_0__["ɵɵelementStart"](0, "div", 30);
+    _angular_core__WEBPACK_IMPORTED_MODULE_0__["ɵɵelementStart"](1, "div", 31);
+    _angular_core__WEBPACK_IMPORTED_MODULE_0__["ɵɵelementStart"](2, "div", 32);
+    _angular_core__WEBPACK_IMPORTED_MODULE_0__["ɵɵtext"](3, " Datos del proveedor ");
+    _angular_core__WEBPACK_IMPORTED_MODULE_0__["ɵɵelementEnd"]();
+    _angular_core__WEBPACK_IMPORTED_MODULE_0__["ɵɵelementStart"](4, "div", 33);
+    _angular_core__WEBPACK_IMPORTED_MODULE_0__["ɵɵelementStart"](5, "div", 34);
+    _angular_core__WEBPACK_IMPORTED_MODULE_0__["ɵɵelementStart"](6, "label", 35);
+    _angular_core__WEBPACK_IMPORTED_MODULE_0__["ɵɵtext"](7, "Nombre *");
+    _angular_core__WEBPACK_IMPORTED_MODULE_0__["ɵɵelementEnd"]();
+    _angular_core__WEBPACK_IMPORTED_MODULE_0__["ɵɵelementStart"](8, "dx-text-box", 36);
+    _angular_core__WEBPACK_IMPORTED_MODULE_0__["ɵɵlistener"]("valueChange", function AdminProveedoresComponent_div_4_Template_dx_text_box_valueChange_8_listener($event) { _angular_core__WEBPACK_IMPORTED_MODULE_0__["ɵɵrestoreView"](_r15); const ctx_r14 = _angular_core__WEBPACK_IMPORTED_MODULE_0__["ɵɵnextContext"](); return ctx_r14.proveedor.nombre_proveedor = $event; });
+    _angular_core__WEBPACK_IMPORTED_MODULE_0__["ɵɵelementEnd"]();
+    _angular_core__WEBPACK_IMPORTED_MODULE_0__["ɵɵelementEnd"]();
+    _angular_core__WEBPACK_IMPORTED_MODULE_0__["ɵɵelementStart"](9, "div", 34);
+    _angular_core__WEBPACK_IMPORTED_MODULE_0__["ɵɵelementStart"](10, "label", 35);
+    _angular_core__WEBPACK_IMPORTED_MODULE_0__["ɵɵtext"](11, "RUC");
+    _angular_core__WEBPACK_IMPORTED_MODULE_0__["ɵɵelementEnd"]();
+    _angular_core__WEBPACK_IMPORTED_MODULE_0__["ɵɵelementStart"](12, "dx-text-box", 37);
+    _angular_core__WEBPACK_IMPORTED_MODULE_0__["ɵɵlistener"]("valueChange", function AdminProveedoresComponent_div_4_Template_dx_text_box_valueChange_12_listener($event) { _angular_core__WEBPACK_IMPORTED_MODULE_0__["ɵɵrestoreView"](_r15); const ctx_r16 = _angular_core__WEBPACK_IMPORTED_MODULE_0__["ɵɵnextContext"](); return ctx_r16.proveedor.ruc = $event; });
+    _angular_core__WEBPACK_IMPORTED_MODULE_0__["ɵɵelementEnd"]();
+    _angular_core__WEBPACK_IMPORTED_MODULE_0__["ɵɵelementEnd"]();
+    _angular_core__WEBPACK_IMPORTED_MODULE_0__["ɵɵelementStart"](13, "div", 38);
+    _angular_core__WEBPACK_IMPORTED_MODULE_0__["ɵɵelementStart"](14, "label", 35);
+    _angular_core__WEBPACK_IMPORTED_MODULE_0__["ɵɵtext"](15, "Direcci\u00F3n");
+    _angular_core__WEBPACK_IMPORTED_MODULE_0__["ɵɵelementEnd"]();
+    _angular_core__WEBPACK_IMPORTED_MODULE_0__["ɵɵelementStart"](16, "dx-text-box", 39);
+    _angular_core__WEBPACK_IMPORTED_MODULE_0__["ɵɵlistener"]("valueChange", function AdminProveedoresComponent_div_4_Template_dx_text_box_valueChange_16_listener($event) { _angular_core__WEBPACK_IMPORTED_MODULE_0__["ɵɵrestoreView"](_r15); const ctx_r17 = _angular_core__WEBPACK_IMPORTED_MODULE_0__["ɵɵnextContext"](); return ctx_r17.proveedor.direccion = $event; });
+    _angular_core__WEBPACK_IMPORTED_MODULE_0__["ɵɵelementEnd"]();
+    _angular_core__WEBPACK_IMPORTED_MODULE_0__["ɵɵelementEnd"]();
+    _angular_core__WEBPACK_IMPORTED_MODULE_0__["ɵɵelementStart"](17, "div", 34);
+    _angular_core__WEBPACK_IMPORTED_MODULE_0__["ɵɵelementStart"](18, "label", 35);
+    _angular_core__WEBPACK_IMPORTED_MODULE_0__["ɵɵtext"](19, "Celular");
+    _angular_core__WEBPACK_IMPORTED_MODULE_0__["ɵɵelementEnd"]();
+    _angular_core__WEBPACK_IMPORTED_MODULE_0__["ɵɵelementStart"](20, "dx-text-box", 40);
+    _angular_core__WEBPACK_IMPORTED_MODULE_0__["ɵɵlistener"]("valueChange", function AdminProveedoresComponent_div_4_Template_dx_text_box_valueChange_20_listener($event) { _angular_core__WEBPACK_IMPORTED_MODULE_0__["ɵɵrestoreView"](_r15); const ctx_r18 = _angular_core__WEBPACK_IMPORTED_MODULE_0__["ɵɵnextContext"](); return ctx_r18.proveedor.celular = $event; });
+    _angular_core__WEBPACK_IMPORTED_MODULE_0__["ɵɵelementEnd"]();
+    _angular_core__WEBPACK_IMPORTED_MODULE_0__["ɵɵelementEnd"]();
+    _angular_core__WEBPACK_IMPORTED_MODULE_0__["ɵɵelementStart"](21, "div", 34);
+    _angular_core__WEBPACK_IMPORTED_MODULE_0__["ɵɵelementStart"](22, "label", 35);
+    _angular_core__WEBPACK_IMPORTED_MODULE_0__["ɵɵtext"](23, "Contacto");
+    _angular_core__WEBPACK_IMPORTED_MODULE_0__["ɵɵelementEnd"]();
+    _angular_core__WEBPACK_IMPORTED_MODULE_0__["ɵɵelementStart"](24, "dx-text-box", 41);
+    _angular_core__WEBPACK_IMPORTED_MODULE_0__["ɵɵlistener"]("valueChange", function AdminProveedoresComponent_div_4_Template_dx_text_box_valueChange_24_listener($event) { _angular_core__WEBPACK_IMPORTED_MODULE_0__["ɵɵrestoreView"](_r15); const ctx_r19 = _angular_core__WEBPACK_IMPORTED_MODULE_0__["ɵɵnextContext"](); return ctx_r19.proveedor.contacto = $event; });
+    _angular_core__WEBPACK_IMPORTED_MODULE_0__["ɵɵelementEnd"]();
+    _angular_core__WEBPACK_IMPORTED_MODULE_0__["ɵɵelementEnd"]();
+    _angular_core__WEBPACK_IMPORTED_MODULE_0__["ɵɵelementEnd"]();
+    _angular_core__WEBPACK_IMPORTED_MODULE_0__["ɵɵelementEnd"]();
+    _angular_core__WEBPACK_IMPORTED_MODULE_0__["ɵɵelementStart"](25, "div", 42);
+    _angular_core__WEBPACK_IMPORTED_MODULE_0__["ɵɵelementStart"](26, "div", 43);
+    _angular_core__WEBPACK_IMPORTED_MODULE_0__["ɵɵelementStart"](27, "div", 44);
+    _angular_core__WEBPACK_IMPORTED_MODULE_0__["ɵɵelementStart"](28, "button", 45);
+    _angular_core__WEBPACK_IMPORTED_MODULE_0__["ɵɵlistener"]("click", function AdminProveedoresComponent_div_4_Template_button_click_28_listener() { _angular_core__WEBPACK_IMPORTED_MODULE_0__["ɵɵrestoreView"](_r15); const ctx_r20 = _angular_core__WEBPACK_IMPORTED_MODULE_0__["ɵɵnextContext"](); return ctx_r20.cerrarPopup(); });
+    _angular_core__WEBPACK_IMPORTED_MODULE_0__["ɵɵtext"](29, " Cancelar ");
+    _angular_core__WEBPACK_IMPORTED_MODULE_0__["ɵɵelementEnd"]();
+    _angular_core__WEBPACK_IMPORTED_MODULE_0__["ɵɵelementEnd"]();
+    _angular_core__WEBPACK_IMPORTED_MODULE_0__["ɵɵelementStart"](30, "div", 44);
+    _angular_core__WEBPACK_IMPORTED_MODULE_0__["ɵɵelementStart"](31, "button", 13);
+    _angular_core__WEBPACK_IMPORTED_MODULE_0__["ɵɵlistener"]("click", function AdminProveedoresComponent_div_4_Template_button_click_31_listener() { _angular_core__WEBPACK_IMPORTED_MODULE_0__["ɵɵrestoreView"](_r15); const ctx_r21 = _angular_core__WEBPACK_IMPORTED_MODULE_0__["ɵɵnextContext"](); return ctx_r21.guardarProveedor(); });
+    _angular_core__WEBPACK_IMPORTED_MODULE_0__["ɵɵtext"](32, " Guardar ");
+    _angular_core__WEBPACK_IMPORTED_MODULE_0__["ɵɵelementEnd"]();
+    _angular_core__WEBPACK_IMPORTED_MODULE_0__["ɵɵelementEnd"]();
+    _angular_core__WEBPACK_IMPORTED_MODULE_0__["ɵɵelementEnd"]();
+    _angular_core__WEBPACK_IMPORTED_MODULE_0__["ɵɵelementEnd"]();
+    _angular_core__WEBPACK_IMPORTED_MODULE_0__["ɵɵelementEnd"]();
+} if (rf & 2) {
+    const ctx_r3 = _angular_core__WEBPACK_IMPORTED_MODULE_0__["ɵɵnextContext"]();
+    _angular_core__WEBPACK_IMPORTED_MODULE_0__["ɵɵadvance"](8);
+    _angular_core__WEBPACK_IMPORTED_MODULE_0__["ɵɵproperty"]("value", ctx_r3.proveedor.nombre_proveedor);
+    _angular_core__WEBPACK_IMPORTED_MODULE_0__["ɵɵadvance"](4);
+    _angular_core__WEBPACK_IMPORTED_MODULE_0__["ɵɵproperty"]("value", ctx_r3.proveedor.ruc);
+    _angular_core__WEBPACK_IMPORTED_MODULE_0__["ɵɵadvance"](4);
+    _angular_core__WEBPACK_IMPORTED_MODULE_0__["ɵɵproperty"]("value", ctx_r3.proveedor.direccion);
+    _angular_core__WEBPACK_IMPORTED_MODULE_0__["ɵɵadvance"](4);
+    _angular_core__WEBPACK_IMPORTED_MODULE_0__["ɵɵproperty"]("value", ctx_r3.proveedor.celular);
+    _angular_core__WEBPACK_IMPORTED_MODULE_0__["ɵɵadvance"](4);
+    _angular_core__WEBPACK_IMPORTED_MODULE_0__["ɵɵproperty"]("value", ctx_r3.proveedor.contacto);
+} }
+const _c1 = function () { return { class: "popup-proveedor-overlay" }; };
+class AdminProveedoresComponent {
+    constructor(proveedoresService, _authenService) {
+        this.proveedoresService = proveedoresService;
+        this._authenService = _authenService;
+        this.proveedor = this.nuevoProveedor();
+        this.proveedores = [];
+        this.popupVisible = false;
+        this.mostrarBloqueo = true;
+        this.mostrarLoading = false;
+        this.mensajeLoading = 'Cargando...';
+        this.esEdicion = false;
+    }
+    ngOnInit() {
+        this.cargarUsuarioLogueado();
+        this.traerProveedores();
+    }
+    get totalConRuc() {
+        return this.proveedores.filter(p => !!p.ruc).length;
+    }
+    get totalConContacto() {
+        return this.proveedores.filter(p => !!p.contacto).length;
+    }
+    cargarUsuarioLogueado() {
+        let correo = '';
+        if (localStorage.getItem('maily') != '') {
+            correo = localStorage.getItem('maily');
+        }
+        this._authenService.getUserLogueado(correo).subscribe(res => {
+            const usuario = res;
+            this.usuarioLogueado = usuario[0];
+            this.mostrarPopupCodigo();
+        });
+    }
+    mostrarPopupCodigo() {
+        sweetalert2__WEBPACK_IMPORTED_MODULE_1___default.a.fire({
+            title: 'Código de Seguridad',
+            allowOutsideClick: false,
+            showCancelButton: false,
+            inputAttributes: {
+                autocapitalize: 'off'
+            },
+            confirmButtonText: 'Ingresar',
+            input: 'password',
+        }).then((result) => {
+            if (this.usuarioLogueado.codigo == result.value) {
+                this.mostrarBloqueo = false;
+            }
+            else {
+                sweetalert2__WEBPACK_IMPORTED_MODULE_1___default.a.fire({
+                    title: 'Error',
+                    text: 'El código ingresado no es el correcto',
+                    icon: 'error',
+                    confirmButtonText: 'Ok'
+                }).then(() => {
+                    this.mostrarPopupCodigo();
+                });
+            }
+        });
+    }
+    traerProveedores() {
+        this.mensajeLoading = 'Cargando proveedores...';
+        this.mostrarLoading = true;
+        this.proveedoresService.getProveedor().subscribe(res => {
+            this.proveedores = res;
+            this.mostrarLoading = false;
+        }, err => {
+            this.mostrarLoading = false;
+            sweetalert2__WEBPACK_IMPORTED_MODULE_1___default.a.fire('Error', 'No se pudieron cargar los proveedores', 'error');
+        });
+    }
+    nuevoProveedor() {
+        const proveedor = new _compras_compra__WEBPACK_IMPORTED_MODULE_2__["Proveedor"]();
+        proveedor._id = '';
+        proveedor.nombre_proveedor = '';
+        proveedor.ruc = '';
+        proveedor.direccion = '';
+        proveedor.celular = '';
+        proveedor.contacto = '';
+        return proveedor;
+    }
+    abrirNuevo() {
+        this.esEdicion = false;
+        this.proveedor = this.nuevoProveedor();
+        this.popupVisible = true;
+    }
+    abrirEdicion(registro) {
+        this.esEdicion = true;
+        this.proveedor = Object.assign({}, registro);
+        this.popupVisible = true;
+    }
+    cerrarPopup() {
+        this.popupVisible = false;
+        this.esEdicion = false;
+        this.proveedor = this.nuevoProveedor();
+    }
+    guardarProveedor() {
+        var _a;
+        if (!((_a = this.proveedor.nombre_proveedor) === null || _a === void 0 ? void 0 : _a.trim())) {
+            sweetalert2__WEBPACK_IMPORTED_MODULE_1___default.a.fire('Validación', 'El nombre del proveedor es obligatorio', 'warning');
+            return;
+        }
+        this.proveedor.nombre_proveedor = this.proveedor.nombre_proveedor.trim();
+        this.mensajeLoading = 'Guardando...';
+        this.mostrarLoading = true;
+        const peticion = this.proveedor._id
+            ? this.proveedoresService.updateProveedor(this.proveedor)
+            : this.proveedoresService.newProveedor(this.proveedor);
+        peticion.subscribe(() => {
+            this.mostrarLoading = false;
+            sweetalert2__WEBPACK_IMPORTED_MODULE_1___default.a.fire('Éxito', this.esEdicion ? 'Proveedor actualizado' : 'Proveedor creado', 'success');
+            this.cerrarPopup();
+            this.traerProveedores();
+        }, () => {
+            this.mostrarLoading = false;
+            sweetalert2__WEBPACK_IMPORTED_MODULE_1___default.a.fire('Error', 'No se pudo guardar el proveedor. Revise e intente nuevamente', 'error');
+        });
+    }
+    eliminarProveedor(registro) {
+        sweetalert2__WEBPACK_IMPORTED_MODULE_1___default.a.fire({
+            title: '¿Eliminar proveedor?',
+            text: registro.nombre_proveedor,
+            icon: 'warning',
+            showCancelButton: true,
+            confirmButtonText: 'Eliminar',
+            cancelButtonText: 'Cancelar'
+        }).then((result) => {
+            if (result.value) {
+                this.mensajeLoading = 'Eliminando...';
+                this.mostrarLoading = true;
+                this.proveedoresService.deleteProveedor(registro).subscribe(() => {
+                    this.mostrarLoading = false;
+                    sweetalert2__WEBPACK_IMPORTED_MODULE_1___default.a.fire('Eliminado', 'Proveedor eliminado', 'success');
+                    this.traerProveedores();
+                }, () => {
+                    this.mostrarLoading = false;
+                    sweetalert2__WEBPACK_IMPORTED_MODULE_1___default.a.fire('Error', 'No se pudo eliminar el proveedor', 'error');
+                });
+            }
+        });
+    }
+    onExporting(e) {
+        e.component.beginUpdate();
+        e.component.columnOption('_id', 'visible', true);
+    }
+    onExported(e) {
+        e.component.columnOption('_id', 'visible', false);
+        e.component.endUpdate();
+    }
+}
+AdminProveedoresComponent.ɵfac = function AdminProveedoresComponent_Factory(t) { return new (t || AdminProveedoresComponent)(_angular_core__WEBPACK_IMPORTED_MODULE_0__["ɵɵdirectiveInject"](src_app_servicios_proveedores_service__WEBPACK_IMPORTED_MODULE_3__["ProveedoresService"]), _angular_core__WEBPACK_IMPORTED_MODULE_0__["ɵɵdirectiveInject"](src_app_servicios_authen_service__WEBPACK_IMPORTED_MODULE_4__["AuthenService"])); };
+AdminProveedoresComponent.ɵcmp = _angular_core__WEBPACK_IMPORTED_MODULE_0__["ɵɵdefineComponent"]({ type: AdminProveedoresComponent, selectors: [["app-admin-proveedores"]], decls: 5, vars: 13, consts: [[4, "ngIf"], ["class", "row", 4, "ngIf"], [3, "visible", "showTitle", "title", "width", "maxHeight", "height", "showCloseButton", "elementAttr", "visibleChange"], ["class", "popup-proveedor-body", 4, "dxTemplate", "dxTemplateOf"], [3, "messagge"], [1, "row"], [1, "card"], [1, "card-header", "text-center", "font-weight-bold", "text-uppercase"], [1, "card-body"], [1, "proveedores-titulo-seccion", "text-center"], [1, "text-muted", "text-center", "mb-3"], [1, "row", "mb-3"], [1, "col-md-4", "offset-md-8", "text-right"], [1, "btn", "btn-block", "btn-proveedor-primario", 3, "click"], ["keyExpr", "_id", 3, "dataSource", "showBorders", "columnAutoWidth", "rowAlternationEnabled", "onExporting", "onExported"], [3, "visible"], ["placeholder", "Buscar...", 3, "visible", "width"], ["fileName", "proveedores", 3, "enabled", "allowExportSelectedData"], ["dataField", "_id", "caption", "ID", 3, "visible"], ["dataField", "nombre_proveedor", "caption", "Nombre"], ["dataField", "ruc", "caption", "RUC"], ["dataField", "direccion", "caption", "Direcci\u00F3n"], ["dataField", "celular", "caption", "Celular"], ["dataField", "contacto", "caption", "Contacto"], ["caption", "Acciones", "cellTemplate", "accionesProveedor", 3, "width", "allowFiltering", "allowSorting"], [4, "dxTemplate", "dxTemplateOf"], [3, "pageSize"], [3, "showPageSizeSelector", "allowedPageSizes", "showInfo"], [1, "btn", "btn-sm", "btn-primary", "mr-1", 3, "click"], [1, "btn", "btn-sm", "btn-danger", 3, "click"], [1, "popup-proveedor-body"], [1, "popup-proveedor-scroll", "p-3"], [1, "proveedores-titulo-seccion", "text-center", "mb-3"], [1, "row", "proveedores-formulario"], [1, "col-md-6", "mb-3"], [1, "form-label"], ["placeholder", "Nombre o raz\u00F3n social", 3, "value", "valueChange"], ["placeholder", "N\u00FAmero de RUC", 3, "value", "valueChange"], [1, "col-md-12", "mb-3"], ["placeholder", "Direcci\u00F3n fiscal o comercial", 3, "value", "valueChange"], ["placeholder", "Tel\u00E9fono de contacto", 3, "value", "valueChange"], ["placeholder", "Persona de contacto", 3, "value", "valueChange"], [1, "popup-proveedor-footer", "px-3", "pb-3"], [1, "row", "mt-0"], [1, "col-6"], [1, "btn", "btn-block", "btn-secondary", 3, "click"]], template: function AdminProveedoresComponent_Template(rf, ctx) { if (rf & 1) {
+        _angular_core__WEBPACK_IMPORTED_MODULE_0__["ɵɵtemplate"](0, AdminProveedoresComponent_div_0_Template, 2, 1, "div", 0);
+        _angular_core__WEBPACK_IMPORTED_MODULE_0__["ɵɵtemplate"](1, AdminProveedoresComponent_div_1_Template, 1, 0, "div", 1);
+        _angular_core__WEBPACK_IMPORTED_MODULE_0__["ɵɵtemplate"](2, AdminProveedoresComponent_div_2_Template, 30, 20, "div", 0);
+        _angular_core__WEBPACK_IMPORTED_MODULE_0__["ɵɵelementStart"](3, "dx-popup", 2);
+        _angular_core__WEBPACK_IMPORTED_MODULE_0__["ɵɵlistener"]("visibleChange", function AdminProveedoresComponent_Template_dx_popup_visibleChange_3_listener($event) { return ctx.popupVisible = $event; });
+        _angular_core__WEBPACK_IMPORTED_MODULE_0__["ɵɵtemplate"](4, AdminProveedoresComponent_div_4_Template, 33, 5, "div", 3);
+        _angular_core__WEBPACK_IMPORTED_MODULE_0__["ɵɵelementEnd"]();
+    } if (rf & 2) {
+        _angular_core__WEBPACK_IMPORTED_MODULE_0__["ɵɵproperty"]("ngIf", ctx.mostrarLoading);
+        _angular_core__WEBPACK_IMPORTED_MODULE_0__["ɵɵadvance"](1);
+        _angular_core__WEBPACK_IMPORTED_MODULE_0__["ɵɵproperty"]("ngIf", ctx.mostrarBloqueo);
+        _angular_core__WEBPACK_IMPORTED_MODULE_0__["ɵɵadvance"](1);
+        _angular_core__WEBPACK_IMPORTED_MODULE_0__["ɵɵproperty"]("ngIf", !ctx.mostrarBloqueo);
+        _angular_core__WEBPACK_IMPORTED_MODULE_0__["ɵɵadvance"](1);
+        _angular_core__WEBPACK_IMPORTED_MODULE_0__["ɵɵproperty"]("visible", ctx.popupVisible)("showTitle", true)("title", ctx.esEdicion ? "Editar proveedor" : "Nuevo proveedor")("width", 700)("maxHeight", "90vh")("height", "auto")("showCloseButton", true)("elementAttr", _angular_core__WEBPACK_IMPORTED_MODULE_0__["ɵɵpureFunction0"](12, _c1));
+        _angular_core__WEBPACK_IMPORTED_MODULE_0__["ɵɵadvance"](1);
+        _angular_core__WEBPACK_IMPORTED_MODULE_0__["ɵɵproperty"]("dxTemplateOf", "content");
+    } }, directives: [_angular_common__WEBPACK_IMPORTED_MODULE_5__["NgIf"], devextreme_angular__WEBPACK_IMPORTED_MODULE_6__["DxPopupComponent"], devextreme_angular_core__WEBPACK_IMPORTED_MODULE_7__["DxTemplateDirective"], _loading_message_loading_messagge_component__WEBPACK_IMPORTED_MODULE_8__["LoadingMessaggeComponent"], devextreme_angular__WEBPACK_IMPORTED_MODULE_6__["DxDataGridComponent"], devextreme_angular_ui_nested__WEBPACK_IMPORTED_MODULE_9__["DxoFilterRowComponent"], devextreme_angular_ui_nested__WEBPACK_IMPORTED_MODULE_9__["DxoHeaderFilterComponent"], devextreme_angular_ui_nested__WEBPACK_IMPORTED_MODULE_9__["DxoSearchPanelComponent"], devextreme_angular_ui_nested__WEBPACK_IMPORTED_MODULE_9__["DxoExportComponent"], devextreme_angular_ui_nested__WEBPACK_IMPORTED_MODULE_9__["DxiColumnComponent"], devextreme_angular_ui_nested__WEBPACK_IMPORTED_MODULE_9__["DxoPagingComponent"], devextreme_angular_ui_nested__WEBPACK_IMPORTED_MODULE_9__["DxoPagerComponent"], devextreme_angular_ui_text_box__WEBPACK_IMPORTED_MODULE_10__["DxTextBoxComponent"]], styles: [".proveedores-titulo-seccion[_ngcontent-%COMP%] {\n  background-color: #fff3cd;\n  color: #c62828;\n  font-weight: bold;\n  text-transform: uppercase;\n  padding: 0.5rem 1rem;\n  margin-bottom: 1rem;\n  border-left: 4px solid #c62828;\n}\n\n.proveedores-formulario[_ngcontent-%COMP%]   .form-label[_ngcontent-%COMP%] {\n  font-weight: 600;\n  font-size: 0.85rem;\n  margin-bottom: 0.25rem;\n}\n\n.proveedores-kpi[_ngcontent-%COMP%] {\n  border: 1px solid #dee2e6;\n  border-radius: 4px;\n  padding: 0.65rem 0.75rem;\n  text-align: center;\n  background: #fff;\n}\n\n.proveedores-kpi[_ngcontent-%COMP%]   strong[_ngcontent-%COMP%] {\n  font-size: 1.25rem;\n  color: #c62828;\n}\n\n.btn-proveedor-primario[_ngcontent-%COMP%] {\n  background-color: #ff5722;\n  border-color: #ff5722;\n  color: #fff;\n}\n\n.btn-proveedor-primario[_ngcontent-%COMP%]:hover, .btn-proveedor-primario[_ngcontent-%COMP%]:focus {\n  background-color: #e64a19;\n  border-color: #e64a19;\n  color: #fff;\n}\n\n[_nghost-%COMP%]     .popup-proveedor-overlay .dx-popup-content {\n  max-height: calc(90vh - 3.5rem);\n  overflow: hidden;\n  padding: 0;\n}\n\n.popup-proveedor-body[_ngcontent-%COMP%] {\n  display: -webkit-box;\n  display: flex;\n  -webkit-box-orient: vertical;\n  -webkit-box-direction: normal;\n          flex-direction: column;\n  max-height: calc(90vh - 3.5rem);\n  width: 100%;\n  max-width: 100%;\n  min-width: 0;\n  box-sizing: border-box;\n}\n\n.popup-proveedor-scroll[_ngcontent-%COMP%] {\n  -webkit-box-flex: 1;\n          flex: 1 1 auto;\n  min-height: 0;\n  overflow-y: auto;\n  overflow-x: hidden;\n  -webkit-overflow-scrolling: touch;\n}\n\n.popup-proveedor-footer[_ngcontent-%COMP%] {\n  -webkit-box-flex: 0;\n          flex: 0 0 auto;\n  border-top: 1px solid #dee2e6;\n  background: #fff;\n  padding-top: 0.75rem;\n}\n/*# sourceMappingURL=data:application/json;base64,eyJ2ZXJzaW9uIjozLCJzb3VyY2VzIjpbInNyYy9hcHAvcGFnZXMvYWRtaW4tcHJvdmVlZG9yZXMvQzpcXEZJREVOU1xcYWxvamFiYXNlczIwMjUvc3JjXFxhcHBcXHBhZ2VzXFxhZG1pbi1wcm92ZWVkb3Jlc1xcYWRtaW4tcHJvdmVlZG9yZXMuY29tcG9uZW50LnNjc3MiLCJzcmMvYXBwL3BhZ2VzL2FkbWluLXByb3ZlZWRvcmVzL2FkbWluLXByb3ZlZWRvcmVzLmNvbXBvbmVudC5zY3NzIl0sIm5hbWVzIjpbXSwibWFwcGluZ3MiOiJBQUFBO0VBQ0UseUJBQUE7RUFDQSxjQUFBO0VBQ0EsaUJBQUE7RUFDQSx5QkFBQTtFQUNBLG9CQUFBO0VBQ0EsbUJBQUE7RUFDQSw4QkFBQTtBQ0NGOztBREVBO0VBQ0UsZ0JBQUE7RUFDQSxrQkFBQTtFQUNBLHNCQUFBO0FDQ0Y7O0FERUE7RUFDRSx5QkFBQTtFQUNBLGtCQUFBO0VBQ0Esd0JBQUE7RUFDQSxrQkFBQTtFQUNBLGdCQUFBO0FDQ0Y7O0FERUE7RUFDRSxrQkFBQTtFQUNBLGNBQUE7QUNDRjs7QURFQTtFQUNFLHlCQUFBO0VBQ0EscUJBQUE7RUFDQSxXQUFBO0FDQ0Y7O0FERUE7O0VBRUUseUJBQUE7RUFDQSxxQkFBQTtFQUNBLFdBQUE7QUNDRjs7QURFQTtFQUNFLCtCQUFBO0VBQ0EsZ0JBQUE7RUFDQSxVQUFBO0FDQ0Y7O0FERUE7RUFDRSxvQkFBQTtFQUFBLGFBQUE7RUFDQSw0QkFBQTtFQUFBLDZCQUFBO1VBQUEsc0JBQUE7RUFDQSwrQkFBQTtFQUNBLFdBQUE7RUFDQSxlQUFBO0VBQ0EsWUFBQTtFQUNBLHNCQUFBO0FDQ0Y7O0FERUE7RUFDRSxtQkFBQTtVQUFBLGNBQUE7RUFDQSxhQUFBO0VBQ0EsZ0JBQUE7RUFDQSxrQkFBQTtFQUNBLGlDQUFBO0FDQ0Y7O0FERUE7RUFDRSxtQkFBQTtVQUFBLGNBQUE7RUFDQSw2QkFBQTtFQUNBLGdCQUFBO0VBQ0Esb0JBQUE7QUNDRiIsImZpbGUiOiJzcmMvYXBwL3BhZ2VzL2FkbWluLXByb3ZlZWRvcmVzL2FkbWluLXByb3ZlZWRvcmVzLmNvbXBvbmVudC5zY3NzIiwic291cmNlc0NvbnRlbnQiOlsiLnByb3ZlZWRvcmVzLXRpdHVsby1zZWNjaW9uIHtcclxuICBiYWNrZ3JvdW5kLWNvbG9yOiAjZmZmM2NkO1xyXG4gIGNvbG9yOiAjYzYyODI4O1xyXG4gIGZvbnQtd2VpZ2h0OiBib2xkO1xyXG4gIHRleHQtdHJhbnNmb3JtOiB1cHBlcmNhc2U7XHJcbiAgcGFkZGluZzogMC41cmVtIDFyZW07XHJcbiAgbWFyZ2luLWJvdHRvbTogMXJlbTtcclxuICBib3JkZXItbGVmdDogNHB4IHNvbGlkICNjNjI4Mjg7XHJcbn1cclxuXHJcbi5wcm92ZWVkb3Jlcy1mb3JtdWxhcmlvIC5mb3JtLWxhYmVsIHtcclxuICBmb250LXdlaWdodDogNjAwO1xyXG4gIGZvbnQtc2l6ZTogMC44NXJlbTtcclxuICBtYXJnaW4tYm90dG9tOiAwLjI1cmVtO1xyXG59XHJcblxyXG4ucHJvdmVlZG9yZXMta3BpIHtcclxuICBib3JkZXI6IDFweCBzb2xpZCAjZGVlMmU2O1xyXG4gIGJvcmRlci1yYWRpdXM6IDRweDtcclxuICBwYWRkaW5nOiAwLjY1cmVtIDAuNzVyZW07XHJcbiAgdGV4dC1hbGlnbjogY2VudGVyO1xyXG4gIGJhY2tncm91bmQ6ICNmZmY7XHJcbn1cclxuXHJcbi5wcm92ZWVkb3Jlcy1rcGkgc3Ryb25nIHtcclxuICBmb250LXNpemU6IDEuMjVyZW07XHJcbiAgY29sb3I6ICNjNjI4Mjg7XHJcbn1cclxuXHJcbi5idG4tcHJvdmVlZG9yLXByaW1hcmlvIHtcclxuICBiYWNrZ3JvdW5kLWNvbG9yOiAjZmY1NzIyO1xyXG4gIGJvcmRlci1jb2xvcjogI2ZmNTcyMjtcclxuICBjb2xvcjogI2ZmZjtcclxufVxyXG5cclxuLmJ0bi1wcm92ZWVkb3ItcHJpbWFyaW86aG92ZXIsXHJcbi5idG4tcHJvdmVlZG9yLXByaW1hcmlvOmZvY3VzIHtcclxuICBiYWNrZ3JvdW5kLWNvbG9yOiAjZTY0YTE5O1xyXG4gIGJvcmRlci1jb2xvcjogI2U2NGExOTtcclxuICBjb2xvcjogI2ZmZjtcclxufVxyXG5cclxuOmhvc3QgOjpuZy1kZWVwIC5wb3B1cC1wcm92ZWVkb3Itb3ZlcmxheSAuZHgtcG9wdXAtY29udGVudCB7XHJcbiAgbWF4LWhlaWdodDogY2FsYyg5MHZoIC0gMy41cmVtKTtcclxuICBvdmVyZmxvdzogaGlkZGVuO1xyXG4gIHBhZGRpbmc6IDA7XHJcbn1cclxuXHJcbi5wb3B1cC1wcm92ZWVkb3ItYm9keSB7XHJcbiAgZGlzcGxheTogZmxleDtcclxuICBmbGV4LWRpcmVjdGlvbjogY29sdW1uO1xyXG4gIG1heC1oZWlnaHQ6IGNhbGMoOTB2aCAtIDMuNXJlbSk7XHJcbiAgd2lkdGg6IDEwMCU7XHJcbiAgbWF4LXdpZHRoOiAxMDAlO1xyXG4gIG1pbi13aWR0aDogMDtcclxuICBib3gtc2l6aW5nOiBib3JkZXItYm94O1xyXG59XHJcblxyXG4ucG9wdXAtcHJvdmVlZG9yLXNjcm9sbCB7XHJcbiAgZmxleDogMSAxIGF1dG87XHJcbiAgbWluLWhlaWdodDogMDtcclxuICBvdmVyZmxvdy15OiBhdXRvO1xyXG4gIG92ZXJmbG93LXg6IGhpZGRlbjtcclxuICAtd2Via2l0LW92ZXJmbG93LXNjcm9sbGluZzogdG91Y2g7XHJcbn1cclxuXHJcbi5wb3B1cC1wcm92ZWVkb3ItZm9vdGVyIHtcclxuICBmbGV4OiAwIDAgYXV0bztcclxuICBib3JkZXItdG9wOiAxcHggc29saWQgI2RlZTJlNjtcclxuICBiYWNrZ3JvdW5kOiAjZmZmO1xyXG4gIHBhZGRpbmctdG9wOiAwLjc1cmVtO1xyXG59XHJcbiIsIi5wcm92ZWVkb3Jlcy10aXR1bG8tc2VjY2lvbiB7XG4gIGJhY2tncm91bmQtY29sb3I6ICNmZmYzY2Q7XG4gIGNvbG9yOiAjYzYyODI4O1xuICBmb250LXdlaWdodDogYm9sZDtcbiAgdGV4dC10cmFuc2Zvcm06IHVwcGVyY2FzZTtcbiAgcGFkZGluZzogMC41cmVtIDFyZW07XG4gIG1hcmdpbi1ib3R0b206IDFyZW07XG4gIGJvcmRlci1sZWZ0OiA0cHggc29saWQgI2M2MjgyODtcbn1cblxuLnByb3ZlZWRvcmVzLWZvcm11bGFyaW8gLmZvcm0tbGFiZWwge1xuICBmb250LXdlaWdodDogNjAwO1xuICBmb250LXNpemU6IDAuODVyZW07XG4gIG1hcmdpbi1ib3R0b206IDAuMjVyZW07XG59XG5cbi5wcm92ZWVkb3Jlcy1rcGkge1xuICBib3JkZXI6IDFweCBzb2xpZCAjZGVlMmU2O1xuICBib3JkZXItcmFkaXVzOiA0cHg7XG4gIHBhZGRpbmc6IDAuNjVyZW0gMC43NXJlbTtcbiAgdGV4dC1hbGlnbjogY2VudGVyO1xuICBiYWNrZ3JvdW5kOiAjZmZmO1xufVxuXG4ucHJvdmVlZG9yZXMta3BpIHN0cm9uZyB7XG4gIGZvbnQtc2l6ZTogMS4yNXJlbTtcbiAgY29sb3I6ICNjNjI4Mjg7XG59XG5cbi5idG4tcHJvdmVlZG9yLXByaW1hcmlvIHtcbiAgYmFja2dyb3VuZC1jb2xvcjogI2ZmNTcyMjtcbiAgYm9yZGVyLWNvbG9yOiAjZmY1NzIyO1xuICBjb2xvcjogI2ZmZjtcbn1cblxuLmJ0bi1wcm92ZWVkb3ItcHJpbWFyaW86aG92ZXIsXG4uYnRuLXByb3ZlZWRvci1wcmltYXJpbzpmb2N1cyB7XG4gIGJhY2tncm91bmQtY29sb3I6ICNlNjRhMTk7XG4gIGJvcmRlci1jb2xvcjogI2U2NGExOTtcbiAgY29sb3I6ICNmZmY7XG59XG5cbjpob3N0IDo6bmctZGVlcCAucG9wdXAtcHJvdmVlZG9yLW92ZXJsYXkgLmR4LXBvcHVwLWNvbnRlbnQge1xuICBtYXgtaGVpZ2h0OiBjYWxjKDkwdmggLSAzLjVyZW0pO1xuICBvdmVyZmxvdzogaGlkZGVuO1xuICBwYWRkaW5nOiAwO1xufVxuXG4ucG9wdXAtcHJvdmVlZG9yLWJvZHkge1xuICBkaXNwbGF5OiBmbGV4O1xuICBmbGV4LWRpcmVjdGlvbjogY29sdW1uO1xuICBtYXgtaGVpZ2h0OiBjYWxjKDkwdmggLSAzLjVyZW0pO1xuICB3aWR0aDogMTAwJTtcbiAgbWF4LXdpZHRoOiAxMDAlO1xuICBtaW4td2lkdGg6IDA7XG4gIGJveC1zaXppbmc6IGJvcmRlci1ib3g7XG59XG5cbi5wb3B1cC1wcm92ZWVkb3Itc2Nyb2xsIHtcbiAgZmxleDogMSAxIGF1dG87XG4gIG1pbi1oZWlnaHQ6IDA7XG4gIG92ZXJmbG93LXk6IGF1dG87XG4gIG92ZXJmbG93LXg6IGhpZGRlbjtcbiAgLXdlYmtpdC1vdmVyZmxvdy1zY3JvbGxpbmc6IHRvdWNoO1xufVxuXG4ucG9wdXAtcHJvdmVlZG9yLWZvb3RlciB7XG4gIGZsZXg6IDAgMCBhdXRvO1xuICBib3JkZXItdG9wOiAxcHggc29saWQgI2RlZTJlNjtcbiAgYmFja2dyb3VuZDogI2ZmZjtcbiAgcGFkZGluZy10b3A6IDAuNzVyZW07XG59Il19 */"] });
+/*@__PURE__*/ (function () { _angular_core__WEBPACK_IMPORTED_MODULE_0__["ɵsetClassMetadata"](AdminProveedoresComponent, [{
+        type: _angular_core__WEBPACK_IMPORTED_MODULE_0__["Component"],
+        args: [{
+                selector: 'app-admin-proveedores',
+                templateUrl: './admin-proveedores.component.html',
+                styleUrls: ['./admin-proveedores.component.scss']
+            }]
+    }], function () { return [{ type: src_app_servicios_proveedores_service__WEBPACK_IMPORTED_MODULE_3__["ProveedoresService"] }, { type: src_app_servicios_authen_service__WEBPACK_IMPORTED_MODULE_4__["AuthenService"] }]; }, null); })();
 
 
 /***/ }),
@@ -60216,7 +60625,7 @@ function NominasEventosPagosComponent_dx_select_box_31_Template(rf, ctx) { if (r
     _angular_core__WEBPACK_IMPORTED_MODULE_0__["ɵɵelementEnd"]();
 } if (rf & 2) {
     const ctx_r4 = _angular_core__WEBPACK_IMPORTED_MODULE_0__["ɵɵnextContext"]();
-    _angular_core__WEBPACK_IMPORTED_MODULE_0__["ɵɵproperty"]("items", ctx_r4.transaccionesNominaB)("value", ctx_r4.formulario.transaccionNomina);
+    _angular_core__WEBPACK_IMPORTED_MODULE_0__["ɵɵproperty"]("items", ctx_r4.transaccionesNominaBDisponibles)("value", ctx_r4.formulario.transaccionNomina);
 } }
 function NominasEventosPagosComponent_dx_select_box_32_Template(rf, ctx) { if (rf & 1) {
     const _r23 = _angular_core__WEBPACK_IMPORTED_MODULE_0__["ɵɵgetCurrentView"]();
@@ -61492,17 +61901,15 @@ class NominasEventosPagosComponent {
         this.cuotasSegSocial = 4;
         this.tiposBeneficiario = ["Interno", "Externo"];
         this.transaccionesNominaA = ["Asignacion nomina", "Dominical"];
-        this.transaccionesNominaB = [
-            "Arriendos",
-            "Pagos puntuales",
-            /* "Préstamos recibidos",
-            "Tarjetas de crédito"*/
+        this.transaccionesNominaBInterno = [
             "Comisiones por ventas",
             "Bono",
             "Décimo tercer sueldo",
             "Décimo cuarto sueldo",
+            "Pagos puntuales",
             "Vacaciones",
         ];
+        this.transaccionesNominaBExterno = ["Arriendos"];
         this.transaccionesBeneficiosAnuales = [
             "Décimo tercer sueldo",
             "Décimo cuarto sueldo",
@@ -61547,6 +61954,16 @@ class NominasEventosPagosComponent {
     }
     get esTipoB() {
         return this.formulario.tipoRegla === "B";
+    }
+    get transaccionesNominaBDisponibles() {
+        const conceptos = this.formulario.tipoBeneficiario === "Externo"
+            ? this.transaccionesNominaBExterno
+            : this.transaccionesNominaBInterno;
+        const actual = (this.formulario.transaccionNomina || "").trim();
+        if (actual && !conceptos.includes(actual)) {
+            return [...conceptos, actual];
+        }
+        return conceptos;
     }
     get esTipoC() {
         return this.formulario.tipoRegla === "C";
@@ -62170,6 +62587,36 @@ class NominasEventosPagosComponent {
         this.formulario.monto = 0;
         this.reglasPagoAsociables = [];
         this.formulario.reglaPagoAsociadaId = undefined;
+        this.aplicarConceptosTipoBPorBeneficiario();
+    }
+    aplicarConceptosTipoBPorBeneficiario() {
+        if (!this.esTipoB)
+            return;
+        const disponibles = this.formulario.tipoBeneficiario === "Externo"
+            ? this.transaccionesNominaBExterno
+            : this.transaccionesNominaBInterno;
+        const actual = (this.formulario.transaccionNomina || "").trim();
+        if (disponibles.includes(actual))
+            return;
+        this.formulario.transaccionNomina = disponibles[0] || "";
+        if (this.esTransaccionBeneficiosAnuales) {
+            this.formulario.frecuencia = "Anual";
+            this.formulario.vigenciaRegla = "Unica vez";
+            this.formulario.modalidadMonto = "Finito";
+            this.formulario.cuotas = 1;
+            this.formulario.parametro = this.parametrosAnualB[0];
+            this.asegurarFechaReferenciaTipoB();
+        }
+        else {
+            this.formulario.frecuencia = "Mensual";
+            this.formulario.parametro = "El dia x del mes";
+            this.formulario.diaDelMes = this.formulario.diaDelMes || 1;
+            this.formulario.vigenciaRegla = "Indefinido";
+            this.formulario.modalidadMonto = "Periodico";
+        }
+        this.actualizarParametrosPorFrecuencia();
+        this.amortizacionEditadaManual = false;
+        this.generarAmortizacion(true);
     }
     etiquetaReglaAsociable(regla) {
         return `${regla.transaccionNomina} — ${regla.frecuencia} $${Number(regla.monto || 0).toFixed(2)} (${regla.parametro || ""})`;
@@ -64487,7 +64934,7 @@ class NominasPagosProgramadosComponent {
             const nDesc = descuentos.length;
             const totalDesc = descuentos.reduce((s, t) => s + (Number(t.valor) || 0), 0);
             const detalleDesc = nDesc
-                ? ` Se registraron ${nDesc} transacción(es) de descuento por $${totalDesc.toFixed(2)} (subcuenta 1.5.7 Descuentos).`
+                ? ` Se registraron ${nDesc} transacción(es) de descuento por $${totalDesc.toFixed(2)} (subcuenta 1.7.4 Nominas - Descuentos).`
                 : "";
             sweetalert2__WEBPACK_IMPORTED_MODULE_2___default.a.fire(parcial ? "Pago parcial registrado" : "Pago completo registrado", parcial
                 ? `Saldo pendiente: $${res.data.saldoPendiente}`
@@ -93213,7 +93660,7 @@ class TransaccionesNominasComponent {
             else if (element.subCuenta == "1.5.3 Anticipos nomina") {
                 this.valorAnticipos = element.valor + this.valorAnticipos;
             }
-            else if (element.subCuenta == "1.5.7 Descuentos") {
+            else if (element.subCuenta == "1.5.7 Descuentos" || element.subCuenta == "1.7.4 Nominas - Descuentos") {
                 this.valorDescuentos = element.valor + this.valorDescuentos;
             }
             else if (element.subCuenta == "1.5.4 Pagos extras") {
@@ -110069,10 +110516,10 @@ class NominasService {
         return this.http.delete(`${this.URL}/reglas-pago/${id}`);
     }
     simularDominical(payload) {
-        return this.http.post(`${this.URL}/dominical/simular`, payload);
+        return this.http.post(`${this.URL}/dominical/simular`, Object.assign(Object.assign({}, payload), { fecha: Object(_pages_nominas_nominas_fecha_util__WEBPACK_IMPORTED_MODULE_3__["fechaCalendarioParam"])(payload.fecha) || payload.fecha }));
     }
     liquidarDominical(payload) {
-        return this.http.post(`${this.URL}/dominical/liquidar`, payload);
+        return this.http.post(`${this.URL}/dominical/liquidar`, Object.assign(Object.assign({}, payload), { fecha: Object(_pages_nominas_nominas_fecha_util__WEBPACK_IMPORTED_MODULE_3__["fechaCalendarioParam"])(payload.fecha) || payload.fecha }));
     }
     getEventosDominical(fecha, cedula) {
         let q = "";

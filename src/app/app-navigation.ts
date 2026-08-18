@@ -148,7 +148,7 @@ export const navigation = [
     icon: "fa fa-users",
     items: [
       {
-        text: "Nóminas",
+        text: "Administración Llaves CyP",
         path: "/nominas",
       },
     ],
@@ -410,6 +410,10 @@ export const navigationAdmin = [
         path: "/clientes",
       },
       {
+        text: "Proveedores",
+        path: "/admin-proveedores",
+      },
+      {
         text: "Bodegas",
         path: "/bodegas",
       },
@@ -514,7 +518,7 @@ export const navigationAdmin = [
         path: "",
       },
       {
-        text: "Nóminas",
+        text: "Administración Llaves CyP",
         path: "/nominas",
       },
     ],
@@ -697,6 +701,10 @@ export const navigationSupervisor = [
         text: "Clientes",
         path: "/clientes",
       },
+      {
+        text: "Proveedores",
+        path: "/admin-proveedores",
+      },
     ],
   },
   {
@@ -786,7 +794,7 @@ export const navigationSupervisor = [
         path: "",
       },
       {
-        text: "Nóminas",
+        text: "Administración Llaves CyP",
         path: "/nominas",
       },
     ],

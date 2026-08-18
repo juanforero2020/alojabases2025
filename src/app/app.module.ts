@@ -73,6 +73,7 @@ import { HttpClientModule, HTTP_INTERCEPTORS } from "@angular/common/http";
 import { SessionExpiredInterceptor } from "./shared/interceptors/session-expired.interceptor";
 import { UserComponent } from "./pages/user/user.component";
 import { ClientesComponent } from "./pages/clientes/clientes.component";
+import { AdminProveedoresComponent } from "./pages/admin-proveedores/admin-proveedores.component";
 import { CalculadorasComponent } from "./pages/calculadora/calculadora.component";
 import { ControlPreciosComponent } from "./pages/control-precios/control-precios.component";
 import { AuditoriasComponent } from "./pages/auditorias/auditorias.component";
@@ -146,6 +147,7 @@ import { NominasLiquidacionDominicalComponent } from "./pages/nominas/nominas-li
     EntregasPComponent,
     UserComponent,
     ClientesComponent,
+    AdminProveedoresComponent,
     CalculadorasComponent,
     ControlPreciosComponent,
     ControlUnidadesComponent,

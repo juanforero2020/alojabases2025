@@ -19,7 +19,7 @@ const {
 } = require("../utils/proyeccionPagosTipoC");
 
 const SUB_CUENTA_PAGO = "1.5.4 Pagos extras";
-const SUB_CUENTA_DESCUENTO = "1.5.7 Descuentos";
+const SUB_CUENTA_DESCUENTO = "1.7.4 Nominas - Descuentos";
 const TIPO_TRANSACCION = "PAGO_NOMINA_TIPO_B";
 const TIPO_TRANSACCION_A = "PAGO_NOMINA_TIPO_A";
 const TIPO_TRANSACCION_DESCUENTO = "DESCUENTO_NOMINA";
@@ -212,6 +212,39 @@ function inicioDiaNomina(fecha) {
   return d;
 }
 
+function formatoFechaCalendario(fecha) {
+  if (!fecha) return "";
+  const d = new Date(fecha);
+  if (isNaN(d.getTime())) return "";
+  const iso = d.toISOString().slice(0, 10);
+  const [anio, mes, dia] = iso.split("-");
+  return `${dia}/${mes}/${anio}`;
+}
+
+function textoFechaCorrespondePago(evento) {
+  if (evento.fechaMin && evento.fechaMax) {
+    const fMin = formatoFechaCalendario(evento.fechaMin);
+    const fMax = formatoFechaCalendario(evento.fechaMax);
+    if (fMin && fMax && fMin === fMax) return fMin;
+    if (fMin && fMax) return `${fMin} — ${fMax}`;
+  }
+  if (evento.fechaMin) return formatoFechaCalendario(evento.fechaMin);
+  return formatoFechaCalendario(evento.fechaProgramada) || "sin fecha";
+}
+
+function construirNotasTransaccionNomina(evento, opciones = {}) {
+  const nombre = (evento.nombreBeneficiario || "").trim() || "Sin nombre";
+  const transaccion =
+    opciones.prefijo || evento.transaccionNomina || "Pago programado";
+  const cuota = `cuota ${evento.numeroCuota}/${evento.totalCuotas}`;
+  const fechaCorresponde = textoFechaCorrespondePago(evento);
+  let notas = `${transaccion} — ${nombre} — ${cuota} — fecha corresponde ${fechaCorresponde}`;
+  if (opciones.detalle) {
+    notas += `. ${opciones.detalle}`;
+  }
+  return notas;
+}
+
 function eventoVentanaVencida(evento) {
   const hoy = inicioDiaNomina(new Date());
   if (evento.fechaMax) {
@@ -318,13 +351,14 @@ async function ejecutarEventoProgramado(eventoId, opciones = {}) {
     isContabilizada: true,
   };
 
-  const notasPago =
-    opciones.notas ||
-    (separarDescuentos
-      ? `${evento.transaccionNomina || "Pago programado"} — cuota ${evento.numeroCuota}/${evento.totalCuotas}. Neto pagado: $${montoPagar.toFixed(2)} (bruto $${montoBruto.toFixed(2)} − descuentos $${montoDescuento.toFixed(2)}).`
-      : `${evento.transaccionNomina || "Pago programado"} — cuota ${evento.numeroCuota}/${evento.totalCuotas}${
-          montoPagar < montoPendiente ? " (pago parcial)" : ""
-        }. Centro costo: ${evento.centroCosto || ""}.`);
+  const detallePago = separarDescuentos
+    ? `Neto pagado: $${montoPagar.toFixed(2)} (bruto $${montoBruto.toFixed(2)} − descuentos $${montoDescuento.toFixed(2)}).`
+    : `${montoPagar < montoPendiente ? "(pago parcial). " : ""}Centro costo: ${
+        evento.centroCosto || ""
+      }.`;
+  const notasPago = construirNotasTransaccionNomina(evento, {
+    detalle: [detallePago, opciones.notas].filter(Boolean).join(" "),
+  });
 
   const tx = new TransaccionFinanciera({
     ...baseTx,
@@ -339,7 +373,7 @@ async function ejecutarEventoProgramado(eventoId, opciones = {}) {
   await tx.save();
 
   const transaccionesDescuento = separarDescuentos
-    ? await registrarTransaccionesDescuento(baseTx, lineasDescuento, cuenta)
+    ? await registrarTransaccionesDescuento(baseTx, lineasDescuento, cuenta, evento)
     : [];
 
   evento.pagosParciales = evento.pagosParciales || [];
@@ -414,7 +448,7 @@ function montoDescuentoEvento(evento) {
   return Math.max(descGuardado, descPorDiferencia);
 }
 
-async function registrarTransaccionesDescuento(baseTx, lineas, cuentaPago) {
+async function registrarTransaccionesDescuento(baseTx, lineas, cuentaPago, evento) {
   const creadas = [];
   const cuentaDesc = await resolverCuentaDesdeSubCuenta(SUB_CUENTA_DESCUENTO);
   for (const linea of lineas || []) {
@@ -425,10 +459,13 @@ async function registrarTransaccionesDescuento(baseTx, lineas, cuentaPago) {
       valor: monto,
       tipoPago: "Ingreso",
       cuenta: cuentaDesc.cuenta || cuentaPago,
-      tipoCuenta: "Ingresos",
+      tipoCuenta: cuentaDesc.tipoCuenta || "Salidas",
       subCuenta: SUB_CUENTA_DESCUENTO,
       tipoTransaccion: TIPO_TRANSACCION_DESCUENTO,
-      notas: `Descuento nómina — ${linea.etiqueta || "Descuento"}`,
+      notas: construirNotasTransaccionNomina(evento, {
+        prefijo: "Descuento nómina",
+        detalle: linea.etiqueta || "Descuento",
+      }),
     });
     await txDesc.save();
     creadas.push(txDesc);
@@ -495,6 +532,10 @@ async function resolverCuentaDesdeSubCuenta(subCuentaNombre) {
 
   const cuentaFijaPorSubcuenta = {
     "1.7.1 Nominas": {
+      cuenta: "1.7 GASTOS OPERACIONALES",
+      tipoCuenta: "Salidas",
+    },
+    "1.7.4 Nominas - Descuentos": {
       cuenta: "1.7 GASTOS OPERACIONALES",
       tipoCuenta: "Salidas",
     },

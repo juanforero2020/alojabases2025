@@ -137,7 +137,7 @@ export class TransaccionesNominasComponent implements OnInit {
         this.valorNominas = element.valor + this.valorNominas;
       }else if(element.subCuenta == "1.5.3 Anticipos nomina"){
         this.valorAnticipos = element.valor + this.valorAnticipos;
-      }else if(element.subCuenta == "1.5.7 Descuentos"){
+      }else if(element.subCuenta == "1.5.7 Descuentos" || element.subCuenta == "1.7.4 Nominas - Descuentos"){
         this.valorDescuentos = element.valor + this.valorDescuentos;
       }else if(element.subCuenta == "1.5.4 Pagos extras"){
         this.valorPagosExtras = element.valor + this.valorPagosExtras;

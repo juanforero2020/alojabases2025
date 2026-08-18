@@ -68,7 +68,7 @@
         ></dx-select-box>
         <dx-select-box
           *ngIf="esTipoB"
-          [items]="transaccionesNominaB"
+          [items]="transaccionesNominaBDisponibles"
           [(value)]="formulario.transaccionNomina"
           (onValueChanged)="onTransaccionNominaBChanged($event)"
         ></dx-select-box>

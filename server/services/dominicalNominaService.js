@@ -13,7 +13,7 @@ const Cuenta = require("../models/cuentas");
 const CONFIG_CLAVE = "principal";
 const CUENTA_PAGO = "1.7 GASTOS OPERACIONALES";
 const SUB_CUENTA_PAGO = "1.7.1 Nominas";
-const SUB_CUENTA_DESCUENTO = "1.5.7 Descuentos";
+const SUB_CUENTA_DESCUENTO = "1.7.4 Nominas - Descuentos";
 const TIPO_PAGO = "PAGO_DOMINICAL";
 const TIPO_AJUSTE = "AJUSTE_DOMINICAL_ANULACION";
 
@@ -55,12 +55,76 @@ function resolverFacturacionNetaCalculoDominical(
   return Number(facturacionTrab.facturacionNetaTrabajador) || 0;
 }
 
+function claveFechaCalendario(valor) {
+  if (valor == null || valor === "") return null;
+
+  if (valor instanceof Date && !isNaN(valor.getTime())) {
+    const iso = valor.toISOString().slice(0, 10);
+    return iso;
+  }
+
+  const texto = String(valor).trim();
+  const isoMatch = texto.match(/^(\d{4})-(\d{2})-(\d{2})/);
+  if (isoMatch) {
+    return `${isoMatch[1]}-${isoMatch[2]}-${isoMatch[3]}`;
+  }
+
+  const dmyMatch = texto.match(/^(\d{1,2})[\/\-](\d{1,2})[\/\-](\d{2,4})/);
+  if (dmyMatch) {
+    let dia = parseInt(dmyMatch[1], 10);
+    let mes = parseInt(dmyMatch[2], 10);
+    let anio = parseInt(dmyMatch[3], 10);
+    if (anio < 100) anio += 2000;
+    if (mes > 12 && dia <= 12) {
+      const tmp = dia;
+      dia = mes;
+      mes = tmp;
+    }
+    if (mes < 1 || mes > 12 || dia < 1 || dia > 31) return null;
+    return `${anio}-${String(mes).padStart(2, "0")}-${String(dia).padStart(2, "0")}`;
+  }
+
+  const d = new Date(texto);
+  if (isNaN(d.getTime())) return null;
+  return d.toISOString().slice(0, 10);
+}
+
+function fechaDesdeClave(clave) {
+  if (!clave) return null;
+  const [anio, mes, dia] = clave.split("-").map(Number);
+  return new Date(anio, mes - 1, dia, 0, 0, 0, 0);
+}
+
+function parseFechaEntrada(fecha) {
+  const clave = claveFechaCalendario(fecha);
+  if (clave) return fechaDesdeClave(clave);
+  const d = new Date(fecha);
+  d.setHours(0, 0, 0, 0);
+  return d;
+}
+
 function rangoDiaCalendario(fecha) {
-  const inicio = new Date(fecha);
-  inicio.setHours(0, 0, 0, 0);
-  const fin = new Date(fecha);
+  const inicio = parseFechaEntrada(fecha);
+  const fin = new Date(inicio);
   fin.setHours(23, 59, 59, 999);
   return { inicio, fin };
+}
+
+function patronesTextoFecha(fecha) {
+  const clave = claveFechaCalendario(fecha);
+  if (!clave) return [];
+  const [anio, mes, dia] = clave.split("-");
+  const diaNum = String(Number(dia));
+  const mesNum = String(Number(mes));
+  return Array.from(
+    new Set([
+      clave,
+      `${dia}/${mes}/${anio}`,
+      `${diaNum}/${mesNum}/${anio}`,
+      `${mes}/${dia}/${anio}`,
+      `${mesNum}/${diaNum}/${anio}`,
+    ])
+  );
 }
 
 function esTransaccionDominical(transaccion) {
@@ -84,11 +148,7 @@ function filtroReglasDominicalAutorizadas(extra = {}) {
 }
 
 function rangoFechaProgramada(fecha) {
-  const inicio = new Date(fecha);
-  inicio.setHours(0, 0, 0, 0);
-  const fin = new Date(fecha);
-  fin.setHours(23, 59, 59, 999);
-  return { inicio, fin };
+  return rangoDiaCalendario(fecha);
 }
 
 async function buscarEventoProgramadoPendiente(reglaId, fechaDom) {
@@ -128,7 +188,11 @@ async function marcarEventoProgramadoDominicalLiquidado(
       fecha: new Date(),
       transaccionFinancieraId: txId,
       ejecutadoPor: opciones.usuario || "",
-      notas: "Liquidación dominical masiva",
+      notas: construirNotasPagoDominical(
+        item,
+        fechaDom,
+        "Liquidación dominical masiva"
+      ),
     });
   }
 
@@ -137,15 +201,15 @@ async function marcarEventoProgramadoDominicalLiquidado(
 }
 
 function inicioSemanaDomingo(fecha) {
-  const d = new Date(fecha);
-  d.setHours(0, 0, 0, 0);
+  const d = parseFechaEntrada(fecha);
   const dia = d.getDay();
   d.setDate(d.getDate() - dia);
+  d.setHours(0, 0, 0, 0);
   return d;
 }
 
 function esDomingo(fecha) {
-  return new Date(fecha).getDay() === 0;
+  return parseFechaEntrada(fecha).getDay() === 0;
 }
 
 async function obtenerConfigGlobal() {
@@ -181,32 +245,33 @@ function calcularMontoPorCargo(cargo, facturacionNeta, calculoDominical) {
 }
 
 function parseFechaDocumento(valor) {
-  if (valor == null || valor === "") return null;
-  if (valor instanceof Date && !isNaN(valor.getTime())) return new Date(valor);
-  if (typeof valor === "number") {
-    const d = new Date(valor);
-    return isNaN(d.getTime()) ? null : d;
-  }
-  const texto = String(valor).trim();
-  const iso = new Date(texto);
-  if (!isNaN(iso.getTime())) return iso;
-  const match = texto.match(/^(\d{1,2})[\/\-](\d{1,2})[\/\-](\d{2,4})/);
-  if (match) {
-    let anio = parseInt(match[3], 10);
-    if (anio < 100) anio += 2000;
-    const d = new Date(anio, parseInt(match[2], 10) - 1, parseInt(match[1], 10));
-    return isNaN(d.getTime()) ? null : d;
-  }
-  return null;
+  const clave = claveFechaCalendario(valor);
+  return clave ? fechaDesdeClave(clave) : null;
 }
 
 function esFechaEnDia(valorFecha, fechaReferencia) {
-  const doc = parseFechaDocumento(valorFecha);
-  const ref = new Date(fechaReferencia);
-  if (!doc || isNaN(ref.getTime())) return false;
-  doc.setHours(0, 0, 0, 0);
-  ref.setHours(0, 0, 0, 0);
-  return doc.getTime() === ref.getTime();
+  const doc = claveFechaCalendario(valorFecha);
+  const ref = claveFechaCalendario(fechaReferencia);
+  return !!doc && !!ref && doc === ref;
+}
+
+function formatoFechaCorresponde(fecha) {
+  const clave = claveFechaCalendario(fecha);
+  if (!clave) return "sin fecha";
+  const [anio, mes, dia] = clave.split("-");
+  return `${dia}/${mes}/${anio}`;
+}
+
+function construirNotasPagoDominical(item, fechaDom, detalle = "", prefijo = "Pago dominical") {
+  const nombre = (item?.nombre || item?.nombreBeneficiario || "").trim() || "Sin nombre";
+  const usuario = (item?.usuarioSistemaUsername || "").trim();
+  const quien = usuario ? `${nombre} (${usuario})` : nombre;
+  const fechaCorresponde = formatoFechaCorresponde(fechaDom);
+  let notas = `${prefijo} — ${quien} — fecha corresponde ${fechaCorresponde}`;
+  if (detalle) {
+    notas += `. ${detalle}`;
+  }
+  return notas;
 }
 
 function documentoVigente(doc) {
@@ -234,25 +299,39 @@ function coincideDevolucionConTrabajador(devolucion, tms) {
   );
 }
 
-async function cargarDocumentosVentasDia(fecha, sucursal) {
+function filtroDocumentosPorFecha(fecha) {
   const { inicio, fin } = rangoDiaCalendario(fecha);
   const margenInicio = new Date(inicio);
-  margenInicio.setDate(margenInicio.getDate() - 3);
+  margenInicio.setDate(margenInicio.getDate() - 15);
   const margenFin = new Date(fin);
-  margenFin.setDate(margenFin.getDate() + 3);
-  const filtroMargen = { createdAt: { $gte: margenInicio, $lte: margenFin } };
+  margenFin.setDate(margenFin.getDate() + 15);
+  const patrones = patronesTextoFecha(inicio);
+  const filtroFecha = patrones.map((p) => ({
+    fecha: { $regex: p.replace(/[.*+?^${}()|[\]\\]/g, "\\$&") },
+  }));
+  return {
+    $or: [
+      ...filtroFecha,
+      { createdAt: { $gte: margenInicio, $lte: margenFin } },
+    ],
+  };
+}
 
-  const filtroFactura = { ...filtroMargen };
-  const filtroNota = { ...filtroMargen };
-  if (sucursal) {
-    filtroFactura.sucursal = sucursal;
-    filtroNota.sucursal = sucursal;
-  }
+async function cargarDocumentosVentasDia(fecha, sucursal) {
+  const { inicio } = rangoDiaCalendario(fecha);
+  const filtroBase = filtroDocumentosPorFecha(inicio);
+
+  const filtroFactura = sucursal
+    ? { $and: [filtroBase, { sucursal }] }
+    : filtroBase;
+  const filtroNota = sucursal
+    ? { $and: [filtroBase, { sucursal }] }
+    : filtroBase;
 
   const [facturasRaw, notasRaw, devolucionesRaw] = await Promise.all([
     Factura.find(filtroFactura).lean(),
     NotasVenta.find(filtroNota).lean(),
-    Devoluciones.find(filtroMargen).lean(),
+    Devoluciones.find(filtroBase).lean(),
   ]);
 
   const facturas = facturasRaw.filter(
@@ -282,9 +361,9 @@ function sumarTotalesVentas(facturas, notas) {
   return totalFacturas + totalNotas;
 }
 
-async function calcularFacturacionNetaDia(fecha, sucursal) {
+async function calcularFacturacionNetaDia(fecha, sucursal, docsPrecargados) {
   const { inicio, facturas, notas, devoluciones } =
-    await cargarDocumentosVentasDia(fecha, sucursal);
+    docsPrecargados || (await cargarDocumentosVentasDia(fecha, sucursal));
 
   const facturacionBruta = sumarTotalesVentas(facturas, notas);
   const totalDevoluciones = devoluciones.reduce(
@@ -306,9 +385,9 @@ async function calcularFacturacionNetaDia(fecha, sucursal) {
   };
 }
 
-async function calcularFacturacionTrabajadorDia(fecha, tms, sucursal) {
+async function calcularFacturacionTrabajadorDia(fecha, tms, sucursal, docsPrecargados) {
   const { inicio, facturas, notas, devoluciones } =
-    await cargarDocumentosVentasDia(fecha, sucursal);
+    docsPrecargados || (await cargarDocumentosVentasDia(fecha, sucursal));
 
   if (!tms?.usuarioSistemaUsername) {
     return {
@@ -353,9 +432,14 @@ async function calcularFacturacionTrabajadorDia(fecha, tms, sucursal) {
 async function simularLiquidacionDominical(fecha, opciones = {}) {
   const fechaDom = inicioSemanaDomingo(fecha);
   const config = await obtenerConfigGlobal();
-  const facturacion = await calcularFacturacionNetaDia(
+  const documentosDia = await cargarDocumentosVentasDia(
     fechaDom,
     opciones.sucursal
+  );
+  const facturacion = await calcularFacturacionNetaDia(
+    fechaDom,
+    opciones.sucursal,
+    documentosDia
   );
   const reglas = await ReglaPagoNomina.find(
     filtroReglasDominicalAutorizadas()
@@ -374,7 +458,8 @@ async function simularLiquidacionDominical(fecha, opciones = {}) {
       const facturacionTrab = await calcularFacturacionTrabajadorDia(
         fechaDom,
         tms,
-        opciones.sucursal
+        opciones.sucursal,
+        documentosDia
       );
       const facturacionParaCalculo = resolverFacturacionNetaCalculoDominical(
         cargo,
@@ -520,7 +605,11 @@ async function liquidarDominical(fecha, opciones = {}) {
         tipoCuenta: cuentaPago.tipoCuenta,
         subCuenta: cuentaPago.subCuenta,
         tipoTransaccion: TIPO_PAGO,
-        notas: `Pago dominical ${fechaDom.toISOString().slice(0, 10)}. Facturación base cálculo $${item.facturacionNetaCalculo ?? simulacion.facturacion.facturacionNeta}. Rango ${item.rangoAplicado}.`,
+        notas: construirNotasPagoDominical(
+          item,
+          fechaDom,
+          `Facturación base cálculo $${item.facturacionNetaCalculo ?? simulacion.facturacion.facturacionNeta}. Rango ${item.rangoAplicado}.`
+        ),
         isContabilizada: true,
       });
     }
@@ -589,11 +678,16 @@ async function aplicarAjustesPendientes(cedula, fechaAplicacion, usuario) {
       cedula: aj.cedulaBeneficiario,
       valor: aj.montoAjuste,
       tipoPago: "Egreso",
+      cuenta: CUENTA_PAGO,
+      tipoCuenta: "Salidas",
       subCuenta: SUB_CUENTA_DESCUENTO,
       tipoTransaccion: TIPO_AJUSTE,
-      notas:
-        aj.motivo ||
-        `Ajuste dominical por anulación. Domingo ${aj.fechaDominical?.toISOString?.().slice(0, 10) || ""}`,
+      notas: construirNotasPagoDominical(
+        aj,
+        aj.fechaDominical || fechaAplicacion,
+        aj.motivo || "Ajuste dominical por anulación",
+        "Ajuste dominical"
+      ),
       isContabilizada: false,
     });
     aj.estado = "Aplicado";

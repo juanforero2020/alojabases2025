@@ -443,7 +443,7 @@ export class NominasPagosProgramadosComponent implements OnInit {
           const detalleDesc = nDesc
             ? ` Se registraron ${nDesc} transacción(es) de descuento por $${totalDesc.toFixed(
                 2
-              )} (subcuenta 1.5.7 Descuentos).`
+              )} (subcuenta 1.7.4 Nominas - Descuentos).`
             : "";
 
           Swal.fire(

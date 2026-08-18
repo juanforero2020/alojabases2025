@@ -819,9 +819,8 @@ router.delete("/reglas-pago/:id", async (req, res) => {
 
 router.post("/dominical/simular", async (req, res) => {
   try {
-    const fecha = new Date(req.body.fecha);
     const resultado = await dominicalNominaService.simularLiquidacionDominical(
-      fecha,
+      req.body.fecha,
       {
         sucursal: req.body.sucursal,
         cedula: req.body.cedula,
@@ -835,8 +834,7 @@ router.post("/dominical/simular", async (req, res) => {
 
 router.post("/dominical/liquidar", async (req, res) => {
   try {
-    const fecha = new Date(req.body.fecha);
-    const resultado = await dominicalNominaService.liquidarDominical(fecha, {
+    const resultado = await dominicalNominaService.liquidarDominical(req.body.fecha, {
       sucursal: req.body.sucursal,
       cedula: req.body.cedula,
       usuario: req.body.usuario,

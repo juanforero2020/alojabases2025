@@ -3,6 +3,7 @@ import { HttpClient } from "@angular/common/http";
 import { map } from "rxjs/operators";
 import { environment } from "src/environments/environment";
 import {
+  fechaCalendarioParam,
   normalizarAjusteNomina,
   normalizarEventoDominical,
   normalizarEventoPagoProgramado,
@@ -162,7 +163,10 @@ export class NominasService {
   }) {
     return this.http.post<SimulacionDominical>(
       `${this.URL}/dominical/simular`,
-      payload
+      {
+        ...payload,
+        fecha: fechaCalendarioParam(payload.fecha as Date) || payload.fecha,
+      }
     );
   }
 
@@ -173,7 +177,10 @@ export class NominasService {
     usuario?: string;
     aplicarAjustes?: boolean;
   }) {
-    return this.http.post(`${this.URL}/dominical/liquidar`, payload);
+    return this.http.post(`${this.URL}/dominical/liquidar`, {
+      ...payload,
+      fecha: fechaCalendarioParam(payload.fecha as Date) || payload.fecha,
+    });
   }
 
   getEventosDominical(fecha?: string, cedula?: string) {
