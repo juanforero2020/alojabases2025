@@ -100,6 +100,10 @@ export class NominasService {
     return this.http.get<string[]>(`${this.URL}/conceptos-descuento`);
   }
 
+  getConceptosExternos() {
+    return this.http.get<string[]>(`${this.URL}/conceptos-externos`);
+  }
+
   getReglaPago(id: string) {
     return this.http
       .get<ReglaPagoNomina>(`${this.URL}/reglas-pago/${id}`)

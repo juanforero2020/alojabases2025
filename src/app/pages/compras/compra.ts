@@ -67,6 +67,10 @@ export class Proveedor{
     direccion:string
     celular:string
     contacto:string
+    tipo_proveedor:string
+    tipo_suministro:string
+    notas:string
+    credito:string
     constructor(){
         //this.nombre_proveedor = ""
     }

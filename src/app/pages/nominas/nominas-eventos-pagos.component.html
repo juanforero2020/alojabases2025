@@ -69,7 +69,7 @@
         <dx-select-box
           *ngIf="esTipoB"
           [items]="transaccionesNominaBDisponibles"
-          [(value)]="formulario.transaccionNomina"
+          [value]="formulario.transaccionNomina"
           (onValueChanged)="onTransaccionNominaBChanged($event)"
         ></dx-select-box>
         <dx-select-box
@@ -78,6 +78,17 @@
           [(value)]="formulario.transaccionNomina"
           (onValueChanged)="onTransaccionTipoCChanged()"
         ></dx-select-box>
+      </div>
+      <div class="col-md-4 mb-3" *ngIf="esConceptoExternoOtro">
+        <label class="form-label">Nueva transacción</label>
+        <dx-text-box
+          [(value)]="conceptoExternoOtro"
+          placeholder="Ej. Servicios de limpieza"
+          [maxLength]="120"
+        ></dx-text-box>
+        <small class="text-muted">
+          El nombre quedará en el catálogo de transacciones externas
+        </small>
       </div>
 
       <!-- Campos Tipo A -->

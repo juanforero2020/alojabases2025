@@ -8,7 +8,11 @@ const ProveedorSchema = new Schema({
     ruc: { type: String, required: false},
     direccion: { type: String, required: false},
     celular: { type: String, required: false},
-    contacto: { type: String, required: false}
+    contacto: { type: String, required: false},
+    tipo_proveedor: { type: String, required: false},
+    tipo_suministro: { type: String, required: false},
+    notas: { type: String, required: false},
+    credito: { type: String, required: false}
 },{
     timestamps:true
 });

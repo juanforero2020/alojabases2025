@@ -30,6 +30,12 @@ export function fechaCalendarioLocal(
   return new Date(d.getUTCFullYear(), d.getUTCMonth(), d.getUTCDate());
 }
 
+/** Medianoche local de la fecha de calendario de hoy (no usar UTC: en Ecuador tras las 19:00 UTC ya es el día siguiente). */
+export function hoyCalendarioNomina(): Date {
+  const n = new Date();
+  return new Date(n.getFullYear(), n.getMonth(), n.getDate());
+}
+
 /** Formato YYYY-MM-DD para parámetros de consulta al API. */
 export function fechaCalendarioParam(
   fecha: Date | null | undefined

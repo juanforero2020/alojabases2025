@@ -15,7 +15,11 @@ router.put('/update/:id', async (req, res,next) => {
         ruc: req.body.ruc,
         direccion: req.body.direccion,
         celular: req.body.celular,
-        contacto:req.body.contacto
+        contacto: req.body.contacto,
+        tipo_proveedor: req.body.tipo_proveedor,
+        tipo_suministro: req.body.tipo_suministro,
+        notas: req.body.notas,
+        credito: req.body.credito
     };
     await Proveedor.findByIdAndUpdate(id, {$set: indexes}, {new: true});
     res.json({status: 'Ìndice Actualizado'});  
@@ -35,7 +39,11 @@ router.post('/newProveedor', async (req, res) => {
         ruc: req.body.ruc,
         direccion: req.body.direccion,
         celular: req.body.celular,
-        contacto:req.body.contacto
+        contacto: req.body.contacto,
+        tipo_proveedor: req.body.tipo_proveedor,
+        tipo_suministro: req.body.tipo_suministro,
+        notas: req.body.notas,
+        credito: req.body.credito
         });
     await newProveedor.save();
     res.json({status: 'Proveedor creado'});

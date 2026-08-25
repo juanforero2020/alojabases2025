@@ -5,6 +5,7 @@ const {
   generarFechasPorRegla,
 } = require("../utils/proyeccionPagosNomina");
 const { aplicarDescuentosEnEventos } = require("../utils/proyeccionPagosTipoC");
+const { subCuentaPagoNomina } = require("../utils/cuentasContablesNomina");
 
 function normalizarTexto(valor) {
   return (valor || "")
@@ -132,17 +133,12 @@ async function validarAsignacionNominaSinSolapamiento(regla, opciones = {}) {
   }
 }
 
-function subCuentaTipoA(transaccionNomina) {
-  const t = normalizarTexto(transaccionNomina);
-  if (t.includes("anticipo")) return "1.5.3 Anticipos nomina";
-  if (
-    t.includes("asignacion") ||
-    t.includes("dominical") ||
-    t.includes("nomina")
-  ) {
-    return "1.7.1 Nominas";
-  }
-  return "1.5.4 Pagos extras";
+function subCuentaTipoA(transaccionNomina, extras = {}) {
+  return subCuentaPagoNomina({
+    tipoRegla: "A",
+    transaccionNomina,
+    ...extras,
+  });
 }
 
 async function generarEventosProgramados(regla, opciones = {}) {

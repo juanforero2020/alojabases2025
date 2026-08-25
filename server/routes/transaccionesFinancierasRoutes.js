@@ -1,6 +1,9 @@
 const { Router } = require("express");
 const router = Router();
 const TransaccionFinanciera = require("../models/transaccionFinanciera");
+const {
+  SUBCUENTAS_CONSULTA_NOMINAS,
+} = require("../utils/cuentasContablesNomina");
 
 router.get("/getTransacciones", async (req, res) => {
   const transacciones = await TransaccionFinanciera.find();
@@ -9,8 +12,7 @@ router.get("/getTransacciones", async (req, res) => {
 
 router.get("/getTransaccionesNominas", async (req, res) => {
   const transacciones = await TransaccionFinanciera.find({
-    subCuenta :{ $in: ['1.5.2 Nominas', '1.5.3 Anticipos nomina','1.5.4 Pagos extras',
-   '1.5.5 Comisiones x Fletes','1.5.6 Decimo cuarto', '1.5.7 Descuentos', '1.3.3 Pago o Abono Préstamo', '1.7.1 Nominas', '1.7.4 Nominas - Descuentos'] }
+    subCuenta: { $in: SUBCUENTAS_CONSULTA_NOMINAS }
   });
   res.send(transacciones);
 });
@@ -53,8 +55,7 @@ router.post("/getTransaccionesNominasPorRango", async (req, res, next) => {
       $gte: start,
       $lt: end,
     },
-   subCuenta :{ $in: ['1.5.2 Nominas', '1.5.3 Anticipos nomina','1.5.4 Pagos extras',
-   '1.5.5 Comisiones x Fletes','1.5.6 Decimo cuarto', '1.5.7 Descuentos', '1.3.3 Pago o Abono Préstamo', '1.7.1 Nominas', '1.7.4 Nominas - Descuentos'] }
+   subCuenta: { $in: SUBCUENTAS_CONSULTA_NOMINAS }
   });
   res.json(transacciones);
 });
@@ -72,8 +73,7 @@ router.post("/getTransaccionesNominasPorRangoYBeneficiario", async (req, res, ne
       $lt: end,
     },
     cliente : sucursal,
-    subCuenta :{ $in: ['1.5.2 Nominas', '1.5.3 Anticipos nomina','1.5.4 Pagos extras',
-   '1.5.5 Comisiones x Fletes','1.5.6 Decimo cuarto', '1.5.7 Descuentos', '1.3.3 Pago o Abono Préstamo', '1.7.1 Nominas', '1.7.4 Nominas - Descuentos'] }
+    subCuenta: { $in: SUBCUENTAS_CONSULTA_NOMINAS }
   });
   res.json(transacciones);
 });

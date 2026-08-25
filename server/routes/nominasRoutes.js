@@ -4,6 +4,7 @@ const TablaMaestraSalarial = require("../models/tablaMaestraSalarial");
 const NominaConfigGlobal = require("../models/nominaConfigGlobal");
 const ReglaPagoNomina = require("../models/reglaPagoNomina");
 const ConceptoDescuentoNomina = require("../models/conceptoDescuentoNomina");
+const ConceptoExternoNomina = require("../models/conceptoExternoNomina");
 const Proveedor = require("../models/proveedor");
 const { construirProyeccion } = require("../utils/proyeccionPagosNomina");
 const { construirProyeccionTipoB } = require("../utils/proyeccionPagosTipoB");
@@ -30,6 +31,8 @@ const CONCEPTOS_DESCUENTO_INICIALES = [
   "Multas",
 ];
 const PREFIJO_CONCEPTO_OTROS = "Otros - ";
+const TRANSACCION_EXTERNA_FIJA = "Arriendos";
+const TRANSACCION_EXTERNA_OTRO = "Otro";
 
 function escaparRegex(texto) {
   return texto.replace(/[.*+?^${}()|[\]\\]/g, "\\$&");
@@ -55,6 +58,39 @@ async function guardarConceptoDescuento(nombre, creadoPor) {
     activo: true,
     creadoPor: (creadoPor || "").toString().trim(),
   }).save();
+}
+
+async function guardarConceptoExterno(nombre, creadoPor) {
+  const valor = (nombre || "").toString().trim().replace(/\s+/g, " ");
+  if (!valor) return null;
+  const clave = valor.toLowerCase();
+  if (clave === TRANSACCION_EXTERNA_OTRO.toLowerCase()) return null;
+  if (clave === TRANSACCION_EXTERNA_FIJA.toLowerCase()) return null;
+
+  const existente = await ConceptoExternoNomina.findOne({
+    nombre: new RegExp(`^${escaparRegex(valor)}$`, "i"),
+  });
+  if (existente) {
+    if (!existente.activo) {
+      existente.activo = true;
+      await existente.save();
+    }
+    return existente;
+  }
+
+  return new ConceptoExternoNomina({
+    nombre: valor,
+    activo: true,
+    creadoPor: (creadoPor || "").toString().trim(),
+  }).save();
+}
+
+async function guardarConceptoExternoDeRegla(regla) {
+  if (regla?.tipoRegla !== "B") return;
+  const beneficiario = (regla?.tipoBeneficiario || "").toString().trim();
+  if (beneficiario.toLowerCase() !== "externo") return;
+  const transaccion = (regla?.transaccionNomina || "").toString().trim();
+  await guardarConceptoExterno(transaccion, regla.creadoPor);
 }
 
 async function guardarConceptoOtrosDeRegla(regla) {
@@ -440,6 +476,31 @@ router.get("/conceptos-descuento", async (req, res) => {
   }
 });
 
+router.get("/conceptos-externos", async (req, res) => {
+  try {
+    const conceptos = await ConceptoExternoNomina.find({ activo: true })
+      .sort({ nombre: 1 })
+      .lean();
+    const nombres = Array.from(
+      new Set(
+        (conceptos || [])
+          .map((concepto) => (concepto.nombre || "").trim())
+          .filter((nombre) => {
+            const clave = nombre.toLowerCase();
+            return (
+              nombre &&
+              clave !== TRANSACCION_EXTERNA_OTRO.toLowerCase() &&
+              clave !== TRANSACCION_EXTERNA_FIJA.toLowerCase()
+            );
+          })
+      )
+    );
+    res.json(nombres);
+  } catch (err) {
+    res.status(400).json({ mensaje: err.message });
+  }
+});
+
 router.get("/reglas-pago", async (req, res) => {
   const reglas = await ReglaPagoNomina.find().sort({ createdAt: -1 });
   res.send(reglas);
@@ -643,6 +704,7 @@ router.post("/reglas-pago", async (req, res) => {
     const regla = new ReglaPagoNomina(body);
     await regla.save();
     await guardarConceptoOtrosDeRegla(regla);
+    await guardarConceptoExternoDeRegla(regla);
     res.json({ status: "Regla creada", data: regla });
   } catch (err) {
     res.status(400).json({ mensaje: err.message });
@@ -667,6 +729,7 @@ router.put("/reglas-pago/:id", async (req, res) => {
       { new: true, runValidators: true }
     );
     await guardarConceptoOtrosDeRegla(actualizado);
+    await guardarConceptoExternoDeRegla(actualizado);
     res.json({ status: "Regla actualizada", data: actualizado });
   } catch (err) {
     res.status(400).json({ mensaje: err.message });

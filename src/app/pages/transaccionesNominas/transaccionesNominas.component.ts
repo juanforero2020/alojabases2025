@@ -133,13 +133,13 @@ export class TransaccionesNominasComponent implements OnInit {
     this.valorNominas = 0;
     this.resultado = 0;
     this.listaTransacciones.forEach(element =>{
-      if(element.subCuenta == "1.5.2 Nominas" || element.subCuenta == "1.7.1 Nominas"){
+      if(element.subCuenta == "1.5.2 Nominas" || element.subCuenta == "1.7.1 Nominas" || element.subCuenta == "1.7.2 Nominas_Dominicales" || element.subCuenta == "1.7.3 Nominas_Complementarios"){
         this.valorNominas = element.valor + this.valorNominas;
       }else if(element.subCuenta == "1.5.3 Anticipos nomina"){
         this.valorAnticipos = element.valor + this.valorAnticipos;
-      }else if(element.subCuenta == "1.5.7 Descuentos" || element.subCuenta == "1.7.4 Nominas - Descuentos"){
+      }else if(element.subCuenta == "1.5.7 Descuentos" || element.subCuenta == "1.7.4 Nominas - Descuentos" || element.subCuenta == "1.3.3 Nominas_Seguridad Social" || element.subCuenta == "1.3.4 Nominas_Descuentos"){
         this.valorDescuentos = element.valor + this.valorDescuentos;
-      }else if(element.subCuenta == "1.5.4 Pagos extras"){
+      }else if(element.subCuenta == "1.5.4 Pagos extras" || element.subCuenta == "1.7.4 Nominas_Extras" || element.subCuenta == "1.7.2 Arriendos" || element.subCuenta == "1.7.5 Servicios"){
         this.valorPagosExtras = element.valor + this.valorPagosExtras;
       }else if(element.subCuenta == "1.5.5 Comisiones x Fletes"){
         this.valorComisiones = element.valor + this.valorComisiones;

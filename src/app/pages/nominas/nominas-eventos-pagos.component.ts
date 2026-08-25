@@ -54,7 +54,12 @@ export class NominasEventosPagosComponent implements OnInit {
     "Pagos puntuales",
     "Vacaciones",
   ];
-  readonly transaccionesNominaBExterno = ["Arriendos"];
+  readonly transaccionExternaFija = "Arriendos";
+  readonly opcionTransaccionExternaOtro = "Otro";
+  conceptosExternosCatalogo: string[] = [];
+  conceptoExternoOtro = "";
+  transaccionesNominaBExterno: string[] = ["Arriendos", "Otro"];
+  transaccionesNominaBDisponibles: string[] = [];
   readonly transaccionesBeneficiosAnuales = [
     "Décimo tercer sueldo",
     "Décimo cuarto sueldo",
@@ -116,16 +121,16 @@ export class NominasEventosPagosComponent implements OnInit {
     return this.formulario.tipoRegla === "B";
   }
 
-  get transaccionesNominaBDisponibles(): string[] {
-    const conceptos =
-      this.formulario.tipoBeneficiario === "Externo"
-        ? this.transaccionesNominaBExterno
-        : this.transaccionesNominaBInterno;
-    const actual = (this.formulario.transaccionNomina || "").trim();
-    if (actual && !conceptos.includes(actual)) {
-      return [...conceptos, actual];
-    }
-    return conceptos;
+  get esExternoTipoB(): boolean {
+    return this.esTipoB && this.formulario.tipoBeneficiario === "Externo";
+  }
+
+  get esConceptoExternoOtro(): boolean {
+    return (
+      this.esExternoTipoB &&
+      (this.formulario.transaccionNomina || "").trim() ===
+        this.opcionTransaccionExternaOtro
+    );
   }
 
   get esTipoC(): boolean {
@@ -399,9 +404,36 @@ export class NominasEventosPagosComponent implements OnInit {
   ngOnInit() {
     this.cargarReglas();
     this.cargarConceptosDescuento();
+    this.cargarConceptosExternos();
     this.cargarCentrosCosto();
     this.cargarConfigGlobal();
     this.actualizarParametrosPorFrecuencia();
+    this.actualizarOpcionesTransaccionB();
+  }
+
+  private actualizarOpcionesTransaccionB(): void {
+    const catalogo = this.conceptosExternosCatalogo.filter((concepto) => {
+      const nombre = (concepto || "").trim();
+      return (
+        nombre &&
+        nombre !== this.transaccionExternaFija &&
+        nombre !== this.opcionTransaccionExternaOtro
+      );
+    });
+    this.transaccionesNominaBExterno = [
+      this.transaccionExternaFija,
+      ...catalogo,
+      this.opcionTransaccionExternaOtro,
+    ];
+    const conceptos =
+      this.formulario.tipoBeneficiario === "Externo"
+        ? this.transaccionesNominaBExterno
+        : [...this.transaccionesNominaBInterno];
+    const actual = (this.formulario.transaccionNomina || "").trim();
+    this.transaccionesNominaBDisponibles =
+      actual && !conceptos.includes(actual)
+        ? [...conceptos, actual]
+        : conceptos;
   }
 
   cargarConceptosDescuento() {
@@ -426,6 +458,30 @@ export class NominasEventosPagosComponent implements OnInit {
           ...this.conceptosDescuentoIniciales,
           "Otros",
         ];
+      }
+    );
+  }
+
+  cargarConceptosExternos() {
+    this._nominasService.getConceptosExternos().subscribe(
+      (lista) => {
+        this.conceptosExternosCatalogo = Array.from(
+          new Set(
+            (lista || [])
+              .map((concepto) => (concepto || "").trim())
+              .filter(
+                (concepto) =>
+                  concepto &&
+                  concepto !== this.transaccionExternaFija &&
+                  concepto !== this.opcionTransaccionExternaOtro
+              )
+          )
+        );
+        this.actualizarOpcionesTransaccionB();
+      },
+      () => {
+        this.conceptosExternosCatalogo = [];
+        this.actualizarOpcionesTransaccionB();
       }
     );
   }
@@ -548,6 +604,7 @@ export class NominasEventosPagosComponent implements OnInit {
     const cedula = this.formulario.cedulaBeneficiario;
     const nombre = this.formulario.nombreBeneficiario;
     this.conceptoDescuentoOtro = "";
+    this.conceptoExternoOtro = "";
     if (this.formulario.tipoRegla === "B") {
       this.formulario = this.nuevaReglaTipoB();
     } else if (this.formulario.tipoRegla === "C") {
@@ -562,13 +619,23 @@ export class NominasEventosPagosComponent implements OnInit {
     this.tablaAmortizacion = [];
     this.amortizacionEditadaManual = false;
     this.actualizarParametrosPorFrecuencia();
+    this.actualizarOpcionesTransaccionB();
     if (this.formulario.cedulaBeneficiario) {
       this.buscarBeneficiario();
     }
   }
 
-  onTransaccionNominaBChanged(event?: { event?: Event }): void {
+  onTransaccionNominaBChanged(event?: {
+    value?: string;
+    event?: Event;
+  }): void {
     if (event && !event.event) return;
+    if (event?.value != null) {
+      this.formulario.transaccionNomina = event.value;
+    }
+    if (!this.esConceptoExternoOtro) {
+      this.conceptoExternoOtro = "";
+    }
     if (!this.esTransaccionBeneficiosAnuales) return;
     this.formulario.frecuencia = "Anual";
     this.formulario.vigenciaRegla = "Unica vez";
@@ -880,7 +947,11 @@ export class NominasEventosPagosComponent implements OnInit {
   }
 
   private aplicarConceptosTipoBPorBeneficiario(): void {
-    if (!this.esTipoB) return;
+    if (!this.esTipoB) {
+      this.actualizarOpcionesTransaccionB();
+      return;
+    }
+    this.actualizarOpcionesTransaccionB();
     const disponibles =
       this.formulario.tipoBeneficiario === "Externo"
         ? this.transaccionesNominaBExterno
@@ -889,6 +960,7 @@ export class NominasEventosPagosComponent implements OnInit {
     if (disponibles.includes(actual)) return;
 
     this.formulario.transaccionNomina = disponibles[0] || "";
+    this.actualizarOpcionesTransaccionB();
     if (this.esTransaccionBeneficiosAnuales) {
       this.formulario.frecuencia = "Anual";
       this.formulario.vigenciaRegla = "Unica vez";
@@ -1002,6 +1074,37 @@ export class NominasEventosPagosComponent implements OnInit {
       );
     }
     this.formulario.conceptoDescuento = nuevoConcepto;
+  }
+
+  private prepararConceptoExternoParaGuardar() {
+    if (!this.esExternoTipoB || !this.esConceptoExternoOtro) return;
+    const detalle = this.conceptoExternoOtro.trim().replace(/\s+/g, " ");
+    if (!detalle) {
+      this.formulario.transaccionNomina = this.opcionTransaccionExternaOtro;
+      return;
+    }
+    const clave = detalle.toLowerCase();
+    if (
+      clave === this.opcionTransaccionExternaOtro.toLowerCase() ||
+      clave === this.transaccionExternaFija.toLowerCase()
+    ) {
+      this.formulario.transaccionNomina = this.transaccionExternaFija;
+      this.conceptoExternoOtro = "";
+      return;
+    }
+    const existente = this.conceptosExternosCatalogo.find(
+      (concepto) => (concepto || "").trim().toLowerCase() === clave
+    );
+    const nombreFinal = existente || detalle;
+    if (!this.conceptosExternosCatalogo.includes(nombreFinal)) {
+      this.conceptosExternosCatalogo = [
+        ...this.conceptosExternosCatalogo,
+        nombreFinal,
+      ];
+    }
+    this.formulario.transaccionNomina = nombreFinal;
+    this.conceptoExternoOtro = "";
+    this.actualizarOpcionesTransaccionB();
   }
 
   onTransaccionTipoCChanged() {
@@ -1308,6 +1411,7 @@ export class NominasEventosPagosComponent implements OnInit {
   limpiarFormulario() {
     this.formulario = this.nuevaRegla();
     this.conceptoDescuentoOtro = "";
+    this.conceptoExternoOtro = "";
     this.beneficiario = null;
     this.modoEdicion = false;
     this.reglaSeleccionada = null;
@@ -1318,6 +1422,7 @@ export class NominasEventosPagosComponent implements OnInit {
     this.validacionDescuentoTipoC = null;
     this.reglasPagoAsociables = [];
     this.actualizarParametrosPorFrecuencia();
+    this.actualizarOpcionesTransaccionB();
   }
 
   guardarRegla() {
@@ -1450,6 +1555,14 @@ export class NominasEventosPagosComponent implements OnInit {
         return;
       }
     } else if (this.esTipoB) {
+      if (this.esConceptoExternoOtro && !this.conceptoExternoOtro.trim()) {
+        Swal.fire(
+          "Validación",
+          "Indique el nombre de la nueva transacción",
+          "warning"
+        );
+        return;
+      }
       if (!this.formulario.centroCosto?.trim()) {
         Swal.fire(
           "Validación",
@@ -1578,6 +1691,7 @@ export class NominasEventosPagosComponent implements OnInit {
     }
 
     this.prepararConceptoDescuentoParaGuardar();
+    this.prepararConceptoExternoParaGuardar();
 
     const payload: ReglaPagoNomina = {
       ...this.formulario,
@@ -1595,6 +1709,7 @@ export class NominasEventosPagosComponent implements OnInit {
       (res: any) => {
         Swal.fire("Éxito", "Regla guardada en borrador", "success");
         this.cargarReglas();
+        this.cargarConceptosExternos();
         if (res?.data?._id) {
           const regla = normalizarReglaPagoNomina(res.data);
           this.reglaSeleccionada = regla;
@@ -1727,6 +1842,7 @@ export class NominasEventosPagosComponent implements OnInit {
     if (regla.estadoRegla === "Autorizada") {
       this.reglaSeleccionada = regla;
       this.formulario = { ...regla };
+      this.actualizarOpcionesTransaccionB();
       if (regla.tipoRegla === "C") {
         this.sincronizarConceptoDescuentoDesdeValorGuardado(
           regla.conceptoDescuento
@@ -1758,6 +1874,7 @@ export class NominasEventosPagosComponent implements OnInit {
     this.modoEdicion = true;
     this.reglaSeleccionada = regla;
     this.formulario = { ...regla };
+    this.actualizarOpcionesTransaccionB();
     if (regla.tipoRegla === "C") {
       this.sincronizarConceptoDescuentoDesdeValorGuardado(
         regla.conceptoDescuento

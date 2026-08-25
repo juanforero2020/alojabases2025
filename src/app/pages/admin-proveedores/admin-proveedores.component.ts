@@ -97,6 +97,10 @@ export class AdminProveedoresComponent implements OnInit {
     proveedor.direccion = '';
     proveedor.celular = '';
     proveedor.contacto = '';
+    proveedor.tipo_proveedor = '';
+    proveedor.tipo_suministro = '';
+    proveedor.notas = '';
+    proveedor.credito = '';
     return proveedor;
   }
 
@@ -108,7 +112,7 @@ export class AdminProveedoresComponent implements OnInit {
 
   abrirEdicion(registro: Proveedor) {
     this.esEdicion = true;
-    this.proveedor = { ...registro };
+    this.proveedor = { ...this.nuevoProveedor(), ...registro };
     this.popupVisible = true;
   }
 

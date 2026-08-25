@@ -11,9 +11,15 @@ const TransaccionFinanciera = require("../models/transaccionFinanciera");
 const Cuenta = require("../models/cuentas");
 
 const CONFIG_CLAVE = "principal";
-const CUENTA_PAGO = "1.7 GASTOS OPERACIONALES";
-const SUB_CUENTA_PAGO = "1.7.1 Nominas";
-const SUB_CUENTA_DESCUENTO = "1.7.4 Nominas - Descuentos";
+const {
+  CUENTA_GASTOS,
+  CUENTA_INGRESOS,
+  SUBCUENTAS_NOMINA,
+} = require("../utils/cuentasContablesNomina");
+
+const CUENTA_PAGO = CUENTA_GASTOS;
+const SUB_CUENTA_PAGO = SUBCUENTAS_NOMINA.DOMINICALES;
+const SUB_CUENTA_DESCUENTO = SUBCUENTAS_NOMINA.DESCUENTOS;
 const TIPO_PAGO = "PAGO_DOMINICAL";
 const TIPO_AJUSTE = "AJUSTE_DOMINICAL_ANULACION";
 
@@ -564,6 +570,17 @@ async function resolverCuentaPagoDominical() {
   };
 }
 
+async function resolverCuentaDescuentoDominical() {
+  const cuentaDoc = await Cuenta.findOne({
+    nombre: { $regex: /^1\.3\s+INGRESOS/i },
+  });
+  return {
+    cuenta: cuentaDoc?.nombre || CUENTA_INGRESOS,
+    tipoCuenta: cuentaDoc?.tipoCuenta || "Ingresos",
+    subCuenta: SUB_CUENTA_DESCUENTO,
+  };
+}
+
 async function liquidarDominical(fecha, opciones = {}) {
   const fechaNormalizada = inicioSemanaDomingo(fecha);
   const simulacion = await simularLiquidacionDominical(
@@ -670,6 +687,7 @@ async function aplicarAjustesPendientes(cedula, fechaAplicacion, usuario) {
   let total = 0;
   for (const aj of ajustes) {
     total += Number(aj.montoAjuste) || 0;
+    const cuentaDesc = await resolverCuentaDescuentoDominical();
     const tx = await crearTransaccionFinanciera({
       fecha: new Date(),
       fechaContable: fechaAplicacion,
@@ -678,9 +696,9 @@ async function aplicarAjustesPendientes(cedula, fechaAplicacion, usuario) {
       cedula: aj.cedulaBeneficiario,
       valor: aj.montoAjuste,
       tipoPago: "Egreso",
-      cuenta: CUENTA_PAGO,
-      tipoCuenta: "Salidas",
-      subCuenta: SUB_CUENTA_DESCUENTO,
+      cuenta: cuentaDesc.cuenta,
+      tipoCuenta: cuentaDesc.tipoCuenta,
+      subCuenta: cuentaDesc.subCuenta,
       tipoTransaccion: TIPO_AJUSTE,
       notas: construirNotasPagoDominical(
         aj,

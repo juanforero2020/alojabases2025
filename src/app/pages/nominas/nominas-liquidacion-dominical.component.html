@@ -1,14 +1,14 @@
 <div class="card mb-3">
   <div class="card-body">
     <div class="liquidacion-dominical-titulo text-center">
-      Liquidación dominical — procesamiento masivo
+      Liquidación dominical
     </div>
     <p class="text-muted text-center mb-3">
       Busca automáticamente a todos los trabajadores con regla tipo A
       <strong>Dominical</strong> autorizada. Para vendedores y usuarios el rango de pago
       se determina con las <strong>ventas de ese trabajador</strong> en el domingo; para
       bodegueros se usa la facturación neta de la tienda.
-      Los eventos programados del domingo quedan marcados como ejecutados.
+      Liquide cada trabajador de forma individual; el evento programado del domingo queda marcado como ejecutado.
     </p>
 
     <div class="row align-items-end mb-3 liquidacion-dominical-acciones">
@@ -24,16 +24,6 @@
           (click)="simularLiquidacion()"
         >
           {{ cargandoSimulacion ? "Calculando…" : "Calcular liquidación" }}
-        </button>
-      </div>
-      <div class="col-md-4 mb-2">
-        <button
-          class="btn btn-block btn-nomina-primario"
-          type="button"
-          [disabled]="cargandoSimulacion || liquidando || !simulacion"
-          (click)="liquidarTodos()"
-        >
-          {{ liquidando ? "Liquidando…" : "Liquidar todos" }}
         </button>
       </div>
     </div>
@@ -83,6 +73,7 @@
             <th>Neto</th>
             <th>Evento prog.</th>
             <th>Estado</th>
+            <th>Acciones</th>
           </tr>
         </thead>
         <tbody>
@@ -120,6 +111,18 @@
               <span class="badge badge-warning" *ngIf="!liq.yaLiquidado && !liq.error && liq.eventoProgramadoPendiente">Por liquidar</span>
               <span class="badge badge-light border" *ngIf="!liq.yaLiquidado && !liq.error && !liq.eventoProgramadoPendiente && !liq.sinEventoProgramado">Listo</span>
               <span class="badge badge-danger" *ngIf="liq.error">Error</span>
+            </td>
+            <td>
+              <button
+                *ngIf="puedeLiquidar(liq)"
+                class="btn btn-sm btn-nomina-primario"
+                type="button"
+                [disabled]="cargandoSimulacion || liquidando"
+                (click)="liquidarUno(liq)"
+              >
+                {{ liquidandoCedula === liq.cedula ? "Liquidando…" : "Liquidar" }}
+              </button>
+              <span *ngIf="!puedeLiquidar(liq)" class="text-muted">—</span>
             </td>
           </tr>
         </tbody>

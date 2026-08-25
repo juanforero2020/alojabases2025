@@ -18,8 +18,15 @@ const {
   esDescuentosGenerales,
 } = require("../utils/proyeccionPagosTipoC");
 
-const SUB_CUENTA_PAGO = "1.5.4 Pagos extras";
-const SUB_CUENTA_DESCUENTO = "1.7.4 Nominas - Descuentos";
+const {
+  MAPA_CUENTA_POR_SUBCUENTA,
+  SUBCUENTAS_NOMINA,
+  subCuentaPagoNomina,
+  subCuentaDescuentoNomina,
+} = require("../utils/cuentasContablesNomina");
+
+const SUB_CUENTA_PAGO = SUBCUENTAS_NOMINA.COMPLEMENTARIOS;
+const SUB_CUENTA_DESCUENTO = SUBCUENTAS_NOMINA.DESCUENTOS;
 const TIPO_TRANSACCION = "PAGO_NOMINA_TIPO_B";
 const TIPO_TRANSACCION_A = "PAGO_NOMINA_TIPO_A";
 const TIPO_TRANSACCION_DESCUENTO = "DESCUENTO_NOMINA";
@@ -110,6 +117,11 @@ function normalizarReglaTipoB(regla) {
 }
 
 function validarReglaTipoB(regla) {
+  const transaccion = (regla.transaccionNomina || "").toString().trim();
+  if (!transaccion || transaccion.toLowerCase() === "otro") {
+    return "Indique la transacción de nómina";
+  }
+
   if (!(regla.centroCosto || "").trim()) {
     return "El centro de costo es obligatorio para reglas tipo B";
   }
@@ -206,10 +218,29 @@ async function generarEventosProgramados(regla, opciones = {}) {
   return { proyeccion, eventos: creados };
 }
 
-function inicioDiaNomina(fecha) {
+function claveCalendarioUtc(fecha) {
   const d = new Date(fecha);
-  d.setHours(0, 0, 0, 0);
-  return d;
+  return Date.UTC(d.getUTCFullYear(), d.getUTCMonth(), d.getUTCDate());
+}
+
+function claveHoyCalendarioEcuador() {
+  const ecuador = new Date(Date.now() - 5 * 60 * 60 * 1000);
+  return Date.UTC(
+    ecuador.getUTCFullYear(),
+    ecuador.getUTCMonth(),
+    ecuador.getUTCDate()
+  );
+}
+
+function eventoVentanaVencida(evento) {
+  const hoy = claveHoyCalendarioEcuador();
+  if (evento.fechaMax) {
+    return hoy > claveCalendarioUtc(evento.fechaMax);
+  }
+  if (!evento.fechaMin && evento.fechaProgramada) {
+    return hoy > claveCalendarioUtc(evento.fechaProgramada);
+  }
+  return false;
 }
 
 function formatoFechaCalendario(fecha) {
@@ -243,17 +274,6 @@ function construirNotasTransaccionNomina(evento, opciones = {}) {
     notas += `. ${opciones.detalle}`;
   }
   return notas;
-}
-
-function eventoVentanaVencida(evento) {
-  const hoy = inicioDiaNomina(new Date());
-  if (evento.fechaMax) {
-    return hoy > inicioDiaNomina(evento.fechaMax);
-  }
-  if (!evento.fechaMin && evento.fechaProgramada) {
-    return hoy > inicioDiaNomina(evento.fechaProgramada);
-  }
-  return false;
 }
 
 async function autorizarEventoFueraPlazo(eventoId, opciones = {}) {
@@ -312,10 +332,12 @@ async function ejecutarEventoProgramado(eventoId, opciones = {}) {
     );
   }
 
-  const subCuenta =
-    evento.tipoRegla === "A"
-      ? tipoANominaService.subCuentaTipoA(evento.transaccionNomina)
-      : SUB_CUENTA_PAGO;
+  const subCuenta = subCuentaPagoNomina({
+    tipoRegla: evento.tipoRegla || regla.tipoRegla,
+    transaccionNomina: evento.transaccionNomina || regla.transaccionNomina,
+    tipoBeneficiario: regla.tipoBeneficiario,
+    frecuencia: regla.frecuencia,
+  });
   const tipoTransaccion =
     evento.tipoRegla === "A" ? TIPO_TRANSACCION_A : TIPO_TRANSACCION;
 
@@ -450,17 +472,21 @@ function montoDescuentoEvento(evento) {
 
 async function registrarTransaccionesDescuento(baseTx, lineas, cuentaPago, evento) {
   const creadas = [];
-  const cuentaDesc = await resolverCuentaDesdeSubCuenta(SUB_CUENTA_DESCUENTO);
   for (const linea of lineas || []) {
     const monto = redondear2(linea.monto);
     if (!(monto > 0.009)) continue;
+    const subCuentaDesc =
+      linea.subCuenta ||
+      subCuentaDescuentoNomina(linea.transaccionNomina) ||
+      SUB_CUENTA_DESCUENTO;
+    const cuentaDesc = await resolverCuentaDesdeSubCuenta(subCuentaDesc);
     const txDesc = new TransaccionFinanciera({
       ...baseTx,
       valor: monto,
       tipoPago: "Ingreso",
       cuenta: cuentaDesc.cuenta || cuentaPago,
-      tipoCuenta: cuentaDesc.tipoCuenta || "Salidas",
-      subCuenta: SUB_CUENTA_DESCUENTO,
+      tipoCuenta: cuentaDesc.tipoCuenta || "Ingresos",
+      subCuenta: subCuentaDesc,
       tipoTransaccion: TIPO_TRANSACCION_DESCUENTO,
       notas: construirNotasTransaccionNomina(evento, {
         prefijo: "Descuento nómina",
@@ -478,7 +504,13 @@ async function obtenerLineasDescuentoEvento(evento, reglaA) {
 
   if (!reglaA || reglaA.tipoRegla !== "A") {
     return montoDescuento > 0
-      ? [{ etiqueta: "Descuento", monto: montoDescuento }]
+      ? [
+          {
+            etiqueta: "Descuento",
+            subCuenta: SUBCUENTAS_NOMINA.DESCUENTOS,
+            monto: montoDescuento,
+          },
+        ]
       : [];
   }
 
@@ -498,6 +530,8 @@ async function obtenerLineasDescuentoEvento(evento, reglaA) {
     if (monto > 0) {
       lineas.push({
         etiqueta: etiquetaReglaDescuento(reglaC),
+        transaccionNomina: reglaC.transaccionNomina,
+        subCuenta: subCuentaDescuentoNomina(reglaC.transaccionNomina),
         monto: redondear2(monto),
       });
     }
@@ -509,11 +543,13 @@ async function obtenerLineasDescuentoEvento(evento, reglaA) {
   if (!lineas.length && montoDescuento > 0) {
     lineas.push({
       etiqueta: "Descuento",
+      subCuenta: SUBCUENTAS_NOMINA.DESCUENTOS,
       monto: montoDescuento,
     });
   } else if (montoDescuento > sumaLineas + 0.009) {
     lineas.push({
       etiqueta: "Descuento",
+      subCuenta: SUBCUENTAS_NOMINA.DESCUENTOS,
       monto: redondear2(montoDescuento - sumaLineas),
     });
   }
@@ -530,27 +566,7 @@ async function resolverCuentaDesdeSubCuenta(subCuentaNombre) {
   const nombre = (subCuentaNombre || "").trim();
   if (!nombre) return fallback;
 
-  const cuentaFijaPorSubcuenta = {
-    "1.7.1 Nominas": {
-      cuenta: "1.7 GASTOS OPERACIONALES",
-      tipoCuenta: "Salidas",
-    },
-    "1.7.4 Nominas - Descuentos": {
-      cuenta: "1.7 GASTOS OPERACIONALES",
-      tipoCuenta: "Salidas",
-    },
-  };
-
-  const sub = await SubCuenta.findOne({ nombre });
-  if (sub?.id_cuenta) {
-    const cuentaDoc = await Cuenta.findById(sub.id_cuenta);
-    if (cuentaDoc?.nombre) {
-      return {
-        cuenta: cuentaDoc.nombre,
-        tipoCuenta: cuentaDoc.tipoCuenta || "Salidas",
-      };
-    }
-  }
+  const cuentaFijaPorSubcuenta = MAPA_CUENTA_POR_SUBCUENTA;
 
   if (cuentaFijaPorSubcuenta[nombre]) {
     const fija = cuentaFijaPorSubcuenta[nombre];
@@ -561,6 +577,17 @@ async function resolverCuentaDesdeSubCuenta(subCuentaNombre) {
       cuenta: cuentaDoc?.nombre || fija.cuenta,
       tipoCuenta: cuentaDoc?.tipoCuenta || fija.tipoCuenta,
     };
+  }
+
+  const sub = await SubCuenta.findOne({ nombre });
+  if (sub?.id_cuenta) {
+    const cuentaDoc = await Cuenta.findById(sub.id_cuenta);
+    if (cuentaDoc?.nombre) {
+      return {
+        cuenta: cuentaDoc.nombre,
+        tipoCuenta: cuentaDoc.tipoCuenta || "Salidas",
+      };
+    }
   }
 
   const prefijoMatch = nombre.match(/^(\d+\.\d+)/);

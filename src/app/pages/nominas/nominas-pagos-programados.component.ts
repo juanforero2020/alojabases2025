@@ -16,6 +16,7 @@ import { mostrarErrorNominaApi } from "./nominas-alert.util";
 import {
   fechaCalendarioParam,
   formatoFechaCalendarioNomina,
+  hoyCalendarioNomina,
   inicioDiaCalendarioNomina,
   textoFechaPagoNomina,
 } from "./nominas-fecha.util";
@@ -440,10 +441,15 @@ export class NominasPagosProgramadosComponent implements OnInit {
             (s, t) => s + (Number(t.valor) || 0),
             0
           );
+          const subcuentasDesc = [
+            ...new Set(
+              descuentos.map((t) => t.subCuenta).filter(Boolean)
+            ),
+          ];
           const detalleDesc = nDesc
             ? ` Se registraron ${nDesc} transacción(es) de descuento por $${totalDesc.toFixed(
                 2
-              )} (subcuenta 1.7.4 Nominas - Descuentos).`
+              )} (${subcuentasDesc.join(", ") || "Ingresos"}).`
             : "";
 
           Swal.fire(
@@ -588,7 +594,7 @@ export class NominasPagosProgramadosComponent implements OnInit {
   }
 
   private hoyInicio(): Date {
-    return this.inicioDia(new Date());
+    return hoyCalendarioNomina();
   }
 
   estaAntesDeVentana(ev: EventoPagoProgramado): boolean {
@@ -603,7 +609,9 @@ export class NominasPagosProgramadosComponent implements OnInit {
   }
 
   puedeDescargarComprobantePago(ev: EventoPagoProgramado): boolean {
-    return !!ev?._id && this.puedeEjecutarEvento(ev);
+    if (!ev?._id) return false;
+    if (ev.estado === "Ejecutado") return true;
+    return this.puedeEjecutarEvento(ev);
   }
 
   tituloComprobantePago(ev: EventoPagoProgramado): string {

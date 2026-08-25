@@ -68,6 +68,10 @@
         <dxi-column dataField="direccion" caption="Dirección"></dxi-column>
         <dxi-column dataField="celular" caption="Celular"></dxi-column>
         <dxi-column dataField="contacto" caption="Contacto"></dxi-column>
+        <dxi-column dataField="tipo_proveedor" caption="Tipo proveedor"></dxi-column>
+        <dxi-column dataField="tipo_suministro" caption="Tipo suministro"></dxi-column>
+        <dxi-column dataField="credito" caption="Crédito"></dxi-column>
+        <dxi-column dataField="notas" caption="Notas"></dxi-column>
         <dxi-column
           caption="Acciones"
           cellTemplate="accionesProveedor"
@@ -146,6 +150,34 @@
           <dx-text-box
             [(value)]="proveedor.contacto"
             placeholder="Persona de contacto"
+          ></dx-text-box>
+        </div>
+        <div class="col-md-6 mb-3">
+          <label class="form-label">Tipo proveedor</label>
+          <dx-text-box
+            [(value)]="proveedor.tipo_proveedor"
+            placeholder="Tipo de proveedor"
+          ></dx-text-box>
+        </div>
+        <div class="col-md-6 mb-3">
+          <label class="form-label">Tipo suministro</label>
+          <dx-text-box
+            [(value)]="proveedor.tipo_suministro"
+            placeholder="Tipo de suministro"
+          ></dx-text-box>
+        </div>
+        <div class="col-md-6 mb-3">
+          <label class="form-label">Crédito</label>
+          <dx-text-box
+            [(value)]="proveedor.credito"
+            placeholder="Condición o días de crédito"
+          ></dx-text-box>
+        </div>
+        <div class="col-md-12 mb-3">
+          <label class="form-label">Notas</label>
+          <dx-text-box
+            [(value)]="proveedor.notas"
+            placeholder="Observaciones del proveedor"
           ></dx-text-box>
         </div>
       </div>

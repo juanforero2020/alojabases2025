@@ -3,6 +3,7 @@ import { NominasService } from "src/app/servicios/nominas.service";
 import Swal from "sweetalert2";
 import {
   AjusteNominaPendiente,
+  LiquidacionDominicalItem,
   SimulacionDominical,
 } from "./nominas";
 import { mostrarErrorNominaApi } from "./nominas-alert.util";
@@ -21,6 +22,7 @@ export class NominasLiquidacionDominicalComponent implements OnInit {
   ajustesPendientes: AjusteNominaPendiente[] = [];
   cargandoSimulacion = false;
   liquidando = false;
+  liquidandoCedula: string | null = null;
 
   constructor(private _nominasService: NominasService) {}
 
@@ -71,59 +73,52 @@ export class NominasLiquidacionDominicalComponent implements OnInit {
       );
   }
 
-  liquidarTodos() {
-    if (!this.simulacion?.liquidaciones?.length) {
-      Swal.fire(
-        "Validación",
-        "Calcule primero la liquidación del domingo.",
-        "warning"
-      );
-      return;
-    }
+  puedeLiquidar(liq: LiquidacionDominicalItem): boolean {
+    return !!liq?.cedula && !liq.error && !liq.yaLiquidado;
+  }
 
-    const pendientes = this.simulacion.pendientesLiquidar ?? 0;
-    if (pendientes <= 0) {
-      Swal.fire(
-        "Sin pendientes",
-        "No hay trabajadores pendientes de liquidar para este domingo.",
-        "info"
-      );
-      return;
-    }
+  liquidarUno(liq: LiquidacionDominicalItem) {
+    if (!this.puedeLiquidar(liq) || this.liquidando) return;
 
+    const neto = Number(liq.montoNeto) || 0;
     Swal.fire({
-      title: "¿Liquidar pagos dominicales?",
-      html: `Se procesarán <strong>${pendientes}</strong> trabajador(es) con regla dominical activa para el domingo <strong>${this.textoFechaDomingo()}</strong>.<br/><span class="text-muted small">Se registrarán transacciones financieras, se aplicarán ajustes pendientes y se marcarán los eventos programados como ejecutados.</span>`,
+      title: "¿Liquidar pago dominical?",
+      html: `Se liquidará a <strong>${liq.nombre}</strong> (${liq.cedula}) para el domingo <strong>${this.textoFechaDomingo()}</strong>.<br/>
+        Neto: <strong>$${neto.toFixed(2)}</strong><br/>
+        <span class="text-muted small">Se registrará la transacción financiera, se aplicarán ajustes pendientes y se marcará el evento programado como ejecutado.</span>`,
       icon: "question",
       showCancelButton: true,
-      confirmButtonText: "Liquidar todos",
+      confirmButtonText: "Liquidar",
       cancelButtonText: "Cancelar",
     }).then((result) => {
       if (!result.value) return;
       this.liquidando = true;
+      this.liquidandoCedula = liq.cedula;
       this._nominasService
         .liquidarDominical({
           fecha: this.fechaDominical,
+          cedula: liq.cedula,
           usuario: this.usuarioNombre,
           aplicarAjustes: true,
         })
         .subscribe(
           (res: any) => {
             this.liquidando = false;
+            this.liquidandoCedula = null;
             const n = res?.data?.liquidados ?? res?.liquidados ?? 0;
-            const omitidos = res?.data?.omitidos ?? res?.omitidos ?? 0;
             Swal.fire(
-              "Liquidación completada",
+              n ? "Liquidación completada" : "Sin cambios",
               n
-                ? `${n} pago(s) dominical(es) registrado(s) en finanzas.${omitidos ? ` ${omitidos} omitido(s) (ya liquidados o con error).` : ""}`
-                : "No se registraron pagos nuevos.",
-              "success"
+                ? `Se registró el pago dominical de ${liq.nombre} en finanzas.`
+                : "No se registró un pago nuevo. Puede que ya estuviera liquidado.",
+              n ? "success" : "info"
             );
             this.simularLiquidacion();
             this.cargarAjustesPendientes();
           },
           (err) => {
             this.liquidando = false;
+            this.liquidandoCedula = null;
             mostrarErrorNominaApi("Error", err, "No se pudo liquidar");
           }
         );
