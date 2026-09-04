@@ -359,7 +359,9 @@ async function ejecutarEventoProgramado(eventoId, opciones = {}) {
       : (Number(evento.monto) || 0) + montoDescuento || montoPagar
   );
 
-  const valorSalida = montoPagar;
+  const valorSalida = separarDescuentos
+    ? redondear2(montoBruto - montoYaPagado)
+    : montoPagar;
 
   const fechaContable = new Date();
   const baseTx = {
@@ -371,10 +373,11 @@ async function ejecutarEventoProgramado(eventoId, opciones = {}) {
     cedula: evento.cedulaBeneficiario,
     centroCosto: evento.centroCosto,
     isContabilizada: true,
+    usuario: opciones.usuario || "",
   };
 
   const detallePago = separarDescuentos
-    ? `Neto pagado: $${montoPagar.toFixed(2)} (bruto $${montoBruto.toFixed(2)} − descuentos $${montoDescuento.toFixed(2)}).`
+    ? `Bruto: $${montoBruto.toFixed(2)}. Neto al empleado: $${montoPagar.toFixed(2)}. Descuentos: $${montoDescuento.toFixed(2)}.`
     : `${montoPagar < montoPendiente ? "(pago parcial). " : ""}Centro costo: ${
         evento.centroCosto || ""
       }.`;

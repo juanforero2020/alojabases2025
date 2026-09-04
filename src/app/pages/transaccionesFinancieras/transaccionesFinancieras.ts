@@ -26,6 +26,7 @@ export class TransaccionesFinancieras{
     centroCosto : string
     ordenCompra : number
     numFactura : string
+    usuario: string
     constructor(){
         this.isContabilizada = true;
         this.fechaContable = new Date();

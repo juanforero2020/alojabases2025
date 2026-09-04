@@ -11,6 +11,7 @@ const NotasSchema = new Schema({
     fecha2: { type: String, required: false},
     total: { type: Number, required: false},
     username: { type: String, required: false},
+    usernameVendedor: { type: String, required: false},
     cliente: { type: CientesSchema, required: false},
     tipo_venta: { type: String, required: false},
     tipo_cliente: { type: String, required: false},

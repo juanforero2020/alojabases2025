@@ -79,6 +79,7 @@ export class RegistrosVentasComponent implements OnInit {
   facturaVeronica : FacturaModel
   ivaPorcentaje=0;
   secuencialFactura = "";
+  idsReprocesoVeronica: string[] = [];
 
   // Recibo de caja: match facturas/notas con recibos
   listadoRecibosCaja: ReciboCaja[] = [];
@@ -676,7 +677,34 @@ export class RegistrosVentasComponent implements OnInit {
     this.dataLog = e.row.data.logVeronica
   }
 
-  reprocesarFacturaVeronica = (e) => {  
+  claveReprocesoVeronica(factura: factura): string {
+    return String(factura?._id || factura?.documento_n || "");
+  }
+
+  estaReprocesandoVeronica(factura: factura): boolean {
+    const id = this.claveReprocesoVeronica(factura);
+    return !!id && this.idsReprocesoVeronica.includes(id);
+  }
+
+  private marcarReprocesoVeronica(factura: factura, activo: boolean) {
+    const id = this.claveReprocesoVeronica(factura);
+    if (!id) return;
+    if (activo) {
+      if (!this.idsReprocesoVeronica.includes(id)) {
+        this.idsReprocesoVeronica = [...this.idsReprocesoVeronica, id];
+      }
+    } else {
+      this.idsReprocesoVeronica = this.idsReprocesoVeronica.filter((x) => x !== id);
+    }
+  }
+
+  reprocesarFacturaVeronica = (e) => {
+    const dataFactura = e.row.data as factura;
+    if (this.estaReprocesandoVeronica(dataFactura)) {
+      return;
+    }
+    this.marcarReprocesoVeronica(dataFactura, true);
+
     Swal.fire({
       title: 'Alerta',
       text: 'Esta seguro de volver a procesar la factura?',
@@ -686,15 +714,17 @@ export class RegistrosVentasComponent implements OnInit {
       cancelButtonText : 'NO'
     }).then((result) => {
       if (result.value) {
-        var dataFactura = e.row.data as factura;
         this.validarReprocesamiento(dataFactura)
         
-      } else if (result.dismiss === Swal.DismissReason.cancel) {
-        Swal.fire(
-          'Cancelado!',
-          'Se ha cancelado su proceso.',
-          'error'
-        )
+      } else {
+        this.marcarReprocesoVeronica(dataFactura, false);
+        if (result.dismiss === Swal.DismissReason.cancel) {
+          Swal.fire(
+            'Cancelado!',
+            'Se ha cancelado su proceso.',
+            'error'
+          )
+        }
       }
     })
     
@@ -768,6 +798,7 @@ export class RegistrosVentasComponent implements OnInit {
       this.logsVeronica = res as ServicioWebVeronica[];
       const logOk = this.logsVeronica.some(log => log.resultado === "OK");
       if (logOk) {
+        this.marcarReprocesoVeronica(dataFactura, false);
         Swal.fire(
           'Aviso',
           'La factura ya ha sido actualizada.',
@@ -778,6 +809,13 @@ export class RegistrosVentasComponent implements OnInit {
         this.continuarProcesoFactura(dataFactura);
       }
       //this.continuarProcesoFactura(dataFactura)
+    }, () => {
+      this.marcarReprocesoVeronica(dataFactura, false);
+      Swal.fire({
+        title: 'Error',
+        text: 'No se pudo validar el estado de la factura',
+        icon: 'error'
+      });
     }) 
   }
 
@@ -877,6 +915,9 @@ export class RegistrosVentasComponent implements OnInit {
 
         console.log(this.facturaVeronica)
         console.log(logApiVeronica)
+        alert("mensaje temporal prueba")
+        this.mostrarLoading = false;
+        this.marcarReprocesoVeronica(dataFactura, false);
                    
         //TO-DO, DESCOMENTAR LUEGO DE PRUEBAS
         /* this._apiVeronicaService.newFactura(this.facturaVeronica).subscribe(
@@ -886,6 +927,7 @@ export class RegistrosVentasComponent implements OnInit {
                     logApiVeronica.resultado = "OK"
                     this._logApiVeronicaService.newLog(logApiVeronica).subscribe(
                       res =>{   this.mostrarLoading = false;
+                                this.marcarReprocesoVeronica(dataFactura, false);
                                 Swal.fire({
                                   title: 'Correcto',
                                   text: 'Factura registrada con éxito',
@@ -893,7 +935,7 @@ export class RegistrosVentasComponent implements OnInit {
                                 })
                                 this.traerFacturasMensuales();
                             },
-                      err => {  });
+                      err => { this.marcarReprocesoVeronica(dataFactura, false); });
                 },
           err => {  
                   
@@ -902,6 +944,7 @@ export class RegistrosVentasComponent implements OnInit {
                     logApiVeronica.resultado = "NOK"
                     this._logApiVeronicaService.newLog(logApiVeronica).subscribe(
                       res =>{   this.mostrarLoading = false;
+                                this.marcarReprocesoVeronica(dataFactura, false);
                                 Swal.fire({
                                   title: 'Error',
                                   text: 'Error al establecer coneccion con el SRI',
@@ -909,11 +952,12 @@ export class RegistrosVentasComponent implements OnInit {
                                   confirmButtonText: 'Ok'
                                 })
                             },
-                      err => {  });              
+                      err => { this.marcarReprocesoVeronica(dataFactura, false); });              
                   });  */
 
       },
-      err => { 
+      err => {
+        this.marcarReprocesoVeronica(dataFactura, false);
         Swal.fire({
           title: 'Error',
           text: 'No se ha podido establecer conexión con el SRI',

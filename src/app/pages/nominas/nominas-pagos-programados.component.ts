@@ -350,8 +350,16 @@ export class NominasPagosProgramadosComponent implements OnInit {
     const variable = this.esMontoVariable(ev);
     const saldo = this.saldoPendienteEvento(ev);
     const ventana = textoFechaPagoNomina(ev);
-    const lineaDesc = this.tieneDescuento(ev)
-      ? `Bruto: $${Number(ev.montoBruto || ev.monto).toFixed(2)} − Desc.: $${Number(ev.montoDescuento || 0).toFixed(2)}<br/>`
+    const bruto = Number(ev.montoBruto || ev.monto) || 0;
+    const desc = Number(ev.montoDescuento || 0) || 0;
+    const pagado = Number(ev.montoPagado || 0) || 0;
+    const conDescuento = this.tieneDescuento(ev);
+    const egresoFinanzas = conDescuento
+      ? Math.round((bruto - pagado) * 100) / 100
+      : saldo;
+    const lineaDesc = conDescuento
+      ? `Bruto: $${bruto.toFixed(2)} − Desc.: $${desc.toFixed(2)}<br/>
+          Neto al empleado: $${Number(ev.monto).toFixed(2)}<br/>`
       : "";
 
     if (variable) {
@@ -380,8 +388,12 @@ export class NominasPagosProgramadosComponent implements OnInit {
         Cuota ${ev.numeroCuota}/${ev.totalCuotas}<br/>
         Fecha de pago: ${ventana}<br/>
         ${lineaDesc}
-        Programado (neto): $${Number(ev.monto).toFixed(2)} · Pagado: $${Number(ev.montoPagado || 0).toFixed(2)}<br/>
-        <strong>Monto a registrar: $${saldo.toFixed(2)}</strong>`,
+        Programado (neto): $${Number(ev.monto).toFixed(2)} · Pagado: $${pagado.toFixed(2)}<br/>
+        <strong>Egreso en finanzas: $${egresoFinanzas.toFixed(2)}</strong>${
+          conDescuento
+            ? `<br/><span class="text-muted">Los descuentos se registran aparte como ingresos.</span>`
+            : ""
+        }`,
       icon: "question",
       showCancelButton: true,
       confirmButtonText: "Registrar pago",
@@ -446,6 +458,10 @@ export class NominasPagosProgramadosComponent implements OnInit {
               descuentos.map((t) => t.subCuenta).filter(Boolean)
             ),
           ];
+          const valorEgreso = Number(res?.data?.transaccion?.valor) || 0;
+          const detalleEgreso = valorEgreso
+            ? ` Egreso${nDesc ? " (bruto)" : ""}: $${valorEgreso.toFixed(2)}.`
+            : "";
           const detalleDesc = nDesc
             ? ` Se registraron ${nDesc} transacción(es) de descuento por $${totalDesc.toFixed(
                 2
@@ -456,7 +472,7 @@ export class NominasPagosProgramadosComponent implements OnInit {
             parcial ? "Pago parcial registrado" : "Pago completo registrado",
             parcial
               ? `Saldo pendiente: $${res.data.saldoPendiente}`
-              : `Pago registrado en finanzas.${detalleDesc}`,
+              : `Pago registrado en finanzas.${detalleEgreso}${detalleDesc}`,
             "success"
           ).then(() => {
             if (!parcial && puedeExtender && reglaPagoId) {

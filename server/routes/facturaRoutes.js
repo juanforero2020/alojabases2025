@@ -204,6 +204,7 @@ router.post("/newFactura", async (req, res) => {
     username: req.body.username,
     nombreUsuario: req.body.nombreUsuario,
     nombreVendedor: req.body.nombreVendedor,
+    usernameVendedor: req.body.usernameVendedor,
     cliente: req.body.cliente,
     tipo_venta: req.body.tipo_venta,
     observaciones: req.body.observaciones,

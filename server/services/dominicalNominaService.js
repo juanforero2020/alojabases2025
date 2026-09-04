@@ -285,13 +285,20 @@ function documentoVigente(doc) {
   return estado !== "ANULADA";
 }
 
-/** Match estricto: username del documento = usuarioSistemaUsername del TMS */
+/** Username del vendedor en el documento (campo nuevo; si no hay, se usa username legado). */
+function usernameVendedorDocumento(documento) {
+  const vendedor = (documento?.usernameVendedor || "").toString().trim();
+  if (vendedor) return vendedor;
+  return (documento?.username || "").toString().trim();
+}
+
+/** Match: usernameVendedor del documento = usuarioSistemaUsername del TMS */
 function coincideUsernameTrabajador(documento, tms) {
-  if (!tms?.usuarioSistemaUsername || !documento?.username) {
-    return false;
-  }
+  if (!tms?.usuarioSistemaUsername) return false;
+  const usernameDoc = usernameVendedorDocumento(documento);
+  if (!usernameDoc) return false;
   return (
-    normalizarTexto(documento.username) ===
+    normalizarTexto(usernameDoc) ===
     normalizarTexto(tms.usuarioSistemaUsername)
   );
 }
@@ -628,6 +635,7 @@ async function liquidarDominical(fecha, opciones = {}) {
           `Facturación base cálculo $${item.facturacionNetaCalculo ?? simulacion.facturacion.facturacionNeta}. Rango ${item.rangoAplicado}.`
         ),
         isContabilizada: true,
+        usuario: opciones.usuario || "",
       });
     }
 
@@ -707,6 +715,7 @@ async function aplicarAjustesPendientes(cedula, fechaAplicacion, usuario) {
         "Ajuste dominical"
       ),
       isContabilizada: false,
+      usuario,
     });
     aj.estado = "Aplicado";
     aj.transaccionAjusteId = tx._id;

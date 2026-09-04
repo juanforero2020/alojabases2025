@@ -28,7 +28,8 @@ const TransaccionesFinancierasSchema = new Schema({
     proveedor : { type: String, required: false},
     centroCosto : { type: String, required: false},
     ordenCompra : { type: Number, required: false},
-    numFactura : { type: String, required: false}    
+    numFactura : { type: String, required: false},
+    usuario: { type: String, required: false}
 },{
     timestamps:true
 });

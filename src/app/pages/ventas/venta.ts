@@ -171,6 +171,7 @@ export class factura {
     nota:string
     nombreUsuario : string
     nombreVendedor : string
+    usernameVendedor : string
     iva: number
     estadoFacturaVeronica:string
     logVeronica:ServicioWebVeronicaLectura

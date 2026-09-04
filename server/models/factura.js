@@ -12,6 +12,7 @@ const FacturaSchema = new Schema({
     username: { type: String, required: false},
     nombreUsuario : { type: String, required: false},
     nombreVendedor : { type: String, required: false},
+    usernameVendedor : { type: String, required: false},
     cliente: { type: CientesSchema, required: false},
     tipo_venta: { type: String, required: false},
     tipo_cliente: { type: String, required: false},

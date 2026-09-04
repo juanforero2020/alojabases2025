@@ -37,6 +37,12 @@
     border: none;
 }
 
+.btn-sect:disabled{
+    opacity: 0.45;
+    cursor: not-allowed;
+    pointer-events: none;
+}
+
 .btn-sect-warning{
     background-color: transparent;
     color: rgb(255, 133, 3);

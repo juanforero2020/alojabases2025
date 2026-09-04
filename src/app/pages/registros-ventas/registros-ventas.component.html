@@ -129,6 +129,7 @@
                     <i class="fa fa-solid fa-exclamation"></i> </button>
 
                 <button *ngSwitchCase="'ERROR'" class="btn-sect btn btn-warning btn-sm"
+                        [disabled]="estaReprocesandoVeronica(data.data)"
                         (click)="reprocesarFacturaVeronica({row: {data: data.data}})">
                     <i class="fa fa-solid fa-rotate-right"></i> </button>
 

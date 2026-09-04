@@ -380,6 +380,7 @@ export class VentasComponent implements OnInit {
       console.log(usuarioClave)
       if(usuarioClave != null){
         this.factura.nombreVendedor = usuarioClave.name
+        this.factura.usernameVendedor = usuarioClave.username
         switch (this.factura.tipoDocumento) {
           case "Factura":
             var existe = this.clientesGenerales.find(x=> x.ruc == this.factura.cliente.ruc);
