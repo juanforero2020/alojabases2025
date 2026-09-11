@@ -441,6 +441,20 @@ router.get("/beneficiario-externo/:documento", async (req, res) => {
   });
 });
 
+router.get("/facturas-pendientes-proveedor", async (req, res) => {
+  try {
+    const {
+      listarFacturasPendientesProveedor,
+    } = require("../utils/facturaProveedorNomina");
+    const facturas = await listarFacturasPendientesProveedor(
+      req.query.proveedor
+    );
+    res.json(facturas);
+  } catch (err) {
+    res.status(400).json({ mensaje: err.message });
+  }
+});
+
 // --- Reglas de pago tipo A (eventos periódicos) ---
 
 router.get("/conceptos-descuento", async (req, res) => {
@@ -901,6 +915,9 @@ router.post("/dominical/liquidar", async (req, res) => {
       sucursal: req.body.sucursal,
       cedula: req.body.cedula,
       usuario: req.body.usuario,
+      rol: req.body.rol,
+      esAdministrador: req.body.esAdministrador,
+      esUsuario: req.body.esUsuario,
       aplicarAjustes: req.body.aplicarAjustes !== false,
     });
     res.json({ status: "Liquidación dominical procesada", data: resultado });
@@ -1063,6 +1080,7 @@ router.get("/eventos-programados/:id/desglose-descuentos", async (req, res) => {
           conceptoDescuento: reglaC.conceptoDescuento || null,
           etiqueta: etiquetaReglaDescuento(reglaC),
           monto: Math.round(monto * 100) / 100,
+          notas: String(reglaC.notas || "").trim() || undefined,
         });
       }
     }
@@ -1094,6 +1112,21 @@ router.put("/eventos-programados/:id/autorizar-fuera-plazo", async (req, res) =>
   }
 });
 
+router.put("/eventos-programados/:id/autorizar-pago-adicional", async (req, res) => {
+  try {
+    const evento = await tipoBNominaService.autorizarPagoAdicional(
+      req.params.id,
+      { usuario: req.body.usuario }
+    );
+    res.json({
+      status: "Pago adicional autorizado para el rol Usuario",
+      data: evento,
+    });
+  } catch (err) {
+    res.status(400).json({ mensaje: err.message });
+  }
+});
+
 router.put("/eventos-programados/:id/ejecutar", async (req, res) => {
   try {
     const resultado = await tipoBNominaService.ejecutarEventoProgramado(
@@ -1103,6 +1136,9 @@ router.put("/eventos-programados/:id/ejecutar", async (req, res) => {
         sucursal: req.body.sucursal,
         notas: req.body.notas,
         monto: req.body.monto,
+        rol: req.body.rol,
+        esAdministrador: req.body.esAdministrador,
+        esUsuario: req.body.esUsuario,
       }
     );
     res.json({

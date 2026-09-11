@@ -1,5 +1,9 @@
 const ReglaPagoNomina = require("../models/reglaPagoNomina");
 const EventoPagoProgramado = require("../models/eventoPagoProgramado");
+const {
+  NOMINA_PRUEBA_PAGO_CUALQUIER_DIA,
+} = require("../utils/nominaPrueba");
+const TablaMaestraSalarial = require("../models/tablaMaestraSalarial");
 const TransaccionFinanciera = require("../models/transaccionFinanciera");
 const SubCuenta = require("../models/subCuentas");
 const Cuenta = require("../models/cuentas");
@@ -24,6 +28,10 @@ const {
   subCuentaPagoNomina,
   subCuentaDescuentoNomina,
 } = require("../utils/cuentasContablesNomina");
+const {
+  aplicarPagoFacturaProveedor,
+  validarFacturaParaPago,
+} = require("../utils/facturaProveedorNomina");
 
 const SUB_CUENTA_PAGO = SUBCUENTAS_NOMINA.COMPLEMENTARIOS;
 const SUB_CUENTA_DESCUENTO = SUBCUENTAS_NOMINA.DESCUENTOS;
@@ -126,6 +134,12 @@ function validarReglaTipoB(regla) {
     return "El centro de costo es obligatorio para reglas tipo B";
   }
 
+  if (regla.tipoBeneficiario === "Externo" && regla.asociarFacturaPendiente) {
+    if (!regla.facturaProveedorId) {
+      return "Seleccione la factura pendiente del proveedor";
+    }
+  }
+
   if (regla.frecuencia === "Anual" && !regla.fechaReferenciaAnual && !regla.fechaInicioPagos) {
     return "Indique la fecha de referencia anual (inicio del periodo de pago)";
   }
@@ -206,6 +220,10 @@ async function generarEventosProgramados(regla, opciones = {}) {
       nombreBeneficiario: reglaObj.nombreBeneficiario,
       modalidadMonto: reglaObj.modalidadMonto,
       estado: "Pendiente",
+      notas: String(reglaObj.notas || "").trim(),
+      facturaProveedorId: reglaObj.facturaProveedorId || undefined,
+      nFacturaProveedor: reglaObj.nFacturaProveedor || "",
+      nSolicitudFactura: reglaObj.nSolicitudFactura || undefined,
     });
     await doc.save();
     creados.push(doc);
@@ -263,6 +281,12 @@ function textoFechaCorrespondePago(evento) {
   return formatoFechaCalendario(evento.fechaProgramada) || "sin fecha";
 }
 
+function textoNotas(...valores) {
+  return [...new Set(valores.map((v) => String(v || "").trim()).filter(Boolean))].join(
+    " | "
+  );
+}
+
 function construirNotasTransaccionNomina(evento, opciones = {}) {
   const nombre = (evento.nombreBeneficiario || "").trim() || "Sin nombre";
   const transaccion =
@@ -274,6 +298,61 @@ function construirNotasTransaccionNomina(evento, opciones = {}) {
     notas += `. ${opciones.detalle}`;
   }
   return notas;
+}
+
+function esRolUsuario(opciones = {}) {
+  if (opciones.esAdministrador === true) return false;
+  const rol = (opciones.rol || "").toString().trim();
+  return rol === "Usuario" || opciones.esUsuario === true;
+}
+
+function grupoCargoUsuario(cargo) {
+  const g = dominicalNominaService.normalizarCargoDominical(cargo);
+  if (g === "BODEGUERO") return "BODEGUERO";
+  if (g === "VENDEDOR") return "VENDEDOR";
+  return "OTRO";
+}
+
+function hoyCalendarioLocal() {
+  const n = new Date();
+  n.setHours(0, 0, 0, 0);
+  return n;
+}
+
+async function assertUsuarioPuedePagarEvento(evento, opciones) {
+  if (!esRolUsuario(opciones)) return;
+
+  const hoy = hoyCalendarioLocal();
+  if (!NOMINA_PRUEBA_PAGO_CUALQUIER_DIA && hoy.getDay() !== 0) {
+    throw new Error(
+      "El pago solo se habilita el domingo correspondiente, no en fechas antiguas o posteriores"
+    );
+  }
+
+  if (evento.pagoAdicionalAutorizado) return;
+
+  const tms = await TablaMaestraSalarial.findOne({
+    cedula: evento.cedulaBeneficiario,
+  }).lean();
+  const grupo = grupoCargoUsuario(tms?.cargo);
+  if (grupo !== "VENDEDOR" && grupo !== "BODEGUERO") {
+    throw new Error(
+      "El rol Usuario solo puede pagar a un vendedor y un bodeguero. Este cargo requiere un administrador."
+    );
+  }
+
+  const mismos = await TablaMaestraSalarial.find({
+    activo: { $ne: false },
+  }).lean();
+  const delGrupo = mismos
+    .filter((r) => grupoCargoUsuario(r.cargo) === grupo)
+    .sort((a, b) => (a.nombre || "").localeCompare(b.nombre || "", "es"));
+  const principal = delGrupo[0];
+  if (!principal || principal.cedula !== evento.cedulaBeneficiario) {
+    throw new Error(
+      "El administrador debe autorizar el pago de este trabajador"
+    );
+  }
 }
 
 async function autorizarEventoFueraPlazo(eventoId, opciones = {}) {
@@ -298,6 +377,34 @@ async function autorizarEventoFueraPlazo(eventoId, opciones = {}) {
   return evento;
 }
 
+async function autorizarPagoAdicional(eventoId, opciones = {}) {
+  const evento = await EventoPagoProgramado.findById(eventoId);
+  if (!evento) throw new Error("Evento programado no encontrado");
+  if (evento.estado !== "Pendiente" && evento.estado !== "Parcial") {
+    throw new Error("Solo se pueden autorizar eventos pendientes o parciales");
+  }
+  if (evento.pagoAdicionalAutorizado) {
+    throw new Error("Este pago adicional ya fue autorizado");
+  }
+
+  evento.pagoAdicionalAutorizado = true;
+  evento.autorizadoAdicionalPor = opciones.usuario || "";
+  evento.fechaAutorizacionAdicional = new Date();
+  evento.markModified("pagoAdicionalAutorizado");
+  await evento.save();
+  await EventoPagoProgramado.collection.updateOne(
+    { _id: evento._id },
+    {
+      $set: {
+        pagoAdicionalAutorizado: true,
+        autorizadoAdicionalPor: opciones.usuario || "",
+        fechaAutorizacionAdicional: new Date(),
+      },
+    }
+  );
+  return evento;
+}
+
 async function ejecutarEventoProgramado(eventoId, opciones = {}) {
   const evento = await EventoPagoProgramado.findById(eventoId);
   if (!evento) throw new Error("Evento programado no encontrado");
@@ -315,6 +422,13 @@ async function ejecutarEventoProgramado(eventoId, opciones = {}) {
 
   if (esEventoMontoVariable(evento, regla)) {
     return ejecutarEventoDominicalProgramado(evento, regla, opciones);
+  }
+
+  await assertUsuarioPuedePagarEvento(evento, opciones);
+
+  const facturaId = evento.facturaProveedorId || regla.facturaProveedorId;
+  if (regla.asociarFacturaPendiente && facturaId) {
+    await validarFacturaParaPago(facturaId);
   }
 
   const montoPendiente = redondear2(
@@ -381,8 +495,18 @@ async function ejecutarEventoProgramado(eventoId, opciones = {}) {
     : `${montoPagar < montoPendiente ? "(pago parcial). " : ""}Centro costo: ${
         evento.centroCosto || ""
       }.`;
+  const notasRegla = textoNotas(
+    evento.notas,
+    regla.notas,
+    opciones.notas,
+    evento.nFacturaProveedor
+      ? `Factura ${evento.nFacturaProveedor}`
+      : regla.nFacturaProveedor
+      ? `Factura ${regla.nFacturaProveedor}`
+      : ""
+  );
   const notasPago = construirNotasTransaccionNomina(evento, {
-    detalle: [detallePago, opciones.notas].filter(Boolean).join(" "),
+    detalle: [detallePago, notasRegla].filter(Boolean).join(" "),
   });
 
   const tx = new TransaccionFinanciera({
@@ -394,6 +518,12 @@ async function ejecutarEventoProgramado(eventoId, opciones = {}) {
     subCuenta,
     tipoTransaccion,
     notas: notasPago,
+    numFactura: evento.nFacturaProveedor || regla.nFacturaProveedor || "",
+    proveedor:
+      regla.tipoBeneficiario === "Externo"
+        ? evento.nombreBeneficiario
+        : "",
+    ordenCompra: evento.nSolicitudFactura || regla.nSolicitudFactura || undefined,
   });
   await tx.save();
 
@@ -401,13 +531,24 @@ async function ejecutarEventoProgramado(eventoId, opciones = {}) {
     ? await registrarTransaccionesDescuento(baseTx, lineasDescuento, cuenta, evento)
     : [];
 
+  let pagoFactura = null;
+  if (regla.asociarFacturaPendiente && facturaId) {
+    pagoFactura = await aplicarPagoFacturaProveedor({
+      facturaId,
+      monto: montoPagar,
+      evento,
+      transaccion: tx,
+      usuario: opciones.usuario || "",
+    });
+  }
+
   evento.pagosParciales = evento.pagosParciales || [];
   evento.pagosParciales.push({
     monto: montoPagar,
     fecha: new Date(),
     transaccionFinancieraId: tx._id,
     ejecutadoPor: opciones.usuario || "",
-    notas: opciones.notas,
+    notas: textoNotas(evento.notas, regla.notas, opciones.notas),
   });
 
   evento.montoPagado = redondear2(montoYaPagado + montoPagar);
@@ -447,6 +588,7 @@ async function ejecutarEventoProgramado(eventoId, opciones = {}) {
     evento,
     transaccion: tx,
     transaccionesDescuento,
+    pagoFactura,
     montoPagado: montoPagar,
     saldoPendiente: redondear2(Number(evento.monto) - evento.montoPagado),
     puedeExtender,
@@ -485,6 +627,7 @@ async function registrarTransaccionesDescuento(baseTx, lineas, cuentaPago, event
     const cuentaDesc = await resolverCuentaDesdeSubCuenta(subCuentaDesc);
     const txDesc = new TransaccionFinanciera({
       ...baseTx,
+      centroCosto: linea.centroCosto || baseTx.centroCosto,
       valor: monto,
       tipoPago: "Ingreso",
       cuenta: cuentaDesc.cuenta || cuentaPago,
@@ -493,7 +636,7 @@ async function registrarTransaccionesDescuento(baseTx, lineas, cuentaPago, event
       tipoTransaccion: TIPO_TRANSACCION_DESCUENTO,
       notas: construirNotasTransaccionNomina(evento, {
         prefijo: "Descuento nómina",
-        detalle: linea.etiqueta || "Descuento",
+        detalle: textoNotas(linea.etiqueta || "Descuento", linea.notas),
       }),
     });
     await txDesc.save();
@@ -536,6 +679,8 @@ async function obtenerLineasDescuentoEvento(evento, reglaA) {
         transaccionNomina: reglaC.transaccionNomina,
         subCuenta: subCuentaDescuentoNomina(reglaC.transaccionNomina),
         monto: redondear2(monto),
+        centroCosto: (reglaC.centroCosto || "").trim() || undefined,
+        notas: String(reglaC.notas || "").trim() || undefined,
       });
     }
   }
@@ -761,6 +906,7 @@ module.exports = {
   eliminarEventosNoPagadosRegla,
   ejecutarEventoProgramado,
   autorizarEventoFueraPlazo,
+  autorizarPagoAdicional,
   reporteEstadoEmpleado,
   resolverCuentaDesdeSubCuenta,
   SUB_CUENTA_PAGO,

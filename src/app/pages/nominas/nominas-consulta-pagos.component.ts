@@ -33,6 +33,7 @@ interface DescuentoEmpleadoFila {
   fechaProgramada?: Date | string;
   fechaEjecucion?: Date | string;
   concepto: string;
+  notas?: string;
   montoBruto: number;
   montoConcepto: number;
   totalDescuentoEvento: number;
@@ -211,7 +212,11 @@ export class NominasConsultaPagosComponent implements OnInit {
           .map(
             (l) =>
               `<tr>
-                <td class="text-left">${l.etiqueta}</td>
+                <td class="text-left">${l.etiqueta}${
+                  l.notas
+                    ? `<br/><span class="text-muted small">${l.notas}</span>`
+                    : ""
+                }</td>
                 <td class="text-right text-danger">−$${Number(l.monto).toFixed(2)}</td>
               </tr>`
           )
@@ -322,6 +327,7 @@ export class NominasConsultaPagosComponent implements OnInit {
               fechaProgramada: ev.fechaProgramada,
               fechaEjecucion: ev.fechaEjecucion,
               concepto: linea.etiqueta,
+              notas: linea.notas || "",
               montoBruto:
                 Number(desglose.montoBruto) ||
                 Number(ev.montoBruto) ||

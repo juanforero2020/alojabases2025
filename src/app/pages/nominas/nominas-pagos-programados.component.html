@@ -165,6 +165,16 @@
         [minWidth]="110"
       ></dxi-column>
       <dxi-column
+        dataField="nFacturaProveedor"
+        caption="Factura"
+        [minWidth]="110"
+      ></dxi-column>
+      <dxi-column
+        dataField="notas"
+        caption="Notas"
+        [minWidth]="140"
+      ></dxi-column>
+      <dxi-column
         dataField="cuotaDisplay"
         caption="Cuota"
         [width]="75"
@@ -215,6 +225,7 @@
       <dxi-column
         caption="Comprobante"
         [width]="105"
+        *ngIf="esAdministrador"
         [allowFiltering]="false"
         [allowSorting]="false"
         [allowExporting]="false"
@@ -279,6 +290,7 @@
       <div *dxTemplate="let d of 'comprobanteCell'">
         <button
           type="button"
+          *ngIf="esAdministrador"
           class="btn btn-sm btn-outline-primary comprobante-pago-btn"
           [disabled]="!puedeDescargarComprobantePago(d.data) || generandoComprobanteId === d.data._id"
           (click)="descargarComprobantePago(d.data)"
@@ -294,6 +306,13 @@
           class="btn btn-sm btn-warning mb-1 d-block"
           *ngIf="puedeAutorizarFueraPlazo(d.data)"
           (click)="autorizarPagoFueraPlazo(d.data)"
+        >
+          Autorizar
+        </button>
+        <button
+          class="btn btn-sm btn-warning mb-1 d-block"
+          *ngIf="puedeAutorizarAdicional(d.data) && !puedeAutorizarFueraPlazo(d.data)"
+          (click)="autorizarPagoAdicional(d.data)"
         >
           Autorizar
         </button>

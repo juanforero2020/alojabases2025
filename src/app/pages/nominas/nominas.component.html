@@ -2,12 +2,30 @@
   <app-loading-messagge [messagge]="mensajeLoading"></app-loading-messagge>
 </div>
 
-<div class="row" *ngIf="mostrarBloqueo"></div>
+<div class="row" *ngIf="mostrarBloqueo && !sinAccesoModulo"></div>
 
-<div *ngIf="!mostrarBloqueo">
+<div *ngIf="sinAccesoModulo">
+  <br /><br />
+  <div class="card">
+    <h5 class="card-header text-center font-weight-bold text-uppercase">
+      Módulo de Nóminas
+    </h5>
+    <div class="card-body text-center">
+      <div class="nominas-titulo-seccion text-center">
+        Sin acceso
+      </div>
+      <p class="text-muted mb-0">
+        Su usuario no tiene permiso para ingresar al módulo de Nóminas.
+        Solicite autorización a un administrador.
+      </p>
+    </div>
+  </div>
+</div>
+
+<div *ngIf="!mostrarBloqueo && !sinAccesoModulo">
   <br /><br />
 
-  <div class="row nominas-menu-superior justify-content-md-end" *ngIf="esAdministrador">
+  <div class="row nominas-menu-superior justify-content-md-end" *ngIf="esAdministrador || esUsuario">
     <div class="col-12 col-md-5 px-2">
       <dx-select-box
         [items]="seccionesMenu"
@@ -309,33 +327,37 @@
       </div>
     </div>
   </div>
-</div>
 
-<!-- EVENTOS DE PAGOS -->
-<div *ngIf="seccionActiva === 'Eventos de Pagos'">
-  <app-nominas-eventos-pagos
-    [usuarioNombre]="nombreUsuario"
-  ></app-nominas-eventos-pagos>
-</div>
+  <!-- EVENTOS DE PAGOS -->
+  <div *ngIf="seccionActiva === 'Eventos de Pagos'">
+    <app-nominas-eventos-pagos
+      [usuarioNombre]="nombreUsuario"
+    ></app-nominas-eventos-pagos>
+  </div>
 
-<!-- PAGOS PROGRAMADOS -->
-<div *ngIf="seccionActiva === 'Pagos Programados'">
-  <app-nominas-pagos-programados
-    [usuarioNombre]="nombreUsuario"
-    [esAdministrador]="esAdministrador"
-  ></app-nominas-pagos-programados>
-</div>
+  <!-- PAGOS PROGRAMADOS -->
+  <div *ngIf="seccionActiva === 'Pagos Programados'">
+    <app-nominas-pagos-programados
+      [usuarioNombre]="nombreUsuario"
+      [esAdministrador]="esAdministrador"
+      [esUsuario]="esUsuario"
+    ></app-nominas-pagos-programados>
+  </div>
 
-<!-- LIQUIDACIÓN DOMINICAL -->
-<div *ngIf="seccionActiva === 'Liquidación Dominical'">
-  <app-nominas-liquidacion-dominical
-    [usuarioNombre]="nombreUsuario"
-  ></app-nominas-liquidacion-dominical>
-</div>
+  <!-- LIQUIDACIÓN DOMINICAL -->
+  <div *ngIf="seccionActiva === 'Liquidación Dominical'">
+    <app-nominas-liquidacion-dominical
+      [usuarioNombre]="nombreUsuario"
+      [esAdministrador]="esAdministrador"
+      [esUsuario]="esUsuario"
+      [rolUsuario]="rolUsuario"
+    ></app-nominas-liquidacion-dominical>
+  </div>
 
-<!-- CONSULTA DE PAGOS -->
-<div *ngIf="seccionActiva === 'Consulta de Pagos'">
-  <app-nominas-consulta-pagos></app-nominas-consulta-pagos>
+  <!-- CONSULTA DE PAGOS -->
+  <div *ngIf="seccionActiva === 'Consulta de Pagos'">
+    <app-nominas-consulta-pagos></app-nominas-consulta-pagos>
+  </div>
 </div>
 
 <!-- Popup formulario tabla maestra salarial -->

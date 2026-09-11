@@ -1,179 +1,195 @@
-<br>
 <div *ngIf="mostrarLoading">
-    <app-loading-messagge [messagge]="mensajeLoading"></app-loading-messagge>
+  <app-loading-messagge [messagge]="mensajeLoading"></app-loading-messagge>
 </div>
 
 <div class="row" *ngIf="mostrarBloqueo"></div>
 
-<div class="card mb-3" *ngIf="!mostrarBloqueo">
-    <div class="card-header">
-        <i class="fa fa-lg fa-user  text-danger"></i> Administración de Usuarios
-    </div>
+<div *ngIf="!mostrarBloqueo">
+  <br /><br />
+
+  <div class="card">
+    <h5 class="card-header text-center font-weight-bold text-uppercase">
+      Administración de Usuarios
+    </h5>
     <div class="card-body">
-        <div class="row">
-            <div class="col-md-1">
-                <div class="row botones">
+      <div class="usuarios-titulo-seccion text-center">
+        Catálogo de Usuarios
+      </div>
+      <p class="text-muted text-center mb-3">
+        Registro y mantenimiento de usuarios. Control de acceso, roles y
+        sucursales.
+      </p>
 
-                    <div class="col-md-12"> <button title="Ver Lista" class="btn btn-primary btnIcons2" (click)="mostrar(1)">
-                            <i class="fa fa-list fa-2x"></i>
-                        </button></div>
+      <div class="row mb-3">
+        <div class="col-md-4 offset-md-8 text-right">
+          <button class="btn btn-block btn-usuario-primario" (click)="abrirNuevo()">
+            + Nuevo usuario
+          </button>
+        </div>
+      </div>
 
-                    <div class="col-md-12"> <button title="Agregar Usuario" class="btn btn-primary btnIcons2" (click)="mostrar(2)">
-                            <i class="fa fa-user-plus fa-2x"></i>
-                        </button></div>
+      <dx-data-grid
+        [dataSource]="usuarios"
+        [showBorders]="true"
+        [columnAutoWidth]="true"
+        [rowAlternationEnabled]="true"
+        keyExpr="_id"
+        (onExporting)="onExporting($event)"
+        (onExported)="onExported($event)"
+      >
+        <dxo-filter-row [visible]="true"></dxo-filter-row>
+        <dxo-header-filter [visible]="true"></dxo-header-filter>
+        <dxo-search-panel [visible]="true" [width]="240" placeholder="Buscar..."></dxo-search-panel>
+        <dxo-export [enabled]="true" fileName="usuarios" [allowExportSelectedData]="true"></dxo-export>
+        <dxi-column dataField="_id" caption="ID" [visible]="false"></dxi-column>
+        <dxi-column dataField="name" caption="Nombre"></dxi-column>
+        <dxi-column dataField="email" caption="Correo"></dxi-column>
+        <dxi-column dataField="username" caption="Usuario"></dxi-column>
+        <dxi-column dataField="rol" caption="Rol"></dxi-column>
+        <dxi-column dataField="sucursal" caption="Sucursal"></dxi-column>
+        <dxi-column dataField="status" caption="Estado"></dxi-column>
+        <dxi-column
+          caption="Acciones"
+          cellTemplate="accionesUsuario"
+          [width]="160"
+          [allowFiltering]="false"
+          [allowSorting]="false"
+        ></dxi-column>
 
-
-                </div>
-
-
-
-            </div>
-            <div class="col-md-11 card carIn">
-                <div id="read" style="display: block;text-align: center;">
-                    <br>
-                    <h4>Usuarios</h4>
-                    <dx-data-grid id="gridContainer" [dataSource]="usuarios" [showBorders]="true">
-                        <dxo-search-panel [visible]="true" [width]="240" placeholder="Buscar..."></dxo-search-panel>
-                        <dxi-column dataField="_id" caption="ID" [visible]="false"></dxi-column>
-                        <dxi-column dataField="name" caption="Nombre"></dxi-column>
-                        <dxi-column dataField="email" caption="Correo"></dxi-column>
-                        <dxi-column dataField="username" caption="Usuario"></dxi-column>
-                        <dxi-column dataField="rol" caption="Rol"></dxi-column>
-                        <dxi-column dataField="sucursal" caption="Sucursal"></dxi-column>
-                        <dxi-column dataField="status" caption="Estado"></dxi-column>
-                        <dxi-column type="buttons" dataField="bt1" caption="Acciones" width="10%">
-                            <dxi-button hint="Editar" icon="fa fa-pencil-square-o" [onClick]="mostrarUpdateUser"></dxi-button>
-                            <dxi-button hint="Eliminar" icon="fa fa-trash-o" [onClick]="deleteUser"></dxi-button>
-                        </dxi-column>
-                        <dxo-paging [pageSize]="5"></dxo-paging>
-                        <dxo-pager [showPageSizeSelector]="true" [allowedPageSizes]="[5, 10, 20]" [showInfo]="true">
-                        </dxo-pager>
-
-                    </dx-data-grid>
-                    <br><br>
-                </div>
-
-
-
-                <div id="new" style="display: none;">
-                    <div style="text-align: center;" class="newr">
-                        <h4>Registrar Nuevo Usuario</h4>
-                        <div>
-                            <form #f="ngForm" (ngSubmit)="register(f)">
-                                <div class="row">
-                                    <div class="col-md-3"></div>
-                                    <div class="col-md-6">
-                                        <div class="row espacio">
-                                            <div class="col-md-4" style="text-align: left;">Nombre y Apellido</div>
-                                            <div class="col-md-8"> <input type="text" [(ngModel)]="usuario.name"
-                                                    name="nombre" class="form-control" placeholder="Nombre usuario"
-                                                    required></div>
-                                        </div>
-                                        <div class="row espacio">
-                                            <div class="col-md-4" style="text-align: left;">Nombre de Usuario</div>
-                                            <div class="col-md-8"> <input type="text" [(ngModel)]="usuario.username"
-                                                    name="username" class="form-control" placeholder="Nombre usuario"
-                                                    required></div>
-                                        </div>
-                                        <div class="row espacio">
-                                            <div class="col-md-4" style="text-align: left;">Correo</div>
-                                            <div class="col-md-8"> <input type="text" [(ngModel)]="usuario.email"
-                                                    name="suaurio" class="form-control" placeholder="Correo"
-                                                    autocomplete="email" required></div>
-                                        </div>
-                                        <div class="row espacio">
-                                            <div class="col-md-4" style="text-align: left;">Contraseña</div>
-                                            <div class="col-md-8"> <input type="text" [(ngModel)]="usuario.password"
-                                                    name="contrasena" class="form-control" placeholder="Contraseña"
-                                                    required></div>
-                                        </div>
-                                        
-
-                                        <div class="row espacio">
-                                            <div class="col-md-4" style="text-align: left;">Rol</div>
-                                             <div class="col-md-8">  <dx-select-box [items]="menu1" 
-                                                 [value]="menu1[0]" 
-                                                 [readOnly]="rolUser" 
-                                                 [disabled]="false"
-                                                 (onValueChanged)="asignarRol($event)"
-                                                 ></dx-select-box></div> 
-                                         </div>
-
-                                        <div class="row espacio">
-                                            <div class="col-md-4" style="text-align: left;">Sucursal</div>
-                                             <div class="col-md-8">   <dx-select-box [items]="locales" [(value)]="localAsignado" [readOnly]="false" [disabled]="false"
-                                                 [searchEnabled]="true" valueExpr="sucursalTipo" displayExpr="sucursalTipo" >
-                                             </dx-select-box></div> 
-                                         </div>
-
-                                        <div class="row espacio">
-                                            <div class="col-md-4" style="text-align: left;margin-top: 1em;">Código Facturación</div>
-                                            <div class="col-md-8"> <input type="text" [(ngModel)]="usuario.codigoFacturacion"
-                                                    name="codigoFacturacion" class="form-control" placeholder="Código"
-                                                    required></div>
-                                        </div>
-
-
-                                        <button class="btn btn-block btn-success espacio colorBtn">Registrar Usuario</button>
-                                    </div>
-                                    <div class="col-md-3"></div>
-                                </div>
-
-
-                            </form>
-                        </div>
-                    </div>
-
-                </div>
-             
-            </div>
+        <div *dxTemplate="let data of 'accionesUsuario'">
+          <button class="btn btn-sm btn-primary mr-1" (click)="abrirEdicion(data.data)">
+            Editar
+          </button>
+          <button class="btn btn-sm btn-danger" (click)="eliminarUsuario(data.data)">
+            Eliminar
+          </button>
         </div>
 
-
-
+        <dxo-paging [pageSize]="8"></dxo-paging>
+        <dxo-pager
+          [showPageSizeSelector]="true"
+          [allowedPageSizes]="[8, 12, 20]"
+          [showInfo]="true"
+        ></dxo-pager>
+      </dx-data-grid>
     </div>
+  </div>
 </div>
 
-<dx-popup [width]="500" [height]="490" [showTitle]="true" title="Actualizar Información" [dragEnabled]="false"
-    [closeOnOutsideClick]="true" [(visible)]="popupVisible">
-    <div *dxTemplate="let data of 'content'">
-        <div class="col-md-12">
-            <div class="row espacio">
-                <div class="col-md-4" style="text-align: left;">Correo</div>
-                <div class="col-md-8"> <input type="text" [(ngModel)]="usuario.email" name="usuario"
-                        class="form-control" placeholder="Correo" autocomplete="email" required></div>
-            </div>
-            <div class="row espacio">
-                <div class="col-md-4" style="text-align: left;">Nombres y Apellidos</div>
-                <div class="col-md-8"> <input type="text" [(ngModel)]="usuario.name" name="usuario" class="form-control"
-                        placeholder="Correo" autocomplete="email" required></div>
-            </div>
-            <div class="row espacio">
-                <div class="col-md-4" style="text-align: left;">Contraseña</div>
-                <div class="col-md-8"> <input type="text" [(ngModel)]="usuario.password" name="contrasena"
-                        class="form-control" placeholder="Descripción" required></div>
-            </div>
-            <div class="row espacio">
-                <div class="col-md-4" style="text-align: left;">Código Facturación</div>
-                <div class="col-md-8"> <input type="text" [(ngModel)]="usuario.codigoFacturacion" name="codigoFacturacion"
-                        class="form-control" placeholder="Código" required></div>
-            </div>
-            <div class="row espacio" >
-                <div class="col-md-4" style="text-align: left;">Estado</div>
-                <div class="col-md-8">
-                    <dx-select-box [items]="menuTipoDatos" [(value)]="usuario.status" [readOnly]="false"
-                        [disabled]="false" (onValueChanged)="setTipo($event)"></dx-select-box>
-                </div>
-            </div>
-        </div>
+<dx-popup
+  [(visible)]="popupVisible"
+  [showTitle]="true"
+  [title]="esEdicion ? 'Editar usuario' : 'Nuevo usuario'"
+  [width]="700"
+  [maxHeight]="'90vh'"
+  [height]="'auto'"
+  [showCloseButton]="true"
+  [elementAttr]="{ class: 'popup-usuario-overlay' }"
+>
+  <div *dxTemplate="let data of 'content'" class="popup-usuario-body">
+    <div class="popup-usuario-scroll p-3">
+      <div class="usuarios-titulo-seccion text-center mb-3">
+        Datos del usuario
+      </div>
 
-        <div class="col-md-12">
-            <div class="row">
-                <div class="col-md-4"></div>
-                <div class="col-md-4"><button class="btn btn2" type="button"
-                        (click)="updateUsuario()">Actualizar</button></div>
-                <div class="col-md-4"></div>
-            </div>
+      <div class="row usuarios-formulario">
+        <div class="col-md-6 mb-3">
+          <label class="form-label">Nombre y apellido *</label>
+          <dx-text-box
+            [(value)]="usuario.name"
+            placeholder="Nombre completo"
+          ></dx-text-box>
         </div>
+        <div class="col-md-6 mb-3">
+          <label class="form-label">Nombre de usuario *</label>
+          <dx-text-box
+            [(value)]="usuario.username"
+            placeholder="Usuario de acceso"
+            [readOnly]="esEdicion"
+          ></dx-text-box>
+        </div>
+        <div class="col-md-6 mb-3">
+          <label class="form-label">Correo *</label>
+          <dx-text-box
+            [(value)]="usuario.email"
+            placeholder="Correo electrónico"
+          ></dx-text-box>
+        </div>
+        <div class="col-md-6 mb-3">
+          <label class="form-label">Contraseña{{ esEdicion ? '' : ' *' }}</label>
+          <dx-text-box
+            [(value)]="usuario.password"
+            placeholder="Contraseña"
+          ></dx-text-box>
+        </div>
+        <div class="col-md-6 mb-3">
+          <label class="form-label">Rol</label>
+          <dx-select-box
+            [items]="menu1"
+            [(value)]="usuario.rol"
+            placeholder="Seleccione un rol"
+            (onValueChanged)="onRolChanged()"
+          ></dx-select-box>
+        </div>
+        <div class="col-md-6 mb-3">
+          <label class="form-label">Sucursal</label>
+          <dx-select-box
+            [items]="locales"
+            [(value)]="localAsignado"
+            [searchEnabled]="true"
+            valueExpr="sucursalTipo"
+            displayExpr="sucursalTipo"
+            placeholder="Seleccione sucursal"
+          ></dx-select-box>
+        </div>
+        <div class="col-md-6 mb-3">
+          <label class="form-label">Código de facturación *</label>
+          <dx-text-box
+            [(value)]="usuario.codigoFacturacion"
+            placeholder="Código"
+          ></dx-text-box>
+        </div>
+        <div class="col-md-6 mb-3" *ngIf="esEdicion">
+          <label class="form-label">Estado</label>
+          <dx-select-box
+            [items]="menuTipoDatos"
+            [(value)]="usuario.status"
+            placeholder="Estado"
+          ></dx-select-box>
+        </div>
+        <div class="col-md-12 mb-3" *ngIf="esRolUsuario">
+          <dx-check-box
+            [(value)]="puedeAccederPagos"
+            text="Puede acceder al Módulo de Pagos"
+          ></dx-check-box>
+        </div>
+        <div class="col-md-6 mb-3" *ngIf="esRolUsuario && puedeAccederPagos">
+          <label class="form-label">Código de acceso a Pagos *</label>
+          <dx-text-box
+            [(value)]="usuario.codigoAccesoPago"
+            placeholder="Entre 5 y 10 dígitos"
+            [maxLength]="10"
+            mode="password"
+            (onValueChanged)="onCodigoAccesoPagoChanged($event)"
+          ></dx-text-box>
+          <small class="text-muted">Obligatorio: mínimo 5 y máximo 10 dígitos.</small>
+        </div>
+      </div>
     </div>
+
+    <div class="popup-usuario-footer px-3 pb-3">
+      <div class="row mt-0">
+        <div class="col-6">
+          <button class="btn btn-block btn-secondary" (click)="cerrarPopup()">
+            Cancelar
+          </button>
+        </div>
+        <div class="col-6">
+          <button class="btn btn-block btn-usuario-primario" (click)="guardarUsuario()">
+            Guardar
+          </button>
+        </div>
+      </div>
+    </div>
+  </div>
 </dx-popup>

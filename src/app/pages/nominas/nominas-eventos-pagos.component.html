@@ -91,6 +91,75 @@
         </small>
       </div>
 
+      <div class="col-md-4 mb-3">
+        <label class="form-label">Centro de costo</label>
+        <dx-select-box
+          [items]="nombresCentrosCosto"
+          [(value)]="formulario.centroCosto"
+          [searchEnabled]="true"
+          placeholder="Seleccione el centro de costo"
+        ></dx-select-box>
+        <small class="text-muted" *ngIf="esTipoB">
+          Identifica la deuda particular para consolidar información
+        </small>
+        <small class="text-muted" *ngIf="!esTipoB">
+          Quedará registrado en las transacciones financieras al ejecutar el pago
+        </small>
+      </div>
+
+      <ng-container *ngIf="esExternoTipoB">
+        <div class="col-md-12 mb-3">
+          <dx-check-box
+            [(value)]="formulario.asociarFacturaPendiente"
+            text="Asociar a factura pendiente del proveedor"
+            [disabled]="formulario.estadoRegla === 'Autorizada'"
+            (onValueChanged)="onAsociarFacturaChanged($event)"
+          ></dx-check-box>
+        </div>
+        <div class="col-md-8 mb-3" *ngIf="formulario.asociarFacturaPendiente">
+          <label class="form-label">Factura pendiente *</label>
+          <dx-select-box
+            [items]="facturasPendientes"
+            displayExpr="etiquetaDisplay"
+            valueExpr="_id"
+            [(value)]="formulario.facturaProveedorId"
+            [searchEnabled]="true"
+            [disabled]="formulario.estadoRegla === 'Autorizada' || cargandoFacturasPendientes"
+            placeholder="Seleccione la factura con saldo pendiente"
+            (onValueChanged)="onFacturaPendienteChanged($event)"
+          ></dx-select-box>
+          <small class="text-muted d-block" *ngIf="!formulario.nombreBeneficiario">
+            Busque el proveedor para listar sus facturas pendientes.
+          </small>
+          <small class="text-muted d-block" *ngIf="cargandoFacturasPendientes">
+            Cargando facturas pendientes…
+          </small>
+          <small
+            class="text-muted d-block"
+            *ngIf="formulario.nombreBeneficiario && !cargandoFacturasPendientes && !facturasPendientes.length"
+          >
+            No hay facturas pendientes para este proveedor.
+          </small>
+          <small class="text-muted d-block" *ngIf="facturaPendienteSeleccionada">
+            Adeudado: ${{ facturaPendienteSeleccionada.valorAdeudado | number : "1.2-2" }}
+            · Total: ${{ facturaPendienteSeleccionada.total | number : "1.2-2" }}
+            · Abonado: ${{ facturaPendienteSeleccionada.valorAbonado | number : "1.2-2" }}
+            <span *ngIf="facturaPendienteSeleccionada.nSolicitud">
+              · OC {{ facturaPendienteSeleccionada.nSolicitud }}
+            </span>
+          </small>
+          <small
+            class="text-muted d-block"
+            *ngIf="!facturaPendienteSeleccionada && formulario.nFacturaProveedor"
+          >
+            Factura enlazada: {{ formulario.nFacturaProveedor }}
+            <span *ngIf="formulario.valorAdeudadoFactura">
+              · Adeudado al vincular ${{ formulario.valorAdeudadoFactura | number : "1.2-2" }}
+            </span>
+          </small>
+        </div>
+      </ng-container>
+
       <!-- Campos Tipo A -->
       <ng-container *ngIf="esTipoA">
         <div class="col-md-4 mb-3">
@@ -190,16 +259,6 @@
 
       <!-- Campos Tipo B -->
       <ng-container *ngIf="esTipoB">
-        <div class="col-md-4 mb-3">
-          <label class="form-label">Centro de costo</label>
-          <dx-select-box
-            [items]="nombresCentrosCosto"
-            [(value)]="formulario.centroCosto"
-            [searchEnabled]="true"
-            placeholder="Raíz de la deuda / trazabilidad"
-          ></dx-select-box>
-          <small class="text-muted">Identifica la deuda particular para consolidar información</small>
-        </div>
         <div class="col-md-4 mb-3">
           <label class="form-label">Fuente</label>
           <dx-text-box [(value)]="formulario.fuente" [readOnly]="true"></dx-text-box>
@@ -538,6 +597,16 @@
           </button>
         </div>
       </ng-container>
+
+      <div class="col-md-12 mb-3" *ngIf="esTipoB || esTipoC">
+        <label class="form-label">Notas</label>
+        <dx-text-area
+          [(value)]="formulario.notas"
+          placeholder="Observaciones que se copiarán a los registros de pago"
+          [height]="70"
+          [maxLength]="500"
+        ></dx-text-area>
+      </div>
     </div>
 
     <!-- Tabla cuotas descuento Tipo C -->
@@ -799,6 +868,8 @@
       <dxi-column dataField="cedulaBeneficiario" caption="Cédula"></dxi-column>
       <dxi-column dataField="centroCosto" caption="Centro costo"></dxi-column>
       <dxi-column dataField="transaccionNomina" caption="Transacción"></dxi-column>
+      <dxi-column dataField="nFacturaProveedor" caption="Factura" [minWidth]="110"></dxi-column>
+      <dxi-column dataField="notas" caption="Notas" [minWidth]="140"></dxi-column>
       <dxi-column dataField="frecuencia" caption="Frecuencia"></dxi-column>
       <dxi-column dataField="parametro" caption="Parámetro"></dxi-column>
       <dxi-column dataField="monto" caption="Monto" format="#,##0.##"></dxi-column>

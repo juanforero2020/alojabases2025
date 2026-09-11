@@ -299,11 +299,15 @@ async function recalcularDescuentosEnEventos(reglaA, opciones = {}) {
     let descTotal = 0;
     const reglasQueAplican = [];
 
+    const notasAplicadas = [];
+
     for (const reglaC of reglasC) {
       const desc = montoDescuentoReglaCEnEvento(reglaC, evento, eventos);
       if (desc > 0) {
         descTotal = redondear2(descTotal + desc);
         reglasQueAplican.push(reglaC._id);
+        const notaC = String(reglaC.notas || "").trim();
+        if (notaC) notasAplicadas.push(notaC);
         if (!cuotaDescReferencia) {
           cuotaDescReferencia = desc;
         }
@@ -319,6 +323,13 @@ async function recalcularDescuentosEnEventos(reglaA, opciones = {}) {
       if (descRegla > 0) {
         eventosConDescuentoRegla += 1;
         if (!cuotaDescRegla) cuotaDescRegla = descRegla;
+        const notaExtra = String(reglaCAdicional.notas || "").trim();
+        if (
+          notaExtra &&
+          !notasAplicadas.includes(notaExtra)
+        ) {
+          notasAplicadas.push(notaExtra);
+        }
       }
     }
 
@@ -326,11 +337,13 @@ async function recalcularDescuentosEnEventos(reglaA, opciones = {}) {
     evento.montoDescuento = descTotal;
     evento.monto = redondear2(Math.max(0, bruto - descTotal));
     evento.reglaDescuentoId = reglasQueAplican[0] || null;
+    evento.notas = [...new Set(notasAplicadas)].join(" | ") || "";
 
     if (descTotal === 0) {
       evento.monto = bruto;
       evento.montoBruto = null;
       evento.reglaDescuentoId = null;
+      evento.notas = "";
     } else {
       eventosConDescuento += 1;
     }

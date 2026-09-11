@@ -11,6 +11,7 @@ import {
   ProyeccionPagoNomina,
   ReglaPagoAsociable,
   ReglaPagoNomina,
+  FacturaPendienteProveedor,
 } from "./nominas";
 import { mostrarErrorNominaApi } from "./nominas-alert.util";
 import {
@@ -111,6 +112,9 @@ export class NominasEventosPagosComponent implements OnInit {
     montoBruto?: number;
   } | null = null;
   configGlobal: NominaConfigGlobal | null = null;
+  facturasPendientes: FacturaPendienteProveedor[] = [];
+  facturaPendienteSeleccionada: FacturaPendienteProveedor | null = null;
+  cargandoFacturasPendientes = false;
 
   constructor(
     private _nominasService: NominasService,
@@ -544,6 +548,7 @@ export class NominasEventosPagosComponent implements OnInit {
       campoMontoTms: "asignacionSalarial",
       empleadoActivo: true,
       mesesProyeccion: 3,
+      centroCosto: "",
     };
   }
 
@@ -570,6 +575,8 @@ export class NominasEventosPagosComponent implements OnInit {
       modalidadDescuento: "Valor unico",
       conceptoDescuento: this.conceptosDescuento[0],
       semanaAplicacion: "Esta semana",
+      centroCosto: "",
+      notas: "",
     };
   }
 
@@ -597,6 +604,12 @@ export class NominasEventosPagosComponent implements OnInit {
       monto: 0,
       empleadoActivo: true,
       mesesProyeccion: 12,
+      notas: "",
+      asociarFacturaPendiente: false,
+      facturaProveedorId: undefined,
+      nFacturaProveedor: "",
+      nSolicitudFactura: undefined,
+      valorAdeudadoFactura: undefined,
     };
   }
 
@@ -943,6 +956,7 @@ export class NominasEventosPagosComponent implements OnInit {
     this.formulario.monto = 0;
     this.reglasPagoAsociables = [];
     this.formulario.reglaPagoAsociadaId = undefined;
+    this.limpiarFacturaAsociada();
     this.aplicarConceptosTipoBPorBeneficiario();
   }
 
@@ -1028,6 +1042,9 @@ export class NominasEventosPagosComponent implements OnInit {
     if (regla) {
       this.formulario.frecuencia = regla.frecuencia;
       this.formulario.parametro = regla.parametro;
+      if (!this.formulario.centroCosto?.trim() && regla.centroCosto) {
+        this.formulario.centroCosto = regla.centroCosto;
+      }
     }
     this.generarTablaDescuento(true);
   }
@@ -1380,6 +1397,10 @@ export class NominasEventosPagosComponent implements OnInit {
             "warning"
           );
         }
+
+        if (this.esExternoTipoB && this.formulario.asociarFacturaPendiente) {
+          this.cargarFacturasPendientes();
+        }
       },
       (err) => {
         this.beneficiario = null;
@@ -1421,8 +1442,108 @@ export class NominasEventosPagosComponent implements OnInit {
     this.validacionAmortizacion = null;
     this.validacionDescuentoTipoC = null;
     this.reglasPagoAsociables = [];
+    this.limpiarFacturaAsociada();
     this.actualizarParametrosPorFrecuencia();
     this.actualizarOpcionesTransaccionB();
+  }
+
+  onAsociarFacturaChanged(event?: { value?: boolean; event?: Event }) {
+    if (event && !event.event) return;
+    if (!this.esExternoTipoB) {
+      this.limpiarFacturaAsociada();
+      return;
+    }
+    if (this.formulario.asociarFacturaPendiente) {
+      this.cargarFacturasPendientes();
+      return;
+    }
+    this.limpiarFacturaAsociada(false);
+  }
+
+  limpiarFacturaAsociada(limpiarCheck = true) {
+    if (limpiarCheck) {
+      this.formulario.asociarFacturaPendiente = false;
+    }
+    this.formulario.facturaProveedorId = undefined;
+    this.formulario.nFacturaProveedor = "";
+    this.formulario.nSolicitudFactura = undefined;
+    this.formulario.valorAdeudadoFactura = undefined;
+    this.facturasPendientes = [];
+    this.facturaPendienteSeleccionada = null;
+    this.cargandoFacturasPendientes = false;
+  }
+
+  private sincronizarFacturaPendienteSeleccionada() {
+    const id = this.formulario.facturaProveedorId;
+    this.facturaPendienteSeleccionada = id
+      ? this.facturasPendientes.find((f) => String(f._id) === String(id)) || null
+      : null;
+  }
+
+  cargarFacturasPendientes() {
+    const proveedor = (this.formulario.nombreBeneficiario || "").trim();
+    if (!this.esExternoTipoB || !this.formulario.asociarFacturaPendiente) {
+      this.facturasPendientes = [];
+      this.sincronizarFacturaPendienteSeleccionada();
+      return;
+    }
+    if (!proveedor) {
+      this.facturasPendientes = [];
+      this.sincronizarFacturaPendienteSeleccionada();
+      return;
+    }
+    this.cargandoFacturasPendientes = true;
+    this._nominasService.getFacturasPendientesProveedor(proveedor).subscribe(
+      (res) => {
+        this.facturasPendientes = res || [];
+        this.cargandoFacturasPendientes = false;
+        if (
+          this.formulario.facturaProveedorId &&
+          !this.facturasPendientes.some(
+            (f) => String(f._id) === String(this.formulario.facturaProveedorId)
+          )
+        ) {
+          this.formulario.facturaProveedorId = undefined;
+        }
+        this.sincronizarFacturaPendienteSeleccionada();
+      },
+      (err) => {
+        this.cargandoFacturasPendientes = false;
+        this.facturasPendientes = [];
+        this.sincronizarFacturaPendienteSeleccionada();
+        mostrarErrorNominaApi(
+          "Error",
+          err,
+          "No se pudieron cargar las facturas pendientes"
+        );
+      }
+    );
+  }
+
+  onFacturaPendienteChanged(event?: { value?: string; event?: Event }) {
+    if (event && !event.event) return;
+    this.sincronizarFacturaPendienteSeleccionada();
+    const factura = this.facturaPendienteSeleccionada;
+    if (!factura) {
+      this.formulario.nFacturaProveedor = "";
+      this.formulario.nSolicitudFactura = undefined;
+      this.formulario.valorAdeudadoFactura = undefined;
+      return;
+    }
+    this.formulario.facturaProveedorId = factura._id;
+    this.formulario.nFacturaProveedor = factura.nFactura;
+    this.formulario.nSolicitudFactura = factura.nSolicitud;
+    this.formulario.valorAdeudadoFactura = factura.valorAdeudado;
+    if (
+      (!this.formulario.cuotaEvento || this.formulario.cuotaEvento <= 0) &&
+      factura.valorAdeudado > 0
+    ) {
+      this.formulario.cuotaEvento = factura.valorAdeudado;
+      if (this.formulario.modalidadMonto === "Finito" || this.usaAmortizacion) {
+        this.formulario.montoTotalDeuda = factura.valorAdeudado;
+      }
+      this.onDatosAmortizacionChanged();
+    }
   }
 
   guardarRegla() {
@@ -1437,6 +1558,26 @@ export class NominasEventosPagosComponent implements OnInit {
         "warning"
       );
       return;
+    }
+    if (!this.formulario.centroCosto?.trim()) {
+      Swal.fire(
+        "Validación",
+        this.esTipoB
+          ? "Seleccione el centro de costo (raíz de la deuda)"
+          : "Seleccione el centro de costo",
+        "warning"
+      );
+      return;
+    }
+    if (this.esExternoTipoB && this.formulario.asociarFacturaPendiente) {
+      if (!this.formulario.facturaProveedorId) {
+        Swal.fire(
+          "Validación",
+          "Seleccione la factura pendiente del proveedor",
+          "warning"
+        );
+        return;
+      }
     }
     if (this.esTipoC) {
       if (!this.formulario.reglaPagoAsociadaId) {
@@ -1559,14 +1700,6 @@ export class NominasEventosPagosComponent implements OnInit {
         Swal.fire(
           "Validación",
           "Indique el nombre de la nueva transacción",
-          "warning"
-        );
-        return;
-      }
-      if (!this.formulario.centroCosto?.trim()) {
-        Swal.fire(
-          "Validación",
-          "Seleccione el centro de costo (raíz de la deuda)",
           "warning"
         );
         return;
@@ -1696,7 +1829,18 @@ export class NominasEventosPagosComponent implements OnInit {
     const payload: ReglaPagoNomina = {
       ...this.formulario,
       creadoPor: this.usuarioNombre,
+      notas:
+        this.esTipoB || this.esTipoC
+          ? String(this.formulario.notas || "").trim()
+          : "",
     };
+    if (!(this.esExternoTipoB && payload.asociarFacturaPendiente)) {
+      payload.asociarFacturaPendiente = false;
+      payload.facturaProveedorId = undefined;
+      payload.nFacturaProveedor = "";
+      payload.nSolicitudFactura = undefined;
+      payload.valorAdeudadoFactura = undefined;
+    }
 
     const peticion = this.modoEdicion && this.reglaSeleccionada?._id
       ? this._nominasService.actualizarReglaPago(
@@ -1756,6 +1900,14 @@ export class NominasEventosPagosComponent implements OnInit {
         "No autorizado",
         "El empleado está INACTIVO. La regla finaliza con el contrato laboral.",
         "error"
+      );
+      return;
+    }
+    if (!this.formulario.centroCosto?.trim()) {
+      Swal.fire(
+        "Validación",
+        "Seleccione el centro de costo antes de autorizar",
+        "warning"
       );
       return;
     }

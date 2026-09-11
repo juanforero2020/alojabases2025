@@ -5,16 +5,37 @@
     </div>
     <p class="text-muted text-center mb-3">
       Busca automáticamente a todos los trabajadores con regla tipo A
-      <strong>Dominical</strong> autorizada. Para vendedores y usuarios el rango de pago
-      se determina con las <strong>ventas de ese trabajador</strong> en el domingo; para
-      bodegueros se usa la facturación neta de la tienda.
+      <strong>Dominical</strong> autorizada.
+      <span *ngIf="!calcularPorTrabajador">
+        El rango de pago se determina con la
+        <strong>facturación neta global de la tienda</strong> del domingo.
+      </span>
+      <span *ngIf="calcularPorTrabajador">
+        Para vendedores y usuarios el rango de pago se determina con las
+        <strong>ventas de ese trabajador</strong> en el domingo; para
+        bodegueros se usa la facturación neta de la tienda.
+      </span>
       Liquide cada trabajador de forma individual; el evento programado del domingo queda marcado como ejecutado.
     </p>
+
+    <div class="alert alert-warning" *ngIf="esUsuario">
+      Como <strong>Usuario</strong> puede liquidar a <strong>un usuario/vendedor</strong> y
+      <strong>un bodeguero</strong>. Elija a quién pagar primero: el botón
+      <strong>Liquidar</strong> queda habilitado para todos. Cuando liquide al primero
+      de un cargo, el segundo queda en espera hasta que el administrador autorice.
+      El botón de pago solo se habilita el <strong>domingo correspondiente</strong>.
+    </div>
 
     <div class="row align-items-end mb-3 liquidacion-dominical-acciones">
       <div class="col-md-4 mb-2">
         <label>Fecha (domingo)</label>
-        <dx-date-box [(value)]="fechaDominical" type="date"></dx-date-box>
+        <dx-date-box
+          [(value)]="fechaDominical"
+          type="date"
+          [readOnly]="esUsuario"
+          [disabled]="esUsuario"
+          [openOnFieldClick]="!esUsuario"
+        ></dx-date-box>
       </div>
       <div class="col-md-4 mb-2">
         <button
@@ -114,6 +135,15 @@
             </td>
             <td>
               <button
+                *ngIf="puedeAutorizarAdicional(liq)"
+                class="btn btn-sm btn-warning mb-1 d-block"
+                type="button"
+                [disabled]="cargandoSimulacion || liquidando || autorizandoId === liq.eventoProgramadoId"
+                (click)="autorizarPagoAdicional(liq)"
+              >
+                {{ autorizandoId === liq.eventoProgramadoId ? "Autorizando…" : "Autorizar" }}
+              </button>
+              <button
                 *ngIf="puedeLiquidar(liq)"
                 class="btn btn-sm btn-nomina-primario"
                 type="button"
@@ -122,7 +152,18 @@
               >
                 {{ liquidandoCedula === liq.cedula ? "Liquidando…" : "Liquidar" }}
               </button>
-              <span *ngIf="!puedeLiquidar(liq)" class="text-muted">—</span>
+              <span
+                class="small d-block"
+                [class.text-muted]="mensajeAccion(liq) !== 'En espera de autorización del administrador'"
+                [class.liquidacion-espera-autorizacion]="mensajeAccion(liq) === 'En espera de autorización del administrador'"
+                *ngIf="mensajeAccion(liq)"
+              >
+                {{ mensajeAccion(liq) }}
+              </span>
+              <span
+                *ngIf="!puedeLiquidar(liq) && !puedeAutorizarAdicional(liq) && !mensajeAccion(liq)"
+                class="text-muted"
+              >—</span>
             </td>
           </tr>
         </tbody>

@@ -7,7 +7,14 @@ import {
   SimulacionDominical,
 } from "./nominas";
 import { mostrarErrorNominaApi } from "./nominas-alert.util";
-import { formatoFechaCalendarioNomina } from "./nominas-fecha.util";
+import {
+  fechaCalendarioLocal,
+  formatoFechaCalendarioNomina,
+  hoyCalendarioNomina,
+  mismoDiaCalendarioNomina,
+  NOMINA_PRUEBA_PAGO_CUALQUIER_DIA,
+  NOMINA_CALCULAR_DOMINICAL_POR_TRABAJADOR,
+} from "./nominas-fecha.util";
 
 @Component({
   selector: "app-nominas-liquidacion-dominical",
@@ -16,6 +23,9 @@ import { formatoFechaCalendarioNomina } from "./nominas-fecha.util";
 })
 export class NominasLiquidacionDominicalComponent implements OnInit {
   @Input() usuarioNombre = "";
+  @Input() esAdministrador = false;
+  @Input() esUsuario = false;
+  @Input() rolUsuario = "";
 
   fechaDominical: Date = this.ultimoDomingo();
   simulacion: SimulacionDominical | null = null;
@@ -23,17 +33,33 @@ export class NominasLiquidacionDominicalComponent implements OnInit {
   cargandoSimulacion = false;
   liquidando = false;
   liquidandoCedula: string | null = null;
+  autorizandoId: string | null = null;
+  calcularPorTrabajador = NOMINA_CALCULAR_DOMINICAL_POR_TRABAJADOR;
 
   constructor(private _nominasService: NominasService) {}
 
   ngOnInit() {
+    if (this.esUsuario) {
+      this.fechaDominical = NOMINA_PRUEBA_PAGO_CUALQUIER_DIA
+        ? hoyCalendarioNomina()
+        : this.proximoDomingo();
+    }
     this.cargarAjustesPendientes();
   }
 
   ultimoDomingo(): Date {
-    const d = new Date();
+    const d = hoyCalendarioNomina();
     d.setDate(d.getDate() - d.getDay());
-    d.setHours(0, 0, 0, 0);
+    return d;
+  }
+
+  /** Domingo de hoy si hoy es domingo; si no, el próximo domingo que se aproxima. */
+  proximoDomingo(): Date {
+    const d = hoyCalendarioNomina();
+    const dia = d.getDay();
+    if (dia !== 0) {
+      d.setDate(d.getDate() + (7 - dia));
+    }
     return d;
   }
 
@@ -41,6 +67,34 @@ export class NominasLiquidacionDominicalComponent implements OnInit {
     const fecha =
       this.simulacion?.fechaDomingoUsada || this.fechaDominical;
     return formatoFechaCalendarioNomina(fecha);
+  }
+
+  fechaDomingoConsulta(): Date | null {
+    return (
+      fechaCalendarioLocal(
+        this.simulacion?.fechaDomingoUsada || this.fechaDominical
+      ) || null
+    );
+  }
+
+  esMismoDomingoHoy(): boolean {
+    if (NOMINA_PRUEBA_PAGO_CUALQUIER_DIA) return true;
+    const hoy = hoyCalendarioNomina();
+    if (hoy.getDay() !== 0) return false;
+    return mismoDiaCalendarioNomina(hoy, this.fechaDomingoConsulta());
+  }
+
+  esFechaAntigua(): boolean {
+    const domingo = this.fechaDomingoConsulta();
+    if (!domingo) return false;
+    return domingo.getTime() < hoyCalendarioNomina().getTime();
+  }
+
+  esFechaPosterior(): boolean {
+    const hoy = hoyCalendarioNomina();
+    const domingo = this.fechaDomingoConsulta();
+    if (!domingo) return false;
+    return domingo.getTime() > hoy.getTime();
   }
 
   cargarAjustesPendientes() {
@@ -74,7 +128,82 @@ export class NominasLiquidacionDominicalComponent implements OnInit {
   }
 
   puedeLiquidar(liq: LiquidacionDominicalItem): boolean {
-    return !!liq?.cedula && !liq.error && !liq.yaLiquidado;
+    if (!liq?.cedula || liq.error || liq.yaLiquidado) return false;
+    if (this.esAdministrador) return true;
+    if (!this.esUsuario) return true;
+    if (!this.esMismoDomingoHoy()) return false;
+    if (this.estaAutorizadoAdicional(liq)) return true;
+    if (!liq.cargoPermitidoUsuario) return false;
+    if (liq.requiereAutorizacionAdmin) return false;
+    return true;
+  }
+
+  estaAutorizadoAdicional(liq: LiquidacionDominicalItem): boolean {
+    return liq?.pagoAdicionalAutorizado === true;
+  }
+
+  puedeAutorizarAdicional(liq: LiquidacionDominicalItem): boolean {
+    if (!this.esAdministrador) return false;
+    if (!liq?.cedula || liq.error || liq.yaLiquidado) return false;
+    if (!liq.eventoProgramadoId) return false;
+    if (liq.pagoAdicionalAutorizado) return false;
+    if (!liq.cargoPermitidoUsuario) return false;
+    return !!liq.requiereAutorizacionAdmin;
+  }
+
+  mensajeAccion(liq: LiquidacionDominicalItem): string | null {
+    if (liq.yaLiquidado || liq.error) return null;
+    if (this.esAdministrador) return null;
+    if (!this.esUsuario) return null;
+    if (!this.esMismoDomingoHoy()) {
+      if (this.esFechaAntigua()) return "No disponible para fechas antiguas";
+      if (this.esFechaPosterior()) {
+        return "No disponible para fechas posteriores";
+      }
+      return "Solo se habilita el domingo de hoy";
+    }
+    if (this.estaAutorizadoAdicional(liq)) return null;
+    if (liq.requiereAutorizacionAdmin) {
+      return "En espera de autorización del administrador";
+    }
+    return null;
+  }
+
+  autorizarPagoAdicional(liq: LiquidacionDominicalItem) {
+    if (!this.puedeAutorizarAdicional(liq) || this.liquidando) return;
+
+    Swal.fire({
+      title: "Autorizar pago adicional",
+      html: `¿Habilitar el pago dominical de <strong>${liq.nombre}</strong> (${liq.cargo}) para el rol Usuario?<br/>
+        Domingo: <strong>${this.textoFechaDomingo()}</strong><br/>
+        <span class="text-muted">Ya se liquidó a otro trabajador de este cargo. Tras autorizar, el usuario podrá usar Liquidar.</span>`,
+      icon: "question",
+      showCancelButton: true,
+      confirmButtonText: "Autorizar",
+      cancelButtonText: "Cancelar",
+    }).then((result) => {
+      if (!result.value || !liq.eventoProgramadoId) return;
+      this.autorizandoId = liq.eventoProgramadoId;
+      this._nominasService
+        .autorizarPagoAdicional(liq.eventoProgramadoId, {
+          usuario: this.usuarioNombre,
+        })
+        .subscribe(
+          () => {
+            this.autorizandoId = null;
+            Swal.fire(
+              "Autorizado",
+              "El usuario podrá liquidar a este trabajador el domingo correspondiente.",
+              "success"
+            );
+            this.simularLiquidacion();
+          },
+          (err) => {
+            this.autorizandoId = null;
+            mostrarErrorNominaApi("Error", err, "No se pudo autorizar");
+          }
+        );
+    });
   }
 
   liquidarUno(liq: LiquidacionDominicalItem) {
@@ -99,6 +228,9 @@ export class NominasLiquidacionDominicalComponent implements OnInit {
           fecha: this.fechaDominical,
           cedula: liq.cedula,
           usuario: this.usuarioNombre,
+          rol: this.rolUsuario,
+          esAdministrador: this.esAdministrador,
+          esUsuario: this.esUsuario,
           aplicarAjustes: true,
         })
         .subscribe(

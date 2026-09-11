@@ -156,6 +156,9 @@ function validarReglaTipoC(regla) {
   if (regla.tipoBeneficiario !== "Interno") {
     return "Los descuentos de nómina solo aplican a beneficiarios internos";
   }
+  if (!(regla.centroCosto || "").trim()) {
+    return "Seleccione el centro de costo";
+  }
   const total = redondear2(regla.montoTotalDeuda || regla.monto || 0);
   if (!total || total <= 0) {
     return "El monto del descuento debe ser mayor a cero";
@@ -229,7 +232,7 @@ async function listarReglasPagoAsociables(cedula) {
     montoVariable: { $ne: true },
   })
     .select(
-      "_id transaccionNomina frecuencia parametro monto nombreBeneficiario cedulaBeneficiario"
+      "_id transaccionNomina frecuencia parametro monto nombreBeneficiario cedulaBeneficiario centroCosto"
     )
     .sort({ createdAt: -1 })
     .lean();

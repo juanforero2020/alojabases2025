@@ -21,6 +21,7 @@ import {
   DesgloseDescuentosEvento,
   EventoPagoProgramado,
   FilaAmortizacion,
+  FacturaPendienteProveedor,
   NominaConfigGlobal,
   ProyeccionPagoNomina,
   ReglaPagoNomina,
@@ -87,6 +88,15 @@ export class NominasService {
   getBeneficiarioExterno(documento: string) {
     return this.http.get<BeneficiarioNomina>(
       `${this.URL}/beneficiario-externo/${documento}`
+    );
+  }
+
+  getFacturasPendientesProveedor(proveedor: string) {
+    return this.http.get<FacturaPendienteProveedor[]>(
+      `${this.URL}/facturas-pendientes-proveedor`,
+      {
+        params: { proveedor: proveedor || "" },
+      }
     );
   }
 
@@ -179,6 +189,9 @@ export class NominasService {
     sucursal?: string;
     cedula?: string;
     usuario?: string;
+    rol?: string;
+    esAdministrador?: boolean;
+    esUsuario?: boolean;
     aplicarAjustes?: boolean;
   }) {
     return this.http.post(`${this.URL}/dominical/liquidar`, {
@@ -244,7 +257,15 @@ export class NominasService {
 
   ejecutarEventoProgramado(
     id: string,
-    payload: { usuario?: string; sucursal?: string; notas?: string; monto?: number }
+    payload: {
+      usuario?: string;
+      sucursal?: string;
+      notas?: string;
+      monto?: number;
+      rol?: string;
+      esAdministrador?: boolean;
+      esUsuario?: boolean;
+    }
   ) {
     return this.http.put(`${this.URL}/eventos-programados/${id}/ejecutar`, payload);
   }
@@ -252,6 +273,13 @@ export class NominasService {
   autorizarEventoFueraPlazo(id: string, payload: { usuario?: string }) {
     return this.http.put(
       `${this.URL}/eventos-programados/${id}/autorizar-fuera-plazo`,
+      payload
+    );
+  }
+
+  autorizarPagoAdicional(id: string, payload: { usuario?: string }) {
+    return this.http.put(
+      `${this.URL}/eventos-programados/${id}/autorizar-pago-adicional`,
       payload
     );
   }

@@ -128,6 +128,11 @@ export interface LiquidacionDominicalItem {
   eventoProgramadoPendiente?: boolean;
   sinEventoProgramado?: boolean;
   eventoProgramadoId?: string;
+  cargoGrupo?: string;
+  cargoPermitidoUsuario?: boolean;
+  cupoUsuario?: boolean;
+  requiereAutorizacionAdmin?: boolean;
+  pagoAdicionalAutorizado?: boolean;
   error?: string;
 }
 
@@ -218,11 +223,17 @@ export interface ReglaPagoNomina {
   empleadoActivo?: boolean;
   tablaMaestraSalarialId?: string;
   proveedorId?: string;
+  asociarFacturaPendiente?: boolean;
+  facturaProveedorId?: string;
+  nFacturaProveedor?: string;
+  nSolicitudFactura?: number;
+  valorAdeudadoFactura?: number;
   fechaAutorizacion?: Date | string;
   proyeccion?: ProyeccionPagoNomina;
   mesesProyeccion?: number;
   creadoPor?: string;
   createdAt?: string;
+  notas?: string;
 }
 
 export interface LineaDesgloseDescuento {
@@ -231,6 +242,7 @@ export interface LineaDesgloseDescuento {
   conceptoDescuento?: string | null;
   etiqueta: string;
   monto: number;
+  notas?: string;
 }
 
 export interface DesgloseDescuentosEvento {
@@ -244,6 +256,20 @@ export interface DesgloseDescuentosEvento {
 export interface BeneficiarioFiltroPagos {
   cedula: string;
   nombre: string;
+  etiquetaDisplay: string;
+  cargo?: string;
+}
+
+export interface FacturaPendienteProveedor {
+  _id: string;
+  nFactura: string;
+  nSolicitud?: number;
+  fecha?: Date | string;
+  total: number;
+  valorAbonado: number;
+  valorAdeudado: number;
+  estado: string;
+  proveedor: string;
   etiquetaDisplay: string;
 }
 
@@ -285,7 +311,13 @@ export interface EventoPagoProgramado {
   pagoFueraPlazoAutorizado?: boolean;
   autorizadoFueraPlazoPor?: string;
   fechaAutorizacionFueraPlazo?: Date | string;
+  pagoAdicionalAutorizado?: boolean;
+  autorizadoAdicionalPor?: string;
+  fechaAutorizacionAdicional?: Date | string;
   notas?: string;
+  facturaProveedorId?: string;
+  nFacturaProveedor?: string;
+  nSolicitudFactura?: number;
 }
 
 /** Fila enriquecida para dx-data-grid (filtros y exportación Excel). */

@@ -77,7 +77,7 @@ export class HomeComponent implements OnInit {
   tipoDetalleOrdenCompraActivo: TipoDetalleIndicadorOrdenCompra | null = null;
   detalleOrdenCompraFiltrado: OrdenDeCompra[] = [];
   versionSistema = "1.1.3";
-  ultimaFechaActualizacion = "15/06/2026 16:00";
+  ultimaFechaActualizacion = "11/09/2026 16:00";
   esAsesorComercial = false;
 
   popupIndicadoresVisible = false;

@@ -30,10 +30,13 @@ export class NominasComponent implements OnInit {
   ];
   seccionActiva = "Tabla Maestra Salarial";
   esAdministrador = false;
+  esUsuario = false;
+  rolUsuario = "";
 
   usuarioLogueado: user;
   nombreUsuario = "";
   mostrarBloqueo = true;
+  sinAccesoModulo = false;
   mostrarLoading = false;
   mensajeLoading = "Cargando...";
 
@@ -148,16 +151,66 @@ export class NominasComponent implements OnInit {
         if (this.usuarioLogueado?.[0]?.name) {
           this.nombreUsuario = this.usuarioLogueado[0].name;
         }
-        this.esAdministrador =
-          this.usuarioLogueado[0].rol?.toString() === "Administrador";
+        this.rolUsuario = this.usuarioLogueado[0].rol?.toString() || "";
+        this.esAdministrador = this.rolUsuario === "Administrador";
+        this.esUsuario = this.rolUsuario === "Usuario";
         if (!this.esAdministrador) {
           this.seccionActiva = "Pagos Programados";
           this.seccionesMenu = ["Pagos Programados", "Liquidación Dominical"];
         }
-        this.mostrarPopupCodigo();
+        this.validarAccesoModuloNominas();
       },
       () => {}
     );
+  }
+
+  validarAccesoModuloNominas() {
+    if (!this.esUsuario) {
+      this.mostrarPopupCodigo();
+      return;
+    }
+
+    console.log(this.usuarioLogueado);
+    console.log(this.usuarioLogueado?.[0]?.codigoAccesoPago);
+    const codigoPago = String(
+      this.usuarioLogueado?.[0]?.codigoAccesoPago || ""
+    ).trim();
+
+    if (!codigoPago) {
+      this.sinAccesoModulo = true;
+      this.mostrarBloqueo = true;
+      return;
+    }
+
+    this.mostrarPopupCodigoAccesoPago();
+  }
+
+  mostrarPopupCodigoAccesoPago() {
+    Swal.fire({
+      title: "Código de acceso a Pagos",
+      text: "Ingrese su código para entrar al módulo de Nóminas",
+      allowOutsideClick: false,
+      showCancelButton: false,
+      inputAttributes: { autocapitalize: "off", maxlength: "10" },
+      confirmButtonText: "Ingresar",
+      input: "password",
+    }).then((result) => {
+      const codigoPago = String(
+        this.usuarioLogueado?.[0]?.codigoAccesoPago || ""
+      ).trim();
+      if (codigoPago && result.value === codigoPago) {
+        this.mostrarBloqueo = false;
+        this.sinAccesoModulo = false;
+        this.inicializarDatos();
+      } else {
+        Swal.fire({
+          title: "Error",
+          text: "El código ingresado no es el correcto",
+          icon: "error",
+          confirmButtonText: "Ok",
+        }).then(() => this.mostrarPopupCodigoAccesoPago());
+      }
+    });
   }
 
   mostrarPopupCodigo() {

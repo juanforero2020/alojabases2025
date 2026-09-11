@@ -58,7 +58,17 @@ const EventoPagoProgramadoSchema = new Schema(
     pagoFueraPlazoAutorizado: { type: Boolean, default: false },
     autorizadoFueraPlazoPor: { type: String, required: false },
     fechaAutorizacionFueraPlazo: { type: Date, required: false },
+    pagoAdicionalAutorizado: { type: Boolean, default: false },
+    autorizadoAdicionalPor: { type: String, required: false },
+    fechaAutorizacionAdicional: { type: Date, required: false },
     notas: { type: String, required: false },
+    facturaProveedorId: {
+      type: Schema.Types.ObjectId,
+      ref: "FacturaProveedor",
+      required: false,
+    },
+    nFacturaProveedor: { type: String, required: false },
+    nSolicitudFactura: { type: Number, required: false },
   },
   { timestamps: true }
 );

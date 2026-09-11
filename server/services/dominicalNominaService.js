@@ -10,12 +10,17 @@ const AjusteNominaPendiente = require("../models/ajusteNominaPendiente");
 const TransaccionFinanciera = require("../models/transaccionFinanciera");
 const Cuenta = require("../models/cuentas");
 
-const CONFIG_CLAVE = "principal";
+const {
+  NOMINA_PRUEBA_PAGO_CUALQUIER_DIA,
+  NOMINA_CALCULAR_DOMINICAL_POR_TRABAJADOR,
+} = require("../utils/nominaPrueba");
 const {
   CUENTA_GASTOS,
   CUENTA_INGRESOS,
   SUBCUENTAS_NOMINA,
 } = require("../utils/cuentasContablesNomina");
+
+const CONFIG_CLAVE = "principal";
 
 const CUENTA_PAGO = CUENTA_GASTOS;
 const SUB_CUENTA_PAGO = SUBCUENTAS_NOMINA.DOMINICALES;
@@ -45,9 +50,71 @@ function normalizarCargoDominical(cargo) {
   return (cargo || "").toString().trim().toUpperCase();
 }
 
-/** Bodeguero: umbral según ventas de la tienda. Demás cargos: ventas del trabajador. */
+/** Bodeguero: siempre umbral de la tienda. Demás cargos: tienda, salvo bandera por trabajador. */
 function usaFacturacionTiendaPorCargo(cargo) {
-  return normalizarCargoDominical(cargo) === "BODEGUERO";
+  if (normalizarCargoDominical(cargo) === "BODEGUERO") return true;
+  return !NOMINA_CALCULAR_DOMINICAL_POR_TRABAJADOR;
+}
+
+function grupoCargoUsuario(cargo) {
+  const g = normalizarCargoDominical(cargo);
+  if (g === "BODEGUERO") return "BODEGUERO";
+  if (g === "VENDEDOR") return "VENDEDOR";
+  return "OTRO";
+}
+
+function anotarCuposUsuario(liquidaciones) {
+  const grupos = { VENDEDOR: [], BODEGUERO: [], OTRO: [] };
+  for (const item of liquidaciones || []) {
+    const grupo = grupoCargoUsuario(item.cargo);
+    item.cargoGrupo = grupo;
+    grupos[grupo].push(item);
+  }
+
+  for (const clave of Object.keys(grupos)) {
+    const items = grupos[clave];
+    const yaPagados = items.filter((i) => i.yaLiquidado).length;
+    const esPermitido = clave === "VENDEDOR" || clave === "BODEGUERO";
+
+    for (const item of items) {
+      const autorizado = !!item.pagoAdicionalAutorizado;
+      item.cargoPermitidoUsuario = esPermitido;
+
+      if (item.yaLiquidado) {
+        item.cupoUsuario = false;
+        item.requiereAutorizacionAdmin = false;
+        continue;
+      }
+
+      if (!esPermitido) {
+        item.cupoUsuario = false;
+        item.requiereAutorizacionAdmin = true;
+        continue;
+      }
+
+      if (yaPagados === 0) {
+        item.cupoUsuario = true;
+        item.requiereAutorizacionAdmin = false;
+      } else {
+        item.cupoUsuario = false;
+        item.requiereAutorizacionAdmin = !autorizado;
+      }
+    }
+  }
+
+  return liquidaciones;
+}
+
+function esRolUsuario(opciones = {}) {
+  if (opciones.esAdministrador === true) return false;
+  const rol = (opciones.rol || "").toString().trim();
+  return rol === "Usuario" || opciones.esUsuario === true;
+}
+
+function hoyCalendarioLocal() {
+  const n = new Date();
+  n.setHours(0, 0, 0, 0);
+  return n;
 }
 
 function resolverFacturacionNetaCalculoDominical(
@@ -159,12 +226,53 @@ function rangoFechaProgramada(fecha) {
 
 async function buscarEventoProgramadoPendiente(reglaId, fechaDom) {
   if (!reglaId) return null;
+  const clave = claveFechaCalendario(fechaDom);
   const { inicio, fin } = rangoFechaProgramada(fechaDom);
-  return EventoPagoProgramado.findOne({
+
+  const eventos = await EventoPagoProgramado.find({
     reglaPagoId: reglaId,
     estado: { $in: ["Pendiente", "Parcial"] },
-    fechaProgramada: { $gte: inicio, $lte: fin },
+    $or: [
+      { fechaProgramada: { $gte: inicio, $lte: fin } },
+      { fechaMin: { $gte: inicio, $lte: fin } },
+      { fechaMax: { $gte: inicio, $lte: fin } },
+    ],
   });
+
+  const delDia = eventos.filter((ev) => eventoCoincideDomingo(ev, clave));
+  const lista = delDia.length ? delDia : eventos;
+  return (
+    lista.find((ev) => ev.pagoAdicionalAutorizado) || lista[0] || null
+  );
+}
+
+function eventoCoincideDomingo(ev, claveDomingo) {
+  if (!claveDomingo) return false;
+  const claves = [
+    claveFechaCalendario(ev.fechaProgramada),
+    claveFechaCalendario(ev.fechaMin),
+    claveFechaCalendario(ev.fechaMax),
+  ].filter(Boolean);
+  return claves.includes(claveDomingo);
+}
+
+async function cedulasAutorizadasAdicional(fechaDom) {
+  const clave = claveFechaCalendario(fechaDom);
+  const eventos = await EventoPagoProgramado.find({
+    pagoAdicionalAutorizado: true,
+    estado: { $in: ["Pendiente", "Parcial"] },
+  }).lean();
+  const porFecha = new Set();
+  const todas = new Set();
+  for (const ev of eventos) {
+    const cedula = String(ev.cedulaBeneficiario || "").trim();
+    if (!cedula) continue;
+    todas.add(cedula);
+    if (eventoCoincideDomingo(ev, clave)) {
+      porFecha.add(cedula);
+    }
+  }
+  return porFecha.size ? porFecha : todas;
 }
 
 async function marcarEventoProgramadoDominicalLiquidado(
@@ -216,6 +324,50 @@ function inicioSemanaDomingo(fecha) {
 
 function esDomingo(fecha) {
   return parseFechaEntrada(fecha).getDay() === 0;
+}
+
+async function contarLiquidadosGrupo(fechaDom, cargoGrupo) {
+  const { inicio, fin } = rangoDiaCalendario(fechaDom);
+  const eventos = await EventoPagoDominical.find({
+    fechaDominical: { $gte: inicio, $lte: fin },
+    estado: "Pagado",
+  }).lean();
+  return eventos.filter((e) => grupoCargoUsuario(e.cargo) === cargoGrupo)
+    .length;
+}
+
+async function assertUsuarioPuedeLiquidar(item, fechaDom, opciones) {
+  if (!esRolUsuario(opciones)) return;
+
+  const hoy = hoyCalendarioLocal();
+  if (!NOMINA_PRUEBA_PAGO_CUALQUIER_DIA) {
+    if (!esDomingo(hoy)) {
+      throw new Error(
+        "El pago dominical solo se habilita el domingo correspondiente"
+      );
+    }
+    if (claveFechaCalendario(hoy) !== claveFechaCalendario(fechaDom)) {
+      throw new Error(
+        "El pago dominical solo se habilita ese mismo domingo, no en fechas antiguas o posteriores"
+      );
+    }
+  }
+
+  const grupo = grupoCargoUsuario(item.cargo);
+  if (grupo !== "VENDEDOR" && grupo !== "BODEGUERO") {
+    throw new Error(
+      "El rol Usuario solo puede liquidar a un vendedor y un bodeguero. Este cargo requiere un administrador."
+    );
+  }
+
+  if (item.pagoAdicionalAutorizado) return;
+
+  const liquidadosGrupo = await contarLiquidadosGrupo(fechaDom, grupo);
+  if (liquidadosGrupo >= 1) {
+    throw new Error(
+      "Ya se liquidó a un trabajador de este cargo. El administrador debe autorizar el pago adicional."
+    );
+  }
 }
 
 async function obtenerConfigGlobal() {
@@ -457,6 +609,7 @@ async function simularLiquidacionDominical(fecha, opciones = {}) {
   const reglas = await ReglaPagoNomina.find(
     filtroReglasDominicalAutorizadas()
   ).lean();
+  const cedulasAutorizadas = await cedulasAutorizadasAdicional(fechaDom);
 
   const liquidaciones = [];
   for (const regla of reglas) {
@@ -501,6 +654,7 @@ async function simularLiquidacionDominical(fecha, opciones = {}) {
         cedula: regla.cedulaBeneficiario,
         nombre: regla.nombreBeneficiario,
         cargo,
+        centroCosto: regla.centroCosto || "",
         usuarioSistemaNombre: tms?.usuarioSistemaNombre || "",
         usuarioSistemaUsername: tms?.usuarioSistemaUsername || "",
         facturacionNetaTienda: facturacion.facturacionNeta,
@@ -514,7 +668,12 @@ async function simularLiquidacionDominical(fecha, opciones = {}) {
         montoNeto: Math.max(0, tarifa.monto - ajustesPendientes),
         yaLiquidado,
         eventoProgramadoPendiente: !!eventoProgramado,
-        eventoProgramadoId: eventoProgramado?._id,
+        eventoProgramadoId: eventoProgramado?._id
+          ? String(eventoProgramado._id)
+          : undefined,
+        pagoAdicionalAutorizado:
+          !!eventoProgramado?.pagoAdicionalAutorizado ||
+          cedulasAutorizadas.has(String(regla.cedulaBeneficiario || "").trim()),
         sinEventoProgramado: !eventoProgramado && !yaLiquidado,
       });
     } catch (err) {
@@ -527,6 +686,8 @@ async function simularLiquidacionDominical(fecha, opciones = {}) {
       });
     }
   }
+
+  anotarCuposUsuario(liquidaciones);
 
   const facturacionResumen = { ...facturacion };
   delete facturacionResumen.facturas;
@@ -590,12 +751,34 @@ async function resolverCuentaDescuentoDominical() {
 
 async function liquidarDominical(fecha, opciones = {}) {
   const fechaNormalizada = inicioSemanaDomingo(fecha);
-  const simulacion = await simularLiquidacionDominical(
+  const simulacionCompleta = await simularLiquidacionDominical(
     fechaNormalizada,
-    opciones
+    { sucursal: opciones.sucursal }
   );
+  const fechaDom = simulacionCompleta.facturacion.fecha;
+  const destino = simulacionCompleta.liquidaciones.filter((item) => {
+    if (opciones.cedula) return item.cedula === opciones.cedula;
+    return true;
+  });
+
+  if (esRolUsuario(opciones)) {
+    if (!opciones.cedula) {
+      throw new Error("El rol Usuario debe liquidar de forma individual");
+    }
+    const item = destino[0];
+    if (!item) {
+      throw new Error("No se encontró el trabajador a liquidar");
+    }
+    await assertUsuarioPuedeLiquidar(item, fechaDom, opciones);
+  }
+
+  const simulacion = opciones.cedula
+    ? {
+        ...simulacionCompleta,
+        liquidaciones: destino,
+      }
+    : simulacionCompleta;
   const resultados = [];
-  const fechaDom = simulacion.facturacion.fecha;
 
   for (const item of simulacion.liquidaciones) {
     if (item.error || item.yaLiquidado) {
@@ -623,6 +806,7 @@ async function liquidarDominical(fecha, opciones = {}) {
         cliente: item.nombre,
         beneficiario: item.nombre,
         cedula: item.cedula,
+        centroCosto: item.centroCosto || "",
         valor: montoNeto,
         tipoPago: "Egreso",
         cuenta: cuentaPago.cuenta,

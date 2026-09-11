@@ -18,6 +18,7 @@ import {
   formatoFechaCalendarioNomina,
   hoyCalendarioNomina,
   inicioDiaCalendarioNomina,
+  NOMINA_PRUEBA_PAGO_CUALQUIER_DIA,
   textoFechaPagoNomina,
 } from "./nominas-fecha.util";
 
@@ -29,6 +30,7 @@ import {
 export class NominasPagosProgramadosComponent implements OnInit {
   @Input() usuarioNombre = "";
   @Input() esAdministrador = false;
+  @Input() esUsuario = false;
 
   eventosProgramados: EventoPagoProgramadoFila[] = [];
   nombreArchivoExport = "Pagos_Programados";
@@ -110,6 +112,7 @@ export class NominasPagosProgramadosComponent implements OnInit {
       .map((r) => ({
         cedula: r.cedula.trim(),
         nombre: (r.nombre || "").trim(),
+        cargo: (r.cargo || "").trim(),
         etiquetaDisplay: `${(r.nombre || "").trim()} — ${r.cedula.trim()}`,
       }))
       .sort((a, b) => a.nombre.localeCompare(b.nombre, "es"));
@@ -269,7 +272,11 @@ export class NominasPagosProgramadosComponent implements OnInit {
           .map(
             (l) =>
               `<tr>
-                <td class="text-left">${l.etiqueta}</td>
+                <td class="text-left">${l.etiqueta}${
+                  l.notas
+                    ? `<br/><span class="text-muted small">${l.notas}</span>`
+                    : ""
+                }</td>
                 <td class="text-right text-danger">−$${Number(l.monto).toFixed(2)}</td>
               </tr>`
           )
@@ -435,11 +442,42 @@ export class NominasPagosProgramadosComponent implements OnInit {
     });
   }
 
+  autorizarPagoAdicional(ev: EventoPagoProgramado) {
+    Swal.fire({
+      title: "Autorizar pago adicional",
+      html: `¿Habilitar el pago de <strong>${ev.nombreBeneficiario}</strong> para el rol Usuario?<br/>
+        <span class="text-muted">El usuario ya puede pagar a un trabajador de este cargo. Esta autorización permite pagar al adicional.</span>`,
+      icon: "question",
+      showCancelButton: true,
+      confirmButtonText: "Autorizar",
+      cancelButtonText: "Cancelar",
+    }).then((result) => {
+      if (!result.value || !ev._id) return;
+      this._nominasService
+        .autorizarPagoAdicional(ev._id, { usuario: this.usuarioNombre })
+        .subscribe(
+          () => {
+            Swal.fire(
+              "Autorizado",
+              "El usuario podrá registrar el pago de este trabajador el domingo correspondiente.",
+              "success"
+            );
+            this.cargarEventosProgramados();
+          },
+          (err) =>
+            mostrarErrorNominaApi("Error", err, "No se pudo autorizar")
+        );
+    });
+  }
+
   private registrarPago(eventoId: string, monto?: number) {
     this._nominasService
       .ejecutarEventoProgramado(eventoId, {
         usuario: this.usuarioNombre,
         monto,
+        rol: this.esUsuario ? "Usuario" : this.esAdministrador ? "Administrador" : "",
+        esAdministrador: this.esAdministrador,
+        esUsuario: this.esUsuario,
       })
       .subscribe(
         (res: any) => {
@@ -541,6 +579,10 @@ export class NominasPagosProgramadosComponent implements OnInit {
     if (this.estaDespuesDeVentana(ev) && !this.estaAutorizadoFueraPlazo(ev)) {
       return false;
     }
+    if (this.esUsuario && !this.esAdministrador) {
+      if (!this.esDomingoHoy()) return false;
+      if (!this.puedePagarTrabajadorUsuario(ev)) return false;
+    }
     return true;
   }
 
@@ -551,7 +593,16 @@ export class NominasPagosProgramadosComponent implements OnInit {
     return !this.estaAutorizadoFueraPlazo(ev);
   }
 
+  puedeAutorizarAdicional(ev: EventoPagoProgramado): boolean {
+    if (!this.esAdministrador) return false;
+    if (this.esPagoDominical(ev)) return false;
+    if (ev.estado !== "Pendiente" && ev.estado !== "Parcial") return false;
+    if (ev.pagoAdicionalAutorizado) return false;
+    return this.esTrabajadorAdicionalUsuario(ev);
+  }
+
   puedeAnularEvento(ev: EventoPagoProgramado): boolean {
+    if (!this.esAdministrador) return false;
     return ev.estado === "Pendiente" || ev.estado === "Parcial";
   }
 
@@ -591,18 +642,89 @@ export class NominasPagosProgramadosComponent implements OnInit {
     if (this.esPagoDominical(ev)) {
       return "Liquidar en Liquidación Dominical";
     }
-    if (this.puedeEjecutarEvento(ev) || this.puedeAutorizarFueraPlazo(ev)) {
+    if (this.puedeEjecutarEvento(ev) || this.puedeAutorizarFueraPlazo(ev) || this.puedeAutorizarAdicional(ev)) {
       return null;
     }
     if (this.estaAntesDeVentana(ev)) return "Fuera de fecha";
     if (this.estaDespuesDeVentana(ev) && !this.estaAutorizadoFueraPlazo(ev)) {
       return "En espera de autorización";
     }
+    if (
+      this.esUsuario &&
+      !this.esAdministrador &&
+      !this.esDomingoHoy()
+    ) {
+      return "Solo se habilita el domingo de hoy";
+    }
+    if (
+      this.esUsuario &&
+      !this.esAdministrador &&
+      this.esTrabajadorAdicionalUsuario(ev) &&
+      !ev.pagoAdicionalAutorizado
+    ) {
+      return "En espera de autorización";
+    }
+    if (this.esUsuario && !this.esAdministrador) {
+      const grupo = this.grupoCargoUsuario(
+        this.cargoBeneficiario(ev.cedulaBeneficiario || "")
+      );
+      if (grupo !== "VENDEDOR" && grupo !== "BODEGUERO") {
+        return "Solo el administrador puede pagar este cargo";
+      }
+    }
     return null;
   }
 
   estaAutorizadoFueraPlazo(ev: EventoPagoProgramado): boolean {
     return !!ev.pagoFueraPlazoAutorizado;
+  }
+
+  esDomingoHoy(): boolean {
+    if (NOMINA_PRUEBA_PAGO_CUALQUIER_DIA) return true;
+    return this.hoyInicio().getDay() === 0;
+  }
+
+  grupoCargoUsuario(cargo: string): "VENDEDOR" | "BODEGUERO" | "OTRO" {
+    const c = (cargo || "")
+      .toString()
+      .trim()
+      .toLowerCase()
+      .normalize("NFD")
+      .replace(/[\u0300-\u036f]/g, "");
+    if (c.includes("bodeguero")) return "BODEGUERO";
+    if (c.includes("vendedor") || c.includes("distribuidor") || c === "usuario") {
+      return "VENDEDOR";
+    }
+    return "OTRO";
+  }
+
+  cargoBeneficiario(cedula: string): string {
+    const found = this.beneficiariosFiltro.find((b) => b.cedula === cedula);
+    return found?.cargo || "";
+  }
+
+  cedulaCupoUsuario(grupo: "VENDEDOR" | "BODEGUERO"): string | null {
+    const items = this.beneficiariosFiltro
+      .filter((b) => this.grupoCargoUsuario(b.cargo || "") === grupo)
+      .sort((a, b) => a.nombre.localeCompare(b.nombre, "es"));
+    return items[0]?.cedula || null;
+  }
+
+  puedePagarTrabajadorUsuario(ev: EventoPagoProgramado): boolean {
+    if (ev.pagoAdicionalAutorizado) return true;
+    const grupo = this.grupoCargoUsuario(
+      this.cargoBeneficiario(ev.cedulaBeneficiario || "")
+    );
+    if (grupo !== "VENDEDOR" && grupo !== "BODEGUERO") return false;
+    return this.cedulaCupoUsuario(grupo) === ev.cedulaBeneficiario;
+  }
+
+  esTrabajadorAdicionalUsuario(ev: EventoPagoProgramado): boolean {
+    const grupo = this.grupoCargoUsuario(
+      this.cargoBeneficiario(ev.cedulaBeneficiario || "")
+    );
+    if (grupo !== "VENDEDOR" && grupo !== "BODEGUERO") return false;
+    return this.cedulaCupoUsuario(grupo) !== ev.cedulaBeneficiario;
   }
 
   private inicioDia(fecha: Date | string): Date {
@@ -722,7 +844,12 @@ export class NominasPagosProgramadosComponent implements OnInit {
     const lineas = desglose.lineas || [];
     if (lineas.length) {
       return lineas.map((l) => [
-        { text: `Descuento: ${l.etiqueta}`, style: "detalleConcepto" },
+        {
+          text: l.notas
+            ? `Descuento: ${l.etiqueta}\n${l.notas}`
+            : `Descuento: ${l.etiqueta}`,
+          style: "detalleConcepto",
+        },
         {
           text: `−${this.formatoMonedaPdf(l.monto)}`,
           style: "detalleMontoDescuento",
@@ -899,6 +1026,20 @@ export class NominasPagosProgramadosComponent implements OnInit {
                 { text: "Usuario", style: "labelCampo" },
                 { text: this.usuarioNombre || "—", style: "valorCampo" },
               ],
+              ...(ev.notas
+                ? [
+                    [
+                      { text: "Notas", style: "labelCampo" },
+                      {
+                        text: ev.notas,
+                        style: "valorCampo",
+                        colSpan: 3,
+                      },
+                      {},
+                      {},
+                    ],
+                  ]
+                : []),
             ],
           },
           layout: {

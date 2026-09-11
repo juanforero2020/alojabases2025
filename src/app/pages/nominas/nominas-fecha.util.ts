@@ -10,6 +10,19 @@ import {
   TablaMaestraSalarial,
 } from "./nominas";
 
+/**
+ * PRUEBAS: ponga true para habilitar Pagar/Liquidar cualquier día (no solo domingo).
+ * Vuelva a false cuando termine de probar.
+ */
+export const NOMINA_PRUEBA_PAGO_CUALQUIER_DIA = true;
+
+/**
+ * Dominical: false = rango según ventas globales de la tienda.
+ * true = vendedores/usuarios con ventas de ese trabajador (solo texto de pantalla;
+ * el cálculo real se activa en server/utils/nominaPrueba.js).
+ */
+export const NOMINA_CALCULAR_DOMINICAL_POR_TRABAJADOR = false;
+
 /** Convierte fechas calendario del API (ISO UTC) a medianoche local sin desfase de un día. */
 export function fechaCalendarioLocal(
   valor: Date | string | null | undefined

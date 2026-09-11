@@ -107,6 +107,15 @@ const ReglaPagoNominaSchema = new Schema(
       required: false,
     },
     proveedorId: { type: Schema.Types.ObjectId, ref: "Proveedor", required: false },
+    asociarFacturaPendiente: { type: Boolean, default: false },
+    facturaProveedorId: {
+      type: Schema.Types.ObjectId,
+      ref: "FacturaProveedor",
+      required: false,
+    },
+    nFacturaProveedor: { type: String, required: false },
+    nSolicitudFactura: { type: Number, required: false },
+    valorAdeudadoFactura: { type: Number, required: false },
     fechaAutorizacion: { type: Date, required: false },
     proyeccion: {
       etiquetaFila: { type: String, default: "Nómina" },
@@ -114,6 +123,7 @@ const ReglaPagoNominaSchema = new Schema(
     },
     mesesProyeccion: { type: Number, default: 3 },
     creadoPor: { type: String, required: false },
+    notas: { type: String, required: false, trim: true, default: "" },
   },
   { timestamps: true }
 );

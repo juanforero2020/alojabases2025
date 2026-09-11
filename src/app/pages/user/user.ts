@@ -16,6 +16,7 @@ export class user{
     codigo : string
     codigoFacturacion : string
     codigoAutorizacion : string
+    codigoAccesoPago : string
     constructor(){
        
     }

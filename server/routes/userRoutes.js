@@ -66,14 +66,14 @@ router.get('/getUsers1/:correo', verifyToken, async (req, res) => {
 
 
 router.post('/newUser', verifyToken, async (req, res) => {
-    const { email, password, name, rol,grupo,sucursal,numUsuarios,username, status,codigoFacturacion } = req.body;
+    const { email, password, name, rol,grupo,sucursal,numUsuarios,username, status,codigoFacturacion, codigoAccesoPago } = req.body;
     const emailExiste = await User.findOne({ email });
     if (emailExiste){
         return  res.status(401).send('Correo ya está asociado a otra cuenta');
     } 
     else{
-        const { email, password, name, rol,sucursal,numUsuarios,username,imageProfile, status, codigoFacturacion } = req.body;
-        const newUser = new User({ email, password, name, rol,sucursal,numUsuarios,username,imageProfile, status, codigoFacturacion});
+        const { email, password, name, rol,sucursal,numUsuarios,username,imageProfile, status, codigoFacturacion, codigoAccesoPago } = req.body;
+        const newUser = new User({ email, password, name, rol,sucursal,numUsuarios,username,imageProfile, status, codigoFacturacion, codigoAccesoPago});
         await newUser.save();
         res.json({status: 'user creado'});
     }
@@ -103,7 +103,8 @@ router.put('/updateUser/:id', verifyToken, async (req, res, next) => {
         empresa: req.body.empresa,
         status:req.body.status,
         imageProfile: req.body.imageProfile,
-        codigoFacturacion: req.body.codigoFacturacion
+        codigoFacturacion: req.body.codigoFacturacion,
+        codigoAccesoPago: req.body.codigoAccesoPago
     };
     await User.findByIdAndUpdate(id, {$set: user}, {new: true});
     res.json({status: 'Perfil Actualizado'});  
@@ -120,7 +121,8 @@ router.put('/update/:id', verifyToken, async (req, res, next) => {
         grupo: req.body.grupo,
         empresa: req.body.empresa,
         status:req.body.status,
-        codigoFacturacion: req.body.codigoFacturacion
+        codigoFacturacion: req.body.codigoFacturacion,
+        codigoAccesoPago: req.body.codigoAccesoPago
     };
     await User.findByIdAndUpdate(id, {$set: usuario}, {new: true});
     res.json({status: 'User Updated'});  
