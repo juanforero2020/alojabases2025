@@ -19,6 +19,10 @@ const {
   CUENTA_INGRESOS,
   SUBCUENTAS_NOMINA,
 } = require("../utils/cuentasContablesNomina");
+const {
+  calcularDescuentoPrestamoParaPago,
+  registrarAbonosPrestamo,
+} = require("../utils/proyeccionPagosTipoD");
 
 const CONFIG_CLAVE = "principal";
 
@@ -43,7 +47,7 @@ function normalizarCargoDominical(cargo) {
   if (
     c.includes("vendedor") ||
     c.includes("distribuidor") ||
-    c === "usuario"
+    c.includes("usuario")
   ) {
     return "VENDEDOR";
   }
@@ -286,10 +290,13 @@ async function marcarEventoProgramadoDominicalLiquidado(
 
   const montoBruto = Number(item.montoBruto) || 0;
   const montoNeto = Number(itemResult.montoNeto) || 0;
+  const montoDescPrestamo = Number(itemResult.montoDescuentoPrestamo) || 0;
   const txId = itemResult.transaccion?._id;
 
+  evento.montoBruto = montoBruto;
   evento.monto = montoBruto;
   evento.montoPagado = montoNeto;
+  evento.montoDescuento = montoDescPrestamo;
   evento.estado = "Ejecutado";
   evento.transaccionFinancieraId = txId || evento.transaccionFinancieraId;
   evento.ejecutadoPor = opciones.usuario || "";
@@ -749,6 +756,17 @@ async function resolverCuentaDescuentoDominical() {
   };
 }
 
+async function resolverCuentaPrestamoDominical() {
+  const cuentaDoc = await Cuenta.findOne({
+    nombre: { $regex: /^1\.3\s+INGRESOS/i },
+  });
+  return {
+    cuenta: cuentaDoc?.nombre || CUENTA_INGRESOS,
+    tipoCuenta: cuentaDoc?.tipoCuenta || "Ingresos",
+    subCuenta: SUBCUENTAS_NOMINA.PRESTAMOS,
+  };
+}
+
 async function liquidarDominical(fecha, opciones = {}) {
   const fechaNormalizada = inicioSemanaDomingo(fecha);
   const simulacionCompleta = await simularLiquidacionDominical(
@@ -794,33 +812,98 @@ async function liquidarDominical(fecha, opciones = {}) {
         opciones.usuario || ""
       );
     }
-    const montoNeto = Math.max(0, montoBruto - ajustesAplicados);
+    const montoNetoBase = Math.max(0, montoBruto - ajustesAplicados);
+    const eventoProgPendiente = await buscarEventoProgramadoPendiente(
+      item.reglaId,
+      fechaDom
+    );
+    let descPrestamo = { monto: 0, lineas: [] };
+    if (eventoProgPendiente) {
+      descPrestamo = await calcularDescuentoPrestamoParaPago(
+        eventoProgPendiente,
+        montoNetoBase
+      );
+    } else if (item.reglaId) {
+      descPrestamo = await calcularDescuentoPrestamoParaPago(
+        {
+          cedulaBeneficiario: item.cedula,
+          reglaPagoId: item.reglaId,
+          transaccionNomina: "Dominical",
+          nombreBeneficiario: item.nombre,
+          numeroCuota: 1,
+          totalCuotas: 1,
+        },
+        montoNetoBase
+      );
+    }
+    const montoDescPrestamo = Number(descPrestamo.monto) || 0;
+    const montoNeto = Math.max(0, montoNetoBase - montoDescPrestamo);
 
     let txPago = null;
-    if (montoNeto > 0) {
+    if (montoNeto > 0 || montoDescPrestamo > 0) {
       const cuentaPago = await resolverCuentaPagoDominical();
-      txPago = await crearTransaccionFinanciera({
-        fecha: new Date(),
-        fechaContable: fechaDom,
-        sucursal: opciones.sucursal || "matriz",
-        cliente: item.nombre,
-        beneficiario: item.nombre,
-        cedula: item.cedula,
-        centroCosto: item.centroCosto || "",
-        valor: montoNeto,
-        tipoPago: "Egreso",
-        cuenta: cuentaPago.cuenta,
-        tipoCuenta: cuentaPago.tipoCuenta,
-        subCuenta: cuentaPago.subCuenta,
-        tipoTransaccion: TIPO_PAGO,
-        notas: construirNotasPagoDominical(
-          item,
-          fechaDom,
-          `Facturación base cálculo $${item.facturacionNetaCalculo ?? simulacion.facturacion.facturacionNeta}. Rango ${item.rangoAplicado}.`
-        ),
-        isContabilizada: true,
-        usuario: opciones.usuario || "",
-      });
+      if (montoNeto > 0) {
+        txPago = await crearTransaccionFinanciera({
+          fecha: new Date(),
+          fechaContable: fechaDom,
+          sucursal: opciones.sucursal || "matriz",
+          cliente: item.nombre,
+          beneficiario: item.nombre,
+          cedula: item.cedula,
+          centroCosto: item.centroCosto || "",
+          valor: montoNeto,
+          tipoPago: "Egreso",
+          cuenta: cuentaPago.cuenta,
+          tipoCuenta: cuentaPago.tipoCuenta,
+          subCuenta: cuentaPago.subCuenta,
+          tipoTransaccion: TIPO_PAGO,
+          notas: construirNotasPagoDominical(
+            item,
+            fechaDom,
+            `Facturación base cálculo $${item.facturacionNetaCalculo ?? simulacion.facturacion.facturacionNeta}. Rango ${item.rangoAplicado}.${
+              montoDescPrestamo > 0
+                ? ` Descuento préstamo $${montoDescPrestamo.toFixed(2)}.`
+                : ""
+            }`
+          ),
+          isContabilizada: true,
+          usuario: opciones.usuario || "",
+        });
+      }
+    }
+
+    const transaccionesPrestamo = [];
+    if (montoDescPrestamo > 0.009) {
+      const cuentaPrestamo = await resolverCuentaPrestamoDominical();
+      for (const linea of descPrestamo.lineas || []) {
+        const txPrestamo = await crearTransaccionFinanciera({
+          fecha: new Date(),
+          fechaContable: fechaDom,
+          sucursal: opciones.sucursal || "matriz",
+          cliente: item.nombre,
+          beneficiario: item.nombre,
+          cedula: item.cedula,
+          centroCosto: linea.centroCosto || item.centroCosto || "",
+          valor: linea.monto,
+          tipoPago: "Ingreso",
+          cuenta: cuentaPrestamo.cuenta,
+          tipoCuenta: cuentaPrestamo.tipoCuenta,
+          subCuenta: cuentaPrestamo.subCuenta,
+          tipoTransaccion: "DESCUENTO_PRESTAMO_NOMINA",
+          referenciaPrestamo: linea.reglaDescuentoId
+            ? String(linea.reglaDescuentoId)
+            : undefined,
+          notas: construirNotasPagoDominical(
+            item,
+            fechaDom,
+            linea.etiqueta || "Abono préstamo",
+            "Abono préstamo nómina"
+          ),
+          isContabilizada: true,
+          usuario: opciones.usuario || "",
+        });
+        transaccionesPrestamo.push(txPrestamo);
+      }
     }
 
     const evento = new EventoPagoDominical({
@@ -852,8 +935,20 @@ async function liquidarDominical(fecha, opciones = {}) {
       item,
       fechaDom,
       opciones,
-      { ...item, evento, transaccion: txPago, montoNeto }
+      {
+        ...item,
+        evento,
+        transaccion: txPago,
+        montoNeto,
+        montoDescuentoPrestamo: montoDescPrestamo,
+      }
     );
+    if (eventoProgramado && montoDescPrestamo > 0.009) {
+      await registrarAbonosPrestamo(eventoProgramado, descPrestamo.lineas, {
+        usuario: opciones.usuario || "",
+        transaccionId: transaccionesPrestamo[0]?._id,
+      });
+    }
     resultados.push({
       ...item,
       evento,

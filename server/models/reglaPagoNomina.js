@@ -34,9 +34,53 @@ const FilaAmortizacionSchema = new Schema(
   { _id: false }
 );
 
+const FuenteDescuentoPrestamoSchema = new Schema(
+  {
+    reglaPagoId: {
+      type: Schema.Types.ObjectId,
+      ref: "ReglaPagoNomina",
+      required: true,
+    },
+    transaccionNomina: { type: String, required: false },
+    frecuencia: { type: String, required: false },
+    parametro: { type: String, required: false },
+    tipoRegla: { type: String, required: false },
+    montoVariable: { type: Boolean, default: false },
+    montoPago: { type: Number, default: 0 },
+    monto: { type: Number, required: true, default: 0 },
+    seleccionado: { type: Boolean, default: false },
+  },
+  { _id: false }
+);
+
+const AbonoPrestamoSchema = new Schema(
+  {
+    fecha: { type: Date, default: Date.now },
+    monto: { type: Number, required: true, default: 0 },
+    eventoPagoId: {
+      type: Schema.Types.ObjectId,
+      ref: "EventoPagoProgramado",
+      required: false,
+    },
+    transaccionFinancieraId: {
+      type: Schema.Types.ObjectId,
+      ref: "TransaccionesFinancieras",
+      required: false,
+    },
+    eventoCobroId: {
+      type: Schema.Types.ObjectId,
+      ref: "EventoCobroPrestamo",
+      required: false,
+    },
+    transaccionNominaOrigen: { type: String, required: false },
+    ejecutadoPor: { type: String, required: false },
+  },
+  { _id: true }
+);
+
 const ReglaPagoNominaSchema = new Schema(
   {
-    tipoRegla: { type: String, enum: ["A", "B", "C"], default: "A" },
+    tipoRegla: { type: String, enum: ["A", "B", "C", "D"], default: "A" },
     esDescuento: { type: Boolean, default: false },
     reglaPagoAsociadaId: {
       type: Schema.Types.ObjectId,
@@ -62,6 +106,9 @@ const ReglaPagoNominaSchema = new Schema(
     diaDelMes: { type: Number, required: false },
     fechaReferenciaAnual: { type: Date, required: false },
     fechaInicioPagos: { type: Date, required: false },
+    fechaDesembolso: { type: Date, required: false },
+    fechaInicioCobros: { type: Date, required: false },
+    frecuenciaCobro: { type: String, required: false },
     diaInicioVentana: { type: Number, default: 2 },
     diaLimiteVentana: { type: Number, default: 5 },
     vigenciaRegla: { type: String, default: "Finalizacion Contrato" },
@@ -122,6 +169,15 @@ const ReglaPagoNominaSchema = new Schema(
       meses: { type: [MesProyeccionSchema], default: [] },
     },
     mesesProyeccion: { type: Number, default: 3 },
+    montoPrestado: { type: Number, required: false, default: 0 },
+    porcentajeInteres: { type: Number, required: false, default: 0 },
+    montoInteres: { type: Number, required: false, default: 0 },
+    saldoPendientePrestamo: { type: Number, required: false },
+    fuentesDescuentoPrestamo: {
+      type: [FuenteDescuentoPrestamoSchema],
+      default: [],
+    },
+    abonosPrestamo: { type: [AbonoPrestamoSchema], default: [] },
     creadoPor: { type: String, required: false },
     notas: { type: String, required: false, trim: true, default: "" },
   },

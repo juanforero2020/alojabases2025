@@ -1,0 +1,36 @@
+.cobros-titulo {
+  background-color: #fff3cd;
+  color: #c62828;
+  font-weight: bold;
+  text-transform: uppercase;
+  padding: 0.5rem 1rem;
+  margin-bottom: 1rem;
+  border-left: 4px solid #c62828;
+}
+
+.cobros-filtros label {
+  font-size: 0.85rem;
+  font-weight: 600;
+  margin-bottom: 0.25rem;
+}
+
+.cobros-loading {
+  min-height: 180px;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+}
+
+.btn-nomina-primario {
+  background-color: #c62828;
+  border-color: #c62828;
+  color: #fff;
+
+  &:hover,
+  &:focus {
+    background-color: #b71c1c;
+    border-color: #b71c1c;
+    color: #fff;
+  }
+}

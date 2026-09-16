@@ -204,6 +204,12 @@ async function generarEventosProgramados(regla, opciones = {}) {
   for (const reglaC of reglasDescuento) {
     await aplicarDescuentosEnEventos(reglaC, reglaObj);
   }
+  if (reglaObj.cedulaBeneficiario) {
+    const {
+      recalcularPrestamosBeneficiario,
+    } = require("../utils/proyeccionPagosTipoD");
+    await recalcularPrestamosBeneficiario(reglaObj.cedulaBeneficiario);
+  }
 
   return { proyeccion, eventos: creados };
 }
@@ -330,6 +336,12 @@ async function extenderEventosProgramados(reglaId, opciones = {}) {
   });
   for (const reglaC of reglasDescuento) {
     await aplicarDescuentosEnEventos(reglaC, reglaObj);
+  }
+  if (reglaObj.cedulaBeneficiario) {
+    const {
+      recalcularPrestamosBeneficiario,
+    } = require("../utils/proyeccionPagosTipoD");
+    await recalcularPrestamosBeneficiario(reglaObj.cedulaBeneficiario);
   }
 
   return {

@@ -12,12 +12,19 @@ const dominicalNominaService = require("../services/dominicalNominaService");
 const tipoBNominaService = require("../services/tipoBNominaService");
 const tipoANominaService = require("../services/tipoANominaService");
 const tipoCNominaService = require("../services/tipoCNominaService");
+const tipoDNominaService = require("../services/tipoDNominaService");
+const cobroPrestamoNominaService = require("../services/cobroPrestamoNominaService");
 const {
   construirProyeccionTipoC,
   recalcularDescuentosEnEventos,
   montoDescuentoReglaCEnEvento,
   esDescuentosGenerales,
 } = require("../utils/proyeccionPagosTipoC");
+const {
+  construirProyeccionTipoD,
+  recalcularPrestamosBeneficiario,
+  obtenerLineasPrestamoEvento,
+} = require("../utils/proyeccionPagosTipoD");
 const { calcularMontoSegSocialDesdeBase } = require("../utils/aporteIessNomina");
 const EventoPagoDominical = require("../models/eventoPagoDominical");
 const EventoPagoProgramado = require("../models/eventoPagoProgramado");
@@ -392,6 +399,61 @@ router.post("/config-global/restablecer", async (req, res) => {
 
 // --- Beneficiarios (lookup TMS / Proveedores) ---
 
+router.get("/beneficiarios-busqueda", async (req, res) => {
+  try {
+    const tipo = (req.query.tipo || "Interno").toString().trim();
+    if (tipo === "Externo") {
+      const proveedores = await Proveedor.find({})
+        .select("ruc nombre_proveedor")
+        .sort({ nombre_proveedor: 1 })
+        .lean();
+      return res.json(
+        (proveedores || [])
+          .filter(
+            (p) =>
+              String(p.nombre_proveedor || "").trim() &&
+              String(p.ruc || "").trim()
+          )
+          .map((p) => {
+            const nombre = String(p.nombre_proveedor).trim();
+            const cedula = String(p.ruc).trim();
+            return {
+              tipoBeneficiario: "Externo",
+              cedula,
+              nombre,
+              etiquetaDisplay: `${nombre} — ${cedula}`,
+            };
+          })
+      );
+    }
+
+    const registros = await TablaMaestraSalarial.find({})
+      .select("cedula nombre cargo activo")
+      .sort({ nombre: 1 })
+      .lean();
+    res.json(
+      (registros || [])
+        .filter(
+          (r) => String(r.cedula || "").trim() && String(r.nombre || "").trim()
+        )
+        .map((r) => {
+          const nombre = String(r.nombre).trim();
+          const cedula = String(r.cedula).trim();
+          return {
+            tipoBeneficiario: "Interno",
+            cedula,
+            nombre,
+            etiquetaDisplay: `${nombre} — ${cedula}`,
+            cargo: r.cargo || "",
+            activo: r.activo !== false,
+          };
+        })
+    );
+  } catch (err) {
+    res.status(400).json({ mensaje: err.message });
+  }
+});
+
 router.get("/beneficiario-interno/:cedula", async (req, res) => {
   const cedula = (req.params.cedula || "").trim();
   const registro = await TablaMaestraSalarial.findOne({ cedula });
@@ -547,6 +609,17 @@ router.get("/reglas-pago/:id/proyeccion", async (req, res) => {
       mesesProyeccion: meses,
       reglaAsociada: reglaA ? reglaA.toObject() : null,
     });
+  } else if (regla.tipoRegla === "D") {
+    const ids = (regla.fuentesDescuentoPrestamo || [])
+      .filter((f) => f.seleccionado && f.reglaPagoId)
+      .map((f) => f.reglaPagoId);
+    const reglasAsociadas = ids.length
+      ? await ReglaPagoNomina.find({ _id: { $in: ids } }).lean()
+      : [];
+    proyeccion = construirProyeccionTipoD(regla.toObject(), {
+      mesesProyeccion: meses,
+      reglasAsociadas,
+    });
   } else {
     proyeccion = construirProyeccion(regla.toObject(), { mesesProyeccion: meses });
   }
@@ -569,6 +642,18 @@ router.post("/reglas-pago/vista-previa", async (req, res) => {
         mesesProyeccion: req.body.mesesProyeccion || 3,
         reglaAsociada: reglaA ? reglaA.toObject() : null,
       });
+    } else if (req.body.tipoRegla === "D") {
+      const reglaD = tipoDNominaService.normalizarReglaTipoD(req.body);
+      const ids = (reglaD.fuentesDescuentoPrestamo || [])
+        .filter((f) => f.seleccionado && f.reglaPagoId)
+        .map((f) => f.reglaPagoId);
+      const reglasAsociadas = ids.length
+        ? await ReglaPagoNomina.find({ _id: { $in: ids } }).lean()
+        : [];
+      proyeccion = construirProyeccionTipoD(reglaD, {
+        mesesProyeccion: req.body.mesesProyeccion || 6,
+        reglasAsociadas,
+      });
     } else {
       proyeccion = construirProyeccion(req.body, {
         mesesProyeccion: req.body.mesesProyeccion || 3,
@@ -583,6 +668,17 @@ router.post("/reglas-pago/vista-previa", async (req, res) => {
 router.get("/reglas-pago-asociables/:cedula", async (req, res) => {
   try {
     const lista = await tipoCNominaService.listarReglasPagoAsociables(
+      req.params.cedula
+    );
+    res.json(lista);
+  } catch (err) {
+    res.status(400).json({ mensaje: err.message });
+  }
+});
+
+router.get("/reglas-pago-asociables-prestamo/:cedula", async (req, res) => {
+  try {
+    const lista = await tipoDNominaService.listarReglasPagoAsociablesPrestamo(
       req.params.cedula
     );
     res.json(lista);
@@ -657,6 +753,16 @@ router.post("/reglas-pago/descuento-previa", async (req, res) => {
   }
 });
 
+router.post("/reglas-pago/prestamo-previa", async (req, res) => {
+  try {
+    const regla = tipoDNominaService.normalizarReglaTipoD(req.body);
+    const resultado = await tipoDNominaService.generarTablaPrestamoPrevia(regla);
+    res.json(resultado);
+  } catch (err) {
+    res.status(400).json({ mensaje: err.message });
+  }
+});
+
 router.post("/reglas-pago/amortizacion-previa", async (req, res) => {
   try {
     const { generarTablaAmortizacion, validarTablaAmortizacion, montoTotalRegla } =
@@ -685,6 +791,14 @@ async function prepararBodyReglaPago(body, validar = false) {
     const normalizado = tipoBNominaService.normalizarReglaTipoB(doc);
     if (validar) {
       const msg = tipoBNominaService.validarReglaTipoB(normalizado);
+      if (msg) throw new Error(msg);
+    }
+    return normalizado;
+  }
+  if (doc.tipoRegla === "D") {
+    const normalizado = tipoDNominaService.normalizarReglaTipoD(doc);
+    if (validar) {
+      const msg = tipoDNominaService.validarReglaTipoD(normalizado);
       if (msg) throw new Error(msg);
     }
     return normalizado;
@@ -804,6 +918,54 @@ router.put("/reglas-pago/:id/autorizar", async (req, res) => {
       });
     }
 
+    if (regla.tipoRegla === "D") {
+      const normalizado = tipoDNominaService.normalizarReglaTipoD(regla);
+      const msg = await tipoDNominaService.validarReglaTipoDCompleta(
+        normalizado
+      );
+      if (msg) return res.status(400).json({ mensaje: msg });
+      regla.esDescuento = true;
+      regla.transaccionNomina = normalizado.transaccionNomina;
+      regla.montoPrestado = normalizado.montoPrestado;
+      regla.porcentajeInteres = normalizado.porcentajeInteres;
+      regla.montoInteres = normalizado.montoInteres;
+      regla.montoTotalDeuda = normalizado.montoTotalDeuda;
+      regla.monto = normalizado.monto;
+      regla.cuotaEvento = normalizado.cuotaEvento;
+      regla.fuentesDescuentoPrestamo = normalizado.fuentesDescuentoPrestamo;
+      regla.saldoPendientePrestamo = normalizado.montoTotalDeuda;
+      regla.fechaDesembolso = normalizado.fechaDesembolso;
+      regla.fechaInicioPagos = normalizado.fechaInicioPagos;
+      regla.fechaInicioCobros = normalizado.fechaInicioCobros;
+      regla.frecuenciaCobro = normalizado.frecuenciaCobro;
+      regla.cuotas = normalizado.cuotas;
+      regla.tablaAmortizacion = normalizado.tablaAmortizacion || [];
+      regla.frecuencia = "Unica";
+      regla.estadoRegla = "Autorizada";
+      regla.fechaAutorizacion = new Date();
+      await regla.save();
+      const { proyeccion, eventosActualizados, cuotaDescuento, eventos, eventosCobro } =
+        await tipoDNominaService.generarEventosProgramados(regla, {
+          mesesProyeccion: regla.mesesProyeccion || 6,
+        });
+      regla.proyeccion = proyeccion;
+      regla.cuotaEvento = cuotaDescuento;
+      await regla.save();
+      const esExterno =
+        (regla.tipoBeneficiario || "").toString().trim().toLowerCase() ===
+        "externo";
+      return res.json({
+        status: esExterno
+          ? "Regla tipo D autorizada — desembolso programado y cuotas de cobro para personal externo"
+          : "Regla tipo D autorizada — desembolso programado y descuentos de préstamo aplicados",
+        data: regla,
+        eventosGenerados: (eventos || []).length,
+        cobrosGenerados: (eventosCobro || []).length,
+        eventosActualizados,
+        cuotaDescuento,
+      });
+    }
+
     const meses = regla.mesesProyeccion || 3;
     const { proyeccion, eventos } =
       await tipoANominaService.generarEventosProgramados(regla, {
@@ -860,6 +1022,10 @@ router.put("/reglas-pago/:id/finalizar", async (req, res) => {
       eventosEliminados = await tipoCNominaService.quitarDescuentosRegla(
         regla._id
       );
+    } else if (regla.tipoRegla === "D") {
+      eventosEliminados = await tipoDNominaService.quitarDescuentosPrestamo(
+        regla
+      );
     } else {
       eventosEliminados = await tipoBNominaService.eliminarEventosNoPagadosRegla(
         regla._id
@@ -888,8 +1054,16 @@ router.delete("/reglas-pago/:id", async (req, res) => {
   const eventosEliminados = await tipoBNominaService.eliminarEventosNoPagadosRegla(
     regla._id
   );
+  const EventoCobroPrestamo = require("../models/eventoCobroPrestamo");
+  const cobrosEliminados = await EventoCobroPrestamo.deleteMany({
+    reglaPagoId: regla._id,
+  });
   await ReglaPagoNomina.findByIdAndRemove(req.params.id);
-  res.json({ status: "Regla eliminada", eventosEliminados });
+  res.json({
+    status: "Regla eliminada",
+    eventosEliminados,
+    cobrosEliminados: cobrosEliminados.deletedCount || 0,
+  });
 });
 
 // --- Pago dominical (facturación del día - devoluciones) ---
@@ -1009,7 +1183,7 @@ router.get("/eventos-programados", async (req, res) => {
     filtro.$and = condicionesExtra;
   }
   const eventosPrevios = await EventoPagoProgramado.find(filtro)
-    .select("reglaPagoId")
+    .select("reglaPagoId cedulaBeneficiario")
     .lean();
   const idsReglaA = [
     ...new Set(
@@ -1028,6 +1202,14 @@ router.get("/eventos-programados", async (req, res) => {
         await recalcularDescuentosEnEventos(reglaA);
       }
     }
+  }
+  const cedulas = [
+    ...new Set(
+      eventosPrevios.map((e) => (e.cedulaBeneficiario || "").trim()).filter(Boolean)
+    ),
+  ];
+  for (const cedula of cedulas) {
+    await recalcularPrestamosBeneficiario(cedula);
   }
 
   const eventos = await EventoPagoProgramado.find(filtro)
@@ -1052,45 +1234,80 @@ router.get("/eventos-programados/:id/desglose-descuentos", async (req, res) => {
     if (!evento) {
       return res.status(404).json({ mensaje: "Evento no encontrado" });
     }
-    const reglaA = await ReglaPagoNomina.findById(evento.reglaPagoId);
-    if (!reglaA || reglaA.tipoRegla !== "A") {
-      return res.json({
-        montoBruto: evento.montoBruto,
-        montoDescuento: Number(evento.montoDescuento) || 0,
-        montoNeto: Number(evento.monto) || 0,
-        lineas: [],
-        total: 0,
-      });
-    }
-    const reglasC = await ReglaPagoNomina.find({
-      reglaPagoAsociadaId: reglaA._id,
-      tipoRegla: "C",
-      estadoRegla: "Autorizada",
-    }).lean();
-    const todosEventos = await EventoPagoProgramado.find({
-      reglaPagoId: reglaA._id,
-    }).sort({ fechaProgramada: 1 });
+    const reglaPago = await ReglaPagoNomina.findById(evento.reglaPagoId);
     const lineas = [];
-    for (const reglaC of reglasC) {
-      const monto = montoDescuentoReglaCEnEvento(reglaC, evento, todosEventos);
-      if (monto > 0) {
-        lineas.push({
-          reglaDescuentoId: reglaC._id,
-          transaccionNomina: reglaC.transaccionNomina,
-          conceptoDescuento: reglaC.conceptoDescuento || null,
-          etiqueta: etiquetaReglaDescuento(reglaC),
-          monto: Math.round(monto * 100) / 100,
-          notas: String(reglaC.notas || "").trim() || undefined,
-        });
+    if (reglaPago && reglaPago.tipoRegla === "A") {
+      const reglasC = await ReglaPagoNomina.find({
+        reglaPagoAsociadaId: reglaPago._id,
+        tipoRegla: "C",
+        estadoRegla: "Autorizada",
+      }).lean();
+      const todosEventos = await EventoPagoProgramado.find({
+        reglaPagoId: reglaPago._id,
+      }).sort({ fechaProgramada: 1 });
+      for (const reglaC of reglasC) {
+        const monto = montoDescuentoReglaCEnEvento(reglaC, evento, todosEventos);
+        if (monto > 0) {
+          lineas.push({
+            reglaDescuentoId: reglaC._id,
+            transaccionNomina: reglaC.transaccionNomina,
+            conceptoDescuento: reglaC.conceptoDescuento || null,
+            etiqueta: etiquetaReglaDescuento(reglaC),
+            monto: Math.round(monto * 100) / 100,
+            notas: String(reglaC.notas || "").trim() || undefined,
+          });
+        }
       }
     }
+    const lineasPrestamo = await obtenerLineasPrestamoEvento(evento);
+    for (const linea of lineasPrestamo) {
+      lineas.push({
+        reglaDescuentoId: linea.reglaDescuentoId,
+        transaccionNomina: linea.transaccionNomina,
+        conceptoDescuento: "Préstamo",
+        etiqueta: linea.etiqueta,
+        monto: linea.monto,
+        notas: linea.notas,
+      });
+    }
     const total = lineas.reduce((s, l) => s + l.monto, 0);
+    const montoPrestamo = Math.round(
+      lineasPrestamo.reduce((s, l) => s + (Number(l.monto) || 0), 0) * 100
+    ) / 100;
+    const pendiente =
+      evento.estado === "Pendiente" || evento.estado === "Parcial";
     res.json({
       montoBruto: evento.montoBruto,
       montoDescuento: Number(evento.montoDescuento) || 0,
       montoNeto: Number(evento.monto) || 0,
       lineas,
       total: Math.round(total * 100) / 100,
+      omitirDescuentoPrestamo: !!evento.omitirDescuentoPrestamo,
+      montoPrestamoOmitido: Number(evento.montoPrestamoOmitido) || 0,
+      montoDescuentoPrestamo:
+        montoPrestamo || Number(evento.montoDescuentoPrestamo) || 0,
+      puedeOmitirPrestamo:
+        pendiente && (montoPrestamo > 0 || !!evento.omitirDescuentoPrestamo),
+    });
+  } catch (err) {
+    res.status(400).json({ mensaje: err.message });
+  }
+});
+
+router.put("/eventos-programados/:id/omitir-prestamo", async (req, res) => {
+  try {
+    const evento = await tipoDNominaService.omitirDescuentoPrestamoEvento(
+      req.params.id,
+      {
+        omitir: req.body.omitir !== false,
+        usuario: req.body.usuario,
+      }
+    );
+    res.json({
+      status: evento.omitirDescuentoPrestamo
+        ? "Préstamo omitido en este pago; la cuota se cobrará después"
+        : "Préstamo reactivado en este pago",
+      data: evento,
     });
   } catch (err) {
     res.status(400).json({ mensaje: err.message });
@@ -1170,6 +1387,54 @@ router.put("/eventos-programados/:id/anular", async (req, res) => {
     evento.notas = req.body.notas || evento.notas;
     await evento.save();
     res.json({ status: "Evento anulado", data: evento });
+  } catch (err) {
+    res.status(400).json({ mensaje: err.message });
+  }
+});
+
+router.get("/cobros-prestamo/personas", async (req, res) => {
+  try {
+    const personas =
+      await cobroPrestamoNominaService.listarPersonasConCobrosPendientes();
+    res.json(personas);
+  } catch (err) {
+    res.status(400).json({ mensaje: err.message });
+  }
+});
+
+router.get("/cobros-prestamo", async (req, res) => {
+  try {
+    const cobros = await cobroPrestamoNominaService.listarCobrosPrestamo({
+      q: req.query.q,
+      cedula: req.query.cedula,
+      nombre: req.query.nombre,
+      estado: req.query.estado,
+    });
+    res.json(cobros);
+  } catch (err) {
+    res.status(400).json({ mensaje: err.message });
+  }
+});
+
+router.put("/cobros-prestamo/:id/ejecutar", async (req, res) => {
+  try {
+    const resultado = await cobroPrestamoNominaService.ejecutarCobroPrestamo(
+      req.params.id,
+      {
+        monto: req.body.monto,
+        usuario: req.body.usuario,
+        sucursal: req.body.sucursal,
+        notas: req.body.notas,
+      }
+    );
+    res.json({
+      status: "Recibo de cobro registrado",
+      data: resultado.cobro,
+      transaccion: resultado.transaccion,
+      montoCobrado: resultado.montoCobrado,
+      saldoPendienteCuota: resultado.saldoPendienteCuota,
+      saldoPrestamo: resultado.saldoPrestamo,
+    });
   } catch (err) {
     res.status(400).json({ mensaje: err.message });
   }

@@ -14,6 +14,14 @@
       <span *ngIf="esSeguridadSocial"> Seguridad social: 4 cuotas en las primeras 4 semanas de cada mes.</span>
       <span *ngIf="esDescuentosGenerales"> Otros descuentos: valor único o por cuotas, con concepto y semana de aplicación.</span>
     </p>
+    <p class="text-muted text-center small mb-3" *ngIf="esTipoD">
+      Tipo D — Préstamos. Se programa un desembolso único en
+      <strong>2.1. PRESTAMOS</strong>
+      (<strong>2.1.0 Internos</strong> o <strong>2.2.1 Externos</strong>).
+      Al personal interno se descuenta de sus pagos programados.
+      Al personal externo se generan fechas de cobro y los recibos se registran en el menú
+      <strong>Cobros</strong>.
+    </p>
 
     <div class="row eventos-formulario">
       <div class="col-md-4 mb-3">
@@ -35,7 +43,17 @@
         ></dx-select-box>
       </div>
       <div class="col-md-4 mb-3">
-        <label class="form-label">Cédula beneficiario</label>
+        <label class="form-label">Buscar beneficiario por</label>
+        <dx-select-box
+          [items]="modosBusquedaBeneficiario"
+          displayExpr="etiqueta"
+          valueExpr="valor"
+          [(value)]="modoBusquedaBeneficiario"
+          (onValueChanged)="onModoBusquedaBeneficiarioChanged($event)"
+        ></dx-select-box>
+      </div>
+      <div class="col-md-4 mb-3" *ngIf="modoBusquedaBeneficiario === 'cedula'">
+        <label class="form-label">{{ etiquetaDocumentoBeneficiario }}</label>
         <div class="d-flex">
           <dx-text-box
             class="flex-grow-1"
@@ -50,7 +68,27 @@
           </button>
         </div>
       </div>
-      <div class="col-md-4 mb-3">
+      <div class="col-md-4 mb-3" *ngIf="modoBusquedaBeneficiario === 'nombre'">
+        <label class="form-label">Nombre beneficiario</label>
+        <dx-select-box
+          [items]="opcionesBeneficiarioNombre"
+          [(value)]="cedulaSeleccionadaNombre"
+          displayExpr="etiquetaDisplay"
+          valueExpr="cedula"
+          [searchEnabled]="true"
+          [searchExpr]="camposBusquedaNombre"
+          searchMode="contains"
+          [minSearchLength]="0"
+          [showClearButton]="true"
+          placeholder="Escriba para filtrar por nombre"
+          [noDataText]="cargandoBeneficiariosNombre ? 'Cargando...' : 'Sin coincidencias'"
+          (onValueChanged)="onBeneficiarioNombreSeleccionado($event)"
+        ></dx-select-box>
+        <small class="text-muted">
+          El listado se filtra mientras escribe (internos o externos según el tipo)
+        </small>
+      </div>
+      <div class="col-md-4 mb-3" *ngIf="modoBusquedaBeneficiario === 'cedula'">
         <label class="form-label">Nombre</label>
         <dx-text-box
           [(value)]="formulario.nombreBeneficiario"
@@ -78,6 +116,17 @@
           [(value)]="formulario.transaccionNomina"
           (onValueChanged)="onTransaccionTipoCChanged()"
         ></dx-select-box>
+        <dx-text-box
+          *ngIf="esTipoD"
+          [value]="transaccionPrestamo"
+          [readOnly]="true"
+        ></dx-text-box>
+        <small class="text-muted d-block" *ngIf="esTipoD && esPrestamoInterno">
+          El préstamo se descuenta de los pagos que seleccione abajo
+        </small>
+        <small class="text-muted d-block" *ngIf="esTipoD && esPrestamoExterno">
+          El personal externo no tiene eventos de pago: se programan recibos de cobro
+        </small>
       </div>
       <div class="col-md-4 mb-3" *ngIf="esConceptoExternoOtro">
         <label class="form-label">Nueva transacción</label>
@@ -102,7 +151,10 @@
         <small class="text-muted" *ngIf="esTipoB">
           Identifica la deuda particular para consolidar información
         </small>
-        <small class="text-muted" *ngIf="!esTipoB">
+        <small class="text-muted" *ngIf="esTipoD">
+          Quedará registrado en cada abono del préstamo
+        </small>
+        <small class="text-muted" *ngIf="!esTipoB && !esTipoD">
           Quedará registrado en las transacciones financieras al ejecutar el pago
         </small>
       </div>
@@ -598,7 +650,220 @@
         </div>
       </ng-container>
 
-      <div class="col-md-12 mb-3" *ngIf="esTipoB || esTipoC">
+      <!-- Campos Tipo D — préstamos -->
+      <ng-container *ngIf="esTipoD">
+        <div class="col-md-4 mb-3">
+          <label class="form-label">Valor prestado ($)</label>
+          <dx-number-box
+            [(value)]="formulario.montoPrestado"
+            [min]="0"
+            format="#,##0.##"
+            (onValueChanged)="onDatosPrestamoChanged()"
+          ></dx-number-box>
+        </div>
+        <div class="col-md-4 mb-3">
+          <label class="form-label">Interés (%)</label>
+          <dx-number-box
+            [(value)]="formulario.porcentajeInteres"
+            [min]="0"
+            format="#,##0.##"
+            (onValueChanged)="onDatosPrestamoChanged()"
+          ></dx-number-box>
+          <small class="text-muted">Se suma al capital. Ej. $500 + 1% = $505</small>
+        </div>
+        <div class="col-md-4 mb-3">
+          <label class="form-label">Interés ($)</label>
+          <div class="eventos-monto-display">
+            {{ montoInteresCalculado | number : "1.2-2" }}
+          </div>
+        </div>
+        <div class="col-md-4 mb-3">
+          <label class="form-label">Total préstamo ($)</label>
+          <div class="eventos-monto-display">
+            {{ totalPrestamoCalculado | number : "1.2-2" }}
+          </div>
+          <small class="text-muted">Capital + interés</small>
+        </div>
+        <div class="col-md-4 mb-3">
+          <label class="form-label">Fecha de desembolso</label>
+          <dx-date-box
+            [(value)]="formulario.fechaDesembolso"
+            type="date"
+            (onValueChanged)="onDatosPrestamoChanged()"
+          ></dx-date-box>
+          <small class="text-muted">
+            Única vez: ese día se programa el pago para entregar el capital
+            (${{ montoPrestadoForm | number : "1.2-2" }}). El encargado lo ejecuta en Pagos programados.
+            Cuenta <strong>2.1. PRESTAMOS</strong> /
+            {{ esPrestamoExterno ? "2.2.1 Externos" : "2.1.0 Internos" }}.
+          </small>
+        </div>
+        <div class="col-md-4 mb-3" *ngIf="esPrestamoExterno">
+          <label class="form-label">N.º cuotas de cobro</label>
+          <dx-number-box
+            [(value)]="formulario.cuotas"
+            [min]="1"
+            [showSpinButtons]="true"
+            (onValueChanged)="onPlanCobroChanged()"
+          ></dx-number-box>
+        </div>
+        <div class="col-md-4 mb-3" *ngIf="esPrestamoExterno">
+          <label class="form-label">Frecuencia de cobro</label>
+          <dx-select-box
+            [items]="frecuenciasCobro"
+            [(value)]="formulario.frecuenciaCobro"
+            (onValueChanged)="onPlanCobroChanged()"
+          ></dx-select-box>
+        </div>
+        <div class="col-md-4 mb-3" *ngIf="esPrestamoExterno">
+          <label class="form-label">Fecha del primer cobro</label>
+          <dx-date-box
+            [(value)]="formulario.fechaInicioCobros"
+            type="date"
+            (onValueChanged)="onPlanCobroChanged()"
+          ></dx-date-box>
+          <small class="text-muted">
+            Las fechas deben cubrir capital + interés
+            (${{ totalPrestamoCalculado | number : "1.2-2" }}).
+          </small>
+        </div>
+        <div class="col-md-4 mb-3" *ngIf="formulario.estadoRegla === 'Autorizada' || (formulario.abonosPrestamo?.length)">
+          <label class="form-label">Saldo pendiente ($)</label>
+          <div class="eventos-monto-display">
+            {{ (formulario.saldoPendientePrestamo != null ? formulario.saldoPendientePrestamo : totalPrestamoCalculado) | number : "1.2-2" }}
+          </div>
+        </div>
+        <div class="col-md-12 mb-2" *ngIf="esPrestamoInterno">
+          <label class="form-label">Tipos de pago donde se descontará</label>
+          <p class="small text-muted mb-2">
+            Se listan los eventos ya programados del beneficiario. Marque uno, varios o todos
+            y coloque la cuota referencial que se restará en cada pago de ese tipo.
+          </p>
+          <div class="mb-2" *ngIf="fuentesPrestamo.length">
+            <button
+              type="button"
+              class="btn btn-sm btn-outline-secondary mr-2"
+              (click)="seleccionarTodasFuentesPrestamo(true)"
+            >
+              Seleccionar todos
+            </button>
+            <button
+              type="button"
+              class="btn btn-sm btn-outline-secondary"
+              (click)="seleccionarTodasFuentesPrestamo(false)"
+            >
+              Quitar selección
+            </button>
+          </div>
+          <div
+            class="alert alert-warning py-2 small mb-2"
+            *ngIf="formulario.cedulaBeneficiario && !fuentesPrestamo.length"
+          >
+            Este beneficiario no tiene pagos programados autorizados (nómina, dominical, comisiones u otros).
+            Autorice primero esas reglas.
+          </div>
+          <div class="table-responsive" *ngIf="fuentesPrestamo.length">
+            <table class="table table-sm table-bordered amortizacion-tabla mb-0">
+              <thead>
+                <tr>
+                  <th style="width: 70px">Usar</th>
+                  <th>Tipo de pago</th>
+                  <th>Frecuencia</th>
+                  <th>Pago ($)</th>
+                  <th style="width: 160px">Cuota a descontar ($)</th>
+                </tr>
+              </thead>
+              <tbody>
+                <tr *ngFor="let fuente of fuentesPrestamo">
+                  <td class="text-center">
+                    <dx-check-box
+                      [(value)]="fuente.seleccionado"
+                      (onValueChanged)="onFuentePrestamoChanged()"
+                    ></dx-check-box>
+                  </td>
+                  <td>{{ fuente.transaccionNomina }}</td>
+                  <td>
+                    {{ fuente.frecuencia }}
+                    <span class="text-muted" *ngIf="fuente.parametro">
+                      ({{ fuente.parametro }})
+                    </span>
+                  </td>
+                  <td>
+                    <span *ngIf="fuente.montoVariable">Variable</span>
+                    <span *ngIf="!fuente.montoVariable">
+                      {{ fuente.montoPago | number : "1.2-2" }}
+                    </span>
+                  </td>
+                  <td>
+                    <dx-number-box
+                      [(value)]="fuente.monto"
+                      [min]="0"
+                      format="#,##0.##"
+                      [disabled]="!fuente.seleccionado"
+                      (onValueChanged)="onFuentePrestamoChanged()"
+                    ></dx-number-box>
+                  </td>
+                </tr>
+              </tbody>
+              <tfoot>
+                <tr>
+                  <td colspan="4" class="text-right font-weight-bold">
+                    Suma cuotas referenciales por ciclo
+                  </td>
+                  <td class="font-weight-bold">
+                    {{ sumaCuotasPrestamo | number : "1.2-2" }}
+                  </td>
+                </tr>
+              </tfoot>
+            </table>
+          </div>
+          <div
+            class="alert alert-info py-2 small mt-2 mb-0"
+            *ngIf="fuentesPrestamoSeleccionadas.length && totalPrestamoCalculado > 0"
+          >
+            En cada pago seleccionado se restará su cuota hasta cubrir
+            <strong>${{ totalPrestamoCalculado | number : "1.2-2" }}</strong>.
+            El abono queda registrado como ingreso en
+            <strong>1.3 INGRESOS / 1.3.3 Pago o Abono Préstamo</strong>.
+          </div>
+          <div
+            class="alert alert-danger py-2 small mt-2 mb-0"
+            *ngIf="validacionPrestamoTipoD && !validacionPrestamoTipoD.ok"
+          >
+            {{ validacionPrestamoTipoD.mensaje }}
+          </div>
+        </div>
+        <div class="col-md-4 mb-3 d-flex align-items-end" *ngIf="esPrestamoInterno">
+          <button
+            type="button"
+            class="btn btn-outline-primary btn-block"
+            (click)="generarTablaPrestamo(true)"
+            [disabled]="!fuentesPrestamoSeleccionadas.length || !montoPrestadoForm"
+          >
+            Ver cuotas proyectadas
+          </button>
+        </div>
+        <div class="col-md-4 mb-3 d-flex align-items-end" *ngIf="esPrestamoExterno">
+          <button
+            type="button"
+            class="btn btn-outline-primary btn-block"
+            (click)="onPlanCobroChanged()"
+            [disabled]="!montoPrestadoForm || !formulario.fechaInicioCobros"
+          >
+            Generar fechas de cobro
+          </button>
+        </div>
+        <div
+          class="col-md-12"
+          *ngIf="esPrestamoExterno && validacionPrestamoTipoD && !validacionPrestamoTipoD.ok"
+        >
+          <div class="alert alert-danger py-2 small mt-2 mb-0">
+            {{ validacionPrestamoTipoD.mensaje }}
+          </div>
+        </div>
+      </ng-container>
+
+      <div class="col-md-12 mb-3" *ngIf="esTipoB || esTipoC || esTipoD">
         <label class="form-label">Notas</label>
         <dx-text-area
           [(value)]="formulario.notas"
@@ -658,6 +923,130 @@
                 >
                   {{ netoLiquidarFila(fila) | number : "1.2-2" }}
                 </td>
+              </tr>
+            </tbody>
+          </table>
+        </div>
+      </div>
+    </div>
+
+    <!-- Tabla cuotas préstamo Tipo D interno -->
+    <div class="row" *ngIf="esPrestamoInterno && tablaAmortizacion.length">
+      <div class="col-12 mb-3">
+        <h6 class="font-weight-bold">Cuotas proyectadas del préstamo</h6>
+        <p class="small text-muted mb-2">
+          Orden referencial según los pagos pendientes. Al ejecutar cada pago se restará
+          la cuota de ese tipo y se registrará el abono hasta cubrir el total.
+        </p>
+        <div class="table-responsive">
+          <table class="table table-sm table-bordered amortizacion-tabla">
+            <thead>
+              <tr>
+                <th>Abono</th>
+                <th>Fecha pago</th>
+                <th>Tipo de pago</th>
+                <th>Descuento ($)</th>
+                <th *ngIf="hayDescuentosExistentesEnTabla">Ya descontado ($)</th>
+                <th>Neto proyectado ($)</th>
+                <th>Saldo préstamo ($)</th>
+              </tr>
+            </thead>
+            <tbody>
+              <tr *ngFor="let fila of tablaAmortizacion">
+                <td>{{ fila.numeroCuota }}</td>
+                <td>{{ fila.fechaMin | date : "dd/MM/yyyy" }}</td>
+                <td>{{ fila.transaccionNomina }}</td>
+                <td>{{ descuentoNuevoFila(fila) | number : "1.2-2" }}</td>
+                <td *ngIf="hayDescuentosExistentesEnTabla" class="text-danger">
+                  {{ (fila.descuentoExistente || 0) | number : "1.2-2" }}
+                </td>
+                <td>
+                  <span *ngIf="fila.netoProyectado != null">
+                    {{ fila.netoProyectado | number : "1.2-2" }}
+                  </span>
+                  <span *ngIf="fila.netoProyectado == null" class="text-muted">Variable</span>
+                </td>
+                <td>{{ (fila.saldoDespues != null ? fila.saldoDespues : 0) | number : "1.2-2" }}</td>
+              </tr>
+            </tbody>
+          </table>
+        </div>
+      </div>
+    </div>
+
+    <!-- Tabla cobros préstamo Tipo D externo -->
+    <div class="row" *ngIf="esPrestamoExterno && tablaAmortizacion.length">
+      <div class="col-12 mb-3">
+        <h6 class="font-weight-bold">Fechas de cobro del préstamo externo</h6>
+        <p class="small text-muted mb-2">
+          Ajuste fechas o montos si necesita. La suma debe cubrir
+          <strong>${{ totalPrestamoCalculado | number : "1.2-2" }}</strong>.
+          Los recibos se registran después en el menú Cobros.
+        </p>
+        <div class="table-responsive">
+          <table class="table table-sm table-bordered amortizacion-tabla">
+            <thead>
+              <tr>
+                <th>Cuota</th>
+                <th>Fecha de cobro</th>
+                <th>Valor ($)</th>
+                <th>Saldo préstamo ($)</th>
+              </tr>
+            </thead>
+            <tbody>
+              <tr *ngFor="let fila of tablaAmortizacion; let i = index">
+                <td>{{ fila.numeroCuota }}</td>
+                <td>
+                  <dx-date-box
+                    [(value)]="tablaAmortizacion[i].fechaMin"
+                    type="date"
+                    (onValueChanged)="onFilaCobroChanged($event)"
+                  ></dx-date-box>
+                </td>
+                <td>
+                  <dx-number-box
+                    [(value)]="tablaAmortizacion[i].monto"
+                    [min]="0"
+                    format="#,##0.##"
+                    (onValueChanged)="onFilaCobroChanged($event)"
+                  ></dx-number-box>
+                </td>
+                <td>{{ (fila.saldoDespues != null ? fila.saldoDespues : 0) | number : "1.2-2" }}</td>
+              </tr>
+            </tbody>
+            <tfoot>
+              <tr>
+                <td colspan="2" class="text-right font-weight-bold">Total cobros</td>
+                <td class="font-weight-bold">
+                  {{ sumaCuotasPrestamo | number : "1.2-2" }}
+                </td>
+                <td></td>
+              </tr>
+            </tfoot>
+          </table>
+        </div>
+      </div>
+    </div>
+
+    <div class="row" *ngIf="esTipoD && formulario.abonosPrestamo?.length">
+      <div class="col-12 mb-3">
+        <h6 class="font-weight-bold">Abonos registrados</h6>
+        <div class="table-responsive">
+          <table class="table table-sm table-bordered">
+            <thead>
+              <tr>
+                <th>Fecha</th>
+                <th>Origen</th>
+                <th>Monto ($)</th>
+                <th>Usuario</th>
+              </tr>
+            </thead>
+            <tbody>
+              <tr *ngFor="let abono of formulario.abonosPrestamo">
+                <td>{{ abono.fecha | date : "dd/MM/yyyy HH:mm" }}</td>
+                <td>{{ abono.transaccionNominaOrigen }}</td>
+                <td>{{ abono.monto | number : "1.2-2" }}</td>
+                <td>{{ abono.ejecutadoPor }}</td>
               </tr>
             </tbody>
           </table>
@@ -738,7 +1127,7 @@
         <button
           class="btn btn-block btn-nomina-primario"
           (click)="guardarRegla()"
-          [disabled]="formulario.estadoRegla === 'Autorizada' || descuentoTipoCInvalido"
+          [disabled]="formulario.estadoRegla === 'Autorizada' || descuentoTipoCInvalido || prestamoTipoDInvalido"
         >
           Guardar borrador
         </button>
@@ -747,7 +1136,7 @@
         <button
           class="btn btn-block btn-success"
           (click)="autorizarRegla()"
-          [disabled]="!reglaSeleccionada?._id || descuentoTipoCInvalido"
+          [disabled]="!reglaSeleccionada?._id || descuentoTipoCInvalido || prestamoTipoDInvalido"
         >
           Autorizar evento
         </button>
@@ -760,6 +1149,11 @@
             (esTipoA && !esDominical && !formulario.monto) ||
             (esTipoB && !usaAmortizacion && !formulario.cuotaEvento) ||
             (esTipoB && usaAmortizacion && !formulario.montoTotalDeuda) ||
+            (esTipoD &&
+              (!montoPrestadoForm ||
+                !formulario.fechaDesembolso ||
+                (esPrestamoInterno && !fuentesPrestamoSeleccionadas.length) ||
+                (esPrestamoExterno && !tablaAmortizacion.length))) ||
             (esTipoC &&
               (!formulario.reglaPagoAsociadaId ||
                 !formulario.montoTotalDeuda ||
@@ -873,6 +1267,7 @@
       <dxi-column dataField="frecuencia" caption="Frecuencia"></dxi-column>
       <dxi-column dataField="parametro" caption="Parámetro"></dxi-column>
       <dxi-column dataField="monto" caption="Monto" format="#,##0.##"></dxi-column>
+      <dxi-column dataField="saldoPendientePrestamo" caption="Saldo préstamo" format="#,##0.##" [minWidth]="120"></dxi-column>
       <dxi-column dataField="estadoRegla" caption="Estado"></dxi-column>
       <dxi-column
         caption="Acciones"

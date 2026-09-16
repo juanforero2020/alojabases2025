@@ -65,6 +65,15 @@ export interface BeneficiarioNomina {
   proveedorId?: string;
 }
 
+export interface OpcionBeneficiarioBusqueda {
+  tipoBeneficiario: "Interno" | "Externo";
+  cedula: string;
+  nombre: string;
+  etiquetaDisplay: string;
+  cargo?: string;
+  activo?: boolean;
+}
+
 export interface OcurrenciaPagoProyectada {
   fecha: Date | string;
   etiqueta: string;
@@ -167,19 +176,45 @@ export interface FilaAmortizacion {
   fechaMin: Date | string;
   fechaMax: Date | string;
   monto: number;
+  transaccionNomina?: string;
   montoBrutoPago?: number;
   descuentoExistente?: number;
   descuentoNuevo?: number;
   netoProyectado?: number;
   descuentoValido?: boolean;
+  saldoDespues?: number;
 }
 
 /** Regla tipo A listada para vincular descuentos tipo C */
 export type ReglaPagoAsociable = ReglaPagoNomina & { etiquetaDisplay?: string };
 
+export interface FuenteDescuentoPrestamo {
+  reglaPagoId: string;
+  transaccionNomina?: string;
+  frecuencia?: string;
+  parametro?: string;
+  tipoRegla?: string;
+  montoVariable?: boolean;
+  montoPago?: number;
+  monto: number;
+  seleccionado?: boolean;
+  etiquetaDisplay?: string;
+}
+
+export interface AbonoPrestamoNomina {
+  _id?: string;
+  fecha?: Date | string;
+  monto: number;
+  eventoPagoId?: string;
+  eventoCobroId?: string;
+  transaccionFinancieraId?: string;
+  transaccionNominaOrigen?: string;
+  ejecutadoPor?: string;
+}
+
 export interface ReglaPagoNomina {
   _id?: string;
-  tipoRegla?: "A" | "B" | "C";
+  tipoRegla?: "A" | "B" | "C" | "D";
   esDescuento?: boolean;
   reglaPagoAsociadaId?: string;
   montoBaseTms?: number;
@@ -207,6 +242,9 @@ export interface ReglaPagoNomina {
   diaDelMes?: number;
   fechaReferenciaAnual?: Date | string;
   fechaInicioPagos?: Date | string;
+  fechaDesembolso?: Date | string;
+  fechaInicioCobros?: Date | string;
+  frecuenciaCobro?: "Semanal" | "Quincenal" | "Mensual" | string;
   diaInicioVentana?: number;
   diaLimiteVentana?: number;
   vigenciaRegla?: string;
@@ -231,6 +269,12 @@ export interface ReglaPagoNomina {
   fechaAutorizacion?: Date | string;
   proyeccion?: ProyeccionPagoNomina;
   mesesProyeccion?: number;
+  montoPrestado?: number;
+  porcentajeInteres?: number;
+  montoInteres?: number;
+  saldoPendientePrestamo?: number;
+  fuentesDescuentoPrestamo?: FuenteDescuentoPrestamo[];
+  abonosPrestamo?: AbonoPrestamoNomina[];
   creadoPor?: string;
   createdAt?: string;
   notas?: string;
@@ -251,6 +295,10 @@ export interface DesgloseDescuentosEvento {
   montoNeto: number;
   lineas: LineaDesgloseDescuento[];
   total: number;
+  omitirDescuentoPrestamo?: boolean;
+  montoPrestamoOmitido?: number;
+  montoDescuentoPrestamo?: number;
+  puedeOmitirPrestamo?: boolean;
 }
 
 export interface BeneficiarioFiltroPagos {
@@ -318,6 +366,11 @@ export interface EventoPagoProgramado {
   facturaProveedorId?: string;
   nFacturaProveedor?: string;
   nSolicitudFactura?: number;
+  omitirDescuentoPrestamo?: boolean;
+  omitirDescuentoPrestamoPor?: string;
+  fechaOmitirDescuentoPrestamo?: Date | string;
+  montoPrestamoOmitido?: number;
+  montoDescuentoPrestamo?: number;
 }
 
 /** Fila enriquecida para dx-data-grid (filtros y exportación Excel). */
@@ -328,6 +381,32 @@ export interface EventoPagoProgramadoFila extends EventoPagoProgramado {
   descuentoExport?: number;
   saldoExport?: number | null;
   mensajePago?: string | null;
+}
+
+export interface EventoCobroPrestamo {
+  _id?: string;
+  reglaPagoId?: string;
+  numeroCuota: number;
+  totalCuotas: number;
+  fechaProgramada?: Date | string;
+  fechaMin?: Date | string;
+  fechaMax?: Date | string;
+  monto: number;
+  montoPagado?: number;
+  montoPendiente?: number;
+  centroCosto?: string;
+  transaccionNomina?: string;
+  tipoBeneficiario?: string;
+  cedulaBeneficiario?: string;
+  nombreBeneficiario?: string;
+  estado?: "Pendiente" | "Parcial" | "Ejecutado" | "Anulado" | string;
+  transaccionFinancieraId?: string;
+  ejecutadoPor?: string;
+  fechaEjecucion?: Date | string;
+  notas?: string;
+  saldoPrestamo?: number;
+  montoTotalDeuda?: number;
+  montoPrestado?: number;
 }
 
 export interface PagoParcialNomina {

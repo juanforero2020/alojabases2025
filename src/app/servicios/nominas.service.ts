@@ -7,6 +7,7 @@ import {
   normalizarAjusteNomina,
   normalizarEventoDominical,
   normalizarEventoPagoProgramado,
+  normalizarEventoCobroPrestamo,
   normalizarNominaConfigGlobal,
   normalizarProyeccionPago,
   normalizarReglaPagoNomina,
@@ -20,9 +21,11 @@ import {
   EventoPagoDominical,
   DesgloseDescuentosEvento,
   EventoPagoProgramado,
+  EventoCobroPrestamo,
   FilaAmortizacion,
   FacturaPendienteProveedor,
   NominaConfigGlobal,
+  OpcionBeneficiarioBusqueda,
   ProyeccionPagoNomina,
   ReglaPagoNomina,
   ReporteEstadoEmpleado,
@@ -77,6 +80,13 @@ export class NominasService {
 
   restablecerConfigGlobal() {
     return this.http.post(`${this.URL}/config-global/restablecer`, {});
+  }
+
+  getBeneficiariosBusqueda(tipo: "Interno" | "Externo") {
+    return this.http.get<OpcionBeneficiarioBusqueda[]>(
+      `${this.URL}/beneficiarios-busqueda`,
+      { params: { tipo } }
+    );
   }
 
   getBeneficiarioInterno(cedula: string) {
@@ -255,6 +265,16 @@ export class NominasService {
     );
   }
 
+  omitirDescuentoPrestamoEvento(
+    id: string,
+    payload: { omitir: boolean; usuario?: string }
+  ) {
+    return this.http.put(
+      `${this.URL}/eventos-programados/${id}/omitir-prestamo`,
+      payload
+    );
+  }
+
   ejecutarEventoProgramado(
     id: string,
     payload: {
@@ -290,9 +310,54 @@ export class NominasService {
     });
   }
 
+  getPersonasCobrosPendientes() {
+    return this.http.get<OpcionBeneficiarioBusqueda[]>(
+      `${this.URL}/cobros-prestamo/personas`
+    );
+  }
+
+  getCobrosPrestamo(filtros?: {
+    q?: string;
+    cedula?: string;
+    nombre?: string;
+    estado?: string;
+  }) {
+    const params = new URLSearchParams();
+    if (filtros?.q) params.set("q", filtros.q);
+    if (filtros?.cedula) params.set("cedula", filtros.cedula);
+    if (filtros?.nombre) params.set("nombre", filtros.nombre);
+    if (filtros?.estado) params.set("estado", filtros.estado);
+    const q = params.toString();
+    return this.http
+      .get<EventoCobroPrestamo[]>(
+        `${this.URL}/cobros-prestamo${q ? `?${q}` : ""}`
+      )
+      .pipe(map((lista) => (lista || []).map(normalizarEventoCobroPrestamo)));
+  }
+
+  ejecutarCobroPrestamo(
+    id: string,
+    payload: {
+      usuario?: string;
+      sucursal?: string;
+      notas?: string;
+      monto?: number;
+    }
+  ) {
+    return this.http.put(`${this.URL}/cobros-prestamo/${id}/ejecutar`, payload);
+  }
+
   getReglasPagoAsociables(cedula: string) {
     return this.http
       .get<ReglaPagoNomina[]>(`${this.URL}/reglas-pago-asociables/${cedula}`)
+      .pipe(map((lista) => (lista || []).map(normalizarReglaPagoNomina)));
+  }
+
+  getReglasPagoAsociablesPrestamo(cedula: string) {
+    return this.http
+      .get<ReglaPagoNomina[]>(
+        `${this.URL}/reglas-pago-asociables-prestamo/${cedula}`
+      )
       .pipe(map((lista) => (lista || []).map(normalizarReglaPagoNomina)));
   }
 
@@ -307,6 +372,26 @@ export class NominasService {
         cuotaNetaEjemplo: number;
         validacionDescuento?: { ok: boolean; mensaje?: string };
       }>(`${this.URL}/reglas-pago/descuento-previa`, regla)
+      .pipe(
+        map((res) => ({
+          ...res,
+          tabla: normalizarTablaAmortizacion(res.tabla),
+        }))
+      );
+  }
+
+  prestamoPrevia(regla: ReglaPagoNomina) {
+    return this.http
+      .post<{
+        tabla: FilaAmortizacion[];
+        total: number;
+        cuotaEvento: number;
+        montoPrestado: number;
+        montoInteres: number;
+        porcentajeInteres: number;
+        saldoPendiente: number;
+        validacionDescuento?: { ok: boolean; mensaje?: string };
+      }>(`${this.URL}/reglas-pago/prestamo-previa`, regla)
       .pipe(
         map((res) => ({
           ...res,

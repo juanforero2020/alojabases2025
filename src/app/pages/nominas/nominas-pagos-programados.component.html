@@ -192,7 +192,7 @@
         dataField="descuentoExport"
         caption="Descuento"
         dataType="number"
-        [width]="100"
+        [width]="120"
         cellTemplate="descuentoCell"
         [allowExporting]="true"
       ></dxi-column>
@@ -233,7 +233,7 @@
       ></dxi-column>
       <dxi-column
         caption="Acciones"
-        [width]="130"
+        [width]="150"
         [allowFiltering]="false"
         [allowSorting]="false"
         [allowExporting]="false"
@@ -260,7 +260,19 @@
         >
           −{{ d.data.montoDescuento | number : "1.2-2" }}
         </button>
-        <span *ngIf="!tieneDescuento(d.data)" class="text-muted">—</span>
+        <span
+          *ngIf="prestamoOmitido(d.data)"
+          class="badge badge-info prestamo-omitido-badge"
+          role="button"
+          (click)="verDesgloseDescuentos(d.data)"
+          title="Préstamo omitido esta semana — se cobrará después"
+        >
+          Préstamo omitido
+        </span>
+        <span
+          *ngIf="!tieneDescuento(d.data) && !prestamoOmitido(d.data)"
+          class="text-muted"
+        >—</span>
       </div>
 
       <div *dxTemplate="let d of 'saldoCell'">
@@ -315,6 +327,22 @@
           (click)="autorizarPagoAdicional(d.data)"
         >
           Autorizar
+        </button>
+        <button
+          class="btn btn-sm btn-outline-warning mb-1 d-block"
+          *ngIf="puedeQuitarPrestamo(d.data)"
+          [disabled]="omitiendoPrestamoId === d.data._id"
+          (click)="confirmarOmitirPrestamo(d.data, true, montoPrestamoEvento(d.data))"
+        >
+          Quitar préstamo
+        </button>
+        <button
+          class="btn btn-sm btn-outline-info mb-1 d-block"
+          *ngIf="puedeReactivarPrestamo(d.data)"
+          [disabled]="omitiendoPrestamoId === d.data._id"
+          (click)="confirmarOmitirPrestamo(d.data, false, montoPrestamoEvento(d.data))"
+        >
+          Reactivar préstamo
         </button>
         <button
           class="btn btn-sm btn-success mb-1 d-block"

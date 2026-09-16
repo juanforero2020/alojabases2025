@@ -9,6 +9,7 @@ function normalizarTexto(valor) {
 
 const CUENTA_GASTOS = "1.7 GASTOS OPERACIONALES";
 const CUENTA_INGRESOS = "1.3 INGRESOS";
+const CUENTA_PRESTAMOS = "2.1. PRESTAMOS";
 
 const SUBCUENTAS_NOMINA = {
   NOMINAS: "1.7.1 Nominas",
@@ -19,6 +20,9 @@ const SUBCUENTAS_NOMINA = {
   SERVICIOS: "1.7.5 Servicios",
   SEGURIDAD_SOCIAL: "1.3.3 Nominas_Seguridad Social",
   DESCUENTOS: "1.3.4 Nominas_Descuentos",
+  PRESTAMOS: "1.3.3 Pago o Abono Préstamo",
+  PRESTAMOS_INTERNOS: "2.1.0 Internos",
+  PRESTAMOS_EXTERNOS: "2.2.1 Externos",
 };
 
 const CONCEPTOS_COMPLEMENTARIOS = [
@@ -61,6 +65,18 @@ const MAPA_CUENTA_POR_SUBCUENTA = {
     cuenta: CUENTA_INGRESOS,
     tipoCuenta: "Ingresos",
   },
+  [SUBCUENTAS_NOMINA.PRESTAMOS]: {
+    cuenta: CUENTA_INGRESOS,
+    tipoCuenta: "Ingresos",
+  },
+  [SUBCUENTAS_NOMINA.PRESTAMOS_INTERNOS]: {
+    cuenta: CUENTA_PRESTAMOS,
+    tipoCuenta: "Salidas",
+  },
+  [SUBCUENTAS_NOMINA.PRESTAMOS_EXTERNOS]: {
+    cuenta: CUENTA_PRESTAMOS,
+    tipoCuenta: "Salidas",
+  },
   "1.7.4 Nominas - Descuentos": {
     cuenta: CUENTA_GASTOS,
     tipoCuenta: "Salidas",
@@ -84,6 +100,8 @@ const SUBCUENTAS_CONSULTA_NOMINAS = [
   SUBCUENTAS_NOMINA.SERVICIOS,
   SUBCUENTAS_NOMINA.SEGURIDAD_SOCIAL,
   SUBCUENTAS_NOMINA.DESCUENTOS,
+  SUBCUENTAS_NOMINA.PRESTAMOS_INTERNOS,
+  SUBCUENTAS_NOMINA.PRESTAMOS_EXTERNOS,
 ];
 
 function esArriendos(transaccionNomina) {
@@ -106,6 +124,25 @@ function esConceptoComplementario(transaccionNomina) {
   );
 }
 
+function subCuentaPrestamoNomina(tipoBeneficiario) {
+  return esExterno(tipoBeneficiario)
+    ? SUBCUENTAS_NOMINA.PRESTAMOS_EXTERNOS
+    : SUBCUENTAS_NOMINA.PRESTAMOS_INTERNOS;
+}
+
+function subCuentaAbonoPrestamoNomina() {
+  return SUBCUENTAS_NOMINA.PRESTAMOS;
+}
+
+function esSubCuentaPrestamoNomina(nombre) {
+  const n = (nombre || "").toString().trim();
+  return (
+    n === SUBCUENTAS_NOMINA.PRESTAMOS ||
+    n === SUBCUENTAS_NOMINA.PRESTAMOS_INTERNOS ||
+    n === SUBCUENTAS_NOMINA.PRESTAMOS_EXTERNOS
+  );
+}
+
 function subCuentaPagoNomina({
   tipoRegla,
   transaccionNomina,
@@ -114,6 +151,10 @@ function subCuentaPagoNomina({
 } = {}) {
   const t = normalizarTexto(transaccionNomina);
   const freq = normalizarTexto(frecuencia);
+
+  if (tipoRegla === "D" || t.includes("prestamo") || t.includes("préstamo")) {
+    return subCuentaPrestamoNomina(tipoBeneficiario);
+  }
 
   if (esArriendos(transaccionNomina)) {
     return SUBCUENTAS_NOMINA.ARRIENDOS;
@@ -144,10 +185,13 @@ function subCuentaPagoNomina({
   return SUBCUENTAS_NOMINA.NOMINAS;
 }
 
-function subCuentaDescuentoNomina(transaccionNomina) {
+function subCuentaDescuentoNomina(transaccionNomina, tipoBeneficiario) {
   const t = normalizarTexto(transaccionNomina);
   if (t.includes("seguridad social")) {
     return SUBCUENTAS_NOMINA.SEGURIDAD_SOCIAL;
+  }
+  if (t.includes("prestamo") || t.includes("préstamo")) {
+    return subCuentaAbonoPrestamoNomina();
   }
   return SUBCUENTAS_NOMINA.DESCUENTOS;
 }
@@ -155,9 +199,13 @@ function subCuentaDescuentoNomina(transaccionNomina) {
 module.exports = {
   CUENTA_GASTOS,
   CUENTA_INGRESOS,
+  CUENTA_PRESTAMOS,
   SUBCUENTAS_NOMINA,
   MAPA_CUENTA_POR_SUBCUENTA,
   SUBCUENTAS_CONSULTA_NOMINAS,
   subCuentaPagoNomina,
   subCuentaDescuentoNomina,
+  subCuentaPrestamoNomina,
+  subCuentaAbonoPrestamoNomina,
+  esSubCuentaPrestamoNomina,
 };

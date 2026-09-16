@@ -24,6 +24,14 @@
   }
 }
 
+.prestamo-omitido-badge {
+  display: block;
+  margin-top: 0.15rem;
+  font-size: 0.7rem;
+  cursor: pointer;
+  font-weight: 600;
+}
+
 .pagos-programados-loading {
   min-height: 180px;
   display: flex;

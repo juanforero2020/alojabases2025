@@ -25,6 +25,7 @@ export class NominasComponent implements OnInit {
     "Configuración Global",
     "Eventos de Pagos",
     "Pagos Programados",
+    "Cobros",
     "Liquidación Dominical",
     "Consulta de Pagos",
   ];

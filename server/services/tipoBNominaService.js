@@ -21,12 +21,17 @@ const {
   montoDescuentoReglaCEnEvento,
   esDescuentosGenerales,
 } = require("../utils/proyeccionPagosTipoC");
+const {
+  obtenerLineasPrestamoEvento,
+  registrarAbonosPrestamo,
+} = require("../utils/proyeccionPagosTipoD");
 
 const {
   MAPA_CUENTA_POR_SUBCUENTA,
   SUBCUENTAS_NOMINA,
   subCuentaPagoNomina,
   subCuentaDescuentoNomina,
+  esSubCuentaPrestamoNomina,
 } = require("../utils/cuentasContablesNomina");
 const {
   aplicarPagoFacturaProveedor,
@@ -75,8 +80,10 @@ async function ejecutarEventoDominicalProgramado(evento, regla, opciones = {}) {
   const montoBruto = Number(item.montoBruto) || 0;
   const montoNeto = Number(item.montoNeto) || 0;
 
+  evento.montoBruto = montoBruto;
   evento.monto = montoBruto;
   evento.montoPagado = montoNeto;
+  evento.montoDescuento = Math.max(0, Math.round((montoBruto - montoNeto) * 100) / 100);
   evento.estado = "Ejecutado";
   evento.transaccionFinancieraId = item.transaccion?._id;
   evento.ejecutadoPor = opciones.usuario || "";
@@ -233,6 +240,13 @@ async function generarEventosProgramados(regla, opciones = {}) {
     regla.tablaAmortizacion = reglaObj.tablaAmortizacion;
   }
 
+  if (reglaObj.cedulaBeneficiario) {
+    const {
+      recalcularPrestamosBeneficiario,
+    } = require("../utils/proyeccionPagosTipoD");
+    await recalcularPrestamosBeneficiario(reglaObj.cedulaBeneficiario);
+  }
+
   return { proyeccion, eventos: creados };
 }
 
@@ -331,14 +345,13 @@ async function assertUsuarioPuedePagarEvento(evento, opciones) {
 
   if (evento.pagoAdicionalAutorizado) return;
 
-  const tms = await TablaMaestraSalarial.findOne({
-    cedula: evento.cedulaBeneficiario,
-  }).lean();
+  const cedula = (evento.cedulaBeneficiario || "").trim();
+  const tms = cedula
+    ? await TablaMaestraSalarial.findOne({ cedula }).lean()
+    : null;
   const grupo = grupoCargoUsuario(tms?.cargo);
   if (grupo !== "VENDEDOR" && grupo !== "BODEGUERO") {
-    throw new Error(
-      "El rol Usuario solo puede pagar a un vendedor y un bodeguero. Este cargo requiere un administrador."
-    );
+    return;
   }
 
   const mismos = await TablaMaestraSalarial.find({
@@ -348,7 +361,7 @@ async function assertUsuarioPuedePagarEvento(evento, opciones) {
     .filter((r) => grupoCargoUsuario(r.cargo) === grupo)
     .sort((a, b) => (a.nombre || "").localeCompare(b.nombre || "", "es"));
   const principal = delGrupo[0];
-  if (!principal || principal.cedula !== evento.cedulaBeneficiario) {
+  if (!principal || String(principal.cedula || "").trim() !== cedula) {
     throw new Error(
       "El administrador debe autorizar el pago de este trabajador"
     );
@@ -431,6 +444,20 @@ async function ejecutarEventoProgramado(eventoId, opciones = {}) {
     await validarFacturaParaPago(facturaId);
   }
 
+  if (evento.cedulaBeneficiario) {
+    const {
+      recalcularPrestamosBeneficiario,
+    } = require("../utils/proyeccionPagosTipoD");
+    await recalcularPrestamosBeneficiario(evento.cedulaBeneficiario);
+    const recargado = await EventoPagoProgramado.findById(evento._id);
+    if (recargado) {
+      evento.monto = recargado.monto;
+      evento.montoBruto = recargado.montoBruto;
+      evento.montoDescuento = recargado.montoDescuento;
+      evento.omitirDescuentoPrestamo = recargado.omitirDescuentoPrestamo;
+    }
+  }
+
   const montoPendiente = redondear2(
     (Number(evento.monto) || 0) - (Number(evento.montoPagado) || 0)
   );
@@ -453,7 +480,11 @@ async function ejecutarEventoProgramado(eventoId, opciones = {}) {
     frecuencia: regla.frecuencia,
   });
   const tipoTransaccion =
-    evento.tipoRegla === "A" ? TIPO_TRANSACCION_A : TIPO_TRANSACCION;
+    evento.tipoRegla === "A"
+      ? TIPO_TRANSACCION_A
+      : evento.tipoRegla === "D"
+      ? "DESEMBOLSO_PRESTAMO_NOMINA"
+      : TIPO_TRANSACCION;
 
   const { cuenta, tipoCuenta } = await resolverCuentaDesdeSubCuenta(subCuenta);
 
@@ -564,6 +595,26 @@ async function ejecutarEventoProgramado(eventoId, opciones = {}) {
   }
   await evento.save();
 
+  if (separarDescuentos) {
+    const lineasPrestamo = lineasDescuento.filter(
+      (l) =>
+        (l.transaccionNomina || "").toLowerCase().includes("prestamo") ||
+        (l.etiqueta || "").toLowerCase().includes("préstamo") ||
+        (l.etiqueta || "").toLowerCase().includes("prestamo")
+    );
+    if (lineasPrestamo.length) {
+      const txPrestamo = transaccionesDescuento.find(
+        (t) =>
+          t.tipoTransaccion === "DESCUENTO_PRESTAMO_NOMINA" ||
+          esSubCuentaPrestamoNomina(t.subCuenta)
+      );
+      await registrarAbonosPrestamo(evento, lineasPrestamo, {
+        usuario: opciones.usuario || "",
+        transaccionId: txPrestamo?._id || transaccionesDescuento[0]?._id,
+      });
+    }
+  }
+
   const pendientesRegla = await EventoPagoProgramado.countDocuments({
     reglaPagoId: regla._id,
     estado: { $in: ["Pendiente", "Parcial"] },
@@ -625,17 +676,25 @@ async function registrarTransaccionesDescuento(baseTx, lineas, cuentaPago, event
       subCuentaDescuentoNomina(linea.transaccionNomina) ||
       SUB_CUENTA_DESCUENTO;
     const cuentaDesc = await resolverCuentaDesdeSubCuenta(subCuentaDesc);
+    const tipoCuentaDesc = esSubCuentaPrestamoNomina(subCuentaDesc)
+      ? "Ingresos"
+      : cuentaDesc.tipoCuenta || "Ingresos";
     const txDesc = new TransaccionFinanciera({
       ...baseTx,
       centroCosto: linea.centroCosto || baseTx.centroCosto,
       valor: monto,
       tipoPago: "Ingreso",
       cuenta: cuentaDesc.cuenta || cuentaPago,
-      tipoCuenta: cuentaDesc.tipoCuenta || "Ingresos",
+      tipoCuenta: tipoCuentaDesc,
       subCuenta: subCuentaDesc,
-      tipoTransaccion: TIPO_TRANSACCION_DESCUENTO,
+      tipoTransaccion: linea.tipoTransaccion || TIPO_TRANSACCION_DESCUENTO,
+      referenciaPrestamo: linea.reglaDescuentoId
+        ? String(linea.reglaDescuentoId)
+        : undefined,
       notas: construirNotasTransaccionNomina(evento, {
-        prefijo: "Descuento nómina",
+        prefijo: linea.tipoTransaccion === "DESCUENTO_PRESTAMO_NOMINA"
+          ? "Abono préstamo nómina"
+          : "Descuento nómina",
         detalle: textoNotas(linea.etiqueta || "Descuento", linea.notas),
       }),
     });
@@ -646,43 +705,50 @@ async function registrarTransaccionesDescuento(baseTx, lineas, cuentaPago, event
 }
 
 async function obtenerLineasDescuentoEvento(evento, reglaA) {
+  if (evento.tipoRegla === "D" || reglaA?.tipoRegla === "D") {
+    return [];
+  }
   const montoDescuento = montoDescuentoEvento(evento);
+  const lineas = [];
 
-  if (!reglaA || reglaA.tipoRegla !== "A") {
-    return montoDescuento > 0
-      ? [
-          {
-            etiqueta: "Descuento",
-            subCuenta: SUBCUENTAS_NOMINA.DESCUENTOS,
-            monto: montoDescuento,
-          },
-        ]
-      : [];
+  if (reglaA && reglaA.tipoRegla === "A") {
+    const reglasC = await ReglaPagoNomina.find({
+      reglaPagoAsociadaId: reglaA._id,
+      tipoRegla: "C",
+      estadoRegla: "Autorizada",
+    }).lean();
+
+    const todosEventos = await EventoPagoProgramado.find({
+      reglaPagoId: reglaA._id,
+    }).sort({ fechaProgramada: 1 });
+
+    for (const reglaC of reglasC) {
+      const monto = montoDescuentoReglaCEnEvento(reglaC, evento, todosEventos);
+      if (monto > 0) {
+        lineas.push({
+          etiqueta: etiquetaReglaDescuento(reglaC),
+          transaccionNomina: reglaC.transaccionNomina,
+          subCuenta: subCuentaDescuentoNomina(reglaC.transaccionNomina),
+          monto: redondear2(monto),
+          centroCosto: (reglaC.centroCosto || "").trim() || undefined,
+          notas: String(reglaC.notas || "").trim() || undefined,
+        });
+      }
+    }
   }
 
-  const reglasC = await ReglaPagoNomina.find({
-    reglaPagoAsociadaId: reglaA._id,
-    tipoRegla: "C",
-    estadoRegla: "Autorizada",
-  }).lean();
-
-  const todosEventos = await EventoPagoProgramado.find({
-    reglaPagoId: reglaA._id,
-  }).sort({ fechaProgramada: 1 });
-
-  const lineas = [];
-  for (const reglaC of reglasC) {
-    const monto = montoDescuentoReglaCEnEvento(reglaC, evento, todosEventos);
-    if (monto > 0) {
-      lineas.push({
-        etiqueta: etiquetaReglaDescuento(reglaC),
-        transaccionNomina: reglaC.transaccionNomina,
-        subCuenta: subCuentaDescuentoNomina(reglaC.transaccionNomina),
-        monto: redondear2(monto),
-        centroCosto: (reglaC.centroCosto || "").trim() || undefined,
-        notas: String(reglaC.notas || "").trim() || undefined,
-      });
-    }
+  const lineasPrestamo = await obtenerLineasPrestamoEvento(evento);
+  for (const linea of lineasPrestamo) {
+    lineas.push({
+      etiqueta: linea.etiqueta,
+      transaccionNomina: linea.transaccionNomina,
+      subCuenta: linea.subCuenta || subCuentaDescuentoNomina(linea.transaccionNomina, reglaA?.tipoBeneficiario),
+      monto: redondear2(linea.monto),
+      centroCosto: linea.centroCosto,
+      notas: linea.notas,
+      reglaDescuentoId: linea.reglaDescuentoId,
+      tipoTransaccion: "DESCUENTO_PRESTAMO_NOMINA",
+    });
   }
 
   const sumaLineas = redondear2(

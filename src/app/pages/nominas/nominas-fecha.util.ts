@@ -2,6 +2,7 @@ import {
   AjusteNominaPendiente,
   EventoPagoDominical,
   EventoPagoProgramado,
+  EventoCobroPrestamo,
   FilaAmortizacion,
   NominaConfigGlobal,
   ProyeccionPagoNomina,
@@ -155,6 +156,26 @@ export function normalizarEventoPagoProgramado(
   };
 }
 
+export function normalizarEventoCobroPrestamo(
+  ev: EventoCobroPrestamo
+): EventoCobroPrestamo {
+  return {
+    ...ev,
+    fechaProgramada: ev.fechaProgramada
+      ? (fechaCalendarioLocal(ev.fechaProgramada) as Date)
+      : ev.fechaProgramada,
+    fechaMin: ev.fechaMin
+      ? (fechaCalendarioLocal(ev.fechaMin) as Date)
+      : ev.fechaMin,
+    fechaMax: ev.fechaMax
+      ? (fechaCalendarioLocal(ev.fechaMax) as Date)
+      : ev.fechaMax,
+    fechaEjecucion: ev.fechaEjecucion
+      ? (fechaCalendarioLocal(ev.fechaEjecucion) as Date)
+      : ev.fechaEjecucion,
+  };
+}
+
 export function normalizarProyeccionPago(
   proyeccion: ProyeccionPagoNomina
 ): ProyeccionPagoNomina {
@@ -185,6 +206,12 @@ export function normalizarReglaPagoNomina(
     fechaInicioPagos: regla.fechaInicioPagos
       ? (fechaCalendarioLocal(regla.fechaInicioPagos) as Date)
       : regla.fechaInicioPagos,
+    fechaDesembolso: regla.fechaDesembolso
+      ? (fechaCalendarioLocal(regla.fechaDesembolso) as Date)
+      : regla.fechaDesembolso,
+    fechaInicioCobros: regla.fechaInicioCobros
+      ? (fechaCalendarioLocal(regla.fechaInicioCobros) as Date)
+      : regla.fechaInicioCobros,
     fechaAutorizacion: regla.fechaAutorizacion
       ? (fechaCalendarioLocal(regla.fechaAutorizacion) as Date)
       : regla.fechaAutorizacion,

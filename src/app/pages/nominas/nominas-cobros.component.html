@@ -1,0 +1,118 @@
+<div class="card mb-3">
+  <div class="card-body">
+    <div class="cobros-titulo text-center">
+      Cobros de préstamos
+    </div>
+    <p class="text-muted text-center mb-3">
+      Consulte por cédula o nombre los cobros pendientes de préstamos
+      (principalmente personal externo). Al registrar el recibo se genera un ingreso
+      en <strong>1.3 INGRESOS / 1.3.3 Pago o Abono Préstamo</strong>.
+    </p>
+
+    <div class="row mb-2 cobros-filtros">
+      <div class="col-md-3 col-lg-2 mb-2">
+        <label>Buscar por</label>
+        <dx-select-box
+          [items]="modosBusqueda"
+          displayExpr="etiqueta"
+          valueExpr="valor"
+          [(value)]="modoBusqueda"
+          (onValueChanged)="onModoBusquedaChanged($event)"
+        ></dx-select-box>
+      </div>
+      <div class="col-md-4 col-lg-3 mb-2" *ngIf="modoBusqueda === 'cedula'">
+        <label>Cédula / RUC</label>
+        <dx-text-box
+          [(value)]="textoBusqueda"
+          placeholder="Digite la cédula o RUC"
+        ></dx-text-box>
+      </div>
+      <div class="col-md-5 col-lg-4 mb-2" *ngIf="modoBusqueda === 'nombre'">
+        <label>Nombre</label>
+        <dx-select-box
+          [items]="personasPendientes"
+          displayExpr="etiquetaDisplay"
+          valueExpr="cedula"
+          [(value)]="cedulaSeleccionada"
+          [searchEnabled]="true"
+          [searchExpr]="camposBusquedaNombre"
+          searchMode="contains"
+          [showClearButton]="true"
+          placeholder="Escriba el nombre o cédula"
+          (onValueChanged)="onPersonaNombreChanged($event)"
+        ></dx-select-box>
+      </div>
+      <div class="col-md-3 col-lg-2 mb-2">
+        <label>Estado</label>
+        <dx-select-box
+          [items]="estadosFiltro"
+          [(value)]="filtroEstado"
+          (onValueChanged)="onEstadoChanged($event)"
+        ></dx-select-box>
+      </div>
+      <div class="col-md-3 col-lg-2 mb-2 d-flex align-items-end">
+        <button class="btn btn-block btn-nomina-primario" (click)="buscarCobros()">
+          Buscar
+        </button>
+      </div>
+    </div>
+
+    <div class="cobros-loading text-center py-5" *ngIf="cargando">
+      <dx-load-indicator [visible]="true" height="48" width="48"></dx-load-indicator>
+      <p class="text-muted mt-3 mb-0">Cargando cobros...</p>
+    </div>
+
+    <div class="table-responsive" *ngIf="!cargando">
+      <table class="table table-sm table-bordered table-striped mb-0">
+        <thead>
+          <tr>
+            <th>Fecha cobro</th>
+            <th>Cédula / RUC</th>
+            <th>Nombre</th>
+            <th>Tipo</th>
+            <th>Cuota</th>
+            <th>Valor ($)</th>
+            <th>Pagado ($)</th>
+            <th>Pendiente ($)</th>
+            <th>Saldo préstamo ($)</th>
+            <th>Estado</th>
+            <th>Acción</th>
+          </tr>
+        </thead>
+        <tbody>
+          <tr *ngIf="!cobros.length">
+            <td colspan="11" class="text-center text-muted py-4">
+              No hay cobros pendientes con esos datos. Digite cédula o nombre, o autorice un préstamo tipo D a personal externo.
+            </td>
+          </tr>
+          <tr *ngFor="let cobro of cobros">
+            <td>{{ cobro.fechaProgramada | date : "dd/MM/yyyy" }}</td>
+            <td>{{ cobro.cedulaBeneficiario }}</td>
+            <td>{{ cobro.nombreBeneficiario }}</td>
+            <td>{{ cobro.tipoBeneficiario }}</td>
+            <td>{{ cobro.numeroCuota }}/{{ cobro.totalCuotas }}</td>
+            <td>{{ cobro.monto | number : "1.2-2" }}</td>
+            <td>{{ (cobro.montoPagado || 0) | number : "1.2-2" }}</td>
+            <td>{{ saldoCuota(cobro) | number : "1.2-2" }}</td>
+            <td>{{ (cobro.saldoPrestamo || 0) | number : "1.2-2" }}</td>
+            <td>{{ cobro.estado }}</td>
+            <td>
+              <button
+                type="button"
+                class="btn btn-sm btn-success"
+                *ngIf="puedeCobrar(cobro)"
+                [disabled]="ejecutandoId === cobro._id"
+                (click)="confirmarCobro(cobro)"
+              >
+                Cobrar
+              </button>
+              <span class="text-muted small" *ngIf="!puedeCobrar(cobro)">
+                {{ cobro.estado }}
+              </span>
+            </td>
+          </tr>
+        </tbody>
+      </table>
+    </div>
+  </div>
+</div>

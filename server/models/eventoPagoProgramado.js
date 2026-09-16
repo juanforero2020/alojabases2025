@@ -69,6 +69,11 @@ const EventoPagoProgramadoSchema = new Schema(
     },
     nFacturaProveedor: { type: String, required: false },
     nSolicitudFactura: { type: Number, required: false },
+    omitirDescuentoPrestamo: { type: Boolean, default: false },
+    omitirDescuentoPrestamoPor: { type: String, required: false },
+    fechaOmitirDescuentoPrestamo: { type: Date, required: false },
+    montoPrestamoOmitido: { type: Number, default: 0 },
+    montoDescuentoPrestamo: { type: Number, default: 0 },
   },
   { timestamps: true }
 );

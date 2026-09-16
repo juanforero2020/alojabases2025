@@ -352,6 +352,13 @@ async function recalcularDescuentosEnEventos(reglaA, opciones = {}) {
     actualizados += 1;
   }
 
+  if (reglaA?.cedulaBeneficiario) {
+    const {
+      recalcularPrestamosBeneficiario,
+    } = require("./proyeccionPagosTipoD");
+    await recalcularPrestamosBeneficiario(reglaA.cedulaBeneficiario);
+  }
+
   return {
     actualizados,
     eventosConDescuento,

@@ -50,7 +50,7 @@ export class NominasPagosProgramadosComponent implements OnInit {
     "Anulado",
     "Todos",
   ];
-  tiposReglaFiltro = ["Todos", "A", "B"];
+  tiposReglaFiltro = ["Todos", "A", "B", "D"];
   opcionesConDescuento = [
     { valor: "Todos", etiqueta: "Todos" },
     { valor: "si", etiqueta: "Con descuento" },
@@ -60,6 +60,7 @@ export class NominasPagosProgramadosComponent implements OnInit {
   cargandoBeneficiarios = false;
   cargandoEventos = true;
   generandoComprobanteId: string | null = null;
+  omitiendoPrestamoId: string | null = null;
   imagenLogotipo = "";
   parametrizaciones: parametrizacionsuc[] = [];
   parametrizacionSucu: parametrizacionsuc;
@@ -96,6 +97,11 @@ export class NominasPagosProgramadosComponent implements OnInit {
       (lista) => {
         this.beneficiariosFiltro = this.mapearBeneficiariosFiltro(lista);
         this.cargandoBeneficiarios = false;
+        if (this.eventosProgramados.length) {
+          this.eventosProgramados = this.eventosProgramados.map((ev) =>
+            this.enriquecerEventoParaGrid(ev)
+          );
+        }
       },
       () => {
         this.beneficiariosFiltro = [];
@@ -264,8 +270,38 @@ export class NominasPagosProgramadosComponent implements OnInit {
     return (Number(ev.montoDescuento) || 0) > 0;
   }
 
+  prestamoOmitido(ev: EventoPagoProgramado): boolean {
+    return !!ev.omitirDescuentoPrestamo;
+  }
+
+  montoPrestamoEvento(ev: EventoPagoProgramado): number {
+    return (
+      Math.round(
+        (Number(ev.montoDescuentoPrestamo) ||
+          Number(ev.montoPrestamoOmitido) ||
+          0) * 100
+      ) / 100
+    );
+  }
+
+  puedeGestionarPrestamo(ev: EventoPagoProgramado): boolean {
+    if (!this.esAdministrador) return false;
+    if (ev.estado !== "Pendiente" && ev.estado !== "Parcial") return false;
+    return this.prestamoOmitido(ev) || this.montoPrestamoEvento(ev) > 0;
+  }
+
+  puedeQuitarPrestamo(ev: EventoPagoProgramado): boolean {
+    return this.puedeGestionarPrestamo(ev) && !this.prestamoOmitido(ev);
+  }
+
+  puedeReactivarPrestamo(ev: EventoPagoProgramado): boolean {
+    return this.puedeGestionarPrestamo(ev) && this.prestamoOmitido(ev);
+  }
+
   verDesgloseDescuentos(ev: EventoPagoProgramado) {
-    if (!ev._id || !this.tieneDescuento(ev)) return;
+    if (!ev._id || (!this.tieneDescuento(ev) && !this.prestamoOmitido(ev))) {
+      return;
+    }
     this._nominasService.getDesgloseDescuentosEvento(ev._id).subscribe(
       (desglose) => {
         const filas = (desglose.lineas || [])
@@ -285,6 +321,36 @@ export class NominasPagosProgramadosComponent implements OnInit {
           desglose.montoBruto != null
             ? Number(desglose.montoBruto)
             : Number(ev.montoBruto) || Number(ev.monto) + Number(desglose.total);
+        const omitido =
+          !!desglose.omitirDescuentoPrestamo || this.prestamoOmitido(ev);
+        const montoPrestamo =
+          Number(desglose.montoDescuentoPrestamo) ||
+          Number(desglose.montoPrestamoOmitido) ||
+          this.montoPrestamoEvento(ev);
+        const notaOmitir = omitido
+          ? `<p class="text-left small mb-2 alert alert-info py-2 px-2">
+               Préstamo omitido esta semana ($${(
+                 Number(desglose.montoPrestamoOmitido) || montoPrestamo
+               ).toFixed(2)}).
+               Se cobrará en un pago posterior.
+             </p>`
+          : "";
+        const puedeAdmin =
+          this.esAdministrador && !!desglose.puedeOmitirPrestamo;
+        const botonAdmin = puedeAdmin
+          ? `<p class="text-left mt-3 mb-0">
+               <button type="button" id="btnOmitirPrestamoSwal"
+                 class="btn btn-sm ${
+                   omitido ? "btn-outline-info" : "btn-outline-warning"
+                 }">
+                 ${
+                   omitido
+                     ? "Reactivar préstamo"
+                     : "Quitar préstamo de esta semana"
+                 }
+               </button>
+             </p>`
+          : "";
         Swal.fire({
           title: "Desglose de descuentos",
           html: `
@@ -292,6 +358,7 @@ export class NominasPagosProgramadosComponent implements OnInit {
               <strong>${ev.nombreBeneficiario}</strong><br/>
               ${formatoFechaCalendarioNomina(ev.fechaProgramada)}
             </p>
+            ${notaOmitir}
             <table class="table table-sm table-bordered mb-2">
               <thead><tr><th>Concepto</th><th>Monto</th></tr></thead>
               <tbody>${filas || '<tr><td colspan="2">Sin detalle</td></tr>'}</tbody>
@@ -307,14 +374,80 @@ export class NominasPagosProgramadosComponent implements OnInit {
               Descuentos: <strong class="text-danger">−$${Number(desglose.montoDescuento || desglose.total).toFixed(2)}</strong><br/>
               Neto a pagar: <strong>$${Number(desglose.montoNeto).toFixed(2)}</strong>
             </p>
+            ${botonAdmin}
           `,
           width: 480,
           confirmButtonText: "Cerrar",
+          onOpen: () => {
+            const btn = document.getElementById("btnOmitirPrestamoSwal");
+            if (!btn) return;
+            btn.addEventListener("click", () => {
+              Swal.close();
+              this.confirmarOmitirPrestamo(ev, !omitido, montoPrestamo);
+            });
+          },
         });
       },
       (err) =>
         mostrarErrorNominaApi("Error", err, "No se pudo cargar el desglose")
     );
+  }
+
+  confirmarOmitirPrestamo(
+    ev: EventoPagoProgramado,
+    omitir: boolean,
+    monto: number
+  ) {
+    const cuota = monto > 0 ? `$${monto.toFixed(2)}` : "la cuota de préstamo";
+    const html = omitir
+      ? `El pago de <strong>${ev.nombreBeneficiario}</strong> no descontará el préstamo esta semana.<br/><br/>
+         ${cuota} se cobrará en un pago posterior: el saldo no baja y se alarga el plazo una cuota.<br/>
+         Los demás descuentos (IESS u otros) se mantienen.`
+      : `Se volverá a descontar el préstamo en este pago de <strong>${ev.nombreBeneficiario}</strong>.`;
+
+    Swal.fire({
+      title: omitir
+        ? "Quitar préstamo de esta semana"
+        : "Reactivar préstamo",
+      html,
+      icon: "question",
+      showCancelButton: true,
+      confirmButtonText: omitir ? "Quitar de esta semana" : "Reactivar",
+      cancelButtonText: "Cancelar",
+    }).then((result) => {
+      if (!result.value || !ev._id) return;
+      this.omitirPrestamo(ev._id, omitir);
+    });
+  }
+
+  omitirPrestamo(id: string, omitir: boolean) {
+    this.omitiendoPrestamoId = id;
+    this._nominasService
+      .omitirDescuentoPrestamoEvento(id, {
+        omitir,
+        usuario: this.usuarioNombre,
+      })
+      .subscribe(
+        () => {
+          this.omitiendoPrestamoId = null;
+          Swal.fire(
+            omitir ? "Préstamo omitido" : "Préstamo reactivado",
+            omitir
+              ? "Este pago se ejecutará sin descontar el préstamo. La cuota se cobrará después."
+              : "El descuento de préstamo volvió a este pago.",
+            "success"
+          );
+          this.cargarEventosProgramados();
+        },
+        (err) => {
+          this.omitiendoPrestamoId = null;
+          mostrarErrorNominaApi(
+            "Error",
+            err,
+            "No se pudo actualizar el préstamo"
+          );
+        }
+      );
   }
 
   esPagoDominical(ev: EventoPagoProgramado): boolean {
@@ -664,14 +797,6 @@ export class NominasPagosProgramadosComponent implements OnInit {
     ) {
       return "En espera de autorización";
     }
-    if (this.esUsuario && !this.esAdministrador) {
-      const grupo = this.grupoCargoUsuario(
-        this.cargoBeneficiario(ev.cedulaBeneficiario || "")
-      );
-      if (grupo !== "VENDEDOR" && grupo !== "BODEGUERO") {
-        return "Solo el administrador puede pagar este cargo";
-      }
-    }
     return null;
   }
 
@@ -692,14 +817,21 @@ export class NominasPagosProgramadosComponent implements OnInit {
       .normalize("NFD")
       .replace(/[\u0300-\u036f]/g, "");
     if (c.includes("bodeguero")) return "BODEGUERO";
-    if (c.includes("vendedor") || c.includes("distribuidor") || c === "usuario") {
+    if (
+      c.includes("vendedor") ||
+      c.includes("distribuidor") ||
+      c.includes("usuario")
+    ) {
       return "VENDEDOR";
     }
     return "OTRO";
   }
 
   cargoBeneficiario(cedula: string): string {
-    const found = this.beneficiariosFiltro.find((b) => b.cedula === cedula);
+    const clave = (cedula || "").trim();
+    const found = this.beneficiariosFiltro.find(
+      (b) => (b.cedula || "").trim() === clave
+    );
     return found?.cargo || "";
   }
 
@@ -715,8 +847,8 @@ export class NominasPagosProgramadosComponent implements OnInit {
     const grupo = this.grupoCargoUsuario(
       this.cargoBeneficiario(ev.cedulaBeneficiario || "")
     );
-    if (grupo !== "VENDEDOR" && grupo !== "BODEGUERO") return false;
-    return this.cedulaCupoUsuario(grupo) === ev.cedulaBeneficiario;
+    if (grupo !== "VENDEDOR" && grupo !== "BODEGUERO") return true;
+    return this.cedulaCupoUsuario(grupo) === (ev.cedulaBeneficiario || "").trim();
   }
 
   esTrabajadorAdicionalUsuario(ev: EventoPagoProgramado): boolean {
@@ -724,7 +856,7 @@ export class NominasPagosProgramadosComponent implements OnInit {
       this.cargoBeneficiario(ev.cedulaBeneficiario || "")
     );
     if (grupo !== "VENDEDOR" && grupo !== "BODEGUERO") return false;
-    return this.cedulaCupoUsuario(grupo) !== ev.cedulaBeneficiario;
+    return this.cedulaCupoUsuario(grupo) !== (ev.cedulaBeneficiario || "").trim();
   }
 
   private inicioDia(fecha: Date | string): Date {

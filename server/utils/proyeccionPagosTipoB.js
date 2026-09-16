@@ -378,4 +378,5 @@ module.exports = {
   calcularMontoCuota,
   cantidadCuotasAGenerar,
   montoTotalRegla,
+  fechaCuotaAmortizacion,
 };
