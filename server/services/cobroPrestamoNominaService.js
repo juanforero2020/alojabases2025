@@ -8,6 +8,7 @@ const {
   SUBCUENTAS_NOMINA,
   subCuentaAbonoPrestamoNomina,
 } = require("../utils/cuentasContablesNomina");
+const { registrarBitacoraPrestamo } = require("../utils/bitacoraPrestamoNomina");
 
 function redondear2(n) {
   return Math.round((Number(n) || 0) * 100) / 100;
@@ -214,6 +215,10 @@ async function ejecutarCobroPrestamo(id, opciones = {}) {
     eventoCobroId: cobro._id,
     transaccionFinancieraId: tx._id,
     transaccionNominaOrigen: "Recibo de cobro",
+    tipoMovimiento: "Cobro cuota",
+    saldoAntes: saldoPrestamo,
+    saldoDespues: redondear2(Math.max(0, saldoPrestamo - montoCobrar)),
+    notas: `Cobro cuota ${cobro.numeroCuota}/${cobro.totalCuotas}`,
     ejecutadoPor: opciones.usuario || "",
   });
 
@@ -230,6 +235,19 @@ async function ejecutarCobroPrestamo(id, opciones = {}) {
   }
   await regla.save();
 
+  await registrarBitacoraPrestamo({
+    regla,
+    tipoMovimiento: "Cobro cuota",
+    monto: montoCobrar,
+    saldoAntes: saldoPrestamo,
+    saldoDespues: regla.saldoPendientePrestamo,
+    transaccionFinancieraId: tx._id,
+    eventoCobroId: cobro._id,
+    ejecutadoPor: opciones.usuario || "",
+    notas: `Cobro cuota ${cobro.numeroCuota}/${cobro.totalCuotas}`,
+    fecha: fechaContable,
+  });
+
   return {
     cobro,
     transaccion: tx,
@@ -242,6 +260,7 @@ async function ejecutarCobroPrestamo(id, opciones = {}) {
 }
 
 module.exports = {
+  resolverCuentaCobroPrestamo,
   listarCobrosPrestamo,
   listarPersonasConCobrosPendientes,
   ejecutarCobroPrestamo,

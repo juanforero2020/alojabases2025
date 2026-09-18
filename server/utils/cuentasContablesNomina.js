@@ -23,6 +23,7 @@ const SUBCUENTAS_NOMINA = {
   PRESTAMOS: "1.3.3 Pago o Abono Préstamo",
   PRESTAMOS_INTERNOS: "2.1.0 Internos",
   PRESTAMOS_EXTERNOS: "2.2.1 Externos",
+  ANTICIPOS: "1.5.3 Anticipos nomina",
 };
 
 const CONCEPTOS_COMPLEMENTARIOS = [
@@ -77,6 +78,10 @@ const MAPA_CUENTA_POR_SUBCUENTA = {
     cuenta: CUENTA_PRESTAMOS,
     tipoCuenta: "Salidas",
   },
+  [SUBCUENTAS_NOMINA.ANTICIPOS]: {
+    cuenta: CUENTA_GASTOS,
+    tipoCuenta: "Salidas",
+  },
   "1.7.4 Nominas - Descuentos": {
     cuenta: CUENTA_GASTOS,
     tipoCuenta: "Salidas",
@@ -124,6 +129,10 @@ function esConceptoComplementario(transaccionNomina) {
   );
 }
 
+function esAnticipoNomina(transaccionNomina) {
+  return normalizarTexto(transaccionNomina).includes("anticipo");
+}
+
 function subCuentaPrestamoNomina(tipoBeneficiario) {
   return esExterno(tipoBeneficiario)
     ? SUBCUENTAS_NOMINA.PRESTAMOS_EXTERNOS
@@ -151,6 +160,10 @@ function subCuentaPagoNomina({
 } = {}) {
   const t = normalizarTexto(transaccionNomina);
   const freq = normalizarTexto(frecuencia);
+
+  if (esAnticipoNomina(transaccionNomina)) {
+    return SUBCUENTAS_NOMINA.ANTICIPOS;
+  }
 
   if (tipoRegla === "D" || t.includes("prestamo") || t.includes("préstamo")) {
     return subCuentaPrestamoNomina(tipoBeneficiario);
@@ -193,6 +206,9 @@ function subCuentaDescuentoNomina(transaccionNomina, tipoBeneficiario) {
   if (t.includes("prestamo") || t.includes("préstamo")) {
     return subCuentaAbonoPrestamoNomina();
   }
+  if (t.includes("anticipo")) {
+    return SUBCUENTAS_NOMINA.DESCUENTOS;
+  }
   return SUBCUENTAS_NOMINA.DESCUENTOS;
 }
 
@@ -208,4 +224,5 @@ module.exports = {
   subCuentaPrestamoNomina,
   subCuentaAbonoPrestamoNomina,
   esSubCuentaPrestamoNomina,
+  esAnticipoNomina,
 };

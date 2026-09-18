@@ -49,6 +49,14 @@ const FuenteDescuentoPrestamoSchema = new Schema(
     montoPago: { type: Number, default: 0 },
     monto: { type: Number, required: true, default: 0 },
     seleccionado: { type: Boolean, default: false },
+    eventoPagoId: {
+      type: Schema.Types.ObjectId,
+      ref: "EventoPagoProgramado",
+      required: false,
+    },
+    fechaEvento: { type: Date, required: false },
+    montoDisponible: { type: Number, required: false },
+    montoDescuentoExistente: { type: Number, required: false },
   },
   { _id: false }
 );
@@ -73,6 +81,10 @@ const AbonoPrestamoSchema = new Schema(
       required: false,
     },
     transaccionNominaOrigen: { type: String, required: false },
+    tipoMovimiento: { type: String, required: false },
+    saldoAntes: { type: Number, required: false },
+    saldoDespues: { type: Number, required: false },
+    notas: { type: String, required: false },
     ejecutadoPor: { type: String, required: false },
   },
   { _id: true }

@@ -1,0 +1,199 @@
+<div class="card mb-3">
+  <div class="card-body">
+    <div class="abonos-titulo text-center">
+      Abonos a préstamos
+    </div>
+    <p class="text-muted text-center mb-3">
+      Busque personal interno o externo con préstamo activo. El abono se registra
+      en <strong>1.3 INGRESOS / 1.3.3 Pago o Abono Préstamo</strong>
+      y refinancia las cuotas pendientes desde las últimas hacia atrás.
+    </p>
+
+    <div class="row mb-2 abonos-filtros">
+      <div class="col-md-3 col-lg-2 mb-2">
+        <label>Tipo beneficiario</label>
+        <dx-select-box
+          [items]="tiposBeneficiario"
+          [(value)]="tipoBeneficiario"
+          (onValueChanged)="onTipoBeneficiarioChanged($event)"
+        ></dx-select-box>
+      </div>
+      <div class="col-md-3 col-lg-2 mb-2">
+        <label>Buscar por</label>
+        <dx-select-box
+          [items]="modosBusqueda"
+          displayExpr="etiqueta"
+          valueExpr="valor"
+          [(value)]="modoBusqueda"
+          (onValueChanged)="onModoBusquedaChanged($event)"
+        ></dx-select-box>
+      </div>
+      <div class="col-md-4 col-lg-3 mb-2" *ngIf="modoBusqueda === 'cedula'">
+        <label>{{ etiquetaDocumento() }}</label>
+        <dx-text-box
+          [(value)]="textoBusqueda"
+          [placeholder]="'Digite ' + etiquetaDocumento().toLowerCase()"
+        ></dx-text-box>
+      </div>
+      <div class="col-md-5 col-lg-4 mb-2" *ngIf="modoBusqueda === 'nombre'">
+        <label>Nombre</label>
+        <dx-select-box
+          [items]="personas"
+          displayExpr="etiquetaDisplay"
+          valueExpr="cedula"
+          [(value)]="cedulaSeleccionada"
+          [searchEnabled]="true"
+          [searchExpr]="camposBusquedaNombre"
+          searchMode="contains"
+          [showClearButton]="true"
+          placeholder="Escriba el nombre o documento"
+          (onValueChanged)="onPersonaNombreChanged($event)"
+        ></dx-select-box>
+      </div>
+      <div class="col-md-3 col-lg-2 mb-2 d-flex align-items-end">
+        <button class="btn btn-block btn-nomina-primario" (click)="buscarPrestamos()">
+          Buscar
+        </button>
+      </div>
+    </div>
+
+    <div class="abonos-loading text-center py-5" *ngIf="cargando">
+      <dx-load-indicator [visible]="true" height="48" width="48"></dx-load-indicator>
+      <p class="text-muted mt-3 mb-0">Cargando préstamos...</p>
+    </div>
+
+    <div *ngIf="!cargando">
+      <div class="card mb-3" *ngFor="let prestamo of prestamos">
+        <div class="card-body">
+          <div class="d-flex justify-content-between flex-wrap mb-2">
+            <div>
+              <h6 class="font-weight-bold mb-1">
+                {{ prestamo.nombreBeneficiario }} —
+                {{ prestamo.cedulaBeneficiario }}
+              </h6>
+              <small class="text-muted">
+                {{ prestamo.tipoBeneficiario }} · Centro de costo:
+                {{ prestamo.centroCosto || "—" }}
+                · Desembolso:
+                {{ prestamo.fechaDesembolso | date : "dd/MM/yyyy" }}
+              </small>
+            </div>
+            <span class="badge badge-info align-self-start">
+              {{ prestamo.estadoRegla }}
+            </span>
+          </div>
+
+          <div class="row text-center mb-3">
+            <div class="col-md-4 mb-2">
+              <div class="abono-dato-label">Total préstamo</div>
+              <div class="abono-dato-valor">
+                {{ prestamo.montoTotalDeuda | number : "1.2-2" }}
+              </div>
+            </div>
+            <div class="col-md-4 mb-2">
+              <div class="abono-dato-label">Abonado / pagado</div>
+              <div class="abono-dato-valor abono-dato-ok">
+                {{ prestamo.montoAbonado | number : "1.2-2" }}
+              </div>
+            </div>
+            <div class="col-md-4 mb-2">
+              <div class="abono-dato-label">Pendiente</div>
+              <div class="abono-dato-valor abono-dato-pendiente">
+                {{ prestamo.saldoPendientePrestamo | number : "1.2-2" }}
+              </div>
+            </div>
+          </div>
+
+          <h6 class="font-weight-bold mt-2" *ngIf="prestamo.cuotasPendientes && prestamo.cuotasPendientes.length">
+            Cuotas pendientes
+          </h6>
+          <div
+            class="table-responsive mb-3"
+            *ngIf="prestamo.cuotasPendientes && prestamo.cuotasPendientes.length"
+          >
+            <table class="table table-sm table-bordered mb-0">
+              <thead>
+                <tr>
+                  <th>Cuota</th>
+                  <th>Fecha</th>
+                  <th>Valor ($)</th>
+                  <th>Pagado ($)</th>
+                  <th>Pendiente ($)</th>
+                  <th>Estado</th>
+                </tr>
+              </thead>
+              <tbody>
+                <tr *ngFor="let cuota of prestamo.cuotasPendientes">
+                  <td>{{ cuota.numeroCuota }}/{{ cuota.totalCuotas }}</td>
+                  <td>{{ cuota.fecha ? (cuota.fecha | date : "dd/MM/yyyy") : "—" }}</td>
+                  <td>{{ cuota.monto | number : "1.2-2" }}</td>
+                  <td>{{ (cuota.montoPagado || 0) | number : "1.2-2" }}</td>
+                  <td>{{ cuota.montoPendiente | number : "1.2-2" }}</td>
+                  <td>{{ cuota.estado || "Pendiente" }}</td>
+                </tr>
+              </tbody>
+            </table>
+          </div>
+
+          <div class="row align-items-end mb-3" *ngIf="prestamo.puedeAbonar">
+            <div class="col-md-4 mb-2">
+              <label>Valor a abonar ($)</label>
+              <dx-number-box
+                [(value)]="prestamo.montoAbonoCaptura"
+                [min]="0"
+                [max]="prestamo.saldoPendientePrestamo"
+                format="#,##0.##"
+              ></dx-number-box>
+            </div>
+            <div class="col-md-3 mb-2">
+              <button
+                type="button"
+                class="btn btn-block btn-success"
+                [disabled]="ejecutandoId === prestamo._id"
+                (click)="confirmarAbono(prestamo)"
+              >
+                Procesar abono
+              </button>
+            </div>
+          </div>
+          <p class="text-muted small mb-2" *ngIf="!prestamo.puedeAbonar">
+            Este préstamo ya no admite abonos.
+          </p>
+
+          <h6 class="font-weight-bold mt-3">Bitácora del préstamo</h6>
+          <div class="table-responsive">
+            <table class="table table-sm table-bordered mb-0">
+              <thead>
+                <tr>
+                  <th>Fecha</th>
+                  <th>Movimiento</th>
+                  <th>Monto ($)</th>
+                  <th>Saldo anterior ($)</th>
+                  <th>Saldo posterior ($)</th>
+                  <th>Usuario</th>
+                  <th>Detalle</th>
+                </tr>
+              </thead>
+              <tbody>
+                <tr *ngIf="!prestamo.bitacora || !prestamo.bitacora.length">
+                  <td colspan="7" class="text-center text-muted">
+                    Aún no hay pagos ni abonos registrados
+                  </td>
+                </tr>
+                <tr *ngFor="let mov of prestamo.bitacora">
+                  <td>{{ mov.fecha | date : "dd/MM/yyyy HH:mm" }}</td>
+                  <td>{{ mov.tipoMovimiento }}</td>
+                  <td>{{ mov.monto | number : "1.2-2" }}</td>
+                  <td>{{ mov.saldoAntes | number : "1.2-2" }}</td>
+                  <td>{{ mov.saldoDespues | number : "1.2-2" }}</td>
+                  <td>{{ mov.ejecutadoPor || "—" }}</td>
+                  <td>{{ mov.notas || "—" }}</td>
+                </tr>
+              </tbody>
+            </table>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>

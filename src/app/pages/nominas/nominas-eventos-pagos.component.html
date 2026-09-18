@@ -15,12 +15,21 @@
       <span *ngIf="esDescuentosGenerales"> Otros descuentos: valor único o por cuotas, con concepto y semana de aplicación.</span>
     </p>
     <p class="text-muted text-center small mb-3" *ngIf="esTipoD">
-      Tipo D — Préstamos. Se programa un desembolso único en
-      <strong>2.1. PRESTAMOS</strong>
-      (<strong>2.1.0 Internos</strong> o <strong>2.2.1 Externos</strong>).
-      Al personal interno se descuenta de sus pagos programados.
-      Al personal externo se generan fechas de cobro y los recibos se registran en el menú
-      <strong>Cobros</strong>.
+      Tipo D — Préstamos y anticipos.
+      <span *ngIf="!esAnticipo">
+        Préstamos: desembolso único en
+        <strong>2.1. PRESTAMOS</strong>
+        (<strong>2.1.0 Internos</strong> o <strong>2.2.1 Externos</strong>).
+        Al personal interno se descuenta de sus pagos programados.
+        Al personal externo se generan fechas de cobro y los recibos se registran en el menú
+        <strong>Cobros</strong>.
+      </span>
+      <span *ngIf="esAnticipo">
+        Anticipos: desembolso en
+        <strong>1.5.3 Anticipos nomina</strong>
+        y descuento en el próximo pago que elija
+        (dominical de esta misma semana, asignación de nómina, décimos o comisiones).
+      </span>
     </p>
 
     <div class="row eventos-formulario">
@@ -39,7 +48,7 @@
           [items]="tiposBeneficiario"
           [(value)]="formulario.tipoBeneficiario"
           (onValueChanged)="onTipoBeneficiarioChanged()"
-          [disabled]="esDominical || esTipoC"
+          [disabled]="esDominical || esTipoC || esAnticipo"
         ></dx-select-box>
       </div>
       <div class="col-md-4 mb-3">
@@ -116,16 +125,21 @@
           [(value)]="formulario.transaccionNomina"
           (onValueChanged)="onTransaccionTipoCChanged()"
         ></dx-select-box>
-        <dx-text-box
+        <dx-select-box
           *ngIf="esTipoD"
-          [value]="transaccionPrestamo"
-          [readOnly]="true"
-        ></dx-text-box>
+          [items]="transaccionesNominaD"
+          [(value)]="formulario.transaccionNomina"
+          (onValueChanged)="onTransaccionTipoDChanged($event)"
+          [disabled]="formulario.estadoRegla === 'Autorizada'"
+        ></dx-select-box>
         <small class="text-muted d-block" *ngIf="esTipoD && esPrestamoInterno">
           El préstamo se descuenta de los pagos que seleccione abajo
         </small>
         <small class="text-muted d-block" *ngIf="esTipoD && esPrestamoExterno">
           El personal externo no tiene eventos de pago: se programan recibos de cobro
+        </small>
+        <small class="text-muted d-block" *ngIf="esAnticipo">
+          Elija el próximo pago sobre el que se descontará el anticipo. El máximo es lo neto disponible.
         </small>
       </div>
       <div class="col-md-4 mb-3" *ngIf="esConceptoExternoOtro">
@@ -151,8 +165,11 @@
         <small class="text-muted" *ngIf="esTipoB">
           Identifica la deuda particular para consolidar información
         </small>
-        <small class="text-muted" *ngIf="esTipoD">
+        <small class="text-muted" *ngIf="esTipoD && !esAnticipo">
           Quedará registrado en cada abono del préstamo
+        </small>
+        <small class="text-muted" *ngIf="esAnticipo">
+          Quedará registrado en el desembolso y en el descuento del pago elegido
         </small>
         <small class="text-muted" *ngIf="!esTipoB && !esTipoD">
           Quedará registrado en las transacciones financieras al ejecutar el pago
@@ -650,10 +667,10 @@
         </div>
       </ng-container>
 
-      <!-- Campos Tipo D — préstamos -->
+      <!-- Campos Tipo D — préstamos / anticipos -->
       <ng-container *ngIf="esTipoD">
         <div class="col-md-4 mb-3">
-          <label class="form-label">Valor prestado ($)</label>
+          <label class="form-label">{{ esAnticipo ? "Valor del anticipo ($)" : "Valor prestado ($)" }}</label>
           <dx-number-box
             [(value)]="formulario.montoPrestado"
             [min]="0"
@@ -661,7 +678,7 @@
             (onValueChanged)="onDatosPrestamoChanged()"
           ></dx-number-box>
         </div>
-        <div class="col-md-4 mb-3">
+        <div class="col-md-4 mb-3" *ngIf="!esAnticipo">
           <label class="form-label">Interés (%)</label>
           <dx-number-box
             [(value)]="formulario.porcentajeInteres"
@@ -671,13 +688,13 @@
           ></dx-number-box>
           <small class="text-muted">Se suma al capital. Ej. $500 + 1% = $505</small>
         </div>
-        <div class="col-md-4 mb-3">
+        <div class="col-md-4 mb-3" *ngIf="!esAnticipo">
           <label class="form-label">Interés ($)</label>
           <div class="eventos-monto-display">
             {{ montoInteresCalculado | number : "1.2-2" }}
           </div>
         </div>
-        <div class="col-md-4 mb-3">
+        <div class="col-md-4 mb-3" *ngIf="!esAnticipo">
           <label class="form-label">Total préstamo ($)</label>
           <div class="eventos-monto-display">
             {{ totalPrestamoCalculado | number : "1.2-2" }}
@@ -691,11 +708,17 @@
             type="date"
             (onValueChanged)="onDatosPrestamoChanged()"
           ></dx-date-box>
-          <small class="text-muted">
+          <small class="text-muted" *ngIf="!esAnticipo">
             Única vez: ese día se programa el pago para entregar el capital
             (${{ montoPrestadoForm | number : "1.2-2" }}). El encargado lo ejecuta en Pagos programados.
             Cuenta <strong>2.1. PRESTAMOS</strong> /
             {{ esPrestamoExterno ? "2.2.1 Externos" : "2.1.0 Internos" }}.
+          </small>
+          <small class="text-muted" *ngIf="esAnticipo">
+            Única vez: ese día se programa el egreso del anticipo
+            (${{ montoPrestadoForm | number : "1.2-2" }}) en
+            <strong>1.5.3 Anticipos nomina</strong>.
+            El descuento queda en el próximo pago elegido.
           </small>
         </div>
         <div class="col-md-4 mb-3" *ngIf="esPrestamoExterno">
@@ -731,6 +754,93 @@
           <label class="form-label">Saldo pendiente ($)</label>
           <div class="eventos-monto-display">
             {{ (formulario.saldoPendientePrestamo != null ? formulario.saldoPendientePrestamo : totalPrestamoCalculado) | number : "1.2-2" }}
+          </div>
+        </div>
+        <div class="col-md-12 mb-2" *ngIf="esAnticipo">
+          <label class="form-label">Próximos pagos disponibles para anticipo</label>
+          <p class="small text-muted mb-2">
+            Se lista el próximo evento de cada tipo (dominical de esta misma semana,
+            asignación de nómina, décimos, comisiones u otros). Marque uno:
+            el máximo es el neto disponible (pago menos descuentos ya parametrizados).
+          </p>
+          <div
+            class="alert alert-warning py-2 small mb-2"
+            *ngIf="formulario.cedulaBeneficiario && !fuentesPrestamo.length"
+          >
+            Este beneficiario no tiene un próximo pago pendiente con saldo disponible
+            para anticipo. Autorice primero las reglas de pago (nómina, dominical, etc.).
+          </div>
+          <div class="table-responsive" *ngIf="fuentesPrestamo.length">
+            <table class="table table-sm table-bordered amortizacion-tabla mb-0">
+              <thead>
+                <tr>
+                  <th style="width: 70px">Usar</th>
+                  <th>Tipo de pago</th>
+                  <th>Próximo pago</th>
+                  <th>Pago ($)</th>
+                  <th>Descuentos ($)</th>
+                  <th>Disponible ($)</th>
+                  <th style="width: 160px">Anticipo ($)</th>
+                </tr>
+              </thead>
+              <tbody>
+                <tr *ngFor="let fuente of fuentesPrestamo">
+                  <td class="text-center">
+                    <dx-check-box
+                      [(value)]="fuente.seleccionado"
+                      (onValueChanged)="seleccionarFuenteAnticipo(fuente, $event)"
+                    ></dx-check-box>
+                  </td>
+                  <td>
+                    {{ fuente.transaccionNomina }}
+                    <span class="text-muted" *ngIf="fuente.frecuencia">
+                      ({{ fuente.frecuencia }})
+                    </span>
+                  </td>
+                  <td>{{ formatoFechaCorta(fuente.fechaEvento) }}</td>
+                  <td>
+                    <span *ngIf="fuente.montoVariable && !(fuente.montoPago > 0)">Variable</span>
+                    <span *ngIf="!fuente.montoVariable || fuente.montoPago > 0">
+                      {{ fuente.montoPago | number : "1.2-2" }}
+                    </span>
+                  </td>
+                  <td>{{ fuente.montoDescuentoExistente | number : "1.2-2" }}</td>
+                  <td>
+                    <span *ngIf="fuente.montoDisponible == null">Variable</span>
+                    <span *ngIf="fuente.montoDisponible != null">
+                      {{ fuente.montoDisponible | number : "1.2-2" }}
+                    </span>
+                  </td>
+                  <td>
+                    <dx-number-box
+                      [(value)]="fuente.monto"
+                      [min]="0"
+                      format="#,##0.##"
+                      [disabled]="!fuente.seleccionado"
+                      (onValueChanged)="onMontoAnticipoChanged(fuente, $event)"
+                    ></dx-number-box>
+                  </td>
+                </tr>
+              </tbody>
+            </table>
+          </div>
+          <div
+            class="alert alert-info py-2 small mt-2 mb-0"
+            *ngIf="fuentesPrestamoSeleccionadas.length && montoPrestadoForm > 0"
+          >
+            Se programará un desembolso de
+            <strong>${{ montoPrestadoForm | number : "1.2-2" }}</strong>
+            y el mismo valor se descontará en
+            <strong>{{ fuentesPrestamoSeleccionadas[0].transaccionNomina }}</strong>
+            del
+            <strong>{{ formatoFechaCorta(fuentesPrestamoSeleccionadas[0].fechaEvento) }}</strong>
+            (cuenta de descuento <strong>1.3.4 Nominas_Descuentos</strong>).
+          </div>
+          <div
+            class="alert alert-danger py-2 small mt-2 mb-0"
+            *ngIf="validacionPrestamoTipoD && !validacionPrestamoTipoD.ok"
+          >
+            {{ validacionPrestamoTipoD.mensaje }}
           </div>
         </div>
         <div class="col-md-12 mb-2" *ngIf="esPrestamoInterno">
@@ -1152,6 +1262,7 @@
             (esTipoD &&
               (!montoPrestadoForm ||
                 !formulario.fechaDesembolso ||
+                (esAnticipo && !fuentesPrestamoSeleccionadas.length) ||
                 (esPrestamoInterno && !fuentesPrestamoSeleccionadas.length) ||
                 (esPrestamoExterno && !tablaAmortizacion.length))) ||
             (esTipoC &&

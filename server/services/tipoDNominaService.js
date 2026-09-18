@@ -4,9 +4,12 @@ const EventoCobroPrestamo = require("../models/eventoCobroPrestamo");
 const { fechaCuotaAmortizacion } = require("../utils/proyeccionPagosTipoB");
 const {
   TRANSACCION_PRESTAMO,
+  TRANSACCION_ANTICIPO,
+  esReglaAnticipo,
   calcularMontosPrestamo,
   fuentesSeleccionadas,
   listarReglasPagoAsociablesPrestamo,
+  listarEventosDisponiblesAnticipo,
   recalcularPrestamosBeneficiario,
   quitarDescuentosPrestamo,
   construirProyeccionTipoD,
@@ -37,6 +40,11 @@ function normalizarFuentes(fuentes = []) {
       montoPago: redondear2(f.montoPago || 0),
       monto: redondear2(f.monto || 0),
       seleccionado: f.seleccionado === true || redondear2(f.monto) > 0,
+      eventoPagoId: f.eventoPagoId || undefined,
+      fechaEvento: f.fechaEvento || undefined,
+      montoDisponible:
+        f.montoDisponible != null ? redondear2(f.montoDisponible) : undefined,
+      montoDescuentoExistente: redondear2(f.montoDescuentoExistente || 0),
     }));
 }
 
@@ -57,23 +65,28 @@ function fechaCalendario(valor) {
 function normalizarReglaTipoD(regla) {
   const doc =
     regla && typeof regla.toObject === "function" ? regla.toObject() : { ...regla };
+  const esAnticipo = esReglaAnticipo(doc);
   const montos = calcularMontosPrestamo(
     doc.montoPrestado || doc.montoTotalDeuda || doc.monto,
-    doc.porcentajeInteres
+    esAnticipo ? 0 : doc.porcentajeInteres
   );
   doc.tipoRegla = "D";
   doc.esDescuento = true;
-  doc.transaccionNomina = TRANSACCION_PRESTAMO;
+  doc.transaccionNomina = esAnticipo ? TRANSACCION_ANTICIPO : TRANSACCION_PRESTAMO;
   doc.fuente = "Manual";
   doc.frecuencia = "Unica";
-  doc.parametro = doc.parametro || "Prestamo";
+  doc.parametro = esAnticipo ? "Anticipo" : doc.parametro || "Prestamo";
   doc.vigenciaRegla = "Numero de cuotas";
   doc.modalidadMonto = "Finito";
   doc.montoPrestado = montos.montoPrestado;
-  doc.porcentajeInteres = montos.porcentajeInteres;
-  doc.montoInteres = montos.montoInteres;
+  doc.porcentajeInteres = esAnticipo ? 0 : montos.porcentajeInteres;
+  doc.montoInteres = esAnticipo ? 0 : montos.montoInteres;
   doc.montoTotalDeuda = montos.montoTotal;
   doc.monto = montos.montoTotal;
+  if (esAnticipo) {
+    doc.tipoBeneficiario = "Interno";
+    doc.cuotas = 1;
+  }
   const fechaDesembolso = fechaCalendario(
     doc.fechaDesembolso || doc.fechaInicioPagos
   );
@@ -185,24 +198,53 @@ function validarTablaCobrosExternos(regla) {
 }
 
 function validarReglaTipoD(regla) {
+  const esAnticipo = esReglaAnticipo(regla);
   if (!(regla.centroCosto || "").trim()) {
     return "Seleccione el centro de costo";
   }
   if (!(regla.cedulaBeneficiario || "").trim()) {
-    return "Indique el beneficiario del préstamo";
+    return esAnticipo
+      ? "Indique el beneficiario del anticipo"
+      : "Indique el beneficiario del préstamo";
   }
   const montos = calcularMontosPrestamo(
     regla.montoPrestado,
-    regla.porcentajeInteres
+    esAnticipo ? 0 : regla.porcentajeInteres
   );
   if (!(montos.montoPrestado > 0)) {
-    return "El valor prestado debe ser mayor a cero";
+    return esAnticipo
+      ? "El valor del anticipo debe ser mayor a cero"
+      : "El valor prestado debe ser mayor a cero";
   }
-  if (montos.porcentajeInteres < 0) {
+  if (!esAnticipo && montos.porcentajeInteres < 0) {
     return "El interés no puede ser negativo";
   }
   if (!fechaCalendario(regla.fechaDesembolso || regla.fechaInicioPagos)) {
-    return "Indique la fecha de desembolso del préstamo";
+    return esAnticipo
+      ? "Indique la fecha de desembolso del anticipo"
+      : "Indique la fecha de desembolso del préstamo";
+  }
+  if (esAnticipo) {
+    if ((regla.tipoBeneficiario || "") === "Externo") {
+      return "Los anticipos solo aplican a personal interno";
+    }
+    const fuentes = fuentesSeleccionadas(regla);
+    if (fuentes.length !== 1) {
+      return "Seleccione un solo evento de pago para descontar el anticipo";
+    }
+    const fuente = fuentes[0];
+    if (!fuente.eventoPagoId) {
+      return "El evento de pago seleccionado ya no está disponible. Vuelva a listar los próximos pagos";
+    }
+    const disponible = redondear2(
+      fuente.montoDisponible != null ? fuente.montoDisponible : fuente.montoPago
+    );
+    if (!fuente.montoVariable && disponible > 0 && fuente.monto > disponible + 0.01) {
+      return `El anticipo ($${fuente.monto.toFixed(
+        2
+      )}) no puede superar lo disponible en ese pago ($${disponible.toFixed(2)})`;
+    }
+    return null;
   }
   if (esPrestamoExterno(regla)) {
     return validarTablaCobrosExternos(regla);
@@ -227,6 +269,46 @@ function validarReglaTipoD(regla) {
 
 async function validarFuentesPrestamo(regla) {
   const fuentes = fuentesSeleccionadas(regla);
+  if (esReglaAnticipo(regla)) {
+    const fuente = fuentes[0];
+    if (!fuente || !fuente.eventoPagoId) {
+      return "Seleccione un solo evento de pago para descontar el anticipo";
+    }
+    const lista = await listarEventosDisponiblesAnticipo(
+      regla.cedulaBeneficiario
+    );
+    const vivo = (lista || []).find(
+      (e) => idStr(e.eventoPagoId) === idStr(fuente.eventoPagoId)
+    );
+    if (!vivo) {
+      return "El pago elegido para el anticipo ya no está pendiente o no tiene saldo disponible";
+    }
+    if (
+      !vivo.montoVariable &&
+      vivo.montoDisponible != null &&
+      fuente.monto > Number(vivo.montoDisponible) + 0.01
+    ) {
+      return `El anticipo ($${fuente.monto.toFixed(
+        2
+      )}) no puede superar lo disponible ($${Number(vivo.montoDisponible).toFixed(
+        2
+      )})`;
+    }
+    fuente.reglaPagoId = vivo.reglaPagoId;
+    fuente.transaccionNomina = vivo.transaccionNomina;
+    fuente.frecuencia = vivo.frecuencia;
+    fuente.parametro = vivo.parametro;
+    fuente.tipoRegla = vivo.tipoRegla;
+    fuente.montoVariable = !!vivo.montoVariable;
+    fuente.montoPago = redondear2(vivo.montoPago || 0);
+    fuente.montoDisponible =
+      vivo.montoDisponible != null ? redondear2(vivo.montoDisponible) : undefined;
+    fuente.montoDescuentoExistente = redondear2(
+      vivo.montoDescuentoExistente || 0
+    );
+    fuente.fechaEvento = vivo.fechaEvento;
+    return null;
+  }
   for (const fuente of fuentes) {
     const asociada = await ReglaPagoNomina.findById(fuente.reglaPagoId);
     if (!asociada) {
@@ -240,6 +322,12 @@ async function validarFuentesPrestamo(regla) {
     }
     if (!["A", "B"].includes(asociada.tipoRegla)) {
       return "Solo se puede descontar el préstamo de pagos tipo A o B";
+    }
+    if (fuente.eventoPagoId) {
+      const evento = await EventoPagoProgramado.findById(fuente.eventoPagoId);
+      if (!evento || !["Pendiente", "Parcial"].includes(evento.estado)) {
+        return "El pago elegido para el anticipo ya no está pendiente";
+      }
     }
     fuente.transaccionNomina =
       fuente.transaccionNomina || asociada.transaccionNomina;
@@ -339,12 +427,21 @@ async function generarEventosProgramados(regla, opciones = {}) {
   const fecha = fechaCalendario(
     reglaObj.fechaDesembolso || reglaObj.fechaInicioPagos
   );
+  const esAnticipo = esReglaAnticipo(reglaObj);
+  const fuenteAnticipo = esAnticipo
+    ? fuentesSeleccionadas(reglaObj)[0]
+    : null;
   const notas = [
     String(reglaObj.notas || "").trim(),
-    `Desembolso préstamo capital $${reglaObj.montoPrestado.toFixed(2)}`,
-    esPrestamoExterno(reglaObj)
+    esAnticipo
+      ? `Desembolso anticipo $${reglaObj.montoPrestado.toFixed(2)}`
+      : `Desembolso préstamo capital $${reglaObj.montoPrestado.toFixed(2)}`,
+    esAnticipo
+      ? `Se descuenta en ${fuenteAnticipo ? fuenteAnticipo.transaccionNomina : "el pago elegido"}`
+      : esPrestamoExterno(reglaObj)
       ? "Subcuenta 2.2.1 Externos"
       : "Subcuenta 2.1.0 Internos",
+    esAnticipo ? "Subcuenta 1.5.3 Anticipos nomina" : "",
   ]
     .filter(Boolean)
     .join(" | ");
@@ -360,7 +457,7 @@ async function generarEventosProgramados(regla, opciones = {}) {
     monto: reglaObj.montoPrestado,
     montoPagado: 0,
     centroCosto: reglaObj.centroCosto,
-    transaccionNomina: TRANSACCION_PRESTAMO,
+    transaccionNomina: esAnticipo ? TRANSACCION_ANTICIPO : TRANSACCION_PRESTAMO,
     cedulaBeneficiario: reglaObj.cedulaBeneficiario,
     nombreBeneficiario: reglaObj.nombreBeneficiario,
     modalidadMonto: "Finito",
@@ -370,7 +467,7 @@ async function generarEventosProgramados(regla, opciones = {}) {
   await eventoDesembolso.save();
 
   let eventosCobro = [];
-  if (esPrestamoExterno(reglaObj)) {
+  if (!esAnticipo && esPrestamoExterno(reglaObj)) {
     let tablaCobros = reglaObj.tablaAmortizacion || [];
     if (!tablaCobros.length) {
       tablaCobros = generarTablaCobrosExternos(reglaObj).tabla;
@@ -383,9 +480,10 @@ async function generarEventosProgramados(regla, opciones = {}) {
     eventosCobro = await crearEventosCobroPrestamo(regla, tablaCobros);
   }
 
-  const actualizados = esPrestamoExterno(reglaObj)
-    ? 0
-    : await recalcularPrestamosBeneficiario(reglaObj.cedulaBeneficiario);
+  const actualizados =
+    !esAnticipo && esPrestamoExterno(reglaObj)
+      ? 0
+      : await recalcularPrestamosBeneficiario(reglaObj.cedulaBeneficiario);
   const previa = await generarTablaPrestamoPreviaUnificada(reglaObj);
   const proyeccion = construirProyeccionTipoD(reglaObj, {
     ...opciones,
@@ -404,10 +502,13 @@ async function generarEventosProgramados(regla, opciones = {}) {
 
 module.exports = {
   TRANSACCION_PRESTAMO,
+  TRANSACCION_ANTICIPO,
+  esReglaAnticipo,
   normalizarReglaTipoD,
   validarReglaTipoD,
   validarReglaTipoDCompleta,
   listarReglasPagoAsociablesPrestamo,
+  listarEventosDisponiblesAnticipo,
   generarEventosProgramados,
   quitarDescuentosPrestamo: quitarDescuentosPrestamoCompleto,
   construirProyeccionTipoD,

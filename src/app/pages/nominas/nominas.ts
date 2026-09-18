@@ -199,6 +199,12 @@ export interface FuenteDescuentoPrestamo {
   monto: number;
   seleccionado?: boolean;
   etiquetaDisplay?: string;
+  eventoPagoId?: string;
+  fechaEvento?: Date | string;
+  montoDisponible?: number;
+  montoDescuentoExistente?: number;
+  numeroCuota?: number;
+  totalCuotas?: number;
 }
 
 export interface AbonoPrestamoNomina {
@@ -209,7 +215,57 @@ export interface AbonoPrestamoNomina {
   eventoCobroId?: string;
   transaccionFinancieraId?: string;
   transaccionNominaOrigen?: string;
+  tipoMovimiento?: string;
+  saldoAntes?: number;
+  saldoDespues?: number;
+  notas?: string;
   ejecutadoPor?: string;
+}
+
+export interface BitacoraPrestamoNomina {
+  _id?: string;
+  reglaPagoId?: string;
+  tipoMovimiento?: string;
+  fecha?: Date | string;
+  monto: number;
+  saldoAntes?: number;
+  saldoDespues?: number;
+  ejecutadoPor?: string;
+  notas?: string;
+  transaccionFinancieraId?: string;
+}
+
+export interface CuotaPrestamoPendiente {
+  numeroCuota?: number;
+  totalCuotas?: number;
+  fecha?: Date | string;
+  monto?: number;
+  montoPagado?: number;
+  montoPendiente?: number;
+  estado?: string;
+}
+
+export interface PrestamoAbonoResumen {
+  _id?: string;
+  tipoRegla?: string;
+  estadoRegla?: string;
+  tipoBeneficiario?: string;
+  cedulaBeneficiario?: string;
+  nombreBeneficiario?: string;
+  centroCosto?: string;
+  fechaDesembolso?: Date | string;
+  montoPrestado?: number;
+  porcentajeInteres?: number;
+  montoInteres?: number;
+  montoTotalDeuda?: number;
+  montoAbonado?: number;
+  saldoPendientePrestamo?: number;
+  puedeAbonar?: boolean;
+  cuotas?: number;
+  cuotaEvento?: number;
+  cuotasPendientes?: CuotaPrestamoPendiente[];
+  bitacora?: BitacoraPrestamoNomina[];
+  montoAbonoCaptura?: number;
 }
 
 export interface ReglaPagoNomina {

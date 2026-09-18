@@ -1,0 +1,56 @@
+.abonos-titulo {
+  background-color: #fff3cd;
+  color: #c62828;
+  font-weight: bold;
+  text-transform: uppercase;
+  padding: 0.5rem 1rem;
+  margin-bottom: 1rem;
+  border-left: 4px solid #c62828;
+}
+
+.abonos-filtros label {
+  font-size: 0.85rem;
+  font-weight: 600;
+  margin-bottom: 0.25rem;
+}
+
+.abonos-loading {
+  min-height: 180px;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+}
+
+.abono-dato-label {
+  font-size: 0.8rem;
+  font-weight: 600;
+  color: #666;
+}
+
+.abono-dato-valor {
+  font-size: 1.4rem;
+  font-weight: bold;
+  color: #333;
+}
+
+.abono-dato-ok {
+  color: #2e7d32;
+}
+
+.abono-dato-pendiente {
+  color: #c62828;
+}
+
+.btn-nomina-primario {
+  background-color: #c62828;
+  border-color: #c62828;
+  color: #fff;
+
+  &:hover,
+  &:focus {
+    background-color: #b71c1c;
+    border-color: #b71c1c;
+    color: #fff;
+  }
+}

@@ -39,8 +39,8 @@ export class NominasPagosProgramadosComponent implements OnInit {
   filtroTipoRegla = "Todos";
   filtroConDescuento = "Todos";
   filtroCedulaBeneficiario: string | null = null;
-  fechaDesde: Date | null = null;
-  fechaHasta: Date | null = null;
+  fechaDesde: Date | null = hoyCalendarioNomina();
+  fechaHasta: Date | null = NominasPagosProgramadosComponent.fechaQuinceDiasAdelante();
 
   transaccionesFiltro: string[] = ["Todos"];
   estadosEventoFiltro = [
@@ -149,9 +149,19 @@ export class NominasPagosProgramadosComponent implements OnInit {
     this.filtroTipoRegla = "Todos";
     this.filtroConDescuento = "Todos";
     this.filtroCedulaBeneficiario = null;
-    this.fechaDesde = null;
-    this.fechaHasta = null;
+    this.aplicarRangoFechasDefault();
     this.cargarEventosProgramados();
+  }
+
+  private static fechaQuinceDiasAdelante(): Date {
+    const hasta = hoyCalendarioNomina();
+    hasta.setDate(hasta.getDate() + 15);
+    return hasta;
+  }
+
+  private aplicarRangoFechasDefault() {
+    this.fechaDesde = hoyCalendarioNomina();
+    this.fechaHasta = NominasPagosProgramadosComponent.fechaQuinceDiasAdelante();
   }
 
   private formatoFechaApi(fecha: Date | null): string | undefined {

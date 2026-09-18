@@ -36,6 +36,8 @@ export class NominasEventosPagosComponent implements OnInit {
   tiposRegla = ["A", "B", "C", "D"];
   transaccionesNominaC = ["Pago Seguridad Social", "Descuentos"];
   transaccionPrestamo = "Prestamos";
+  transaccionAnticipo = "Anticipos";
+  transaccionesNominaD = ["Prestamos", "Anticipos"];
   modalidadesDescuento = ["Por cuota", "Valor unico"];
   private readonly conceptosDescuentoIniciales = [
     "Por roturas",
@@ -167,11 +169,32 @@ export class NominasEventosPagosComponent implements OnInit {
   }
 
   get esPrestamoExterno(): boolean {
-    return this.esTipoD && this.formulario.tipoBeneficiario === "Externo";
+    return (
+      this.esTipoD &&
+      !this.esAnticipo &&
+      this.formulario.tipoBeneficiario === "Externo"
+    );
   }
 
   get esPrestamoInterno(): boolean {
-    return this.esTipoD && this.formulario.tipoBeneficiario !== "Externo";
+    return (
+      this.esTipoD &&
+      !this.esAnticipo &&
+      this.formulario.tipoBeneficiario !== "Externo"
+    );
+  }
+
+  get esAnticipo(): boolean {
+    return (
+      this.esTipoD &&
+      (this.formulario.transaccionNomina || "")
+        .toLowerCase()
+        .includes("anticipo")
+    );
+  }
+
+  formatoFechaCorta(valor?: Date | string | null): string {
+    return formatoFechaCalendarioNomina(valor);
   }
 
   get esTipoA(): boolean {
@@ -758,6 +781,36 @@ export class NominasEventosPagosComponent implements OnInit {
     }
   }
 
+  onTransaccionTipoDChanged(event?: { value?: string; event?: Event }) {
+    if (event && !event.event) return;
+    if (event && event.value != null) {
+      this.formulario.transaccionNomina = event.value;
+    }
+    const eraExterno = this.formulario.tipoBeneficiario === "Externo";
+    this.fuentesPrestamo = [];
+    this.formulario.fuentesDescuentoPrestamo = [];
+    this.tablaAmortizacion = [];
+    if (this.esAnticipo) {
+      this.formulario.tipoBeneficiario = "Interno";
+      this.formulario.porcentajeInteres = 0;
+      this.formulario.montoInteres = 0;
+      this.formulario.parametro = "Anticipo";
+      if (eraExterno) {
+        this.formulario.cedulaBeneficiario = "";
+        this.formulario.nombreBeneficiario = "";
+        this.beneficiario = null;
+        this.cedulaSeleccionadaNombre = null;
+        this.cargarOpcionesBeneficiarioNombre();
+        return;
+      }
+    } else {
+      this.formulario.parametro = "Prestamo";
+    }
+    if (this.formulario.cedulaBeneficiario) {
+      this.cargarFuentesPrestamo();
+    }
+  }
+
   onTransaccionNominaBChanged(event?: {
     value?: string;
     event?: Event;
@@ -1070,6 +1123,9 @@ export class NominasEventosPagosComponent implements OnInit {
 
   onTipoBeneficiarioChanged(_event?: { event?: Event }) {
     if (_event && !_event.event) return;
+    if (this.esAnticipo) {
+      this.formulario.tipoBeneficiario = "Interno";
+    }
     this.formulario.cedulaBeneficiario = "";
     this.formulario.nombreBeneficiario = "";
     this.beneficiario = null;
@@ -1202,6 +1258,10 @@ export class NominasEventosPagosComponent implements OnInit {
       montoPago: f.montoPago,
       monto: Number(f.monto) || 0,
       seleccionado: !!f.seleccionado && (Number(f.monto) || 0) > 0,
+      eventoPagoId: f.eventoPagoId,
+      fechaEvento: f.fechaEvento,
+      montoDisponible: f.montoDisponible,
+      montoDescuentoExistente: f.montoDescuentoExistente,
     }));
     this.formulario.cuotaEvento = this.sumaCuotasPrestamo;
     this.formulario.montoInteres = this.montoInteresCalculado;
@@ -1219,6 +1279,10 @@ export class NominasEventosPagosComponent implements OnInit {
     const doc = (this.formulario.cedulaBeneficiario || "").trim();
     if (!doc || !this.esTipoD || this.esPrestamoExterno) {
       this.fuentesPrestamo = [];
+      return;
+    }
+    if (this.esAnticipo) {
+      this.cargarEventosAnticipo();
       return;
     }
     this._nominasService.getReglasPagoAsociablesPrestamo(doc).subscribe(
@@ -1255,7 +1319,110 @@ export class NominasEventosPagosComponent implements OnInit {
     );
   }
 
+  cargarEventosAnticipo() {
+    const doc = (this.formulario.cedulaBeneficiario || "").trim();
+    if (!doc) {
+      this.fuentesPrestamo = [];
+      return;
+    }
+    this._nominasService.getEventosAnticipo(doc).subscribe(
+      (res) => {
+        const guardadas = this.formulario.fuentesDescuentoPrestamo || [];
+        this.fuentesPrestamo = (res || []).map((ev) => {
+          const previa = guardadas.find(
+            (f) =>
+              String(f.eventoPagoId || "") === String(ev.eventoPagoId || "")
+          );
+          const disponible = Number(ev.montoDisponible);
+          const montoPrev = previa ? Number(previa.monto) || 0 : 0;
+          return {
+            reglaPagoId: String(ev.reglaPagoId || ""),
+            eventoPagoId: ev.eventoPagoId ? String(ev.eventoPagoId) : undefined,
+            transaccionNomina: ev.transaccionNomina,
+            frecuencia: ev.frecuencia,
+            parametro: ev.parametro,
+            tipoRegla: ev.tipoRegla,
+            montoVariable: !!ev.montoVariable,
+            montoPago: Number(ev.montoPago) || 0,
+            montoDescuentoExistente: Number(ev.montoDescuentoExistente) || 0,
+            montoDisponible: isNaN(disponible) ? undefined : disponible,
+            fechaEvento: ev.fechaEvento
+              ? (fechaCalendarioLocal(ev.fechaEvento) as Date)
+              : ev.fechaEvento,
+            monto: previa && previa.seleccionado ? montoPrev : 0,
+            seleccionado: !!(previa && previa.seleccionado && montoPrev > 0),
+            etiquetaDisplay: ev.etiquetaDisplay,
+            numeroCuota: ev.numeroCuota,
+            totalCuotas: ev.totalCuotas,
+          };
+        });
+        this.sincronizarFuentesPrestamoEnFormulario();
+      },
+      () => {
+        this.fuentesPrestamo = [...(this.formulario.fuentesDescuentoPrestamo || [])];
+        this.sincronizarFuentesPrestamoEnFormulario();
+      }
+    );
+  }
+
+  seleccionarFuenteAnticipo(
+    fuente: FuenteDescuentoPrestamo,
+    event?: { event?: Event }
+  ) {
+    if (event && !event.event) return;
+    for (const f of this.fuentesPrestamo) {
+      if (f === fuente) continue;
+      f.seleccionado = false;
+      f.monto = 0;
+    }
+    if (fuente.seleccionado) {
+      const max = fuente.montoVariable
+        ? Number(fuente.montoDisponible) || 0
+        : Number(fuente.montoDisponible) || 0;
+      let monto = Number(fuente.monto) || this.montoPrestadoForm || 0;
+      if (!(monto > 0) && max > 0) {
+        monto = max;
+      }
+      if (!fuente.montoVariable && max > 0 && monto > max + 0.01) {
+        monto = max;
+      }
+      fuente.monto = monto;
+      this.formulario.montoPrestado = monto;
+    } else {
+      this.formulario.montoPrestado = 0;
+    }
+    this.sincronizarFuentesPrestamoEnFormulario();
+  }
+
+  onMontoAnticipoChanged(
+    fuente: FuenteDescuentoPrestamo,
+    event?: { event?: Event }
+  ) {
+    if (event && !event.event) return;
+    if (!fuente.seleccionado) return;
+    const max = Number(fuente.montoDisponible);
+    if (!fuente.montoVariable && max > 0 && Number(fuente.monto) > max + 0.01) {
+      fuente.monto = max;
+    }
+    this.formulario.montoPrestado = Number(fuente.monto) || 0;
+    this.sincronizarFuentesPrestamoEnFormulario();
+  }
+
   onDatosPrestamoChanged() {
+    if (this.esAnticipo) {
+      const fuente = this.fuentesPrestamo.find((f) => f.seleccionado);
+      if (fuente) {
+        const max = Number(fuente.montoDisponible);
+        if (
+          !fuente.montoVariable &&
+          max > 0 &&
+          this.montoPrestadoForm > max + 0.01
+        ) {
+          this.formulario.montoPrestado = max;
+        }
+        fuente.monto = this.montoPrestadoForm;
+      }
+    }
     this.formulario.montoInteres = this.montoInteresCalculado;
     this.formulario.montoTotalDeuda = this.totalPrestamoCalculado;
     this.formulario.monto = this.totalPrestamoCalculado;
@@ -1268,6 +1435,9 @@ export class NominasEventosPagosComponent implements OnInit {
       return;
     }
     this.sincronizarFuentesPrestamoEnFormulario();
+    if (this.esAnticipo) {
+      return;
+    }
     this.generarTablaPrestamo(true);
   }
 
@@ -1320,16 +1490,51 @@ export class NominasEventosPagosComponent implements OnInit {
     if (!(this.montoPrestadoForm > 0)) {
       this.validacionPrestamoTipoD = {
         ok: false,
-        mensaje: "Indique el valor prestado",
+        mensaje: this.esAnticipo
+          ? "Indique el valor del anticipo"
+          : "Indique el valor prestado",
       };
       return false;
     }
     if (!this.formulario.fechaDesembolso) {
       this.validacionPrestamoTipoD = {
         ok: false,
-        mensaje: "Indique la fecha de desembolso del préstamo",
+        mensaje: this.esAnticipo
+          ? "Indique la fecha de desembolso del anticipo"
+          : "Indique la fecha de desembolso del préstamo",
       };
       return false;
+    }
+    if (this.esAnticipo) {
+      const fuentes = this.fuentesPrestamoSeleccionadas;
+      if (fuentes.length !== 1) {
+        this.validacionPrestamoTipoD = {
+          ok: false,
+          mensaje: "Seleccione un solo evento de pago para descontar el anticipo",
+        };
+        return false;
+      }
+      const fuente = fuentes[0];
+      if (!fuente.eventoPagoId) {
+        this.validacionPrestamoTipoD = {
+          ok: false,
+          mensaje: "El evento elegido ya no está disponible. Vuelva a buscar el beneficiario",
+        };
+        return false;
+      }
+      const disponible = Number(fuente.montoDisponible);
+      const monto = Number(fuente.monto) || 0;
+      if (!fuente.montoVariable && disponible > 0 && monto > disponible + 0.01) {
+        this.validacionPrestamoTipoD = {
+          ok: false,
+          mensaje: `El anticipo ($${monto.toFixed(
+            2
+          )}) no puede superar lo disponible ($${disponible.toFixed(2)})`,
+        };
+        return false;
+      }
+      this.validacionPrestamoTipoD = { ok: true };
+      return true;
     }
     if (this.esPrestamoExterno) {
       if (!this.formulario.fechaInicioCobros) {
@@ -1405,7 +1610,10 @@ export class NominasEventosPagosComponent implements OnInit {
   }
 
   generarTablaPrestamo(forzar = false) {
-    if (!this.esTipoD) {
+    if (!this.esTipoD || this.esAnticipo) {
+      if (this.esAnticipo) {
+        this.sincronizarFuentesPrestamoEnFormulario();
+      }
       return;
     }
     if (this.esPrestamoExterno) {
@@ -2074,16 +2282,20 @@ export class NominasEventosPagosComponent implements OnInit {
         Swal.fire(
           "Validación",
           this.validacionPrestamoTipoD?.mensaje ||
-            "Revise el préstamo y las cuotas referenciales",
+            (this.esAnticipo
+              ? "Revise el anticipo y el evento de pago elegido"
+              : "Revise el préstamo y las cuotas referenciales"),
           "warning"
         );
         return;
       }
-      this.formulario.transaccionNomina = this.transaccionPrestamo;
+      this.formulario.transaccionNomina = this.esAnticipo
+        ? this.transaccionAnticipo
+        : this.transaccionPrestamo;
       this.formulario.esDescuento = true;
       this.formulario.fuente = "Manual";
       this.formulario.frecuencia = "Unica";
-      this.formulario.parametro = "Prestamo";
+      this.formulario.parametro = this.esAnticipo ? "Anticipo" : "Prestamo";
       this.formulario.fechaDesembolso = this.formulario.fechaDesembolso;
       this.formulario.fechaInicioPagos = this.formulario.fechaDesembolso;
       this.formulario.fechaInicioCobros =
@@ -2091,12 +2303,22 @@ export class NominasEventosPagosComponent implements OnInit {
       this.formulario.frecuenciaCobro =
         this.formulario.frecuenciaCobro || "Mensual";
       this.formulario.montoPrestado = this.montoPrestadoForm;
-      this.formulario.porcentajeInteres = this.porcentajeInteresForm;
-      this.formulario.montoInteres = this.montoInteresCalculado;
+      this.formulario.porcentajeInteres = this.esAnticipo
+        ? 0
+        : this.porcentajeInteresForm;
+      this.formulario.montoInteres = this.esAnticipo
+        ? 0
+        : this.montoInteresCalculado;
       this.formulario.montoTotalDeuda = this.totalPrestamoCalculado;
       this.formulario.monto = this.totalPrestamoCalculado;
       this.formulario.cuotaEvento = this.sumaCuotasPrestamo;
-      this.formulario.tablaAmortizacion = [...this.tablaAmortizacion];
+      this.formulario.cuotas = this.esAnticipo ? 1 : this.formulario.cuotas;
+      this.formulario.tipoBeneficiario = this.esAnticipo
+        ? "Interno"
+        : this.formulario.tipoBeneficiario;
+      this.formulario.tablaAmortizacion = this.esAnticipo
+        ? []
+        : [...this.tablaAmortizacion];
     } else if (this.esTipoC) {
       if (!this.formulario.reglaPagoAsociadaId) {
         Swal.fire(
@@ -2418,7 +2640,9 @@ export class NominasEventosPagosComponent implements OnInit {
       Swal.fire(
         "Validación",
         this.validacionPrestamoTipoD?.mensaje ||
-          "Revise el préstamo y las cuotas referenciales",
+          (this.esAnticipo
+            ? "Revise el anticipo y el evento de pago elegido"
+            : "Revise el préstamo y las cuotas referenciales"),
         "warning"
       );
       return;
@@ -2444,7 +2668,25 @@ export class NominasEventosPagosComponent implements OnInit {
     }
 
     const textoAutorizar = this.esTipoD
-      ? this.esPrestamoExterno
+      ? this.esAnticipo
+        ? `Se programará el desembolso del anticipo por $${this.montoPrestadoForm.toFixed(
+            2
+          )} el ${formatoFechaCalendarioNomina(
+            this.formulario.fechaDesembolso
+          )} (egreso en 1.5.3 Anticipos nomina). El valor se descontará del próximo ${
+            this.fuentesPrestamoSeleccionadas[0]
+              ? this.fuentesPrestamoSeleccionadas[0].transaccionNomina
+              : "pago"
+          }${
+            this.fuentesPrestamoSeleccionadas[0] &&
+            this.fuentesPrestamoSeleccionadas[0].fechaEvento
+              ? " del " +
+                formatoFechaCalendarioNomina(
+                  this.fuentesPrestamoSeleccionadas[0].fechaEvento
+                )
+              : ""
+          }.`
+      : this.esPrestamoExterno
         ? `Se programará un desembolso único de $${this.montoPrestadoForm.toFixed(
             2
           )} el ${formatoFechaCalendarioNomina(
@@ -2610,7 +2852,11 @@ export class NominasEventosPagosComponent implements OnInit {
         ? this.normalizarFechasAmortizacion([...regla.tablaAmortizacion])
         : [];
       this.fuentesPrestamo = [...(regla.fuentesDescuentoPrestamo || [])];
-      this.formulario.transaccionNomina = this.transaccionPrestamo;
+      this.formulario.transaccionNomina = (regla.transaccionNomina || "")
+        .toLowerCase()
+        .includes("anticipo")
+        ? this.transaccionAnticipo
+        : this.transaccionPrestamo;
       this.formulario.fechaDesembolso =
         (regla.fechaDesembolso
           ? (fechaCalendarioLocal(regla.fechaDesembolso) as Date)

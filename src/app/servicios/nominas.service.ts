@@ -8,6 +8,7 @@ import {
   normalizarEventoDominical,
   normalizarEventoPagoProgramado,
   normalizarEventoCobroPrestamo,
+  normalizarPrestamoAbonoResumen,
   normalizarNominaConfigGlobal,
   normalizarProyeccionPago,
   normalizarReglaPagoNomina,
@@ -22,6 +23,8 @@ import {
   DesgloseDescuentosEvento,
   EventoPagoProgramado,
   EventoCobroPrestamo,
+  PrestamoAbonoResumen,
+  FuenteDescuentoPrestamo,
   FilaAmortizacion,
   FacturaPendienteProveedor,
   NominaConfigGlobal,
@@ -347,6 +350,58 @@ export class NominasService {
     return this.http.put(`${this.URL}/cobros-prestamo/${id}/ejecutar`, payload);
   }
 
+  getPersonasAbonosPrestamo(tipoBeneficiario?: "Interno" | "Externo") {
+    const params: { [key: string]: string } = {};
+    if (tipoBeneficiario) params.tipoBeneficiario = tipoBeneficiario;
+    return this.http.get<OpcionBeneficiarioBusqueda[]>(
+      `${this.URL}/abonos-prestamo/personas`,
+      { params }
+    );
+  }
+
+  getPrestamosParaAbono(filtros?: {
+    tipoBeneficiario?: "Interno" | "Externo";
+    q?: string;
+    cedula?: string;
+    nombre?: string;
+  }) {
+    const params = new URLSearchParams();
+    if (filtros?.tipoBeneficiario) {
+      params.set("tipoBeneficiario", filtros.tipoBeneficiario);
+    }
+    if (filtros?.q) params.set("q", filtros.q);
+    if (filtros?.cedula) params.set("cedula", filtros.cedula);
+    if (filtros?.nombre) params.set("nombre", filtros.nombre);
+    const q = params.toString();
+    return this.http
+      .get<PrestamoAbonoResumen[]>(
+        `${this.URL}/abonos-prestamo${q ? `?${q}` : ""}`
+      )
+      .pipe(map((lista) => (lista || []).map(normalizarPrestamoAbonoResumen)));
+  }
+
+  ejecutarAbonoPrestamo(
+    id: string,
+    payload: {
+      usuario?: string;
+      sucursal?: string;
+      notas?: string;
+      monto?: number;
+    }
+  ) {
+    return this.http
+      .put<any>(`${this.URL}/abonos-prestamo/${id}/ejecutar`, payload)
+      .pipe(
+        map((res) => ({
+          ...res,
+          data:
+            res && res.data
+              ? normalizarPrestamoAbonoResumen(res.data)
+              : undefined,
+        }))
+      );
+  }
+
   getReglasPagoAsociables(cedula: string) {
     return this.http
       .get<ReglaPagoNomina[]>(`${this.URL}/reglas-pago-asociables/${cedula}`)
@@ -359,6 +414,12 @@ export class NominasService {
         `${this.URL}/reglas-pago-asociables-prestamo/${cedula}`
       )
       .pipe(map((lista) => (lista || []).map(normalizarReglaPagoNomina)));
+  }
+
+  getEventosAnticipo(cedula: string) {
+    return this.http.get<FuenteDescuentoPrestamo[]>(
+      `${this.URL}/eventos-anticipo/${cedula}`
+    );
   }
 
   descuentoPrevia(regla: ReglaPagoNomina) {

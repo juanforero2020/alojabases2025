@@ -3,6 +3,8 @@ import {
   EventoPagoDominical,
   EventoPagoProgramado,
   EventoCobroPrestamo,
+  PrestamoAbonoResumen,
+  BitacoraPrestamoNomina,
   FilaAmortizacion,
   NominaConfigGlobal,
   ProyeccionPagoNomina,
@@ -173,6 +175,33 @@ export function normalizarEventoCobroPrestamo(
     fechaEjecucion: ev.fechaEjecucion
       ? (fechaCalendarioLocal(ev.fechaEjecucion) as Date)
       : ev.fechaEjecucion,
+  };
+}
+
+export function normalizarBitacoraPrestamo(
+  item: BitacoraPrestamoNomina
+): BitacoraPrestamoNomina {
+  return {
+    ...item,
+    fecha: item.fecha ? new Date(item.fecha) : item.fecha,
+  };
+}
+
+export function normalizarPrestamoAbonoResumen(
+  prestamo: PrestamoAbonoResumen
+): PrestamoAbonoResumen {
+  return {
+    ...prestamo,
+    fechaDesembolso: prestamo.fechaDesembolso
+      ? (fechaCalendarioLocal(prestamo.fechaDesembolso) as Date)
+      : prestamo.fechaDesembolso,
+    bitacora: (prestamo.bitacora || []).map(normalizarBitacoraPrestamo),
+    cuotasPendientes: (prestamo.cuotasPendientes || []).map((cuota) => ({
+      ...cuota,
+      fecha: cuota.fecha
+        ? (fechaCalendarioLocal(cuota.fecha) as Date)
+        : cuota.fecha,
+    })),
   };
 }
 

@@ -123,6 +123,7 @@ import { NominasEventosPagosComponent } from "./pages/nominas/nominas-eventos-pa
 import { NominasConsultaPagosComponent } from "./pages/nominas/nominas-consulta-pagos.component";
 import { NominasPagosProgramadosComponent } from "./pages/nominas/nominas-pagos-programados.component";
 import { NominasCobrosModule } from "./pages/nominas/nominas-cobros.module";
+import { NominasAbonosModule } from "./pages/nominas/nominas-abonos.module";
 import { NominasLiquidacionDominicalComponent } from "./pages/nominas/nominas-liquidacion-dominical.component";
 
 @NgModule({
@@ -204,6 +205,7 @@ import { NominasLiquidacionDominicalComponent } from "./pages/nominas/nominas-li
     SideNavInnerToolbarModule,
     SingleCardModule,
     NominasCobrosModule,
+    NominasAbonosModule,
     FooterModule,
     LoginFormModule,
     AppRoutingModule,

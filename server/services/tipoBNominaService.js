@@ -538,6 +538,10 @@ async function ejecutarEventoProgramado(eventoId, opciones = {}) {
   );
   const notasPago = construirNotasTransaccionNomina(evento, {
     detalle: [detallePago, notasRegla].filter(Boolean).join(" "),
+    prefijo:
+      (evento.tipoRegla || regla.tipoRegla) === "D"
+        ? "Desembolso préstamo (egreso, no abona la deuda)"
+        : undefined,
   });
 
   const tx = new TransaccionFinanciera({
@@ -548,6 +552,10 @@ async function ejecutarEventoProgramado(eventoId, opciones = {}) {
     tipoCuenta,
     subCuenta,
     tipoTransaccion,
+    referenciaPrestamo:
+      (evento.tipoRegla || regla.tipoRegla) === "D"
+        ? String(regla._id)
+        : undefined,
     notas: notasPago,
     numFactura: evento.nFacturaProveedor || regla.nFacturaProveedor || "",
     proveedor:
@@ -619,7 +627,10 @@ async function ejecutarEventoProgramado(eventoId, opciones = {}) {
     reglaPagoId: regla._id,
     estado: { $in: ["Pendiente", "Parcial"] },
   });
+  const esDesembolsoPrestamo =
+    (evento.tipoRegla || regla.tipoRegla) === "D";
   if (
+    !esDesembolsoPrestamo &&
     pendientesRegla === 0 &&
     (regla.modalidadMonto === "Finito" ||
       regla.vigenciaRegla === "Unica vez" ||

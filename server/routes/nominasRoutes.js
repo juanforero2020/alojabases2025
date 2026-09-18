@@ -14,6 +14,7 @@ const tipoANominaService = require("../services/tipoANominaService");
 const tipoCNominaService = require("../services/tipoCNominaService");
 const tipoDNominaService = require("../services/tipoDNominaService");
 const cobroPrestamoNominaService = require("../services/cobroPrestamoNominaService");
+const abonoPrestamoNominaService = require("../services/abonoPrestamoNominaService");
 const {
   construirProyeccionTipoC,
   recalcularDescuentosEnEventos,
@@ -687,6 +688,17 @@ router.get("/reglas-pago-asociables-prestamo/:cedula", async (req, res) => {
   }
 });
 
+router.get("/eventos-anticipo/:cedula", async (req, res) => {
+  try {
+    const lista = await tipoDNominaService.listarEventosDisponiblesAnticipo(
+      req.params.cedula
+    );
+    res.json(lista);
+  } catch (err) {
+    res.status(400).json({ mensaje: err.message });
+  }
+});
+
 router.post("/reglas-pago/descuento-previa", async (req, res) => {
   try {
     const regla = await tipoCNominaService.normalizarReglaTipoC(req.body);
@@ -951,11 +963,14 @@ router.put("/reglas-pago/:id/autorizar", async (req, res) => {
       regla.proyeccion = proyeccion;
       regla.cuotaEvento = cuotaDescuento;
       await regla.save();
+      const esAnticipo = tipoDNominaService.esReglaAnticipo(regla);
       const esExterno =
         (regla.tipoBeneficiario || "").toString().trim().toLowerCase() ===
         "externo";
       return res.json({
-        status: esExterno
+        status: esAnticipo
+          ? "Anticipo autorizado — desembolso programado y descuento en el próximo pago elegido"
+          : esExterno
           ? "Regla tipo D autorizada — desembolso programado y cuotas de cobro para personal externo"
           : "Regla tipo D autorizada — desembolso programado y descuentos de préstamo aplicados",
         data: regla,
@@ -1434,6 +1449,56 @@ router.put("/cobros-prestamo/:id/ejecutar", async (req, res) => {
       montoCobrado: resultado.montoCobrado,
       saldoPendienteCuota: resultado.saldoPendienteCuota,
       saldoPrestamo: resultado.saldoPrestamo,
+    });
+  } catch (err) {
+    res.status(400).json({ mensaje: err.message });
+  }
+});
+
+router.get("/abonos-prestamo/personas", async (req, res) => {
+  try {
+    const personas = await abonoPrestamoNominaService.listarPersonasConPrestamoActivo(
+      req.query.tipoBeneficiario
+    );
+    res.json(personas);
+  } catch (err) {
+    res.status(400).json({ mensaje: err.message });
+  }
+});
+
+router.get("/abonos-prestamo", async (req, res) => {
+  try {
+    const prestamos = await abonoPrestamoNominaService.listarPrestamosActivos({
+      tipoBeneficiario: req.query.tipoBeneficiario,
+      q: req.query.q,
+      cedula: req.query.cedula,
+      nombre: req.query.nombre,
+      soloPendientes: req.query.soloPendientes,
+    });
+    res.json(prestamos);
+  } catch (err) {
+    res.status(400).json({ mensaje: err.message });
+  }
+});
+
+router.put("/abonos-prestamo/:id/ejecutar", async (req, res) => {
+  try {
+    const resultado = await abonoPrestamoNominaService.ejecutarAbonoPrestamo(
+      req.params.id,
+      {
+        monto: req.body.monto,
+        usuario: req.body.usuario,
+        sucursal: req.body.sucursal,
+        notas: req.body.notas,
+      }
+    );
+    res.json({
+      status: "Abono registrado",
+      data: resultado.prestamo,
+      transaccion: resultado.transaccion,
+      montoAbonado: resultado.montoAbonado,
+      saldoPrestamo: resultado.saldoPrestamo,
+      refinanciacion: resultado.refinanciacion,
     });
   } catch (err) {
     res.status(400).json({ mensaje: err.message });
