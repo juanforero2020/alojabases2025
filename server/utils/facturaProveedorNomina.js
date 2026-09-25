@@ -168,9 +168,93 @@ async function aplicarPagoFacturaProveedor({
   return { factura, transaccionFactura: txFactura, aplicado, saldoNuevo, estado };
 }
 
+async function aplicarDescuentoFacturaProveedor({
+  facturaId,
+  monto,
+  concepto,
+  usuario,
+  transaccion,
+  regla,
+}) {
+  if (!facturaId) {
+    throw new Error("Seleccione la factura pendiente del proveedor");
+  }
+  const montoDesc = redondear2(monto);
+  if (!(montoDesc > 0.009)) {
+    throw new Error("El monto del descuento debe ser mayor a cero");
+  }
+
+  const { factura, saldo } = await validarFacturaParaPago(facturaId);
+  if (montoDesc > saldo.valorAdeudado + 0.01) {
+    throw new Error(
+      `El descuento ($${montoDesc.toFixed(
+        2
+      )}) no puede superar el saldo de la factura ${factura.nFactura || ""} ($${saldo.valorAdeudado.toFixed(
+        2
+      )})`
+    );
+  }
+
+  const aplicado = redondear2(Math.min(montoDesc, saldo.valorAdeudado));
+  const descuentoNuevo = redondear2(
+    (Number(factura.valorDescuento) || 0) + aplicado
+  );
+  const saldoNuevo = redondear2(Math.max(0, saldo.valorAdeudado - aplicado));
+  const estado = saldoNuevo <= 0.01 ? "CUBIERTA" : factura.estado || "PENDIENTE";
+  const conceptoTxt = (concepto || "Descuento").toString().trim();
+  const notaDescuento = `Descuento nómina tipo C — ${conceptoTxt}: $${aplicado.toFixed(
+    2
+  )}`;
+
+  factura.valorDescuento = descuentoNuevo;
+  factura.estado = estado;
+  factura.observaciones = [factura.observaciones, notaDescuento]
+    .filter(Boolean)
+    .join(" | ");
+  await factura.save();
+
+  const txFactura = new TransaccionesFacturas({
+    fecha: new Date(),
+    idFactura: String(factura._id),
+    idComprobante: regla?._id
+      ? `NOM-DESC-${String(regla._id).slice(-8).toUpperCase()}`
+      : "NOM-DESC",
+    numFactura: factura.nFactura,
+    fechaFactura: factura.fecha,
+    valorFactura: saldo.total,
+    valorCancelado: 0,
+    valorAbonado: saldo.abonado,
+    valorSaldos: saldoNuevo,
+    fechaPago: new Date().toISOString(),
+    proveedor: factura.proveedor,
+    usuario: usuario || "",
+    estado,
+    numeroOrden: factura.nSolicitud,
+    observaciones: notaDescuento,
+  });
+  await txFactura.save();
+
+  if (transaccion) {
+    transaccion.numFactura = factura.nFactura;
+    transaccion.proveedor = factura.proveedor;
+    transaccion.ordenCompra = factura.nSolicitud;
+    transaccion.documentoVenta = factura.nFactura;
+    await transaccion.save();
+  }
+
+  return {
+    factura,
+    transaccionFactura: txFactura,
+    aplicado,
+    saldoNuevo,
+    estado,
+  };
+}
+
 module.exports = {
   listarFacturasPendientesProveedor,
   aplicarPagoFacturaProveedor,
+  aplicarDescuentoFacturaProveedor,
   validarFacturaParaPago,
   resumenSaldoFactura,
 };

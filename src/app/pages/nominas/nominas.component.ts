@@ -158,7 +158,11 @@ export class NominasComponent implements OnInit {
         this.esUsuario = this.rolUsuario === "Usuario";
         if (!this.esAdministrador) {
           this.seccionActiva = "Pagos Programados";
-          this.seccionesMenu = ["Pagos Programados", "Liquidación Dominical"];
+          this.seccionesMenu = [
+            "Pagos Programados",
+            "Cobros",
+            "Liquidación Dominical",
+          ];
         }
         this.validarAccesoModuloNominas();
       },

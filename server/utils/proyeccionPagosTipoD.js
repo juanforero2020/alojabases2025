@@ -9,6 +9,7 @@ const {
 } = require("./proyeccionPagosNomina");
 const { subCuentaAbonoPrestamoNomina, subCuentaDescuentoNomina, esAnticipoNomina } = require("./cuentasContablesNomina");
 const { registrarBitacoraPrestamo } = require("./bitacoraPrestamoNomina");
+const { etiquetaPrestamo } = require("./codigoPrestamoNomina");
 
 const TRANSACCION_PRESTAMO = "Prestamos";
 const TRANSACCION_ANTICIPO = "Anticipos";
@@ -52,6 +53,25 @@ function cuotaFuenteParaEvento(reglaD, evento) {
     if (porEvento) return redondear2(porEvento.monto);
     return 0;
   }
+  const tabla = reglaD.tablaAmortizacion || [];
+  if (tabla.length) {
+    const porEvento = tabla.find(
+      (f) => f.eventoPagoId && idStr(f.eventoPagoId) === idStr(evento._id)
+    );
+    if (porEvento) return redondear2(porEvento.monto);
+    const fechaEv = fechaCalendarioFiltro(evento.fechaProgramada);
+    const tx = (evento.transaccionNomina || "").toString().trim().toLowerCase();
+    const porFecha = tabla.find((f) => {
+      const fechaFila = fechaCalendarioFiltro(f.fechaMin || f.fechaMax);
+      if (!fechaEv || !fechaFila || fechaEv.getTime() !== fechaFila.getTime()) {
+        return false;
+      }
+      const txFila = (f.transaccionNomina || "").toString().trim().toLowerCase();
+      return !txFila || !tx || txFila === tx;
+    });
+    if (porFecha) return redondear2(porFecha.monto);
+    return 0;
+  }
   return cuotaFuenteParaRegla(reglaD, evento.reglaPagoId);
 }
 
@@ -62,39 +82,20 @@ function inicioDelDiaLocal(valor) {
   return d;
 }
 
-function domingoDeEstaSemana(hoy) {
-  const d = inicioDelDiaLocal(hoy) || new Date();
-  d.setHours(0, 0, 0, 0);
-  const add = (7 - d.getDay()) % 7;
-  const domingo = new Date(d);
-  domingo.setDate(d.getDate() + add);
-  return domingo;
+function fechaCalendarioFiltro(valor) {
+  if (!valor) return null;
+  if (typeof valor === "string") {
+    const m = String(valor).match(/^(\d{4})-(\d{2})-(\d{2})/);
+    if (m) {
+      return new Date(Number(m[1]), Number(m[2]) - 1, Number(m[3]));
+    }
+  }
+  const d = valor instanceof Date ? valor : new Date(valor);
+  if (isNaN(d.getTime())) return null;
+  return new Date(d.getUTCFullYear(), d.getUTCMonth(), d.getUTCDate());
 }
 
-function inicioSemanaLunes(hoy) {
-  const d = inicioDelDiaLocal(hoy) || new Date();
-  d.setHours(0, 0, 0, 0);
-  const day = d.getDay();
-  const diff = day === 0 ? -6 : 1 - day;
-  const lunes = new Date(d);
-  lunes.setDate(d.getDate() + diff);
-  return lunes;
-}
-
-function mismaFechaCalendario(a, b) {
-  const x = inicioDelDiaLocal(a);
-  const y = inicioDelDiaLocal(b);
-  if (!x || !y) return false;
-  return x.getTime() === y.getTime();
-}
-
-function esPagoDominical(regla, transaccion) {
-  const t = (transaccion || regla.transaccionNomina || "").toString().toLowerCase();
-  const f = (regla.frecuencia || "").toString().toLowerCase();
-  return t.includes("dominical") || f === "dominical";
-}
-
-function elegirProximoEventoAnticipo(regla, eventos, hoy) {
+function elegirEventoMasCercanoAnticipo(eventos, fechaObjetivo) {
   const pendientes = (eventos || [])
     .filter((e) => ["Pendiente", "Parcial"].includes(e.estado))
     .slice()
@@ -104,21 +105,23 @@ function elegirProximoEventoAnticipo(regla, eventos, hoy) {
         (a.numeroCuota || 0) - (b.numeroCuota || 0)
     );
   if (!pendientes.length) return null;
-  if (esPagoDominical(regla, pendientes[0].transaccionNomina)) {
-    const domingo = domingoDeEstaSemana(hoy);
-    return (
-      pendientes.find((e) =>
-        mismaFechaCalendario(e.fechaProgramada, domingo)
-      ) || null
-    );
-  }
-  const desde = inicioSemanaLunes(hoy);
-  return (
-    pendientes.find((e) => {
-      const f = inicioDelDiaLocal(e.fechaProgramada);
-      return f && f.getTime() >= desde.getTime();
-    }) || null
-  );
+  const objetivo =
+    fechaCalendarioFiltro(fechaObjetivo) || inicioDelDiaLocal(new Date());
+  const desdeFecha = pendientes.filter((evento) => {
+    const fecha = fechaCalendarioFiltro(evento.fechaProgramada);
+    return fecha && fecha.getTime() >= objetivo.getTime();
+  });
+  if (desdeFecha.length) return desdeFecha[0];
+  return pendientes[pendientes.length - 1];
+}
+
+function eventoDesdeFechaInicioCobro(reglaD, fechaEvento) {
+  if (esReglaAnticipo(reglaD)) return true;
+  const inicio = fechaCalendarioFiltro(reglaD.fechaInicioCobros);
+  if (!inicio) return true;
+  const fecha = fechaCalendarioFiltro(fechaEvento);
+  if (!fecha) return true;
+  return fecha.getTime() >= inicio.getTime();
 }
 
 function cuotaFuenteParaRegla(reglaD, reglaPagoId) {
@@ -298,6 +301,7 @@ function asignarDescuentosDEnEventos(ctx) {
       const info = porEvento.get(idStr(evento._id));
       if (!info) continue;
       if (evento.omitirDescuentoPrestamo) continue;
+      if (!eventoDesdeFechaInicioCobro(reglaD, evento.fechaProgramada)) continue;
       const cuota = cuotaFuenteParaEvento(reglaD, evento);
       if (!(cuota > 0)) continue;
 
@@ -319,9 +323,8 @@ function asignarDescuentosDEnEventos(ctx) {
         reglaDescuentoId: reglaD._id,
         transaccionNomina: reglaD.transaccionNomina || TRANSACCION_PRESTAMO,
         conceptoDescuento: esAnticipo ? "Anticipo" : "Préstamo",
-        etiqueta: esAnticipo
-          ? `Anticipo (${evento.transaccionNomina || "pago"})`
-          : `Préstamo (cuota ${evento.transaccionNomina || "pago"})`,
+        etiqueta: etiquetaPrestamo(reglaD, evento),
+        codigoPrestamo: (reglaD.codigoPrestamo || "").trim() || undefined,
         monto: aplicar,
         centroCosto: (reglaD.centroCosto || "").trim() || undefined,
         notas: notaD || undefined,
@@ -518,6 +521,7 @@ async function quitarDescuentosPrestamo(reglaD) {
 }
 
 function esPrestamoExterno(regla) {
+  if (esReglaAnticipo(regla)) return false;
   return (regla.tipoBeneficiario || "").toString().trim().toLowerCase() === "externo";
 }
 
@@ -610,6 +614,7 @@ function construirProyeccionTipoD(regla, opciones = {}) {
 
   fechasCombinadas.forEach((item) => {
     const { fecha, fuente, asociada } = item;
+    if (!eventoDesdeFechaInicioCobro(regla, fecha)) return;
     const claveMes = `${fecha.getFullYear()}-${fecha.getMonth()}`;
     if (!mapa.has(claveMes)) {
       mapa.set(claveMes, {
@@ -689,6 +694,7 @@ async function generarTablaPrestamoPrevia(regla, opciones = {}) {
   for (const evento of eventos) {
     if (saldo <= 0.009) break;
     if (evento.omitirDescuentoPrestamo) continue;
+    if (!eventoDesdeFechaInicioCobro(regla, evento.fechaProgramada)) continue;
     const fuente = fuentes.find(
       (f) => idStr(f.reglaPagoId) === idStr(evento.reglaPagoId)
     );
@@ -721,6 +727,7 @@ async function generarTablaPrestamoPrevia(regla, opciones = {}) {
       fechaMax: evento.fechaProgramada,
       monto: cuota,
       transaccionNomina: evento.transaccionNomina || fuente.transaccionNomina,
+      eventoPagoId: evento._id,
       montoBrutoPago: variable ? null : bruto,
       descuentoExistente: descC,
       descuentoNuevo: cuota,
@@ -818,12 +825,13 @@ async function omitirDescuentoPrestamoEvento(eventoId, opciones = {}) {
   return EventoPagoProgramado.findById(eventoId);
 }
 
-async function listarEventosDisponiblesAnticipo(cedula) {
+async function listarEventosDisponiblesAnticipo(cedula, fechaCobro) {
   const doc = (cedula || "").trim();
   if (!doc) return [];
   const ctx = await contextoDescuentosBeneficiario(doc);
   const asignado = asignarDescuentosDEnEventos(ctx);
-  const hoy = inicioDelDiaLocal(new Date());
+  const fechaObjetivo =
+    fechaCalendarioFiltro(fechaCobro) || inicioDelDiaLocal(new Date());
   const porRegla = new Map();
   for (const evento of ctx.eventos || []) {
     if (evento.tipoRegla === "D") continue;
@@ -837,7 +845,7 @@ async function listarEventosDisponiblesAnticipo(cedula) {
   for (const [clave, eventosRegla] of porRegla.entries()) {
     const reglaPago = ctx.mapaReglasPago.get(clave);
     if (!reglaPago || !["A", "B"].includes(reglaPago.tipoRegla)) continue;
-    const proximo = elegirProximoEventoAnticipo(reglaPago, eventosRegla, hoy);
+    const proximo = elegirEventoMasCercanoAnticipo(eventosRegla, fechaObjetivo);
     if (!proximo) continue;
     const info = asignado.get(idStr(proximo._id));
     const variable = !!(info && info.variable);

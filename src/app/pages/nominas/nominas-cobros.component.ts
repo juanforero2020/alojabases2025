@@ -6,7 +6,11 @@ import {
   OpcionBeneficiarioBusqueda,
 } from "./nominas";
 import { mostrarErrorNominaApi } from "./nominas-alert.util";
-import { formatoFechaCalendarioNomina } from "./nominas-fecha.util";
+import {
+  formatoFechaCalendarioNomina,
+  hoyCalendarioNomina,
+  inicioDiaCalendarioNomina,
+} from "./nominas-fecha.util";
 
 @Component({
   selector: "app-nominas-cobros",
@@ -117,8 +121,28 @@ export class NominasCobrosComponent implements OnInit {
     const estado = cobro.estado || "";
     return (
       (estado === "Pendiente" || estado === "Parcial") &&
-      this.saldoCuota(cobro) > 0.009
+      this.saldoCuota(cobro) > 0.009 &&
+      !this.estaAntesDeFechaCobro(cobro)
     );
+  }
+
+  estaAntesDeFechaCobro(cobro: EventoCobroPrestamo): boolean {
+    const fechaCobro = cobro.fechaMin || cobro.fechaProgramada;
+    if (!fechaCobro) return false;
+    return hoyCalendarioNomina().getTime() < inicioDiaCalendarioNomina(fechaCobro).getTime();
+  }
+
+  mensajeEstadoCobro(cobro: EventoCobroPrestamo): string {
+    if (this.puedeCobrar(cobro)) return "";
+    const estado = cobro.estado || "";
+    if (
+      (estado === "Pendiente" || estado === "Parcial") &&
+      this.saldoCuota(cobro) > 0.009 &&
+      this.estaAntesDeFechaCobro(cobro)
+    ) {
+      return "Fuera de fecha";
+    }
+    return estado;
   }
 
   confirmarCobro(cobro: EventoCobroPrestamo) {
@@ -126,7 +150,7 @@ export class NominasCobrosComponent implements OnInit {
     const fecha = formatoFechaCalendarioNomina(cobro.fechaProgramada);
     Swal.fire({
       title: "Registrar recibo de cobro",
-      html: `<strong>${cobro.nombreBeneficiario || ""}</strong><br/>
+      html: `<strong>${cobro.codigoPrestamo ? cobro.codigoPrestamo + " · " : ""}${cobro.nombreBeneficiario || ""}</strong><br/>
         ${cobro.cedulaBeneficiario || ""} · ${cobro.tipoBeneficiario || "Externo"}<br/>
         Cuota ${cobro.numeroCuota}/${cobro.totalCuotas} · Fecha ${fecha}<br/>
         Programado: $${Number(cobro.monto || 0).toFixed(2)} · Pagado: $${Number(

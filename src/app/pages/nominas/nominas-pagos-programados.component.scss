@@ -53,3 +53,10 @@
 .pagos-programados-grid {
   margin-top: 0.25rem;
 }
+
+.notas-ajuste-cell {
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  max-width: 100%;
+}

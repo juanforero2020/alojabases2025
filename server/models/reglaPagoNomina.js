@@ -30,6 +30,12 @@ const FilaAmortizacionSchema = new Schema(
     fechaMin: { type: Date, required: true },
     fechaMax: { type: Date, required: true },
     monto: { type: Number, required: true, default: 0 },
+    transaccionNomina: { type: String, required: false },
+    eventoPagoId: {
+      type: Schema.Types.ObjectId,
+      ref: "EventoPagoProgramado",
+      required: false,
+    },
   },
   { _id: false }
 );
@@ -181,6 +187,7 @@ const ReglaPagoNominaSchema = new Schema(
       meses: { type: [MesProyeccionSchema], default: [] },
     },
     mesesProyeccion: { type: Number, default: 3 },
+    codigoPrestamo: { type: String, required: false, trim: true },
     montoPrestado: { type: Number, required: false, default: 0 },
     porcentajeInteres: { type: Number, required: false, default: 0 },
     montoInteres: { type: Number, required: false, default: 0 },
@@ -194,6 +201,11 @@ const ReglaPagoNominaSchema = new Schema(
     notas: { type: String, required: false, trim: true, default: "" },
   },
   { timestamps: true }
+);
+
+ReglaPagoNominaSchema.index(
+  { codigoPrestamo: 1 },
+  { unique: true, sparse: true }
 );
 
 module.exports = mongoose.model("ReglaPagoNomina", ReglaPagoNominaSchema);

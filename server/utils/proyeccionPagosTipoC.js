@@ -30,6 +30,18 @@ function esDescuentosGenerales(transaccion) {
   return t === "descuentos" || (!esTransaccionSeguridadSocial(transaccion) && t.includes("descuento"));
 }
 
+function esBeneficiarioExterno(tipo) {
+  return normalizarTexto(tipo) === "externo";
+}
+
+function esDescuentoExternoTipoC(regla) {
+  return (
+    !!regla &&
+    esDescuentosGenerales(regla.transaccionNomina) &&
+    esBeneficiarioExterno(regla.tipoBeneficiario)
+  );
+}
+
 function inicioSemanaLunes(fecha) {
   const d = new Date(fecha);
   d.setHours(0, 0, 0, 0);
@@ -368,6 +380,41 @@ async function recalcularDescuentosEnEventos(reglaA, opciones = {}) {
 }
 
 function construirProyeccionTipoC(regla, opciones = {}) {
+  const MESES = [
+    "Enero", "Febrero", "Marzo", "Abril", "Mayo", "Junio",
+    "Julio", "Agosto", "Septiembre", "Octubre", "Noviembre", "Diciembre",
+  ];
+  if (esDescuentoExternoTipoC(regla)) {
+    const total = redondear2(regla.montoTotalDeuda || regla.monto || 0);
+    const fecha = new Date();
+    const factura = (regla.nFacturaProveedor || "").toString().trim();
+    const concepto = (regla.conceptoDescuento || "Descuento").toString().trim();
+    return {
+      etiquetaFila: factura
+        ? `Descuento factura ${factura}`
+        : "Descuento sobre factura pendiente",
+      meses: [
+        {
+          mes: MESES[fecha.getMonth()],
+          anio: fecha.getFullYear(),
+          ocurrencias: [
+            {
+              fecha,
+              etiqueta: factura
+                ? `${concepto} — Factura ${factura}`
+                : concepto,
+              monto: total,
+              montoDescuento: total,
+              montoNeto: total,
+            },
+          ],
+        },
+      ],
+      tipoRegla: "C",
+      montoTotalDescuento: total,
+    };
+  }
+
   const reglaAsociada = opciones.reglaAsociada;
   if (!reglaAsociada) {
     return {
@@ -403,10 +450,6 @@ function construirProyeccionTipoC(regla, opciones = {}) {
         mesesProyeccion: opciones.mesesProyeccion || 3,
       }).tabla
     : [];
-  const MESES = [
-    "Enero", "Febrero", "Marzo", "Abril", "Mayo", "Junio",
-    "Julio", "Agosto", "Septiembre", "Octubre", "Noviembre", "Diciembre",
-  ];
   const mapa = new Map();
 
   fechas.forEach((fecha) => {
@@ -642,6 +685,7 @@ module.exports = {
   CUOTAS_SEG_SOCIAL,
   esTransaccionSeguridadSocial,
   esDescuentosGenerales,
+  esDescuentoExternoTipoC,
   distribuirEnCuotas,
   cuotaSegSocial,
   generarTablaCuotasSegSocial,

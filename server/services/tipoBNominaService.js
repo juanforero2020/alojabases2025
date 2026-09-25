@@ -464,7 +464,7 @@ async function ejecutarEventoProgramado(eventoId, opciones = {}) {
   let montoPagar = opciones.monto != null ? Number(opciones.monto) : montoPendiente;
   montoPagar = redondear2(montoPagar);
 
-  if (!montoPagar || montoPagar <= 0) {
+  if (montoPagar < -0.009) {
     throw new Error("Indique un monto mayor a cero");
   }
   if (montoPagar > montoPendiente + 0.01) {
@@ -503,6 +503,14 @@ async function ejecutarEventoProgramado(eventoId, opciones = {}) {
       ? Number(evento.montoBruto)
       : (Number(evento.monto) || 0) + montoDescuento || montoPagar
   );
+
+  if (
+    !(montoPagar > 0.009) &&
+    !(montoDescuento > 0.009) &&
+    !(montoBruto > 0.009)
+  ) {
+    throw new Error("Indique un monto mayor a cero");
+  }
 
   const valorSalida = separarDescuentos
     ? redondear2(montoBruto - montoYaPagado)
@@ -544,31 +552,35 @@ async function ejecutarEventoProgramado(eventoId, opciones = {}) {
         : undefined,
   });
 
-  const tx = new TransaccionFinanciera({
-    ...baseTx,
-    valor: valorSalida,
-    tipoPago: "Egreso",
-    cuenta,
-    tipoCuenta,
-    subCuenta,
-    tipoTransaccion,
-    referenciaPrestamo:
-      (evento.tipoRegla || regla.tipoRegla) === "D"
-        ? String(regla._id)
-        : undefined,
-    notas: notasPago,
-    numFactura: evento.nFacturaProveedor || regla.nFacturaProveedor || "",
-    proveedor:
-      regla.tipoBeneficiario === "Externo"
-        ? evento.nombreBeneficiario
-        : "",
-    ordenCompra: evento.nSolicitudFactura || regla.nSolicitudFactura || undefined,
-  });
-  await tx.save();
+  let tx = null;
+  if (valorSalida > 0.009) {
+    tx = new TransaccionFinanciera({
+      ...baseTx,
+      valor: valorSalida,
+      tipoPago: "Egreso",
+      cuenta,
+      tipoCuenta,
+      subCuenta,
+      tipoTransaccion,
+      referenciaPrestamo:
+        (evento.tipoRegla || regla.tipoRegla) === "D"
+          ? String(regla._id)
+          : undefined,
+      notas: notasPago,
+      numFactura: evento.nFacturaProveedor || regla.nFacturaProveedor || "",
+      proveedor:
+        regla.tipoBeneficiario === "Externo"
+          ? evento.nombreBeneficiario
+          : "",
+      ordenCompra: evento.nSolicitudFactura || regla.nSolicitudFactura || undefined,
+    });
+    await tx.save();
+  }
 
   const transaccionesDescuento = separarDescuentos
     ? await registrarTransaccionesDescuento(baseTx, lineasDescuento, cuenta, evento)
     : [];
+  const txReferencia = tx || transaccionesDescuento[0] || null;
 
   let pagoFactura = null;
   if (regla.asociarFacturaPendiente && facturaId) {
@@ -576,7 +588,7 @@ async function ejecutarEventoProgramado(eventoId, opciones = {}) {
       facturaId,
       monto: montoPagar,
       evento,
-      transaccion: tx,
+      transaccion: txReferencia,
       usuario: opciones.usuario || "",
     });
   }
@@ -585,13 +597,13 @@ async function ejecutarEventoProgramado(eventoId, opciones = {}) {
   evento.pagosParciales.push({
     monto: montoPagar,
     fecha: new Date(),
-    transaccionFinancieraId: tx._id,
+    transaccionFinancieraId: txReferencia ? txReferencia._id : undefined,
     ejecutadoPor: opciones.usuario || "",
     notas: textoNotas(evento.notas, regla.notas, opciones.notas),
   });
 
   evento.montoPagado = redondear2(montoYaPagado + montoPagar);
-  evento.transaccionFinancieraId = tx._id;
+  evento.transaccionFinancieraId = txReferencia ? txReferencia._id : undefined;
   evento.ejecutadoPor = opciones.usuario || "";
   evento.fechaEjecucion = new Date();
 
@@ -604,12 +616,19 @@ async function ejecutarEventoProgramado(eventoId, opciones = {}) {
   await evento.save();
 
   if (separarDescuentos) {
-    const lineasPrestamo = lineasDescuento.filter(
-      (l) =>
-        (l.transaccionNomina || "").toLowerCase().includes("prestamo") ||
-        (l.etiqueta || "").toLowerCase().includes("préstamo") ||
-        (l.etiqueta || "").toLowerCase().includes("prestamo")
-    );
+    const lineasPrestamo = lineasDescuento.filter((l) => {
+      if (l.tipoTransaccion === "DESCUENTO_PRESTAMO_NOMINA") return true;
+      const tx = (l.transaccionNomina || "").toLowerCase();
+      const et = (l.etiqueta || "").toLowerCase();
+      return (
+        tx.includes("prestamo") ||
+        tx.includes("préstamo") ||
+        tx.includes("anticipo") ||
+        et.includes("préstamo") ||
+        et.includes("prestamo") ||
+        et.includes("anticipo")
+      );
+    });
     if (lineasPrestamo.length) {
       const txPrestamo = transaccionesDescuento.find(
         (t) =>

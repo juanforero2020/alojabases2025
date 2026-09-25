@@ -25,6 +25,26 @@ function saldoActualPrestamo(regla) {
   return redondear2(regla.montoTotalDeuda || regla.monto || 0);
 }
 
+function claveCalendarioUtc(fecha) {
+  const d = new Date(fecha);
+  return Date.UTC(d.getUTCFullYear(), d.getUTCMonth(), d.getUTCDate());
+}
+
+function claveHoyCalendarioEcuador() {
+  const ecuador = new Date(Date.now() - 5 * 60 * 60 * 1000);
+  return Date.UTC(
+    ecuador.getUTCFullYear(),
+    ecuador.getUTCMonth(),
+    ecuador.getUTCDate()
+  );
+}
+
+function cobroAunNoVence(cobro) {
+  const fechaCobro = cobro.fechaMin || cobro.fechaProgramada;
+  if (!fechaCobro) return false;
+  return claveHoyCalendarioEcuador() < claveCalendarioUtc(fechaCobro);
+}
+
 async function resolverCuentaCobroPrestamo() {
   const subCuenta = subCuentaAbonoPrestamoNomina();
   const fija = MAPA_CUENTA_POR_SUBCUENTA[subCuenta] || {
@@ -76,11 +96,18 @@ async function listarCobrosPrestamo(filtros = {}) {
   const reglas = reglaIds.length
     ? await ReglaPagoNomina.find({ _id: { $in: reglaIds } })
         .select(
-          "saldoPendientePrestamo montoTotalDeuda montoPrestado porcentajeInteres centroCosto"
+          "saldoPendientePrestamo montoTotalDeuda montoPrestado porcentajeInteres centroCosto codigoPrestamo tipoRegla transaccionNomina"
         )
-        .lean()
     : [];
-  const mapaReglas = new Map(reglas.map((r) => [String(r._id), r]));
+  const mapaReglas = new Map();
+  for (const regla of reglas) {
+    if (!(regla.codigoPrestamo || "").trim()) {
+      const { asignarCodigoPrestamoSiFalta } = require("../utils/codigoPrestamoNomina");
+      await asignarCodigoPrestamoSiFalta(regla);
+      await regla.save();
+    }
+    mapaReglas.set(String(regla._id), regla);
+  }
 
   return cobros.map((c) => {
     const regla = mapaReglas.get(String(c.reglaPagoId));
@@ -92,6 +119,7 @@ async function listarCobrosPrestamo(filtros = {}) {
       saldoPrestamo: regla ? saldoActualPrestamo(regla) : null,
       montoTotalDeuda: regla?.montoTotalDeuda,
       montoPrestado: regla?.montoPrestado,
+      codigoPrestamo: regla?.codigoPrestamo || "",
     };
   });
 }
@@ -130,6 +158,11 @@ async function ejecutarCobroPrestamo(id, opciones = {}) {
   if (cobro.estado === "Anulado") {
     throw new Error("Este cobro está anulado");
   }
+  if (cobroAunNoVence(cobro)) {
+    throw new Error(
+      "Este cobro aún no vence: el recibo solo se habilita a partir de la fecha de cobro"
+    );
+  }
 
   const pendienteCuota = redondear2(
     Math.max(0, (Number(cobro.monto) || 0) - (Number(cobro.montoPagado) || 0))
@@ -164,7 +197,9 @@ async function ejecutarCobroPrestamo(id, opciones = {}) {
   const cuenta = await resolverCuentaCobroPrestamo();
   const fechaContable = new Date();
   const cuotaTxt = `cuota ${cobro.numeroCuota}/${cobro.totalCuotas}`;
+  const codigoTxt = (regla.codigoPrestamo || "").trim();
   const notas = [
+    codigoTxt ? `Préstamo ${codigoTxt}` : "",
     `Recibo de cobro préstamo — ${cobro.nombreBeneficiario || ""} — ${cuotaTxt}`,
     "1.3 INGRESOS / 1.3.3 Pago o Abono Préstamo",
     opciones.notas || cobro.notas || "",

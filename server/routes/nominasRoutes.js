@@ -27,6 +27,7 @@ const {
   obtenerLineasPrestamoEvento,
 } = require("../utils/proyeccionPagosTipoD");
 const { calcularMontoSegSocialDesdeBase } = require("../utils/aporteIessNomina");
+const { asignarCodigoPrestamoSiFalta } = require("../utils/codigoPrestamoNomina");
 const EventoPagoDominical = require("../models/eventoPagoDominical");
 const EventoPagoProgramado = require("../models/eventoPagoProgramado");
 const AjusteNominaPendiente = require("../models/ajusteNominaPendiente");
@@ -580,6 +581,12 @@ router.get("/conceptos-externos", async (req, res) => {
 
 router.get("/reglas-pago", async (req, res) => {
   const reglas = await ReglaPagoNomina.find().sort({ createdAt: -1 });
+  for (const regla of reglas) {
+    if (regla.tipoRegla === "D" && !(regla.codigoPrestamo || "").trim()) {
+      await asignarCodigoPrestamoSiFalta(regla);
+      await regla.save();
+    }
+  }
   res.send(reglas);
 });
 
@@ -691,7 +698,8 @@ router.get("/reglas-pago-asociables-prestamo/:cedula", async (req, res) => {
 router.get("/eventos-anticipo/:cedula", async (req, res) => {
   try {
     const lista = await tipoDNominaService.listarEventosDisponiblesAnticipo(
-      req.params.cedula
+      req.params.cedula,
+      req.query.fechaCobro
     );
     res.json(lista);
   } catch (err) {
@@ -842,6 +850,7 @@ router.post("/reglas-pago", async (req, res) => {
       estadoRegla: "Borrador",
     });
     const regla = new ReglaPagoNomina(body);
+    await asignarCodigoPrestamoSiFalta(regla);
     await regla.save();
     await guardarConceptoOtrosDeRegla(regla);
     await guardarConceptoExternoDeRegla(regla);
@@ -863,11 +872,16 @@ router.put("/reglas-pago/:id", async (req, res) => {
       });
     }
     const body = await prepararBodyReglaPago({ ...req.body });
+    delete body.codigoPrestamo;
     const actualizado = await ReglaPagoNomina.findByIdAndUpdate(
       req.params.id,
       { $set: body },
       { new: true, runValidators: true }
     );
+    await asignarCodigoPrestamoSiFalta(actualizado);
+    if (actualizado.isModified && actualizado.isModified("codigoPrestamo")) {
+      await actualizado.save();
+    }
     await guardarConceptoOtrosDeRegla(actualizado);
     await guardarConceptoExternoDeRegla(actualizado);
     res.json({ status: "Regla actualizada", data: actualizado });
@@ -912,7 +926,7 @@ router.put("/reglas-pago/:id/autorizar", async (req, res) => {
       const msg = await tipoCNominaService.validarReglaTipoCCompleta(regla);
       if (msg) return res.status(400).json({ mensaje: msg });
       const meses = regla.mesesProyeccion || 3;
-      const { proyeccion, eventosActualizados, cuotaDescuento } =
+      const { proyeccion, eventosActualizados, cuotaDescuento, descuentoFactura } =
         await tipoCNominaService.generarEventosProgramados(regla, {
           mesesProyeccion: meses,
         });
@@ -921,12 +935,15 @@ router.put("/reglas-pago/:id/autorizar", async (req, res) => {
       regla.proyeccion = proyeccion;
       regla.cuotaEvento = cuotaDescuento;
       await regla.save();
+      const esExternoDesc = tipoCNominaService.esDescuentoExternoTipoC(regla);
       return res.json({
-        status:
-          "Regla tipo C autorizada — descuentos aplicados a pagos programados",
+        status: esExternoDesc
+          ? "Regla tipo C autorizada — descuento aplicado a la factura pendiente"
+          : "Regla tipo C autorizada — descuentos aplicados a pagos programados",
         data: regla,
         eventosActualizados,
         cuotaDescuento,
+        descuentoFactura,
       });
     }
 
@@ -955,6 +972,7 @@ router.put("/reglas-pago/:id/autorizar", async (req, res) => {
       regla.frecuencia = "Unica";
       regla.estadoRegla = "Autorizada";
       regla.fechaAutorizacion = new Date();
+      await asignarCodigoPrestamoSiFalta(regla);
       await regla.save();
       const { proyeccion, eventosActualizados, cuotaDescuento, eventos, eventosCobro } =
         await tipoDNominaService.generarEventosProgramados(regla, {
@@ -1281,6 +1299,7 @@ router.get("/eventos-programados/:id/desglose-descuentos", async (req, res) => {
         transaccionNomina: linea.transaccionNomina,
         conceptoDescuento: "Préstamo",
         etiqueta: linea.etiqueta,
+        codigoPrestamo: linea.codigoPrestamo,
         monto: linea.monto,
         notas: linea.notas,
       });
@@ -1474,6 +1493,7 @@ router.get("/abonos-prestamo", async (req, res) => {
       cedula: req.query.cedula,
       nombre: req.query.nombre,
       soloPendientes: req.query.soloPendientes,
+      incluirDetalle: req.query.incluirDetalle,
     });
     res.json(prestamos);
   } catch (err) {

@@ -9,7 +9,7 @@ function normalizarTexto(valor) {
 
 const CUENTA_GASTOS = "1.7 GASTOS OPERACIONALES";
 const CUENTA_INGRESOS = "1.3 INGRESOS";
-const CUENTA_PRESTAMOS = "2.1. PRESTAMOS";
+const CUENTA_PRESTAMOS = "2.1 PRESTAMOS";
 
 const SUBCUENTAS_NOMINA = {
   NOMINAS: "1.7.1 Nominas",

@@ -66,6 +66,7 @@
       <table class="table table-sm table-bordered table-striped mb-0">
         <thead>
           <tr>
+            <th>Código</th>
             <th>Fecha cobro</th>
             <th>Cédula / RUC</th>
             <th>Nombre</th>
@@ -81,11 +82,12 @@
         </thead>
         <tbody>
           <tr *ngIf="!cobros.length">
-            <td colspan="11" class="text-center text-muted py-4">
+            <td colspan="12" class="text-center text-muted py-4">
               No hay cobros pendientes con esos datos. Digite cédula o nombre, o autorice un préstamo tipo D a personal externo.
             </td>
           </tr>
           <tr *ngFor="let cobro of cobros">
+            <td>{{ cobro.codigoPrestamo || "—" }}</td>
             <td>{{ cobro.fechaProgramada | date : "dd/MM/yyyy" }}</td>
             <td>{{ cobro.cedulaBeneficiario }}</td>
             <td>{{ cobro.nombreBeneficiario }}</td>
@@ -107,7 +109,7 @@
                 Cobrar
               </button>
               <span class="text-muted small" *ngIf="!puedeCobrar(cobro)">
-                {{ cobro.estado }}
+                {{ mensajeEstadoCobro(cobro) }}
               </span>
             </td>
           </tr>

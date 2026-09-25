@@ -177,6 +177,7 @@ export interface FilaAmortizacion {
   fechaMax: Date | string;
   monto: number;
   transaccionNomina?: string;
+  eventoPagoId?: string;
   montoBrutoPago?: number;
   descuentoExistente?: number;
   descuentoNuevo?: number;
@@ -247,6 +248,7 @@ export interface CuotaPrestamoPendiente {
 
 export interface PrestamoAbonoResumen {
   _id?: string;
+  codigoPrestamo?: string;
   tipoRegla?: string;
   estadoRegla?: string;
   tipoBeneficiario?: string;
@@ -325,6 +327,7 @@ export interface ReglaPagoNomina {
   fechaAutorizacion?: Date | string;
   proyeccion?: ProyeccionPagoNomina;
   mesesProyeccion?: number;
+  codigoPrestamo?: string;
   montoPrestado?: number;
   porcentajeInteres?: number;
   montoInteres?: number;
@@ -341,6 +344,7 @@ export interface LineaDesgloseDescuento {
   transaccionNomina?: string;
   conceptoDescuento?: string | null;
   etiqueta: string;
+  codigoPrestamo?: string;
   monto: number;
   notas?: string;
 }
@@ -404,6 +408,7 @@ export interface EventoPagoProgramado {
   montoPagado?: number;
   centroCosto?: string;
   transaccionNomina?: string;
+  codigoPrestamo?: string;
   cedulaBeneficiario?: string;
   nombreBeneficiario?: string;
   modalidadMonto?: string;
@@ -460,6 +465,7 @@ export interface EventoCobroPrestamo {
   ejecutadoPor?: string;
   fechaEjecucion?: Date | string;
   notas?: string;
+  codigoPrestamo?: string;
   saldoPrestamo?: number;
   montoTotalDeuda?: number;
   montoPrestado?: number;

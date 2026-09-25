@@ -14,6 +14,8 @@ import { DatosConfiguracionService } from 'src/app/servicios/datosConfiguracion.
 import 'jspdf-autotable';
 import { CuentaPorCobrar } from '../cuentasPorCobrar/cuentasPorCobrar';
 import { CuentasPorCobrarService } from 'src/app/servicios/cuentasPorCobrar.service';
+import { PrestamoAbonoResumen } from '../nominas/nominas';
+import { NominasService } from 'src/app/servicios/nominas.service';
 
 @Component({
   selector: 'app-caja-menor',
@@ -68,12 +70,14 @@ export class CajaMenorComponent implements OnInit {
 
   listaCuentas: CuentaPorCobrar [] = []
   listaCuentasActivas: CuentaPorCobrar [] = []
+  listaPrestamosActivos: PrestamoAbonoResumen [] = []
   
   constructor(
     public _transaccionesFinancierasService : TransaccionesFinancierasService,
     public _authenService: AuthenService,
     public _cajaMenorService : CajaMenorService,
     public _cuentasporCobrarService : CuentasPorCobrarService,
+    public _nominasService : NominasService,
     public _contadoresService : ContadoresDocumentosService,
     public _configurationService : DatosConfiguracionService
     ) {
@@ -88,6 +92,7 @@ export class CajaMenorComponent implements OnInit {
     this.traerDatosConfiguracion();
     this.validarEstadoCaja();
     this.traerListaCuentasPorPagar();
+    this.traerListaPrestamosPendientes();
     this.formImpresion = new FormatoImpresion();
   }
 
@@ -104,6 +109,30 @@ export class CajaMenorComponent implements OnInit {
       });
       this.listaCuentasActivas = this.listaCuentas.filter(x => x.estado == "Activa");
    })
+  }
+
+  traerListaPrestamosPendientes(){
+    this.listaPrestamosActivos = [];
+    this._nominasService
+      .getPrestamosParaAbono({ incluirDetalle: false })
+      .subscribe(
+        (lista) => {
+          this.listaPrestamosActivos = (lista || [])
+            .filter((p) => (Number(p.saldoPendientePrestamo) || 0) > 0.009)
+            .sort((a, b) => {
+              const dateA = a.fechaDesembolso
+                ? new Date(a.fechaDesembolso).getTime()
+                : 0;
+              const dateB = b.fechaDesembolso
+                ? new Date(b.fechaDesembolso).getTime()
+                : 0;
+              return dateA - dateB;
+            });
+        },
+        () => {
+          this.listaPrestamosActivos = [];
+        }
+      );
   }
 
   validarEstadoCaja(){
@@ -753,6 +782,22 @@ export class CajaMenorComponent implements OnInit {
 
         this.getListadoCuentasporCobrar(),
 
+        { text: '', margin: [0, 20, 0, 20] },
+
+        {
+          columns: [
+            {
+              width: 490,
+              text: "PRÉSTAMOS PENDIENTES DE COBRAR",
+              bold: true,
+              fontSize: 15,
+              alignment: "center",
+            },
+          ],
+        },
+
+        this.getListadoPrestamosPendientes(),
+
       ],
       footer: function () {
         return {
@@ -926,7 +971,60 @@ export class CajaMenorComponent implements OnInit {
    }; 
  }
 
-
+  getListadoPrestamosPendientes() {
+    return {
+      table: {
+        widths: ["10%", "20%", "12%", "9%", "11%", "12%", "14%", "12%"],
+        alignment: "center",
+        fontSize: 7,
+        headerRows: 1,
+        body: [
+          [
+            { text: "Código", style: "tableHeader2", fontSize: 7 },
+            { text: "Beneficiario", style: "tableHeader2", fontSize: 7 },
+            { text: "Cédula / RUC", style: "tableHeader2", fontSize: 7 },
+            { text: "Tipo", style: "tableHeader2", fontSize: 7 },
+            { text: "Valor Deuda", style: "tableHeader2", fontSize: 7 },
+            { text: "Valor Pendiente", style: "tableHeader2", fontSize: 7 },
+            { text: "Centro de costo", style: "tableHeader2", fontSize: 7 },
+            { text: "Fecha desembolso", style: "tableHeader2", fontSize: 7 },
+          ],
+          ...(this.listaPrestamosActivos || []).map((prestamo: PrestamoAbonoResumen) => {
+            const fecha = prestamo.fechaDesembolso
+              ? new Date(prestamo.fechaDesembolso)
+              : null;
+            const fechaTexto =
+              fecha && !isNaN(fecha.getTime())
+                ? [
+                    fecha.getFullYear(),
+                    String(fecha.getMonth() + 1).padStart(2, "0"),
+                    String(fecha.getDate()).padStart(2, "0"),
+                  ].join("-")
+                : "";
+            const valorDeuda =
+              prestamo.montoTotalDeuda != null
+                ? Number(prestamo.montoTotalDeuda).toFixed(2)
+                : "";
+            const valorPendiente =
+              prestamo.saldoPendientePrestamo != null
+                ? Number(prestamo.saldoPendientePrestamo).toFixed(2)
+                : "";
+            return [
+              { text: prestamo.codigoPrestamo || "", alignment: "center", fontSize: 7 },
+              { text: prestamo.nombreBeneficiario || "", alignment: "center", fontSize: 7 },
+              { text: prestamo.cedulaBeneficiario || "", alignment: "center", fontSize: 7 },
+              { text: prestamo.tipoBeneficiario || "", alignment: "center", fontSize: 7 },
+              { text: valorDeuda, alignment: "center", fontSize: 7 },
+              { text: valorPendiente, alignment: "center", fontSize: 7 },
+              { text: prestamo.centroCosto || "", alignment: "center", fontSize: 7 },
+              { text: fechaTexto, alignment: "center", fontSize: 7 },
+            ];
+          }),
+        ],
+      },
+      layout: "lightHorizontalLines",
+    };
+  }
 
   getSubcuentas(operaciones: DetalleCajaMenor[]) {
     return {

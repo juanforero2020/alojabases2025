@@ -54,7 +54,7 @@ export function hoyCalendarioNomina(): Date {
 
 /** Formato YYYY-MM-DD para parámetros de consulta al API. */
 export function fechaCalendarioParam(
-  fecha: Date | null | undefined
+  fecha: Date | string | null | undefined
 ): string | undefined {
   if (!fecha) return undefined;
   const d = fechaCalendarioLocal(fecha);

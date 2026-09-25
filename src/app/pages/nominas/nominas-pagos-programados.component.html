@@ -160,6 +160,11 @@
         [minWidth]="120"
       ></dxi-column>
       <dxi-column
+        dataField="codigoPrestamo"
+        caption="Cód. préstamo"
+        [width]="110"
+      ></dxi-column>
+      <dxi-column
         dataField="centroCosto"
         caption="Centro costo"
         [minWidth]="110"
@@ -172,7 +177,9 @@
       <dxi-column
         dataField="notas"
         caption="Notas"
-        [minWidth]="140"
+        [width]="120"
+        cssClass="notas-ajuste-texto"
+        cellTemplate="notasAjusteTextCell"
       ></dxi-column>
       <dxi-column
         dataField="cuotaDisplay"
@@ -239,6 +246,12 @@
         [allowExporting]="false"
         cellTemplate="accionesCell"
       ></dxi-column>
+
+      <div *dxTemplate="let d of 'notasAjusteTextCell'">
+        <div class="notas-ajuste-cell" [title]="d.data.notas || ''">
+          {{ d.data.notas || "—" }}
+        </div>
+      </div>
 
       <div *dxTemplate="let d of 'programadoCell'">
         <span *ngIf="esMontoVariable(d.data)" class="text-muted">Variable</span>

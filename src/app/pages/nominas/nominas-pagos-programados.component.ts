@@ -531,6 +531,7 @@ export class NominasPagosProgramadosComponent implements OnInit {
       return;
     }
 
+    const netoCero = this.pagoCubiertoPorDescuento(ev);
     Swal.fire({
       title: "Registrar pago",
       html: `<strong>${ev.nombreBeneficiario}</strong><br/>
@@ -542,6 +543,10 @@ export class NominasPagosProgramadosComponent implements OnInit {
         <strong>Egreso en finanzas: $${egresoFinanzas.toFixed(2)}</strong>${
           conDescuento
             ? `<br/><span class="text-muted">Los descuentos se registran aparte como ingresos.</span>`
+            : ""
+        }${
+          netoCero
+            ? `<br/><span class="text-info">El neto es $0: igual se registra el proceso (descuentos y cierre del pago).</span>`
             : ""
         }`,
       icon: "question",
@@ -712,10 +717,22 @@ export class NominasPagosProgramadosComponent implements OnInit {
     });
   }
 
+  pagoCubiertoPorDescuento(ev: EventoPagoProgramado): boolean {
+    return (
+      !this.esMontoVariable(ev) &&
+      this.saldoPendienteEvento(ev) <= 0 &&
+      this.tieneDescuento(ev)
+    );
+  }
+
   puedeEjecutarEvento(ev: EventoPagoProgramado): boolean {
     if (this.esPagoDominical(ev)) return false;
     if (ev.estado !== "Pendiente" && ev.estado !== "Parcial") return false;
-    if (!this.esMontoVariable(ev) && this.saldoPendienteEvento(ev) <= 0) {
+    if (
+      !this.esMontoVariable(ev) &&
+      this.saldoPendienteEvento(ev) <= 0 &&
+      !this.pagoCubiertoPorDescuento(ev)
+    ) {
       return false;
     }
     if (this.estaAntesDeVentana(ev)) return false;

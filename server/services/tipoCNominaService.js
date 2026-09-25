@@ -3,6 +3,7 @@ const {
   CUOTAS_SEG_SOCIAL,
   esTransaccionSeguridadSocial,
   esDescuentosGenerales,
+  esDescuentoExternoTipoC,
   construirProyeccionTipoC,
   aplicarDescuentosEnEventos,
   quitarDescuentosRegla,
@@ -17,6 +18,16 @@ const {
   calcularMontoSegSocialParaRegla,
   calcularMontoSegSocialDesdeBase,
 } = require("../utils/aporteIessNomina");
+const {
+  validarFacturaParaPago,
+  aplicarDescuentoFacturaProveedor,
+} = require("../utils/facturaProveedorNomina");
+const TransaccionFinanciera = require("../models/transaccionFinanciera");
+const {
+  SUBCUENTAS_NOMINA,
+  subCuentaDescuentoNomina,
+} = require("../utils/cuentasContablesNomina");
+const tipoBNominaService = require("./tipoBNominaService");
 
 function redondear2(n) {
   return Math.round((Number(n) || 0) * 100) / 100;
@@ -27,7 +38,13 @@ async function normalizarReglaTipoC(regla) {
     regla && typeof regla.toObject === "function" ? regla.toObject() : { ...regla };
   doc.tipoRegla = "C";
   doc.esDescuento = true;
-  doc.tipoBeneficiario = "Interno";
+  if (esTransaccionSeguridadSocial(doc.transaccionNomina)) {
+    doc.tipoBeneficiario = "Interno";
+  } else if (esDescuentoExternoTipoC(doc)) {
+    doc.tipoBeneficiario = "Externo";
+  } else {
+    doc.tipoBeneficiario = doc.tipoBeneficiario || "Interno";
+  }
   doc.fuente = doc.fuente || "TMS";
   doc.campoMontoTms = doc.campoMontoTms || "salarioCalculoVariablesPrestacionales";
 
@@ -46,6 +63,14 @@ async function normalizarReglaTipoC(regla) {
     doc.monto = total;
     const partes = distribuirEnCuotas(total, nCuotas);
     doc.cuotaEvento = partes[0] || 0;
+    if (esDescuentoExternoTipoC(doc)) {
+      doc.asociarFacturaPendiente = true;
+      doc.reglaPagoAsociadaId = null;
+      doc.modalidadDescuento = "Valor unico";
+      doc.cuotas = 1;
+      doc.cuotaEvento = total;
+      doc.semanaAplicacion = "Esta semana";
+    }
     if (doc.tablaAmortizacion && doc.tablaAmortizacion.length) {
       doc.tablaAmortizacion = doc.tablaAmortizacion;
     }
@@ -153,8 +178,15 @@ function validarCuotaDescuentoVsBruto(reglaC, montoBrutoPago) {
 }
 
 function validarReglaTipoC(regla) {
-  if (regla.tipoBeneficiario !== "Interno") {
-    return "Los descuentos de nómina solo aplican a beneficiarios internos";
+  if (esTransaccionSeguridadSocial(regla.transaccionNomina)) {
+    if (regla.tipoBeneficiario !== "Interno") {
+      return "El descuento de seguridad social solo aplica a beneficiarios internos";
+    }
+  } else if (
+    regla.tipoBeneficiario !== "Interno" &&
+    regla.tipoBeneficiario !== "Externo"
+  ) {
+    return "Seleccione si el beneficiario es interno o externo";
   }
   if (!(regla.centroCosto || "").trim()) {
     return "Seleccione el centro de costo";
@@ -176,22 +208,28 @@ function validarReglaTipoC(regla) {
     if (!regla.conceptoDescuento) {
       return "Seleccione el concepto del descuento";
     }
-    if (!regla.modalidadDescuento) {
-      return "Indique si el descuento es por cuota o valor único";
-    }
-    if (!regla.semanaAplicacion) {
-      return "Indique en qué semana se aplicará el descuento";
-    }
-    if (
-      regla.semanaAplicacion === "Semana especifica" &&
-      !regla.fechaAplicacionDescuento
-    ) {
-      return "Indique la fecha de la semana en que se aplicará el descuento";
-    }
-    if (regla.modalidadDescuento === "Por cuota") {
-      const n = Number(regla.cuotas) || 0;
-      if (n < 2) {
-        return "Para descuento por cuota indique al menos 2 cuotas";
+    if (esDescuentoExternoTipoC(regla)) {
+      if (!regla.facturaProveedorId) {
+        return "Seleccione la factura pendiente a la que se aplicará el descuento";
+      }
+    } else {
+      if (!regla.modalidadDescuento) {
+        return "Indique si el descuento es por cuota o valor único";
+      }
+      if (!regla.semanaAplicacion) {
+        return "Indique en qué semana se aplicará el descuento";
+      }
+      if (
+        regla.semanaAplicacion === "Semana especifica" &&
+        !regla.fechaAplicacionDescuento
+      ) {
+        return "Indique la fecha de la semana en que se aplicará el descuento";
+      }
+      if (regla.modalidadDescuento === "Por cuota") {
+        const n = Number(regla.cuotas) || 0;
+        if (n < 2) {
+          return "Para descuento por cuota indique al menos 2 cuotas";
+        }
       }
     }
   }
@@ -201,6 +239,26 @@ function validarReglaTipoC(regla) {
 async function validarReglaTipoCCompleta(regla) {
   const msgBase = validarReglaTipoC(regla);
   if (msgBase) return msgBase;
+
+  if (esDescuentoExternoTipoC(regla)) {
+    try {
+      const { saldo, factura } = await validarFacturaParaPago(
+        regla.facturaProveedorId
+      );
+      const total = redondear2(regla.montoTotalDeuda || regla.monto || 0);
+      if (total > saldo.valorAdeudado + 0.01) {
+        return `El descuento ($${total.toFixed(
+          2
+        )}) no puede superar el saldo de la factura ${factura.nFactura || ""} ($${saldo.valorAdeudado.toFixed(
+          2
+        )})`;
+      }
+    } catch (err) {
+      return err.message || "No se pudo validar la factura pendiente";
+    }
+    return null;
+  }
+
   const msgAsoc = await validarReglaPagoAsociada(regla);
   if (msgAsoc) return msgAsoc;
 
@@ -238,10 +296,79 @@ async function listarReglasPagoAsociables(cedula) {
     .lean();
 }
 
+async function aplicarDescuentoEnFacturaExterna(regla, opciones = {}) {
+  const total = redondear2(regla.montoTotalDeuda || regla.monto || 0);
+  const subCuenta = subCuentaDescuentoNomina(
+    regla.transaccionNomina,
+    regla.tipoBeneficiario
+  );
+  const cuentaDesc = await tipoBNominaService.resolverCuentaDesdeSubCuenta(
+    subCuenta || SUBCUENTAS_NOMINA.DESCUENTOS
+  );
+  const fechaContable = new Date();
+  const concepto = (regla.conceptoDescuento || "Descuento").toString().trim();
+  const facturaTxt = (regla.nFacturaProveedor || "").toString().trim();
+  const notas = [
+    `Descuento tipo C — ${concepto}`,
+    facturaTxt ? `Factura ${facturaTxt}` : "",
+    "1.3 INGRESOS / 1.3.4 Nominas_Descuentos",
+    opciones.notas || regla.notas || "",
+  ]
+    .filter(Boolean)
+    .join(". ");
+
+  const tx = new TransaccionFinanciera({
+    fecha: fechaContable,
+    fechaContable,
+    sucursal: opciones.sucursal || "matriz",
+    cliente: regla.nombreBeneficiario,
+    beneficiario: regla.nombreBeneficiario,
+    proveedor: regla.nombreBeneficiario,
+    cedula: regla.cedulaBeneficiario,
+    centroCosto: regla.centroCosto,
+    isContabilizada: true,
+    usuario: opciones.usuario || regla.creadoPor || "",
+    valor: total,
+    tipoPago: "Ingreso",
+    cuenta: cuentaDesc.cuenta,
+    tipoCuenta: cuentaDesc.tipoCuenta || "Ingresos",
+    subCuenta: subCuenta || SUBCUENTAS_NOMINA.DESCUENTOS,
+    tipoTransaccion: "DESCUENTO_NOMINA",
+    numFactura: facturaTxt,
+    ordenCompra: regla.nSolicitudFactura,
+    documentoVenta: facturaTxt,
+    notas,
+  });
+  await tx.save();
+
+  const descuentoFactura = await aplicarDescuentoFacturaProveedor({
+    facturaId: regla.facturaProveedorId,
+    monto: total,
+    concepto,
+    usuario: opciones.usuario || regla.creadoPor || "",
+    transaccion: tx,
+    regla,
+  });
+
+  return { transaccion: tx, descuentoFactura, monto: total };
+}
+
 async function generarEventosProgramados(regla, opciones = {}) {
   const reglaObj = await normalizarReglaTipoC(regla);
   const msg = await validarReglaTipoCCompleta(reglaObj);
   if (msg) throw new Error(msg);
+
+  if (esDescuentoExternoTipoC(reglaObj)) {
+    const aplicado = await aplicarDescuentoEnFacturaExterna(reglaObj, opciones);
+    const proyeccion = construirProyeccionTipoC(reglaObj, opciones);
+    return {
+      proyeccion,
+      eventos: [],
+      eventosActualizados: 0,
+      cuotaDescuento: aplicado.monto,
+      descuentoFactura: aplicado.descuentoFactura,
+    };
+  }
 
   const reglaA = await cargarReglaAsociada(reglaObj);
   if (!reglaA) {
@@ -280,4 +407,5 @@ module.exports = {
   generarTablaCuotasSegSocial,
   generarTablaDescuentoGeneral,
   construirProyeccionTipoC,
+  esDescuentoExternoTipoC,
 };

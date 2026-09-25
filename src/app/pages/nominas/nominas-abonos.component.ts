@@ -145,13 +145,13 @@ export class NominasAbonosComponent implements OnInit {
     }
     Swal.fire({
       title: "Registrar abono",
-      html: `<strong>${prestamo.nombreBeneficiario || ""}</strong><br/>
+      html: `<strong>${prestamo.codigoPrestamo ? prestamo.codigoPrestamo + " · " : ""}${prestamo.nombreBeneficiario || ""}</strong><br/>
         ${prestamo.cedulaBeneficiario || ""} · ${prestamo.tipoBeneficiario}<br/>
         Total préstamo: $${Number(prestamo.montoTotalDeuda || 0).toFixed(2)}<br/>
         Ya abonado: $${Number(prestamo.montoAbonado || 0).toFixed(2)}<br/>
         Pendiente: $${saldo.toFixed(2)}<br/>
         <strong>Abono: $${monto.toFixed(2)}</strong><br/>
-        <span class="text-muted">Se descontará de las últimas cuotas pendientes (las finales se eliminan o se reducen). Ingreso en 1.3 / 1.3.3</span>`,
+        <span class="text-muted">Se descontará de las cuotas más próximas a pagar (las cubiertas se eliminan y la siguiente se reduce). Ingreso en 1.3 / 1.3.3</span>`,
       icon: "question",
       showCancelButton: true,
       confirmButtonText: "Registrar abono",

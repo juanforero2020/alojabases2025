@@ -364,6 +364,7 @@ export class NominasService {
     q?: string;
     cedula?: string;
     nombre?: string;
+    incluirDetalle?: boolean;
   }) {
     const params = new URLSearchParams();
     if (filtros?.tipoBeneficiario) {
@@ -372,6 +373,9 @@ export class NominasService {
     if (filtros?.q) params.set("q", filtros.q);
     if (filtros?.cedula) params.set("cedula", filtros.cedula);
     if (filtros?.nombre) params.set("nombre", filtros.nombre);
+    if (filtros?.incluirDetalle === false) {
+      params.set("incluirDetalle", "false");
+    }
     const q = params.toString();
     return this.http
       .get<PrestamoAbonoResumen[]>(
@@ -416,9 +420,10 @@ export class NominasService {
       .pipe(map((lista) => (lista || []).map(normalizarReglaPagoNomina)));
   }
 
-  getEventosAnticipo(cedula: string) {
+  getEventosAnticipo(cedula: string, fechaCobro?: string) {
+    const q = fechaCobro ? `?fechaCobro=${encodeURIComponent(fechaCobro)}` : "";
     return this.http.get<FuenteDescuentoPrestamo[]>(
-      `${this.URL}/eventos-anticipo/${cedula}`
+      `${this.URL}/eventos-anticipo/${cedula}${q}`
     );
   }
 

@@ -16,6 +16,7 @@ const {
   generarTablaPrestamoPrevia,
   omitirDescuentoPrestamoEvento,
 } = require("../utils/proyeccionPagosTipoD");
+const { asignarCodigoPrestamoSiFalta } = require("../utils/codigoPrestamoNomina");
 
 function redondear2(n) {
   return Math.round((Number(n) || 0) * 100) / 100;
@@ -84,7 +85,6 @@ function normalizarReglaTipoD(regla) {
   doc.montoTotalDeuda = montos.montoTotal;
   doc.monto = montos.montoTotal;
   if (esAnticipo) {
-    doc.tipoBeneficiario = "Interno";
     doc.cuotas = 1;
   }
   const fechaDesembolso = fechaCalendario(
@@ -114,7 +114,10 @@ function normalizarReglaTipoD(regla) {
     doc.cuotaEvento = redondear2(
       fuentes.reduce((s, f) => s + (Number(f.monto) || 0), 0)
     );
-    doc.cuotas = Math.max(1, fuentes.length);
+    doc.cuotas = Math.max(
+      1,
+      tablaCobros.length || fuentes.length || 1
+    );
   }
   if (doc.saldoPendientePrestamo == null) {
     doc.saldoPendientePrestamo = montos.montoTotal;
@@ -123,6 +126,7 @@ function normalizarReglaTipoD(regla) {
 }
 
 function esPrestamoExterno(regla) {
+  if (esReglaAnticipo(regla)) return false;
   return (regla.tipoBeneficiario || "").toString().trim().toLowerCase() === "externo";
 }
 
@@ -225,8 +229,8 @@ function validarReglaTipoD(regla) {
       : "Indique la fecha de desembolso del préstamo";
   }
   if (esAnticipo) {
-    if ((regla.tipoBeneficiario || "") === "Externo") {
-      return "Los anticipos solo aplican a personal interno";
+    if (!fechaCalendario(regla.fechaInicioCobros)) {
+      return "Indique la fecha de cobro del anticipo";
     }
     const fuentes = fuentesSeleccionadas(regla);
     if (fuentes.length !== 1) {
@@ -253,6 +257,9 @@ function validarReglaTipoD(regla) {
   if (!fuentes.length) {
     return "Seleccione al menos un tipo de pago programado y coloque la cuota referencial a descontar";
   }
+  if (!fechaCalendario(regla.fechaInicioCobros)) {
+    return "Indique la fecha de inicio de cobro de las cuotas";
+  }
   for (const fuente of fuentes) {
     if (!(redondear2(fuente.monto) > 0)) {
       return `Indique la cuota referencial para ${fuente.transaccionNomina || "el pago seleccionado"}`;
@@ -262,6 +269,22 @@ function validarReglaTipoD(regla) {
       return `La cuota de ${fuente.transaccionNomina || "pago"} ($${fuente.monto.toFixed(
         2
       )}) no puede superar el pago ($${bruto.toFixed(2)})`;
+    }
+  }
+  const tablaInterna = regla.tablaAmortizacion || [];
+  if (tablaInterna.length) {
+    let suma = 0;
+    for (const fila of tablaInterna) {
+      const monto = redondear2(fila.monto);
+      if (!(monto > 0.009)) {
+        return "Cada cuota proyectada debe ser mayor a cero";
+      }
+      suma = redondear2(suma + monto);
+    }
+    if (Math.abs(suma - montos.montoTotal) > 0.05) {
+      return `La suma de cuotas ($${suma.toFixed(
+        2
+      )}) debe cubrir el préstamo ($${montos.montoTotal.toFixed(2)})`;
     }
   }
   return null;
@@ -275,7 +298,8 @@ async function validarFuentesPrestamo(regla) {
       return "Seleccione un solo evento de pago para descontar el anticipo";
     }
     const lista = await listarEventosDisponiblesAnticipo(
-      regla.cedulaBeneficiario
+      regla.cedulaBeneficiario,
+      regla.fechaInicioCobros || fuente.fechaEvento
     );
     const vivo = (lista || []).find(
       (e) => idStr(e.eventoPagoId) === idStr(fuente.eventoPagoId)
@@ -431,7 +455,16 @@ async function generarEventosProgramados(regla, opciones = {}) {
   const fuenteAnticipo = esAnticipo
     ? fuentesSeleccionadas(reglaObj)[0]
     : null;
+  await asignarCodigoPrestamoSiFalta(regla);
+  if (regla.isModified && regla.isModified("codigoPrestamo") && regla._id) {
+    await regla.save();
+  }
+  if (!reglaObj.codigoPrestamo && regla.codigoPrestamo) {
+    reglaObj.codigoPrestamo = regla.codigoPrestamo;
+  }
+  const codigoTxt = (regla.codigoPrestamo || reglaObj.codigoPrestamo || "").trim();
   const notas = [
+    codigoTxt ? `${esAnticipo ? "Anticipo" : "Préstamo"} ${codigoTxt}` : "",
     String(reglaObj.notas || "").trim(),
     esAnticipo
       ? `Desembolso anticipo $${reglaObj.montoPrestado.toFixed(2)}`
@@ -458,6 +491,7 @@ async function generarEventosProgramados(regla, opciones = {}) {
     montoPagado: 0,
     centroCosto: reglaObj.centroCosto,
     transaccionNomina: esAnticipo ? TRANSACCION_ANTICIPO : TRANSACCION_PRESTAMO,
+    codigoPrestamo: codigoTxt || undefined,
     cedulaBeneficiario: reglaObj.cedulaBeneficiario,
     nombreBeneficiario: reglaObj.nombreBeneficiario,
     modalidadMonto: "Finito",

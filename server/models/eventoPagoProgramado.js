@@ -39,6 +39,7 @@ const EventoPagoProgramadoSchema = new Schema(
     montoPagado: { type: Number, default: 0 },
     centroCosto: { type: String, required: false },
     transaccionNomina: { type: String, required: false },
+    codigoPrestamo: { type: String, required: false, trim: true },
     cedulaBeneficiario: { type: String, required: false },
     nombreBeneficiario: { type: String, required: false },
     modalidadMonto: { type: String, default: "Periodico" },

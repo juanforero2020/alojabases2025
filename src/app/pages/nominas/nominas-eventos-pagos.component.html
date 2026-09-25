@@ -10,15 +10,17 @@
       Tipo B — Deudas programadas (arriendos, préstamos, tarjetas). Se cargan en calendario y el encargado ejecuta en la fecha.
     </p>
     <p class="text-muted text-center small mb-3" *ngIf="esTipoC">
-      Tipo C — Descuentos. No genera pagos: reduce el monto neto de la regla de pago tipo A asociada.
+      Tipo C — Descuentos.
+      <span *ngIf="!esExternoDescuentosC"> No genera pagos: reduce el monto neto de la regla de pago tipo A asociada.</span>
       <span *ngIf="esSeguridadSocial"> Seguridad social: 4 cuotas en las primeras 4 semanas de cada mes.</span>
-      <span *ngIf="esDescuentosGenerales"> Otros descuentos: valor único o por cuotas, con concepto y semana de aplicación.</span>
+      <span *ngIf="esDescuentosGenerales && !esExternoDescuentosC"> Otros descuentos: valor único o por cuotas, con concepto y semana de aplicación.</span>
+      <span *ngIf="esExternoDescuentosC"> En personal externo el descuento se aplica a una factura pendiente (reduce la deuda con el proveedor).</span>
     </p>
     <p class="text-muted text-center small mb-3" *ngIf="esTipoD">
       Tipo D — Préstamos y anticipos.
       <span *ngIf="!esAnticipo">
         Préstamos: desembolso único en
-        <strong>2.1. PRESTAMOS</strong>
+        <strong>2.1 PRESTAMOS</strong>
         (<strong>2.1.0 Internos</strong> o <strong>2.2.1 Externos</strong>).
         Al personal interno se descuenta de sus pagos programados.
         Al personal externo se generan fechas de cobro y los recibos se registran en el menú
@@ -27,8 +29,9 @@
       <span *ngIf="esAnticipo">
         Anticipos: desembolso en
         <strong>1.5.3 Anticipos nomina</strong>
-        y descuento en el próximo pago que elija
-        (dominical de esta misma semana, asignación de nómina, décimos o comisiones).
+        y descuento en el pago programado que elija.
+        Interno: nómina, dominical, décimos o comisiones.
+        Externo: un evento ya creado (por ejemplo arriendo). Al ejecutarlo se resta el anticipo.
       </span>
     </p>
 
@@ -48,7 +51,7 @@
           [items]="tiposBeneficiario"
           [(value)]="formulario.tipoBeneficiario"
           (onValueChanged)="onTipoBeneficiarioChanged()"
-          [disabled]="esDominical || esTipoC || esAnticipo"
+          [disabled]="esDominical || esSeguridadSocial"
         ></dx-select-box>
       </div>
       <div class="col-md-4 mb-3">
@@ -139,7 +142,8 @@
           El personal externo no tiene eventos de pago: se programan recibos de cobro
         </small>
         <small class="text-muted d-block" *ngIf="esAnticipo">
-          Elija el próximo pago sobre el que se descontará el anticipo. El máximo es lo neto disponible.
+          Elija la fecha de cobro: si ese día no hay pago, se usa el programado más cercano
+          (nómina interna o, en externos, el arriendo u otro pago tipo B).
         </small>
       </div>
       <div class="col-md-4 mb-3" *ngIf="esConceptoExternoOtro">
@@ -460,7 +464,51 @@
 
       <!-- Campos Tipo C — descuentos -->
       <ng-container *ngIf="esTipoC">
-        <div class="col-md-8 mb-3">
+        <ng-container *ngIf="esExternoDescuentosC">
+          <div class="col-md-8 mb-3">
+            <label class="form-label">Factura pendiente *</label>
+            <dx-select-box
+              [items]="facturasPendientes"
+              displayExpr="etiquetaDisplay"
+              valueExpr="_id"
+              [(value)]="formulario.facturaProveedorId"
+              [searchEnabled]="true"
+              [disabled]="formulario.estadoRegla === 'Autorizada' || cargandoFacturasPendientes"
+              placeholder="Seleccione la factura con saldo pendiente"
+              (onValueChanged)="onFacturaPendienteChanged($event)"
+            ></dx-select-box>
+            <small class="text-muted d-block" *ngIf="!formulario.nombreBeneficiario">
+              Busque el proveedor para listar sus facturas pendientes.
+            </small>
+            <small class="text-muted d-block" *ngIf="cargandoFacturasPendientes">
+              Cargando facturas pendientes…
+            </small>
+            <small
+              class="text-muted d-block"
+              *ngIf="formulario.nombreBeneficiario && !cargandoFacturasPendientes && !facturasPendientes.length"
+            >
+              No hay facturas pendientes para este proveedor.
+            </small>
+            <small class="text-muted d-block" *ngIf="facturaPendienteSeleccionada">
+              Adeudado: ${{ facturaPendienteSeleccionada.valorAdeudado | number : "1.2-2" }}
+              · Total: ${{ facturaPendienteSeleccionada.total | number : "1.2-2" }}
+              · Abonado: ${{ facturaPendienteSeleccionada.valorAbonado | number : "1.2-2" }}
+              <span *ngIf="facturaPendienteSeleccionada.nSolicitud">
+                · OC {{ facturaPendienteSeleccionada.nSolicitud }}
+              </span>
+            </small>
+            <small
+              class="text-muted d-block"
+              *ngIf="!facturaPendienteSeleccionada && formulario.nFacturaProveedor"
+            >
+              Factura enlazada: {{ formulario.nFacturaProveedor }}
+              <span *ngIf="formulario.valorAdeudadoFactura">
+                · Adeudado al vincular ${{ formulario.valorAdeudadoFactura | number : "1.2-2" }}
+              </span>
+            </small>
+          </div>
+        </ng-container>
+        <div class="col-md-8 mb-3" *ngIf="!esExternoDescuentosC">
           <label class="form-label">Regla de pago asociada (tipo A autorizada)</label>
           <dx-select-box
             [items]="reglasPagoAsociables"
@@ -500,7 +548,7 @@
             ></dx-text-box>
             <small class="text-muted">El nombre quedará disponible en el catálogo de descuentos</small>
           </div>
-          <div class="col-md-4 mb-3">
+          <div class="col-md-4 mb-3" *ngIf="!esExternoDescuentosC">
             <label class="form-label">Modalidad</label>
             <dx-select-box
               [items]="modalidadesDescuento"
@@ -518,7 +566,7 @@
               (onValueChanged)="onMontoDescuentoChanged()"
             ></dx-number-box>
           </div>
-          <div class="col-md-4 mb-3" *ngIf="esDescuentoPorCuota">
+          <div class="col-md-4 mb-3" *ngIf="esDescuentoPorCuota && !esExternoDescuentosC">
             <label class="form-label">Número de cuotas</label>
             <dx-number-box
               [(value)]="formulario.cuotas"
@@ -528,7 +576,7 @@
               (onValueChanged)="onCuotasDescuentoChanged()"
             ></dx-number-box>
           </div>
-          <div class="col-md-4 mb-3">
+          <div class="col-md-4 mb-3" *ngIf="!esExternoDescuentosC">
             <label class="form-label">Cuota por pago ($)</label>
             <div
               class="eventos-monto-display"
@@ -545,7 +593,7 @@
               Máximo por pago: ${{ montoBrutoReglaAsociada | number : "1.2-2" }}
             </small>
           </div>
-          <div class="col-md-4 mb-3">
+          <div class="col-md-4 mb-3" *ngIf="!esExternoDescuentosC">
             <label class="form-label">Semana de aplicación</label>
             <dx-select-box
               [items]="opcionesSemanaAplicacion"
@@ -553,7 +601,7 @@
               (onValueChanged)="onSemanaAplicacionChanged()"
             ></dx-select-box>
           </div>
-          <div class="col-md-4 mb-3" *ngIf="esSemanaEspecifica">
+          <div class="col-md-4 mb-3" *ngIf="esSemanaEspecifica && !esExternoDescuentosC">
             <label class="form-label">Fecha de la semana</label>
             <dx-date-box
               [(value)]="formulario.fechaAplicacionDescuento"
@@ -640,7 +688,7 @@
             </div>
           </div>
         </ng-container>
-        <div class="col-md-12 mb-2" *ngIf="esDescuentosGenerales && reglaPagoAsociadaSeleccionada && cuotaDescuentoCalculada > 0">
+        <div class="col-md-12 mb-2" *ngIf="esDescuentosGenerales && reglaPagoAsociadaSeleccionada && cuotaDescuentoCalculada > 0 && !esExternoDescuentosC">
           <div class="alert alert-info py-2 mb-0 small">
             <strong>{{ conceptoDescuentoTexto }}</strong> —
             {{ formulario.modalidadDescuento }} de
@@ -652,7 +700,25 @@
             Sobre pago base ${{ montoBrutoReglaAsociada | number : "1.2-2" }}.
           </div>
         </div>
-        <div class="col-md-4 mb-3 d-flex align-items-end">
+        <div class="col-md-12 mb-2" *ngIf="esExternoDescuentosC && formulario.montoTotalDeuda > 0">
+          <div
+            class="alert py-2 mb-0 small"
+            [class.alert-info]="!descuentoTipoCInvalido"
+            [class.alert-warning]="descuentoTipoCInvalido"
+          >
+            <strong>{{ conceptoDescuentoTexto }}</strong>
+            de ${{ formulario.montoTotalDeuda | number : "1.2-2" }}
+            se aplicará a la factura
+            <strong>{{ formulario.nFacturaProveedor || "pendiente seleccionada" }}</strong>
+            <span *ngIf="facturaPendienteSeleccionada">
+              (saldo ${{ facturaPendienteSeleccionada.valorAdeudado | number : "1.2-2" }}).
+            </span>
+            <span *ngIf="descuentoTipoCInvalido && validacionDescuentoTipoC?.mensaje">
+              {{ validacionDescuentoTipoC.mensaje }}
+            </span>
+          </div>
+        </div>
+        <div class="col-md-4 mb-3 d-flex align-items-end" *ngIf="!esExternoDescuentosC">
           <button
             type="button"
             class="btn btn-outline-primary btn-block"
@@ -669,6 +735,15 @@
 
       <!-- Campos Tipo D — préstamos / anticipos -->
       <ng-container *ngIf="esTipoD">
+        <div class="col-md-4 mb-3" *ngIf="formulario.codigoPrestamo">
+          <label class="form-label">Identificador</label>
+          <div class="eventos-monto-display">
+            {{ formulario.codigoPrestamo }}
+          </div>
+          <small class="text-muted">
+            Use este código para distinguir este {{ esAnticipo ? "anticipo" : "préstamo" }} si la persona tiene varios.
+          </small>
+        </div>
         <div class="col-md-4 mb-3">
           <label class="form-label">{{ esAnticipo ? "Valor del anticipo ($)" : "Valor prestado ($)" }}</label>
           <dx-number-box
@@ -711,14 +786,45 @@
           <small class="text-muted" *ngIf="!esAnticipo">
             Única vez: ese día se programa el pago para entregar el capital
             (${{ montoPrestadoForm | number : "1.2-2" }}). El encargado lo ejecuta en Pagos programados.
-            Cuenta <strong>2.1. PRESTAMOS</strong> /
+            Cuenta <strong>2.1 PRESTAMOS</strong> /
             {{ esPrestamoExterno ? "2.2.1 Externos" : "2.1.0 Internos" }}.
           </small>
           <small class="text-muted" *ngIf="esAnticipo">
             Única vez: ese día se programa el egreso del anticipo
             (${{ montoPrestadoForm | number : "1.2-2" }}) en
             <strong>1.5.3 Anticipos nomina</strong>.
-            El descuento queda en el próximo pago elegido.
+          </small>
+        </div>
+        <div class="col-md-4 mb-3" *ngIf="esAnticipo">
+          <label class="form-label">Fecha de cobro del anticipo</label>
+          <dx-date-box
+            [(value)]="formulario.fechaInicioCobros"
+            type="date"
+            (onValueChanged)="onFechaCobroAnticipoChanged($event)"
+            [disabled]="formulario.estadoRegla === 'Autorizada'"
+          ></dx-date-box>
+          <small class="text-muted">
+            Si elige un día sin pago (ej. jueves 1 de octubre), el cobro pasa al siguiente día de
+            nómina más cercano (sábado 3 de octubre).
+          </small>
+          <small class="text-info d-block" *ngIf="mensajeAjusteFechaCobroAnticipo">
+            {{ mensajeAjusteFechaCobroAnticipo }}
+          </small>
+        </div>
+        <div class="col-md-4 mb-3" *ngIf="esPrestamoInterno">
+          <label class="form-label">Fecha de inicio de cobro de cuotas</label>
+          <dx-date-box
+            [(value)]="formulario.fechaInicioCobros"
+            type="date"
+            (onValueChanged)="onFechaInicioCuotasPrestamoChanged($event)"
+            [disabled]="formulario.estadoRegla === 'Autorizada'"
+          ></dx-date-box>
+          <small class="text-muted">
+            Primera cuota a partir de este día. Si no hay pago (ej. jueves 1 de octubre),
+            inicia el siguiente día de nómina (sábado 3 de octubre).
+          </small>
+          <small class="text-info d-block" *ngIf="mensajeAjusteFechaCobroAnticipo">
+            {{ mensajeAjusteFechaCobroAnticipo }}
           </small>
         </div>
         <div class="col-md-4 mb-3" *ngIf="esPrestamoExterno">
@@ -757,18 +863,23 @@
           </div>
         </div>
         <div class="col-md-12 mb-2" *ngIf="esAnticipo">
-          <label class="form-label">Próximos pagos disponibles para anticipo</label>
+          <label class="form-label">Pagos disponibles para descontar el anticipo</label>
           <p class="small text-muted mb-2">
-            Se lista el próximo evento de cada tipo (dominical de esta misma semana,
-            asignación de nómina, décimos, comisiones u otros). Marque uno:
-            el máximo es el neto disponible (pago menos descuentos ya parametrizados).
+            Según la fecha de cobro se lista, por cada tipo, el pago programado más cercano.
+            Marque uno: el máximo es el neto disponible (pago menos descuentos ya parametrizados).
           </p>
           <div
             class="alert alert-warning py-2 small mb-2"
             *ngIf="formulario.cedulaBeneficiario && !fuentesPrestamo.length"
           >
-            Este beneficiario no tiene un próximo pago pendiente con saldo disponible
-            para anticipo. Autorice primero las reglas de pago (nómina, dominical, etc.).
+            Este beneficiario no tiene un pago pendiente con saldo disponible
+            para anticipo en esa fecha.
+            <span *ngIf="formulario.tipoBeneficiario !== 'Externo'">
+              Autorice primero las reglas de pago (nómina, dominical, etc.).
+            </span>
+            <span *ngIf="formulario.tipoBeneficiario === 'Externo'">
+              Autorice primero un pago programado tipo B de este proveedor (por ejemplo arriendo).
+            </span>
           </div>
           <div class="table-responsive" *ngIf="fuentesPrestamo.length">
             <table class="table table-sm table-bordered amortizacion-tabla mb-0">
@@ -776,7 +887,7 @@
                 <tr>
                   <th style="width: 70px">Usar</th>
                   <th>Tipo de pago</th>
-                  <th>Próximo pago</th>
+                  <th>Fecha de pago</th>
                   <th>Pago ($)</th>
                   <th>Descuentos ($)</th>
                   <th>Disponible ($)</th>
@@ -931,7 +1042,9 @@
             class="alert alert-info py-2 small mt-2 mb-0"
             *ngIf="fuentesPrestamoSeleccionadas.length && totalPrestamoCalculado > 0"
           >
-            En cada pago seleccionado se restará su cuota hasta cubrir
+            En cada pago seleccionado, desde el
+            <strong>{{ formatoFechaCorta(formulario.fechaInicioCobros) }}</strong>,
+            se restará su cuota hasta cubrir
             <strong>${{ totalPrestamoCalculado | number : "1.2-2" }}</strong>.
             El abono queda registrado como ingreso en
             <strong>1.3 INGRESOS / 1.3.3 Pago o Abono Préstamo</strong>.
@@ -985,7 +1098,7 @@
     </div>
 
     <!-- Tabla cuotas descuento Tipo C -->
-    <div class="row" *ngIf="esTipoC && tablaAmortizacion.length">
+    <div class="row" *ngIf="esTipoC && tablaAmortizacion.length && !esExternoDescuentosC">
       <div class="col-12 mb-3">
         <h6 class="font-weight-bold">{{ tituloTablaDescuento }}</h6>
         <p class="small text-muted mb-2" *ngIf="esSeguridadSocial">
@@ -1045,9 +1158,16 @@
       <div class="col-12 mb-3">
         <h6 class="font-weight-bold">Cuotas proyectadas del préstamo</h6>
         <p class="small text-muted mb-2">
-          Orden referencial según los pagos pendientes. Al ejecutar cada pago se restará
-          la cuota de ese tipo y se registrará el abono hasta cubrir el total.
+          Puede ajustar el valor de cada cuota. La suma debe cubrir
+          <strong>${{ totalPrestamoCalculado | number : "1.2-2" }}</strong>
+          para poder guardar. El valor no puede superar lo disponible en ese pago.
         </p>
+        <div
+          class="alert alert-danger py-2 small mb-2"
+          *ngIf="validacionPrestamoTipoD && !validacionPrestamoTipoD.ok"
+        >
+          {{ validacionPrestamoTipoD.mensaje }}
+        </div>
         <div class="table-responsive">
           <table class="table table-sm table-bordered amortizacion-tabla">
             <thead>
@@ -1055,18 +1175,26 @@
                 <th>Abono</th>
                 <th>Fecha pago</th>
                 <th>Tipo de pago</th>
-                <th>Descuento ($)</th>
+                <th style="width: 160px">Descuento ($)</th>
                 <th *ngIf="hayDescuentosExistentesEnTabla">Ya descontado ($)</th>
                 <th>Neto proyectado ($)</th>
                 <th>Saldo préstamo ($)</th>
               </tr>
             </thead>
             <tbody>
-              <tr *ngFor="let fila of tablaAmortizacion">
+              <tr *ngFor="let fila of tablaAmortizacion; let i = index">
                 <td>{{ fila.numeroCuota }}</td>
                 <td>{{ fila.fechaMin | date : "dd/MM/yyyy" }}</td>
                 <td>{{ fila.transaccionNomina }}</td>
-                <td>{{ descuentoNuevoFila(fila) | number : "1.2-2" }}</td>
+                <td>
+                  <dx-number-box
+                    [(value)]="tablaAmortizacion[i].monto"
+                    [min]="0"
+                    format="#,##0.##"
+                    [disabled]="formulario.estadoRegla === 'Autorizada'"
+                    (onValueChanged)="onFilaCuotaPrestamoInternoChanged($event)"
+                  ></dx-number-box>
+                </td>
                 <td *ngIf="hayDescuentosExistentesEnTabla" class="text-danger">
                   {{ (fila.descuentoExistente || 0) | number : "1.2-2" }}
                 </td>
@@ -1079,6 +1207,17 @@
                 <td>{{ (fila.saldoDespues != null ? fila.saldoDespues : 0) | number : "1.2-2" }}</td>
               </tr>
             </tbody>
+            <tfoot>
+              <tr>
+                <td colspan="3" class="text-right font-weight-bold">Total cuotas</td>
+                <td class="font-weight-bold">
+                  {{ sumaCuotasTablaPrestamo | number : "1.2-2" }}
+                </td>
+                <td *ngIf="hayDescuentosExistentesEnTabla"></td>
+                <td></td>
+                <td></td>
+              </tr>
+            </tfoot>
           </table>
         </div>
       </div>
@@ -1266,12 +1405,13 @@
                 (esPrestamoInterno && !fuentesPrestamoSeleccionadas.length) ||
                 (esPrestamoExterno && !tablaAmortizacion.length))) ||
             (esTipoC &&
-              (!formulario.reglaPagoAsociadaId ||
-                !formulario.montoTotalDeuda ||
+              (!formulario.montoTotalDeuda ||
+                (esExternoDescuentosC && !formulario.facturaProveedorId) ||
+                (!esExternoDescuentosC && !formulario.reglaPagoAsociadaId) ||
                 (esDescuentosGenerales &&
                   (!formulario.conceptoDescuento ||
                     (esConceptoOtros && !conceptoDescuentoOtro?.trim()) ||
-                    (esSemanaEspecifica && !formulario.fechaAplicacionDescuento)))))
+                    (!esExternoDescuentosC && esSemanaEspecifica && !formulario.fechaAplicacionDescuento)))))
           "
         >
           Vista previa
@@ -1369,6 +1509,7 @@
       [allowExportSelectedData]="true"
     ></dxo-export>
       <dxi-column dataField="tipoRegla" caption="Tipo" [width]="60"></dxi-column>
+      <dxi-column dataField="codigoPrestamo" caption="Cód. préstamo" [width]="110"></dxi-column>
       <dxi-column dataField="nombreBeneficiario" caption="Beneficiario"></dxi-column>
       <dxi-column dataField="cedulaBeneficiario" caption="Cédula"></dxi-column>
       <dxi-column dataField="centroCosto" caption="Centro costo"></dxi-column>

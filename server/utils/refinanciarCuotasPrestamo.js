@@ -9,21 +9,45 @@ function pendienteCuota(item) {
 }
 
 function filaAmortizacionPlain(fila) {
-  return {
+  const plain = {
     numeroCuota: fila.numeroCuota,
     fechaMin: fila.fechaMin,
     fechaMax: fila.fechaMax || fila.fechaMin,
     monto: redondear2(fila.monto),
   };
+  if (fila.transaccionNomina) {
+    plain.transaccionNomina = fila.transaccionNomina;
+  }
+  if (fila.eventoPagoId) {
+    plain.eventoPagoId = fila.eventoPagoId;
+  }
+  return plain;
+}
+
+function tiempoCuota(item) {
+  const valor =
+    item && (item.fechaProgramada || item.fechaMin || item.fechaMax || item.fecha);
+  const n = valor ? new Date(valor).getTime() : NaN;
+  return isNaN(n) ? Number.MAX_SAFE_INTEGER : n;
+}
+
+function ordenarCuotasProximas(items) {
+  return (items || []).slice().sort((a, b) => {
+    const fa = tiempoCuota(a);
+    const fb = tiempoCuota(b);
+    if (fa !== fb) return fa - fb;
+    return (Number(a.numeroCuota) || 0) - (Number(b.numeroCuota) || 0);
+  });
 }
 
 /**
- * Recorta cuotas pendientes desde la última hacia atrás.
- * items: ordenados por número de cuota ASC, solo pendientes/parciales.
- * item se mantiene por referencia (p. ej. documento mongoose).
+ * Aplica el abono a las cuotas pendientes más próximas a pagar
+ * (de la más cercana en adelante). Si el abono cubre una cuota, esa
+ * desaparece; el remanente reduce la siguiente.
+ * items: solo pendientes/parciales. item se mantiene por referencia.
  */
-function refinanciarCuotasDesdeAtras(items, montoAbono) {
-  const lista = (items || []).map((item, index) => ({
+function refinanciarCuotasProximas(items, montoAbono) {
+  const lista = ordenarCuotasProximas(items).map((item, index) => ({
     item,
     index,
     numeroCuota: item.numeroCuota,
@@ -35,7 +59,7 @@ function refinanciarCuotasDesdeAtras(items, montoAbono) {
   }));
 
   let restante = redondear2(montoAbono);
-  for (let i = lista.length - 1; i >= 0 && restante > 0.009; i--) {
+  for (let i = 0; i < lista.length && restante > 0.009; i++) {
     const row = lista[i];
     if (!(row.pendiente > 0.009)) continue;
 
@@ -73,9 +97,9 @@ function textoRefinanciacion(resultado) {
   if (!resultado) return "";
   const partes = [];
   if (resultado.cuotasEliminadas === 1) {
-    partes.push("se eliminó 1 cuota final");
+    partes.push("se eliminó 1 cuota próxima");
   } else if (resultado.cuotasEliminadas > 1) {
-    partes.push(`se eliminaron ${resultado.cuotasEliminadas} cuotas finales`);
+    partes.push(`se eliminaron ${resultado.cuotasEliminadas} cuotas próximas`);
   }
   for (const row of resultado.filas || []) {
     if (row.accion !== "ajustar") continue;
@@ -162,7 +186,9 @@ module.exports = {
   redondear2,
   pendienteCuota,
   filaAmortizacionPlain,
-  refinanciarCuotasDesdeAtras,
+  ordenarCuotasProximas,
+  refinanciarCuotasProximas,
+  refinanciarCuotasDesdeAtras: refinanciarCuotasProximas,
   textoRefinanciacion,
   extraerPendientesDeTabla,
   reconstruirTablaDesdeRefinanciacion,

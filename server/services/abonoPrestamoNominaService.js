@@ -13,12 +13,13 @@ const {
   cuotaFuenteParaRegla,
 } = require("../utils/proyeccionPagosTipoD");
 const {
-  refinanciarCuotasDesdeAtras,
+  refinanciarCuotasProximas,
   textoRefinanciacion,
   extraerPendientesDeTabla,
   filaAmortizacionPlain,
 } = require("../utils/refinanciarCuotasPrestamo");
 const cobroPrestamoNominaService = require("./cobroPrestamoNominaService");
+const { asignarCodigoPrestamoSiFalta } = require("../utils/codigoPrestamoNomina");
 
 function redondear2(n) {
   return Math.round((Number(n) || 0) * 100) / 100;
@@ -101,6 +102,7 @@ function resumenPrestamo(regla, bitacora, cuotasPendientes = []) {
   const cuotas = cuotasPendientes || [];
   return {
     _id: regla._id,
+    codigoPrestamo: regla.codigoPrestamo || "",
     tipoRegla: regla.tipoRegla,
     estadoRegla: regla.estadoRegla,
     tipoBeneficiario: regla.tipoBeneficiario,
@@ -188,8 +190,20 @@ async function listarPrestamosActivos(filtros = {}) {
     nombreBeneficiario: 1,
     createdAt: -1,
   });
+  const incluirDetalle =
+    filtros.incluirDetalle !== false &&
+    filtros.incluirDetalle !== "false" &&
+    filtros.incluirDetalle !== "0";
   const resultado = [];
   for (const regla of reglas) {
+    await asignarCodigoPrestamoSiFalta(regla);
+    if (regla.isModified && regla.isModified("codigoPrestamo")) {
+      await regla.save();
+    }
+    if (!incluirDetalle) {
+      resultado.push(resumenPrestamo(regla, [], []));
+      continue;
+    }
     const bitacora = await bitacoraDeRegla(regla);
     const cuotasPendientes = await listarCuotasPendientesPrestamo(regla);
     resultado.push(resumenPrestamo(regla, bitacora, cuotasPendientes));
@@ -202,7 +216,7 @@ async function listarCuotasPendientesPrestamo(regla) {
     reglaPagoId: regla._id,
     estado: { $in: ["Pendiente", "Parcial"] },
   })
-    .sort({ numeroCuota: 1 })
+    .sort({ fechaProgramada: 1, numeroCuota: 1 })
     .lean();
   if (cobros.length) {
     const totalVigentes = await EventoCobroPrestamo.countDocuments({
@@ -288,10 +302,10 @@ async function refinanciarCobrosPrestamo(regla, montoAbono) {
   const cobros = await EventoCobroPrestamo.find({
     reglaPagoId: regla._id,
     estado: { $in: ["Pendiente", "Parcial"] },
-  }).sort({ numeroCuota: 1 });
+  }).sort({ fechaProgramada: 1, numeroCuota: 1 });
   if (!cobros.length) return null;
 
-  const resultado = refinanciarCuotasDesdeAtras(cobros, montoAbono);
+  const resultado = refinanciarCuotasProximas(cobros, montoAbono);
   for (const row of resultado.eliminados) {
     await EventoCobroPrestamo.deleteOne({ _id: row.item._id });
   }
@@ -348,7 +362,7 @@ async function reconstruirTablaInternaPorSaldo(regla, saldo) {
   return tabla;
 }
 
-async function refinanciarPlanCuotasPrestamo(regla, montoAbono, saldoAntes, saldoDespues) {
+async function refinanciarPlanCuotasPrestamo(regla, montoAbono, saldoAntes) {
   const porCobros = await refinanciarCobrosPrestamo(regla, montoAbono);
   if (porCobros) {
     return {
@@ -358,52 +372,34 @@ async function refinanciarPlanCuotasPrestamo(regla, montoAbono, saldoAntes, sald
     };
   }
 
-  const tablaInterna = await reconstruirTablaInternaPorSaldo(regla, saldoDespues);
-  if (tablaInterna.length) {
-    const cuotaRef =
-      redondear2((fuentesSeleccionadas(regla)[0] || {}).monto) ||
-      redondear2(regla.cuotaEvento);
-    const cuotasAntes =
-      cuotaRef > 0.009
-        ? Math.ceil((redondear2(saldoAntes) - 0.009) / cuotaRef)
-        : (regla.tablaAmortizacion || []).length;
-    regla.tablaAmortizacion = tablaInterna;
-    regla.cuotas = tablaInterna.length;
-    const eliminadas = Math.max(0, cuotasAntes - tablaInterna.length);
-    const ultima = tablaInterna[tablaInterna.length - 1];
-    const cuotaTipica = redondear2(
-      (tablaInterna[0] && tablaInterna[0].monto) || cuotaRef
-    );
-    const ajustoFinal =
-      ultima &&
-      cuotaTipica > 0 &&
-      Math.abs(ultima.monto - cuotaTipica) > 0.01;
-    const partes = [];
-    if (eliminadas === 1) partes.push("se eliminó 1 cuota final");
-    else if (eliminadas > 1) partes.push(`se eliminaron ${eliminadas} cuotas finales`);
-    if (ajustoFinal) {
-      partes.push(`la última cuota quedó en $${ultima.monto.toFixed(2)}`);
-    }
-    return {
-      texto: partes.length ? `Refinanciación: ${partes.join("; ")}` : "",
-      cuotasEliminadas: eliminadas,
-      cuotasAjustadas: ajustoFinal ? 1 : 0,
-    };
-  }
-
   const tabla = regla.tablaAmortizacion || [];
-  if (!tabla.length) {
+  let pendientes = [];
+  if (tabla.length) {
+    const sumaTabla = redondear2(
+      tabla.reduce((s, f) => s + (Number(f.monto) || 0), 0)
+    );
+    pendientes =
+      Math.abs(sumaTabla - redondear2(saldoAntes)) <= 0.05
+        ? tabla.map((fila) => ({
+            ...filaAmortizacionPlain(fila),
+            montoPagado: 0,
+          }))
+        : extraerPendientesDeTabla(
+            tabla,
+            redondear2(Math.max(0, totalPrestamo(regla) - saldoAntes))
+          ).pendientes;
+  }
+  if (!pendientes.length) {
+    pendientes = await reconstruirTablaInternaPorSaldo(regla, saldoAntes);
+  }
+  if (!pendientes.length) {
     return { texto: "", cuotasEliminadas: 0, cuotasAjustadas: 0 };
   }
 
-  const yaPagado = redondear2(Math.max(0, totalPrestamo(regla) - saldoAntes));
-  const { pendientes } = extraerPendientesDeTabla(tabla, yaPagado);
-  const resultado = refinanciarCuotasDesdeAtras(pendientes, montoAbono);
+  const resultado = refinanciarCuotasProximas(pendientes, montoAbono);
   regla.tablaAmortizacion = (resultado.vigentes || []).map((row) =>
     filaAmortizacionPlain({
-      numeroCuota: row.item.numeroCuota,
-      fechaMin: row.item.fechaMin,
-      fechaMax: row.item.fechaMax || row.item.fechaMin,
+      ...row.item,
       monto: row.accion === "mantener" ? row.monto : row.montoNuevo,
     })
   );
@@ -446,6 +442,9 @@ async function ejecutarAbonoPrestamo(reglaId, opciones = {}) {
   const fechaContable = new Date();
   const saldoDespues = redondear2(Math.max(0, saldoAntes - monto));
   const notas = [
+    (regla.codigoPrestamo || "").trim()
+      ? `Préstamo ${regla.codigoPrestamo}`
+      : "",
     `Abono extraordinario préstamo — ${regla.nombreBeneficiario || ""}`,
     "1.3 INGRESOS / 1.3.3 Pago o Abono Préstamo",
     opciones.notas || "",
@@ -495,8 +494,7 @@ async function ejecutarAbonoPrestamo(reglaId, opciones = {}) {
   const refinanciacion = await refinanciarPlanCuotasPrestamo(
     regla,
     monto,
-    saldoAntes,
-    regla.saldoPendientePrestamo
+    saldoAntes
   );
   const notasAbono = [
     opciones.notas || "Abono extraordinario",
