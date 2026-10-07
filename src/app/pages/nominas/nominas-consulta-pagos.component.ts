@@ -1,4 +1,4 @@
-import { Component, OnInit } from "@angular/core";
+import { Component, Input, OnInit } from "@angular/core";
 import { forkJoin, of } from "rxjs";
 import { catchError, map } from "rxjs/operators";
 import { NominasService } from "src/app/servicios/nominas.service";
@@ -55,6 +55,28 @@ export class NominasConsultaPagosComponent implements OnInit {
   reporteCedula = "";
   reporteCentroCosto = "";
   reporteDesde: Date = new Date(new Date().getFullYear(), 0, 1);
+  /** Fecha mínima permitida en "Desde" (solo rol Usuario: un mes atrás). */
+  fechaMinimaDesde: Date | undefined;
+
+  private _esUsuario = false;
+  @Input()
+  set esUsuario(valor: boolean) {
+    this._esUsuario = !!valor;
+    if (this._esUsuario) {
+      const hoy = new Date();
+      this.fechaMinimaDesde = new Date(
+        hoy.getFullYear(),
+        hoy.getMonth() - 1,
+        hoy.getDate()
+      );
+      this.reporteDesde = this.fechaMinimaDesde;
+    } else {
+      this.fechaMinimaDesde = undefined;
+    }
+  }
+  get esUsuario(): boolean {
+    return this._esUsuario;
+  }
   reporteHasta: Date = new Date();
   reporteEstado: ReporteEstadoEmpleado | null = null;
   /** Filas enriquecidas para dx-data-grid (filtros y exportación Excel). */
@@ -170,6 +192,20 @@ export class NominasConsultaPagosComponent implements OnInit {
         "Seleccione un empleado o indique el centro de costo",
         "warning"
       );
+      return;
+    }
+    if (
+      this.fechaMinimaDesde &&
+      (!this.reporteDesde ||
+        this.fechaLocalParam(this.reporteDesde) <
+          this.fechaLocalParam(this.fechaMinimaDesde))
+    ) {
+      Swal.fire(
+        "Validación",
+        "Solo puede consultar pagos desde un mes atrás",
+        "warning"
+      );
+      this.reporteDesde = this.fechaMinimaDesde;
       return;
     }
     this.limpiarDescuentosEmpleado();

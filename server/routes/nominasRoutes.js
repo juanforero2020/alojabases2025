@@ -699,7 +699,8 @@ router.get("/eventos-anticipo/:cedula", async (req, res) => {
   try {
     const lista = await tipoDNominaService.listarEventosDisponiblesAnticipo(
       req.params.cedula,
-      req.query.fechaCobro
+      req.query.fechaCobro,
+      { todos: req.query.todos === "1" || req.query.todos === "true" }
     );
     res.json(lista);
   } catch (err) {
@@ -934,11 +935,17 @@ router.put("/reglas-pago/:id/autorizar", async (req, res) => {
       regla.fechaAutorizacion = new Date();
       regla.proyeccion = proyeccion;
       regla.cuotaEvento = cuotaDescuento;
-      await regla.save();
       const esExternoDesc = tipoCNominaService.esDescuentoExternoTipoC(regla);
+      const porEventos = tipoCNominaService.tieneFuentesDescuentoEvento(regla);
+      if (porEventos) {
+        regla.asociarFacturaPendiente = false;
+      }
+      await regla.save();
       return res.json({
         status: esExternoDesc
-          ? "Regla tipo C autorizada — descuento aplicado a la factura pendiente"
+          ? porEventos
+            ? "Regla tipo C autorizada — descuento aplicado al pago programado"
+            : "Regla tipo C autorizada — descuento aplicado a la factura pendiente"
           : "Regla tipo C autorizada — descuentos aplicados a pagos programados",
         data: regla,
         eventosActualizados,
@@ -974,7 +981,7 @@ router.put("/reglas-pago/:id/autorizar", async (req, res) => {
       regla.fechaAutorizacion = new Date();
       await asignarCodigoPrestamoSiFalta(regla);
       await regla.save();
-      const { proyeccion, eventosActualizados, cuotaDescuento, eventos, eventosCobro } =
+      const { proyeccion, eventosActualizados, cuotaDescuento, eventos, eventosCobro, eventosNominaGenerados } =
         await tipoDNominaService.generarEventosProgramados(regla, {
           mesesProyeccion: regla.mesesProyeccion || 6,
         });
@@ -990,11 +997,14 @@ router.put("/reglas-pago/:id/autorizar", async (req, res) => {
           ? "Anticipo autorizado — desembolso programado y descuento en el próximo pago elegido"
           : esExterno
           ? "Regla tipo D autorizada — desembolso programado y cuotas de cobro para personal externo"
+          : eventosNominaGenerados > 0
+          ? `Regla tipo D autorizada — desembolso programado, ${eventosNominaGenerados} pago(s) de nómina adicional(es) y descuentos de préstamo aplicados`
           : "Regla tipo D autorizada — desembolso programado y descuentos de préstamo aplicados",
         data: regla,
         eventosGenerados: (eventos || []).length,
         cobrosGenerados: (eventosCobro || []).length,
         eventosActualizados,
+        eventosNominaGenerados: eventosNominaGenerados || 0,
         cuotaDescuento,
       });
     }
@@ -1269,27 +1279,32 @@ router.get("/eventos-programados/:id/desglose-descuentos", async (req, res) => {
     }
     const reglaPago = await ReglaPagoNomina.findById(evento.reglaPagoId);
     const lineas = [];
+    const filtroC = {
+      tipoRegla: "C",
+      estadoRegla: "Autorizada",
+      $or: [{ "fuentesDescuentoPrestamo.eventoPagoId": evento._id }],
+    };
     if (reglaPago && reglaPago.tipoRegla === "A") {
-      const reglasC = await ReglaPagoNomina.find({
-        reglaPagoAsociadaId: reglaPago._id,
-        tipoRegla: "C",
-        estadoRegla: "Autorizada",
-      }).lean();
-      const todosEventos = await EventoPagoProgramado.find({
-        reglaPagoId: reglaPago._id,
-      }).sort({ fechaProgramada: 1 });
-      for (const reglaC of reglasC) {
-        const monto = montoDescuentoReglaCEnEvento(reglaC, evento, todosEventos);
-        if (monto > 0) {
-          lineas.push({
-            reglaDescuentoId: reglaC._id,
-            transaccionNomina: reglaC.transaccionNomina,
-            conceptoDescuento: reglaC.conceptoDescuento || null,
-            etiqueta: etiquetaReglaDescuento(reglaC),
-            monto: Math.round(monto * 100) / 100,
-            notas: String(reglaC.notas || "").trim() || undefined,
-          });
-        }
+      filtroC.$or.push({ reglaPagoAsociadaId: reglaPago._id });
+    }
+    const reglasC = await ReglaPagoNomina.find(filtroC).lean();
+    const todosEventos =
+      reglaPago && reglaPago.tipoRegla === "A"
+        ? await EventoPagoProgramado.find({
+            reglaPagoId: reglaPago._id,
+          }).sort({ fechaProgramada: 1 })
+        : [evento];
+    for (const reglaC of reglasC) {
+      const monto = montoDescuentoReglaCEnEvento(reglaC, evento, todosEventos);
+      if (monto > 0) {
+        lineas.push({
+          reglaDescuentoId: reglaC._id,
+          transaccionNomina: reglaC.transaccionNomina,
+          conceptoDescuento: reglaC.conceptoDescuento || null,
+          etiqueta: etiquetaReglaDescuento(reglaC),
+          monto: Math.round(monto * 100) / 100,
+          notas: String(reglaC.notas || "").trim() || undefined,
+        });
       }
     }
     const lineasPrestamo = await obtenerLineasPrestamoEvento(evento);

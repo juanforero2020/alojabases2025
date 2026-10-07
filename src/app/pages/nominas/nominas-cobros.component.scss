@@ -22,6 +22,14 @@
   justify-content: center;
 }
 
+.cobros-grid {
+  margin-top: 0.25rem;
+}
+
+:host ::ng-deep .dx-datagrid-rowsview td {
+  white-space: nowrap;
+}
+
 .btn-nomina-primario {
   background-color: #c62828;
   border-color: #c62828;

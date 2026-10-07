@@ -52,10 +52,26 @@
           valueExpr="cedula"
           [(value)]="filtroCedulaBeneficiario"
           [searchEnabled]="true"
+          [searchExpr]="camposBusquedaBeneficiario"
           [showClearButton]="true"
           placeholder="Todos los empleados"
           [disabled]="cargandoBeneficiarios"
           (onValueChanged)="onBeneficiarioChanged($event)"
+        ></dx-select-box>
+      </div>
+      <div class="col-md-6 col-lg-3 mb-2">
+        <label>Beneficiario externo</label>
+        <dx-select-box
+          [items]="beneficiariosExternosFiltro"
+          displayExpr="etiquetaDisplay"
+          valueExpr="cedula"
+          [(value)]="filtroCedulaExterno"
+          [searchEnabled]="true"
+          [searchExpr]="camposBusquedaBeneficiario"
+          [showClearButton]="true"
+          placeholder="Todos los proveedores"
+          [disabled]="cargandoBeneficiariosExternos"
+          (onValueChanged)="onBeneficiarioExternoChanged($event)"
         ></dx-select-box>
       </div>
       <div class="col-md-3 col-lg-2 mb-2">
@@ -115,6 +131,7 @@
       [dataSource]="eventosProgramados"
       [showBorders]="true"
       [columnAutoWidth]="true"
+      [wordWrapEnabled]="true"
       [rowAlternationEnabled]="true"
       keyExpr="_id"
       noDataText="No hay eventos con los filtros seleccionados. Autorice una regla de pago (tipo A o B) o ajuste los filtros."
@@ -137,7 +154,7 @@
       <dxi-column
         dataField="tipoRegla"
         caption="Tipo"
-        [width]="55"
+        [width]="85"
       ></dxi-column>
       <dxi-column
         dataField="rangoFechas"
@@ -177,7 +194,8 @@
       <dxi-column
         dataField="notas"
         caption="Notas"
-        [width]="120"
+        [width]="150"
+        [minWidth]="150"
         cssClass="notas-ajuste-texto"
         cellTemplate="notasAjusteTextCell"
       ></dxi-column>

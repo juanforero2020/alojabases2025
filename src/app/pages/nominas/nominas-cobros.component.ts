@@ -3,6 +3,7 @@ import { NominasService } from "src/app/servicios/nominas.service";
 import Swal from "sweetalert2";
 import {
   EventoCobroPrestamo,
+  EventoCobroPrestamoFila,
   OpcionBeneficiarioBusqueda,
 } from "./nominas";
 import { mostrarErrorNominaApi } from "./nominas-alert.util";
@@ -32,7 +33,8 @@ export class NominasCobrosComponent implements OnInit {
   textoBusqueda = "";
   cedulaSeleccionada: string | null = null;
   personasPendientes: OpcionBeneficiarioBusqueda[] = [];
-  cobros: EventoCobroPrestamo[] = [];
+  cobros: EventoCobroPrestamoFila[] = [];
+  nombreArchivoExport = "Cobros_Prestamos";
   filtroEstado = "Pendiente";
   estadosFiltro = ["Pendiente", "Ejecutado", "Anulado", "Todos"];
   cargando = false;
@@ -95,7 +97,9 @@ export class NominasCobrosComponent implements OnInit {
     }
     this._nominasService.getCobrosPrestamo(filtros).subscribe(
       (lista) => {
-        this.cobros = lista || [];
+        this.cobros = (lista || []).map((cobro) =>
+          this.enriquecerCobroParaGrid(cobro)
+        );
         this.cargando = false;
       },
       (err) => {
@@ -103,6 +107,42 @@ export class NominasCobrosComponent implements OnInit {
         mostrarErrorNominaApi("Error", err, "No se pudieron cargar los cobros");
       }
     );
+  }
+
+  private enriquecerCobroParaGrid(
+    cobro: EventoCobroPrestamo
+  ): EventoCobroPrestamoFila {
+    const fila: EventoCobroPrestamoFila = {
+      ...cobro,
+      cuotaDisplay: `${cobro.numeroCuota}/${cobro.totalCuotas}`,
+      pagadoExport: Number(cobro.montoPagado) || 0,
+      pendienteExport: this.saldoCuota(cobro),
+      saldoPrestamoExport: Number(cobro.saldoPrestamo) || 0,
+    };
+    fila.mensajeCobro = this.puedeCobrar(fila)
+      ? "Cobrar"
+      : this.mensajeEstadoCobro(fila);
+    return fila;
+  }
+
+  onExportingCobros(e: {
+    component: {
+      beginUpdate: () => void;
+      columnOption: (field: string, option: string, value?: boolean) => void;
+    };
+  }) {
+    e.component.beginUpdate();
+    e.component.columnOption("mensajeCobro", "visible", true);
+  }
+
+  onExportedCobros(e: {
+    component: {
+      columnOption: (field: string, option: string, value?: boolean) => void;
+      endUpdate: () => void;
+    };
+  }) {
+    e.component.columnOption("mensajeCobro", "visible", false);
+    e.component.endUpdate();
   }
 
   saldoCuota(cobro: EventoCobroPrestamo): number {

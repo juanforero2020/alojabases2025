@@ -130,6 +130,8 @@ export class NominasEventosPagosComponent implements OnInit {
   ajustarSeleccionAnticipoPorFecha = false;
   mensajeAjusteFechaCobroAnticipo = "";
   validacionPrestamoTipoD: { ok: boolean; mensaje?: string } | null = null;
+  mensajeEventosNominaPrestamo = "";
+  eventosNominaPorCrear = 0;
   configGlobal: NominaConfigGlobal | null = null;
   facturasPendientes: FacturaPendienteProveedor[] = [];
   facturaPendienteSeleccionada: FacturaPendienteProveedor | null = null;
@@ -325,6 +327,41 @@ export class NominasEventosPagosComponent implements OnInit {
     return this.fuentesPrestamo.filter(
       (f) => f.seleccionado && (Number(f.monto) || 0) > 0
     );
+  }
+
+  get etiquetaSubcuentaAnticipo(): string {
+    const prefijo = "1.7.8 Anticipos";
+    if (this.formulario.tipoBeneficiario === "Externo") {
+      return `${prefijo} a externos`;
+    }
+    const transaccion = (
+      (this.fuentesPrestamoSeleccionadas[0] &&
+        this.fuentesPrestamoSeleccionadas[0].transaccionNomina) ||
+      ""
+    )
+      .toString()
+      .trim();
+    const t = transaccion
+      .toLowerCase()
+      .normalize("NFD")
+      .replace(/[\u0300-\u036f]/g, "");
+    if (
+      !t ||
+      t.indexOf("anticipo") >= 0 ||
+      t.indexOf("prestamo") >= 0 ||
+      t.indexOf("préstamo") >= 0 ||
+      t.indexOf("asignacion") >= 0 ||
+      t.indexOf("salario") >= 0 ||
+      (t.indexOf("nomina") >= 0 &&
+        t.indexOf("dominical") < 0 &&
+        t.indexOf("descuento") < 0)
+    ) {
+      return `${prefijo} Salario`;
+    }
+    const concepto = t.replace(/\s+/g, " ").trim();
+    const capitalizado =
+      concepto.charAt(0).toUpperCase() + concepto.slice(1);
+    return `${prefijo} ${capitalizado}`;
   }
 
   get sumaCuotasPrestamo(): number {
@@ -699,6 +736,7 @@ export class NominasEventosPagosComponent implements OnInit {
       semanaAplicacion: "Esta semana",
       centroCosto: "",
       notas: "",
+      fuentesDescuentoPrestamo: [],
     };
   }
 
@@ -1032,36 +1070,74 @@ export class NominasEventosPagosComponent implements OnInit {
 
   validarDescuentoVsFacturaExterna(): boolean {
     const total = this.redondear2(Number(this.formulario.montoTotalDeuda) || 0);
-    const saldo =
-      this.facturaPendienteSeleccionada?.valorAdeudado != null
-        ? this.redondear2(this.facturaPendienteSeleccionada.valorAdeudado)
-        : this.redondear2(Number(this.formulario.valorAdeudadoFactura) || 0);
-    if (!this.formulario.facturaProveedorId) {
+    const hayFactura = !!this.formulario.facturaProveedorId;
+    const fuentes = this.fuentesPrestamoSeleccionadas;
+    if (hayFactura && fuentes.length) {
       this.validacionDescuentoTipoC = {
         ok: false,
-        mensaje: "Seleccione la factura pendiente a la que se aplicará el descuento",
+        mensaje:
+          "Elija una factura pendiente o un pago programado, no ambos",
       };
       return false;
     }
+    if (!hayFactura && !fuentes.length) {
+      this.validacionDescuentoTipoC = {
+        ok: false,
+        mensaje:
+          "Seleccione una factura pendiente o un pago programado al que aplicar el descuento",
+      };
+      return false;
+    }
+    if (hayFactura) {
+      const saldo =
+        this.facturaPendienteSeleccionada?.valorAdeudado != null
+          ? this.redondear2(this.facturaPendienteSeleccionada.valorAdeudado)
+          : this.redondear2(Number(this.formulario.valorAdeudadoFactura) || 0);
+      if (!(total > 0.009)) {
+        this.validacionDescuentoTipoC = null;
+        return true;
+      }
+      if (saldo > 0 && total > saldo + 0.009) {
+        this.validacionDescuentoTipoC = {
+          ok: false,
+          mensaje: `El descuento ($${total.toFixed(
+            2
+          )}) no puede superar el saldo de la factura ($${saldo.toFixed(2)}).`,
+          cuotaMaxima: total,
+          montoBruto: saldo,
+        };
+        return false;
+      }
+      this.validacionDescuentoTipoC = {
+        ok: true,
+        cuotaMaxima: total,
+        montoBruto: saldo,
+      };
+      return true;
+    }
+    const fuente = fuentes[0];
+    const disponible = this.redondear2(Number(fuente.montoDisponible) || 0);
     if (!(total > 0.009)) {
       this.validacionDescuentoTipoC = null;
       return true;
     }
-    if (saldo > 0 && total > saldo + 0.009) {
+    if (!fuente.montoVariable && disponible > 0 && total > disponible + 0.009) {
       this.validacionDescuentoTipoC = {
         ok: false,
         mensaje: `El descuento ($${total.toFixed(
           2
-        )}) no puede superar el saldo de la factura ($${saldo.toFixed(2)}).`,
+        )}) no puede superar lo disponible ($${disponible.toFixed(
+          2
+        )}) en ${fuente.transaccionNomina || "el pago"}.`,
         cuotaMaxima: total,
-        montoBruto: saldo,
+        montoBruto: disponible,
       };
       return false;
     }
     this.validacionDescuentoTipoC = {
       ok: true,
       cuotaMaxima: total,
-      montoBruto: saldo,
+      montoBruto: disponible,
     };
     return true;
   }
@@ -1178,6 +1254,7 @@ export class NominasEventosPagosComponent implements OnInit {
 
   onTipoBeneficiarioChanged(_event?: { event?: Event }) {
     if (_event && !_event.event) return;
+    const cedulaPrevia = (this.formulario.cedulaBeneficiario || "").trim();
     this.formulario.cedulaBeneficiario = "";
     this.formulario.nombreBeneficiario = "";
     this.beneficiario = null;
@@ -1204,6 +1281,10 @@ export class NominasEventosPagosComponent implements OnInit {
         this.tablaAmortizacion = [];
       } else {
         this.limpiarFacturaAsociada();
+      }
+      if (cedulaPrevia) {
+        this.formulario.cedulaBeneficiario = cedulaPrevia;
+        this.buscarBeneficiario();
       }
     }
     if (this.esTipoD) {
@@ -1633,6 +1714,143 @@ export class NominasEventosPagosComponent implements OnInit {
     this.sincronizarFuentesPrestamoEnFormulario();
   }
 
+  sincronizarFuentesDescuentoC() {
+    this.formulario.fuentesDescuentoPrestamo = this.fuentesPrestamo.map((f) => ({
+      reglaPagoId: f.reglaPagoId,
+      transaccionNomina: f.transaccionNomina,
+      frecuencia: f.frecuencia,
+      parametro: f.parametro,
+      tipoRegla: f.tipoRegla,
+      montoVariable: f.montoVariable,
+      montoPago: f.montoPago,
+      monto: Number(f.monto) || 0,
+      seleccionado: !!f.seleccionado && (Number(f.monto) || 0) > 0,
+      eventoPagoId: f.eventoPagoId,
+      fechaEvento: f.fechaEvento,
+      montoDisponible: f.montoDisponible,
+      montoDescuentoExistente: f.montoDescuentoExistente,
+    }));
+    this.validarDescuentoVsFacturaExterna();
+  }
+
+  cargarEventosDescuentoExterno() {
+    const doc = (this.formulario.cedulaBeneficiario || "").trim();
+    if (!this.esExternoDescuentosC) {
+      return;
+    }
+    if (!doc) {
+      this.fuentesPrestamo = [];
+      return;
+    }
+    const fechaCobro =
+      fechaCalendarioParam(this.formulario.fechaInicioCobros) ||
+      fechaCalendarioParam(new Date());
+    this._nominasService.getEventosAnticipo(doc, fechaCobro).subscribe(
+      (res) => {
+        const guardadas = this.formulario.fuentesDescuentoPrestamo || [];
+        this.fuentesPrestamo = (res || []).map((ev) => {
+          const previa = guardadas.find(
+            (f) =>
+              String(f.eventoPagoId || "") === String(ev.eventoPagoId || "")
+          );
+          const disponible = Number(ev.montoDisponible);
+          const montoPrev = previa ? Number(previa.monto) || 0 : 0;
+          return {
+            reglaPagoId: String(ev.reglaPagoId || ""),
+            eventoPagoId: ev.eventoPagoId ? String(ev.eventoPagoId) : undefined,
+            transaccionNomina: ev.transaccionNomina,
+            frecuencia: ev.frecuencia,
+            parametro: ev.parametro,
+            tipoRegla: ev.tipoRegla,
+            montoVariable: !!ev.montoVariable,
+            montoPago: Number(ev.montoPago) || 0,
+            montoDescuentoExistente: Number(ev.montoDescuentoExistente) || 0,
+            montoDisponible: isNaN(disponible) ? undefined : disponible,
+            fechaEvento: ev.fechaEvento
+              ? (fechaCalendarioLocal(ev.fechaEvento) as Date)
+              : ev.fechaEvento,
+            monto: previa && previa.seleccionado ? montoPrev : 0,
+            seleccionado: !!(previa && previa.seleccionado && montoPrev > 0),
+            etiquetaDisplay: ev.etiquetaDisplay,
+            numeroCuota: ev.numeroCuota,
+            totalCuotas: ev.totalCuotas,
+          };
+        });
+        if (this.formulario.facturaProveedorId) {
+          for (const f of this.fuentesPrestamo) {
+            f.seleccionado = false;
+            f.monto = 0;
+          }
+        }
+        this.sincronizarFuentesDescuentoC();
+      },
+      (err) => {
+        this.fuentesPrestamo = [
+          ...(this.formulario.fuentesDescuentoPrestamo || []),
+        ];
+        this.sincronizarFuentesDescuentoC();
+        mostrarErrorNominaApi(
+          "Error",
+          err,
+          "No se pudieron cargar los pagos programados del beneficiario"
+        );
+      }
+    );
+  }
+
+  seleccionarFuenteDescuentoC(
+    fuente: FuenteDescuentoPrestamo,
+    event?: { event?: Event }
+  ) {
+    if (event && !event.event) return;
+    for (const f of this.fuentesPrestamo) {
+      if (f === fuente) continue;
+      f.seleccionado = false;
+      f.monto = 0;
+    }
+    if (fuente.seleccionado) {
+      this.formulario.facturaProveedorId = undefined;
+      this.formulario.nFacturaProveedor = "";
+      this.formulario.nSolicitudFactura = undefined;
+      this.formulario.valorAdeudadoFactura = undefined;
+      this.facturaPendienteSeleccionada = null;
+      this.formulario.asociarFacturaPendiente = false;
+      const max = Number(fuente.montoDisponible) || 0;
+      let monto = Number(fuente.monto) || Number(this.formulario.montoTotalDeuda) || 0;
+      if (!(monto > 0) && max > 0) {
+        monto = max;
+        this.formulario.montoTotalDeuda = monto;
+        this.formulario.monto = monto;
+        this.formulario.cuotaEvento = monto;
+      }
+      if (!fuente.montoVariable && max > 0 && monto > max + 0.01) {
+        monto = max;
+        this.formulario.montoTotalDeuda = monto;
+        this.formulario.monto = monto;
+        this.formulario.cuotaEvento = monto;
+      }
+      fuente.monto = monto;
+    }
+    this.sincronizarFuentesDescuentoC();
+  }
+
+  onMontoDescuentoEventoCChanged(
+    fuente: FuenteDescuentoPrestamo,
+    event?: { event?: Event }
+  ) {
+    if (event && !event.event) return;
+    if (!fuente.seleccionado) return;
+    const max = Number(fuente.montoDisponible);
+    if (!fuente.montoVariable && max > 0 && Number(fuente.monto) > max + 0.01) {
+      fuente.monto = max;
+    }
+    const monto = Number(fuente.monto) || 0;
+    this.formulario.montoTotalDeuda = monto;
+    this.formulario.monto = monto;
+    this.formulario.cuotaEvento = monto;
+    this.sincronizarFuentesDescuentoC();
+  }
+
   onDatosPrestamoChanged() {
     if (this.esAnticipo) {
       const fuente = this.fuentesPrestamo.find((f) => f.seleccionado);
@@ -1983,6 +2201,8 @@ export class NominasEventosPagosComponent implements OnInit {
         this.formulario.cuotaEvento = res.cuotaEvento;
         this.formulario.tablaAmortizacion = [...this.tablaAmortizacion];
         this.amortizacionEditadaManual = false;
+        this.eventosNominaPorCrear = res.eventosNominaPorCrear || 0;
+        this.mensajeEventosNominaPrestamo = res.mensajeEventosNomina || "";
         if (res.validacionDescuento && !res.validacionDescuento.ok) {
           this.validacionPrestamoTipoD = res.validacionDescuento;
         } else {
@@ -2100,6 +2320,7 @@ export class NominasEventosPagosComponent implements OnInit {
         this.formulario.asociarFacturaPendiente = true;
         this.formulario.reglaPagoAsociadaId = undefined;
         this.cargarFacturasPendientes();
+        this.cargarEventosDescuentoExterno();
       }
     } else if (this.esSeguridadSocial) {
       this.formulario.tipoBeneficiario = "Interno";
@@ -2147,6 +2368,20 @@ export class NominasEventosPagosComponent implements OnInit {
   onMontoDescuentoChanged() {
     this.formulario.monto = this.formulario.montoTotalDeuda || 0;
     this.formulario.cuotaEvento = this.cuotaDescuentoCalculada;
+    if (this.esExternoDescuentosC) {
+      const fuente = this.fuentesPrestamo.find((f) => f.seleccionado);
+      if (fuente) {
+        const max = Number(fuente.montoDisponible);
+        let monto = Number(this.formulario.montoTotalDeuda) || 0;
+        if (!fuente.montoVariable && max > 0 && monto > max + 0.01) {
+          monto = max;
+          this.formulario.montoTotalDeuda = monto;
+          this.formulario.monto = monto;
+        }
+        fuente.monto = monto;
+        this.sincronizarFuentesDescuentoC();
+      }
+    }
     this.generarTablaDescuento(true);
     if (!this.formulario.reglaPagoAsociadaId) {
       this.validarDescuentoVsPagoBruto();
@@ -2385,6 +2620,7 @@ export class NominasEventosPagosComponent implements OnInit {
         if (this.esTipoC) {
           if (this.esExternoDescuentosC) {
             this.cargarFacturasPendientes();
+            this.cargarEventosDescuentoExterno();
           } else {
             this.cargarReglasPagoAsociables();
           }
@@ -2447,6 +2683,9 @@ export class NominasEventosPagosComponent implements OnInit {
         ) {
           this.cargarFacturasPendientes();
         }
+        if (this.esExternoDescuentosC) {
+          this.cargarEventosDescuentoExterno();
+        }
       },
       (err) => {
         this.beneficiario = null;
@@ -2489,6 +2728,8 @@ export class NominasEventosPagosComponent implements OnInit {
     this.validacionAmortizacion = null;
     this.validacionDescuentoTipoC = null;
     this.validacionPrestamoTipoD = null;
+    this.mensajeEventosNominaPrestamo = "";
+    this.eventosNominaPorCrear = 0;
     this.reglasPagoAsociables = [];
     this.fuentesPrestamo = [];
     this.limpiarFacturaAsociada();
@@ -2582,6 +2823,9 @@ export class NominasEventosPagosComponent implements OnInit {
       this.formulario.nFacturaProveedor = "";
       this.formulario.nSolicitudFactura = undefined;
       this.formulario.valorAdeudadoFactura = undefined;
+      if (this.esExternoDescuentosC) {
+        this.validarDescuentoVsFacturaExterna();
+      }
       return;
     }
     this.formulario.facturaProveedorId = factura._id;
@@ -2589,6 +2833,12 @@ export class NominasEventosPagosComponent implements OnInit {
     this.formulario.nSolicitudFactura = factura.nSolicitud;
     this.formulario.valorAdeudadoFactura = factura.valorAdeudado;
     if (this.esExternoDescuentosC) {
+      for (const f of this.fuentesPrestamo) {
+        f.seleccionado = false;
+        f.monto = 0;
+      }
+      this.formulario.asociarFacturaPendiente = true;
+      this.sincronizarFuentesDescuentoC();
       this.validarDescuentoVsFacturaExterna();
       return;
     }
@@ -2691,10 +2941,21 @@ export class NominasEventosPagosComponent implements OnInit {
         : [...this.tablaAmortizacion];
     } else if (this.esTipoC) {
       if (this.esExternoDescuentosC) {
-        if (!this.formulario.facturaProveedorId) {
+        this.sincronizarFuentesDescuentoC();
+        const hayFactura = !!this.formulario.facturaProveedorId;
+        const hayEventos = this.fuentesPrestamoSeleccionadas.length > 0;
+        if (hayFactura && hayEventos) {
           Swal.fire(
             "Validación",
-            "Seleccione la factura pendiente a la que se aplicará el descuento",
+            "Elija una factura pendiente o un pago programado, no ambos",
+            "warning"
+          );
+          return;
+        }
+        if (!hayFactura && !hayEventos) {
+          Swal.fire(
+            "Validación",
+            "Seleccione una factura pendiente o un pago programado al que aplicar el descuento",
             "warning"
           );
           return;
@@ -2750,7 +3011,8 @@ export class NominasEventosPagosComponent implements OnInit {
         if (this.esExternoDescuentosC) {
           this.formulario.modalidadDescuento = "Valor unico";
           this.formulario.cuotas = 1;
-          this.formulario.asociarFacturaPendiente = true;
+          this.formulario.asociarFacturaPendiente = !!this.formulario
+            .facturaProveedorId;
         } else {
           if (!this.formulario.modalidadDescuento) {
             Swal.fire(
@@ -2968,19 +3230,33 @@ export class NominasEventosPagosComponent implements OnInit {
           : "",
     };
     if (this.esExternoDescuentosC) {
-      payload.asociarFacturaPendiente = true;
+      this.sincronizarFuentesDescuentoC();
+      const hayEventos = this.fuentesPrestamoSeleccionadas.length > 0;
+      payload.asociarFacturaPendiente =
+        !!payload.facturaProveedorId && !hayEventos;
+      payload.fuentesDescuentoPrestamo = hayEventos
+        ? this.formulario.fuentesDescuentoPrestamo
+        : [];
+      if (!payload.asociarFacturaPendiente) {
+        payload.facturaProveedorId = undefined;
+        payload.nFacturaProveedor = "";
+        payload.nSolicitudFactura = undefined;
+        payload.valorAdeudadoFactura = undefined;
+      }
     }
     if (
       !(
         (this.esExternoTipoB && payload.asociarFacturaPendiente) ||
-        this.esExternoDescuentosC
+        (this.esExternoDescuentosC && payload.asociarFacturaPendiente)
       )
     ) {
-      payload.asociarFacturaPendiente = false;
-      payload.facturaProveedorId = undefined;
-      payload.nFacturaProveedor = "";
-      payload.nSolicitudFactura = undefined;
-      payload.valorAdeudadoFactura = undefined;
+      if (!this.esExternoDescuentosC) {
+        payload.asociarFacturaPendiente = false;
+        payload.facturaProveedorId = undefined;
+        payload.nFacturaProveedor = "";
+        payload.nSolicitudFactura = undefined;
+        payload.valorAdeudadoFactura = undefined;
+      }
     }
 
     const peticion = this.modoEdicion && this.reglaSeleccionada?._id
@@ -3008,6 +3284,10 @@ export class NominasEventosPagosComponent implements OnInit {
           if (regla.tipoRegla === "D") {
             this.fuentesPrestamo = [...(regla.fuentesDescuentoPrestamo || [])];
             this.cargarFuentesPrestamo();
+          }
+          if (regla.tipoRegla === "C" && this.esExternoDescuentosC) {
+            this.fuentesPrestamo = [...(regla.fuentesDescuentoPrestamo || [])];
+            this.cargarEventosDescuentoExterno();
           }
           this.modoEdicion = true;
         }
@@ -3074,7 +3354,7 @@ export class NominasEventosPagosComponent implements OnInit {
             2
           )} el ${formatoFechaCalendarioNomina(
             this.formulario.fechaDesembolso
-          )} (egreso en 1.5.3 Anticipos nomina). El valor se descontará de ${
+          )} (egreso en Anticipos / ${this.etiquetaSubcuentaAnticipo}). El valor se descontará de ${
             this.fuentesPrestamoSeleccionadas[0]
               ? this.fuentesPrestamoSeleccionadas[0].transaccionNomina
               : "pago"
@@ -3108,11 +3388,27 @@ export class NominasEventosPagosComponent implements OnInit {
         )}).`
       : this.esTipoC
       ? this.esExternoDescuentosC
-        ? `Se aplicará un descuento de $${(this.formulario.montoTotalDeuda || 0).toFixed(
-            2
-          )} (${this.conceptoDescuentoTexto || "Descuentos"}) a la factura ${
-            this.formulario.nFacturaProveedor || "pendiente"
-          }. El saldo de esa deuda se reducirá en ese valor.`
+        ? this.formulario.facturaProveedorId
+          ? `Se aplicará un descuento de $${(this.formulario.montoTotalDeuda || 0).toFixed(
+              2
+            )} (${this.conceptoDescuentoTexto || "Descuentos"}) a la factura ${
+              this.formulario.nFacturaProveedor || "pendiente"
+            }. El saldo de esa deuda se reducirá en ese valor.`
+          : `Se aplicará un descuento de $${(this.formulario.montoTotalDeuda || 0).toFixed(
+              2
+            )} (${this.conceptoDescuentoTexto || "Descuentos"}) al pago ${
+              this.fuentesPrestamoSeleccionadas[0]
+                ? this.fuentesPrestamoSeleccionadas[0].transaccionNomina
+                : "programado"
+            }${
+              this.fuentesPrestamoSeleccionadas[0] &&
+              this.fuentesPrestamoSeleccionadas[0].fechaEvento
+                ? " del " +
+                  formatoFechaCalendarioNomina(
+                    this.fuentesPrestamoSeleccionadas[0].fechaEvento
+                  )
+                : ""
+            }. Al ejecutarlo se registra en 1.3.4 Nominas_Descuentos.`
         : this.esDescuentosGenerales
         ? `Se aplicará descuento (${this.conceptoDescuentoTexto || ""}, ${this.formulario.modalidadDescuento || ""}) en ${this.formulario.semanaAplicacion === "Esta semana" ? "la semana actual" : "la semana indicada"} sobre la regla de pago asociada. Monto total: $${(this.formulario.montoTotalDeuda || 0).toFixed(2)}.`
         : `Se aplicará descuento de seguridad social ($${this.cuotaDescuentoSegSocial.toFixed(2)}/semana en las 4 primeras semanas de cada mes) sobre la regla de pago asociada. Ejemplo: $${this.montoBrutoReglaAsociada.toFixed(2)} − $${this.cuotaDescuentoSegSocial.toFixed(2)} = $${this.ejemploNetoSemanal.toFixed(2)} neto a liquidar.`
@@ -3141,11 +3437,15 @@ export class NominasEventosPagosComponent implements OnInit {
               : this.esTipoD && res.eventosGenerados
               ? `Regla autorizada. Se programó el desembolso (${res.eventosGenerados} pago) y el descuento aplica en ${res.eventosActualizados || 0} pago(s) pendiente(s).`
               : this.esExternoDescuentosC
-              ? `Regla autorizada. Se aplicó el descuento de $${Number(
-                  this.formulario.montoTotalDeuda || res.cuotaDescuento || 0
-                ).toFixed(2)} a la factura ${
-                  this.formulario.nFacturaProveedor || "pendiente"
-                }.`
+              ? this.formulario.facturaProveedorId
+                ? `Regla autorizada. Se aplicó el descuento de $${Number(
+                    this.formulario.montoTotalDeuda || res.cuotaDescuento || 0
+                  ).toFixed(2)} a la factura ${
+                    this.formulario.nFacturaProveedor || "pendiente"
+                  }.`
+                : `Regla autorizada. Se aplicó el descuento de $${Number(
+                    this.formulario.montoTotalDeuda || res.cuotaDescuento || 0
+                  ).toFixed(2)} al pago programado seleccionado.`
               : res.eventosActualizados != null
               ? `Regla autorizada. Descuento aplicado en ${res.eventosActualizados} pago(s) programado(s) pendiente(s).`
               : res.eventosGenerados != null
@@ -3224,6 +3524,10 @@ export class NominasEventosPagosComponent implements OnInit {
         ? this.normalizarFechasAmortizacion([...regla.tablaAmortizacion])
         : [];
       if (regla.tipoRegla === "C" && regla.cedulaBeneficiario) {
+        this.fuentesPrestamo = [...(regla.fuentesDescuentoPrestamo || [])];
+        this.formulario.fuentesDescuentoPrestamo = [
+          ...(regla.fuentesDescuentoPrestamo || []),
+        ];
         this._nominasService
           .getReglasPagoAsociables(regla.cedulaBeneficiario)
           .subscribe((res) => {
@@ -3256,6 +3560,10 @@ export class NominasEventosPagosComponent implements OnInit {
         ) as Date;
       }
       this.actualizarParametrosPorFrecuencia();
+      this.fuentesPrestamo = [...(regla.fuentesDescuentoPrestamo || [])];
+      this.formulario.fuentesDescuentoPrestamo = [
+        ...(regla.fuentesDescuentoPrestamo || []),
+      ];
       if (regla.cedulaBeneficiario) {
         this.buscarBeneficiario();
       }

@@ -1,6 +1,7 @@
 import { NgModule } from "@angular/core";
 import { CommonModule } from "@angular/common";
 import {
+  DxDataGridModule,
   DxLoadIndicatorModule,
   DxSelectBoxModule,
   DxTextBoxModule,
@@ -11,6 +12,7 @@ import { NominasCobrosComponent } from "./nominas-cobros.component";
   declarations: [NominasCobrosComponent],
   imports: [
     CommonModule,
+    DxDataGridModule,
     DxSelectBoxModule,
     DxTextBoxModule,
     DxLoadIndicatorModule,

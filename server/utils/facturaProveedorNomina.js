@@ -121,7 +121,7 @@ async function aplicarPagoFacturaProveedor({
   const aplicado = redondear2(Math.min(montoPagar, saldo.valorAdeudado));
   const abonadoNuevo = redondear2(saldo.abonado + aplicado);
   const saldoNuevo = redondear2(Math.max(0, saldo.total - abonadoNuevo));
-  const estado = saldoNuevo <= 0.01 ? "CUBIERTA" : "CUBIERTA PARCIAL";
+  const estado = saldoNuevo <= 0.01 ? "PAGADA" : "CUBIERTA PARCIAL";
 
   factura.valorAbonado = abonadoNuevo;
   factura.valorPagado = abonadoNuevo;

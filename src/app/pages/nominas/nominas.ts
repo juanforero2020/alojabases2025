@@ -178,6 +178,7 @@ export interface FilaAmortizacion {
   monto: number;
   transaccionNomina?: string;
   eventoPagoId?: string;
+  eventoVirtual?: boolean;
   montoBrutoPago?: number;
   descuentoExistente?: number;
   descuentoNuevo?: number;
@@ -469,6 +470,15 @@ export interface EventoCobroPrestamo {
   saldoPrestamo?: number;
   montoTotalDeuda?: number;
   montoPrestado?: number;
+}
+
+/** Fila enriquecida para dx-data-grid (filtros y exportación Excel). */
+export interface EventoCobroPrestamoFila extends EventoCobroPrestamo {
+  cuotaDisplay?: string;
+  pagadoExport?: number;
+  pendienteExport?: number;
+  saldoPrestamoExport?: number;
+  mensajeCobro?: string;
 }
 
 export interface PagoParcialNomina {

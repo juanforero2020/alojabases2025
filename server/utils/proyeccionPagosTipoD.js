@@ -6,6 +6,8 @@ const {
 const {
   generarFechasPorRegla,
   etiquetaFechaCorta,
+  proximasFechasPago,
+  claveFechaLocal,
 } = require("./proyeccionPagosNomina");
 const { subCuentaAbonoPrestamoNomina, subCuentaDescuentoNomina, esAnticipoNomina } = require("./cuentasContablesNomina");
 const { registrarBitacoraPrestamo } = require("./bitacoraPrestamoNomina");
@@ -13,6 +15,7 @@ const { etiquetaPrestamo } = require("./codigoPrestamoNomina");
 
 const TRANSACCION_PRESTAMO = "Prestamos";
 const TRANSACCION_ANTICIPO = "Anticipos";
+const MAX_EVENTOS_EXTRA_PRESTAMO = 156;
 
 function redondear2(n) {
   return Math.round((Number(n) || 0) * 100) / 100;
@@ -42,6 +45,175 @@ function fuentesSeleccionadas(reglaD) {
 
 function esReglaAnticipo(reglaD) {
   return esAnticipoNomina(reglaD && reglaD.transaccionNomina);
+}
+
+function esPrestamoExternoRegla(regla) {
+  if (esReglaAnticipo(regla)) return false;
+  return (
+    (regla.tipoBeneficiario || "").toString().trim().toLowerCase() === "externo"
+  );
+}
+
+function esAsignacionNominaTexto(transaccion) {
+  const t = (transaccion || "")
+    .toString()
+    .trim()
+    .toLowerCase()
+    .normalize("NFD")
+    .replace(/[\u0300-\u036f]/g, "");
+  return t.includes("asignacion") && t.includes("nomina");
+}
+
+function cuotaMinimaFuentes(fuentes) {
+  const montos = (fuentes || [])
+    .map((f) => redondear2(f.monto))
+    .filter((n) => n > 0.009);
+  if (!montos.length) return 0;
+  return Math.min(...montos);
+}
+
+function cuotasNecesariasPrestamo(regla, fuentes) {
+  const total = redondear2(
+    regla.montoTotalDeuda ||
+      calcularMontosPrestamo(regla.montoPrestado, regla.porcentajeInteres)
+        .montoTotal
+  );
+  const cuotaMin = cuotaMinimaFuentes(fuentes);
+  const porMonto =
+    total > 0.009 && cuotaMin > 0.009 ? Math.ceil(total / cuotaMin) : 0;
+  const porTabla = (regla.tablaAmortizacion || []).filter(
+    (f) => redondear2(f.monto) > 0.009
+  ).length;
+  return Math.max(porMonto, porTabla);
+}
+
+function elegirReglaNominaParaExtender(reglasPago, fuentes) {
+  const idsFuente = new Set((fuentes || []).map((f) => idStr(f.reglaPagoId)));
+  const candidatas = (reglasPago || []).filter(
+    (r) =>
+      r &&
+      r.tipoRegla === "A" &&
+      r.estadoRegla === "Autorizada" &&
+      idsFuente.has(idStr(r._id))
+  );
+  if (!candidatas.length) return null;
+  return (
+    candidatas.find((r) => esAsignacionNominaTexto(r.transaccionNomina)) ||
+    candidatas[0]
+  );
+}
+
+function construirEventoVirtualPrestamo(reglaPago, fecha, indice) {
+  const variable = !!(
+    reglaPago.montoVariable ||
+    (reglaPago.frecuencia || "").toString().toLowerCase() === "dominical"
+  );
+  const monto = variable ? 0 : redondear2(reglaPago.monto || 0);
+  const clave = claveFechaLocal(fecha) || String(indice);
+  return {
+    _id: `virtual-${idStr(reglaPago._id)}-${clave}`,
+    reglaPagoId: reglaPago._id,
+    tipoRegla: "A",
+    fechaProgramada: fecha,
+    transaccionNomina: reglaPago.transaccionNomina,
+    estado: "Pendiente",
+    monto,
+    montoBruto: variable ? null : monto,
+    montoDescuento: 0,
+    omitirDescuentoPrestamo: false,
+    modalidadMonto: variable ? "Variable" : "Periodico",
+    numeroCuota: indice,
+    virtual: true,
+  };
+}
+
+async function fechasVirtualesParaPrestamo(
+  reglaPago,
+  cantidad,
+  fechaInicioCobros
+) {
+  if (!(cantidad > 0) || !reglaPago) return [];
+  const ultimo = await EventoPagoProgramado.findOne({
+    reglaPagoId: reglaPago._id,
+    estado: { $ne: "Anulado" },
+  }).sort({ fechaProgramada: -1, numeroCuota: -1 });
+  const existentes = await EventoPagoProgramado.find({
+    reglaPagoId: reglaPago._id,
+    estado: { $ne: "Anulado" },
+  }).select("fechaProgramada");
+  const inicioCobro = fechaCalendarioFiltro(fechaInicioCobros);
+  let despuesDe = ultimo ? ultimo.fechaProgramada : new Date();
+  if (inicioCobro) {
+    const tUltimo = fechaCalendarioFiltro(despuesDe);
+    if (!tUltimo || tUltimo.getTime() < inicioCobro.getTime()) {
+      const unDiaAntes = new Date(inicioCobro);
+      unDiaAntes.setDate(unDiaAntes.getDate() - 1);
+      despuesDe = unDiaAntes;
+    }
+  }
+  return proximasFechasPago(reglaPago, {
+    cantidad,
+    despuesDe,
+    fechasExcluir: existentes.map((e) => e.fechaProgramada),
+  });
+}
+
+async function asegurarEventosNominaParaPrestamo(regla) {
+  if (esReglaAnticipo(regla) || esPrestamoExternoRegla(regla)) {
+    return { eventosGenerados: 0 };
+  }
+  const fuentes = fuentesSeleccionadas(regla);
+  if (!fuentes.length) {
+    return { eventosGenerados: 0 };
+  }
+
+  const ids = fuentes.map((f) => f.reglaPagoId);
+  const reglasPago = await ReglaPagoNomina.find({ _id: { $in: ids } }).lean();
+  const reglaNomina = elegirReglaNominaParaExtender(reglasPago, fuentes);
+  if (!reglaNomina) {
+    return { eventosGenerados: 0 };
+  }
+
+  const tabla = regla.tablaAmortizacion || [];
+  const filasSinEvento = tabla.filter(
+    (f) => redondear2(f.monto) > 0.009 && !esIdMongo(f.eventoPagoId)
+  );
+  const eventos = await EventoPagoProgramado.find({
+    reglaPagoId: { $in: ids },
+    estado: { $in: ["Pendiente", "Parcial"] },
+  }).sort({ fechaProgramada: 1, numeroCuota: 1 });
+  const usables = eventos.filter(
+    (e) =>
+      !e.omitirDescuentoPrestamo &&
+      eventoDesdeFechaInicioCobro(regla, e.fechaProgramada)
+  );
+  const needed = Math.max(
+    cuotasNecesariasPrestamo(regla, fuentes),
+    tabla.filter((f) => redondear2(f.monto) > 0.009).length
+  );
+  const faltanPorTabla = filasSinEvento.length;
+  const faltanPorSaldo = Math.max(0, needed - usables.length);
+  const faltan = Math.min(
+    MAX_EVENTOS_EXTRA_PRESTAMO,
+    Math.max(faltanPorTabla, faltanPorSaldo)
+  );
+  if (!faltan) return { eventosGenerados: 0 };
+
+  const tipoANominaService = require("../services/tipoANominaService");
+  const resultado = await tipoANominaService.extenderEventosAdicionales(
+    reglaNomina._id,
+    { cantidadCuotas: faltan }
+  );
+  return {
+    eventosGenerados: resultado.eventosGenerados || 0,
+    reglaPagoId: reglaNomina._id,
+    transaccionNomina: reglaNomina.transaccionNomina,
+  };
+}
+
+function esIdMongo(valor) {
+  const s = idStr(valor);
+  return /^[a-fA-F0-9]{24}$/.test(s);
 }
 
 function cuotaFuenteParaEvento(reglaD, evento) {
@@ -198,15 +370,24 @@ async function cargarEventosPorReglaA(idsReglaA) {
   return mapa;
 }
 
-function descuentoCDeEvento(evento, reglasCPorA, eventosPorA) {
+function descuentoCDeEvento(
+  evento,
+  reglasCPorA,
+  eventosPorA,
+  reglasCPorFuentes = []
+) {
   const clave = idStr(evento.reglaPagoId);
   const reglasC = reglasCPorA.get(clave) || [];
-  if (!reglasC.length) return 0;
   const todos = eventosPorA.get(clave) || [evento];
   let total = 0;
   for (const reglaC of reglasC) {
     total = redondear2(
       total + montoDescuentoReglaCEnEvento(reglaC, evento, todos)
+    );
+  }
+  for (const reglaC of reglasCPorFuentes || []) {
+    total = redondear2(
+      total + montoDescuentoReglaCEnEvento(reglaC, evento, [evento])
     );
   }
   return total;
@@ -252,6 +433,14 @@ async function contextoDescuentosBeneficiario(cedula) {
   const idsA = reglasPago.filter((r) => r.tipoRegla === "A").map((r) => r._id);
   const reglasCPorA = await cargarReglasCPorReglaA(idsA);
   const eventosPorA = await cargarEventosPorReglaA(idsA);
+  const idsEventos = eventos.map((e) => e._id).filter(Boolean);
+  const reglasCPorFuentes = idsEventos.length
+    ? await ReglaPagoNomina.find({
+        tipoRegla: "C",
+        estadoRegla: "Autorizada",
+        "fuentesDescuentoPrestamo.eventoPagoId": { $in: idsEventos },
+      }).lean()
+    : [];
 
   return {
     reglasD,
@@ -259,6 +448,7 @@ async function contextoDescuentosBeneficiario(cedula) {
     mapaReglasPago,
     reglasCPorA,
     eventosPorA,
+    reglasCPorFuentes,
   };
 }
 
@@ -269,13 +459,19 @@ function asignarDescuentosDEnEventos(ctx) {
     mapaReglasPago,
     reglasCPorA,
     eventosPorA,
+    reglasCPorFuentes,
   } = ctx;
   const porEvento = new Map();
 
   for (const evento of eventos) {
     const reglaPago = mapaReglasPago.get(idStr(evento.reglaPagoId));
     if (evento.tipoRegla === "D" || reglaPago?.tipoRegla === "D") continue;
-    const descC = descuentoCDeEvento(evento, reglasCPorA, eventosPorA);
+    const descC = descuentoCDeEvento(
+      evento,
+      reglasCPorA,
+      eventosPorA,
+      reglasCPorFuentes
+    );
     const bruto = brutoDeEvento(evento, reglaPago);
     const variable = esEventoVariable(evento, reglaPago);
     porEvento.set(idStr(evento._id), {
@@ -385,6 +581,12 @@ async function recalcularPrestamosBeneficiario(cedula) {
         if (n) notasC.push(n);
       }
     }
+    for (const reglaC of ctx.reglasCPorFuentes || []) {
+      if (montoDescuentoReglaCEnEvento(reglaC, evento, [evento]) > 0) {
+        const n = String(reglaC.notas || reglaC.conceptoDescuento || "").trim();
+        if (n) notasC.push(n);
+      }
+    }
     let notas = [...new Set([...notasC, ...info.notasD])].join(" | ");
     if (evento.omitirDescuentoPrestamo) {
       const marca = "Préstamo omitido esta semana — se cobrará en un pago posterior";
@@ -406,6 +608,9 @@ async function recalcularPrestamosBeneficiario(cedula) {
       evento.monto = redondear2(Math.max(0, info.bruto - descTotal));
       evento.reglaDescuentoId =
         (reglasC[0] && info.descC > 0 ? reglasC[0]._id : null) ||
+        ((ctx.reglasCPorFuentes || []).find(
+          (r) => montoDescuentoReglaCEnEvento(r, evento, [evento]) > 0
+        ) || {})._id ||
         info.reglasDIds[0] ||
         evento.reglaDescuentoId ||
         null;
@@ -675,9 +880,9 @@ async function generarTablaPrestamoPrevia(regla, opciones = {}) {
   }
 
   const ids = fuentes.map((f) => f.reglaPagoId);
-  const eventos = await EventoPagoProgramado.find({
+  let eventos = await EventoPagoProgramado.find({
     reglaPagoId: { $in: ids },
-    estado: "Pendiente",
+    estado: { $in: ["Pendiente", "Parcial"] },
   }).sort({ fechaProgramada: 1, numeroCuota: 1 });
 
   const reglasPago = await ReglaPagoNomina.find({ _id: { $in: ids } }).lean();
@@ -685,6 +890,42 @@ async function generarTablaPrestamoPrevia(regla, opciones = {}) {
   const idsA = reglasPago.filter((r) => r.tipoRegla === "A").map((r) => r._id);
   const reglasCPorA = await cargarReglasCPorReglaA(idsA);
   const eventosPorA = await cargarEventosPorReglaA(idsA);
+
+  const reglaNomina = elegirReglaNominaParaExtender(reglasPago, fuentes);
+  const usables = eventos.filter(
+    (e) =>
+      !e.omitirDescuentoPrestamo &&
+      eventoDesdeFechaInicioCobro(regla, e.fechaProgramada)
+  );
+  const needed = cuotasNecesariasPrestamo(regla, fuentes);
+  let eventosNominaPorCrear = 0;
+  let mensajeEventosNomina = "";
+  if (reglaNomina && needed > usables.length) {
+    const faltan = Math.min(
+      MAX_EVENTOS_EXTRA_PRESTAMO,
+      Math.max(0, needed - usables.length) + 3
+    );
+    const fechas = await fechasVirtualesParaPrestamo(
+      reglaNomina,
+      faltan,
+      regla.fechaInicioCobros
+    );
+    eventosNominaPorCrear = fechas.length;
+    const virtuales = fechas.map((fecha, i) =>
+      construirEventoVirtualPrestamo(reglaNomina, fecha, 9000 + i)
+    );
+    eventos = eventos.concat(virtuales).sort(
+      (a, b) =>
+        new Date(a.fechaProgramada) - new Date(b.fechaProgramada) ||
+        (a.numeroCuota || 0) - (b.numeroCuota || 0)
+    );
+    if (eventosNominaPorCrear > 0) {
+      mensajeEventosNomina = `Hay ${usables.length} pago(s) de nómina vigentes y el préstamo requiere ${needed} cuotas. Al autorizar se crearán los eventos adicionales de ${reglaNomina.transaccionNomina || "nómina"} para destinar las cuotas restantes.`;
+    }
+  } else if (!reglaNomina && needed > usables.length) {
+    mensajeEventosNomina =
+      "No hay suficientes pagos programados para cubrir el préstamo. Seleccione Asignación nómina (u otro pago periódico tipo A) para generar automáticamente los eventos que falten.";
+  }
 
   let saldo = total;
   const tabla = [];
@@ -727,7 +968,8 @@ async function generarTablaPrestamoPrevia(regla, opciones = {}) {
       fechaMax: evento.fechaProgramada,
       monto: cuota,
       transaccionNomina: evento.transaccionNomina || fuente.transaccionNomina,
-      eventoPagoId: evento._id,
+      eventoPagoId: evento.virtual ? undefined : evento._id,
+      eventoVirtual: !!evento.virtual,
       montoBrutoPago: variable ? null : bruto,
       descuentoExistente: descC,
       descuentoNuevo: cuota,
@@ -752,6 +994,17 @@ async function generarTablaPrestamoPrevia(regla, opciones = {}) {
         2
       )}). Reduzca la cuota referencial.`,
     };
+  } else if (saldo > 0.05) {
+    validacionDescuento = {
+      ok: false,
+      mensaje: reglaNomina
+        ? `No hay suficientes fechas de ${reglaNomina.transaccionNomina || "nómina"} para cubrir el préstamo (quedan $${saldo.toFixed(
+            2
+          )}). Verifique la frecuencia de la regla de pago.`
+        : `No hay suficientes pagos programados para cubrir el préstamo (quedan $${saldo.toFixed(
+            2
+          )}). Seleccione Asignación nómina para generar los eventos faltantes.`,
+    };
   }
 
   return {
@@ -763,6 +1016,8 @@ async function generarTablaPrestamoPrevia(regla, opciones = {}) {
     porcentajeInteres: montos.porcentajeInteres,
     saldoPendiente: saldo,
     validacionDescuento,
+    eventosNominaPorCrear,
+    mensajeEventosNomina,
   };
 }
 
@@ -825,13 +1080,14 @@ async function omitirDescuentoPrestamoEvento(eventoId, opciones = {}) {
   return EventoPagoProgramado.findById(eventoId);
 }
 
-async function listarEventosDisponiblesAnticipo(cedula, fechaCobro) {
+async function listarEventosDisponiblesAnticipo(cedula, fechaCobro, opciones = {}) {
   const doc = (cedula || "").trim();
   if (!doc) return [];
   const ctx = await contextoDescuentosBeneficiario(doc);
   const asignado = asignarDescuentosDEnEventos(ctx);
   const fechaObjetivo =
     fechaCalendarioFiltro(fechaCobro) || inicioDelDiaLocal(new Date());
+  const listarTodos = !!(opciones && opciones.todos);
   const porRegla = new Map();
   for (const evento of ctx.eventos || []) {
     if (evento.tipoRegla === "D") continue;
@@ -845,42 +1101,57 @@ async function listarEventosDisponiblesAnticipo(cedula, fechaCobro) {
   for (const [clave, eventosRegla] of porRegla.entries()) {
     const reglaPago = ctx.mapaReglasPago.get(clave);
     if (!reglaPago || !["A", "B"].includes(reglaPago.tipoRegla)) continue;
-    const proximo = elegirEventoMasCercanoAnticipo(eventosRegla, fechaObjetivo);
-    if (!proximo) continue;
-    const info = asignado.get(idStr(proximo._id));
-    const variable = !!(info && info.variable);
-    const bruto = info
-      ? redondear2(info.bruto)
-      : brutoDeEvento(proximo, reglaPago);
-    const descC = info ? redondear2(info.descC) : 0;
-    const descD = info ? redondear2(info.descD) : 0;
-    const descuentos = redondear2(descC + descD);
-    const disponible =
-      variable && !(bruto > 0.009)
-        ? null
-        : redondear2(Math.max(0, bruto - descuentos));
-    if (!variable && !(disponible > 0.009)) continue;
-    resultado.push({
-      reglaPagoId: reglaPago._id,
-      eventoPagoId: proximo._id,
-      transaccionNomina: proximo.transaccionNomina || reglaPago.transaccionNomina,
-      frecuencia: reglaPago.frecuencia,
-      parametro: reglaPago.parametro,
-      tipoRegla: reglaPago.tipoRegla,
-      fechaEvento: proximo.fechaProgramada,
-      montoVariable: variable,
-      montoPago: bruto,
-      montoDescuentoExistente: descuentos,
-      montoDisponible: disponible,
-      numeroCuota: proximo.numeroCuota,
-      totalCuotas: proximo.totalCuotas,
-      etiquetaDisplay: `${proximo.transaccionNomina || reglaPago.transaccionNomina} — ${reglaPago.frecuencia}`,
-    });
+    const candidatos = listarTodos
+      ? eventosRegla.slice()
+      : (() => {
+          const proximo = elegirEventoMasCercanoAnticipo(
+            eventosRegla,
+            fechaObjetivo
+          );
+          return proximo ? [proximo] : [];
+        })();
+    for (const proximo of candidatos) {
+      const info = asignado.get(idStr(proximo._id));
+      const variable = !!(info && info.variable);
+      const bruto = info
+        ? redondear2(info.bruto)
+        : brutoDeEvento(proximo, reglaPago);
+      const descC = info ? redondear2(info.descC) : 0;
+      const descD = info ? redondear2(info.descD) : 0;
+      const descuentos = redondear2(descC + descD);
+      const disponible =
+        variable && !(bruto > 0.009)
+          ? null
+          : redondear2(Math.max(0, bruto - descuentos));
+      if (!variable && !(disponible > 0.009)) continue;
+      resultado.push({
+        reglaPagoId: reglaPago._id,
+        eventoPagoId: proximo._id,
+        transaccionNomina:
+          proximo.transaccionNomina || reglaPago.transaccionNomina,
+        frecuencia: reglaPago.frecuencia,
+        parametro: reglaPago.parametro,
+        tipoRegla: reglaPago.tipoRegla,
+        fechaEvento: proximo.fechaProgramada,
+        montoVariable: variable,
+        montoPago: bruto,
+        montoDescuentoExistente: descuentos,
+        montoDisponible: disponible,
+        numeroCuota: proximo.numeroCuota,
+        totalCuotas: proximo.totalCuotas,
+        etiquetaDisplay: `${
+          proximo.transaccionNomina || reglaPago.transaccionNomina
+        } — ${reglaPago.frecuencia}`,
+      });
+    }
   }
   return resultado.sort((a, b) => {
     const fa = new Date(a.fechaEvento) - new Date(b.fechaEvento);
     if (fa) return fa;
-    return (a.transaccionNomina || "").localeCompare(b.transaccionNomina || "", "es");
+    return (a.transaccionNomina || "").localeCompare(
+      b.transaccionNomina || "",
+      "es"
+    );
   });
 }
 
@@ -901,6 +1172,7 @@ module.exports = {
   quitarDescuentosPrestamo,
   construirProyeccionTipoD,
   generarTablaPrestamoPrevia,
+  asegurarEventosNominaParaPrestamo,
   calcularDescuentoPrestamoParaPago,
   omitirDescuentoPrestamoEvento,
 };

@@ -10,6 +10,7 @@ import {
   DesgloseDescuentosEvento,
   EventoPagoProgramado,
   EventoPagoProgramadoFila,
+  OpcionBeneficiarioBusqueda,
   TablaMaestraSalarial,
 } from "./nominas";
 import { mostrarErrorNominaApi } from "./nominas-alert.util";
@@ -39,6 +40,7 @@ export class NominasPagosProgramadosComponent implements OnInit {
   filtroTipoRegla = "Todos";
   filtroConDescuento = "Todos";
   filtroCedulaBeneficiario: string | null = null;
+  filtroCedulaExterno: string | null = null;
   fechaDesde: Date | null = hoyCalendarioNomina();
   fechaHasta: Date | null = NominasPagosProgramadosComponent.fechaQuinceDiasAdelante();
 
@@ -57,7 +59,10 @@ export class NominasPagosProgramadosComponent implements OnInit {
     { valor: "no", etiqueta: "Sin descuento" },
   ];
   beneficiariosFiltro: BeneficiarioFiltroPagos[] = [];
+  beneficiariosExternosFiltro: BeneficiarioFiltroPagos[] = [];
+  camposBusquedaBeneficiario = ["nombre", "cedula", "etiquetaDisplay"];
   cargandoBeneficiarios = false;
+  cargandoBeneficiariosExternos = false;
   cargandoEventos = true;
   generandoComprobanteId: string | null = null;
   omitiendoPrestamoId: string | null = null;
@@ -73,6 +78,7 @@ export class NominasPagosProgramadosComponent implements OnInit {
 
   ngOnInit() {
     this.cargarBeneficiariosTms();
+    this.cargarBeneficiariosExternos();
     this.cargarEventosProgramados();
     this.cargarDatosPdf();
   }
@@ -124,6 +130,37 @@ export class NominasPagosProgramadosComponent implements OnInit {
       .sort((a, b) => a.nombre.localeCompare(b.nombre, "es"));
   }
 
+  cargarBeneficiariosExternos() {
+    this.cargandoBeneficiariosExternos = true;
+    this._nominasService.getBeneficiariosBusqueda("Externo").subscribe(
+      (lista) => {
+        this.beneficiariosExternosFiltro = this.mapearBeneficiariosExternosFiltro(
+          lista
+        );
+        this.cargandoBeneficiariosExternos = false;
+      },
+      () => {
+        this.beneficiariosExternosFiltro = [];
+        this.cargandoBeneficiariosExternos = false;
+      }
+    );
+  }
+
+  mapearBeneficiariosExternosFiltro(
+    lista: OpcionBeneficiarioBusqueda[]
+  ): BeneficiarioFiltroPagos[] {
+    return (lista || [])
+      .filter((r) => (r.cedula || "").trim() && (r.nombre || "").trim())
+      .map((r) => ({
+        cedula: r.cedula.trim(),
+        nombre: (r.nombre || "").trim(),
+        etiquetaDisplay:
+          (r.etiquetaDisplay || "").trim() ||
+          `${(r.nombre || "").trim()} — ${r.cedula.trim()}`,
+      }))
+      .sort((a, b) => a.nombre.localeCompare(b.nombre, "es"));
+  }
+
   onFiltroSelectChanged(event?: { event?: Event }) {
     if (event && event.event === undefined) return;
     this.cargarEventosProgramados();
@@ -140,6 +177,21 @@ export class NominasPagosProgramadosComponent implements OnInit {
   onBeneficiarioChanged(event: { value?: string | null; event?: Event }) {
     if (event?.event === undefined) return;
     this.filtroCedulaBeneficiario = event.value || null;
+    if (this.filtroCedulaBeneficiario) {
+      this.filtroCedulaExterno = null;
+    }
+    this.cargarEventosProgramados();
+  }
+
+  onBeneficiarioExternoChanged(event: {
+    value?: string | null;
+    event?: Event;
+  }) {
+    if (event?.event === undefined) return;
+    this.filtroCedulaExterno = event.value || null;
+    if (this.filtroCedulaExterno) {
+      this.filtroCedulaBeneficiario = null;
+    }
     this.cargarEventosProgramados();
   }
 
@@ -149,6 +201,7 @@ export class NominasPagosProgramadosComponent implements OnInit {
     this.filtroTipoRegla = "Todos";
     this.filtroConDescuento = "Todos";
     this.filtroCedulaBeneficiario = null;
+    this.filtroCedulaExterno = null;
     this.aplicarRangoFechasDefault();
     this.cargarEventosProgramados();
   }
@@ -185,7 +238,8 @@ export class NominasPagosProgramadosComponent implements OnInit {
       this.filtroConDescuento === "Todos"
         ? undefined
         : (this.filtroConDescuento as "si" | "no");
-    const cedula = this.filtroCedulaBeneficiario || undefined;
+    const cedula =
+      this.filtroCedulaBeneficiario || this.filtroCedulaExterno || undefined;
     const desde = this.formatoFechaApi(this.fechaDesde);
     const hasta = this.formatoFechaApi(this.fechaHasta);
 

@@ -376,7 +376,9 @@
 
   <!-- CONSULTA DE PAGOS -->
   <div *ngIf="seccionActiva === 'Consulta de Pagos'">
-    <app-nominas-consulta-pagos></app-nominas-consulta-pagos>
+    <app-nominas-consulta-pagos
+      [esUsuario]="esUsuario"
+    ></app-nominas-consulta-pagos>
   </div>
 </div>
 

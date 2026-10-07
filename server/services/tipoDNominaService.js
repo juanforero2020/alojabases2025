@@ -15,8 +15,12 @@ const {
   construirProyeccionTipoD,
   generarTablaPrestamoPrevia,
   omitirDescuentoPrestamoEvento,
+  asegurarEventosNominaParaPrestamo,
 } = require("../utils/proyeccionPagosTipoD");
 const { asignarCodigoPrestamoSiFalta } = require("../utils/codigoPrestamoNomina");
+const {
+  subCuentaAnticipoPorEvento,
+} = require("../utils/cuentasContablesNomina");
 
 function redondear2(n) {
   return Math.round((Number(n) || 0) * 100) / 100;
@@ -63,6 +67,22 @@ function fechaCalendario(valor) {
   return d;
 }
 
+function esObjectIdValido(valor) {
+  const s = idStr(valor);
+  return /^[a-fA-F0-9]{24}$/.test(s);
+}
+
+function sanitizarTablaAmortizacion(tabla = []) {
+  return (tabla || []).map((f) => {
+    const fila = { ...f };
+    if (fila.eventoPagoId && !esObjectIdValido(fila.eventoPagoId)) {
+      delete fila.eventoPagoId;
+    }
+    delete fila.eventoVirtual;
+    return fila;
+  });
+}
+
 function normalizarReglaTipoD(regla) {
   const doc =
     regla && typeof regla.toObject === "function" ? regla.toObject() : { ...regla };
@@ -101,9 +121,10 @@ function normalizarReglaTipoD(regla) {
     doc.fuentesDescuentoPrestamo
   );
   const fuentes = fuentesSeleccionadas(doc);
-  const tablaCobros = Array.isArray(doc.tablaAmortizacion)
-    ? doc.tablaAmortizacion
-    : [];
+  const tablaCobros = sanitizarTablaAmortizacion(
+    Array.isArray(doc.tablaAmortizacion) ? doc.tablaAmortizacion : []
+  );
+  doc.tablaAmortizacion = tablaCobros;
   if (esPrestamoExterno(doc)) {
     doc.cuotas = Math.max(1, Number(doc.cuotas) || tablaCobros.length || 1);
     doc.cuotaEvento = redondear2(
@@ -463,6 +484,12 @@ async function generarEventosProgramados(regla, opciones = {}) {
     reglaObj.codigoPrestamo = regla.codigoPrestamo;
   }
   const codigoTxt = (regla.codigoPrestamo || reglaObj.codigoPrestamo || "").trim();
+  const subCuentaAnticipo = esAnticipo
+    ? subCuentaAnticipoPorEvento(
+        reglaObj.tipoBeneficiario,
+        fuenteAnticipo ? fuenteAnticipo.transaccionNomina : ""
+      )
+    : "";
   const notas = [
     codigoTxt ? `${esAnticipo ? "Anticipo" : "Préstamo"} ${codigoTxt}` : "",
     String(reglaObj.notas || "").trim(),
@@ -474,7 +501,9 @@ async function generarEventosProgramados(regla, opciones = {}) {
       : esPrestamoExterno(reglaObj)
       ? "Subcuenta 2.2.1 Externos"
       : "Subcuenta 2.1.0 Internos",
-    esAnticipo ? "Subcuenta 1.5.3 Anticipos nomina" : "",
+    esAnticipo
+      ? `Subcuenta ${subCuentaAnticipo} (cuenta Anticipos)`
+      : "",
   ]
     .filter(Boolean)
     .join(" | ");
@@ -501,6 +530,7 @@ async function generarEventosProgramados(regla, opciones = {}) {
   await eventoDesembolso.save();
 
   let eventosCobro = [];
+  let eventosNominaGenerados = 0;
   if (!esAnticipo && esPrestamoExterno(reglaObj)) {
     let tablaCobros = reglaObj.tablaAmortizacion || [];
     if (!tablaCobros.length) {
@@ -512,6 +542,48 @@ async function generarEventosProgramados(regla, opciones = {}) {
     regla.frecuenciaCobro = reglaObj.frecuenciaCobro;
     regla.cuotas = reglaObj.cuotas;
     eventosCobro = await crearEventosCobroPrestamo(regla, tablaCobros);
+  } else if (!esAnticipo) {
+    const asegurado = await asegurarEventosNominaParaPrestamo(reglaObj);
+    eventosNominaGenerados = asegurado.eventosGenerados || 0;
+    const tabla = sanitizarTablaAmortizacion(reglaObj.tablaAmortizacion || []);
+    if (tabla.length) {
+      const idsFuente = fuentesSeleccionadas(reglaObj).map((f) => f.reglaPagoId);
+      const eventosNomina = idsFuente.length
+        ? await EventoPagoProgramado.find({
+            reglaPagoId: { $in: idsFuente },
+            estado: { $in: ["Pendiente", "Parcial"] },
+          }).sort({ fechaProgramada: 1, numeroCuota: 1 })
+        : [];
+      for (const fila of tabla) {
+        if (fila.eventoPagoId) continue;
+        const fechaFila = fechaCalendario(fila.fechaMin || fila.fechaMax);
+        const txFila = (fila.transaccionNomina || "")
+          .toString()
+          .trim()
+          .toLowerCase();
+        const match = eventosNomina.find((e) => {
+          const fechaEv = fechaCalendario(e.fechaProgramada);
+          if (
+            !fechaFila ||
+            !fechaEv ||
+            fechaFila.getTime() !== fechaEv.getTime()
+          ) {
+            return false;
+          }
+          const txEv = (e.transaccionNomina || "").toString().trim().toLowerCase();
+          return !txFila || !txEv || txFila === txEv;
+        });
+        if (match) fila.eventoPagoId = match._id;
+      }
+      reglaObj.tablaAmortizacion = tabla;
+      regla.tablaAmortizacion = tabla;
+      regla.cuotas = tabla.length;
+      reglaObj.cuotas = tabla.length;
+      if (regla._id) {
+        regla.markModified("tablaAmortizacion");
+        await regla.save();
+      }
+    }
   }
 
   const actualizados =
@@ -531,6 +603,7 @@ async function generarEventosProgramados(regla, opciones = {}) {
     eventosActualizados: actualizados,
     cuotaDescuento: reglaObj.cuotaEvento,
     tabla: previa.tabla,
+    eventosNominaGenerados,
   };
 }
 

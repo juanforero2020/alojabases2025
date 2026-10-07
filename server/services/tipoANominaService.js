@@ -3,6 +3,7 @@ const ReglaPagoNomina = require("../models/reglaPagoNomina");
 const {
   construirProyeccionConEventos,
   generarFechasPorRegla,
+  proximasFechasPago,
 } = require("../utils/proyeccionPagosNomina");
 const { aplicarDescuentosEnEventos } = require("../utils/proyeccionPagosTipoC");
 const { subCuentaPagoNomina } = require("../utils/cuentasContablesNomina");
@@ -249,45 +250,79 @@ async function extenderEventosProgramados(reglaId, opciones = {}) {
     );
   }
 
-  const ultimo = await EventoPagoProgramado.findOne({
+  return crearEventosAdicionalesRegla(regla, { cantidadCuotas: cantidad });
+}
+
+/**
+ * Crea N pagos programados adicionales aunque aún existan cuotas pendientes.
+ * Se usa para cubrir préstamos tipo D que superan los eventos de nómina vigentes.
+ */
+async function extenderEventosAdicionales(reglaId, opciones = {}) {
+  const cantidad = Math.max(1, Number(opciones.cantidadCuotas) || 0);
+  const regla = await ReglaPagoNomina.findById(reglaId);
+  if (!regla) throw new Error("Regla de pago no encontrada");
+  if (regla.tipoRegla !== "A") {
+    throw new Error("Solo se pueden extender reglas de pago tipo A");
+  }
+  if (regla.estadoRegla !== "Autorizada") {
+    throw new Error("La regla debe estar autorizada para extender pagos");
+  }
+  return crearEventosAdicionalesRegla(regla, { cantidadCuotas: cantidad });
+}
+
+async function crearEventosAdicionalesRegla(regla, opciones = {}) {
+  const cantidad = Math.max(
+    1,
+    Number(opciones.cantidadCuotas) || CUOTAS_EXTENSION_ASIGNACION
+  );
+
+  const ultimoPorFecha = await EventoPagoProgramado.findOne({
     reglaPagoId: regla._id,
     estado: { $ne: "Anulado" },
+  }).sort({ fechaProgramada: -1, numeroCuota: -1 });
+
+  const ultimoPorNumero = await EventoPagoProgramado.findOne({
+    reglaPagoId: regla._id,
   }).sort({ numeroCuota: -1 });
 
-  if (!ultimo) {
+  if (!ultimoPorFecha && !ultimoPorNumero) {
     throw new Error("No hay eventos previos para extender");
   }
 
-  const fechaDesde = new Date(ultimo.fechaProgramada);
-  fechaDesde.setDate(fechaDesde.getDate() + 1);
-  fechaDesde.setHours(0, 0, 0, 0);
+  const ultimo = ultimoPorFecha || ultimoPorNumero;
+  const cuotaInicial =
+    Number(ultimoPorNumero?.numeroCuota || ultimo.numeroCuota) || 0;
 
   const reglaObj =
     typeof regla.toObject === "function" ? regla.toObject() : { ...regla };
 
-  const fechasCandidatas = generarFechasPorRegla(reglaObj, {
-    fechaDesde,
-    fechaHasta: (() => {
-      const h = new Date(fechaDesde);
-      h.setFullYear(h.getFullYear() + 3);
-      h.setHours(23, 59, 59, 999);
-      return h;
-    })(),
-  });
+  const existentes = await EventoPagoProgramado.find({
+    reglaPagoId: regla._id,
+    estado: { $ne: "Anulado" },
+  }).select("fechaProgramada");
+  const fechasExcluir = existentes.map((e) => e.fechaProgramada);
 
-  const fechas = fechasCandidatas.slice(0, cantidad);
+  const fechas = proximasFechasPago(reglaObj, {
+    cantidad,
+    despuesDe: ultimo.fechaProgramada,
+    fechasExcluir,
+  });
   if (!fechas.length) {
     throw new Error(
       "No se pudieron calcular nuevas fechas de pago con la frecuencia de la regla"
     );
   }
 
-  await validarAsignacionNominaSinSolapamiento(regla, {
-    fechaDesde,
-    fechaHasta: fechas[fechas.length - 1],
-  });
+  if (esAsignacionNomina(reglaObj.transaccionNomina)) {
+    const fechaDesde = new Date(ultimo.fechaProgramada);
+    fechaDesde.setDate(fechaDesde.getDate() + 1);
+    fechaDesde.setHours(0, 0, 0, 0);
+    await validarAsignacionNominaSinSolapamiento(regla, {
+      fechaDesde,
+      fechaHasta: fechas[fechas.length - 1],
+    });
+  }
 
-  const cuotaInicial = Number(ultimo.numeroCuota) || 0;
   const totalCuotas = cuotaInicial + fechas.length;
   const monto =
     reglaObj.frecuencia === "Dominical" || reglaObj.montoVariable
@@ -367,6 +402,7 @@ function puedeOfrecerExtension(evento, regla, pendientesRegla) {
 module.exports = {
   generarEventosProgramados,
   extenderEventosProgramados,
+  extenderEventosAdicionales,
   validarAsignacionNominaSinSolapamiento,
   validarDominicalUnicoPorBeneficiario,
   puedeOfrecerExtension,

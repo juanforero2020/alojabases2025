@@ -129,8 +129,62 @@ function esConceptoComplementario(transaccionNomina) {
   );
 }
 
+const PREFIJO_SUBCUENTA_ANTICIPO = "1.7.8 Anticipos";
+
 function esAnticipoNomina(transaccionNomina) {
   return normalizarTexto(transaccionNomina).includes("anticipo");
+}
+
+function capitalizarConceptoAnticipo(texto) {
+  const s = (texto || "").toString().trim();
+  if (!s) return "Salario";
+  return s.charAt(0).toUpperCase() + s.slice(1);
+}
+
+function conceptoAnticipoDesdeEvento(transaccionEvento) {
+  const crudo = (transaccionEvento || "").toString().trim();
+  const t = normalizarTexto(crudo);
+  if (
+    !t ||
+    t.includes("asignacion") ||
+    t.includes("salario") ||
+    (t.includes("nomina") &&
+      !t.includes("dominical") &&
+      !t.includes("descuento") &&
+      !t.includes("anticipo"))
+  ) {
+    return "Salario";
+  }
+  const limpio = crudo
+    .toLowerCase()
+    .normalize("NFD")
+    .replace(/[\u0300-\u036f]/g, "")
+    .replace(/\s+/g, " ")
+    .trim();
+  return capitalizarConceptoAnticipo(limpio);
+}
+
+function subCuentaAnticipoPorEvento(tipoBeneficiario, transaccionEvento) {
+  if (esExterno(tipoBeneficiario)) {
+    return `${PREFIJO_SUBCUENTA_ANTICIPO} a externos`;
+  }
+  const t = normalizarTexto(transaccionEvento);
+  if (
+    !t ||
+    t.includes("anticipo") ||
+    t.includes("prestamo") ||
+    t.includes("préstamo")
+  ) {
+    return `${PREFIJO_SUBCUENTA_ANTICIPO} Salario`;
+  }
+  return `${PREFIJO_SUBCUENTA_ANTICIPO} ${conceptoAnticipoDesdeEvento(
+    transaccionEvento
+  )}`;
+}
+
+function esSubCuentaAnticipoNomina(nombre) {
+  const n = normalizarTexto(nombre);
+  return n.includes("anticipo");
 }
 
 function subCuentaPrestamoNomina(tipoBeneficiario) {
@@ -157,11 +211,18 @@ function subCuentaPagoNomina({
   transaccionNomina,
   tipoBeneficiario,
   frecuencia,
+  transaccionEventoAnticipo,
 } = {}) {
   const t = normalizarTexto(transaccionNomina);
   const freq = normalizarTexto(frecuencia);
 
   if (esAnticipoNomina(transaccionNomina)) {
+    if (tipoRegla === "D") {
+      return subCuentaAnticipoPorEvento(
+        tipoBeneficiario,
+        transaccionEventoAnticipo || transaccionNomina
+      );
+    }
     return SUBCUENTAS_NOMINA.ANTICIPOS;
   }
 
@@ -219,10 +280,13 @@ module.exports = {
   SUBCUENTAS_NOMINA,
   MAPA_CUENTA_POR_SUBCUENTA,
   SUBCUENTAS_CONSULTA_NOMINAS,
+  PREFIJO_SUBCUENTA_ANTICIPO,
   subCuentaPagoNomina,
   subCuentaDescuentoNomina,
   subCuentaPrestamoNomina,
   subCuentaAbonoPrestamoNomina,
+  subCuentaAnticipoPorEvento,
   esSubCuentaPrestamoNomina,
+  esSubCuentaAnticipoNomina,
   esAnticipoNomina,
 };

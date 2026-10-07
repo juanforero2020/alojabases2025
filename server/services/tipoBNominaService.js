@@ -32,6 +32,8 @@ const {
   subCuentaPagoNomina,
   subCuentaDescuentoNomina,
   esSubCuentaPrestamoNomina,
+  esAnticipoNomina,
+  esSubCuentaAnticipoNomina,
 } = require("../utils/cuentasContablesNomina");
 const {
   aplicarPagoFacturaProveedor,
@@ -473,12 +475,26 @@ async function ejecutarEventoProgramado(eventoId, opciones = {}) {
     );
   }
 
+  const esDesembolsoAnticipo =
+    (evento.tipoRegla === "D" || regla.tipoRegla === "D") &&
+    esAnticipoNomina(evento.transaccionNomina || regla.transaccionNomina);
+  const fuenteAnticipo = esDesembolsoAnticipo
+    ? (regla.fuentesDescuentoPrestamo || []).find(
+        (f) => f.seleccionado !== false && Number(f.monto) > 0
+      )
+    : null;
   const subCuenta = subCuentaPagoNomina({
     tipoRegla: evento.tipoRegla || regla.tipoRegla,
     transaccionNomina: evento.transaccionNomina || regla.transaccionNomina,
     tipoBeneficiario: regla.tipoBeneficiario,
     frecuencia: regla.frecuencia,
+    transaccionEventoAnticipo: fuenteAnticipo
+      ? fuenteAnticipo.transaccionNomina
+      : undefined,
   });
+  if (esDesembolsoAnticipo) {
+    await asegurarSubCuentaAnticipo(subCuenta);
+  }
   const tipoTransaccion =
     evento.tipoRegla === "A"
       ? TIPO_TRANSACCION_A
@@ -740,30 +756,37 @@ async function obtenerLineasDescuentoEvento(evento, reglaA) {
   }
   const montoDescuento = montoDescuentoEvento(evento);
   const lineas = [];
-
+  const filtroC = {
+    tipoRegla: "C",
+    estadoRegla: "Autorizada",
+    $or: [{ "fuentesDescuentoPrestamo.eventoPagoId": evento._id }],
+  };
   if (reglaA && reglaA.tipoRegla === "A") {
-    const reglasC = await ReglaPagoNomina.find({
-      reglaPagoAsociadaId: reglaA._id,
-      tipoRegla: "C",
-      estadoRegla: "Autorizada",
-    }).lean();
+    filtroC.$or.push({ reglaPagoAsociadaId: reglaA._id });
+  }
 
-    const todosEventos = await EventoPagoProgramado.find({
-      reglaPagoId: reglaA._id,
-    }).sort({ fechaProgramada: 1 });
+  const reglasC = await ReglaPagoNomina.find(filtroC).lean();
+  const todosEventos =
+    reglaA && reglaA.tipoRegla === "A"
+      ? await EventoPagoProgramado.find({
+          reglaPagoId: reglaA._id,
+        }).sort({ fechaProgramada: 1 })
+      : [evento];
 
-    for (const reglaC of reglasC) {
-      const monto = montoDescuentoReglaCEnEvento(reglaC, evento, todosEventos);
-      if (monto > 0) {
-        lineas.push({
-          etiqueta: etiquetaReglaDescuento(reglaC),
-          transaccionNomina: reglaC.transaccionNomina,
-          subCuenta: subCuentaDescuentoNomina(reglaC.transaccionNomina),
-          monto: redondear2(monto),
-          centroCosto: (reglaC.centroCosto || "").trim() || undefined,
-          notas: String(reglaC.notas || "").trim() || undefined,
-        });
-      }
+  for (const reglaC of reglasC) {
+    const monto = montoDescuentoReglaCEnEvento(reglaC, evento, todosEventos);
+    if (monto > 0) {
+      lineas.push({
+        etiqueta: etiquetaReglaDescuento(reglaC),
+        transaccionNomina: reglaC.transaccionNomina,
+        subCuenta: subCuentaDescuentoNomina(
+          reglaC.transaccionNomina,
+          reglaC.tipoBeneficiario
+        ),
+        monto: redondear2(monto),
+        centroCosto: (reglaC.centroCosto || "").trim() || undefined,
+        notas: String(reglaC.notas || "").trim() || undefined,
+      });
     }
   }
 
@@ -823,7 +846,9 @@ async function resolverCuentaDesdeSubCuenta(subCuentaNombre) {
     };
   }
 
-  const sub = await SubCuenta.findOne({ nombre });
+  const sub = await SubCuenta.findOne({
+    nombre: { $regex: new RegExp(`^${escapeRegexNombre(nombre)}$`, "i") },
+  });
   if (sub?.id_cuenta) {
     const cuentaDoc = await Cuenta.findById(sub.id_cuenta);
     if (cuentaDoc?.nombre) {
@@ -832,6 +857,21 @@ async function resolverCuentaDesdeSubCuenta(subCuentaNombre) {
         tipoCuenta: cuentaDoc.tipoCuenta || "Salidas",
       };
     }
+  }
+
+  if (esSubCuentaAnticipoNomina(nombre)) {
+    const cuentaAnticipos = await encontrarCuentaAnticipos();
+    if (cuentaAnticipos?.nombre) {
+      return {
+        cuenta: cuentaAnticipos.nombre,
+        tipoCuenta: cuentaAnticipos.tipoCuenta || "Salidas",
+      };
+    }
+    const fija = MAPA_CUENTA_POR_SUBCUENTA[SUBCUENTAS_NOMINA.ANTICIPOS];
+    return {
+      cuenta: fija.cuenta,
+      tipoCuenta: fija.tipoCuenta,
+    };
   }
 
   const prefijoMatch = nombre.match(/^(\d+\.\d+)/);
@@ -849,6 +889,50 @@ async function resolverCuentaDesdeSubCuenta(subCuentaNombre) {
   }
 
   return fallback;
+}
+
+function escapeRegexNombre(valor) {
+  return String(valor || "").replace(/[.*+?^${}()|[\]\\]/g, "\\$&");
+}
+
+async function encontrarCuentaAnticipos() {
+  const subCanon = await SubCuenta.findOne({
+    nombre: { $regex: /^(1\.5\.3\s*Anticipos|1\.7\.8\s*Anticipos)/i },
+  });
+  if (subCanon?.id_cuenta) {
+    const cuenta = await Cuenta.findById(subCanon.id_cuenta);
+    if (cuenta) return cuenta;
+  }
+  const porNombre = await Cuenta.findOne({
+    nombre: { $regex: /anticipo/i },
+  }).sort({ nombre: 1 });
+  if (porNombre) return porNombre;
+  const fija = MAPA_CUENTA_POR_SUBCUENTA[SUBCUENTAS_NOMINA.ANTICIPOS];
+  return Cuenta.findOne({
+    nombre: {
+      $regex: new RegExp(
+        `^${escapeRegexNombre(fija.cuenta)}`,
+        "i"
+      ),
+    },
+  });
+}
+
+async function asegurarSubCuentaAnticipo(nombreSub) {
+  const nombre = (nombreSub || "").trim();
+  if (!nombre) return null;
+  const existente = await SubCuenta.findOne({
+    nombre: { $regex: new RegExp(`^${escapeRegexNombre(nombre)}$`, "i") },
+  });
+  if (existente) return existente;
+  const cuenta = await encontrarCuentaAnticipos();
+  const doc = new SubCuenta({
+    nombre,
+    id_cuenta: cuenta?._id ? String(cuenta._id) : undefined,
+    mcaCajaMenor: false,
+  });
+  await doc.save();
+  return doc;
 }
 
 function parseFechaFiltro(valor, finDeDia = false) {

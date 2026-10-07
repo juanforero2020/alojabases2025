@@ -135,7 +135,7 @@ export class TransaccionesNominasComponent implements OnInit {
     this.listaTransacciones.forEach(element =>{
       if(element.subCuenta == "1.5.2 Nominas" || element.subCuenta == "1.7.1 Nominas" || element.subCuenta == "1.7.2 Nominas_Dominicales" || element.subCuenta == "1.7.3 Nominas_Complementarios"){
         this.valorNominas = element.valor + this.valorNominas;
-      }else if(element.subCuenta == "1.5.3 Anticipos nomina"){
+      }else if(element.subCuenta == "1.5.3 Anticipos nomina" || (element.subCuenta || "").toLowerCase().indexOf("anticipo") >= 0){
         this.valorAnticipos = element.valor + this.valorAnticipos;
       }else if(element.subCuenta == "1.5.7 Descuentos" || element.subCuenta == "1.7.4 Nominas - Descuentos" || element.subCuenta == "1.3.3 Nominas_Seguridad Social" || element.subCuenta == "1.3.4 Nominas_Descuentos"){
         this.valorDescuentos = element.valor + this.valorDescuentos;

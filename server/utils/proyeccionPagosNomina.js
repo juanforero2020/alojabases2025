@@ -177,6 +177,49 @@ function generarFechasPorRegla(regla, opciones = {}) {
   return fechas;
 }
 
+function claveFechaLocal(valor) {
+  if (!valor) return "";
+  if (typeof valor === "string") {
+    const m = String(valor).match(/^(\d{4})-(\d{2})-(\d{2})/);
+    if (m) return `${m[1]}-${m[2]}-${m[3]}`;
+  }
+  const d = valor instanceof Date ? valor : new Date(valor);
+  if (isNaN(d.getTime())) return "";
+  const y = d.getFullYear();
+  const m = String(d.getMonth() + 1).padStart(2, "0");
+  const day = String(d.getDate()).padStart(2, "0");
+  return `${y}-${m}-${day}`;
+}
+
+function proximasFechasPago(regla, opciones = {}) {
+  const cantidad = Math.max(0, Number(opciones.cantidad) || 0);
+  if (!cantidad) return [];
+  const despuesDe = opciones.despuesDe
+    ? new Date(opciones.despuesDe)
+    : new Date();
+  if (isNaN(despuesDe.getTime())) return [];
+  const desde = new Date(despuesDe);
+  desde.setDate(desde.getDate() + (opciones.incluirDesde ? 0 : 1));
+  desde.setHours(0, 0, 0, 0);
+  const hasta = opciones.fechaHasta
+    ? new Date(opciones.fechaHasta)
+    : (() => {
+        const h = new Date(desde);
+        h.setFullYear(h.getFullYear() + 4);
+        h.setHours(23, 59, 59, 999);
+        return h;
+      })();
+  const excluir = new Set(
+    (opciones.fechasExcluir || [])
+      .map((f) => claveFechaLocal(f))
+      .filter(Boolean)
+  );
+  return generarFechasPorRegla(regla, {
+    fechaDesde: desde,
+    fechaHasta: hasta,
+  }).filter((fecha) => !excluir.has(claveFechaLocal(fecha))).slice(0, cantidad);
+}
+
 function agruparProyeccionPorMes(fechas, monto, etiquetaFila) {
   const mapa = new Map();
   fechas.forEach((fecha) => {
@@ -253,5 +296,7 @@ module.exports = {
   construirProyeccion,
   construirProyeccionConEventos,
   generarFechasPorRegla,
+  proximasFechasPago,
+  claveFechaLocal,
   etiquetaFechaCorta,
 };

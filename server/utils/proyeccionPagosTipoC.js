@@ -42,6 +42,31 @@ function esDescuentoExternoTipoC(regla) {
   );
 }
 
+function idStr(valor) {
+  if (!valor) return "";
+  if (typeof valor === "object" && valor._id) return String(valor._id);
+  return String(valor);
+}
+
+function fuentesDescuentoSeleccionadas(regla) {
+  return (regla.fuentesDescuentoPrestamo || []).filter((f) => {
+    if (!f || !f.eventoPagoId) return false;
+    if (f.seleccionado === false) return false;
+    return redondear2(f.monto) > 0;
+  });
+}
+
+function tieneFuentesDescuentoEvento(regla) {
+  return fuentesDescuentoSeleccionadas(regla).length > 0;
+}
+
+function montoDesdeFuentesEvento(reglaC, evento) {
+  const fuente = fuentesDescuentoSeleccionadas(reglaC).find(
+    (f) => idStr(f.eventoPagoId) === idStr(evento && evento._id)
+  );
+  return fuente ? redondear2(fuente.monto || 0) : 0;
+}
+
 function inicioSemanaLunes(fecha) {
   const d = new Date(fecha);
   d.setHours(0, 0, 0, 0);
@@ -256,6 +281,9 @@ function montoDescuentoGeneralEnEvento(reglaC, evento, todosEventos) {
 }
 
 function montoDescuentoReglaCEnEvento(reglaC, evento, todosEventos) {
+  if (tieneFuentesDescuentoEvento(reglaC)) {
+    return montoDesdeFuentesEvento(reglaC, evento);
+  }
   if (esDescuentosGenerales(reglaC.transaccionNomina)) {
     return montoDescuentoGeneralEnEvento(reglaC, evento, todosEventos);
   }
@@ -386,13 +414,24 @@ function construirProyeccionTipoC(regla, opciones = {}) {
   ];
   if (esDescuentoExternoTipoC(regla)) {
     const total = redondear2(regla.montoTotalDeuda || regla.monto || 0);
-    const fecha = new Date();
+    const fuentes = fuentesDescuentoSeleccionadas(regla);
+    const fuente = fuentes[0];
+    const fecha = fuente && fuente.fechaEvento
+      ? new Date(fuente.fechaEvento)
+      : new Date();
     const factura = (regla.nFacturaProveedor || "").toString().trim();
     const concepto = (regla.conceptoDescuento || "Descuento").toString().trim();
+    const etiquetaPago = fuente
+      ? `${concepto} — ${fuente.transaccionNomina || "Pago programado"}`
+      : factura
+        ? `${concepto} — Factura ${factura}`
+        : concepto;
     return {
-      etiquetaFila: factura
-        ? `Descuento factura ${factura}`
-        : "Descuento sobre factura pendiente",
+      etiquetaFila: fuente
+        ? `Descuento en ${fuente.transaccionNomina || "pago programado"}`
+        : factura
+          ? `Descuento factura ${factura}`
+          : "Descuento sobre factura pendiente",
       meses: [
         {
           mes: MESES[fecha.getMonth()],
@@ -400,9 +439,7 @@ function construirProyeccionTipoC(regla, opciones = {}) {
           ocurrencias: [
             {
               fecha,
-              etiqueta: factura
-                ? `${concepto} — Factura ${factura}`
-                : concepto,
+              etiqueta: etiquetaPago,
               monto: total,
               montoDescuento: total,
               montoNeto: total,
@@ -527,7 +564,14 @@ async function aplicarDescuentosEnEventos(reglaC, reglaA) {
 
 async function quitarDescuentosRegla(reglaCId) {
   const reglaC = await ReglaPagoNomina.findById(reglaCId).lean();
-  if (!reglaC?.reglaPagoAsociadaId) return 0;
+  if (!reglaC) return 0;
+  if (tieneFuentesDescuentoEvento(reglaC) && reglaC.cedulaBeneficiario) {
+    const {
+      recalcularPrestamosBeneficiario,
+    } = require("./proyeccionPagosTipoD");
+    return recalcularPrestamosBeneficiario(reglaC.cedulaBeneficiario);
+  }
+  if (!reglaC.reglaPagoAsociadaId) return 0;
   const reglaA = await ReglaPagoNomina.findById(reglaC.reglaPagoAsociadaId);
   if (!reglaA) return 0;
   const { actualizados } = await recalcularDescuentosEnEventos(reglaA);
@@ -686,6 +730,8 @@ module.exports = {
   esTransaccionSeguridadSocial,
   esDescuentosGenerales,
   esDescuentoExternoTipoC,
+  fuentesDescuentoSeleccionadas,
+  tieneFuentesDescuentoEvento,
   distribuirEnCuotas,
   cuotaSegSocial,
   generarTablaCuotasSegSocial,

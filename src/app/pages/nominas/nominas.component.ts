@@ -163,6 +163,9 @@ export class NominasComponent implements OnInit {
             "Cobros",
             "Liquidación Dominical",
           ];
+          if (this.esUsuario) {
+            this.seccionesMenu.push("Consulta de Pagos");
+          }
         }
         this.validarAccesoModuloNominas();
       },

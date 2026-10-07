@@ -420,8 +420,11 @@ export class NominasService {
       .pipe(map((lista) => (lista || []).map(normalizarReglaPagoNomina)));
   }
 
-  getEventosAnticipo(cedula: string, fechaCobro?: string) {
-    const q = fechaCobro ? `?fechaCobro=${encodeURIComponent(fechaCobro)}` : "";
+  getEventosAnticipo(cedula: string, fechaCobro?: string, todos?: boolean) {
+    const params: string[] = [];
+    if (fechaCobro) params.push(`fechaCobro=${encodeURIComponent(fechaCobro)}`);
+    if (todos) params.push("todos=1");
+    const q = params.length ? `?${params.join("&")}` : "";
     return this.http.get<FuenteDescuentoPrestamo[]>(
       `${this.URL}/eventos-anticipo/${cedula}${q}`
     );
@@ -457,6 +460,8 @@ export class NominasService {
         porcentajeInteres: number;
         saldoPendiente: number;
         validacionDescuento?: { ok: boolean; mensaje?: string };
+        eventosNominaPorCrear?: number;
+        mensajeEventosNomina?: string;
       }>(`${this.URL}/reglas-pago/prestamo-previa`, regla)
       .pipe(
         map((res) => ({

@@ -14,7 +14,7 @@
       <span *ngIf="!esExternoDescuentosC"> No genera pagos: reduce el monto neto de la regla de pago tipo A asociada.</span>
       <span *ngIf="esSeguridadSocial"> Seguridad social: 4 cuotas en las primeras 4 semanas de cada mes.</span>
       <span *ngIf="esDescuentosGenerales && !esExternoDescuentosC"> Otros descuentos: valor único o por cuotas, con concepto y semana de aplicación.</span>
-      <span *ngIf="esExternoDescuentosC"> En personal externo el descuento se aplica a una factura pendiente (reduce la deuda con el proveedor).</span>
+      <span *ngIf="esExternoDescuentosC"> En personal externo el descuento se aplica a una factura pendiente o, si no elige factura, a un pago programado de ese proveedor.</span>
     </p>
     <p class="text-muted text-center small mb-3" *ngIf="esTipoD">
       Tipo D — Préstamos y anticipos.
@@ -23,15 +23,20 @@
         <strong>2.1 PRESTAMOS</strong>
         (<strong>2.1.0 Internos</strong> o <strong>2.2.1 Externos</strong>).
         Al personal interno se descuenta de sus pagos programados.
+        Si el préstamo tiene más cuotas que pagos de nómina vigentes, al autorizar
+        se crean automáticamente los eventos de nómina que falten para destinar las cuotas restantes.
         Al personal externo se generan fechas de cobro y los recibos se registran en el menú
         <strong>Cobros</strong>.
       </span>
       <span *ngIf="esAnticipo">
-        Anticipos: desembolso en
-        <strong>1.5.3 Anticipos nomina</strong>
-        y descuento en el pago programado que elija.
+        Anticipos: desembolso en la cuenta <strong>Anticipos</strong>,
+        subcuenta <strong>1.7.8 Anticipos</strong> + el pago elegido
+        (ej. <strong>1.7.8 Anticipos Salario</strong>,
+        <strong>1.7.8 Anticipos Decimo tercer sueldo</strong>;
+        en externos <strong>1.7.8 Anticipos a externos</strong>).
+        El descuento se aplica al ejecutar el pago programado.
         Interno: nómina, dominical, décimos o comisiones.
-        Externo: un evento ya creado (por ejemplo arriendo). Al ejecutarlo se resta el anticipo.
+        Externo: un evento ya creado (por ejemplo arriendo).
       </span>
     </p>
 
@@ -466,17 +471,21 @@
       <ng-container *ngIf="esTipoC">
         <ng-container *ngIf="esExternoDescuentosC">
           <div class="col-md-8 mb-3">
-            <label class="form-label">Factura pendiente *</label>
+            <label class="form-label">Factura pendiente (opcional)</label>
             <dx-select-box
               [items]="facturasPendientes"
               displayExpr="etiquetaDisplay"
               valueExpr="_id"
               [(value)]="formulario.facturaProveedorId"
               [searchEnabled]="true"
+              [showClearButton]="true"
               [disabled]="formulario.estadoRegla === 'Autorizada' || cargandoFacturasPendientes"
-              placeholder="Seleccione la factura con saldo pendiente"
+              placeholder="Seleccione factura, o déjela vacía para descontar de un pago"
               (onValueChanged)="onFacturaPendienteChanged($event)"
             ></dx-select-box>
+            <small class="text-muted d-block">
+              Si no elige factura, marque abajo el pago programado desde el que se descontará.
+            </small>
             <small class="text-muted d-block" *ngIf="!formulario.nombreBeneficiario">
               Busque el proveedor para listar sus facturas pendientes.
             </small>
@@ -700,6 +709,75 @@
             Sobre pago base ${{ montoBrutoReglaAsociada | number : "1.2-2" }}.
           </div>
         </div>
+        <div class="col-md-12 mb-2" *ngIf="esExternoDescuentosC">
+          <label class="form-label">Pagos disponibles para aplicar el descuento</label>
+          <p class="small text-muted mb-2">
+            Si no elige factura, marque el pago programado de este proveedor desde el que se restará el descuento.
+            Al ejecutarlo (Pagar) se registra en <strong>1.3.4 Nominas_Descuentos</strong>.
+          </p>
+          <div
+            class="alert alert-warning py-2 small mb-2"
+            *ngIf="formulario.cedulaBeneficiario && !fuentesPrestamo.length && !formulario.facturaProveedorId"
+          >
+            Este beneficiario no tiene un pago pendiente con saldo disponible.
+            Autorice primero un pago programado tipo B de este proveedor (por ejemplo arriendo).
+          </div>
+          <div class="table-responsive" *ngIf="fuentesPrestamo.length">
+            <table class="table table-sm table-bordered amortizacion-tabla mb-0">
+              <thead>
+                <tr>
+                  <th style="width: 70px">Usar</th>
+                  <th>Tipo de pago</th>
+                  <th>Fecha de pago</th>
+                  <th>Pago ($)</th>
+                  <th>Descuentos ($)</th>
+                  <th>Disponible ($)</th>
+                  <th style="width: 160px">Descuento ($)</th>
+                </tr>
+              </thead>
+              <tbody>
+                <tr *ngFor="let fuente of fuentesPrestamo">
+                  <td class="text-center">
+                    <dx-check-box
+                      [(value)]="fuente.seleccionado"
+                      [disabled]="formulario.estadoRegla === 'Autorizada'"
+                      (onValueChanged)="seleccionarFuenteDescuentoC(fuente, $event)"
+                    ></dx-check-box>
+                  </td>
+                  <td>
+                    {{ fuente.transaccionNomina }}
+                    <span class="text-muted" *ngIf="fuente.frecuencia">
+                      ({{ fuente.frecuencia }})
+                    </span>
+                  </td>
+                  <td>{{ formatoFechaCorta(fuente.fechaEvento) }}</td>
+                  <td>
+                    <span *ngIf="fuente.montoVariable && !(fuente.montoPago > 0)">Variable</span>
+                    <span *ngIf="!fuente.montoVariable || fuente.montoPago > 0">
+                      {{ fuente.montoPago | number : "1.2-2" }}
+                    </span>
+                  </td>
+                  <td>{{ fuente.montoDescuentoExistente | number : "1.2-2" }}</td>
+                  <td>
+                    <span *ngIf="fuente.montoDisponible == null">Variable</span>
+                    <span *ngIf="fuente.montoDisponible != null">
+                      {{ fuente.montoDisponible | number : "1.2-2" }}
+                    </span>
+                  </td>
+                  <td>
+                    <dx-number-box
+                      [(value)]="fuente.monto"
+                      [min]="0"
+                      format="#,##0.##"
+                      [disabled]="!fuente.seleccionado || formulario.estadoRegla === 'Autorizada'"
+                      (onValueChanged)="onMontoDescuentoEventoCChanged(fuente, $event)"
+                    ></dx-number-box>
+                  </td>
+                </tr>
+              </tbody>
+            </table>
+          </div>
+        </div>
         <div class="col-md-12 mb-2" *ngIf="esExternoDescuentosC && formulario.montoTotalDeuda > 0">
           <div
             class="alert py-2 mb-0 small"
@@ -708,11 +786,23 @@
           >
             <strong>{{ conceptoDescuentoTexto }}</strong>
             de ${{ formulario.montoTotalDeuda | number : "1.2-2" }}
-            se aplicará a la factura
-            <strong>{{ formulario.nFacturaProveedor || "pendiente seleccionada" }}</strong>
-            <span *ngIf="facturaPendienteSeleccionada">
-              (saldo ${{ facturaPendienteSeleccionada.valorAdeudado | number : "1.2-2" }}).
-            </span>
+            <ng-container *ngIf="formulario.facturaProveedorId">
+              se aplicará a la factura
+              <strong>{{ formulario.nFacturaProveedor || "pendiente seleccionada" }}</strong>
+              <span *ngIf="facturaPendienteSeleccionada">
+                (saldo ${{ facturaPendienteSeleccionada.valorAdeudado | number : "1.2-2" }}).
+              </span>
+            </ng-container>
+            <ng-container *ngIf="!formulario.facturaProveedorId && fuentesPrestamoSeleccionadas.length">
+              se descontará de
+              <strong>{{ fuentesPrestamoSeleccionadas[0].transaccionNomina }}</strong>
+              del
+              <strong>{{ formatoFechaCorta(fuentesPrestamoSeleccionadas[0].fechaEvento) }}</strong>
+              (disponible ${{ fuentesPrestamoSeleccionadas[0].montoDisponible | number : "1.2-2" }}).
+            </ng-container>
+            <ng-container *ngIf="!formulario.facturaProveedorId && !fuentesPrestamoSeleccionadas.length">
+              : elija una factura o marque un pago programado.
+            </ng-container>
             <span *ngIf="descuentoTipoCInvalido && validacionDescuentoTipoC?.mensaje">
               {{ validacionDescuentoTipoC.mensaje }}
             </span>
@@ -791,8 +881,9 @@
           </small>
           <small class="text-muted" *ngIf="esAnticipo">
             Única vez: ese día se programa el egreso del anticipo
-            (${{ montoPrestadoForm | number : "1.2-2" }}) en
-            <strong>1.5.3 Anticipos nomina</strong>.
+            (${{ montoPrestadoForm | number : "1.2-2" }}) en la cuenta
+            <strong>Anticipos</strong> / subcuenta
+            <strong>{{ etiquetaSubcuentaAnticipo }}</strong>.
           </small>
         </div>
         <div class="col-md-4 mb-3" *ngIf="esAnticipo">
@@ -941,11 +1032,13 @@
           >
             Se programará un desembolso de
             <strong>${{ montoPrestadoForm | number : "1.2-2" }}</strong>
+            en cuenta <strong>Anticipos</strong> / subcuenta
+            <strong>{{ etiquetaSubcuentaAnticipo }}</strong>
             y el mismo valor se descontará en
             <strong>{{ fuentesPrestamoSeleccionadas[0].transaccionNomina }}</strong>
             del
             <strong>{{ formatoFechaCorta(fuentesPrestamoSeleccionadas[0].fechaEvento) }}</strong>
-            (cuenta de descuento <strong>1.3.4 Nominas_Descuentos</strong>).
+            (descuento en <strong>1.3.4 Nominas_Descuentos</strong>).
           </div>
           <div
             class="alert alert-danger py-2 small mt-2 mb-0"
@@ -1163,6 +1256,12 @@
           para poder guardar. El valor no puede superar lo disponible en ese pago.
         </p>
         <div
+          class="alert alert-info py-2 small mb-2"
+          *ngIf="mensajeEventosNominaPrestamo"
+        >
+          {{ mensajeEventosNominaPrestamo }}
+        </div>
+        <div
           class="alert alert-danger py-2 small mb-2"
           *ngIf="validacionPrestamoTipoD && !validacionPrestamoTipoD.ok"
         >
@@ -1184,7 +1283,15 @@
             <tbody>
               <tr *ngFor="let fila of tablaAmortizacion; let i = index">
                 <td>{{ fila.numeroCuota }}</td>
-                <td>{{ fila.fechaMin | date : "dd/MM/yyyy" }}</td>
+                <td>
+                  {{ fila.fechaMin | date : "dd/MM/yyyy" }}
+                  <span
+                    class="badge badge-info ml-1"
+                    *ngIf="fila.eventoVirtual"
+                    title="Se creará al autorizar el préstamo"
+                    >nuevo</span
+                  >
+                </td>
                 <td>{{ fila.transaccionNomina }}</td>
                 <td>
                   <dx-number-box
@@ -1406,7 +1513,7 @@
                 (esPrestamoExterno && !tablaAmortizacion.length))) ||
             (esTipoC &&
               (!formulario.montoTotalDeuda ||
-                (esExternoDescuentosC && !formulario.facturaProveedorId) ||
+                (esExternoDescuentosC && !formulario.facturaProveedorId && !fuentesPrestamoSeleccionadas.length) ||
                 (!esExternoDescuentosC && !formulario.reglaPagoAsociadaId) ||
                 (esDescuentosGenerales &&
                   (!formulario.conceptoDescuento ||
@@ -1494,6 +1601,7 @@
       [dataSource]="reglas"
       [showBorders]="true"
       [columnAutoWidth]="true"
+      [wordWrapEnabled]="true"
       keyExpr="_id"
     >
     <dxo-filter-row [visible]="true"></dxo-filter-row>
@@ -1515,7 +1623,14 @@
       <dxi-column dataField="centroCosto" caption="Centro costo"></dxi-column>
       <dxi-column dataField="transaccionNomina" caption="Transacción"></dxi-column>
       <dxi-column dataField="nFacturaProveedor" caption="Factura" [minWidth]="110"></dxi-column>
-      <dxi-column dataField="notas" caption="Notas" [minWidth]="140"></dxi-column>
+      <dxi-column
+        dataField="notas"
+        caption="Notas"
+        [width]="140"
+        [minWidth]="140"
+        cssClass="notas-ajuste-texto"
+        cellTemplate="notasAjusteTextCell"
+      ></dxi-column>
       <dxi-column dataField="frecuencia" caption="Frecuencia"></dxi-column>
       <dxi-column dataField="parametro" caption="Parámetro"></dxi-column>
       <dxi-column dataField="monto" caption="Monto" format="#,##0.##"></dxi-column>
@@ -1526,6 +1641,11 @@
         cellTemplate="accionesRegla"
         [width]="220"
       ></dxi-column>
+      <div *dxTemplate="let d of 'notasAjusteTextCell'">
+        <div class="notas-ajuste-cell" [title]="d.data.notas || ''">
+          {{ d.data.notas || "—" }}
+        </div>
+      </div>
       <div *dxTemplate="let d of 'accionesRegla'">
         <button class="btn btn-sm btn-primary mr-1" (click)="editarRegla(d.data)">
           Ver

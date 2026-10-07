@@ -62,59 +62,151 @@
       <p class="text-muted mt-3 mb-0">Cargando cobros...</p>
     </div>
 
-    <div class="table-responsive" *ngIf="!cargando">
-      <table class="table table-sm table-bordered table-striped mb-0">
-        <thead>
-          <tr>
-            <th>Código</th>
-            <th>Fecha cobro</th>
-            <th>Cédula / RUC</th>
-            <th>Nombre</th>
-            <th>Tipo</th>
-            <th>Cuota</th>
-            <th>Valor ($)</th>
-            <th>Pagado ($)</th>
-            <th>Pendiente ($)</th>
-            <th>Saldo préstamo ($)</th>
-            <th>Estado</th>
-            <th>Acción</th>
-          </tr>
-        </thead>
-        <tbody>
-          <tr *ngIf="!cobros.length">
-            <td colspan="12" class="text-center text-muted py-4">
-              No hay cobros pendientes con esos datos. Digite cédula o nombre, o autorice un préstamo tipo D a personal externo.
-            </td>
-          </tr>
-          <tr *ngFor="let cobro of cobros">
-            <td>{{ cobro.codigoPrestamo || "—" }}</td>
-            <td>{{ cobro.fechaProgramada | date : "dd/MM/yyyy" }}</td>
-            <td>{{ cobro.cedulaBeneficiario }}</td>
-            <td>{{ cobro.nombreBeneficiario }}</td>
-            <td>{{ cobro.tipoBeneficiario }}</td>
-            <td>{{ cobro.numeroCuota }}/{{ cobro.totalCuotas }}</td>
-            <td>{{ cobro.monto | number : "1.2-2" }}</td>
-            <td>{{ (cobro.montoPagado || 0) | number : "1.2-2" }}</td>
-            <td>{{ saldoCuota(cobro) | number : "1.2-2" }}</td>
-            <td>{{ (cobro.saldoPrestamo || 0) | number : "1.2-2" }}</td>
-            <td>{{ cobro.estado }}</td>
-            <td>
-              <button
-                type="button"
-                class="btn btn-sm btn-success"
-                *ngIf="puedeCobrar(cobro)"
-                [disabled]="ejecutandoId === cobro._id"
-                (click)="confirmarCobro(cobro)"
-              >
-                Cobrar
-              </button>
-              <span class="text-muted small" *ngIf="!puedeCobrar(cobro)">
-                {{ mensajeEstadoCobro(cobro) }}
-              </span>
-            </td>
-          </tr>
-        </tbody>
-      </table>
-    </div>
+    <p class="text-muted small mb-2" *ngIf="!cargando && cobros.length">
+      {{ cobros.length }} registro(s) cargado(s). Use la fila de filtros bajo cada columna o el buscador para refinar.
+    </p>
+
+    <dx-data-grid
+      *ngIf="!cargando"
+      id="gridCobrosPrestamos"
+      class="cobros-grid"
+      [dataSource]="cobros"
+      [showBorders]="true"
+      [columnAutoWidth]="true"
+      [wordWrapEnabled]="true"
+      [rowAlternationEnabled]="true"
+      keyExpr="_id"
+      noDataText="No hay cobros pendientes con esos datos. Digite cédula o nombre, o autorice un préstamo tipo D a personal externo."
+      (onExporting)="onExportingCobros($event)"
+      (onExported)="onExportedCobros($event)"
+    >
+      <dxo-filter-row [visible]="true"></dxo-filter-row>
+      <dxo-header-filter [visible]="true"></dxo-header-filter>
+      <dxo-search-panel
+        [visible]="true"
+        [width]="260"
+        placeholder="Buscar en todas las columnas…"
+      ></dxo-search-panel>
+      <dxo-export
+        [enabled]="true"
+        [fileName]="nombreArchivoExport"
+        [allowExportSelectedData]="true"
+      ></dxo-export>
+
+      <dxi-column
+        dataField="codigoPrestamo"
+        caption="Código"
+        [width]="110"
+      ></dxi-column>
+      <dxi-column
+        dataField="fechaProgramada"
+        caption="Fecha cobro"
+        dataType="date"
+        format="dd/MM/yyyy"
+        [width]="120"
+      ></dxi-column>
+      <dxi-column
+        dataField="cedulaBeneficiario"
+        caption="Cédula / RUC"
+        [width]="120"
+      ></dxi-column>
+      <dxi-column
+        dataField="nombreBeneficiario"
+        caption="Nombre"
+        [minWidth]="160"
+      ></dxi-column>
+      <dxi-column
+        dataField="tipoBeneficiario"
+        caption="Tipo"
+        [width]="100"
+      ></dxi-column>
+      <dxi-column
+        dataField="cuotaDisplay"
+        caption="Cuota"
+        [width]="75"
+      ></dxi-column>
+      <dxi-column
+        dataField="monto"
+        caption="Valor ($)"
+        dataType="number"
+        format="#,##0.00"
+        [width]="105"
+      ></dxi-column>
+      <dxi-column
+        dataField="pagadoExport"
+        caption="Pagado ($)"
+        dataType="number"
+        format="#,##0.00"
+        [width]="105"
+      ></dxi-column>
+      <dxi-column
+        dataField="pendienteExport"
+        caption="Pendiente ($)"
+        dataType="number"
+        format="#,##0.00"
+        [width]="115"
+      ></dxi-column>
+      <dxi-column
+        dataField="saldoPrestamoExport"
+        caption="Saldo préstamo ($)"
+        dataType="number"
+        format="#,##0.00"
+        [width]="140"
+      ></dxi-column>
+      <dxi-column
+        dataField="estado"
+        caption="Estado"
+        [width]="100"
+        cellTemplate="estadoCell"
+      ></dxi-column>
+      <dxi-column
+        dataField="mensajeCobro"
+        caption="Situación"
+        [visible]="false"
+      ></dxi-column>
+      <dxi-column
+        caption="Acción"
+        [width]="120"
+        [allowFiltering]="false"
+        [allowSorting]="false"
+        [allowExporting]="false"
+        cellTemplate="accionesCell"
+      ></dxi-column>
+
+      <div *dxTemplate="let d of 'estadoCell'">
+        <span
+          class="badge"
+          [class.badge-warning]="d.data.estado === 'Pendiente'"
+          [class.badge-info]="d.data.estado === 'Parcial'"
+          [class.badge-success]="d.data.estado === 'Ejecutado'"
+          [class.badge-secondary]="d.data.estado === 'Anulado'"
+        >
+          {{ d.data.estado }}
+        </span>
+      </div>
+
+      <div *dxTemplate="let d of 'accionesCell'">
+        <button
+          type="button"
+          class="btn btn-sm btn-success"
+          *ngIf="puedeCobrar(d.data)"
+          [disabled]="ejecutandoId === d.data._id"
+          (click)="confirmarCobro(d.data)"
+        >
+          Cobrar
+        </button>
+        <span class="text-muted small" *ngIf="!puedeCobrar(d.data)">
+          {{ mensajeEstadoCobro(d.data) }}
+        </span>
+      </div>
+
+      <dxo-scrolling columnRenderingMode="virtual"></dxo-scrolling>
+      <dxo-paging [pageSize]="15"></dxo-paging>
+      <dxo-pager
+        [showPageSizeSelector]="true"
+        [allowedPageSizes]="[10, 15, 25, 50]"
+        [showInfo]="true"
+      ></dxo-pager>
+    </dx-data-grid>
   </div>
 </div>
