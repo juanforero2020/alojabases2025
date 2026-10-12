@@ -269,6 +269,7 @@ export interface PrestamoAbonoResumen {
   cuotasPendientes?: CuotaPrestamoPendiente[];
   bitacora?: BitacoraPrestamoNomina[];
   montoAbonoCaptura?: number;
+  comentarioAbonoCaptura?: string;
 }
 
 export interface ReglaPagoNomina {
@@ -278,6 +279,13 @@ export interface ReglaPagoNomina {
   reglaPagoAsociadaId?: string;
   montoBaseTms?: number;
   porcentajeAportePersonal?: number;
+  /** Tipo B y anticipo tipo D: cuenta/subcuenta contable de la transacción financiera. */
+  cuentaContableId?: string;
+  cuentaContable?: string;
+  subCuentaContableId?: string;
+  subCuentaContable?: string;
+  /** Tipo D externo: cuotas fijas por fecha o descuento de pagos programados. */
+  modalidadCobroExterno?: "Cuota fija" | "Descuento de eventos";
   /** Tipo C — Descuentos (no seg. social) */
   modalidadDescuento?: "Por cuota" | "Valor unico";
   conceptoDescuento?: string;

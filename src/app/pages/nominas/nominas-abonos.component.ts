@@ -168,6 +168,7 @@ export class NominasAbonosComponent implements OnInit {
       .ejecutarAbonoPrestamo(prestamo._id, {
         usuario: this.usuarioNombre,
         monto,
+        notas: (prestamo.comentarioAbonoCaptura || "").trim() || undefined,
       })
       .subscribe(
         (res: any) => {

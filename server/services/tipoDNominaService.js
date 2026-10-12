@@ -22,6 +22,8 @@ const {
   subCuentaAnticipoPorEvento,
 } = require("../utils/cuentasContablesNomina");
 
+const MODALIDAD_DESCUENTO_EVENTOS = "Descuento de eventos";
+
 function redondear2(n) {
   return Math.round((Number(n) || 0) * 100) / 100;
 }
@@ -107,6 +109,10 @@ function normalizarReglaTipoD(regla) {
   if (esAnticipo) {
     doc.cuotas = 1;
   }
+  doc.modalidadCobroExterno =
+    doc.modalidadCobroExterno === MODALIDAD_DESCUENTO_EVENTOS
+      ? MODALIDAD_DESCUENTO_EVENTOS
+      : "Cuota fija";
   const fechaDesembolso = fechaCalendario(
     doc.fechaDesembolso || doc.fechaInicioPagos
   );
@@ -146,9 +152,19 @@ function normalizarReglaTipoD(regla) {
   return doc;
 }
 
+function esBeneficiarioExterno(regla) {
+  return (regla.tipoBeneficiario || "").toString().trim().toLowerCase() === "externo";
+}
+
+/**
+ * Préstamo externo cobrado por cuotas fijas en fechas (EventoCobroPrestamo).
+ * Un externo con modalidad "Descuento de eventos" se cobra como un interno:
+ * descontando de sus pagos programados.
+ */
 function esPrestamoExterno(regla) {
   if (esReglaAnticipo(regla)) return false;
-  return (regla.tipoBeneficiario || "").toString().trim().toLowerCase() === "externo";
+  if (regla.modalidadCobroExterno === MODALIDAD_DESCUENTO_EVENTOS) return false;
+  return esBeneficiarioExterno(regla);
 }
 
 function generarTablaCobrosExternos(regla) {
@@ -250,6 +266,9 @@ function validarReglaTipoD(regla) {
       : "Indique la fecha de desembolso del préstamo";
   }
   if (esAnticipo) {
+    if (!regla.cuentaContableId || !regla.subCuentaContableId) {
+      return "Seleccione la cuenta y subcuenta contable del anticipo";
+    }
     if (!fechaCalendario(regla.fechaInicioCobros)) {
       return "Indique la fecha de cobro del anticipo";
     }
@@ -498,7 +517,7 @@ async function generarEventosProgramados(regla, opciones = {}) {
       : `Desembolso préstamo capital $${reglaObj.montoPrestado.toFixed(2)}`,
     esAnticipo
       ? `Se descuenta en ${fuenteAnticipo ? fuenteAnticipo.transaccionNomina : "el pago elegido"}`
-      : esPrestamoExterno(reglaObj)
+      : esBeneficiarioExterno(reglaObj)
       ? "Subcuenta 2.2.1 Externos"
       : "Subcuenta 2.1.0 Internos",
     esAnticipo

@@ -59,6 +59,33 @@
           [disabled]="esDominical || esSeguridadSocial"
         ></dx-select-box>
       </div>
+      <div class="col-md-4 mb-3" *ngIf="requiereCuentaContable">
+        <label class="form-label">Cuenta</label>
+        <dx-select-box
+          [items]="cuentasContables"
+          displayExpr="nombre"
+          valueExpr="_id"
+          [searchEnabled]="true"
+          [(value)]="formulario.cuentaContableId"
+          (onValueChanged)="onCuentaContableChanged($event)"
+          [disabled]="formulario.estadoRegla === 'Autorizada'"
+        ></dx-select-box>
+      </div>
+      <div class="col-md-4 mb-3" *ngIf="requiereCuentaContable">
+        <label class="form-label">Subcuenta</label>
+        <dx-select-box
+          [items]="subCuentasContables"
+          displayExpr="nombre"
+          valueExpr="_id"
+          [searchEnabled]="true"
+          [(value)]="formulario.subCuentaContableId"
+          (onValueChanged)="onSubCuentaContableChanged($event)"
+          [disabled]="formulario.estadoRegla === 'Autorizada' || !formulario.cuentaContableId"
+        ></dx-select-box>
+        <small class="text-muted">
+          La transacción financiera del pago se registra en esta cuenta y subcuenta.
+        </small>
+      </div>
       <div class="col-md-4 mb-3">
         <label class="form-label">Buscar beneficiario por</label>
         <dx-select-box
@@ -144,7 +171,7 @@
           El préstamo se descuenta de los pagos que seleccione abajo
         </small>
         <small class="text-muted d-block" *ngIf="esTipoD && esPrestamoExterno">
-          El personal externo no tiene eventos de pago: se programan recibos de cobro
+          Cuota fija: se programan recibos de cobro en las fechas indicadas
         </small>
         <small class="text-muted d-block" *ngIf="esAnticipo">
           Elija la fecha de cobro: si ese día no hay pago, se usa el programado más cercano
@@ -877,7 +904,7 @@
             Única vez: ese día se programa el pago para entregar el capital
             (${{ montoPrestadoForm | number : "1.2-2" }}). El encargado lo ejecuta en Pagos programados.
             Cuenta <strong>2.1 PRESTAMOS</strong> /
-            {{ esPrestamoExterno ? "2.2.1 Externos" : "2.1.0 Internos" }}.
+            {{ esBeneficiarioExternoPrestamo ? "2.2.1 Externos" : "2.1.0 Internos" }}.
           </small>
           <small class="text-muted" *ngIf="esAnticipo">
             Única vez: ese día se programa el egreso del anticipo
@@ -900,6 +927,23 @@
           </small>
           <small class="text-info d-block" *ngIf="mensajeAjusteFechaCobroAnticipo">
             {{ mensajeAjusteFechaCobroAnticipo }}
+          </small>
+        </div>
+        <div class="col-md-4 mb-3" *ngIf="esBeneficiarioExternoPrestamo">
+          <label class="form-label">Forma de cobro</label>
+          <dx-select-box
+            [items]="modalidadesCobroExterno"
+            [(value)]="formulario.modalidadCobroExterno"
+            (onValueChanged)="onModalidadCobroExternoChanged($event)"
+            [disabled]="formulario.estadoRegla === 'Autorizada'"
+          ></dx-select-box>
+          <small class="text-muted">
+            <span *ngIf="esPrestamoExterno">
+              Cuotas fijas en fechas definidas; los recibos se registran en el menú Cobros.
+            </span>
+            <span *ngIf="!esPrestamoExterno">
+              Se descuenta de los pagos programados del beneficiario (por ejemplo arriendos).
+            </span>
           </small>
         </div>
         <div class="col-md-4 mb-3" *ngIf="esPrestamoInterno">
@@ -1073,8 +1117,14 @@
             class="alert alert-warning py-2 small mb-2"
             *ngIf="formulario.cedulaBeneficiario && !fuentesPrestamo.length"
           >
-            Este beneficiario no tiene pagos programados autorizados (nómina, dominical, comisiones u otros).
-            Autorice primero esas reglas.
+            <ng-container *ngIf="formulario.tipoBeneficiario !== 'Externo'">
+              Este beneficiario no tiene pagos programados autorizados (nómina, dominical, comisiones u otros).
+              Autorice primero esas reglas.
+            </ng-container>
+            <ng-container *ngIf="formulario.tipoBeneficiario === 'Externo'">
+              Este beneficiario externo no tiene pagos programados autorizados (por ejemplo arriendos).
+              Autorice primero un pago tipo B o use la forma de cobro "Cuota fija".
+            </ng-container>
           </div>
           <div class="table-responsive" *ngIf="fuentesPrestamo.length">
             <table class="table table-sm table-bordered amortizacion-tabla mb-0">
@@ -1622,6 +1672,8 @@
       <dxi-column dataField="cedulaBeneficiario" caption="Cédula"></dxi-column>
       <dxi-column dataField="centroCosto" caption="Centro costo"></dxi-column>
       <dxi-column dataField="transaccionNomina" caption="Transacción"></dxi-column>
+      <dxi-column dataField="cuentaContable" caption="Cuenta"></dxi-column>
+      <dxi-column dataField="subCuentaContable" caption="Subcuenta"></dxi-column>
       <dxi-column dataField="nFacturaProveedor" caption="Factura" [minWidth]="110"></dxi-column>
       <dxi-column
         dataField="notas"

@@ -109,7 +109,7 @@
           </div>
 
           <h6 class="font-weight-bold mt-2" *ngIf="prestamo.cuotasPendientes && prestamo.cuotasPendientes.length">
-            Cuotas pendientes
+            Cuotas del préstamo
           </h6>
           <div
             class="table-responsive mb-3"
@@ -127,7 +127,11 @@
                 </tr>
               </thead>
               <tbody>
-                <tr *ngFor="let cuota of prestamo.cuotasPendientes">
+                <tr
+                  *ngFor="let cuota of prestamo.cuotasPendientes"
+                  [class.table-success]="cuota.estado === 'Pagada'"
+                  [class.table-warning]="cuota.estado === 'Abonada'"
+                >
                   <td>{{ cuota.numeroCuota }}/{{ cuota.totalCuotas }}</td>
                   <td>{{ cuota.fecha ? (cuota.fecha | date : "dd/MM/yyyy") : "—" }}</td>
                   <td>{{ cuota.monto | number : "1.2-2" }}</td>
@@ -148,6 +152,14 @@
                 [max]="prestamo.saldoPendientePrestamo"
                 format="#,##0.##"
               ></dx-number-box>
+            </div>
+            <div class="col-md-5 mb-2">
+              <label>Comentario</label>
+              <dx-text-box
+                [(value)]="prestamo.comentarioAbonoCaptura"
+                [maxLength]="300"
+                placeholder="Opcional: detalle o motivo del abono"
+              ></dx-text-box>
             </div>
             <div class="col-md-3 mb-2">
               <button

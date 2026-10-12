@@ -205,76 +205,125 @@ async function listarPrestamosActivos(filtros = {}) {
       continue;
     }
     const bitacora = await bitacoraDeRegla(regla);
-    const cuotasPendientes = await listarCuotasPendientesPrestamo(regla);
+    const cuotasPendientes = await listarCuotasPrestamo(regla);
     resultado.push(resumenPrestamo(regla, bitacora, cuotasPendientes));
   }
   return resultado;
 }
 
-async function listarCuotasPendientesPrestamo(regla) {
+function estadoCuotaVisible(pagada, montoPagado) {
+  if (pagada) return "Pagada";
+  return (Number(montoPagado) || 0) > 0.009 ? "Abonada" : "Pendiente";
+}
+
+/** Abonos parciales de préstamos internos, indexados por número de cuota. */
+function mapaAbonosCuotas(regla) {
+  const mapa = new Map();
+  for (const a of regla.abonosCuotasPrestamo || []) {
+    mapa.set(Number(a.numeroCuota), redondear2(a.montoAbonado));
+  }
+  return mapa;
+}
+
+/** Todas las cuotas del préstamo (pagadas y pendientes), ordenadas por fecha. */
+async function listarCuotasPrestamo(regla) {
   const cobros = await EventoCobroPrestamo.find({
     reglaPagoId: regla._id,
-    estado: { $in: ["Pendiente", "Parcial"] },
+    estado: { $ne: "Anulado" },
   })
     .sort({ fechaProgramada: 1, numeroCuota: 1 })
     .lean();
   if (cobros.length) {
-    const totalVigentes = await EventoCobroPrestamo.countDocuments({
-      reglaPagoId: regla._id,
-      estado: { $ne: "Anulado" },
+    const totalCuotas = Math.max(
+      cobros.length,
+      ...cobros.map((c) => Number(c.numeroCuota) || 0)
+    );
+    return cobros.map((c) => {
+      const monto = redondear2(c.monto);
+      const pagado =
+        c.estado === "Ejecutado"
+          ? Math.max(redondear2(c.montoPagado || 0), monto)
+          : redondear2(c.montoPagado || 0);
+      return {
+        numeroCuota: c.numeroCuota,
+        totalCuotas,
+        fecha: c.fechaProgramada || c.fechaMin,
+        monto,
+        montoPagado: pagado,
+        montoPendiente: redondear2(Math.max(0, monto - pagado)),
+        estado: estadoCuotaVisible(c.estado === "Ejecutado", pagado),
+      };
     });
-    return cobros.map((c) => ({
-      numeroCuota: c.numeroCuota,
-      totalCuotas: totalVigentes,
-      fecha: c.fechaProgramada || c.fechaMin,
-      monto: redondear2(c.monto),
-      montoPagado: redondear2(c.montoPagado || 0),
-      montoPendiente: redondear2(
-        Math.max(0, (Number(c.monto) || 0) - (Number(c.montoPagado) || 0))
-      ),
-      estado: c.estado,
-    }));
   }
 
   const tabla = regla.tablaAmortizacion || [];
   const saldo = saldoActualPrestamo(regla);
+  // Cuotas que ya salieron de la tabla (pagadas por nómina o cubiertas por abono).
+  const historialPagadas = (regla.cuotasPagadasPrestamo || []).map((fila) => ({
+    numeroCuota: fila.numeroCuota,
+    fechaMin: fila.fechaMin,
+    fechaMax: fila.fechaMax,
+    monto: fila.monto,
+    montoPagado: fila.monto,
+    pagada: true,
+  }));
+  let filas;
   if (!tabla.length) {
     const reconstruida = await reconstruirTablaInternaPorSaldo(regla, saldo);
-    return reconstruida.map((fila) => ({
+    filas = reconstruida.map((fila) => ({ ...fila, montoPagado: 0 }));
+  } else {
+    const sumaTabla = redondear2(
+      tabla.reduce((s, f) => s + (Number(f.monto) || 0), 0)
+    );
+    if (Math.abs(sumaTabla - saldo) <= 0.05) {
+      filas = tabla.map((fila) => ({
+        ...filaAmortizacionPlain(fila),
+        montoPagado: 0,
+      }));
+    } else {
+      const { pagadas, pendientes } = extraerPendientesDeTabla(
+        tabla,
+        redondear2(Math.max(0, totalPrestamo(regla) - saldo))
+      );
+      filas = [
+        ...pagadas.map((fila) => ({ ...fila, montoPagado: fila.monto, pagada: true })),
+        ...pendientes,
+      ];
+    }
+  }
+  // En la tabla interna el monto ya viene reducido por los abonos parciales
+  // (es lo que se descuenta en nómina); para mostrar se suma lo abonado.
+  const abonos = mapaAbonosCuotas(regla);
+  filas = [
+    ...historialPagadas,
+    ...filas.map((fila) => {
+      const abonado = abonos.get(Number(fila.numeroCuota)) || 0;
+      if (!(abonado > 0.009)) return fila;
+      return {
+        ...fila,
+        monto: redondear2((Number(fila.monto) || 0) + abonado),
+        montoPagado: redondear2((Number(fila.montoPagado) || 0) + abonado),
+      };
+    }),
+  ];
+  const total = Math.max(
+    filas.length,
+    ...filas.map((f) => Number(f.numeroCuota) || 0)
+  );
+  return filas.map((fila) => {
+    const montoPagado = redondear2(fila.montoPagado || 0);
+    return {
       numeroCuota: fila.numeroCuota,
-      totalCuotas: reconstruida.length,
+      totalCuotas: total,
       fecha: fila.fechaMin || fila.fechaMax,
       monto: redondear2(fila.monto),
-      montoPagado: 0,
-      montoPendiente: redondear2(fila.monto),
-      estado: "Pendiente",
-    }));
-  }
-  const sumaTabla = redondear2(
-    tabla.reduce((s, f) => s + (Number(f.monto) || 0), 0)
-  );
-  const filasPendientes =
-    Math.abs(sumaTabla - saldo) <= 0.05
-      ? tabla.map((fila) => ({
-          ...filaAmortizacionPlain(fila),
-          montoPagado: 0,
-        }))
-      : extraerPendientesDeTabla(
-          tabla,
-          redondear2(Math.max(0, totalPrestamo(regla) - saldo))
-        ).pendientes;
-  const total = filasPendientes.length;
-  return filasPendientes.map((fila) => ({
-    numeroCuota: fila.numeroCuota,
-    totalCuotas: total,
-    fecha: fila.fechaMin || fila.fechaMax,
-    monto: redondear2(fila.monto),
-    montoPagado: redondear2(fila.montoPagado || 0),
-    montoPendiente: redondear2(
-      Math.max(0, (Number(fila.monto) || 0) - (Number(fila.montoPagado) || 0))
-    ),
-    estado: (fila.montoPagado || 0) > 0.009 ? "Parcial" : "Pendiente",
-  }));
+      montoPagado,
+      montoPendiente: fila.pagada
+        ? 0
+        : redondear2(Math.max(0, (Number(fila.monto) || 0) - montoPagado)),
+      estado: estadoCuotaVisible(fila.pagada, montoPagado),
+    };
+  });
 }
 
 async function sincronizarTablaDesdeCobros(regla) {
@@ -306,21 +355,34 @@ async function refinanciarCobrosPrestamo(regla, montoAbono) {
   if (!cobros.length) return null;
 
   const resultado = refinanciarCuotasProximas(cobros, montoAbono);
+  // Las cuotas cubiertas por el abono se marcan como pagadas (no se eliminan)
+  // para conservar el historial de cuotas del préstamo.
   for (const row of resultado.eliminados) {
-    await EventoCobroPrestamo.deleteOne({ _id: row.item._id });
+    const cobro = row.item;
+    cobro.estado = "Ejecutado";
+    cobro.montoPagado = redondear2(cobro.monto);
+    cobro.notas = [cobro.notas, "Cuota cubierta por abono extraordinario"]
+      .filter(Boolean)
+      .join(" | ");
+    await cobro.save();
   }
+  // El valor de la cuota se conserva; lo abonado se suma a montoPagado
+  // y el cobro posterior solo exige el pendiente (monto - montoPagado).
   for (const row of resultado.ajustados) {
     const cobro = row.item;
-    cobro.monto = row.montoNuevo;
     if (row.accion === "cerrar") {
       cobro.estado = "Ejecutado";
-      cobro.notas = [cobro.notas, "Saldo de cuota refinanciado por abono"]
+      cobro.montoPagado = redondear2(cobro.monto);
+      cobro.notas = [cobro.notas, "Saldo de cuota cubierto por abono"]
         .filter(Boolean)
         .join(" | ");
     } else {
+      const aplicado = redondear2(row.monto - row.montoNuevo);
+      cobro.montoPagado = redondear2((Number(cobro.montoPagado) || 0) + aplicado);
+      cobro.estado = "Parcial";
       cobro.notas = [
         cobro.notas,
-        `Cuota refinanciada a $${row.montoNuevo.toFixed(2)} por abono`,
+        `Abono de $${aplicado.toFixed(2)} a la cuota`,
       ]
         .filter(Boolean)
         .join(" | ");
@@ -374,20 +436,24 @@ async function refinanciarPlanCuotasPrestamo(regla, montoAbono, saldoAntes) {
 
   const tabla = regla.tablaAmortizacion || [];
   let pendientes = [];
+  let pagadasTabla = [];
   if (tabla.length) {
     const sumaTabla = redondear2(
       tabla.reduce((s, f) => s + (Number(f.monto) || 0), 0)
     );
-    pendientes =
-      Math.abs(sumaTabla - redondear2(saldoAntes)) <= 0.05
-        ? tabla.map((fila) => ({
-            ...filaAmortizacionPlain(fila),
-            montoPagado: 0,
-          }))
-        : extraerPendientesDeTabla(
-            tabla,
-            redondear2(Math.max(0, totalPrestamo(regla) - saldoAntes))
-          ).pendientes;
+    if (Math.abs(sumaTabla - redondear2(saldoAntes)) <= 0.05) {
+      pendientes = tabla.map((fila) => ({
+        ...filaAmortizacionPlain(fila),
+        montoPagado: 0,
+      }));
+    } else {
+      const extraidas = extraerPendientesDeTabla(
+        tabla,
+        redondear2(Math.max(0, totalPrestamo(regla) - saldoAntes))
+      );
+      pendientes = extraidas.pendientes;
+      pagadasTabla = extraidas.pagadas;
+    }
   }
   if (!pendientes.length) {
     pendientes = await reconstruirTablaInternaPorSaldo(regla, saldoAntes);
@@ -397,6 +463,50 @@ async function refinanciarPlanCuotasPrestamo(regla, montoAbono, saldoAntes) {
   }
 
   const resultado = refinanciarCuotasProximas(pendientes, montoAbono);
+  // Abonos parciales previos por cuota: al salir la cuota de la tabla se
+  // suman para guardar su valor original en el historial.
+  const abonos = mapaAbonosCuotas(regla);
+  const montoOriginal = (numeroCuota, monto) => {
+    const n = Number(numeroCuota);
+    const abonado = abonos.get(n) || 0;
+    abonos.delete(n);
+    return redondear2((Number(monto) || 0) + abonado);
+  };
+  // Guarda en el historial las cuotas que salen de la tabla (ya pagadas
+  // por nómina o cubiertas por este abono) para seguir mostrándolas.
+  const fechaAbono = new Date();
+  regla.cuotasPagadasPrestamo = [
+    ...(regla.cuotasPagadasPrestamo || []),
+    ...pagadasTabla.map((fila) => ({
+      numeroCuota: fila.numeroCuota,
+      fechaMin: fila.fechaMin,
+      fechaMax: fila.fechaMax,
+      monto: montoOriginal(fila.numeroCuota, fila.monto),
+      origen: "Nómina",
+      fechaRegistro: fechaAbono,
+    })),
+    ...resultado.eliminados.map((row) => ({
+      numeroCuota: row.item.numeroCuota,
+      fechaMin: row.item.fechaMin,
+      fechaMax: row.item.fechaMax || row.item.fechaMin,
+      monto: montoOriginal(row.item.numeroCuota, row.monto),
+      origen: "Abono extraordinario",
+      fechaRegistro: fechaAbono,
+    })),
+  ];
+  regla.markModified("cuotasPagadasPrestamo");
+  // Cuota abonada parcialmente: en la tabla queda el pendiente (lo que se
+  // descuenta en nómina) y lo abonado se registra para mostrarlo.
+  for (const row of resultado.ajustados) {
+    if (row.accion !== "ajustar") continue;
+    const n = Number(row.item.numeroCuota);
+    const aplicado = redondear2(row.monto - row.montoNuevo);
+    abonos.set(n, redondear2((abonos.get(n) || 0) + aplicado));
+  }
+  regla.abonosCuotasPrestamo = Array.from(abonos.entries()).map(
+    ([numeroCuota, montoAbonado]) => ({ numeroCuota, montoAbonado })
+  );
+  regla.markModified("abonosCuotasPrestamo");
   regla.tablaAmortizacion = (resultado.vigentes || []).map((row) =>
     filaAmortizacionPlain({
       ...row.item,
@@ -520,12 +630,17 @@ async function ejecutarAbonoPrestamo(reglaId, opciones = {}) {
     fecha: fechaContable,
   });
 
-  if ((regla.tipoBeneficiario || "") === "Interno") {
+  // Préstamos que descuentan de pagos programados (internos o externos
+  // con modalidad "Descuento de eventos"): recalcular los descuentos.
+  if (
+    (regla.tipoBeneficiario || "") === "Interno" ||
+    regla.modalidadCobroExterno === "Descuento de eventos"
+  ) {
     await recalcularPrestamosBeneficiario(regla.cedulaBeneficiario);
   }
 
   const bitacora = await bitacoraDeRegla(regla);
-  const cuotasPendientes = await listarCuotasPendientesPrestamo(regla);
+  const cuotasPendientes = await listarCuotasPrestamo(regla);
   return {
     prestamo: resumenPrestamo(regla, bitacora, cuotasPendientes),
     transaccion: tx,

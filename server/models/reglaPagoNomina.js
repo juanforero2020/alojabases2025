@@ -40,6 +40,19 @@ const FilaAmortizacionSchema = new Schema(
   { _id: false }
 );
 
+/** Cuotas de préstamo interno ya pagadas que salieron de la tabla de amortización. */
+const CuotaPagadaPrestamoSchema = new Schema(
+  {
+    numeroCuota: { type: Number, required: false },
+    fechaMin: { type: Date, required: false },
+    fechaMax: { type: Date, required: false },
+    monto: { type: Number, required: true, default: 0 },
+    origen: { type: String, required: false },
+    fechaRegistro: { type: Date, required: false },
+  },
+  { _id: false }
+);
+
 const FuenteDescuentoPrestamoSchema = new Schema(
   {
     reglaPagoId: {
@@ -114,6 +127,11 @@ const ReglaPagoNominaSchema = new Schema(
     nombreBeneficiario: { type: String, required: false },
     transaccionNomina: { type: String, required: true },
     centroCosto: { type: String, required: false },
+    /** Tipo B y anticipo tipo D: cuenta/subcuenta contable elegida para el egreso. */
+    cuentaContableId: { type: String, required: false },
+    cuentaContable: { type: String, required: false },
+    subCuentaContableId: { type: String, required: false },
+    subCuentaContable: { type: String, required: false },
     fuente: { type: String, default: "TMS" },
     frecuencia: {
       type: String,
@@ -139,6 +157,26 @@ const ReglaPagoNominaSchema = new Schema(
     },
     montoTotalDeuda: { type: Number, required: false },
     tablaAmortizacion: { type: [FilaAmortizacionSchema], default: [] },
+    cuotasPagadasPrestamo: { type: [CuotaPagadaPrestamoSchema], default: [] },
+    /** Préstamo externo: cuotas fijas por fecha o descuento de pagos programados. */
+    modalidadCobroExterno: {
+      type: String,
+      enum: ["Cuota fija", "Descuento de eventos"],
+      default: "Cuota fija",
+    },
+    /** Préstamo interno: total abonado a cuotas que siguen en la tabla. */
+    abonosCuotasPrestamo: {
+      type: [
+        new Schema(
+          {
+            numeroCuota: { type: Number, required: true },
+            montoAbonado: { type: Number, required: true, default: 0 },
+          },
+          { _id: false }
+        ),
+      ],
+      default: [],
+    },
     monto: { type: Number, required: true, default: 0 },
     montoVariable: { type: Boolean, default: false },
     cargoNomina: { type: String, required: false },

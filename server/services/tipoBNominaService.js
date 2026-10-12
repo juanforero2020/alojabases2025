@@ -143,6 +143,10 @@ function validarReglaTipoB(regla) {
     return "El centro de costo es obligatorio para reglas tipo B";
   }
 
+  if (!regla.cuentaContableId || !regla.subCuentaContableId) {
+    return "Seleccione la cuenta y subcuenta contable del pago";
+  }
+
   if (regla.tipoBeneficiario === "Externo" && regla.asociarFacturaPendiente) {
     if (!regla.facturaProveedorId) {
       return "Seleccione la factura pendiente del proveedor";
@@ -483,7 +487,7 @@ async function ejecutarEventoProgramado(eventoId, opciones = {}) {
         (f) => f.seleccionado !== false && Number(f.monto) > 0
       )
     : null;
-  const subCuenta = subCuentaPagoNomina({
+  let subCuenta = subCuentaPagoNomina({
     tipoRegla: evento.tipoRegla || regla.tipoRegla,
     transaccionNomina: evento.transaccionNomina || regla.transaccionNomina,
     tipoBeneficiario: regla.tipoBeneficiario,
@@ -502,7 +506,18 @@ async function ejecutarEventoProgramado(eventoId, opciones = {}) {
       ? "DESEMBOLSO_PRESTAMO_NOMINA"
       : TIPO_TRANSACCION;
 
-  const { cuenta, tipoCuenta } = await resolverCuentaDesdeSubCuenta(subCuenta);
+  let { cuenta, tipoCuenta } = await resolverCuentaDesdeSubCuenta(subCuenta);
+  // Tipo B o desembolso de anticipo con cuenta/subcuenta elegidas: el egreso va
+  // a esa subcuenta y respeta su marca de caja menor (igual que el comprobante).
+  const contableElegida =
+    (evento.tipoRegla || regla.tipoRegla) === "B" || esDesembolsoAnticipo
+      ? await resolverCuentaContableElegida(regla)
+      : null;
+  if (contableElegida) {
+    subCuenta = contableElegida.subCuenta;
+    cuenta = contableElegida.cuenta;
+    tipoCuenta = contableElegida.tipoCuenta;
+  }
 
   const montoYaPagado = Number(evento.montoPagado) || 0;
   const pagoCompletaCuota = montoPagar >= montoPendiente - 0.01;
@@ -572,6 +587,9 @@ async function ejecutarEventoProgramado(eventoId, opciones = {}) {
   if (valorSalida > 0.009) {
     tx = new TransaccionFinanciera({
       ...baseTx,
+      ...(contableElegida
+        ? { isContabilizada: contableElegida.isContabilizada }
+        : {}),
       valor: valorSalida,
       tipoPago: "Egreso",
       cuenta,
@@ -826,6 +844,30 @@ async function obtenerLineasDescuentoEvento(evento, reglaA) {
 
 function redondear2(n) {
   return Math.round((Number(n) || 0) * 100) / 100;
+}
+
+/**
+ * Cuenta/subcuenta elegidas en la regla (tipo B o anticipo tipo D). Se leen de
+ * la base por id para usar los nombres vigentes; si no, se usan los guardados.
+ */
+async function resolverCuentaContableElegida(regla) {
+  if (!regla || !regla.subCuentaContableId) return null;
+  const esId = (v) => /^[a-fA-F0-9]{24}$/.test(String(v || ""));
+  const sub = esId(regla.subCuentaContableId)
+    ? await SubCuenta.findById(regla.subCuentaContableId)
+    : null;
+  const idCuenta = (sub && sub.id_cuenta) || regla.cuentaContableId;
+  const cuentaDoc = esId(idCuenta) ? await Cuenta.findById(idCuenta) : null;
+  const subCuenta = (sub && sub.nombre) || regla.subCuentaContable || "";
+  const cuenta = (cuentaDoc && cuentaDoc.nombre) || regla.cuentaContable || "";
+  if (!subCuenta || !cuenta) return null;
+  return {
+    cuenta,
+    subCuenta,
+    tipoCuenta: (cuentaDoc && cuentaDoc.tipoCuenta) || "Salidas",
+    // Igual que el comprobante de pago: la subcuenta define si va a caja menor.
+    isContabilizada: sub ? sub.mcaCajaMenor !== false : true,
+  };
 }
 
 async function resolverCuentaDesdeSubCuenta(subCuentaNombre) {

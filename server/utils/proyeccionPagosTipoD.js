@@ -47,8 +47,10 @@ function esReglaAnticipo(reglaD) {
   return esAnticipoNomina(reglaD && reglaD.transaccionNomina);
 }
 
+/** Externo cobrado por cuotas fijas (no descuenta de pagos programados). */
 function esPrestamoExternoRegla(regla) {
   if (esReglaAnticipo(regla)) return false;
+  if (regla.modalidadCobroExterno === "Descuento de eventos") return false;
   return (
     (regla.tipoBeneficiario || "").toString().trim().toLowerCase() === "externo"
   );
@@ -726,8 +728,7 @@ async function quitarDescuentosPrestamo(reglaD) {
 }
 
 function esPrestamoExterno(regla) {
-  if (esReglaAnticipo(regla)) return false;
-  return (regla.tipoBeneficiario || "").toString().trim().toLowerCase() === "externo";
+  return esPrestamoExternoRegla(regla);
 }
 
 function construirProyeccionCobrosExternos(regla, total) {

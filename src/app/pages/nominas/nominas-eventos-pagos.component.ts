@@ -1,7 +1,13 @@
 import { Component, Input, OnInit } from "@angular/core";
 import { NominasService } from "src/app/servicios/nominas.service";
 import { CentroCostoService } from "src/app/servicios/centro-costo.service";
-import { CentroCosto } from "../administracion-cuentas/administracion-cuenta";
+import { CuentasService } from "src/app/servicios/cuentas.service";
+import { SubCuentasService } from "src/app/servicios/subCuentas.service";
+import {
+  CentroCosto,
+  Cuenta,
+  SubCuenta,
+} from "../administracion-cuentas/administracion-cuenta";
 import Swal from "sweetalert2";
 import {
   AporteIess,
@@ -85,11 +91,14 @@ export class NominasEventosPagosComponent implements OnInit {
   frecuenciasDominical = ["Dominical"];
   frecuenciasB = ["Unica", "Diario", "Semanal", "Quincenal", "Mensual", "Anual"];
   frecuenciasCobro = ["Semanal", "Quincenal", "Mensual"];
+  modalidadesCobroExterno = ["Cuota fija", "Descuento de eventos"];
   vigenciasReglaA = ["Finalizacion Contrato"];
   vigenciasReglaB = ["Indefinido", "Numero de cuotas", "Unica vez"];
   modalidadesMontoB = ["Periodico", "Finito"];
   parametrosAnualB = ["Limite Fecha"];
   centrosCosto: CentroCosto[] = [];
+  cuentasContables: Cuenta[] = [];
+  subCuentasContables: SubCuenta[] = [];
   nombresCentrosCosto: string[] = [];
 
   parametrosSemanal = [
@@ -139,8 +148,84 @@ export class NominasEventosPagosComponent implements OnInit {
 
   constructor(
     private _nominasService: NominasService,
-    private _centroCostoService: CentroCostoService
+    private _centroCostoService: CentroCostoService,
+    private _cuentasService: CuentasService,
+    private _subCuentasService: SubCuentasService
   ) {}
+
+  /** Tipo B y anticipos tipo D: requieren cuenta y subcuenta contable para la transacción. */
+  get requiereCuentaContable(): boolean {
+    return this.esTipoB || this.esAnticipo;
+  }
+
+  /** Mismas cuentas de salida que ofrece el comprobante de pago. */
+  cargarCuentasContables() {
+    const excluidas = [
+      "6195af58f75a418e9c2eba00",
+      "6195b02af75a418e9c2eba05",
+      "6195af71f75a418e9c2eba03",
+    ];
+    this._cuentasService.getCuentas().subscribe(
+      (res) => {
+        this.cuentasContables = ((res as Cuenta[]) || [])
+          .filter(
+            (c) =>
+              (c.tipoCuenta === "Salidas" ||
+                c.tipoCuenta === "Reales y Transitorias") &&
+              !excluidas.includes(c._id)
+          )
+          .sort((a, b) =>
+            (a.nombre || "").localeCompare(b.nombre || "", "es", {
+              numeric: true,
+            })
+          );
+      },
+      () => {
+        this.cuentasContables = [];
+      }
+    );
+  }
+
+  /** Subcuentas de la cuenta elegida, con los mismos filtros del comprobante de pago. */
+  cargarSubCuentasContables(idCuenta?: string) {
+    this.subCuentasContables = [];
+    if (!idCuenta) return;
+    this._subCuentasService.getSubCuentasPorId(idCuenta).subscribe(
+      (res) => {
+        let lista = (res as SubCuenta[]) || [];
+        if (idCuenta === "6195b036f75a418e9c2eba06") {
+          lista = lista.filter((s) => s.tipoCuenta === "SALIDA");
+        } else if (idCuenta === "6195b03cf75a418e9c2eba07") {
+          lista = lista.filter((s) => s._id !== "62072de14b08c5ff14ef9fe0");
+        }
+        this.subCuentasContables = lista.sort((a, b) =>
+          (a.nombre || "").localeCompare(b.nombre || "", "es", { numeric: true })
+        );
+      },
+      () => {
+        this.subCuentasContables = [];
+      }
+    );
+  }
+
+  onCuentaContableChanged(event?: { value?: string; event?: Event }) {
+    if (event && !event.event) return;
+    const cuenta = this.cuentasContables.find(
+      (c) => c._id === this.formulario.cuentaContableId
+    );
+    this.formulario.cuentaContable = cuenta ? cuenta.nombre : "";
+    this.formulario.subCuentaContableId = undefined;
+    this.formulario.subCuentaContable = "";
+    this.cargarSubCuentasContables(this.formulario.cuentaContableId);
+  }
+
+  onSubCuentaContableChanged(event?: { value?: string; event?: Event }) {
+    if (event && !event.event) return;
+    const sub = this.subCuentasContables.find(
+      (s) => s._id === this.formulario.subCuentaContableId
+    );
+    this.formulario.subCuentaContable = sub ? sub.nombre : "";
+  }
 
   get esTipoB(): boolean {
     return this.formulario.tipoRegla === "B";
@@ -172,7 +257,8 @@ export class NominasEventosPagosComponent implements OnInit {
     return this.formulario.tipoRegla === "D";
   }
 
-  get esPrestamoExterno(): boolean {
+  /** Préstamo a beneficiario externo (sin importar cómo se cobra). */
+  get esBeneficiarioExternoPrestamo(): boolean {
     return (
       this.esTipoD &&
       !this.esAnticipo &&
@@ -180,12 +266,17 @@ export class NominasEventosPagosComponent implements OnInit {
     );
   }
 
-  get esPrestamoInterno(): boolean {
+  /** Externo cobrado con cuotas fijas por fecha (recibos en menú Cobros). */
+  get esPrestamoExterno(): boolean {
     return (
-      this.esTipoD &&
-      !this.esAnticipo &&
-      this.formulario.tipoBeneficiario !== "Externo"
+      this.esBeneficiarioExternoPrestamo &&
+      this.formulario.modalidadCobroExterno !== "Descuento de eventos"
     );
+  }
+
+  /** Préstamo que se descuenta de pagos programados (interno o externo por eventos). */
+  get esPrestamoInterno(): boolean {
+    return this.esTipoD && !this.esAnticipo && !this.esPrestamoExterno;
   }
 
   get esAnticipo(): boolean {
@@ -568,6 +659,7 @@ export class NominasEventosPagosComponent implements OnInit {
     this.cargarConceptosDescuento();
     this.cargarConceptosExternos();
     this.cargarCentrosCosto();
+    this.cargarCuentasContables();
     this.cargarConfigGlobal();
     this.actualizarParametrosPorFrecuencia();
     this.actualizarOpcionesTransaccionB();
@@ -804,7 +896,23 @@ export class NominasEventosPagosComponent implements OnInit {
       notas: "",
       fuentesDescuentoPrestamo: [],
       abonosPrestamo: [],
+      modalidadCobroExterno: "Cuota fija",
     };
+  }
+
+  onModalidadCobroExternoChanged(event?: { value?: string; event?: Event }) {
+    if (event && !event.event) return;
+    this.fuentesPrestamo = [];
+    this.formulario.fuentesDescuentoPrestamo = [];
+    this.tablaAmortizacion = [];
+    this.amortizacionEditadaManual = false;
+    this.validacionPrestamoTipoD = null;
+    if (!this.formulario.cedulaBeneficiario) return;
+    if (this.esPrestamoExterno) {
+      this.generarTablaPrestamo(true);
+    } else {
+      this.cargarFuentesPrestamo();
+    }
   }
 
   onTipoReglaChanged() {
@@ -3507,6 +3615,7 @@ export class NominasEventosPagosComponent implements OnInit {
       this.reglaSeleccionada = regla;
       this.formulario = { ...regla };
       this.actualizarOpcionesTransaccionB();
+      this.cargarSubCuentasContables(regla.cuentaContableId);
       if (regla.tipoRegla === "C") {
         this.sincronizarConceptoDescuentoDesdeValorGuardado(
           regla.conceptoDescuento
@@ -3547,6 +3656,7 @@ export class NominasEventosPagosComponent implements OnInit {
     this.reglaSeleccionada = regla;
     this.formulario = { ...regla };
     this.actualizarOpcionesTransaccionB();
+    this.cargarSubCuentasContables(regla.cuentaContableId);
     if (regla.tipoRegla === "C") {
       this.sincronizarConceptoDescuentoDesdeValorGuardado(
         regla.conceptoDescuento
