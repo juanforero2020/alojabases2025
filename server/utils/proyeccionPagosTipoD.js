@@ -229,24 +229,177 @@ function cuotaFuenteParaEvento(reglaD, evento) {
   }
   const tabla = reglaD.tablaAmortizacion || [];
   if (tabla.length) {
-    const porEvento = tabla.find(
-      (f) => f.eventoPagoId && idStr(f.eventoPagoId) === idStr(evento._id)
-    );
-    if (porEvento) return redondear2(porEvento.monto);
-    const fechaEv = fechaCalendarioFiltro(evento.fechaProgramada);
-    const tx = (evento.transaccionNomina || "").toString().trim().toLowerCase();
-    const porFecha = tabla.find((f) => {
-      const fechaFila = fechaCalendarioFiltro(f.fechaMin || f.fechaMax);
-      if (!fechaEv || !fechaFila || fechaEv.getTime() !== fechaFila.getTime()) {
-        return false;
-      }
-      const txFila = (f.transaccionNomina || "").toString().trim().toLowerCase();
-      return !txFila || !tx || txFila === tx;
-    });
-    if (porFecha) return redondear2(porFecha.monto);
-    return 0;
+    const indice = indiceFilaTablaParaEvento(tabla, evento);
+    return indice >= 0 ? redondear2(tabla[indice].monto) : 0;
   }
   return cuotaFuenteParaRegla(reglaD, evento.reglaPagoId);
+}
+
+/** Fila de la tabla del préstamo que se cobra en ese evento (por id o por fecha). */
+function indiceFilaTablaParaEvento(tabla, evento) {
+  const porEvento = tabla.findIndex(
+    (f) => f.eventoPagoId && idStr(f.eventoPagoId) === idStr(evento._id)
+  );
+  if (porEvento >= 0) return porEvento;
+  const fechaEv = fechaCalendarioFiltro(evento.fechaProgramada);
+  const tx = (evento.transaccionNomina || "").toString().trim().toLowerCase();
+  return tabla.findIndex((f) => {
+    const fechaFila = fechaCalendarioFiltro(f.fechaMin || f.fechaMax);
+    if (!fechaEv || !fechaFila || fechaEv.getTime() !== fechaFila.getTime()) {
+      return false;
+    }
+    const txFila = (f.transaccionNomina || "").toString().trim().toLowerCase();
+    return !txFila || !tx || txFila === tx;
+  });
+}
+
+function filaTablaPlain(fila) {
+  const f = fila && typeof fila.toObject === "function" ? fila.toObject() : { ...fila };
+  return {
+    numeroCuota: f.numeroCuota,
+    fechaMin: f.fechaMin,
+    fechaMax: f.fechaMax || f.fechaMin,
+    monto: redondear2(f.monto),
+    transaccionNomina: f.transaccionNomina || undefined,
+    eventoPagoId: f.eventoPagoId || undefined,
+  };
+}
+
+/**
+ * Siguiente pago (de la misma regla de pago del evento omitido) posterior a
+ * la última cuota de la tabla y sin cuota asignada. Si es nómina tipo A y no
+ * hay más pagos, se crea uno adicional.
+ */
+async function siguienteEventoParaCuotaMovida(tabla, evento) {
+  const fechas = tabla
+    .map((f) => fechaCalendarioFiltro(f.fechaMin || f.fechaMax))
+    .filter(Boolean)
+    .map((d) => d.getTime());
+  const fechaEvento = fechaCalendarioFiltro(evento.fechaProgramada);
+  const desde = Math.max(
+    fechaEvento ? fechaEvento.getTime() : 0,
+    ...(fechas.length ? fechas : [0])
+  );
+  const buscar = async () => {
+    const candidatos = await EventoPagoProgramado.find({
+      reglaPagoId: evento.reglaPagoId,
+      estado: { $in: ["Pendiente", "Parcial"] },
+      omitirDescuentoPrestamo: { $ne: true },
+    }).sort({ fechaProgramada: 1, numeroCuota: 1 });
+    return candidatos.find((c) => {
+      const f = fechaCalendarioFiltro(c.fechaProgramada);
+      return (
+        f && f.getTime() > desde && indiceFilaTablaParaEvento(tabla, c) < 0
+      );
+    });
+  };
+
+  let destino = await buscar();
+  if (destino) return destino;
+
+  const reglaPago = await ReglaPagoNomina.findById(evento.reglaPagoId).lean();
+  if (reglaPago && reglaPago.tipoRegla === "A" && reglaPago.estadoRegla === "Autorizada") {
+    const tipoANominaService = require("../services/tipoANominaService");
+    await tipoANominaService.extenderEventosAdicionales(reglaPago._id, {
+      cantidadCuotas: 1,
+    });
+    destino = await buscar();
+  }
+  return destino || null;
+}
+
+/**
+ * Mueve la cuota del préstamo (no anticipo) que se cobraba en el evento
+ * omitido al siguiente pago disponible. Devuelve el registro para revertirlo.
+ */
+async function moverCuotaPrestamoOmitida(reglaDId, evento) {
+  const reglaD = await ReglaPagoNomina.findById(reglaDId);
+  if (!reglaD || esReglaAnticipo(reglaD)) return null;
+  const tabla = (reglaD.tablaAmortizacion || []).map(filaTablaPlain);
+  // Sin tabla, el saldo se cobra solo en los pagos siguientes.
+  if (!tabla.length) return null;
+  const indice = indiceFilaTablaParaEvento(tabla, evento);
+  if (indice < 0) return null;
+
+  const filaOriginal = tabla[indice];
+  const destino = await siguienteEventoParaCuotaMovida(tabla, evento);
+  if (!destino) {
+    throw new Error(
+      `No hay un pago posterior de ${
+        evento.transaccionNomina || "este tipo"
+      } para mover la cuota del préstamo${
+        reglaD.codigoPrestamo ? ` ${reglaD.codigoPrestamo}` : ""
+      }. Genere más pagos de esa regla antes de omitir el préstamo.`
+    );
+  }
+
+  const numeroNuevo =
+    Math.max(0, ...tabla.map((f) => Number(f.numeroCuota) || 0)) + 1;
+  tabla.splice(indice, 1);
+  tabla.push({
+    ...filaOriginal,
+    numeroCuota: numeroNuevo,
+    fechaMin: destino.fechaProgramada,
+    fechaMax: destino.fechaProgramada,
+    transaccionNomina: destino.transaccionNomina || filaOriginal.transaccionNomina,
+    eventoPagoId: destino._id,
+  });
+  reglaD.tablaAmortizacion = tabla;
+  reglaD.cuotas = tabla.length;
+  reglaD.markModified("tablaAmortizacion");
+  moverAbonoCuota(reglaD, filaOriginal.numeroCuota, numeroNuevo);
+  await reglaD.save();
+
+  return {
+    reglaDescuentoId: reglaD._id,
+    filaOriginal,
+    numeroCuotaNuevo: numeroNuevo,
+    eventoDestinoId: destino._id,
+    fechaDestino: destino.fechaProgramada,
+  };
+}
+
+/** Revierte el movimiento: la cuota vuelve al evento original. */
+async function revertirCuotaPrestamoMovida(registro) {
+  const reglaD = await ReglaPagoNomina.findById(registro.reglaDescuentoId);
+  if (!reglaD) return;
+  const destino = await EventoPagoProgramado.findById(registro.eventoDestinoId);
+  if (destino && destino.estado !== "Pendiente") {
+    throw new Error(
+      "La cuota movida ya se cobró en el pago posterior; no se puede reactivar el préstamo en esta semana."
+    );
+  }
+  const tabla = (reglaD.tablaAmortizacion || []).map(filaTablaPlain);
+  const indice = tabla.findIndex(
+    (f) => idStr(f.eventoPagoId) === idStr(registro.eventoDestinoId)
+  );
+  if (indice >= 0) tabla.splice(indice, 1);
+  tabla.push(filaTablaPlain(registro.filaOriginal));
+  tabla.sort(
+    (a, b) =>
+      new Date(a.fechaMin || 0) - new Date(b.fechaMin || 0) ||
+      (Number(a.numeroCuota) || 0) - (Number(b.numeroCuota) || 0)
+  );
+  reglaD.tablaAmortizacion = tabla;
+  reglaD.cuotas = tabla.length;
+  reglaD.markModified("tablaAmortizacion");
+  moverAbonoCuota(
+    reglaD,
+    registro.numeroCuotaNuevo,
+    registro.filaOriginal && registro.filaOriginal.numeroCuota
+  );
+  await reglaD.save();
+}
+
+/** Mantiene el abono parcial de una cuota cuando cambia su número. */
+function moverAbonoCuota(reglaD, numeroAnterior, numeroNuevo) {
+  const abonos = reglaD.abonosCuotasPrestamo || [];
+  const abono = abonos.find(
+    (a) => Number(a.numeroCuota) === Number(numeroAnterior)
+  );
+  if (!abono || numeroNuevo == null) return;
+  abono.numeroCuota = Number(numeroNuevo);
+  reglaD.markModified("abonosCuotasPrestamo");
 }
 
 function inicioDelDiaLocal(valor) {
@@ -498,7 +651,8 @@ function asignarDescuentosDEnEventos(ctx) {
       if (saldo <= 0.009) break;
       const info = porEvento.get(idStr(evento._id));
       if (!info) continue;
-      if (evento.omitirDescuentoPrestamo) continue;
+      // "Quitar préstamo de esta semana" no aplica a anticipos.
+      if (evento.omitirDescuentoPrestamo && !esReglaAnticipo(reglaD)) continue;
       if (!eventoDesdeFechaInicioCobro(reglaD, evento.fechaProgramada)) continue;
       const cuota = cuotaFuenteParaEvento(reglaD, evento);
       if (!(cuota > 0)) continue;
@@ -649,12 +803,17 @@ function lineasPrestamoParaEvento(evento, ctx) {
   const fromCtx = (ctx.eventos || []).find(
     (e) => idStr(e._id) === idStr(evento._id)
   );
-  if (evento.omitirDescuentoPrestamo || fromCtx?.omitirDescuentoPrestamo) {
-    return [];
-  }
+  const omitido =
+    evento.omitirDescuentoPrestamo || fromCtx?.omitirDescuentoPrestamo;
   const asignado = asignarDescuentosDEnEventos(ctx);
   const info = asignado.get(idStr(evento._id));
-  return info && info.lineasD ? info.lineasD : [];
+  const lineas = info && info.lineasD ? info.lineasD : [];
+  // Con el préstamo omitido esta semana solo se mantiene el anticipo.
+  return omitido ? lineas.filter(esLineaAnticipo) : lineas;
+}
+
+function esLineaAnticipo(linea) {
+  return (linea && linea.conceptoDescuento) === "Anticipo";
 }
 
 async function obtenerLineasPrestamoEvento(evento) {
@@ -1023,7 +1182,7 @@ async function generarTablaPrestamoPrevia(regla, opciones = {}) {
 }
 
 async function calcularDescuentoPrestamoParaPago(evento, montoDisponible) {
-  if (evento.omitirDescuentoPrestamo || evento.tipoRegla === "D") {
+  if (evento.tipoRegla === "D") {
     return { monto: 0, lineas: [] };
   }
   const cedula = (evento.cedulaBeneficiario || "").trim();
@@ -1056,21 +1215,40 @@ async function omitirDescuentoPrestamoEvento(eventoId, opciones = {}) {
 
   if (omitir) {
     if (!evento.omitirDescuentoPrestamo) {
-      const lineas = await obtenerLineasPrestamoEvento(evento);
+      // Solo préstamos: el anticipo de este pago se sigue descontando.
+      const lineas = (await obtenerLineasPrestamoEvento(evento)).filter(
+        (l) => !esLineaAnticipo(l)
+      );
       const monto = redondear2(
         lineas.reduce((s, l) => s + (Number(l.monto) || 0), 0)
       );
       if (!(monto > 0.009)) {
         throw new Error(
-          "Este pago no tiene descuento de préstamo pendiente. Verifique el saldo del préstamo."
+          "Este pago no tiene descuento de préstamo pendiente (los anticipos no se pueden quitar). Verifique el saldo del préstamo."
         );
       }
+      // Refinancia: la cuota pasa al siguiente pago disponible.
+      const movidos = [];
+      for (const linea of lineas) {
+        const registro = await moverCuotaPrestamoOmitida(
+          linea.reglaDescuentoId,
+          evento
+        );
+        if (registro) movidos.push(registro);
+      }
       evento.montoPrestamoOmitido = monto;
+      evento.prestamosMovidosOmision = movidos;
+      evento.markModified("prestamosMovidosOmision");
     }
     evento.omitirDescuentoPrestamo = true;
     evento.omitirDescuentoPrestamoPor = usuario;
     evento.fechaOmitirDescuentoPrestamo = new Date();
   } else {
+    for (const registro of evento.prestamosMovidosOmision || []) {
+      await revertirCuotaPrestamoMovida(registro);
+    }
+    evento.prestamosMovidosOmision = [];
+    evento.markModified("prestamosMovidosOmision");
     evento.omitirDescuentoPrestamo = false;
     evento.omitirDescuentoPrestamoPor = usuario;
     evento.fechaOmitirDescuentoPrestamo = new Date();

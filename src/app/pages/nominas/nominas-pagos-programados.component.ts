@@ -465,8 +465,8 @@ export class NominasPagosProgramadosComponent implements OnInit {
     const cuota = monto > 0 ? `$${monto.toFixed(2)}` : "la cuota de préstamo";
     const html = omitir
       ? `El pago de <strong>${ev.nombreBeneficiario}</strong> no descontará el préstamo esta semana.<br/><br/>
-         ${cuota} se cobrará en un pago posterior: el saldo no baja y se alarga el plazo una cuota.<br/>
-         Los demás descuentos (IESS u otros) se mantienen.`
+         ${cuota} se moverá al siguiente pago disponible: el saldo no baja y se alarga el plazo una cuota.<br/>
+         Los demás descuentos (anticipos, IESS u otros) se mantienen.`
       : `Se volverá a descontar el préstamo en este pago de <strong>${ev.nombreBeneficiario}</strong>.`;
 
     Swal.fire({
@@ -492,12 +492,19 @@ export class NominasPagosProgramadosComponent implements OnInit {
         usuario: this.usuarioNombre,
       })
       .subscribe(
-        () => {
+        (res: any) => {
           this.omitiendoPrestamoId = null;
+          const movidos: Array<{ fechaDestino?: string }> =
+            (res && res.data && res.data.prestamosMovidosOmision) || [];
+          const fechas = movidos
+            .map((m) => formatoFechaCalendarioNomina(m.fechaDestino))
+            .filter(Boolean);
           Swal.fire(
             omitir ? "Préstamo omitido" : "Préstamo reactivado",
             omitir
-              ? "Este pago se ejecutará sin descontar el préstamo. La cuota se cobrará después."
+              ? fechas.length
+                ? `Este pago se ejecutará sin descontar el préstamo. La cuota se movió al pago del ${fechas.join(", ")}.`
+                : "Este pago se ejecutará sin descontar el préstamo. La cuota se cobrará en los pagos siguientes."
               : "El descuento de préstamo volvió a este pago.",
             "success"
           );

@@ -36744,7 +36744,7 @@ function _classCallCheck(instance, Constructor) { if (!(instance instanceof Cons
         value: function getListadoPrestamosPendientes() {
           return {
             table: {
-              widths: ["10%", "20%", "12%", "9%", "11%", "12%", "14%", "12%"],
+              widths: ["9%", "17%", "11%", "7%", "10%", "10%", "12%", "10%", "14%"],
               alignment: "center",
               fontSize: 7,
               headerRows: 1,
@@ -36778,6 +36778,10 @@ function _classCallCheck(instance, Constructor) { if (!(instance instanceof Cons
                 fontSize: 7
               }, {
                 text: "Fecha desembolso",
+                style: "tableHeader2",
+                fontSize: 7
+              }, {
+                text: "Estado cuotas",
                 style: "tableHeader2",
                 fontSize: 7
               }]].concat(_toConsumableArray((this.listaPrestamosActivos || []).map(function (prestamo) {
@@ -36817,6 +36821,12 @@ function _classCallCheck(instance, Constructor) { if (!(instance instanceof Cons
                   text: fechaTexto,
                   alignment: "center",
                   fontSize: 7
+                }, {
+                  text: prestamo.estadoCuotas || "",
+                  alignment: "center",
+                  fontSize: 7,
+                  bold: (prestamo.cuotasVencidas || 0) > 0,
+                  color: (prestamo.cuotasVencidas || 0) > 0 ? "#c0392b" : undefined
                 }];
               })))
             },
@@ -119467,7 +119477,7 @@ function _classCallCheck(instance, Constructor) { if (!(instance instanceof Cons
           var _this850 = this;
 
           var cuota = monto > 0 ? "$".concat(monto.toFixed(2)) : "la cuota de préstamo";
-          var html = omitir ? "El pago de <strong>".concat(ev.nombreBeneficiario, "</strong> no descontar\xE1 el pr\xE9stamo esta semana.<br/><br/>\n         ").concat(cuota, " se cobrar\xE1 en un pago posterior: el saldo no baja y se alarga el plazo una cuota.<br/>\n         Los dem\xE1s descuentos (IESS u otros) se mantienen.") : "Se volver\xE1 a descontar el pr\xE9stamo en este pago de <strong>".concat(ev.nombreBeneficiario, "</strong>.");
+          var html = omitir ? "El pago de <strong>".concat(ev.nombreBeneficiario, "</strong> no descontar\xE1 el pr\xE9stamo esta semana.<br/><br/>\n         ").concat(cuota, " se mover\xE1 al siguiente pago disponible: el saldo no baja y se alarga el plazo una cuota.<br/>\n         Los dem\xE1s descuentos (anticipos, IESS u otros) se mantienen.") : "Se volver\xE1 a descontar el pr\xE9stamo en este pago de <strong>".concat(ev.nombreBeneficiario, "</strong>.");
           sweetalert2__WEBPACK_IMPORTED_MODULE_2___default.a.fire({
             title: omitir ? "Quitar préstamo de esta semana" : "Reactivar préstamo",
             html: html,
@@ -119491,9 +119501,13 @@ function _classCallCheck(instance, Constructor) { if (!(instance instanceof Cons
           this._nominasService.omitirDescuentoPrestamoEvento(id, {
             omitir: omitir,
             usuario: this.usuarioNombre
-          }).subscribe(function () {
+          }).subscribe(function (res) {
             _this851.omitiendoPrestamoId = null;
-            sweetalert2__WEBPACK_IMPORTED_MODULE_2___default.a.fire(omitir ? "Préstamo omitido" : "Préstamo reactivado", omitir ? "Este pago se ejecutará sin descontar el préstamo. La cuota se cobrará después." : "El descuento de préstamo volvió a este pago.", "success");
+            var movidos = res && res.data && res.data.prestamosMovidosOmision || [];
+            var fechas = movidos.map(function (m) {
+              return Object(_nominas_fecha_util__WEBPACK_IMPORTED_MODULE_4__["formatoFechaCalendarioNomina"])(m.fechaDestino);
+            }).filter(Boolean);
+            sweetalert2__WEBPACK_IMPORTED_MODULE_2___default.a.fire(omitir ? "Préstamo omitido" : "Préstamo reactivado", omitir ? fechas.length ? "Este pago se ejecutar\xE1 sin descontar el pr\xE9stamo. La cuota se movi\xF3 al pago del ".concat(fechas.join(", "), ".") : "Este pago se ejecutará sin descontar el préstamo. La cuota se cobrará en los pagos siguientes." : "El descuento de préstamo volvió a este pago.", "success");
 
             _this851.cargarEventosProgramados();
           }, function (err) {

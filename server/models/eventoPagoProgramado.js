@@ -74,6 +74,8 @@ const EventoPagoProgramadoSchema = new Schema(
     omitirDescuentoPrestamoPor: { type: String, required: false },
     fechaOmitirDescuentoPrestamo: { type: Date, required: false },
     montoPrestamoOmitido: { type: Number, default: 0 },
+    /** Cuotas de préstamo movidas a otro pago al omitir; se usan para revertir. */
+    prestamosMovidosOmision: { type: [Schema.Types.Mixed], default: [] },
     montoDescuentoPrestamo: { type: Number, default: 0 },
   },
   { timestamps: true }

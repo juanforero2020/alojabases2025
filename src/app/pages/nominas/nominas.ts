@@ -267,6 +267,10 @@ export interface PrestamoAbonoResumen {
   cuotas?: number;
   cuotaEvento?: number;
   cuotasPendientes?: CuotaPrestamoPendiente[];
+  /** "Al día", "Sin cuotas" o "N cuotas vencidas ($X)" a la fecha de hoy. */
+  estadoCuotas?: string;
+  cuotasVencidas?: number;
+  montoVencido?: number;
   bitacora?: BitacoraPrestamoNomina[];
   montoAbonoCaptura?: number;
   comentarioAbonoCaptura?: string;

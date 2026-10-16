@@ -95,12 +95,61 @@ async function bitacoraDeRegla(regla) {
   return mapearBitacoraDesdeAbonos(regla);
 }
 
+/** Fecha calendario (año-mes-día) comparable, sin depender de la zona del servidor. */
+function claveFechaCalendario(valor) {
+  const d = valor ? new Date(valor) : null;
+  if (!d || isNaN(d.getTime())) return null;
+  return Date.UTC(d.getUTCFullYear(), d.getUTCMonth(), d.getUTCDate());
+}
+
+function claveHoyEcuador() {
+  const ecuador = new Date(Date.now() - 5 * 60 * 60 * 1000);
+  return Date.UTC(
+    ecuador.getUTCFullYear(),
+    ecuador.getUTCMonth(),
+    ecuador.getUTCDate()
+  );
+}
+
+/**
+ * Estado de pago del préstamo a hoy: cuotas con fecha anterior a hoy que
+ * aún tienen saldo se consideran vencidas.
+ */
+function estadoCuotasPrestamo(cuotas) {
+  const lista = cuotas || [];
+  if (!lista.length) {
+    return { estadoCuotas: "Sin cuotas", cuotasVencidas: 0, montoVencido: 0 };
+  }
+  const hoy = claveHoyEcuador();
+  const vencidas = lista.filter((c) => {
+    const clave = claveFechaCalendario(c.fecha);
+    return (
+      clave != null && clave < hoy && (Number(c.montoPendiente) || 0) > 0.009
+    );
+  });
+  const montoVencido = redondear2(
+    vencidas.reduce((s, c) => s + (Number(c.montoPendiente) || 0), 0)
+  );
+  if (!vencidas.length) {
+    return { estadoCuotas: "Al día", cuotasVencidas: 0, montoVencido: 0 };
+  }
+  const n = vencidas.length;
+  return {
+    estadoCuotas: `${n} cuota${n === 1 ? "" : "s"} vencida${
+      n === 1 ? "" : "s"
+    } ($${montoVencido.toFixed(2)})`,
+    cuotasVencidas: n,
+    montoVencido,
+  };
+}
+
 function resumenPrestamo(regla, bitacora, cuotasPendientes = []) {
   const total = totalPrestamo(regla);
   const saldo = saldoActualPrestamo(regla);
   const abonado = montoAbonado(regla);
   const cuotas = cuotasPendientes || [];
   return {
+    ...estadoCuotasPrestamo(cuotas),
     _id: regla._id,
     codigoPrestamo: regla.codigoPrestamo || "",
     tipoRegla: regla.tipoRegla,
@@ -201,7 +250,10 @@ async function listarPrestamosActivos(filtros = {}) {
       await regla.save();
     }
     if (!incluirDetalle) {
-      resultado.push(resumenPrestamo(regla, [], []));
+      // Sin bitácora ni detalle de cuotas, pero con el estado (al día / vencidas).
+      const resumen = resumenPrestamo(regla, [], await listarCuotasPrestamo(regla));
+      resumen.cuotasPendientes = [];
+      resultado.push(resumen);
       continue;
     }
     const bitacora = await bitacoraDeRegla(regla);

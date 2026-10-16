@@ -22619,7 +22619,7 @@ class CajaMenorComponent {
     getListadoPrestamosPendientes() {
         return {
             table: {
-                widths: ["10%", "20%", "12%", "9%", "11%", "12%", "14%", "12%"],
+                widths: ["9%", "17%", "11%", "7%", "10%", "10%", "12%", "10%", "14%"],
                 alignment: "center",
                 fontSize: 7,
                 headerRows: 1,
@@ -22633,6 +22633,7 @@ class CajaMenorComponent {
                         { text: "Valor Pendiente", style: "tableHeader2", fontSize: 7 },
                         { text: "Centro de costo", style: "tableHeader2", fontSize: 7 },
                         { text: "Fecha desembolso", style: "tableHeader2", fontSize: 7 },
+                        { text: "Estado cuotas", style: "tableHeader2", fontSize: 7 },
                     ],
                     ...(this.listaPrestamosActivos || []).map((prestamo) => {
                         const fecha = prestamo.fechaDesembolso
@@ -22660,6 +22661,13 @@ class CajaMenorComponent {
                             { text: valorPendiente, alignment: "center", fontSize: 7 },
                             { text: prestamo.centroCosto || "", alignment: "center", fontSize: 7 },
                             { text: fechaTexto, alignment: "center", fontSize: 7 },
+                            {
+                                text: prestamo.estadoCuotas || "",
+                                alignment: "center",
+                                fontSize: 7,
+                                bold: (prestamo.cuotasVencidas || 0) > 0,
+                                color: (prestamo.cuotasVencidas || 0) > 0 ? "#c0392b" : undefined,
+                            },
                         ];
                     }),
                 ],
@@ -70202,8 +70210,8 @@ class NominasPagosProgramadosComponent {
         const cuota = monto > 0 ? `$${monto.toFixed(2)}` : "la cuota de préstamo";
         const html = omitir
             ? `El pago de <strong>${ev.nombreBeneficiario}</strong> no descontará el préstamo esta semana.<br/><br/>
-         ${cuota} se cobrará en un pago posterior: el saldo no baja y se alarga el plazo una cuota.<br/>
-         Los demás descuentos (IESS u otros) se mantienen.`
+         ${cuota} se moverá al siguiente pago disponible: el saldo no baja y se alarga el plazo una cuota.<br/>
+         Los demás descuentos (anticipos, IESS u otros) se mantienen.`
             : `Se volverá a descontar el préstamo en este pago de <strong>${ev.nombreBeneficiario}</strong>.`;
         sweetalert2__WEBPACK_IMPORTED_MODULE_2___default.a.fire({
             title: omitir
@@ -70227,10 +70235,16 @@ class NominasPagosProgramadosComponent {
             omitir,
             usuario: this.usuarioNombre,
         })
-            .subscribe(() => {
+            .subscribe((res) => {
             this.omitiendoPrestamoId = null;
+            const movidos = (res && res.data && res.data.prestamosMovidosOmision) || [];
+            const fechas = movidos
+                .map((m) => Object(_nominas_fecha_util__WEBPACK_IMPORTED_MODULE_4__["formatoFechaCalendarioNomina"])(m.fechaDestino))
+                .filter(Boolean);
             sweetalert2__WEBPACK_IMPORTED_MODULE_2___default.a.fire(omitir ? "Préstamo omitido" : "Préstamo reactivado", omitir
-                ? "Este pago se ejecutará sin descontar el préstamo. La cuota se cobrará después."
+                ? fechas.length
+                    ? `Este pago se ejecutará sin descontar el préstamo. La cuota se movió al pago del ${fechas.join(", ")}.`
+                    : "Este pago se ejecutará sin descontar el préstamo. La cuota se cobrará en los pagos siguientes."
                 : "El descuento de préstamo volvió a este pago.", "success");
             this.cargarEventosProgramados();
         }, (err) => {

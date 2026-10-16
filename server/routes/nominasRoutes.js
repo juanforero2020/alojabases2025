@@ -1312,7 +1312,8 @@ router.get("/eventos-programados/:id/desglose-descuentos", async (req, res) => {
       lineas.push({
         reglaDescuentoId: linea.reglaDescuentoId,
         transaccionNomina: linea.transaccionNomina,
-        conceptoDescuento: "Préstamo",
+        conceptoDescuento:
+          linea.conceptoDescuento === "Anticipo" ? "Anticipo" : "Préstamo",
         etiqueta: linea.etiqueta,
         codigoPrestamo: linea.codigoPrestamo,
         monto: linea.monto,
@@ -1320,8 +1321,11 @@ router.get("/eventos-programados/:id/desglose-descuentos", async (req, res) => {
       });
     }
     const total = lineas.reduce((s, l) => s + l.monto, 0);
+    // Solo préstamos: "Quitar préstamo de esta semana" no aplica a anticipos.
     const montoPrestamo = Math.round(
-      lineasPrestamo.reduce((s, l) => s + (Number(l.monto) || 0), 0) * 100
+      lineasPrestamo
+        .filter((l) => l.conceptoDescuento !== "Anticipo")
+        .reduce((s, l) => s + (Number(l.monto) || 0), 0) * 100
     ) / 100;
     const pendiente =
       evento.estado === "Pendiente" || evento.estado === "Parcial";

@@ -579,7 +579,9 @@ async function ejecutarEventoProgramado(eventoId, opciones = {}) {
     detalle: [detallePago, notasRegla].filter(Boolean).join(" "),
     prefijo:
       (evento.tipoRegla || regla.tipoRegla) === "D"
-        ? "Desembolso préstamo (egreso, no abona la deuda)"
+        ? esDesembolsoAnticipo
+          ? "Desembolso anticipo (egreso, no abona la deuda)"
+          : "Desembolso préstamo (egreso, no abona la deuda)"
         : undefined,
   });
 

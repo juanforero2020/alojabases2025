@@ -974,7 +974,7 @@ export class CajaMenorComponent implements OnInit {
   getListadoPrestamosPendientes() {
     return {
       table: {
-        widths: ["10%", "20%", "12%", "9%", "11%", "12%", "14%", "12%"],
+        widths: ["9%", "17%", "11%", "7%", "10%", "10%", "12%", "10%", "14%"],
         alignment: "center",
         fontSize: 7,
         headerRows: 1,
@@ -988,6 +988,7 @@ export class CajaMenorComponent implements OnInit {
             { text: "Valor Pendiente", style: "tableHeader2", fontSize: 7 },
             { text: "Centro de costo", style: "tableHeader2", fontSize: 7 },
             { text: "Fecha desembolso", style: "tableHeader2", fontSize: 7 },
+            { text: "Estado cuotas", style: "tableHeader2", fontSize: 7 },
           ],
           ...(this.listaPrestamosActivos || []).map((prestamo: PrestamoAbonoResumen) => {
             const fecha = prestamo.fechaDesembolso
@@ -1018,6 +1019,13 @@ export class CajaMenorComponent implements OnInit {
               { text: valorPendiente, alignment: "center", fontSize: 7 },
               { text: prestamo.centroCosto || "", alignment: "center", fontSize: 7 },
               { text: fechaTexto, alignment: "center", fontSize: 7 },
+              {
+                text: prestamo.estadoCuotas || "",
+                alignment: "center",
+                fontSize: 7,
+                bold: (prestamo.cuotasVencidas || 0) > 0,
+                color: (prestamo.cuotasVencidas || 0) > 0 ? "#c0392b" : undefined,
+              },
             ];
           }),
         ],
