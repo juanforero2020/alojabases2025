@@ -508,7 +508,7 @@ async function ejecutarEventoProgramado(eventoId, opciones = {}) {
 
   let { cuenta, tipoCuenta } = await resolverCuentaDesdeSubCuenta(subCuenta);
   // Tipo B o desembolso de anticipo con cuenta/subcuenta elegidas: el egreso va
-  // a esa subcuenta y respeta su marca de caja menor (igual que el comprobante).
+  // a esa subcuenta (siempre contabilizado, para que aparezca en caja menor).
   const contableElegida =
     (evento.tipoRegla || regla.tipoRegla) === "B" || esDesembolsoAnticipo
       ? await resolverCuentaContableElegida(regla)
@@ -589,9 +589,6 @@ async function ejecutarEventoProgramado(eventoId, opciones = {}) {
   if (valorSalida > 0.009) {
     tx = new TransaccionFinanciera({
       ...baseTx,
-      ...(contableElegida
-        ? { isContabilizada: contableElegida.isContabilizada }
-        : {}),
       valor: valorSalida,
       tipoPago: "Egreso",
       cuenta,
@@ -626,7 +623,13 @@ async function ejecutarEventoProgramado(eventoId, opciones = {}) {
       evento,
       transaccion: txReferencia,
       usuario: opciones.usuario || "",
+      observacion: esDesembolsoAnticipo
+        ? `Anticipo${regla.codigoPrestamo ? ` ${regla.codigoPrestamo}` : ""}`
+        : undefined,
     });
+    if (esDesembolsoAnticipo && pagoFactura) {
+      await saldarAnticipoAplicadoAFactura(regla, montoPagar, txReferencia, opciones);
+    }
   }
 
   evento.pagosParciales = evento.pagosParciales || [];
@@ -849,6 +852,53 @@ function redondear2(n) {
 }
 
 /**
+ * Anticipo a externo restado de su factura pendiente: al desembolsarlo queda
+ * cubierto (no se descuenta de ningún pago), así que se salda y finaliza.
+ */
+async function saldarAnticipoAplicadoAFactura(regla, monto, transaccion, opciones = {}) {
+  const reglaD = await ReglaPagoNomina.findById(regla._id);
+  if (!reglaD) return;
+  const { registrarBitacoraPrestamo } = require("../utils/bitacoraPrestamoNomina");
+  const saldoAntes = redondear2(
+    reglaD.saldoPendientePrestamo != null
+      ? reglaD.saldoPendientePrestamo
+      : reglaD.montoTotalDeuda || reglaD.monto
+  );
+  const aplicado = redondear2(Math.min(saldoAntes, monto));
+  const saldoDespues = redondear2(Math.max(0, saldoAntes - aplicado));
+  const notas = `Anticipo aplicado a la factura ${reglaD.nFacturaProveedor || ""}`.trim();
+  reglaD.saldoPendientePrestamo = saldoDespues;
+  reglaD.abonosPrestamo = reglaD.abonosPrestamo || [];
+  reglaD.abonosPrestamo.push({
+    fecha: new Date(),
+    monto: aplicado,
+    transaccionFinancieraId: transaccion ? transaccion._id : undefined,
+    transaccionNominaOrigen: "Factura proveedor",
+    tipoMovimiento: "Aplicado a factura",
+    saldoAntes,
+    saldoDespues,
+    notas,
+    ejecutadoPor: opciones.usuario || "",
+  });
+  if (saldoDespues <= 0.009) {
+    reglaD.saldoPendientePrestamo = 0;
+    reglaD.estadoRegla = "Finalizada";
+  }
+  reglaD.markModified("abonosPrestamo");
+  await reglaD.save();
+  await registrarBitacoraPrestamo({
+    regla: reglaD,
+    tipoMovimiento: "Aplicado a factura",
+    monto: aplicado,
+    saldoAntes,
+    saldoDespues: reglaD.saldoPendientePrestamo,
+    transaccionFinancieraId: transaccion ? transaccion._id : undefined,
+    ejecutadoPor: opciones.usuario || "",
+    notas,
+  });
+}
+
+/**
  * Cuenta/subcuenta elegidas en la regla (tipo B o anticipo tipo D). Se leen de
  * la base por id para usar los nombres vigentes; si no, se usan los guardados.
  */
@@ -867,8 +917,6 @@ async function resolverCuentaContableElegida(regla) {
     cuenta,
     subCuenta,
     tipoCuenta: (cuentaDoc && cuentaDoc.tipoCuenta) || "Salidas",
-    // Igual que el comprobante de pago: la subcuenta define si va a caja menor.
-    isContabilizada: sub ? sub.mcaCajaMenor !== false : true,
   };
 }
 

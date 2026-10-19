@@ -314,6 +314,15 @@ export class NominasEventosPagosComponent implements OnInit {
     );
   }
 
+  /** Anticipo a externo: puede restarse de una factura pendiente o de un pago. */
+  get esAnticipoExterno(): boolean {
+    return this.esAnticipo && this.formulario.tipoBeneficiario === "Externo";
+  }
+
+  get esAnticipoAFactura(): boolean {
+    return this.esAnticipoExterno && !!this.formulario.facturaProveedorId;
+  }
+
   get esExternoDescuentosC(): boolean {
     return (
       this.esDescuentosGenerales &&
@@ -1784,6 +1793,15 @@ export class NominasEventosPagosComponent implements OnInit {
       f.seleccionado = false;
       f.monto = 0;
     }
+    if (fuente.seleccionado && this.esAnticipoAFactura) {
+      // Factura o pago, no ambos.
+      this.formulario.facturaProveedorId = undefined;
+      this.formulario.nFacturaProveedor = "";
+      this.formulario.nSolicitudFactura = undefined;
+      this.formulario.valorAdeudadoFactura = undefined;
+      this.formulario.asociarFacturaPendiente = false;
+      this.facturaPendienteSeleccionada = null;
+    }
     if (fuente.seleccionado) {
       const max = fuente.montoVariable
         ? Number(fuente.montoDisponible) || 0
@@ -2090,6 +2108,20 @@ export class NominasEventosPagosComponent implements OnInit {
           : "Indique la fecha de desembolso del préstamo",
       };
       return false;
+    }
+    if (this.esAnticipoAFactura) {
+      const adeudado = Number(this.formulario.valorAdeudadoFactura) || 0;
+      if (adeudado > 0 && this.montoPrestadoForm > adeudado + 0.01) {
+        this.validacionPrestamoTipoD = {
+          ok: false,
+          mensaje: `El anticipo ($${this.montoPrestadoForm.toFixed(
+            2
+          )}) no puede superar el saldo de la factura ($${adeudado.toFixed(2)})`,
+        };
+        return false;
+      }
+      this.validacionPrestamoTipoD = { ok: true };
+      return true;
     }
     if (this.esAnticipo) {
       if (!this.formulario.fechaInicioCobros) {
@@ -2787,7 +2819,8 @@ export class NominasEventosPagosComponent implements OnInit {
 
         if (
           (this.esExternoTipoB && this.formulario.asociarFacturaPendiente) ||
-          this.esExternoDescuentosC
+          this.esExternoDescuentosC ||
+          this.esAnticipoExterno
         ) {
           this.cargarFacturasPendientes();
         }
@@ -2885,7 +2918,7 @@ export class NominasEventosPagosComponent implements OnInit {
     const listarParaTipoC = this.esExternoDescuentosC;
     const listarParaTipoB =
       this.esExternoTipoB && this.formulario.asociarFacturaPendiente;
-    if (!listarParaTipoC && !listarParaTipoB) {
+    if (!listarParaTipoC && !listarParaTipoB && !this.esAnticipoExterno) {
       this.facturasPendientes = [];
       this.sincronizarFacturaPendienteSeleccionada();
       return;
@@ -2931,6 +2964,10 @@ export class NominasEventosPagosComponent implements OnInit {
       this.formulario.nFacturaProveedor = "";
       this.formulario.nSolicitudFactura = undefined;
       this.formulario.valorAdeudadoFactura = undefined;
+      if (this.esAnticipoExterno) {
+        this.formulario.asociarFacturaPendiente = false;
+        this.validarPrestamoTipoD();
+      }
       if (this.esExternoDescuentosC) {
         this.validarDescuentoVsFacturaExterna();
       }
@@ -2940,6 +2977,17 @@ export class NominasEventosPagosComponent implements OnInit {
     this.formulario.nFacturaProveedor = factura.nFactura;
     this.formulario.nSolicitudFactura = factura.nSolicitud;
     this.formulario.valorAdeudadoFactura = factura.valorAdeudado;
+    if (this.esAnticipoExterno) {
+      // Factura o pago, no ambos: al elegir factura se quita el pago marcado.
+      for (const f of this.fuentesPrestamo) {
+        f.seleccionado = false;
+        f.monto = 0;
+      }
+      this.formulario.asociarFacturaPendiente = true;
+      this.sincronizarFuentesPrestamoEnFormulario();
+      this.validarPrestamoTipoD();
+      return;
+    }
     if (this.esExternoDescuentosC) {
       for (const f of this.fuentesPrestamo) {
         f.seleccionado = false;
@@ -3352,10 +3400,17 @@ export class NominasEventosPagosComponent implements OnInit {
         payload.valorAdeudadoFactura = undefined;
       }
     }
+    if (this.esAnticipo) {
+      payload.asociarFacturaPendiente = this.esAnticipoAFactura;
+      if (payload.asociarFacturaPendiente) {
+        payload.fuentesDescuentoPrestamo = [];
+      }
+    }
     if (
       !(
         (this.esExternoTipoB && payload.asociarFacturaPendiente) ||
-        (this.esExternoDescuentosC && payload.asociarFacturaPendiente)
+        (this.esExternoDescuentosC && payload.asociarFacturaPendiente) ||
+        (this.esAnticipoExterno && payload.asociarFacturaPendiente)
       )
     ) {
       if (!this.esExternoDescuentosC) {

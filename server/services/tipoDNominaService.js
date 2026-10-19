@@ -18,6 +18,7 @@ const {
   asegurarEventosNominaParaPrestamo,
 } = require("../utils/proyeccionPagosTipoD");
 const { asignarCodigoPrestamoSiFalta } = require("../utils/codigoPrestamoNomina");
+const { validarFacturaParaPago } = require("../utils/facturaProveedorNomina");
 const {
   subCuentaAnticipoPorEvento,
 } = require("../utils/cuentasContablesNomina");
@@ -109,6 +110,19 @@ function normalizarReglaTipoD(regla) {
   if (esAnticipo) {
     doc.cuotas = 1;
   }
+  if (esAnticipo) {
+    // Externo: el anticipo se resta de una factura pendiente o de un pago, no ambos.
+    if (esAnticipoAFactura(doc)) {
+      doc.asociarFacturaPendiente = true;
+      doc.fuentesDescuentoPrestamo = [];
+    } else {
+      doc.asociarFacturaPendiente = false;
+      doc.facturaProveedorId = undefined;
+      doc.nFacturaProveedor = "";
+      doc.nSolicitudFactura = undefined;
+      doc.valorAdeudadoFactura = undefined;
+    }
+  }
   doc.modalidadCobroExterno =
     doc.modalidadCobroExterno === MODALIDAD_DESCUENTO_EVENTOS
       ? MODALIDAD_DESCUENTO_EVENTOS
@@ -150,6 +164,15 @@ function normalizarReglaTipoD(regla) {
     doc.saldoPendientePrestamo = montos.montoTotal;
   }
   return doc;
+}
+
+/** Anticipo a externo que se resta de una factura pendiente del proveedor. */
+function esAnticipoAFactura(regla) {
+  return (
+    esReglaAnticipo(regla) &&
+    esBeneficiarioExterno(regla) &&
+    !!regla.facturaProveedorId
+  );
 }
 
 function esBeneficiarioExterno(regla) {
@@ -268,6 +291,12 @@ function validarReglaTipoD(regla) {
   if (esAnticipo) {
     if (!regla.cuentaContableId || !regla.subCuentaContableId) {
       return "Seleccione la cuenta y subcuenta contable del anticipo";
+    }
+    if (esAnticipoAFactura(regla)) {
+      if (fuentesSeleccionadas(regla).length) {
+        return "Elija una factura pendiente o un pago programado, no ambos";
+      }
+      return null;
     }
     if (!fechaCalendario(regla.fechaInicioCobros)) {
       return "Indique la fecha de cobro del anticipo";
@@ -416,6 +445,24 @@ async function validarFuentesPrestamo(regla) {
 async function validarReglaTipoDCompleta(regla) {
   const msgBase = validarReglaTipoD(regla);
   if (msgBase) return msgBase;
+  if (esAnticipoAFactura(regla)) {
+    try {
+      const { saldo, factura } = await validarFacturaParaPago(
+        regla.facturaProveedorId
+      );
+      const monto = redondear2(regla.montoPrestado || regla.monto || 0);
+      if (monto > saldo.valorAdeudado + 0.01) {
+        return `El anticipo ($${monto.toFixed(
+          2
+        )}) no puede superar el saldo de la factura ${factura.nFactura || ""} ($${saldo.valorAdeudado.toFixed(
+          2
+        )})`;
+      }
+    } catch (err) {
+      return err.message || "No se pudo validar la factura pendiente";
+    }
+    return null;
+  }
   if (esPrestamoExterno(regla)) return null;
   return validarFuentesPrestamo(regla);
 }
@@ -516,7 +563,9 @@ async function generarEventosProgramados(regla, opciones = {}) {
       ? `Desembolso anticipo $${reglaObj.montoPrestado.toFixed(2)}`
       : `Desembolso préstamo capital $${reglaObj.montoPrestado.toFixed(2)}`,
     esAnticipo
-      ? `Se descuenta en ${fuenteAnticipo ? fuenteAnticipo.transaccionNomina : "el pago elegido"}`
+      ? esAnticipoAFactura(reglaObj)
+        ? `Se resta de la factura ${reglaObj.nFacturaProveedor || ""}`.trim()
+        : `Se descuenta en ${fuenteAnticipo ? fuenteAnticipo.transaccionNomina : "el pago elegido"}`
       : esBeneficiarioExterno(reglaObj)
       ? "Subcuenta 2.2.1 Externos"
       : "Subcuenta 2.1.0 Internos",

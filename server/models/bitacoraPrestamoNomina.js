@@ -10,7 +10,7 @@ const BitacoraPrestamoNominaSchema = new Schema(
     },
     tipoMovimiento: {
       type: String,
-      enum: ["Descuento nomina", "Cobro cuota", "Abono extraordinario"],
+      enum: ["Descuento nomina", "Cobro cuota", "Abono extraordinario", "Aplicado a factura"],
       required: true,
     },
     fecha: { type: Date, default: Date.now },

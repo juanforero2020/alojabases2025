@@ -101,6 +101,7 @@ async function aplicarPagoFacturaProveedor({
   evento,
   transaccion,
   usuario,
+  observacion,
 }) {
   if (!facturaId) return null;
   const montoPagar = redondear2(monto);
@@ -128,7 +129,9 @@ async function aplicarPagoFacturaProveedor({
   factura.estado = estado;
   await factura.save();
 
-  const observacionCuota = evento
+  const observacionCuota = observacion
+    ? observacion
+    : evento
     ? `Pago nómina tipo B — cuota ${evento.numeroCuota}/${evento.totalCuotas}`
     : "Pago nómina tipo B";
   const observacionSaldo =

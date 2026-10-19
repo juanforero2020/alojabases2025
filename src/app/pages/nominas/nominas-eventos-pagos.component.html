@@ -913,7 +913,7 @@
             <strong>{{ etiquetaSubcuentaAnticipo }}</strong>.
           </small>
         </div>
-        <div class="col-md-4 mb-3" *ngIf="esAnticipo">
+        <div class="col-md-4 mb-3" *ngIf="esAnticipo && !esAnticipoAFactura">
           <label class="form-label">Fecha de cobro del anticipo</label>
           <dx-date-box
             [(value)]="formulario.fechaInicioCobros"
@@ -997,7 +997,69 @@
             {{ (formulario.saldoPendientePrestamo != null ? formulario.saldoPendientePrestamo : totalPrestamoCalculado) | number : "1.2-2" }}
           </div>
         </div>
-        <div class="col-md-12 mb-2" *ngIf="esAnticipo">
+        <div class="col-md-8 mb-3" *ngIf="esAnticipoExterno">
+          <label class="form-label">Factura pendiente (opcional)</label>
+          <dx-select-box
+            [items]="facturasPendientes"
+            displayExpr="etiquetaDisplay"
+            valueExpr="_id"
+            [(value)]="formulario.facturaProveedorId"
+            [searchEnabled]="true"
+            [showClearButton]="true"
+            [disabled]="formulario.estadoRegla === 'Autorizada' || cargandoFacturasPendientes"
+            placeholder="Seleccione factura, o déjela vacía para descontar de un pago"
+            (onValueChanged)="onFacturaPendienteChanged($event)"
+          ></dx-select-box>
+          <small class="text-muted d-block">
+            Si elige factura, al desembolsar el anticipo se resta de lo adeudado en esa factura.
+            Si no, marque abajo el pago programado del que se descontará.
+          </small>
+          <small class="text-muted d-block" *ngIf="!formulario.nombreBeneficiario">
+            Busque el proveedor para listar sus facturas pendientes.
+          </small>
+          <small class="text-muted d-block" *ngIf="cargandoFacturasPendientes">
+            Cargando facturas pendientes…
+          </small>
+          <small
+            class="text-muted d-block"
+            *ngIf="formulario.nombreBeneficiario && !cargandoFacturasPendientes && !facturasPendientes.length"
+          >
+            No hay facturas pendientes para este proveedor.
+          </small>
+          <small class="text-muted d-block" *ngIf="facturaPendienteSeleccionada">
+            Adeudado: ${{ facturaPendienteSeleccionada.valorAdeudado | number : "1.2-2" }}
+            · Total: ${{ facturaPendienteSeleccionada.total | number : "1.2-2" }}
+            · Abonado: ${{ facturaPendienteSeleccionada.valorAbonado | number : "1.2-2" }}
+            <span *ngIf="facturaPendienteSeleccionada.nSolicitud">
+              · OC {{ facturaPendienteSeleccionada.nSolicitud }}
+            </span>
+          </small>
+          <small
+            class="text-muted d-block"
+            *ngIf="!facturaPendienteSeleccionada && formulario.nFacturaProveedor"
+          >
+            Factura enlazada: {{ formulario.nFacturaProveedor }}
+            <span *ngIf="formulario.valorAdeudadoFactura">
+              · Adeudado al vincular ${{ formulario.valorAdeudadoFactura | number : "1.2-2" }}
+            </span>
+          </small>
+          <div
+            class="alert alert-info py-2 small mt-2 mb-0"
+            *ngIf="esAnticipoAFactura && montoPrestadoForm > 0"
+          >
+            Se programará un desembolso de
+            <strong>${{ montoPrestadoForm | number : "1.2-2" }}</strong>
+            y, al ejecutarlo, ese valor se restará de la factura
+            <strong>{{ formulario.nFacturaProveedor }}</strong>.
+          </div>
+          <div
+            class="alert alert-danger py-2 small mt-2 mb-0"
+            *ngIf="esAnticipoAFactura && validacionPrestamoTipoD && !validacionPrestamoTipoD.ok"
+          >
+            {{ validacionPrestamoTipoD.mensaje }}
+          </div>
+        </div>
+        <div class="col-md-12 mb-2" *ngIf="esAnticipo && !esAnticipoAFactura">
           <label class="form-label">Pagos disponibles para descontar el anticipo</label>
           <p class="small text-muted mb-2">
             Según la fecha de cobro se lista, por cada tipo, el pago programado más cercano.
