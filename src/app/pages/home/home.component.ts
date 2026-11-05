@@ -5,7 +5,7 @@ import { CajaMenorService } from 'src/app/servicios/cajaMenor.service';
 import { CajaMenor } from '../cajaMenor/caja-menor';
 import { OrdenesCompraService } from 'src/app/servicios/ordenes-compra.service';
 import { OrdenDeCompra } from '../compras/compra';
-import { objDate } from '../transacciones/transacciones';
+import Swal from 'sweetalert2';
 import { AuthenService } from 'src/app/servicios/authen.service';
 import { user } from '../user/user';
 
@@ -56,7 +56,10 @@ export class HomeComponent implements OnInit {
   errorIndicadoresCajaMenor = false;
   cargandoIndicadoresCajaMenor = false;
   listadoCajaMenorReciente: CajaMenor[] = [];
-  diasIndicadorCajaMenor = 30;
+  /** Todas las cajas (vista global); el rango se aplica sobre la fecha de cada caja. */
+  listadoCajaMenorTodas: CajaMenor[] = [];
+  filtroCajaMenorDesde: Date | null = null;
+  filtroCajaMenorHasta: Date | null = null;
   popupCajaMenorVisible = false;
   tituloPopupCajaMenor = "";
   tipoDetalleCajaMenorActivo: TipoDetalleIndicadorCajaMenor | null = null;
@@ -71,7 +74,10 @@ export class HomeComponent implements OnInit {
   errorIndicadoresOrdenCompra = false;
   cargandoIndicadoresOrdenCompra = false;
   listadoOrdenCompraReciente: OrdenDeCompra[] = [];
-  diasIndicadorOrdenCompra = 30;
+  /** Todas las órdenes (vista global); el rango se aplica sobre la fecha de cada orden. */
+  listadoOrdenCompraTodas: OrdenDeCompra[] = [];
+  filtroOrdenCompraDesde: Date | null = null;
+  filtroOrdenCompraHasta: Date | null = null;
   popupOrdenCompraVisible = false;
   tituloPopupOrdenCompra = "";
   tipoDetalleOrdenCompraActivo: TipoDetalleIndicadorOrdenCompra | null = null;
@@ -231,24 +237,18 @@ export class HomeComponent implements OnInit {
   cargarIndicadoresCajaMenor(): void {
     this.errorIndicadoresCajaMenor = false;
     this.cargandoIndicadoresCajaMenor = true;
-    const rango = new objDate();
-    const hasta = new Date();
-    const desde = new Date();
-    desde.setDate(desde.getDate() - this.diasIndicadorCajaMenor);
-    desde.setHours(0, 0, 0, 0);
-    rango.fechaAnterior = desde;
-    rango.fechaActual = hasta;
 
-    this.cajaMenorService.getCajaMenorPorRango(rango).subscribe({
+    this.cajaMenorService.getCajaMenor().subscribe({
       next: (resp) => {
         const lista = (Array.isArray(resp) ? resp : []) as CajaMenor[];
-        this.listadoCajaMenorReciente = lista
+        this.listadoCajaMenorTodas = lista
           .map((c) => this.normalizarRegistroCajaMenor(c))
           .sort((a, b) => this.obtenerTimestampFechaCaja(b) - this.obtenerTimestampFechaCaja(a));
-        this.recalcularIndicadoresCajaMenor();
+        this.aplicarFiltroCajaMenor();
         this.cargandoIndicadoresCajaMenor = false;
       },
       error: () => {
+        this.listadoCajaMenorTodas = [];
         this.listadoCajaMenorReciente = [];
         this.recalcularIndicadoresCajaMenor();
         this.cargandoIndicadoresCajaMenor = false;
@@ -257,10 +257,99 @@ export class HomeComponent implements OnInit {
     });
   }
 
+  /** Filtra por la fecha de cada caja; sin fechas muestra todas (global). */
+  aplicarFiltroCajaMenor(): void {
+    const desde = this.filtroCajaMenorDesde ? new Date(this.filtroCajaMenorDesde) : null;
+    const hasta = this.filtroCajaMenorHasta ? new Date(this.filtroCajaMenorHasta) : null;
+    if (desde) desde.setHours(0, 0, 0, 0);
+    if (hasta) hasta.setHours(23, 59, 59, 999);
+    if (desde && hasta && desde > hasta) {
+      Swal.fire("Validación", "La fecha desde no puede ser mayor que la fecha hasta", "warning");
+      return;
+    }
+    const registradas = this.listadoCajaMenorTodas.filter((c) => {
+      const t = this.obtenerTimestampFechaCaja(c);
+      if (desde && t < desde.getTime()) return false;
+      if (hasta && t > hasta.getTime()) return false;
+      return true;
+    });
+    this.listadoCajaMenorReciente = [
+      ...registradas,
+      ...this.cajasSinRegistroIntermedias(registradas),
+    ].sort((a, b) => this.obtenerTimestampFechaCaja(b) - this.obtenerTimestampFechaCaja(a));
+    this.recalcularIndicadoresCajaMenor();
+  }
+
+  /**
+   * Días sin registro de caja entre la primera y la última caja de cada
+   * sucursal (solo huecos intermedios): se cuentan como cajas abiertas, porque
+   * ese día no se cerró la caja.
+   */
+  private cajasSinRegistroIntermedias(registradas: CajaMenor[]): CajaMenor[] {
+    const clave = (d: Date) => `${d.getFullYear()}-${d.getMonth()}-${d.getDate()}`;
+    const porSucursal = new Map<string, Set<string>>();
+    const rango = new Map<string, { min: Date; max: Date }>();
+    for (const c of registradas) {
+      if (!c.fecha) continue;
+      const d = new Date(c.fecha);
+      if (Number.isNaN(d.getTime())) continue;
+      d.setHours(0, 0, 0, 0);
+      const suc = (c.sucursal || "").trim();
+      if (!porSucursal.has(suc)) porSucursal.set(suc, new Set());
+      porSucursal.get(suc).add(clave(d));
+      const r = rango.get(suc);
+      if (!r) rango.set(suc, { min: new Date(d), max: new Date(d) });
+      else {
+        if (d < r.min) r.min = new Date(d);
+        if (d > r.max) r.max = new Date(d);
+      }
+    }
+    const faltantes: CajaMenor[] = [];
+    rango.forEach(({ min, max }, suc) => {
+      const dias = porSucursal.get(suc);
+      const d = new Date(min);
+      d.setDate(d.getDate() + 1);
+      while (d < max) {
+        if (!dias.has(clave(d))) {
+          faltantes.push({
+            fecha: new Date(d),
+            sucursal: suc,
+            estado: "Abierta",
+            estadoCaja: "Sin registro (no se cerró)",
+            resultado: 0,
+            sinRegistro: true,
+          } as CajaMenor & { sinRegistro: boolean });
+        }
+        d.setDate(d.getDate() + 1);
+      }
+    });
+    return faltantes;
+  }
+
+  esCajaSinRegistro(registro: CajaMenor): boolean {
+    return !!(registro as CajaMenor & { sinRegistro?: boolean })?.sinRegistro;
+  }
+
+  limpiarFiltroCajaMenor(): void {
+    this.filtroCajaMenorDesde = null;
+    this.filtroCajaMenorHasta = null;
+    this.aplicarFiltroCajaMenor();
+  }
+
+  get textoRangoCajaMenor(): string {
+    const f = (d: Date | null) => (d ? new Date(d).toLocaleDateString() : "");
+    if (this.filtroCajaMenorDesde && this.filtroCajaMenorHasta) {
+      return `del ${f(this.filtroCajaMenorDesde)} al ${f(this.filtroCajaMenorHasta)}`;
+    }
+    if (this.filtroCajaMenorDesde) return `desde el ${f(this.filtroCajaMenorDesde)}`;
+    if (this.filtroCajaMenorHasta) return `hasta el ${f(this.filtroCajaMenorHasta)}`;
+    return "todas las fechas";
+  }
+
   abrirDetalleIndicadorCajaMenor(tipo: TipoDetalleIndicadorCajaMenor): void {
     this.actualizarTamanoPopupIndicadores();
     const titulos: Record<TipoDetalleIndicadorCajaMenor, string> = {
-      todas: `Caja menor — detalle día a día (últimos ${this.diasIndicadorCajaMenor} días)`,
+      todas: `Caja menor — detalle día a día (${this.textoRangoCajaMenor})`,
       cerradas: "Cajas menores cerradas",
       abiertas: "Cajas menores abiertas",
       faltantes: "Cajas menores con faltante mayor a $1.00",
@@ -343,7 +432,9 @@ export class HomeComponent implements OnInit {
       total: lista.length,
       cerradas: lista.filter((c) => this.esCajaCerrada(c)).length,
       abiertas: lista.filter((c) => !this.esCajaCerrada(c)).length,
-      cuadradas: lista.filter((c) => Number(c.resultado ?? 0) === 0).length,
+      cuadradas: lista.filter(
+        (c) => !this.esCajaSinRegistro(c) && Number(c.resultado ?? 0) === 0
+      ).length,
       faltantes: lista.filter((c) => this.esCajaConFaltante(c)).length,
       sobranteMasUno: lista.filter((c) => this.esCajaConSobranteMasUno(c)).length,
     };
@@ -388,26 +479,19 @@ export class HomeComponent implements OnInit {
   cargarIndicadoresOrdenCompra(): void {
     this.errorIndicadoresOrdenCompra = false;
     this.cargandoIndicadoresOrdenCompra = true;
-    const rango = new objDate();
-    const hasta = new Date();
-    const desde = new Date();
-    hasta.setDate(hasta.getDate() + 1);
-    desde.setDate(hasta.getDate() - this.diasIndicadorOrdenCompra);
-    desde.setHours(0, 0, 0, 0);
-    rango.fechaAnterior = desde;
-    rango.fechaActual = hasta;
 
-    this.ordenesCompraService.getOrdenesMensuales(rango).subscribe({
+    this.ordenesCompraService.getOrden().subscribe({
       next: (resp) => {
         const lista = (Array.isArray(resp) ? resp : []) as OrdenDeCompra[];
-        this.listadoOrdenCompraReciente = lista
+        this.listadoOrdenCompraTodas = lista
           .map((o) => this.normalizarRegistroOrdenCompra(o))
           .filter((o) => this.esRegistroVisibleIndicadorOrdenCompra(o))
           .sort((a, b) => this.obtenerTimestampFechaOrdenCompra(b) - this.obtenerTimestampFechaOrdenCompra(a));
-        this.recalcularIndicadoresOrdenCompra();
+        this.aplicarFiltroOrdenCompra();
         this.cargandoIndicadoresOrdenCompra = false;
       },
       error: () => {
+        this.listadoOrdenCompraTodas = [];
         this.listadoOrdenCompraReciente = [];
         this.recalcularIndicadoresOrdenCompra();
         this.cargandoIndicadoresOrdenCompra = false;
@@ -416,10 +500,45 @@ export class HomeComponent implements OnInit {
     });
   }
 
+  /** Filtra por la fecha de cada orden; sin fechas muestra todas (global). */
+  aplicarFiltroOrdenCompra(): void {
+    const desde = this.filtroOrdenCompraDesde ? new Date(this.filtroOrdenCompraDesde) : null;
+    const hasta = this.filtroOrdenCompraHasta ? new Date(this.filtroOrdenCompraHasta) : null;
+    if (desde) desde.setHours(0, 0, 0, 0);
+    if (hasta) hasta.setHours(23, 59, 59, 999);
+    if (desde && hasta && desde > hasta) {
+      Swal.fire("Validación", "La fecha desde no puede ser mayor que la fecha hasta", "warning");
+      return;
+    }
+    this.listadoOrdenCompraReciente = this.listadoOrdenCompraTodas.filter((o) => {
+      const t = this.obtenerTimestampFechaOrdenCompra(o);
+      if (desde && t < desde.getTime()) return false;
+      if (hasta && t > hasta.getTime()) return false;
+      return true;
+    });
+    this.recalcularIndicadoresOrdenCompra();
+  }
+
+  limpiarFiltroOrdenCompra(): void {
+    this.filtroOrdenCompraDesde = null;
+    this.filtroOrdenCompraHasta = null;
+    this.aplicarFiltroOrdenCompra();
+  }
+
+  get textoRangoOrdenCompra(): string {
+    const f = (d: Date | null) => (d ? new Date(d).toLocaleDateString() : "");
+    if (this.filtroOrdenCompraDesde && this.filtroOrdenCompraHasta) {
+      return `del ${f(this.filtroOrdenCompraDesde)} al ${f(this.filtroOrdenCompraHasta)}`;
+    }
+    if (this.filtroOrdenCompraDesde) return `desde el ${f(this.filtroOrdenCompraDesde)}`;
+    if (this.filtroOrdenCompraHasta) return `hasta el ${f(this.filtroOrdenCompraHasta)}`;
+    return "todas las fechas";
+  }
+
   abrirDetalleIndicadorOrdenCompra(tipo: TipoDetalleIndicadorOrdenCompra): void {
     this.actualizarTamanoPopupIndicadores();
     const titulos: Record<TipoDetalleIndicadorOrdenCompra, string> = {
-      todas: `Órdenes de compra — últimos ${this.diasIndicadorOrdenCompra} días`,
+      todas: `Órdenes de compra — ${this.textoRangoOrdenCompra}`,
       solicitudes: "Solicitudes de orden de compra",
       abierto: "Órdenes abiertas (pendientes de ingreso)",
       parcial: "Órdenes con ingreso parcial",

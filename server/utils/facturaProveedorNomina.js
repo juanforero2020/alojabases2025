@@ -164,7 +164,10 @@ async function aplicarPagoFacturaProveedor({
     transaccion.numFactura = factura.nFactura;
     transaccion.proveedor = factura.proveedor;
     transaccion.ordenCompra = factura.nSolicitud;
-    transaccion.documentoVenta = factura.nFactura;
+    // Un desembolso de anticipo conserva "Anticipo" como documento.
+    if (!transaccion.documentoVenta) {
+      transaccion.documentoVenta = factura.nFactura;
+    }
     await transaccion.save();
   }
 

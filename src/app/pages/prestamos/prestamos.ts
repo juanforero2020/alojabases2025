@@ -20,6 +20,8 @@ export class Prestamos{
     comprobanteId : string
     total:number
     observaciones:string
+    reglaPagoId?: string   // préstamo generado en Nóminas
+    origen?: string
 
     constructor(){
         this.estado = "Activa"  //Cancelada cuando se establezca el pago

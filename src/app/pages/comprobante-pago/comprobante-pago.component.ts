@@ -55,6 +55,7 @@ export class ComprobantePagoComponent implements OnInit {
   bloquearBoton = false;
 
   listaCuentas: Cuenta [] = []
+  esAdministrador: boolean = false;
   listaCuentasGlobal: Cuenta [] = []
   listaSubCuentas: SubCuenta [] = []
   listaSubCuentas2: SubCuenta [] = []
@@ -251,15 +252,23 @@ export class ComprobantePagoComponent implements OnInit {
  
 
    separarcuentas(){
+    // Se reconstruye cada vez: se llama al cargar las cuentas y al conocer el rol.
+    this.listaCuentas = [];
     this.listaCuentasGlobal.forEach(element=>{
       if(element.tipoCuenta == "Salidas" || element.tipoCuenta == "Reales y Transitorias"){
         if(element._id == "6195af58f75a418e9c2eba00" || element._id == "6195b02af75a418e9c2eba05" || element._id == "6195af71f75a418e9c2eba03"){
 
+        }else if(!this.esAdministrador && this.esCuentaGastosOperacionales(element)){
+          // 1.7 GASTOS OPERACIONALES solo para administradores
         }else
           this.listaCuentas.push(element);
       }
         
     })
+  }
+
+  esCuentaGastosOperacionales(cuenta: Cuenta): boolean {
+    return /^1\.7(\s|$)/.test((cuenta.nombre || "").trim());
   }
 
   traerProveedores(){
@@ -319,6 +328,8 @@ export class ComprobantePagoComponent implements OnInit {
               this.isUser = true;
             else
               this.isUser = false;
+            this.esAdministrador = usuario[0].rol == "Administrador";
+            this.separarcuentas();
           }
         )
     });

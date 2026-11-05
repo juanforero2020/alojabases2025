@@ -15,6 +15,13 @@ const User = require('../server/models/user')
 
 
 require('./database');
+// Refleja en el módulo Préstamos los préstamos de Nóminas ya autorizados.
+require('mongoose').connection.once('open', () => {
+  require('./utils/prestamosModuloSync')
+    .sincronizarTodosLosPrestamos()
+    .then((n) => console.log(`Préstamos de nómina sincronizados: ${n}`))
+    .catch((err) => console.error('Sincronización de préstamos:', err.message));
+});
 
 app.set('port', process.env.PORT || 3000);
 app.use(cors());

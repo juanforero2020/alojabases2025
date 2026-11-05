@@ -173,6 +173,10 @@ export class PrestamosComponent implements OnInit {
 
 
   anularPrestamo(e:any){ 
+    if (e.reglaPagoId) {
+      this.mostrarMensajeGenerico(2,"Este préstamo se generó en Nóminas. Para cancelarlo o anularlo use el módulo de Nóminas (abonos o finalizar la regla).");
+      return;
+    }
     Swal.fire({
       title: 'Anular Préstamo',
       text: "Desea anular el préstamo perteneciente a "+e.beneficiario+ " por un valor de "+e.valor,

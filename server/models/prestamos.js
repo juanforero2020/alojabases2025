@@ -12,7 +12,10 @@ const PrestamosSchema = new Schema({
     valor: { type: Number, required: false},
     valorDeuda: { type: Number, required: false},
     estado: { type: String, required: false},
-    notas: { type: String, required: false}
+    notas: { type: String, required: false},
+    // Préstamos generados en Nóminas (regla tipo D): se sincronizan solos.
+    reglaPagoId: { type: String, required: false, index: true },
+    origen: { type: String, required: false }
 },{
     timestamps:true
 });

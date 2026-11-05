@@ -420,10 +420,19 @@ export class NominasService {
       .pipe(map((lista) => (lista || []).map(normalizarReglaPagoNomina)));
   }
 
-  getEventosAnticipo(cedula: string, fechaCobro?: string, todos?: boolean) {
+  getEventosAnticipo(
+    cedula: string,
+    fechaCobro?: string,
+    todos?: boolean,
+    excluirReglaId?: string
+  ) {
     const params: string[] = [];
     if (fechaCobro) params.push(`fechaCobro=${encodeURIComponent(fechaCobro)}`);
     if (todos) params.push("todos=1");
+    // El anticipo que se edita no debe restar de su propio disponible.
+    if (excluirReglaId) {
+      params.push(`excluirReglaId=${encodeURIComponent(excluirReglaId)}`);
+    }
     const q = params.length ? `?${params.join("&")}` : "";
     return this.http.get<FuenteDescuentoPrestamo[]>(
       `${this.URL}/eventos-anticipo/${cedula}${q}`

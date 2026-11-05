@@ -1593,7 +1593,9 @@ export class NominasEventosPagosComponent implements OnInit {
     const fechaCobro =
       fechaCalendarioParam(this.formulario.fechaInicioCobros) ||
       fechaCalendarioParam(new Date());
-    this._nominasService.getEventosAnticipo(doc, fechaCobro).subscribe(
+    this._nominasService
+      .getEventosAnticipo(doc, fechaCobro, false, this.formulario._id)
+      .subscribe(
       (res) => {
         const guardadas = this.formulario.fuentesDescuentoPrestamo || [];
         this.fuentesPrestamo = (res || []).map((ev) => {
@@ -1664,7 +1666,9 @@ export class NominasEventosPagosComponent implements OnInit {
     ) as Date | null;
     const fechaCobro =
       fechaCalendarioParam(fechaElegida) || fechaCalendarioParam(new Date());
-    this._nominasService.getEventosAnticipo(doc, fechaCobro).subscribe(
+    this._nominasService
+      .getEventosAnticipo(doc, fechaCobro, false, this.formulario._id)
+      .subscribe(
       (res) => {
         const snapped = this.elegirPagoMasCercanoDesde(res || [], fechaElegida);
         if (
@@ -1871,7 +1875,9 @@ export class NominasEventosPagosComponent implements OnInit {
     const fechaCobro =
       fechaCalendarioParam(this.formulario.fechaInicioCobros) ||
       fechaCalendarioParam(new Date());
-    this._nominasService.getEventosAnticipo(doc, fechaCobro).subscribe(
+    this._nominasService
+      .getEventosAnticipo(doc, fechaCobro, false, this.formulario._id)
+      .subscribe(
       (res) => {
         const guardadas = this.formulario.fuentesDescuentoPrestamo || [];
         this.fuentesPrestamo = (res || []).map((ev) => {

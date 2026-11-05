@@ -311,7 +311,8 @@ function construirNotasTransaccionNomina(evento, opciones = {}) {
   const nombre = (evento.nombreBeneficiario || "").trim() || "Sin nombre";
   const transaccion =
     opciones.prefijo || evento.transaccionNomina || "Pago programado";
-  const cuota = `cuota ${evento.numeroCuota}/${evento.totalCuotas}`;
+  const cuota =
+    opciones.cuota || `cuota ${evento.numeroCuota}/${evento.totalCuotas}`;
   const fechaCorresponde = textoFechaCorrespondePago(evento);
   let notas = `${transaccion} — ${nombre} — ${cuota} — fecha corresponde ${fechaCorresponde}`;
   if (opciones.detalle) {
@@ -547,9 +548,15 @@ async function ejecutarEventoProgramado(eventoId, opciones = {}) {
     ? redondear2(montoBruto - montoYaPagado)
     : montoPagar;
 
-  const fechaContable = new Date();
+  // Desembolso de préstamo/anticipo: la transacción va a la caja del día de la
+  // fecha de desembolso, aunque se pague otro día.
+  const fechaContable =
+    (evento.tipoRegla || regla.tipoRegla) === "D"
+      ? fechaCajaDelDia(regla.fechaDesembolso || evento.fechaProgramada) ||
+        new Date()
+      : new Date();
   const baseTx = {
-    fecha: new Date(),
+    fecha: fechaContable,
     fechaContable,
     sucursal: opciones.sucursal || "matriz",
     cliente: evento.nombreBeneficiario,
@@ -606,6 +613,18 @@ async function ejecutarEventoProgramado(eventoId, opciones = {}) {
           ? evento.nombreBeneficiario
           : "",
       ordenCompra: evento.nSolicitudFactura || regla.nSolicitudFactura || undefined,
+      // Desembolso de préstamo/anticipo: "ANT-0008 MARIA SALAZAR" y tipo de documento.
+      ...((evento.tipoRegla || regla.tipoRegla) === "D"
+        ? {
+            numDocumento: [
+              (regla.codigoPrestamo || evento.codigoPrestamo || "").trim(),
+              (evento.nombreBeneficiario || regla.nombreBeneficiario || "").trim(),
+            ]
+              .filter(Boolean)
+              .join(" "),
+            documentoVenta: esDesembolsoAnticipo ? "Anticipo" : "Préstamo",
+          }
+        : {}),
     });
     await tx.save();
   }
@@ -748,6 +767,17 @@ async function registrarTransaccionesDescuento(baseTx, lineas, cuentaPago, event
     const tipoCuentaDesc = esSubCuentaPrestamoNomina(subCuentaDesc)
       ? "Ingresos"
       : cuentaDesc.tipoCuenta || "Ingresos";
+    // Descuento de préstamo/anticipo: la cuota es la del préstamo, no la del pago de nómina.
+    const reglaPrestamo = linea.reglaDescuentoId
+      ? await ReglaPagoNomina.findById(linea.reglaDescuentoId).lean()
+      : null;
+    const cuotaPrestamo =
+      reglaPrestamo && reglaPrestamo.tipoRegla === "D"
+        ? require("../utils/proyeccionPagosTipoD").textoCuotaPrestamoEvento(
+            reglaPrestamo,
+            evento
+          )
+        : "";
     const txDesc = new TransaccionFinanciera({
       ...baseTx,
       centroCosto: linea.centroCosto || baseTx.centroCosto,
@@ -764,6 +794,7 @@ async function registrarTransaccionesDescuento(baseTx, lineas, cuentaPago, event
         prefijo: linea.tipoTransaccion === "DESCUENTO_PRESTAMO_NOMINA"
           ? "Abono préstamo nómina"
           : "Descuento nómina",
+        cuota: cuotaPrestamo || undefined,
         detalle: textoNotas(linea.etiqueta || "Descuento", linea.notas),
       }),
     });
@@ -849,6 +880,18 @@ async function obtenerLineasDescuentoEvento(evento, reglaA) {
 
 function redondear2(n) {
   return Math.round((Number(n) || 0) * 100) / 100;
+}
+
+/**
+ * Fecha calendario (se guarda a medianoche UTC) llevada al mediodía de Ecuador
+ * (UTC-5), para que caiga dentro del rango de la caja menor de ese mismo día.
+ */
+function fechaCajaDelDia(valor) {
+  const d = valor ? new Date(valor) : null;
+  if (!d || isNaN(d.getTime())) return null;
+  return new Date(
+    Date.UTC(d.getUTCFullYear(), d.getUTCMonth(), d.getUTCDate(), 17, 0, 0)
+  );
 }
 
 /**

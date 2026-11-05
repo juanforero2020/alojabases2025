@@ -250,7 +250,7 @@
       <dxi-column
         caption="Comprobante"
         [width]="105"
-        *ngIf="esAdministrador"
+        *ngIf="esAdministrador || esUsuario"
         [allowFiltering]="false"
         [allowSorting]="false"
         [allowExporting]="false"
@@ -333,7 +333,7 @@
       <div *dxTemplate="let d of 'comprobanteCell'">
         <button
           type="button"
-          *ngIf="esAdministrador"
+          *ngIf="esAdministrador || esUsuario"
           class="btn btn-sm btn-outline-primary comprobante-pago-btn"
           [disabled]="!puedeDescargarComprobantePago(d.data) || generandoComprobanteId === d.data._id"
           (click)="descargarComprobantePago(d.data)"

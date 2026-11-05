@@ -1193,7 +1193,7 @@ export class NominasPagosProgramadosComponent implements OnInit {
           columns: [
             {
               width: "*",
-              text: "COMPROBANTE DE PAGO — NÓMINA",
+              text: "COMPROBANTE DE PAGO",
               bold: true,
               fontSize: 16,
             },

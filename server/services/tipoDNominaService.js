@@ -368,7 +368,8 @@ async function validarFuentesPrestamo(regla) {
     }
     const lista = await listarEventosDisponiblesAnticipo(
       regla.cedulaBeneficiario,
-      regla.fechaInicioCobros || fuente.fechaEvento
+      regla.fechaInicioCobros || fuente.fechaEvento,
+      { excluirReglaId: regla._id }
     );
     const vivo = (lista || []).find(
       (e) => idStr(e.eventoPagoId) === idStr(fuente.eventoPagoId)

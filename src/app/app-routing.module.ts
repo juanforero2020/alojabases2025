@@ -15,6 +15,7 @@ import {
   DxButtonModule,
   DxTemplateModule,
   DxPopupModule,
+  DxDateBoxModule,
 } from "devextreme-angular";
 import { VentasComponent } from "./pages/ventas/ventas.component";
 import { TransaccionesComponent } from "./pages/transacciones/transacciones.component";
@@ -413,6 +414,7 @@ const routes: Routes = [
     DxButtonModule,
     DxTemplateModule,
     DxPopupModule,
+    DxDateBoxModule,
   ],
   providers: [AuthGuardService],
   exports: [RouterModule],

@@ -2,6 +2,22 @@ const { Router } = require("express");
 const router = Router();
 const Prestamos = require("../models/prestamos");
 
+// Los préstamos de Nóminas se cobran por nómina o en Abonos de préstamos;
+// no se ofrecen para cobro en recibo de caja ni se modifican desde aquí.
+const NO_NOMINA = { reglaPagoId: { $exists: false } };
+
+async function rechazarSiEsDeNomina(id, res) {
+  const prestamo = await Prestamos.findById(id).lean();
+  if (prestamo && prestamo.reglaPagoId) {
+    res.status(400).json({
+      mensaje:
+        "Este préstamo se generó en Nóminas. Gestiónelo desde Nóminas (abonos o finalizar la regla).",
+    });
+    return true;
+  }
+  return false;
+}
+
 router.get("/getPrestamos", async (req, res) => {
   const cuentas = await Prestamos.find();
   res.send(cuentas);
@@ -9,19 +25,19 @@ router.get("/getPrestamos", async (req, res) => {
 
 router.post("/getPrestamosPorRUC/:documento", async (req, res, next) => {
   const { documento } = req.params;
-  const documentos = await Prestamos.find({ruc: documento, estado:"Activa"});
+  const documentos = await Prestamos.find({ruc: documento, estado:"Activa", ...NO_NOMINA});
   res.json(documentos);
 });
 
 router.post("/getPrestamosPorReferencias/:documento", async (req, res, next) => {
   const { documento } = req.params;
-  const documentos = await Prestamos.find({comprobanteId: documento, estado:"Activa"});
+  const documentos = await Prestamos.find({comprobanteId: documento, estado:"Activa", ...NO_NOMINA});
   res.json(documentos);
 });
 
 router.post("/getPrestamosPorNombre/:nombre", async (req, res, next) => {
   const { nombre } = req.params;
-  const documentos = await Prestamos.find({beneficiario: nombre, estado:"Activa"});
+  const documentos = await Prestamos.find({beneficiario: nombre, estado:"Activa", ...NO_NOMINA});
   res.json(documentos);
 });
 
@@ -62,6 +78,7 @@ router.post("/getCuentasPorNombre/:nombre", async (req, res, next) => {
 router.put("/updateEstado/:id/:estado", async (req, res, next) => {
   const { id } = req.params;
   const { estado } = req.params;
+  if (await rechazarSiEsDeNomina(id, res)) return;
   await Prestamos.findByIdAndUpdate(id,{ $set: { estado: estado } },{ new: true });
   res.json({ status: "Cuenta Updated" });
 });
@@ -69,11 +86,13 @@ router.put("/updateEstado/:id/:estado", async (req, res, next) => {
 router.put("/updateValor/:id/:valor", async (req, res, next) => {
   const { id } = req.params;
   const { valor } = req.params;
+  if (await rechazarSiEsDeNomina(id, res)) return;
   await Prestamos.findByIdAndUpdate(id,{ $set: { valor: valor } },{ new: true });
   res.json({ status: "Cuenta Updated" });
 });
 
 router.delete("/delete/:id", async (req, res, next) => {
+  if (await rechazarSiEsDeNomina(req.params.id, res)) return;
   await Prestamos.findByIdAndRemove(req.params.id);
   res.json({ status: "Cuenta Eliminada" });
 });

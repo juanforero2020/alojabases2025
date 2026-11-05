@@ -241,6 +241,15 @@ const ReglaPagoNominaSchema = new Schema(
   { timestamps: true }
 );
 
+// Refleja los préstamos tipo D en el módulo Préstamos (saldo, cancelado, anulado).
+ReglaPagoNominaSchema.post("save", function (doc) {
+  if (!doc || doc.tipoRegla !== "D") return;
+  const { sincronizarPrestamoModulo } = require("../utils/prestamosModuloSync");
+  sincronizarPrestamoModulo(doc).catch((err) =>
+    console.error("No se pudo sincronizar el módulo Préstamos:", err.message)
+  );
+});
+
 ReglaPagoNominaSchema.index(
   { codigoPrestamo: 1 },
   { unique: true, sparse: true }

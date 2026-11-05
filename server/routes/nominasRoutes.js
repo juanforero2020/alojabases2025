@@ -700,7 +700,10 @@ router.get("/eventos-anticipo/:cedula", async (req, res) => {
     const lista = await tipoDNominaService.listarEventosDisponiblesAnticipo(
       req.params.cedula,
       req.query.fechaCobro,
-      { todos: req.query.todos === "1" || req.query.todos === "true" }
+      {
+        todos: req.query.todos === "1" || req.query.todos === "true",
+        excluirReglaId: req.query.excluirReglaId || undefined,
+      }
     );
     res.json(lista);
   } catch (err) {
@@ -981,10 +984,22 @@ router.put("/reglas-pago/:id/autorizar", async (req, res) => {
       regla.fechaAutorizacion = new Date();
       await asignarCodigoPrestamoSiFalta(regla);
       await regla.save();
-      const { proyeccion, eventosActualizados, cuotaDescuento, eventos, eventosCobro, eventosNominaGenerados } =
-        await tipoDNominaService.generarEventosProgramados(regla, {
+      let generado;
+      try {
+        generado = await tipoDNominaService.generarEventosProgramados(regla, {
           mesesProyeccion: regla.mesesProyeccion || 6,
         });
+      } catch (errGenerar) {
+        // Si no se pudo crear el desembolso, la regla no puede quedar autorizada:
+        // vuelve a borrador y se quitan los descuentos que se hubieran aplicado.
+        regla.estadoRegla = "Borrador";
+        regla.fechaAutorizacion = undefined;
+        await regla.save();
+        await tipoDNominaService.quitarDescuentosPrestamo(regla);
+        throw errGenerar;
+      }
+      const { proyeccion, eventosActualizados, cuotaDescuento, eventos, eventosCobro, eventosNominaGenerados } =
+        generado;
       regla.proyeccion = proyeccion;
       regla.cuotaEvento = cuotaDescuento;
       await regla.save();

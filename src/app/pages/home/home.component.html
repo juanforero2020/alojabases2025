@@ -166,11 +166,52 @@
     <div class="row mb-3">
         <div class="col-md-12">
             <div class="dx-card responsive-paddings">
+                
                 <h5>Indicador - Caja Menor</h5>
                 <p class="text-muted">
-                    Resumen de cierres diarios de caja menor (últimos {{ diasIndicadorCajaMenor }} días).
+                    Resumen de cierres diarios de caja menor ({{ textoRangoCajaMenor }}).
                     <strong>Faltante &gt; $1.00</strong> (resultado menor a −$1.00) y <strong>Sobrante &gt; $1.00</strong> (resultado mayor a $1.00).
                 </p>
+                <div class="row align-items-end mb-3">
+                    <div class="col-6 col-md-3 mb-2">
+                        <label class="small mb-1">Desde</label>
+                        <dx-date-box
+                            [(value)]="filtroCajaMenorDesde"
+                            type="date"
+                            [showClearButton]="true"
+                            placeholder="Sin límite"
+                        ></dx-date-box>
+                    </div>
+                    <div class="col-6 col-md-3 mb-2">
+                        <label class="small mb-1">Hasta</label>
+                        <dx-date-box
+                            [(value)]="filtroCajaMenorHasta"
+                            type="date"
+                            [showClearButton]="true"
+                            placeholder="Sin límite"
+                        ></dx-date-box>
+                    </div>
+                    <div class="col-6 col-md-2 mb-2">
+                        <button
+                            type="button"
+                            class="btn btn-primary btn-block"
+                            [disabled]="cargandoIndicadoresCajaMenor"
+                            (click)="aplicarFiltroCajaMenor()"
+                        >
+                            Aplicar
+                        </button>
+                    </div>
+                    <div class="col-6 col-md-2 mb-2">
+                        <button
+                            type="button"
+                            class="btn btn-outline-secondary btn-block"
+                            [disabled]="cargandoIndicadoresCajaMenor"
+                            (click)="limpiarFiltroCajaMenor()"
+                        >
+                            Ver todo
+                        </button>
+                    </div>
+                </div>
                 <div *ngIf="cargandoIndicadoresCajaMenor" class="loading-wrap">
                     <dx-load-indicator [visible]="true" height="32" width="32"></dx-load-indicator>
                     <span>Cargando indicadores de caja menor…</span>
@@ -304,9 +345,12 @@
                         <span *ngIf="c.idDocumento"> · Doc. #{{ c.idDocumento }}</span>
                         <span *ngIf="c.estadoCaja"> · {{ c.estadoCaja }}</span>
                     </div>
-                    <div class="detalle-orden-linea small">
+                    <div class="detalle-orden-linea small" *ngIf="!esCajaSinRegistro(c)">
                         Resultado:
                         <strong [ngClass]="claseResultadoCajaMenor(c)">{{ formatearResultadoCajaMenor(c.resultado) }}</strong>
+                    </div>
+                    <div class="detalle-orden-linea small text-muted" *ngIf="esCajaSinRegistro(c)">
+                        No hay registro de caja ese día: se cuenta como abierta.
                     </div>
                 </div>
             </div>
@@ -316,11 +360,52 @@
     <div class="row mb-3">
         <div class="col-md-12">
             <div class="dx-card responsive-paddings">
+                
                 <h5>Indicador - Órdenes de Compra</h5>
                 <p class="text-muted">
-                    Solicitudes y órdenes aprobadas de los últimos {{ diasIndicadorOrdenCompra }} días
+                    Solicitudes y órdenes aprobadas ({{ textoRangoOrdenCompra }})
                     (abierto, parcial y completo). No incluye rechazadas.
                 </p>
+                <div class="row align-items-end mb-3">
+                    <div class="col-6 col-md-3 mb-2">
+                        <label class="small mb-1">Desde</label>
+                        <dx-date-box
+                            [(value)]="filtroOrdenCompraDesde"
+                            type="date"
+                            [showClearButton]="true"
+                            placeholder="Sin límite"
+                        ></dx-date-box>
+                    </div>
+                    <div class="col-6 col-md-3 mb-2">
+                        <label class="small mb-1">Hasta</label>
+                        <dx-date-box
+                            [(value)]="filtroOrdenCompraHasta"
+                            type="date"
+                            [showClearButton]="true"
+                            placeholder="Sin límite"
+                        ></dx-date-box>
+                    </div>
+                    <div class="col-6 col-md-2 mb-2">
+                        <button
+                            type="button"
+                            class="btn btn-primary btn-block"
+                            [disabled]="cargandoIndicadoresOrdenCompra"
+                            (click)="aplicarFiltroOrdenCompra()"
+                        >
+                            Aplicar
+                        </button>
+                    </div>
+                    <div class="col-6 col-md-2 mb-2">
+                        <button
+                            type="button"
+                            class="btn btn-outline-secondary btn-block"
+                            [disabled]="cargandoIndicadoresOrdenCompra"
+                            (click)="limpiarFiltroOrdenCompra()"
+                        >
+                            Ver todo
+                        </button>
+                    </div>
+                </div>
                 <div *ngIf="cargandoIndicadoresOrdenCompra" class="loading-wrap">
                     <dx-load-indicator [visible]="true" height="32" width="32"></dx-load-indicator>
                     <span>Cargando indicadores de órdenes de compra…</span>
@@ -421,7 +506,7 @@
         <div *dxTemplate="let data of 'content'" class="popup-indicadores-entregas">
             <div class="popup-indicadores-scroll">
                 <p class="text-muted small mb-2">
-                    Detalle referencial de los últimos {{ diasIndicadorOrdenCompra }} días; incluye solicitud, proveedor, estado y total.
+                    Detalle referencial ({{ textoRangoOrdenCompra }}); incluye solicitud, proveedor, estado y total.
                 </p>
                 <div *ngIf="detalleOrdenCompraFiltrado.length === 0" class="text-muted">
                     No hay registros en esta categoría.

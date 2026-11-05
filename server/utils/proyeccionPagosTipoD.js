@@ -253,6 +253,37 @@ function indiceFilaTablaParaEvento(tabla, evento) {
   });
 }
 
+/**
+ * "cuota X/Y" del préstamo (no del pago de nómina) que se cobra en ese evento.
+ * Cuenta las cuotas ya pagadas del historial más la posición en la tabla.
+ */
+function textoCuotaPrestamoEvento(reglaD, evento) {
+  if (!reglaD) return "";
+  if (esReglaAnticipo(reglaD)) return "cuota 1/1";
+  const historial = (reglaD.cuotasPagadasPrestamo || []).length;
+  const tabla = (reglaD.tablaAmortizacion || [])
+    .map(filaTablaPlain)
+    .sort(
+      (a, b) =>
+        new Date(a.fechaMin || 0) - new Date(b.fechaMin || 0) ||
+        (Number(a.numeroCuota) || 0) - (Number(b.numeroCuota) || 0)
+    );
+  if (tabla.length) {
+    const indice = indiceFilaTablaParaEvento(tabla, evento);
+    if (indice >= 0) {
+      return `cuota ${historial + indice + 1}/${historial + tabla.length}`;
+    }
+  }
+  // Sin tabla: cuotas descontadas antes en nómina + esta.
+  const previas = (reglaD.abonosPrestamo || []).filter(
+    (a) => a.tipoMovimiento === "Descuento nomina"
+  ).length;
+  const total = Number(reglaD.cuotas) || 0;
+  return total
+    ? `cuota ${Math.min(previas + 1, total)}/${total}`
+    : `cuota ${previas + 1}`;
+}
+
 function filaTablaPlain(fila) {
   const f = fila && typeof fila.toObject === "function" ? fila.toObject() : { ...fila };
   return {
@@ -1263,6 +1294,12 @@ async function listarEventosDisponiblesAnticipo(cedula, fechaCobro, opciones = {
   const doc = (cedula || "").trim();
   if (!doc) return [];
   const ctx = await contextoDescuentosBeneficiario(doc);
+  // Al validar un anticipo ya guardado, su propio descuento no debe contar
+  // como ocupado (si no, el disponible baja y la autorización falla).
+  const excluir = opciones && opciones.excluirReglaId ? idStr(opciones.excluirReglaId) : "";
+  if (excluir) {
+    ctx.reglasD = (ctx.reglasD || []).filter((r) => idStr(r._id) !== excluir);
+  }
   const asignado = asignarDescuentosDEnEventos(ctx);
   const fechaObjetivo =
     fechaCalendarioFiltro(fechaCobro) || inicioDelDiaLocal(new Date());
@@ -1354,4 +1391,5 @@ module.exports = {
   asegurarEventosNominaParaPrestamo,
   calcularDescuentoPrestamoParaPago,
   omitirDescuentoPrestamoEvento,
+  textoCuotaPrestamoEvento,
 };
