@@ -51,6 +51,11 @@
     border: none;
 }
 
+/* Factura en ERROR que en Veronica está CREADO (pendiente de autorización SRI) */
+.btn-sect-warning.veronica-creado{
+    color: #1e6fd9;
+}
+
 .btn-sect-success{
     background-color: transparent;
     color: green;

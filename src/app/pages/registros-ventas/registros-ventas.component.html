@@ -72,7 +72,18 @@
 
             </div>
             <div class="col-md-2"></div>
-        </div>   
+        </div>
+    </div>
+</div>
+
+<div class="row mt-2" *ngIf="tipoBusqueda === 'Factura'">
+    <div class="col-12 d-flex justify-content-end">
+        <button class="btn btn-primary"
+                [disabled]="validandoFacturasVeronica || !facturas?.length"
+                title="Consulta en Veronica las facturas de matriz del rango Desde/Hasta y actualiza las que están en ERROR"
+                (click)="validarFacturasVeronica()">
+            <i class="fa fa-solid fa-check-double"></i> Validar facturas con Veronica
+        </button>
     </div>
 </div>
 
@@ -125,6 +136,8 @@
             <ng-container [ngSwitch]="data.value" class="btn-center">
 
                 <button *ngSwitchCase="'ERROR'" class="btn-sect-warning btn btn-danger btn-sm"
+                        [class.veronica-creado]="data.data.estadoVeronicaSri === 'CREADO'"
+                        [title]="data.data.estadoVeronicaSri === 'CREADO' ? 'En Veronica: CREADO (pendiente de autorización del SRI)' : 'Ver error de envío'"
                         (click)="getViewLog({row: {data: data.data}})">
                     <i class="fa fa-solid fa-exclamation"></i> </button>
 

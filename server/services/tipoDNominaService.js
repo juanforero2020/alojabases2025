@@ -56,18 +56,33 @@ function normalizarFuentes(fuentes = []) {
     }));
 }
 
+const OFFSET_ECUADOR_MS = 5 * 60 * 60 * 1000; // UTC-5, sin horario de verano
+
+/**
+ * Día calendario de una fecha, interpretada en hora de Ecuador.
+ * El navegador envía fechas con hora en UTC (21:00 del 6/11 en Ecuador llega
+ * como 2026-11-07T02:00Z); tomar el día UTC lo corría al día siguiente.
+ * - "YYYY-MM-DD" (sin hora): ese día.
+ * - Medianoche UTC exacta: fecha ya guardada como "solo día", se respeta.
+ * - Cualquier otra hora: se convierte a Ecuador antes de tomar el día.
+ */
 function fechaCalendario(valor) {
   if (!valor) return null;
   if (typeof valor === "string") {
-    const m = valor.match(/^(\d{4})-(\d{2})-(\d{2})/);
+    const m = valor.match(/^(\d{4})-(\d{2})-(\d{2})$/);
     if (m) {
       return new Date(Number(m[1]), Number(m[2]) - 1, Number(m[3]));
     }
   }
   const d = new Date(valor);
   if (isNaN(d.getTime())) return null;
-  d.setHours(0, 0, 0, 0);
-  return d;
+  const esSoloDia =
+    d.getUTCHours() === 0 &&
+    d.getUTCMinutes() === 0 &&
+    d.getUTCSeconds() === 0 &&
+    d.getUTCMilliseconds() === 0;
+  const ref = esSoloDia ? d : new Date(d.getTime() - OFFSET_ECUADOR_MS);
+  return new Date(ref.getUTCFullYear(), ref.getUTCMonth(), ref.getUTCDate());
 }
 
 function esObjectIdValido(valor) {

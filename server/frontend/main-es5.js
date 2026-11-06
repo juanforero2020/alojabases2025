@@ -98009,7 +98009,7 @@ function _classCallCheck(instance, Constructor) { if (!(instance instanceof Cons
         this.tipoDetalleOrdenCompraActivo = null;
         this.detalleOrdenCompraFiltrado = [];
         this.versionSistema = "1.1.3";
-        this.ultimaFechaActualizacion = "24/10/2026 17:00";
+        this.ultimaFechaActualizacion = "06/11/2026 19:00";
         this.esAsesorComercial = false;
         this.popupIndicadoresVisible = false;
         this.tituloPopupIndicadores = "";
@@ -147172,7 +147172,7 @@ function _classCallCheck(instance, Constructor) { if (!(instance instanceof Cons
       if (rf & 1) {
         _angular_core__WEBPACK_IMPORTED_MODULE_1__["ɵɵelementStart"](0, "div");
 
-        _angular_core__WEBPACK_IMPORTED_MODULE_1__["ɵɵelement"](1, "app-loading-messagge", 27);
+        _angular_core__WEBPACK_IMPORTED_MODULE_1__["ɵɵelement"](1, "app-loading-messagge", 28);
 
         _angular_core__WEBPACK_IMPORTED_MODULE_1__["ɵɵelementEnd"]();
       }
@@ -147186,115 +147186,161 @@ function _classCallCheck(instance, Constructor) { if (!(instance instanceof Cons
       }
     }
 
-    function RegistrosVentasComponent_div_49_div_28_button_2_Template(rf, ctx) {
+    function RegistrosVentasComponent_div_49_Template(rf, ctx) {
       if (rf & 1) {
-        var _r14 = _angular_core__WEBPACK_IMPORTED_MODULE_1__["ɵɵgetCurrentView"]();
+        var _r6 = _angular_core__WEBPACK_IMPORTED_MODULE_1__["ɵɵgetCurrentView"]();
 
-        _angular_core__WEBPACK_IMPORTED_MODULE_1__["ɵɵelementStart"](0, "button", 69);
+        _angular_core__WEBPACK_IMPORTED_MODULE_1__["ɵɵelementStart"](0, "div", 29);
 
-        _angular_core__WEBPACK_IMPORTED_MODULE_1__["ɵɵlistener"]("click", function RegistrosVentasComponent_div_49_div_28_button_2_Template_button_click_0_listener() {
-          _angular_core__WEBPACK_IMPORTED_MODULE_1__["ɵɵrestoreView"](_r14);
+        _angular_core__WEBPACK_IMPORTED_MODULE_1__["ɵɵelementStart"](1, "div", 30);
 
-          var data_r7 = _angular_core__WEBPACK_IMPORTED_MODULE_1__["ɵɵnextContext"]().$implicit;
+        _angular_core__WEBPACK_IMPORTED_MODULE_1__["ɵɵelementStart"](2, "button", 31);
 
-          var ctx_r12 = _angular_core__WEBPACK_IMPORTED_MODULE_1__["ɵɵnextContext"](2);
+        _angular_core__WEBPACK_IMPORTED_MODULE_1__["ɵɵlistener"]("click", function RegistrosVentasComponent_div_49_Template_button_click_2_listener() {
+          _angular_core__WEBPACK_IMPORTED_MODULE_1__["ɵɵrestoreView"](_r6);
 
-          return ctx_r12.getViewLog({
-            row: {
-              data: data_r7.data
-            }
-          });
+          var ctx_r5 = _angular_core__WEBPACK_IMPORTED_MODULE_1__["ɵɵnextContext"]();
+
+          return ctx_r5.validarFacturasVeronica();
         });
 
-        _angular_core__WEBPACK_IMPORTED_MODULE_1__["ɵɵelement"](1, "i", 70);
+        _angular_core__WEBPACK_IMPORTED_MODULE_1__["ɵɵelement"](3, "i", 32);
+
+        _angular_core__WEBPACK_IMPORTED_MODULE_1__["ɵɵtext"](4, " Validar facturas con Veronica ");
 
         _angular_core__WEBPACK_IMPORTED_MODULE_1__["ɵɵelementEnd"]();
-      }
-    }
 
-    function RegistrosVentasComponent_div_49_div_28_button_3_Template(rf, ctx) {
-      if (rf & 1) {
-        var _r17 = _angular_core__WEBPACK_IMPORTED_MODULE_1__["ɵɵgetCurrentView"]();
-
-        _angular_core__WEBPACK_IMPORTED_MODULE_1__["ɵɵelementStart"](0, "button", 71);
-
-        _angular_core__WEBPACK_IMPORTED_MODULE_1__["ɵɵlistener"]("click", function RegistrosVentasComponent_div_49_div_28_button_3_Template_button_click_0_listener() {
-          _angular_core__WEBPACK_IMPORTED_MODULE_1__["ɵɵrestoreView"](_r17);
-
-          var data_r7 = _angular_core__WEBPACK_IMPORTED_MODULE_1__["ɵɵnextContext"]().$implicit;
-
-          var ctx_r15 = _angular_core__WEBPACK_IMPORTED_MODULE_1__["ɵɵnextContext"](2);
-
-          return ctx_r15.reprocesarFacturaVeronica({
-            row: {
-              data: data_r7.data
-            }
-          });
-        });
-
-        _angular_core__WEBPACK_IMPORTED_MODULE_1__["ɵɵelement"](1, "i", 72);
+        _angular_core__WEBPACK_IMPORTED_MODULE_1__["ɵɵelementEnd"]();
 
         _angular_core__WEBPACK_IMPORTED_MODULE_1__["ɵɵelementEnd"]();
       }
 
       if (rf & 2) {
-        var data_r7 = _angular_core__WEBPACK_IMPORTED_MODULE_1__["ɵɵnextContext"]().$implicit;
+        var ctx_r1 = _angular_core__WEBPACK_IMPORTED_MODULE_1__["ɵɵnextContext"]();
 
-        var ctx_r9 = _angular_core__WEBPACK_IMPORTED_MODULE_1__["ɵɵnextContext"](2);
+        _angular_core__WEBPACK_IMPORTED_MODULE_1__["ɵɵadvance"](2);
 
-        _angular_core__WEBPACK_IMPORTED_MODULE_1__["ɵɵproperty"]("disabled", ctx_r9.estaReprocesandoVeronica(data_r7.data));
+        _angular_core__WEBPACK_IMPORTED_MODULE_1__["ɵɵproperty"]("disabled", ctx_r1.validandoFacturasVeronica || !(ctx_r1.facturas == null ? null : ctx_r1.facturas.length));
       }
     }
 
-    function RegistrosVentasComponent_div_49_div_28_button_4_Template(rf, ctx) {
+    function RegistrosVentasComponent_div_50_div_28_button_2_Template(rf, ctx) {
       if (rf & 1) {
-        var _r21 = _angular_core__WEBPACK_IMPORTED_MODULE_1__["ɵɵgetCurrentView"]();
+        var _r17 = _angular_core__WEBPACK_IMPORTED_MODULE_1__["ɵɵgetCurrentView"]();
 
-        _angular_core__WEBPACK_IMPORTED_MODULE_1__["ɵɵelementStart"](0, "button", 73);
+        _angular_core__WEBPACK_IMPORTED_MODULE_1__["ɵɵelementStart"](0, "button", 74);
 
-        _angular_core__WEBPACK_IMPORTED_MODULE_1__["ɵɵlistener"]("click", function RegistrosVentasComponent_div_49_div_28_button_4_Template_button_click_0_listener() {
-          _angular_core__WEBPACK_IMPORTED_MODULE_1__["ɵɵrestoreView"](_r21);
+        _angular_core__WEBPACK_IMPORTED_MODULE_1__["ɵɵlistener"]("click", function RegistrosVentasComponent_div_50_div_28_button_2_Template_button_click_0_listener() {
+          _angular_core__WEBPACK_IMPORTED_MODULE_1__["ɵɵrestoreView"](_r17);
 
-          var data_r7 = _angular_core__WEBPACK_IMPORTED_MODULE_1__["ɵɵnextContext"]().$implicit;
+          var data_r10 = _angular_core__WEBPACK_IMPORTED_MODULE_1__["ɵɵnextContext"]().$implicit;
 
-          var ctx_r19 = _angular_core__WEBPACK_IMPORTED_MODULE_1__["ɵɵnextContext"](2);
+          var ctx_r15 = _angular_core__WEBPACK_IMPORTED_MODULE_1__["ɵɵnextContext"](2);
 
-          return ctx_r19.reprocesarFacturaDirecta({
+          return ctx_r15.getViewLog({
             row: {
-              data: data_r7.data
+              data: data_r10.data
             }
           });
         });
 
-        _angular_core__WEBPACK_IMPORTED_MODULE_1__["ɵɵelement"](1, "i", 74);
+        _angular_core__WEBPACK_IMPORTED_MODULE_1__["ɵɵelement"](1, "i", 75);
+
+        _angular_core__WEBPACK_IMPORTED_MODULE_1__["ɵɵelementEnd"]();
+      }
+
+      if (rf & 2) {
+        var data_r10 = _angular_core__WEBPACK_IMPORTED_MODULE_1__["ɵɵnextContext"]().$implicit;
+
+        _angular_core__WEBPACK_IMPORTED_MODULE_1__["ɵɵclassProp"]("veronica-creado", data_r10.data.estadoVeronicaSri === "CREADO");
+
+        _angular_core__WEBPACK_IMPORTED_MODULE_1__["ɵɵproperty"]("title", data_r10.data.estadoVeronicaSri === "CREADO" ? "En Veronica: CREADO (pendiente de autorizaci\xF3n del SRI)" : "Ver error de env\xEDo");
+      }
+    }
+
+    function RegistrosVentasComponent_div_50_div_28_button_3_Template(rf, ctx) {
+      if (rf & 1) {
+        var _r21 = _angular_core__WEBPACK_IMPORTED_MODULE_1__["ɵɵgetCurrentView"]();
+
+        _angular_core__WEBPACK_IMPORTED_MODULE_1__["ɵɵelementStart"](0, "button", 76);
+
+        _angular_core__WEBPACK_IMPORTED_MODULE_1__["ɵɵlistener"]("click", function RegistrosVentasComponent_div_50_div_28_button_3_Template_button_click_0_listener() {
+          _angular_core__WEBPACK_IMPORTED_MODULE_1__["ɵɵrestoreView"](_r21);
+
+          var data_r10 = _angular_core__WEBPACK_IMPORTED_MODULE_1__["ɵɵnextContext"]().$implicit;
+
+          var ctx_r19 = _angular_core__WEBPACK_IMPORTED_MODULE_1__["ɵɵnextContext"](2);
+
+          return ctx_r19.reprocesarFacturaVeronica({
+            row: {
+              data: data_r10.data
+            }
+          });
+        });
+
+        _angular_core__WEBPACK_IMPORTED_MODULE_1__["ɵɵelement"](1, "i", 77);
+
+        _angular_core__WEBPACK_IMPORTED_MODULE_1__["ɵɵelementEnd"]();
+      }
+
+      if (rf & 2) {
+        var data_r10 = _angular_core__WEBPACK_IMPORTED_MODULE_1__["ɵɵnextContext"]().$implicit;
+
+        var ctx_r12 = _angular_core__WEBPACK_IMPORTED_MODULE_1__["ɵɵnextContext"](2);
+
+        _angular_core__WEBPACK_IMPORTED_MODULE_1__["ɵɵproperty"]("disabled", ctx_r12.estaReprocesandoVeronica(data_r10.data));
+      }
+    }
+
+    function RegistrosVentasComponent_div_50_div_28_button_4_Template(rf, ctx) {
+      if (rf & 1) {
+        var _r25 = _angular_core__WEBPACK_IMPORTED_MODULE_1__["ɵɵgetCurrentView"]();
+
+        _angular_core__WEBPACK_IMPORTED_MODULE_1__["ɵɵelementStart"](0, "button", 78);
+
+        _angular_core__WEBPACK_IMPORTED_MODULE_1__["ɵɵlistener"]("click", function RegistrosVentasComponent_div_50_div_28_button_4_Template_button_click_0_listener() {
+          _angular_core__WEBPACK_IMPORTED_MODULE_1__["ɵɵrestoreView"](_r25);
+
+          var data_r10 = _angular_core__WEBPACK_IMPORTED_MODULE_1__["ɵɵnextContext"]().$implicit;
+
+          var ctx_r23 = _angular_core__WEBPACK_IMPORTED_MODULE_1__["ɵɵnextContext"](2);
+
+          return ctx_r23.reprocesarFacturaDirecta({
+            row: {
+              data: data_r10.data
+            }
+          });
+        });
+
+        _angular_core__WEBPACK_IMPORTED_MODULE_1__["ɵɵelement"](1, "i", 79);
 
         _angular_core__WEBPACK_IMPORTED_MODULE_1__["ɵɵelementEnd"]();
       }
     }
 
-    function RegistrosVentasComponent_div_49_div_28_button_5_Template(rf, ctx) {
+    function RegistrosVentasComponent_div_50_div_28_button_5_Template(rf, ctx) {
       if (rf & 1) {
-        _angular_core__WEBPACK_IMPORTED_MODULE_1__["ɵɵelementStart"](0, "button", 75);
+        _angular_core__WEBPACK_IMPORTED_MODULE_1__["ɵɵelementStart"](0, "button", 80);
 
-        _angular_core__WEBPACK_IMPORTED_MODULE_1__["ɵɵelement"](1, "i", 76);
+        _angular_core__WEBPACK_IMPORTED_MODULE_1__["ɵɵelement"](1, "i", 81);
 
         _angular_core__WEBPACK_IMPORTED_MODULE_1__["ɵɵelementEnd"]();
       }
     }
 
-    function RegistrosVentasComponent_div_49_div_28_Template(rf, ctx) {
+    function RegistrosVentasComponent_div_50_div_28_Template(rf, ctx) {
       if (rf & 1) {
-        _angular_core__WEBPACK_IMPORTED_MODULE_1__["ɵɵelementStart"](0, "div", 63);
+        _angular_core__WEBPACK_IMPORTED_MODULE_1__["ɵɵelementStart"](0, "div", 68);
 
-        _angular_core__WEBPACK_IMPORTED_MODULE_1__["ɵɵelementContainerStart"](1, 64);
+        _angular_core__WEBPACK_IMPORTED_MODULE_1__["ɵɵelementContainerStart"](1, 69);
 
-        _angular_core__WEBPACK_IMPORTED_MODULE_1__["ɵɵtemplate"](2, RegistrosVentasComponent_div_49_div_28_button_2_Template, 2, 0, "button", 65);
+        _angular_core__WEBPACK_IMPORTED_MODULE_1__["ɵɵtemplate"](2, RegistrosVentasComponent_div_50_div_28_button_2_Template, 2, 3, "button", 70);
 
-        _angular_core__WEBPACK_IMPORTED_MODULE_1__["ɵɵtemplate"](3, RegistrosVentasComponent_div_49_div_28_button_3_Template, 2, 1, "button", 66);
+        _angular_core__WEBPACK_IMPORTED_MODULE_1__["ɵɵtemplate"](3, RegistrosVentasComponent_div_50_div_28_button_3_Template, 2, 1, "button", 71);
 
-        _angular_core__WEBPACK_IMPORTED_MODULE_1__["ɵɵtemplate"](4, RegistrosVentasComponent_div_49_div_28_button_4_Template, 2, 0, "button", 67);
+        _angular_core__WEBPACK_IMPORTED_MODULE_1__["ɵɵtemplate"](4, RegistrosVentasComponent_div_50_div_28_button_4_Template, 2, 0, "button", 72);
 
-        _angular_core__WEBPACK_IMPORTED_MODULE_1__["ɵɵtemplate"](5, RegistrosVentasComponent_div_49_div_28_button_5_Template, 2, 0, "button", 68);
+        _angular_core__WEBPACK_IMPORTED_MODULE_1__["ɵɵtemplate"](5, RegistrosVentasComponent_div_50_div_28_button_5_Template, 2, 0, "button", 73);
 
         _angular_core__WEBPACK_IMPORTED_MODULE_1__["ɵɵelementContainerEnd"]();
 
@@ -147302,11 +147348,11 @@ function _classCallCheck(instance, Constructor) { if (!(instance instanceof Cons
       }
 
       if (rf & 2) {
-        var data_r7 = ctx.$implicit;
+        var data_r10 = ctx.$implicit;
 
         _angular_core__WEBPACK_IMPORTED_MODULE_1__["ɵɵadvance"](1);
 
-        _angular_core__WEBPACK_IMPORTED_MODULE_1__["ɵɵproperty"]("ngSwitch", data_r7.value);
+        _angular_core__WEBPACK_IMPORTED_MODULE_1__["ɵɵproperty"]("ngSwitch", data_r10.value);
 
         _angular_core__WEBPACK_IMPORTED_MODULE_1__["ɵɵadvance"](1);
 
@@ -147326,13 +147372,13 @@ function _classCallCheck(instance, Constructor) { if (!(instance instanceof Cons
       }
     }
 
-    function RegistrosVentasComponent_div_49_div_29_ng_container_1_Template(rf, ctx) {
+    function RegistrosVentasComponent_div_50_div_29_ng_container_1_Template(rf, ctx) {
       if (rf & 1) {
         _angular_core__WEBPACK_IMPORTED_MODULE_1__["ɵɵelementContainerStart"](0);
 
-        _angular_core__WEBPACK_IMPORTED_MODULE_1__["ɵɵelementStart"](1, "button", 75);
+        _angular_core__WEBPACK_IMPORTED_MODULE_1__["ɵɵelementStart"](1, "button", 80);
 
-        _angular_core__WEBPACK_IMPORTED_MODULE_1__["ɵɵelement"](2, "i", 77);
+        _angular_core__WEBPACK_IMPORTED_MODULE_1__["ɵɵelement"](2, "i", 82);
 
         _angular_core__WEBPACK_IMPORTED_MODULE_1__["ɵɵelementEnd"]();
 
@@ -147340,29 +147386,29 @@ function _classCallCheck(instance, Constructor) { if (!(instance instanceof Cons
       }
     }
 
-    function RegistrosVentasComponent_div_49_div_29_ng_container_2_Template(rf, ctx) {
+    function RegistrosVentasComponent_div_50_div_29_ng_container_2_Template(rf, ctx) {
       if (rf & 1) {
-        var _r27 = _angular_core__WEBPACK_IMPORTED_MODULE_1__["ɵɵgetCurrentView"]();
+        var _r31 = _angular_core__WEBPACK_IMPORTED_MODULE_1__["ɵɵgetCurrentView"]();
 
         _angular_core__WEBPACK_IMPORTED_MODULE_1__["ɵɵelementContainerStart"](0);
 
-        _angular_core__WEBPACK_IMPORTED_MODULE_1__["ɵɵelementStart"](1, "button", 78);
+        _angular_core__WEBPACK_IMPORTED_MODULE_1__["ɵɵelementStart"](1, "button", 83);
 
-        _angular_core__WEBPACK_IMPORTED_MODULE_1__["ɵɵlistener"]("click", function RegistrosVentasComponent_div_49_div_29_ng_container_2_Template_button_click_1_listener() {
-          _angular_core__WEBPACK_IMPORTED_MODULE_1__["ɵɵrestoreView"](_r27);
+        _angular_core__WEBPACK_IMPORTED_MODULE_1__["ɵɵlistener"]("click", function RegistrosVentasComponent_div_50_div_29_ng_container_2_Template_button_click_1_listener() {
+          _angular_core__WEBPACK_IMPORTED_MODULE_1__["ɵɵrestoreView"](_r31);
 
-          var data_r22 = _angular_core__WEBPACK_IMPORTED_MODULE_1__["ɵɵnextContext"]().$implicit;
+          var data_r26 = _angular_core__WEBPACK_IMPORTED_MODULE_1__["ɵɵnextContext"]().$implicit;
 
-          var ctx_r25 = _angular_core__WEBPACK_IMPORTED_MODULE_1__["ɵɵnextContext"](2);
+          var ctx_r29 = _angular_core__WEBPACK_IMPORTED_MODULE_1__["ɵɵnextContext"](2);
 
-          return ctx_r25.generarReciboCajaParaFactura({
+          return ctx_r29.generarReciboCajaParaFactura({
             row: {
-              data: data_r22.data
+              data: data_r26.data
             }
           });
         });
 
-        _angular_core__WEBPACK_IMPORTED_MODULE_1__["ɵɵelement"](2, "i", 79);
+        _angular_core__WEBPACK_IMPORTED_MODULE_1__["ɵɵelement"](2, "i", 84);
 
         _angular_core__WEBPACK_IMPORTED_MODULE_1__["ɵɵelementEnd"]();
 
@@ -147370,27 +147416,27 @@ function _classCallCheck(instance, Constructor) { if (!(instance instanceof Cons
       }
     }
 
-    function RegistrosVentasComponent_div_49_div_29_Template(rf, ctx) {
+    function RegistrosVentasComponent_div_50_div_29_Template(rf, ctx) {
       if (rf & 1) {
-        _angular_core__WEBPACK_IMPORTED_MODULE_1__["ɵɵelementStart"](0, "div", 63);
+        _angular_core__WEBPACK_IMPORTED_MODULE_1__["ɵɵelementStart"](0, "div", 68);
 
-        _angular_core__WEBPACK_IMPORTED_MODULE_1__["ɵɵtemplate"](1, RegistrosVentasComponent_div_49_div_29_ng_container_1_Template, 3, 0, "ng-container", 0);
+        _angular_core__WEBPACK_IMPORTED_MODULE_1__["ɵɵtemplate"](1, RegistrosVentasComponent_div_50_div_29_ng_container_1_Template, 3, 0, "ng-container", 0);
 
-        _angular_core__WEBPACK_IMPORTED_MODULE_1__["ɵɵtemplate"](2, RegistrosVentasComponent_div_49_div_29_ng_container_2_Template, 3, 0, "ng-container", 0);
+        _angular_core__WEBPACK_IMPORTED_MODULE_1__["ɵɵtemplate"](2, RegistrosVentasComponent_div_50_div_29_ng_container_2_Template, 3, 0, "ng-container", 0);
 
         _angular_core__WEBPACK_IMPORTED_MODULE_1__["ɵɵelementEnd"]();
       }
 
       if (rf & 2) {
-        var data_r22 = ctx.$implicit;
+        var data_r26 = ctx.$implicit;
 
         _angular_core__WEBPACK_IMPORTED_MODULE_1__["ɵɵadvance"](1);
 
-        _angular_core__WEBPACK_IMPORTED_MODULE_1__["ɵɵproperty"]("ngIf", data_r22.data.tieneReciboCaja);
+        _angular_core__WEBPACK_IMPORTED_MODULE_1__["ɵɵproperty"]("ngIf", data_r26.data.tieneReciboCaja);
 
         _angular_core__WEBPACK_IMPORTED_MODULE_1__["ɵɵadvance"](1);
 
-        _angular_core__WEBPACK_IMPORTED_MODULE_1__["ɵɵproperty"]("ngIf", !data_r22.data.tieneReciboCaja);
+        _angular_core__WEBPACK_IMPORTED_MODULE_1__["ɵɵproperty"]("ngIf", !data_r26.data.tieneReciboCaja);
       }
     }
 
@@ -147398,103 +147444,103 @@ function _classCallCheck(instance, Constructor) { if (!(instance instanceof Cons
       return [8, 12, 20];
     };
 
-    function RegistrosVentasComponent_div_49_Template(rf, ctx) {
+    function RegistrosVentasComponent_div_50_Template(rf, ctx) {
       if (rf & 1) {
-        var _r29 = _angular_core__WEBPACK_IMPORTED_MODULE_1__["ɵɵgetCurrentView"]();
+        var _r33 = _angular_core__WEBPACK_IMPORTED_MODULE_1__["ɵɵgetCurrentView"]();
 
         _angular_core__WEBPACK_IMPORTED_MODULE_1__["ɵɵelementStart"](0, "div");
 
         _angular_core__WEBPACK_IMPORTED_MODULE_1__["ɵɵelement"](1, "br");
 
-        _angular_core__WEBPACK_IMPORTED_MODULE_1__["ɵɵelementStart"](2, "dx-data-grid", 28);
+        _angular_core__WEBPACK_IMPORTED_MODULE_1__["ɵɵelementStart"](2, "dx-data-grid", 33);
 
-        _angular_core__WEBPACK_IMPORTED_MODULE_1__["ɵɵlistener"]("onExporting", function RegistrosVentasComponent_div_49_Template_dx_data_grid_onExporting_2_listener($event) {
-          _angular_core__WEBPACK_IMPORTED_MODULE_1__["ɵɵrestoreView"](_r29);
+        _angular_core__WEBPACK_IMPORTED_MODULE_1__["ɵɵlistener"]("onExporting", function RegistrosVentasComponent_div_50_Template_dx_data_grid_onExporting_2_listener($event) {
+          _angular_core__WEBPACK_IMPORTED_MODULE_1__["ɵɵrestoreView"](_r33);
 
-          var ctx_r28 = _angular_core__WEBPACK_IMPORTED_MODULE_1__["ɵɵnextContext"]();
+          var ctx_r32 = _angular_core__WEBPACK_IMPORTED_MODULE_1__["ɵɵnextContext"]();
 
-          return ctx_r28.onExporting($event);
-        })("onExported", function RegistrosVentasComponent_div_49_Template_dx_data_grid_onExported_2_listener($event) {
-          _angular_core__WEBPACK_IMPORTED_MODULE_1__["ɵɵrestoreView"](_r29);
+          return ctx_r32.onExporting($event);
+        })("onExported", function RegistrosVentasComponent_div_50_Template_dx_data_grid_onExported_2_listener($event) {
+          _angular_core__WEBPACK_IMPORTED_MODULE_1__["ɵɵrestoreView"](_r33);
 
-          var ctx_r30 = _angular_core__WEBPACK_IMPORTED_MODULE_1__["ɵɵnextContext"]();
+          var ctx_r34 = _angular_core__WEBPACK_IMPORTED_MODULE_1__["ɵɵnextContext"]();
 
-          return ctx_r30.onExported($event);
+          return ctx_r34.onExported($event);
         });
 
-        _angular_core__WEBPACK_IMPORTED_MODULE_1__["ɵɵelement"](3, "dxo-filter-row", 29);
+        _angular_core__WEBPACK_IMPORTED_MODULE_1__["ɵɵelement"](3, "dxo-filter-row", 34);
 
-        _angular_core__WEBPACK_IMPORTED_MODULE_1__["ɵɵelement"](4, "dxo-search-panel", 30);
+        _angular_core__WEBPACK_IMPORTED_MODULE_1__["ɵɵelement"](4, "dxo-search-panel", 35);
 
-        _angular_core__WEBPACK_IMPORTED_MODULE_1__["ɵɵelement"](5, "dxo-export", 31);
+        _angular_core__WEBPACK_IMPORTED_MODULE_1__["ɵɵelement"](5, "dxo-export", 36);
 
-        _angular_core__WEBPACK_IMPORTED_MODULE_1__["ɵɵelement"](6, "dxi-column", 32);
+        _angular_core__WEBPACK_IMPORTED_MODULE_1__["ɵɵelement"](6, "dxi-column", 37);
 
-        _angular_core__WEBPACK_IMPORTED_MODULE_1__["ɵɵelement"](7, "dxi-column", 33);
+        _angular_core__WEBPACK_IMPORTED_MODULE_1__["ɵɵelement"](7, "dxi-column", 38);
 
-        _angular_core__WEBPACK_IMPORTED_MODULE_1__["ɵɵelement"](8, "dxi-column", 34);
+        _angular_core__WEBPACK_IMPORTED_MODULE_1__["ɵɵelement"](8, "dxi-column", 39);
 
-        _angular_core__WEBPACK_IMPORTED_MODULE_1__["ɵɵelement"](9, "dxi-column", 35);
+        _angular_core__WEBPACK_IMPORTED_MODULE_1__["ɵɵelement"](9, "dxi-column", 40);
 
-        _angular_core__WEBPACK_IMPORTED_MODULE_1__["ɵɵelement"](10, "dxi-column", 36);
+        _angular_core__WEBPACK_IMPORTED_MODULE_1__["ɵɵelement"](10, "dxi-column", 41);
 
-        _angular_core__WEBPACK_IMPORTED_MODULE_1__["ɵɵelement"](11, "dxi-column", 37);
+        _angular_core__WEBPACK_IMPORTED_MODULE_1__["ɵɵelement"](11, "dxi-column", 42);
 
-        _angular_core__WEBPACK_IMPORTED_MODULE_1__["ɵɵelement"](12, "dxi-column", 38);
+        _angular_core__WEBPACK_IMPORTED_MODULE_1__["ɵɵelement"](12, "dxi-column", 43);
 
-        _angular_core__WEBPACK_IMPORTED_MODULE_1__["ɵɵelement"](13, "dxi-column", 39);
+        _angular_core__WEBPACK_IMPORTED_MODULE_1__["ɵɵelement"](13, "dxi-column", 44);
 
-        _angular_core__WEBPACK_IMPORTED_MODULE_1__["ɵɵelement"](14, "dxi-column", 40);
+        _angular_core__WEBPACK_IMPORTED_MODULE_1__["ɵɵelement"](14, "dxi-column", 45);
 
-        _angular_core__WEBPACK_IMPORTED_MODULE_1__["ɵɵelement"](15, "dxi-column", 41);
+        _angular_core__WEBPACK_IMPORTED_MODULE_1__["ɵɵelement"](15, "dxi-column", 46);
 
-        _angular_core__WEBPACK_IMPORTED_MODULE_1__["ɵɵelement"](16, "dxi-column", 42);
+        _angular_core__WEBPACK_IMPORTED_MODULE_1__["ɵɵelement"](16, "dxi-column", 47);
 
-        _angular_core__WEBPACK_IMPORTED_MODULE_1__["ɵɵelement"](17, "dxi-column", 43);
+        _angular_core__WEBPACK_IMPORTED_MODULE_1__["ɵɵelement"](17, "dxi-column", 48);
 
-        _angular_core__WEBPACK_IMPORTED_MODULE_1__["ɵɵelement"](18, "dxi-column", 44);
+        _angular_core__WEBPACK_IMPORTED_MODULE_1__["ɵɵelement"](18, "dxi-column", 49);
 
-        _angular_core__WEBPACK_IMPORTED_MODULE_1__["ɵɵelement"](19, "dxi-column", 45);
+        _angular_core__WEBPACK_IMPORTED_MODULE_1__["ɵɵelement"](19, "dxi-column", 50);
 
-        _angular_core__WEBPACK_IMPORTED_MODULE_1__["ɵɵelement"](20, "dxi-column", 46);
+        _angular_core__WEBPACK_IMPORTED_MODULE_1__["ɵɵelement"](20, "dxi-column", 51);
 
-        _angular_core__WEBPACK_IMPORTED_MODULE_1__["ɵɵelement"](21, "dxi-column", 47);
+        _angular_core__WEBPACK_IMPORTED_MODULE_1__["ɵɵelement"](21, "dxi-column", 52);
 
-        _angular_core__WEBPACK_IMPORTED_MODULE_1__["ɵɵelement"](22, "dxi-column", 48);
+        _angular_core__WEBPACK_IMPORTED_MODULE_1__["ɵɵelement"](22, "dxi-column", 53);
 
-        _angular_core__WEBPACK_IMPORTED_MODULE_1__["ɵɵelement"](23, "dxi-column", 49);
+        _angular_core__WEBPACK_IMPORTED_MODULE_1__["ɵɵelement"](23, "dxi-column", 54);
 
-        _angular_core__WEBPACK_IMPORTED_MODULE_1__["ɵɵelement"](24, "dxi-column", 50);
+        _angular_core__WEBPACK_IMPORTED_MODULE_1__["ɵɵelement"](24, "dxi-column", 55);
 
-        _angular_core__WEBPACK_IMPORTED_MODULE_1__["ɵɵelement"](25, "dxi-column", 51);
+        _angular_core__WEBPACK_IMPORTED_MODULE_1__["ɵɵelement"](25, "dxi-column", 56);
 
-        _angular_core__WEBPACK_IMPORTED_MODULE_1__["ɵɵelement"](26, "dxi-column", 52);
+        _angular_core__WEBPACK_IMPORTED_MODULE_1__["ɵɵelement"](26, "dxi-column", 57);
 
-        _angular_core__WEBPACK_IMPORTED_MODULE_1__["ɵɵelement"](27, "dxi-column", 53);
+        _angular_core__WEBPACK_IMPORTED_MODULE_1__["ɵɵelement"](27, "dxi-column", 58);
 
-        _angular_core__WEBPACK_IMPORTED_MODULE_1__["ɵɵtemplate"](28, RegistrosVentasComponent_div_49_div_28_Template, 6, 5, "div", 54);
+        _angular_core__WEBPACK_IMPORTED_MODULE_1__["ɵɵtemplate"](28, RegistrosVentasComponent_div_50_div_28_Template, 6, 5, "div", 59);
 
-        _angular_core__WEBPACK_IMPORTED_MODULE_1__["ɵɵtemplate"](29, RegistrosVentasComponent_div_49_div_29_Template, 3, 2, "div", 54);
+        _angular_core__WEBPACK_IMPORTED_MODULE_1__["ɵɵtemplate"](29, RegistrosVentasComponent_div_50_div_29_Template, 3, 2, "div", 59);
 
-        _angular_core__WEBPACK_IMPORTED_MODULE_1__["ɵɵelementStart"](30, "dxi-column", 55);
+        _angular_core__WEBPACK_IMPORTED_MODULE_1__["ɵɵelementStart"](30, "dxi-column", 60);
 
-        _angular_core__WEBPACK_IMPORTED_MODULE_1__["ɵɵelement"](31, "dxi-button", 56);
-
-        _angular_core__WEBPACK_IMPORTED_MODULE_1__["ɵɵelementEnd"]();
-
-        _angular_core__WEBPACK_IMPORTED_MODULE_1__["ɵɵelementStart"](32, "dxi-column", 57);
-
-        _angular_core__WEBPACK_IMPORTED_MODULE_1__["ɵɵelement"](33, "dxi-button", 58);
+        _angular_core__WEBPACK_IMPORTED_MODULE_1__["ɵɵelement"](31, "dxi-button", 61);
 
         _angular_core__WEBPACK_IMPORTED_MODULE_1__["ɵɵelementEnd"]();
 
-        _angular_core__WEBPACK_IMPORTED_MODULE_1__["ɵɵelement"](34, "dxo-paging", 59);
+        _angular_core__WEBPACK_IMPORTED_MODULE_1__["ɵɵelementStart"](32, "dxi-column", 62);
 
-        _angular_core__WEBPACK_IMPORTED_MODULE_1__["ɵɵelement"](35, "dxo-group-panel", 29);
+        _angular_core__WEBPACK_IMPORTED_MODULE_1__["ɵɵelement"](33, "dxi-button", 63);
 
-        _angular_core__WEBPACK_IMPORTED_MODULE_1__["ɵɵelement"](36, "dxo-grouping", 60, 61);
+        _angular_core__WEBPACK_IMPORTED_MODULE_1__["ɵɵelementEnd"]();
 
-        _angular_core__WEBPACK_IMPORTED_MODULE_1__["ɵɵelement"](38, "dxo-pager", 62);
+        _angular_core__WEBPACK_IMPORTED_MODULE_1__["ɵɵelement"](34, "dxo-paging", 64);
+
+        _angular_core__WEBPACK_IMPORTED_MODULE_1__["ɵɵelement"](35, "dxo-group-panel", 34);
+
+        _angular_core__WEBPACK_IMPORTED_MODULE_1__["ɵɵelement"](36, "dxo-grouping", 65, 66);
+
+        _angular_core__WEBPACK_IMPORTED_MODULE_1__["ɵɵelement"](38, "dxo-pager", 67);
 
         _angular_core__WEBPACK_IMPORTED_MODULE_1__["ɵɵelementEnd"]();
 
@@ -147502,11 +147548,11 @@ function _classCallCheck(instance, Constructor) { if (!(instance instanceof Cons
       }
 
       if (rf & 2) {
-        var ctx_r1 = _angular_core__WEBPACK_IMPORTED_MODULE_1__["ɵɵnextContext"]();
+        var ctx_r2 = _angular_core__WEBPACK_IMPORTED_MODULE_1__["ɵɵnextContext"]();
 
         _angular_core__WEBPACK_IMPORTED_MODULE_1__["ɵɵadvance"](2);
 
-        _angular_core__WEBPACK_IMPORTED_MODULE_1__["ɵɵproperty"]("dataSource", ctx_r1.facturas)("showBorders", true)("remoteOperations", true);
+        _angular_core__WEBPACK_IMPORTED_MODULE_1__["ɵɵproperty"]("dataSource", ctx_r2.facturas)("showBorders", true)("remoteOperations", true);
 
         _angular_core__WEBPACK_IMPORTED_MODULE_1__["ɵɵadvance"](1);
 
@@ -147598,11 +147644,11 @@ function _classCallCheck(instance, Constructor) { if (!(instance instanceof Cons
 
         _angular_core__WEBPACK_IMPORTED_MODULE_1__["ɵɵadvance"](2);
 
-        _angular_core__WEBPACK_IMPORTED_MODULE_1__["ɵɵproperty"]("onClick", ctx_r1.getCourseFile);
+        _angular_core__WEBPACK_IMPORTED_MODULE_1__["ɵɵproperty"]("onClick", ctx_r2.getCourseFile);
 
         _angular_core__WEBPACK_IMPORTED_MODULE_1__["ɵɵadvance"](2);
 
-        _angular_core__WEBPACK_IMPORTED_MODULE_1__["ɵɵproperty"]("onClick", ctx_r1.mostrarNotas);
+        _angular_core__WEBPACK_IMPORTED_MODULE_1__["ɵɵproperty"]("onClick", ctx_r2.mostrarNotas);
 
         _angular_core__WEBPACK_IMPORTED_MODULE_1__["ɵɵadvance"](1);
 
@@ -147622,36 +147668,36 @@ function _classCallCheck(instance, Constructor) { if (!(instance instanceof Cons
       }
     }
 
-    function RegistrosVentasComponent_div_69_div_26_ng_container_1_Template(rf, ctx) {
+    function RegistrosVentasComponent_div_70_div_26_ng_container_1_Template(rf, ctx) {
       if (rf & 1) {
         _angular_core__WEBPACK_IMPORTED_MODULE_1__["ɵɵelementContainerStart"](0);
 
-        _angular_core__WEBPACK_IMPORTED_MODULE_1__["ɵɵelement"](1, "i", 84);
+        _angular_core__WEBPACK_IMPORTED_MODULE_1__["ɵɵelement"](1, "i", 89);
 
         _angular_core__WEBPACK_IMPORTED_MODULE_1__["ɵɵelementContainerEnd"]();
       }
     }
 
-    function RegistrosVentasComponent_div_69_div_26_ng_container_2_Template(rf, ctx) {
+    function RegistrosVentasComponent_div_70_div_26_ng_container_2_Template(rf, ctx) {
       if (rf & 1) {
-        var _r37 = _angular_core__WEBPACK_IMPORTED_MODULE_1__["ɵɵgetCurrentView"]();
+        var _r41 = _angular_core__WEBPACK_IMPORTED_MODULE_1__["ɵɵgetCurrentView"]();
 
         _angular_core__WEBPACK_IMPORTED_MODULE_1__["ɵɵelementContainerStart"](0);
 
-        _angular_core__WEBPACK_IMPORTED_MODULE_1__["ɵɵelement"](1, "i", 85);
+        _angular_core__WEBPACK_IMPORTED_MODULE_1__["ɵɵelement"](1, "i", 90);
 
-        _angular_core__WEBPACK_IMPORTED_MODULE_1__["ɵɵelementStart"](2, "button", 86);
+        _angular_core__WEBPACK_IMPORTED_MODULE_1__["ɵɵelementStart"](2, "button", 91);
 
-        _angular_core__WEBPACK_IMPORTED_MODULE_1__["ɵɵlistener"]("click", function RegistrosVentasComponent_div_69_div_26_ng_container_2_Template_button_click_2_listener() {
-          _angular_core__WEBPACK_IMPORTED_MODULE_1__["ɵɵrestoreView"](_r37);
+        _angular_core__WEBPACK_IMPORTED_MODULE_1__["ɵɵlistener"]("click", function RegistrosVentasComponent_div_70_div_26_ng_container_2_Template_button_click_2_listener() {
+          _angular_core__WEBPACK_IMPORTED_MODULE_1__["ɵɵrestoreView"](_r41);
 
-          var data_r32 = _angular_core__WEBPACK_IMPORTED_MODULE_1__["ɵɵnextContext"]().$implicit;
+          var data_r36 = _angular_core__WEBPACK_IMPORTED_MODULE_1__["ɵɵnextContext"]().$implicit;
 
-          var ctx_r35 = _angular_core__WEBPACK_IMPORTED_MODULE_1__["ɵɵnextContext"](2);
+          var ctx_r39 = _angular_core__WEBPACK_IMPORTED_MODULE_1__["ɵɵnextContext"](2);
 
-          return ctx_r35.generarReciboCajaParaFactura({
+          return ctx_r39.generarReciboCajaParaFactura({
             row: {
-              data: data_r32.data
+              data: data_r36.data
             }
           });
         });
@@ -147664,117 +147710,117 @@ function _classCallCheck(instance, Constructor) { if (!(instance instanceof Cons
       }
     }
 
-    function RegistrosVentasComponent_div_69_div_26_Template(rf, ctx) {
+    function RegistrosVentasComponent_div_70_div_26_Template(rf, ctx) {
       if (rf & 1) {
-        _angular_core__WEBPACK_IMPORTED_MODULE_1__["ɵɵelementStart"](0, "div", 63);
+        _angular_core__WEBPACK_IMPORTED_MODULE_1__["ɵɵelementStart"](0, "div", 68);
 
-        _angular_core__WEBPACK_IMPORTED_MODULE_1__["ɵɵtemplate"](1, RegistrosVentasComponent_div_69_div_26_ng_container_1_Template, 2, 0, "ng-container", 0);
+        _angular_core__WEBPACK_IMPORTED_MODULE_1__["ɵɵtemplate"](1, RegistrosVentasComponent_div_70_div_26_ng_container_1_Template, 2, 0, "ng-container", 0);
 
-        _angular_core__WEBPACK_IMPORTED_MODULE_1__["ɵɵtemplate"](2, RegistrosVentasComponent_div_69_div_26_ng_container_2_Template, 4, 0, "ng-container", 0);
+        _angular_core__WEBPACK_IMPORTED_MODULE_1__["ɵɵtemplate"](2, RegistrosVentasComponent_div_70_div_26_ng_container_2_Template, 4, 0, "ng-container", 0);
 
         _angular_core__WEBPACK_IMPORTED_MODULE_1__["ɵɵelementEnd"]();
       }
 
       if (rf & 2) {
-        var data_r32 = ctx.$implicit;
+        var data_r36 = ctx.$implicit;
 
         _angular_core__WEBPACK_IMPORTED_MODULE_1__["ɵɵadvance"](1);
 
-        _angular_core__WEBPACK_IMPORTED_MODULE_1__["ɵɵproperty"]("ngIf", data_r32.data.tieneReciboCaja);
+        _angular_core__WEBPACK_IMPORTED_MODULE_1__["ɵɵproperty"]("ngIf", data_r36.data.tieneReciboCaja);
 
         _angular_core__WEBPACK_IMPORTED_MODULE_1__["ɵɵadvance"](1);
 
-        _angular_core__WEBPACK_IMPORTED_MODULE_1__["ɵɵproperty"]("ngIf", !data_r32.data.tieneReciboCaja);
+        _angular_core__WEBPACK_IMPORTED_MODULE_1__["ɵɵproperty"]("ngIf", !data_r36.data.tieneReciboCaja);
       }
     }
 
-    function RegistrosVentasComponent_div_69_Template(rf, ctx) {
+    function RegistrosVentasComponent_div_70_Template(rf, ctx) {
       if (rf & 1) {
-        var _r39 = _angular_core__WEBPACK_IMPORTED_MODULE_1__["ɵɵgetCurrentView"]();
+        var _r43 = _angular_core__WEBPACK_IMPORTED_MODULE_1__["ɵɵgetCurrentView"]();
 
         _angular_core__WEBPACK_IMPORTED_MODULE_1__["ɵɵelementStart"](0, "div");
 
         _angular_core__WEBPACK_IMPORTED_MODULE_1__["ɵɵelement"](1, "br");
 
-        _angular_core__WEBPACK_IMPORTED_MODULE_1__["ɵɵelementStart"](2, "dx-data-grid", 28);
+        _angular_core__WEBPACK_IMPORTED_MODULE_1__["ɵɵelementStart"](2, "dx-data-grid", 33);
 
-        _angular_core__WEBPACK_IMPORTED_MODULE_1__["ɵɵlistener"]("onExporting", function RegistrosVentasComponent_div_69_Template_dx_data_grid_onExporting_2_listener($event) {
-          _angular_core__WEBPACK_IMPORTED_MODULE_1__["ɵɵrestoreView"](_r39);
+        _angular_core__WEBPACK_IMPORTED_MODULE_1__["ɵɵlistener"]("onExporting", function RegistrosVentasComponent_div_70_Template_dx_data_grid_onExporting_2_listener($event) {
+          _angular_core__WEBPACK_IMPORTED_MODULE_1__["ɵɵrestoreView"](_r43);
 
-          var ctx_r38 = _angular_core__WEBPACK_IMPORTED_MODULE_1__["ɵɵnextContext"]();
+          var ctx_r42 = _angular_core__WEBPACK_IMPORTED_MODULE_1__["ɵɵnextContext"]();
 
-          return ctx_r38.onExporting($event);
-        })("onExported", function RegistrosVentasComponent_div_69_Template_dx_data_grid_onExported_2_listener($event) {
-          _angular_core__WEBPACK_IMPORTED_MODULE_1__["ɵɵrestoreView"](_r39);
+          return ctx_r42.onExporting($event);
+        })("onExported", function RegistrosVentasComponent_div_70_Template_dx_data_grid_onExported_2_listener($event) {
+          _angular_core__WEBPACK_IMPORTED_MODULE_1__["ɵɵrestoreView"](_r43);
 
-          var ctx_r40 = _angular_core__WEBPACK_IMPORTED_MODULE_1__["ɵɵnextContext"]();
+          var ctx_r44 = _angular_core__WEBPACK_IMPORTED_MODULE_1__["ɵɵnextContext"]();
 
-          return ctx_r40.onExported($event);
+          return ctx_r44.onExported($event);
         });
 
-        _angular_core__WEBPACK_IMPORTED_MODULE_1__["ɵɵelement"](3, "dxo-filter-row", 29);
+        _angular_core__WEBPACK_IMPORTED_MODULE_1__["ɵɵelement"](3, "dxo-filter-row", 34);
 
-        _angular_core__WEBPACK_IMPORTED_MODULE_1__["ɵɵelement"](4, "dxo-export", 80);
+        _angular_core__WEBPACK_IMPORTED_MODULE_1__["ɵɵelement"](4, "dxo-export", 85);
 
-        _angular_core__WEBPACK_IMPORTED_MODULE_1__["ɵɵelement"](5, "dxo-search-panel", 30);
+        _angular_core__WEBPACK_IMPORTED_MODULE_1__["ɵɵelement"](5, "dxo-search-panel", 35);
 
-        _angular_core__WEBPACK_IMPORTED_MODULE_1__["ɵɵelement"](6, "dxi-column", 32);
+        _angular_core__WEBPACK_IMPORTED_MODULE_1__["ɵɵelement"](6, "dxi-column", 37);
 
-        _angular_core__WEBPACK_IMPORTED_MODULE_1__["ɵɵelement"](7, "dxi-column", 33);
+        _angular_core__WEBPACK_IMPORTED_MODULE_1__["ɵɵelement"](7, "dxi-column", 38);
 
-        _angular_core__WEBPACK_IMPORTED_MODULE_1__["ɵɵelement"](8, "dxi-column", 34);
+        _angular_core__WEBPACK_IMPORTED_MODULE_1__["ɵɵelement"](8, "dxi-column", 39);
 
-        _angular_core__WEBPACK_IMPORTED_MODULE_1__["ɵɵelement"](9, "dxi-column", 35);
+        _angular_core__WEBPACK_IMPORTED_MODULE_1__["ɵɵelement"](9, "dxi-column", 40);
 
-        _angular_core__WEBPACK_IMPORTED_MODULE_1__["ɵɵelement"](10, "dxi-column", 81);
+        _angular_core__WEBPACK_IMPORTED_MODULE_1__["ɵɵelement"](10, "dxi-column", 86);
 
-        _angular_core__WEBPACK_IMPORTED_MODULE_1__["ɵɵelement"](11, "dxi-column", 38);
+        _angular_core__WEBPACK_IMPORTED_MODULE_1__["ɵɵelement"](11, "dxi-column", 43);
 
-        _angular_core__WEBPACK_IMPORTED_MODULE_1__["ɵɵelement"](12, "dxi-column", 39);
+        _angular_core__WEBPACK_IMPORTED_MODULE_1__["ɵɵelement"](12, "dxi-column", 44);
 
-        _angular_core__WEBPACK_IMPORTED_MODULE_1__["ɵɵelement"](13, "dxi-column", 40);
+        _angular_core__WEBPACK_IMPORTED_MODULE_1__["ɵɵelement"](13, "dxi-column", 45);
 
-        _angular_core__WEBPACK_IMPORTED_MODULE_1__["ɵɵelement"](14, "dxi-column", 41);
+        _angular_core__WEBPACK_IMPORTED_MODULE_1__["ɵɵelement"](14, "dxi-column", 46);
 
-        _angular_core__WEBPACK_IMPORTED_MODULE_1__["ɵɵelement"](15, "dxi-column", 42);
+        _angular_core__WEBPACK_IMPORTED_MODULE_1__["ɵɵelement"](15, "dxi-column", 47);
 
-        _angular_core__WEBPACK_IMPORTED_MODULE_1__["ɵɵelement"](16, "dxi-column", 43);
+        _angular_core__WEBPACK_IMPORTED_MODULE_1__["ɵɵelement"](16, "dxi-column", 48);
 
-        _angular_core__WEBPACK_IMPORTED_MODULE_1__["ɵɵelement"](17, "dxi-column", 44);
+        _angular_core__WEBPACK_IMPORTED_MODULE_1__["ɵɵelement"](17, "dxi-column", 49);
 
-        _angular_core__WEBPACK_IMPORTED_MODULE_1__["ɵɵelement"](18, "dxi-column", 45);
+        _angular_core__WEBPACK_IMPORTED_MODULE_1__["ɵɵelement"](18, "dxi-column", 50);
 
-        _angular_core__WEBPACK_IMPORTED_MODULE_1__["ɵɵelement"](19, "dxi-column", 82);
+        _angular_core__WEBPACK_IMPORTED_MODULE_1__["ɵɵelement"](19, "dxi-column", 87);
 
-        _angular_core__WEBPACK_IMPORTED_MODULE_1__["ɵɵelement"](20, "dxi-column", 47);
+        _angular_core__WEBPACK_IMPORTED_MODULE_1__["ɵɵelement"](20, "dxi-column", 52);
 
-        _angular_core__WEBPACK_IMPORTED_MODULE_1__["ɵɵelement"](21, "dxi-column", 49);
+        _angular_core__WEBPACK_IMPORTED_MODULE_1__["ɵɵelement"](21, "dxi-column", 54);
 
-        _angular_core__WEBPACK_IMPORTED_MODULE_1__["ɵɵelement"](22, "dxi-column", 48);
+        _angular_core__WEBPACK_IMPORTED_MODULE_1__["ɵɵelement"](22, "dxi-column", 53);
 
-        _angular_core__WEBPACK_IMPORTED_MODULE_1__["ɵɵelement"](23, "dxi-column", 50);
+        _angular_core__WEBPACK_IMPORTED_MODULE_1__["ɵɵelement"](23, "dxi-column", 55);
 
-        _angular_core__WEBPACK_IMPORTED_MODULE_1__["ɵɵelement"](24, "dxi-column", 51);
+        _angular_core__WEBPACK_IMPORTED_MODULE_1__["ɵɵelement"](24, "dxi-column", 56);
 
-        _angular_core__WEBPACK_IMPORTED_MODULE_1__["ɵɵelement"](25, "dxi-column", 83);
+        _angular_core__WEBPACK_IMPORTED_MODULE_1__["ɵɵelement"](25, "dxi-column", 88);
 
-        _angular_core__WEBPACK_IMPORTED_MODULE_1__["ɵɵtemplate"](26, RegistrosVentasComponent_div_69_div_26_Template, 3, 2, "div", 54);
+        _angular_core__WEBPACK_IMPORTED_MODULE_1__["ɵɵtemplate"](26, RegistrosVentasComponent_div_70_div_26_Template, 3, 2, "div", 59);
 
-        _angular_core__WEBPACK_IMPORTED_MODULE_1__["ɵɵelementStart"](27, "dxi-column", 55);
+        _angular_core__WEBPACK_IMPORTED_MODULE_1__["ɵɵelementStart"](27, "dxi-column", 60);
 
-        _angular_core__WEBPACK_IMPORTED_MODULE_1__["ɵɵelement"](28, "dxi-button", 56);
-
-        _angular_core__WEBPACK_IMPORTED_MODULE_1__["ɵɵelementEnd"]();
-
-        _angular_core__WEBPACK_IMPORTED_MODULE_1__["ɵɵelementStart"](29, "dxi-column", 57);
-
-        _angular_core__WEBPACK_IMPORTED_MODULE_1__["ɵɵelement"](30, "dxi-button", 58);
+        _angular_core__WEBPACK_IMPORTED_MODULE_1__["ɵɵelement"](28, "dxi-button", 61);
 
         _angular_core__WEBPACK_IMPORTED_MODULE_1__["ɵɵelementEnd"]();
 
-        _angular_core__WEBPACK_IMPORTED_MODULE_1__["ɵɵelement"](31, "dxo-paging", 59);
+        _angular_core__WEBPACK_IMPORTED_MODULE_1__["ɵɵelementStart"](29, "dxi-column", 62);
 
-        _angular_core__WEBPACK_IMPORTED_MODULE_1__["ɵɵelement"](32, "dxo-pager", 62);
+        _angular_core__WEBPACK_IMPORTED_MODULE_1__["ɵɵelement"](30, "dxi-button", 63);
+
+        _angular_core__WEBPACK_IMPORTED_MODULE_1__["ɵɵelementEnd"]();
+
+        _angular_core__WEBPACK_IMPORTED_MODULE_1__["ɵɵelement"](31, "dxo-paging", 64);
+
+        _angular_core__WEBPACK_IMPORTED_MODULE_1__["ɵɵelement"](32, "dxo-pager", 67);
 
         _angular_core__WEBPACK_IMPORTED_MODULE_1__["ɵɵelementEnd"]();
 
@@ -147782,11 +147828,11 @@ function _classCallCheck(instance, Constructor) { if (!(instance instanceof Cons
       }
 
       if (rf & 2) {
-        var ctx_r2 = _angular_core__WEBPACK_IMPORTED_MODULE_1__["ɵɵnextContext"]();
+        var ctx_r3 = _angular_core__WEBPACK_IMPORTED_MODULE_1__["ɵɵnextContext"]();
 
         _angular_core__WEBPACK_IMPORTED_MODULE_1__["ɵɵadvance"](2);
 
-        _angular_core__WEBPACK_IMPORTED_MODULE_1__["ɵɵproperty"]("dataSource", ctx_r2.notasVenta)("showBorders", true)("remoteOperations", true);
+        _angular_core__WEBPACK_IMPORTED_MODULE_1__["ɵɵproperty"]("dataSource", ctx_r3.notasVenta)("showBorders", true)("remoteOperations", true);
 
         _angular_core__WEBPACK_IMPORTED_MODULE_1__["ɵɵadvance"](1);
 
@@ -147870,11 +147916,11 @@ function _classCallCheck(instance, Constructor) { if (!(instance instanceof Cons
 
         _angular_core__WEBPACK_IMPORTED_MODULE_1__["ɵɵadvance"](2);
 
-        _angular_core__WEBPACK_IMPORTED_MODULE_1__["ɵɵproperty"]("onClick", ctx_r2.getCourseFile2);
+        _angular_core__WEBPACK_IMPORTED_MODULE_1__["ɵɵproperty"]("onClick", ctx_r3.getCourseFile2);
 
         _angular_core__WEBPACK_IMPORTED_MODULE_1__["ɵɵadvance"](2);
 
-        _angular_core__WEBPACK_IMPORTED_MODULE_1__["ɵɵproperty"]("onClick", ctx_r2.mostrarNotasVenta);
+        _angular_core__WEBPACK_IMPORTED_MODULE_1__["ɵɵproperty"]("onClick", ctx_r3.mostrarNotasVenta);
 
         _angular_core__WEBPACK_IMPORTED_MODULE_1__["ɵɵadvance"](1);
 
@@ -147886,81 +147932,81 @@ function _classCallCheck(instance, Constructor) { if (!(instance instanceof Cons
       }
     }
 
-    function RegistrosVentasComponent_div_70_Template(rf, ctx) {
+    function RegistrosVentasComponent_div_71_Template(rf, ctx) {
       if (rf & 1) {
-        var _r42 = _angular_core__WEBPACK_IMPORTED_MODULE_1__["ɵɵgetCurrentView"]();
+        var _r46 = _angular_core__WEBPACK_IMPORTED_MODULE_1__["ɵɵgetCurrentView"]();
 
         _angular_core__WEBPACK_IMPORTED_MODULE_1__["ɵɵelementStart"](0, "div");
 
         _angular_core__WEBPACK_IMPORTED_MODULE_1__["ɵɵelement"](1, "br");
 
-        _angular_core__WEBPACK_IMPORTED_MODULE_1__["ɵɵelementStart"](2, "dx-data-grid", 28);
+        _angular_core__WEBPACK_IMPORTED_MODULE_1__["ɵɵelementStart"](2, "dx-data-grid", 33);
 
-        _angular_core__WEBPACK_IMPORTED_MODULE_1__["ɵɵlistener"]("onExporting", function RegistrosVentasComponent_div_70_Template_dx_data_grid_onExporting_2_listener($event) {
-          _angular_core__WEBPACK_IMPORTED_MODULE_1__["ɵɵrestoreView"](_r42);
+        _angular_core__WEBPACK_IMPORTED_MODULE_1__["ɵɵlistener"]("onExporting", function RegistrosVentasComponent_div_71_Template_dx_data_grid_onExporting_2_listener($event) {
+          _angular_core__WEBPACK_IMPORTED_MODULE_1__["ɵɵrestoreView"](_r46);
 
-          var ctx_r41 = _angular_core__WEBPACK_IMPORTED_MODULE_1__["ɵɵnextContext"]();
+          var ctx_r45 = _angular_core__WEBPACK_IMPORTED_MODULE_1__["ɵɵnextContext"]();
 
-          return ctx_r41.onExporting($event);
-        })("onExported", function RegistrosVentasComponent_div_70_Template_dx_data_grid_onExported_2_listener($event) {
-          _angular_core__WEBPACK_IMPORTED_MODULE_1__["ɵɵrestoreView"](_r42);
+          return ctx_r45.onExporting($event);
+        })("onExported", function RegistrosVentasComponent_div_71_Template_dx_data_grid_onExported_2_listener($event) {
+          _angular_core__WEBPACK_IMPORTED_MODULE_1__["ɵɵrestoreView"](_r46);
 
-          var ctx_r43 = _angular_core__WEBPACK_IMPORTED_MODULE_1__["ɵɵnextContext"]();
+          var ctx_r47 = _angular_core__WEBPACK_IMPORTED_MODULE_1__["ɵɵnextContext"]();
 
-          return ctx_r43.onExported($event);
+          return ctx_r47.onExported($event);
         });
 
-        _angular_core__WEBPACK_IMPORTED_MODULE_1__["ɵɵelement"](3, "dxo-filter-row", 29);
+        _angular_core__WEBPACK_IMPORTED_MODULE_1__["ɵɵelement"](3, "dxo-filter-row", 34);
 
-        _angular_core__WEBPACK_IMPORTED_MODULE_1__["ɵɵelement"](4, "dxo-search-panel", 30);
+        _angular_core__WEBPACK_IMPORTED_MODULE_1__["ɵɵelement"](4, "dxo-search-panel", 35);
 
-        _angular_core__WEBPACK_IMPORTED_MODULE_1__["ɵɵelement"](5, "dxo-export", 87);
+        _angular_core__WEBPACK_IMPORTED_MODULE_1__["ɵɵelement"](5, "dxo-export", 92);
 
-        _angular_core__WEBPACK_IMPORTED_MODULE_1__["ɵɵelement"](6, "dxi-column", 32);
+        _angular_core__WEBPACK_IMPORTED_MODULE_1__["ɵɵelement"](6, "dxi-column", 37);
 
-        _angular_core__WEBPACK_IMPORTED_MODULE_1__["ɵɵelement"](7, "dxi-column", 88);
+        _angular_core__WEBPACK_IMPORTED_MODULE_1__["ɵɵelement"](7, "dxi-column", 93);
 
-        _angular_core__WEBPACK_IMPORTED_MODULE_1__["ɵɵelement"](8, "dxi-column", 34);
+        _angular_core__WEBPACK_IMPORTED_MODULE_1__["ɵɵelement"](8, "dxi-column", 39);
 
-        _angular_core__WEBPACK_IMPORTED_MODULE_1__["ɵɵelement"](9, "dxi-column", 35);
+        _angular_core__WEBPACK_IMPORTED_MODULE_1__["ɵɵelement"](9, "dxi-column", 40);
 
-        _angular_core__WEBPACK_IMPORTED_MODULE_1__["ɵɵelement"](10, "dxi-column", 81);
+        _angular_core__WEBPACK_IMPORTED_MODULE_1__["ɵɵelement"](10, "dxi-column", 86);
 
-        _angular_core__WEBPACK_IMPORTED_MODULE_1__["ɵɵelement"](11, "dxi-column", 38);
+        _angular_core__WEBPACK_IMPORTED_MODULE_1__["ɵɵelement"](11, "dxi-column", 43);
 
-        _angular_core__WEBPACK_IMPORTED_MODULE_1__["ɵɵelement"](12, "dxi-column", 39);
+        _angular_core__WEBPACK_IMPORTED_MODULE_1__["ɵɵelement"](12, "dxi-column", 44);
 
-        _angular_core__WEBPACK_IMPORTED_MODULE_1__["ɵɵelement"](13, "dxi-column", 40);
+        _angular_core__WEBPACK_IMPORTED_MODULE_1__["ɵɵelement"](13, "dxi-column", 45);
 
-        _angular_core__WEBPACK_IMPORTED_MODULE_1__["ɵɵelement"](14, "dxi-column", 42);
+        _angular_core__WEBPACK_IMPORTED_MODULE_1__["ɵɵelement"](14, "dxi-column", 47);
 
-        _angular_core__WEBPACK_IMPORTED_MODULE_1__["ɵɵelement"](15, "dxi-column", 43);
+        _angular_core__WEBPACK_IMPORTED_MODULE_1__["ɵɵelement"](15, "dxi-column", 48);
 
-        _angular_core__WEBPACK_IMPORTED_MODULE_1__["ɵɵelement"](16, "dxi-column", 44);
+        _angular_core__WEBPACK_IMPORTED_MODULE_1__["ɵɵelement"](16, "dxi-column", 49);
 
-        _angular_core__WEBPACK_IMPORTED_MODULE_1__["ɵɵelement"](17, "dxi-column", 47);
+        _angular_core__WEBPACK_IMPORTED_MODULE_1__["ɵɵelement"](17, "dxi-column", 52);
 
-        _angular_core__WEBPACK_IMPORTED_MODULE_1__["ɵɵelement"](18, "dxi-column", 48);
+        _angular_core__WEBPACK_IMPORTED_MODULE_1__["ɵɵelement"](18, "dxi-column", 53);
 
-        _angular_core__WEBPACK_IMPORTED_MODULE_1__["ɵɵelement"](19, "dxi-column", 50);
+        _angular_core__WEBPACK_IMPORTED_MODULE_1__["ɵɵelement"](19, "dxi-column", 55);
 
-        _angular_core__WEBPACK_IMPORTED_MODULE_1__["ɵɵelement"](20, "dxi-column", 51);
+        _angular_core__WEBPACK_IMPORTED_MODULE_1__["ɵɵelement"](20, "dxi-column", 56);
 
-        _angular_core__WEBPACK_IMPORTED_MODULE_1__["ɵɵelementStart"](21, "dxi-column", 55);
+        _angular_core__WEBPACK_IMPORTED_MODULE_1__["ɵɵelementStart"](21, "dxi-column", 60);
 
-        _angular_core__WEBPACK_IMPORTED_MODULE_1__["ɵɵelement"](22, "dxi-button", 56);
-
-        _angular_core__WEBPACK_IMPORTED_MODULE_1__["ɵɵelementEnd"]();
-
-        _angular_core__WEBPACK_IMPORTED_MODULE_1__["ɵɵelementStart"](23, "dxi-column", 57);
-
-        _angular_core__WEBPACK_IMPORTED_MODULE_1__["ɵɵelement"](24, "dxi-button", 58);
+        _angular_core__WEBPACK_IMPORTED_MODULE_1__["ɵɵelement"](22, "dxi-button", 61);
 
         _angular_core__WEBPACK_IMPORTED_MODULE_1__["ɵɵelementEnd"]();
 
-        _angular_core__WEBPACK_IMPORTED_MODULE_1__["ɵɵelement"](25, "dxo-paging", 59);
+        _angular_core__WEBPACK_IMPORTED_MODULE_1__["ɵɵelementStart"](23, "dxi-column", 62);
 
-        _angular_core__WEBPACK_IMPORTED_MODULE_1__["ɵɵelement"](26, "dxo-pager", 62);
+        _angular_core__WEBPACK_IMPORTED_MODULE_1__["ɵɵelement"](24, "dxi-button", 63);
+
+        _angular_core__WEBPACK_IMPORTED_MODULE_1__["ɵɵelementEnd"]();
+
+        _angular_core__WEBPACK_IMPORTED_MODULE_1__["ɵɵelement"](25, "dxo-paging", 64);
+
+        _angular_core__WEBPACK_IMPORTED_MODULE_1__["ɵɵelement"](26, "dxo-pager", 67);
 
         _angular_core__WEBPACK_IMPORTED_MODULE_1__["ɵɵelementEnd"]();
 
@@ -147968,11 +148014,11 @@ function _classCallCheck(instance, Constructor) { if (!(instance instanceof Cons
       }
 
       if (rf & 2) {
-        var ctx_r3 = _angular_core__WEBPACK_IMPORTED_MODULE_1__["ɵɵnextContext"]();
+        var ctx_r4 = _angular_core__WEBPACK_IMPORTED_MODULE_1__["ɵɵnextContext"]();
 
         _angular_core__WEBPACK_IMPORTED_MODULE_1__["ɵɵadvance"](2);
 
-        _angular_core__WEBPACK_IMPORTED_MODULE_1__["ɵɵproperty"]("dataSource", ctx_r3.cotizaciones)("showBorders", true)("remoteOperations", true);
+        _angular_core__WEBPACK_IMPORTED_MODULE_1__["ɵɵproperty"]("dataSource", ctx_r4.cotizaciones)("showBorders", true)("remoteOperations", true);
 
         _angular_core__WEBPACK_IMPORTED_MODULE_1__["ɵɵadvance"](1);
 
@@ -148032,11 +148078,11 @@ function _classCallCheck(instance, Constructor) { if (!(instance instanceof Cons
 
         _angular_core__WEBPACK_IMPORTED_MODULE_1__["ɵɵadvance"](2);
 
-        _angular_core__WEBPACK_IMPORTED_MODULE_1__["ɵɵproperty"]("onClick", ctx_r3.getCourseFile3);
+        _angular_core__WEBPACK_IMPORTED_MODULE_1__["ɵɵproperty"]("onClick", ctx_r4.getCourseFile3);
 
         _angular_core__WEBPACK_IMPORTED_MODULE_1__["ɵɵadvance"](2);
 
-        _angular_core__WEBPACK_IMPORTED_MODULE_1__["ɵɵproperty"]("onClick", ctx_r3.mostrarNotasCtiza);
+        _angular_core__WEBPACK_IMPORTED_MODULE_1__["ɵɵproperty"]("onClick", ctx_r4.mostrarNotasCtiza);
 
         _angular_core__WEBPACK_IMPORTED_MODULE_1__["ɵɵadvance"](1);
 
@@ -148219,6 +148265,8 @@ function _classCallCheck(instance, Constructor) { if (!(instance instanceof Cons
           });
         };
 
+        this.validandoFacturasVeronica = false;
+
         this.getCourseFile = function (e) {
           _this1124.cargarFactura(e.row.data);
         };
@@ -148388,6 +148436,7 @@ function _classCallCheck(instance, Constructor) { if (!(instance instanceof Cons
           this.obj = new _transacciones_transacciones__WEBPACK_IMPORTED_MODULE_5__["objDate"]();
           this.obj.fechaActual = fechaHoy;
           this.obj.fechaAnterior = fechaAnterior;
+          this.nowdesde = fechaAnterior;
         }
       }, {
         key: "cargarUsuarioLogueado",
@@ -148992,9 +149041,344 @@ function _classCallCheck(instance, Constructor) { if (!(instance instanceof Cons
           }
         }
       }, {
+        key: "fechaVeronica",
+        value: function fechaVeronica(fecha) {
+          var d = new Date(fecha);
+          var dd = String(d.getDate()).padStart(2, '0');
+          var mm = String(d.getMonth() + 1).padStart(2, '0');
+          return "".concat(dd, "/").concat(mm, "/").concat(d.getFullYear());
+        }
+      }, {
+        key: "claveComprobanteVeronica",
+        value: function claveComprobanteVeronica(identificacion, secuencial) {
+          var ident = String(identificacion || '').trim();
+          var sec = String(secuencial || '').trim().replace(/^0+/, '');
+          return ident && sec ? "".concat(ident, "|").concat(sec) : '';
+        }
+        /** Todas las páginas de facturas emitidas en Veronica para un RUC y rango. */
+
+      }, {
+        key: "consultarTodasFacturasVeronica",
+        value: function consultarTodasFacturasVeronica(ruc, desde, hasta) {
+          return Object(tslib__WEBPACK_IMPORTED_MODULE_0__["__awaiter"])(this, void 0, void 0, /*#__PURE__*/regeneratorRuntime.mark(function _callee52() {
+            var todas, page, resp, result, contenido;
+            return regeneratorRuntime.wrap(function _callee52$(_context52) {
+              while (1) {
+                switch (_context52.prev = _context52.next) {
+                  case 0:
+                    todas = [];
+                    page = 0;
+
+                  case 2:
+                    if (!(page < 100)) {
+                      _context52.next = 14;
+                      break;
+                    }
+
+                    _context52.next = 5;
+                    return this._apiVeronicaService.consultarFacturasEmitidas(ruc, desde, hasta, page, 200).toPromise();
+
+                  case 5:
+                    resp = _context52.sent;
+                    result = resp && resp.result || {};
+                    contenido = result.content || [];
+                    todas.push.apply(todas, _toConsumableArray(contenido));
+
+                    if (!(result.last !== false || !contenido.length)) {
+                      _context52.next = 11;
+                      break;
+                    }
+
+                    return _context52.abrupt("break", 14);
+
+                  case 11:
+                    page++;
+                    _context52.next = 2;
+                    break;
+
+                  case 14:
+                    return _context52.abrupt("return", todas);
+
+                  case 15:
+                  case "end":
+                    return _context52.stop();
+                }
+              }
+            }, _callee52, this);
+          }));
+        }
+        /**
+         * Cruza las facturas en ERROR con las emitidas en Veronica (mismo rango de
+         * fechas), por identificación del receptor y secuencial enviados en el log:
+         * AUTORIZADO -> log en OK (ENVIADA); CREADO -> botón en azul.
+         */
+
+      }, {
+        key: "validarFacturasVeronica",
+        value: function validarFacturasVeronica() {
+          return Object(tslib__WEBPACK_IMPORTED_MODULE_0__["__awaiter"])(this, void 0, void 0, /*#__PURE__*/regeneratorRuntime.mark(function _callee53() {
+            var _this1149 = this;
+
+            var esMatriz, enError, rucs, desde, hasta, estados, _i2, _rucs, ruc, emitidas, _iterator17, _step17, c, clave, estatus, autorizadas, creadas, _iterator18, _step18, _loop23;
+
+            return regeneratorRuntime.wrap(function _callee53$(_context54) {
+              while (1) {
+                switch (_context54.prev = _context54.next) {
+                  case 0:
+                    // Solo la empresa de matriz.
+                    esMatriz = function esMatriz(sucursal) {
+                      return String(sucursal || '').trim().toLowerCase() === 'matriz';
+                    };
+
+                    enError = (this.facturas || []).filter(function (f) {
+                      return f.estadoFacturaVeronica === 'ERROR' && esMatriz(f.sucursal);
+                    });
+
+                    if (enError.length) {
+                      _context54.next = 5;
+                      break;
+                    }
+
+                    sweetalert2__WEBPACK_IMPORTED_MODULE_4___default.a.fire('Sin pendientes', 'No hay facturas de matriz en estado ERROR en la consulta actual.', 'info');
+                    return _context54.abrupt("return");
+
+                  case 5:
+                    rucs = Array.from(new Set((this.parametrizaciones || []).filter(function (p) {
+                      return esMatriz(p.sucursal);
+                    }).map(function (p) {
+                      return String(p.ruc || '').trim();
+                    }).filter(Boolean)));
+
+                    if (rucs.length) {
+                      _context54.next = 9;
+                      break;
+                    }
+
+                    sweetalert2__WEBPACK_IMPORTED_MODULE_4___default.a.fire('Validación', 'No hay RUC configurado en la parametrización de matriz.', 'warning');
+                    return _context54.abrupt("return");
+
+                  case 9:
+                    desde = this.fechaVeronica(this.nowdesde);
+                    hasta = this.fechaVeronica(this.nowhasta);
+                    this.validandoFacturasVeronica = true;
+                    this.mensajeLoading = 'Validando facturas con Veronica';
+                    this.mostrarLoading = true;
+                    _context54.prev = 14;
+                    // identificación|secuencial -> estatus (AUTORIZADO tiene prioridad)
+                    estados = new Map();
+                    _i2 = 0, _rucs = rucs;
+
+                  case 17:
+                    if (!(_i2 < _rucs.length)) {
+                      _context54.next = 45;
+                      break;
+                    }
+
+                    ruc = _rucs[_i2];
+                    _context54.next = 21;
+                    return this.consultarTodasFacturasVeronica(ruc, desde, hasta);
+
+                  case 21:
+                    emitidas = _context54.sent;
+                    _iterator17 = _createForOfIteratorHelper(emitidas);
+                    _context54.prev = 23;
+
+                    _iterator17.s();
+
+                  case 25:
+                    if ((_step17 = _iterator17.n()).done) {
+                      _context54.next = 34;
+                      break;
+                    }
+
+                    c = _step17.value;
+                    clave = this.claveComprobanteVeronica(c.identificacionReceptor, c.secuencial);
+
+                    if (clave) {
+                      _context54.next = 30;
+                      break;
+                    }
+
+                    return _context54.abrupt("continue", 32);
+
+                  case 30:
+                    estatus = String(c.estatus || '').toUpperCase();
+                    if (estados.get(clave) !== 'AUTORIZADO') estados.set(clave, estatus);
+
+                  case 32:
+                    _context54.next = 25;
+                    break;
+
+                  case 34:
+                    _context54.next = 39;
+                    break;
+
+                  case 36:
+                    _context54.prev = 36;
+                    _context54.t0 = _context54["catch"](23);
+
+                    _iterator17.e(_context54.t0);
+
+                  case 39:
+                    _context54.prev = 39;
+
+                    _iterator17.f();
+
+                    return _context54.finish(39);
+
+                  case 42:
+                    _i2++;
+                    _context54.next = 17;
+                    break;
+
+                  case 45:
+                    autorizadas = 0;
+                    creadas = 0;
+                    _iterator18 = _createForOfIteratorHelper(enError);
+                    _context54.prev = 48;
+                    _loop23 = /*#__PURE__*/regeneratorRuntime.mark(function _loop23() {
+                      var f, logs, _iterator19, _step19, log, enviado, _clave, _estatus;
+
+                      return regeneratorRuntime.wrap(function _loop23$(_context53) {
+                        while (1) {
+                          switch (_context53.prev = _context53.next) {
+                            case 0:
+                              f = _step18.value;
+                              f.estadoVeronicaSri = undefined;
+                              logs = (_this1149.logsVeronica || []).filter(function (l) {
+                                return l.nroDocumento === String(f.documento_n);
+                              });
+                              _iterator19 = _createForOfIteratorHelper(logs);
+                              _context53.prev = 4;
+
+                              _iterator19.s();
+
+                            case 6:
+                              if ((_step19 = _iterator19.n()).done) {
+                                _context53.next = 20;
+                                break;
+                              }
+
+                              log = _step19.value;
+                              enviado = null;
+
+                              try {
+                                enviado = JSON.parse(log.objetoRequest || '{}');
+                              } catch (e) {
+                                enviado = null;
+                              }
+
+                              _clave = _this1149.claveComprobanteVeronica(enviado && enviado.receptor && enviado.receptor.identificacion || f.cliente && f.cliente.ruc, enviado && enviado.secuencial);
+                              _estatus = _clave ? estados.get(_clave) : undefined;
+
+                              if (!(_estatus === 'AUTORIZADO')) {
+                                _context53.next = 17;
+                                break;
+                              }
+
+                              _context53.next = 15;
+                              return _this1149._logApiVeronicaService.updateEstadoLog(log, 'OK').toPromise();
+
+                            case 15:
+                              autorizadas++;
+                              return _context53.abrupt("break", 20);
+
+                            case 17:
+                              if (_estatus === 'CREADO' && f.estadoVeronicaSri !== 'CREADO') {
+                                f.estadoVeronicaSri = 'CREADO';
+                                creadas++;
+                              }
+
+                            case 18:
+                              _context53.next = 6;
+                              break;
+
+                            case 20:
+                              _context53.next = 25;
+                              break;
+
+                            case 22:
+                              _context53.prev = 22;
+                              _context53.t0 = _context53["catch"](4);
+
+                              _iterator19.e(_context53.t0);
+
+                            case 25:
+                              _context53.prev = 25;
+
+                              _iterator19.f();
+
+                              return _context53.finish(25);
+
+                            case 28:
+                            case "end":
+                              return _context53.stop();
+                          }
+                        }
+                      }, _loop23, null, [[4, 22, 25, 28]]);
+                    });
+
+                    _iterator18.s();
+
+                  case 51:
+                    if ((_step18 = _iterator18.n()).done) {
+                      _context54.next = 55;
+                      break;
+                    }
+
+                    return _context54.delegateYield(_loop23(), "t1", 53);
+
+                  case 53:
+                    _context54.next = 51;
+                    break;
+
+                  case 55:
+                    _context54.next = 60;
+                    break;
+
+                  case 57:
+                    _context54.prev = 57;
+                    _context54.t2 = _context54["catch"](48);
+
+                    _iterator18.e(_context54.t2);
+
+                  case 60:
+                    _context54.prev = 60;
+
+                    _iterator18.f();
+
+                    return _context54.finish(60);
+
+                  case 63:
+                    this.mostrarLoading = false;
+                    sweetalert2__WEBPACK_IMPORTED_MODULE_4___default.a.fire('Validación con Veronica', "Facturas en ERROR revisadas: ".concat(enError.length, ".<br>") + "Autorizadas (pasan a ENVIADA): <strong>".concat(autorizadas, "</strong>.<br>") + "En estado CREADO (bot\xF3n azul): <strong>".concat(creadas, "</strong>."), 'success');
+                    if (autorizadas) this.obtenerLogsVeronica();
+                    _context54.next = 72;
+                    break;
+
+                  case 68:
+                    _context54.prev = 68;
+                    _context54.t3 = _context54["catch"](14);
+                    this.mostrarLoading = false;
+                    sweetalert2__WEBPACK_IMPORTED_MODULE_4___default.a.fire('Error', 'No se pudo consultar Veronica. Intente nuevamente.', 'error');
+
+                  case 72:
+                    _context54.prev = 72;
+                    this.validandoFacturasVeronica = false;
+                    return _context54.finish(72);
+
+                  case 75:
+                  case "end":
+                    return _context54.stop();
+                }
+              }
+            }, _callee53, this, [[14, 68, 72, 75], [23, 36, 39, 42], [48, 57, 60, 63]]);
+          }));
+        }
+      }, {
         key: "cambiarEstadoLogValidacion",
         value: function cambiarEstadoLogValidacion(dataFactura) {
-          var _this1149 = this;
+          var _this1150 = this;
 
           var dataLog = this.logsVeronica.find(function (log) {
             return log.nroDocumento === dataFactura.documento_n.toString();
@@ -149003,35 +149387,35 @@ function _classCallCheck(instance, Constructor) { if (!(instance instanceof Cons
           this._logApiVeronicaService.updateEstadoLog(dataLog, "OK").subscribe(function (res) {
             sweetalert2__WEBPACK_IMPORTED_MODULE_4___default.a.fire('Correcto!', 'Se ha realizado su actualización con éxito.', 'success');
 
-            _this1149.obtenerLogsVeronica();
+            _this1150.obtenerLogsVeronica();
           });
         }
       }, {
         key: "validarReprocesamiento",
         value: function validarReprocesamiento(dataFactura) {
-          var _this1150 = this;
+          var _this1151 = this;
 
           var _a;
 
           this._logApiVeronicaService.getLogsVeronicaPorFactura(this.obj, (_a = dataFactura) === null || _a === void 0 ? void 0 : _a.documento_n).subscribe(function (res) {
-            _this1150.logsVeronica = res;
+            _this1151.logsVeronica = res;
 
-            var logOk = _this1150.logsVeronica.some(function (log) {
+            var logOk = _this1151.logsVeronica.some(function (log) {
               return log.resultado === "OK";
             });
 
             if (logOk) {
-              _this1150.marcarReprocesoVeronica(dataFactura, false);
+              _this1151.marcarReprocesoVeronica(dataFactura, false);
 
               sweetalert2__WEBPACK_IMPORTED_MODULE_4___default.a.fire('Aviso', 'La factura ya ha sido actualizada.', 'info');
 
-              _this1150.obtenerLogsVeronica();
+              _this1151.obtenerLogsVeronica();
             } else {
-              _this1150.continuarProcesoFactura(dataFactura);
+              _this1151.continuarProcesoFactura(dataFactura);
             } //this.continuarProcesoFactura(dataFactura)
 
           }, function () {
-            _this1150.marcarReprocesoVeronica(dataFactura, false);
+            _this1151.marcarReprocesoVeronica(dataFactura, false);
 
             sweetalert2__WEBPACK_IMPORTED_MODULE_4___default.a.fire({
               title: 'Error',
@@ -149043,13 +149427,13 @@ function _classCallCheck(instance, Constructor) { if (!(instance instanceof Cons
       }, {
         key: "continuarProcesoFactura",
         value: function continuarProcesoFactura(dataFactura) {
-          var _this1151 = this;
+          var _this1152 = this;
 
           this.facturaVeronica = new _api_veronica_api_veronica__WEBPACK_IMPORTED_MODULE_6__["FacturaModel"]();
           this.facturaVeronica.pagos = [];
           this.facturaVeronica.detalles = [];
           this.parametrizaciones.forEach(function (element) {
-            if (element.sucursal == dataFactura.sucursal) _this1151.parametrizacionSucu = element;
+            if (element.sucursal == dataFactura.sucursal) _this1152.parametrizacionSucu = element;
           });
           this.mensajeLoading = "Enviando Factura SRI";
           this.mostrarLoading = true;
@@ -149058,24 +149442,24 @@ function _classCallCheck(instance, Constructor) { if (!(instance instanceof Cons
             var _a, _b, _c, _d, _e, _f, _g, _h, _j;
 
             var consecutivoVeronica = res;
-            _this1151.secuencialFactura = consecutivoVeronica.result[0].establecimiento.puntosEmision[0].secuencialFactura; //--------------INICIO LLENADO DE OBJETO SRI VERONICA--------------------
+            _this1152.secuencialFactura = consecutivoVeronica.result[0].establecimiento.puntosEmision[0].secuencialFactura; //--------------INICIO LLENADO DE OBJETO SRI VERONICA--------------------
             // Asegura que dataFactura.fecha sea un Date válido y lo formatea a "dd/MM/yyyy"
 
-            _this1151.facturaVeronica.fechaEmision = ((_a = dataFactura) === null || _a === void 0 ? void 0 : _a.fecha) ? (typeof dataFactura.fecha === 'string' ? new Date(dataFactura.fecha) : dataFactura.fecha).toLocaleDateString('es-EC', {
+            _this1152.facturaVeronica.fechaEmision = ((_a = dataFactura) === null || _a === void 0 ? void 0 : _a.fecha) ? (typeof dataFactura.fecha === 'string' ? new Date(dataFactura.fecha) : dataFactura.fecha).toLocaleDateString('es-EC', {
               day: '2-digit',
               month: '2-digit',
               year: 'numeric'
             }) : '';
-            _this1151.facturaVeronica.ruc = _this1151.parametrizacionSucu.ruc;
-            _this1151.facturaVeronica.secuencial = _this1151.secuencialFactura; //this.facturaVeronica.estab = this.factura.sucursal == "matriz" ? "002":"001"
+            _this1152.facturaVeronica.ruc = _this1152.parametrizacionSucu.ruc;
+            _this1152.facturaVeronica.secuencial = _this1152.secuencialFactura; //this.facturaVeronica.estab = this.factura.sucursal == "matriz" ? "002":"001"
 
-            _this1151.facturaVeronica.estab = _this1151.parametrizacionSucu.nroEstablecimiento; //******DATOS DEL RECEPTOR********** */
+            _this1152.facturaVeronica.estab = _this1152.parametrizacionSucu.nroEstablecimiento; //******DATOS DEL RECEPTOR********** */
 
-            _this1151.facturaVeronica.receptor = new _api_veronica_api_veronica__WEBPACK_IMPORTED_MODULE_6__["ReceptorModel"]();
-            _this1151.facturaVeronica.receptor.tipoIdentificacion = dataFactura.cliente.ruc.length == 13 ? "04" : "05";
-            _this1151.facturaVeronica.receptor.razonSocial = dataFactura.cliente.cliente_nombre;
-            _this1151.facturaVeronica.receptor.identificacion = dataFactura.cliente.ruc;
-            _this1151.facturaVeronica.receptor.direccion = dataFactura.cliente.direccion; //*********DETALLE FACTURA********** */
+            _this1152.facturaVeronica.receptor = new _api_veronica_api_veronica__WEBPACK_IMPORTED_MODULE_6__["ReceptorModel"]();
+            _this1152.facturaVeronica.receptor.tipoIdentificacion = dataFactura.cliente.ruc.length == 13 ? "04" : "05";
+            _this1152.facturaVeronica.receptor.razonSocial = dataFactura.cliente.cliente_nombre;
+            _this1152.facturaVeronica.receptor.identificacion = dataFactura.cliente.ruc;
+            _this1152.facturaVeronica.receptor.direccion = dataFactura.cliente.direccion; //*********DETALLE FACTURA********** */
 
             dataFactura.productosVendidos.forEach(function (element) {
               var detalle = new _api_veronica_api_veronica__WEBPACK_IMPORTED_MODULE_6__["ComprobanteDetalle"]();
@@ -149083,80 +149467,80 @@ function _classCallCheck(instance, Constructor) { if (!(instance instanceof Cons
               detalle.codigoAuxiliar = "000000";
               detalle.descripcion = element.producto.PRODUCTO;
               detalle.cantidad = element.cantidad;
-              detalle.precioUnitario = element.precio_venta / ((element.producto.ivaExcepcion || _this1151.ivaPorcentaje) / 100 + 1);
+              detalle.precioUnitario = element.precio_venta / ((element.producto.ivaExcepcion || _this1152.ivaPorcentaje) / 100 + 1);
               detalle.descuento = 0;
               var impuesto = new _api_veronica_api_veronica__WEBPACK_IMPORTED_MODULE_6__["ImpuestoModel"]();
               if (element.producto.ivaExcepcion) impuesto.codigoPorcentaje = '5';
-              impuesto.tarifa = element.producto.ivaExcepcion || _this1151.ivaPorcentaje;
+              impuesto.tarifa = element.producto.ivaExcepcion || _this1152.ivaPorcentaje;
               impuesto.baseImponible = Number(element.subtP1.toFixed(2));
-              impuesto.valor = impuesto.baseImponible * ((element.producto.ivaExcepcion || _this1151.ivaPorcentaje) / 100);
+              impuesto.valor = impuesto.baseImponible * ((element.producto.ivaExcepcion || _this1152.ivaPorcentaje) / 100);
               detalle.impuesto.push(impuesto);
 
-              _this1151.facturaVeronica.detalles.push(detalle);
+              _this1152.facturaVeronica.detalles.push(detalle);
             }); //*************FORMA DE PAGO*********** */
 
             var pago = new _api_veronica_api_veronica__WEBPACK_IMPORTED_MODULE_6__["PagosModel"]();
             pago.total = Number(dataFactura.total.toFixed(2));
 
-            _this1151.facturaVeronica.pagos.push(pago); //************CAMPOS ADICIONALES*********** */
+            _this1152.facturaVeronica.pagos.push(pago); //************CAMPOS ADICIONALES*********** */
 
 
             var campoAdicional = new _api_veronica_api_veronica__WEBPACK_IMPORTED_MODULE_6__["CampoAdicionalModel"]();
             campoAdicional.nombre = "email";
             campoAdicional.value = (_b = dataFactura.cliente) === null || _b === void 0 ? void 0 : _b.correo; //cambiar*********
 
-            _this1151.facturaVeronica.campoAdicional.push(campoAdicional);
+            _this1152.facturaVeronica.campoAdicional.push(campoAdicional);
 
             var campoAdicional2 = new _api_veronica_api_veronica__WEBPACK_IMPORTED_MODULE_6__["CampoAdicionalModel"]();
             campoAdicional2.nombre = "Documento Interno";
             campoAdicional2.value = dataFactura.documento_n.toString(); //cambiar*********
 
-            _this1151.facturaVeronica.campoAdicional.push(campoAdicional2);
+            _this1152.facturaVeronica.campoAdicional.push(campoAdicional2);
 
             if (((_c = dataFactura.cliente) === null || _c === void 0 ? void 0 : _c.celular) != undefined) {
               var campoAdicional3 = new _api_veronica_api_veronica__WEBPACK_IMPORTED_MODULE_6__["CampoAdicionalModel"]();
               campoAdicional3.nombre = "Teléfono Cliente";
               campoAdicional3.value = (_f = (_e = (_d = dataFactura) === null || _d === void 0 ? void 0 : _d.cliente) === null || _e === void 0 ? void 0 : _e.celular) === null || _f === void 0 ? void 0 : _f.toString(); //cambiar*********
 
-              _this1151.facturaVeronica.campoAdicional.push(campoAdicional3);
+              _this1152.facturaVeronica.campoAdicional.push(campoAdicional3);
             }
 
             if (((_g = dataFactura) === null || _g === void 0 ? void 0 : _g.observaciones) != undefined) {
               if (((_h = dataFactura) === null || _h === void 0 ? void 0 : _h.observaciones) != " ") {
-                _this1151.facturaVeronica.campoAdicional.push(campoAdicional3);
+                _this1152.facturaVeronica.campoAdicional.push(campoAdicional3);
 
                 var campoAdicional4 = new _api_veronica_api_veronica__WEBPACK_IMPORTED_MODULE_6__["CampoAdicionalModel"]();
                 campoAdicional4.nombre = "Nota";
                 campoAdicional4.value = (_j = dataFactura) === null || _j === void 0 ? void 0 : _j.observaciones; //cambiar*********
 
-                _this1151.facturaVeronica.campoAdicional.push(campoAdicional4);
+                _this1152.facturaVeronica.campoAdicional.push(campoAdicional4);
               }
             } //****************LOG SERVICIO WEB VERONICA**********/
 
 
             var logApiVeronica = new _api_veronica_api_veronica__WEBPACK_IMPORTED_MODULE_6__["ServicioWebVeronica"]();
-            logApiVeronica.objetoRequest = JSON.stringify(_this1151.facturaVeronica);
+            logApiVeronica.objetoRequest = JSON.stringify(_this1152.facturaVeronica);
             logApiVeronica.nroDocumento = dataFactura.documento_n.toString();
             logApiVeronica.fecha = dataFactura.fecha;
             logApiVeronica.sucursal = dataFactura.sucursal;
-            console.log(_this1151.facturaVeronica);
+            console.log(_this1152.facturaVeronica);
             console.log(logApiVeronica);
             alert("mensaje temporal prueba");
-            _this1151.mostrarLoading = false;
+            _this1152.mostrarLoading = false;
 
-            _this1151.marcarReprocesoVeronica(dataFactura, false); //TO-DO, DESCOMENTAR LUEGO DE PRUEBAS
+            _this1152.marcarReprocesoVeronica(dataFactura, false); //TO-DO, DESCOMENTAR LUEGO DE PRUEBAS
 
 
-            _this1151._apiVeronicaService.newFactura(_this1151.facturaVeronica).subscribe(function (res) {
+            _this1152._apiVeronicaService.newFactura(_this1152.facturaVeronica).subscribe(function (res) {
               var resultado = res;
               logApiVeronica.objetoResponse = JSON.stringify(res);
               logApiVeronica.claveAcceso = resultado.result.claveAccesoConsultada;
               logApiVeronica.resultado = "OK";
 
-              _this1151._logApiVeronicaService.newLog(logApiVeronica).subscribe(function (res) {
-                _this1151.mostrarLoading = false;
+              _this1152._logApiVeronicaService.newLog(logApiVeronica).subscribe(function (res) {
+                _this1152.mostrarLoading = false;
 
-                _this1151.marcarReprocesoVeronica(dataFactura, false);
+                _this1152.marcarReprocesoVeronica(dataFactura, false);
 
                 sweetalert2__WEBPACK_IMPORTED_MODULE_4___default.a.fire({
                   title: 'Correcto',
@@ -149164,19 +149548,19 @@ function _classCallCheck(instance, Constructor) { if (!(instance instanceof Cons
                   icon: 'success'
                 });
 
-                _this1151.traerFacturasMensuales();
+                _this1152.traerFacturasMensuales();
               }, function (err) {
-                _this1151.marcarReprocesoVeronica(dataFactura, false);
+                _this1152.marcarReprocesoVeronica(dataFactura, false);
               });
             }, function (err) {
               logApiVeronica.objetoResponse = JSON.stringify(err);
               logApiVeronica.claveAcceso = "";
               logApiVeronica.resultado = "NOK";
 
-              _this1151._logApiVeronicaService.newLog(logApiVeronica).subscribe(function (res) {
-                _this1151.mostrarLoading = false;
+              _this1152._logApiVeronicaService.newLog(logApiVeronica).subscribe(function (res) {
+                _this1152.mostrarLoading = false;
 
-                _this1151.marcarReprocesoVeronica(dataFactura, false);
+                _this1152.marcarReprocesoVeronica(dataFactura, false);
 
                 sweetalert2__WEBPACK_IMPORTED_MODULE_4___default.a.fire({
                   title: 'Error',
@@ -149185,11 +149569,11 @@ function _classCallCheck(instance, Constructor) { if (!(instance instanceof Cons
                   confirmButtonText: 'Ok'
                 });
               }, function (err) {
-                _this1151.marcarReprocesoVeronica(dataFactura, false);
+                _this1152.marcarReprocesoVeronica(dataFactura, false);
               });
             });
           }, function (err) {
-            _this1151.marcarReprocesoVeronica(dataFactura, false);
+            _this1152.marcarReprocesoVeronica(dataFactura, false);
 
             sweetalert2__WEBPACK_IMPORTED_MODULE_4___default.a.fire({
               title: 'Error',
@@ -149201,7 +149585,7 @@ function _classCallCheck(instance, Constructor) { if (!(instance instanceof Cons
       }, {
         key: "popupNotasVenta",
         value: function popupNotasVenta(e) {
-          var _this1152 = this;
+          var _this1153 = this;
 
           sweetalert2__WEBPACK_IMPORTED_MODULE_4___default.a.fire({
             title: "Notas",
@@ -149215,7 +149599,7 @@ function _classCallCheck(instance, Constructor) { if (!(instance instanceof Cons
             if (result.value) {
               e.nota = result.value;
 
-              _this1152.notasventaService.actualizarNota(e, result.value).subscribe(function (res) {
+              _this1153.notasventaService.actualizarNota(e, result.value).subscribe(function (res) {
                 sweetalert2__WEBPACK_IMPORTED_MODULE_4___default.a.fire({
                   title: 'Correcto',
                   text: 'Su proceso se realizó con éxito',
@@ -149235,7 +149619,7 @@ function _classCallCheck(instance, Constructor) { if (!(instance instanceof Cons
       }, {
         key: "popupNotasCoti",
         value: function popupNotasCoti(e) {
-          var _this1153 = this;
+          var _this1154 = this;
 
           sweetalert2__WEBPACK_IMPORTED_MODULE_4___default.a.fire({
             title: "Notas",
@@ -149249,7 +149633,7 @@ function _classCallCheck(instance, Constructor) { if (!(instance instanceof Cons
             if (result.value) {
               e.nota = result.value;
 
-              _this1153.proformasService.actualizarNota(e, result.value).subscribe(function (res) {
+              _this1154.proformasService.actualizarNota(e, result.value).subscribe(function (res) {
                 sweetalert2__WEBPACK_IMPORTED_MODULE_4___default.a.fire({
                   title: 'Correcto',
                   text: 'Su proceso se realizó con éxito',
@@ -149269,7 +149653,7 @@ function _classCallCheck(instance, Constructor) { if (!(instance instanceof Cons
       }, {
         key: "popupNotas",
         value: function popupNotas(e) {
-          var _this1154 = this;
+          var _this1155 = this;
 
           sweetalert2__WEBPACK_IMPORTED_MODULE_4___default.a.fire({
             title: "Notas",
@@ -149283,7 +149667,7 @@ function _classCallCheck(instance, Constructor) { if (!(instance instanceof Cons
             if (result.value) {
               e.nota = result.value;
 
-              _this1154.facturasService.actualizarNota(e, result.value).subscribe(function (res) {
+              _this1155.facturasService.actualizarNota(e, result.value).subscribe(function (res) {
                 sweetalert2__WEBPACK_IMPORTED_MODULE_4___default.a.fire({
                   title: 'Correcto',
                   text: 'Su proceso se realizó con éxito',
@@ -149303,23 +149687,23 @@ function _classCallCheck(instance, Constructor) { if (!(instance instanceof Cons
       }, {
         key: "cargarFactura",
         value: function cargarFactura(e) {
-          var _this1155 = this;
+          var _this1156 = this;
 
           this.mostrarMensaje();
           this.limpiarArregloPFact();
           this.facturas.forEach(function (element) {
             if (e.documento_n == element.documento_n) {
-              _this1155.factura = element;
-              _this1155.productosVendidos2 = _this1155.factura.productosVendidos;
+              _this1156.factura = element;
+              _this1156.productosVendidos2 = _this1156.factura.productosVendidos;
             }
           });
           this.productosVendidos.forEach(function (element) {
             if (element.factura_id == e.documento_n && element.tipoDocumentoVenta == "Factura") {
-              _this1155.productosVendidos2.push(element);
+              _this1156.productosVendidos2.push(element);
             }
           });
           this.parametrizaciones.forEach(function (element) {
-            if (element.sucursal == _this1155.factura.sucursal) _this1155.parametrizacionSucu = element;
+            if (element.sucursal == _this1156.factura.sucursal) _this1156.parametrizacionSucu = element;
           });
           this.tDocumento = "Factura";
 
@@ -149337,19 +149721,19 @@ function _classCallCheck(instance, Constructor) { if (!(instance instanceof Cons
       }, {
         key: "cargarNotaVenta",
         value: function cargarNotaVenta(e) {
-          var _this1156 = this;
+          var _this1157 = this;
 
           this.mostrarMensaje();
           this.limpiarArregloPFact();
           this.notasVenta.forEach(function (element) {
             if (e.documento_n == element.documento_n) {
-              _this1156.factura = element;
-              _this1156.productosVendidos2 = element.productosVendidos;
+              _this1157.factura = element;
+              _this1157.productosVendidos2 = element.productosVendidos;
             }
           });
           this.parametrizaciones.forEach(function (element) {
-            if (element.sucursal == _this1156.factura.sucursal) {
-              _this1156.parametrizacionSucu = element;
+            if (element.sucursal == _this1157.factura.sucursal) {
+              _this1157.parametrizacionSucu = element;
             }
           });
           this.tDocumento = "NOTA DE VENTA 001";
@@ -149368,19 +149752,19 @@ function _classCallCheck(instance, Constructor) { if (!(instance instanceof Cons
       }, {
         key: "cargarCotizaci\xF3n",
         value: function cargarCotizaciN(e) {
-          var _this1157 = this;
+          var _this1158 = this;
 
           this.mostrarMensaje();
           this.limpiarArregloPFact();
           this.cotizaciones.forEach(function (element) {
             if (e.documento_n == element.documento_n) {
-              _this1157.factura = element;
-              _this1157.productosVendidos2 = element.productosVendidos;
+              _this1158.factura = element;
+              _this1158.productosVendidos2 = element.productosVendidos;
             }
           });
           this.parametrizaciones.forEach(function (element) {
-            if (element.sucursal == _this1157.factura.sucursal) {
-              _this1157.parametrizacionSucu = element;
+            if (element.sucursal == _this1158.factura.sucursal) {
+              _this1158.parametrizacionSucu = element;
             }
           });
           this.tDocumento = "PROFORMA 000 001";
@@ -149496,7 +149880,7 @@ function _classCallCheck(instance, Constructor) { if (!(instance instanceof Cons
       }, {
         key: "limpiarArregloPFact",
         value: function limpiarArregloPFact() {
-          var _this1158 = this;
+          var _this1159 = this;
 
           var cont = 0;
           this.productosVendidos2.forEach(function (element) {
@@ -149505,7 +149889,7 @@ function _classCallCheck(instance, Constructor) { if (!(instance instanceof Cons
 
           if (cont >= 0) {
             this.productosVendidos2.forEach(function (element) {
-              _this1158.productosVendidos2.splice(0);
+              _this1159.productosVendidos2.splice(0);
             });
           }
         }
@@ -150496,9 +150880,9 @@ function _classCallCheck(instance, Constructor) { if (!(instance instanceof Cons
     RegistrosVentasComponent.ɵcmp = _angular_core__WEBPACK_IMPORTED_MODULE_1__["ɵɵdefineComponent"]({
       type: RegistrosVentasComponent,
       selectors: [["app-registros-ventas"]],
-      decls: 71,
-      vars: 20,
-      consts: [[4, "ngIf"], [1, "row", "menu", "remiPro"], [1, "col-md-8"], [1, ""], [1, "col-md-4"], [1, "form-control", "select", 3, "items", "value", "readOnly", "disabled", "onValueChanged"], [1, "card"], [1, "card-header", "text-center", "font-weight-bold", "text-uppercase"], [1, "card-body"], [1, "row"], [1, "col-md-2"], [1, "col-md-12", 2, "text-align", "center", "font-weight", "bold"], [1, "row", "card"], [1, "col-md-12"], [1, "col-md-3", 2, "margin-top", "0.5em"], [1, "col-md-9"], ["type", "date", 3, "value", "valueChange"], [1, "col-md-4", "btnSearch"], [1, "btn", "btn-block", "btn-success", 2, "background-color", "#ff5722", "border-color", "#ff5722", 3, "click"], [1, "col-md-4", 2, "margin-left", "1em"], [1, "col-md-3"], [1, "col-md-6", "btnSearch"], ["title", "Informaci\xF3n", 3, "visible", "width", "height", "showTitle", "dragEnabled", "closeOnOutsideClick", "visibleChange"], ["width", "100%", "height", "100%"], [1, "cs-popup"], [2, "font-weight", "bold"], [2, "background-color", "#f8ff18"], [3, "messagge"], ["id", "gridContainer", 3, "dataSource", "showBorders", "remoteOperations", "onExporting", "onExported"], [3, "visible"], ["placeholder", "Buscar...", 3, "visible", "width"], ["fileName", "Facturas_ingresadas", 3, "enabled", "allowExportSelectedData"], ["dataField", "createdAt", "caption", "Fecha de creaci\xF3n", "dataType", "date", "sortOrder", "desc", 3, "visible"], ["dataField", "documento_n", "caption", "Factura #", "dataType", "string"], ["dataField", "fecha", "caption", "Fecha", "dataType", "date"], ["dataField", "fecha2", "caption", "Fecha Transaccion", "dataType", "string", 3, "visible"], ["dataField", "rucFactura", "caption", "RUC Suc"], ["dataField", "sucursal", "caption", "Sucursal", "dataType", "string", 3, "groupIndex"], ["dataField", "cliente.cliente_nombre", "caption", "Cliente", "dataType", "string"], ["dataField", "cliente.ruc", "caption", "Cliente", "dataType", "string", 3, "visible"], ["dataField", "tipo_venta", "caption", "Tipo Venta", "dataType", "string", 3, "visible"], ["dataField", "cotizacion", "caption", "Cotizaci\xF3n", "dataType", "string", 3, "visible"], ["dataField", "coste_transporte", "caption", "Transporte", "dataType", "string", 3, "visible"], ["dataField", "totalIva", "caption", "Iva", "dataType", "number", 3, "visible"], ["dataField", "total", "caption", "Total", "dataType", "number", 3, "visible"], ["dataField", "estado", "caption", "Estado", "dataType", "string", 3, "visible"], ["dataField", "caja", "caption", "Caja", "dataType", "number", 3, "visible"], ["dataField", "username", "caption", "Vendedor", "dataType", "string", 3, "visible"], ["dataField", "username", "caption", "Usuario", "dataType", "string", 3, "visible"], ["dataField", "maestro", "caption", "Maestro", "dataType", "string", 3, "visible"], ["dataField", "observaciones", "caption", "Observaciones", "dataType", "string", 3, "visible"], ["dataField", "nota", "caption", "Notas", "dataType", "string", 3, "visible"], ["dataField", "estadoFacturaVeronica", "caption", "Est.Facturaci\xF3n", "cellTemplate", "estadoVeronicaTemplate"], ["caption", "Recibo Caja", "cellTemplate", "reciboCajaTemplate", "width", "120", 3, "allowSorting", "allowFiltering"], ["style", "text-align: center;", 4, "dxTemplate", "dxTemplateOf"], ["type", "buttons", "caption", "Ver"], ["icon", "fa fa-arrow-down", 3, "onClick"], ["type", "buttons", "dataField", "bt1", "caption", "Notas", "width", "7%"], ["hint", "Notas", "icon", "fa fa-list-alt", 3, "onClick"], [3, "pageSize"], [3, "autoExpandAll"], ["expand", ""], [3, "showPageSizeSelector", "allowedPageSizes"], [2, "text-align", "center"], [1, "btn-center", 3, "ngSwitch"], ["class", "btn-sect-warning btn btn-danger btn-sm", 3, "click", 4, "ngSwitchCase"], ["class", "btn-sect btn btn-warning btn-sm", 3, "disabled", "click", 4, "ngSwitchCase"], ["class", "btn-sect-success btn btn-warning btn-sm", 3, "click", 4, "ngSwitchCase"], ["class", "btn-sect-success btn btn-success btn-sm", 4, "ngSwitchCase"], [1, "btn-sect-warning", "btn", "btn-danger", "btn-sm", 3, "click"], [1, "fa", "fa-solid", "fa-exclamation"], [1, "btn-sect", "btn", "btn-warning", "btn-sm", 3, "disabled", "click"], [1, "fa", "fa-solid", "fa-rotate-right"], [1, "btn-sect-success", "btn", "btn-warning", "btn-sm", 3, "click"], [1, "fa", "fa-solid", "fa-check"], [1, "btn-sect-success", "btn", "btn-success", "btn-sm"], [1, "fa", "fa-solid", "fa-check-circle"], ["title", "Recibo de caja generado", 1, "fa", "fa-solid", "fa-check-circle", "text-success"], ["type", "button", "title", "Generar recibo de caja", 1, "btn", "btn-sm", "btn-sect", 3, "click"], [1, "fa", "fa-solid", "fa-times-circle", "text-danger"], ["fileName", "NotasVenta_ingresadas", 3, "enabled", "allowExportSelectedData"], ["dataField", "sucursal", "caption", "Sucursal", "dataType", "string"], ["dataField", "caja", "caption", "Caja", "dataType", "string", 3, "visible"], ["caption", "Recibo Caja", "cellTemplate", "reciboCajaTemplateNotas", "width", "120", 3, "allowSorting", "allowFiltering"], ["title", "Recibo de caja generado", 1, "fa", "fa-check-circle", "text-success"], ["title", "Sin recibo de caja", 1, "fa", "fa-times-circle", "text-danger"], ["type", "button", "title", "Generar recibo de caja", 1, "btn", "btn-sm", "btn-outline-primary", "ml-1", 3, "click"], ["fileName", "Cotizaciones_ingresadas", 3, "enabled", "allowExportSelectedData"], ["dataField", "documento_n", "caption", "ID #", "dataType", "string"]],
+      decls: 72,
+      vars: 21,
+      consts: [[4, "ngIf"], [1, "row", "menu", "remiPro"], [1, "col-md-8"], [1, ""], [1, "col-md-4"], [1, "form-control", "select", 3, "items", "value", "readOnly", "disabled", "onValueChanged"], [1, "card"], [1, "card-header", "text-center", "font-weight-bold", "text-uppercase"], [1, "card-body"], [1, "row"], [1, "col-md-2"], [1, "col-md-12", 2, "text-align", "center", "font-weight", "bold"], [1, "row", "card"], [1, "col-md-12"], [1, "col-md-3", 2, "margin-top", "0.5em"], [1, "col-md-9"], ["type", "date", 3, "value", "valueChange"], [1, "col-md-4", "btnSearch"], [1, "btn", "btn-block", "btn-success", 2, "background-color", "#ff5722", "border-color", "#ff5722", 3, "click"], [1, "col-md-4", 2, "margin-left", "1em"], [1, "col-md-3"], [1, "col-md-6", "btnSearch"], ["class", "row mt-2", 4, "ngIf"], ["title", "Informaci\xF3n", 3, "visible", "width", "height", "showTitle", "dragEnabled", "closeOnOutsideClick", "visibleChange"], ["width", "100%", "height", "100%"], [1, "cs-popup"], [2, "font-weight", "bold"], [2, "background-color", "#f8ff18"], [3, "messagge"], [1, "row", "mt-2"], [1, "col-12", "d-flex", "justify-content-end"], ["title", "Consulta en Veronica las facturas de matriz del rango Desde/Hasta y actualiza las que est\xE1n en ERROR", 1, "btn", "btn-primary", 3, "disabled", "click"], [1, "fa", "fa-solid", "fa-check-double"], ["id", "gridContainer", 3, "dataSource", "showBorders", "remoteOperations", "onExporting", "onExported"], [3, "visible"], ["placeholder", "Buscar...", 3, "visible", "width"], ["fileName", "Facturas_ingresadas", 3, "enabled", "allowExportSelectedData"], ["dataField", "createdAt", "caption", "Fecha de creaci\xF3n", "dataType", "date", "sortOrder", "desc", 3, "visible"], ["dataField", "documento_n", "caption", "Factura #", "dataType", "string"], ["dataField", "fecha", "caption", "Fecha", "dataType", "date"], ["dataField", "fecha2", "caption", "Fecha Transaccion", "dataType", "string", 3, "visible"], ["dataField", "rucFactura", "caption", "RUC Suc"], ["dataField", "sucursal", "caption", "Sucursal", "dataType", "string", 3, "groupIndex"], ["dataField", "cliente.cliente_nombre", "caption", "Cliente", "dataType", "string"], ["dataField", "cliente.ruc", "caption", "Cliente", "dataType", "string", 3, "visible"], ["dataField", "tipo_venta", "caption", "Tipo Venta", "dataType", "string", 3, "visible"], ["dataField", "cotizacion", "caption", "Cotizaci\xF3n", "dataType", "string", 3, "visible"], ["dataField", "coste_transporte", "caption", "Transporte", "dataType", "string", 3, "visible"], ["dataField", "totalIva", "caption", "Iva", "dataType", "number", 3, "visible"], ["dataField", "total", "caption", "Total", "dataType", "number", 3, "visible"], ["dataField", "estado", "caption", "Estado", "dataType", "string", 3, "visible"], ["dataField", "caja", "caption", "Caja", "dataType", "number", 3, "visible"], ["dataField", "username", "caption", "Vendedor", "dataType", "string", 3, "visible"], ["dataField", "username", "caption", "Usuario", "dataType", "string", 3, "visible"], ["dataField", "maestro", "caption", "Maestro", "dataType", "string", 3, "visible"], ["dataField", "observaciones", "caption", "Observaciones", "dataType", "string", 3, "visible"], ["dataField", "nota", "caption", "Notas", "dataType", "string", 3, "visible"], ["dataField", "estadoFacturaVeronica", "caption", "Est.Facturaci\xF3n", "cellTemplate", "estadoVeronicaTemplate"], ["caption", "Recibo Caja", "cellTemplate", "reciboCajaTemplate", "width", "120", 3, "allowSorting", "allowFiltering"], ["style", "text-align: center;", 4, "dxTemplate", "dxTemplateOf"], ["type", "buttons", "caption", "Ver"], ["icon", "fa fa-arrow-down", 3, "onClick"], ["type", "buttons", "dataField", "bt1", "caption", "Notas", "width", "7%"], ["hint", "Notas", "icon", "fa fa-list-alt", 3, "onClick"], [3, "pageSize"], [3, "autoExpandAll"], ["expand", ""], [3, "showPageSizeSelector", "allowedPageSizes"], [2, "text-align", "center"], [1, "btn-center", 3, "ngSwitch"], ["class", "btn-sect-warning btn btn-danger btn-sm", 3, "veronica-creado", "title", "click", 4, "ngSwitchCase"], ["class", "btn-sect btn btn-warning btn-sm", 3, "disabled", "click", 4, "ngSwitchCase"], ["class", "btn-sect-success btn btn-warning btn-sm", 3, "click", 4, "ngSwitchCase"], ["class", "btn-sect-success btn btn-success btn-sm", 4, "ngSwitchCase"], [1, "btn-sect-warning", "btn", "btn-danger", "btn-sm", 3, "title", "click"], [1, "fa", "fa-solid", "fa-exclamation"], [1, "btn-sect", "btn", "btn-warning", "btn-sm", 3, "disabled", "click"], [1, "fa", "fa-solid", "fa-rotate-right"], [1, "btn-sect-success", "btn", "btn-warning", "btn-sm", 3, "click"], [1, "fa", "fa-solid", "fa-check"], [1, "btn-sect-success", "btn", "btn-success", "btn-sm"], [1, "fa", "fa-solid", "fa-check-circle"], ["title", "Recibo de caja generado", 1, "fa", "fa-solid", "fa-check-circle", "text-success"], ["type", "button", "title", "Generar recibo de caja", 1, "btn", "btn-sm", "btn-sect", 3, "click"], [1, "fa", "fa-solid", "fa-times-circle", "text-danger"], ["fileName", "NotasVenta_ingresadas", 3, "enabled", "allowExportSelectedData"], ["dataField", "sucursal", "caption", "Sucursal", "dataType", "string"], ["dataField", "caja", "caption", "Caja", "dataType", "string", 3, "visible"], ["caption", "Recibo Caja", "cellTemplate", "reciboCajaTemplateNotas", "width", "120", 3, "allowSorting", "allowFiltering"], ["title", "Recibo de caja generado", 1, "fa", "fa-check-circle", "text-success"], ["title", "Sin recibo de caja", 1, "fa", "fa-times-circle", "text-danger"], ["type", "button", "title", "Generar recibo de caja", 1, "btn", "btn-sm", "btn-outline-primary", "ml-1", 3, "click"], ["fileName", "Cotizaciones_ingresadas", 3, "enabled", "allowExportSelectedData"], ["dataField", "documento_n", "caption", "ID #", "dataType", "string"]],
       template: function RegistrosVentasComponent_Template(rf, ctx) {
         if (rf & 1) {
           _angular_core__WEBPACK_IMPORTED_MODULE_1__["ɵɵtemplate"](0, RegistrosVentasComponent_div_0_Template, 2, 1, "div", 0);
@@ -150679,67 +151063,69 @@ function _classCallCheck(instance, Constructor) { if (!(instance instanceof Cons
 
           _angular_core__WEBPACK_IMPORTED_MODULE_1__["ɵɵelementEnd"]();
 
-          _angular_core__WEBPACK_IMPORTED_MODULE_1__["ɵɵtemplate"](49, RegistrosVentasComponent_div_49_Template, 39, 36, "div", 0);
+          _angular_core__WEBPACK_IMPORTED_MODULE_1__["ɵɵtemplate"](49, RegistrosVentasComponent_div_49_Template, 5, 1, "div", 22);
 
-          _angular_core__WEBPACK_IMPORTED_MODULE_1__["ɵɵelementStart"](50, "dx-popup", 22);
+          _angular_core__WEBPACK_IMPORTED_MODULE_1__["ɵɵtemplate"](50, RegistrosVentasComponent_div_50_Template, 39, 36, "div", 0);
 
-          _angular_core__WEBPACK_IMPORTED_MODULE_1__["ɵɵlistener"]("visibleChange", function RegistrosVentasComponent_Template_dx_popup_visibleChange_50_listener($event) {
+          _angular_core__WEBPACK_IMPORTED_MODULE_1__["ɵɵelementStart"](51, "dx-popup", 23);
+
+          _angular_core__WEBPACK_IMPORTED_MODULE_1__["ɵɵlistener"]("visibleChange", function RegistrosVentasComponent_Template_dx_popup_visibleChange_51_listener($event) {
             return ctx.isPopupVisible = $event;
           });
 
-          _angular_core__WEBPACK_IMPORTED_MODULE_1__["ɵɵelementStart"](51, "dx-scroll-view", 23);
+          _angular_core__WEBPACK_IMPORTED_MODULE_1__["ɵɵelementStart"](52, "dx-scroll-view", 24);
 
-          _angular_core__WEBPACK_IMPORTED_MODULE_1__["ɵɵelementStart"](52, "div", 24);
+          _angular_core__WEBPACK_IMPORTED_MODULE_1__["ɵɵelementStart"](53, "div", 25);
 
-          _angular_core__WEBPACK_IMPORTED_MODULE_1__["ɵɵelementStart"](53, "span", 25);
+          _angular_core__WEBPACK_IMPORTED_MODULE_1__["ɵɵelementStart"](54, "span", 26);
 
-          _angular_core__WEBPACK_IMPORTED_MODULE_1__["ɵɵelementStart"](54, "h6");
+          _angular_core__WEBPACK_IMPORTED_MODULE_1__["ɵɵelementStart"](55, "h6");
 
-          _angular_core__WEBPACK_IMPORTED_MODULE_1__["ɵɵtext"](55, "Detalle Error:");
-
-          _angular_core__WEBPACK_IMPORTED_MODULE_1__["ɵɵelementEnd"]();
-
-          _angular_core__WEBPACK_IMPORTED_MODULE_1__["ɵɵelementEnd"]();
-
-          _angular_core__WEBPACK_IMPORTED_MODULE_1__["ɵɵelementStart"](56, "div", 26);
-
-          _angular_core__WEBPACK_IMPORTED_MODULE_1__["ɵɵelementStart"](57, "p");
-
-          _angular_core__WEBPACK_IMPORTED_MODULE_1__["ɵɵtext"](58);
+          _angular_core__WEBPACK_IMPORTED_MODULE_1__["ɵɵtext"](56, "Detalle Error:");
 
           _angular_core__WEBPACK_IMPORTED_MODULE_1__["ɵɵelementEnd"]();
 
           _angular_core__WEBPACK_IMPORTED_MODULE_1__["ɵɵelementEnd"]();
 
-          _angular_core__WEBPACK_IMPORTED_MODULE_1__["ɵɵelementStart"](59, "span", 25);
+          _angular_core__WEBPACK_IMPORTED_MODULE_1__["ɵɵelementStart"](57, "div", 27);
 
-          _angular_core__WEBPACK_IMPORTED_MODULE_1__["ɵɵelementStart"](60, "h6");
+          _angular_core__WEBPACK_IMPORTED_MODULE_1__["ɵɵelementStart"](58, "p");
 
-          _angular_core__WEBPACK_IMPORTED_MODULE_1__["ɵɵtext"](61, "Objeto Enviado:");
-
-          _angular_core__WEBPACK_IMPORTED_MODULE_1__["ɵɵelementEnd"]();
-
-          _angular_core__WEBPACK_IMPORTED_MODULE_1__["ɵɵelementEnd"]();
-
-          _angular_core__WEBPACK_IMPORTED_MODULE_1__["ɵɵelementStart"](62, "P");
-
-          _angular_core__WEBPACK_IMPORTED_MODULE_1__["ɵɵtext"](63);
-
-          _angular_core__WEBPACK_IMPORTED_MODULE_1__["ɵɵelementEnd"]();
-
-          _angular_core__WEBPACK_IMPORTED_MODULE_1__["ɵɵelementStart"](64, "span", 25);
-
-          _angular_core__WEBPACK_IMPORTED_MODULE_1__["ɵɵelementStart"](65, "h6");
-
-          _angular_core__WEBPACK_IMPORTED_MODULE_1__["ɵɵtext"](66, "Objeto Recibido:");
+          _angular_core__WEBPACK_IMPORTED_MODULE_1__["ɵɵtext"](59);
 
           _angular_core__WEBPACK_IMPORTED_MODULE_1__["ɵɵelementEnd"]();
 
           _angular_core__WEBPACK_IMPORTED_MODULE_1__["ɵɵelementEnd"]();
 
-          _angular_core__WEBPACK_IMPORTED_MODULE_1__["ɵɵelementStart"](67, "P");
+          _angular_core__WEBPACK_IMPORTED_MODULE_1__["ɵɵelementStart"](60, "span", 26);
 
-          _angular_core__WEBPACK_IMPORTED_MODULE_1__["ɵɵtext"](68);
+          _angular_core__WEBPACK_IMPORTED_MODULE_1__["ɵɵelementStart"](61, "h6");
+
+          _angular_core__WEBPACK_IMPORTED_MODULE_1__["ɵɵtext"](62, "Objeto Enviado:");
+
+          _angular_core__WEBPACK_IMPORTED_MODULE_1__["ɵɵelementEnd"]();
+
+          _angular_core__WEBPACK_IMPORTED_MODULE_1__["ɵɵelementEnd"]();
+
+          _angular_core__WEBPACK_IMPORTED_MODULE_1__["ɵɵelementStart"](63, "P");
+
+          _angular_core__WEBPACK_IMPORTED_MODULE_1__["ɵɵtext"](64);
+
+          _angular_core__WEBPACK_IMPORTED_MODULE_1__["ɵɵelementEnd"]();
+
+          _angular_core__WEBPACK_IMPORTED_MODULE_1__["ɵɵelementStart"](65, "span", 26);
+
+          _angular_core__WEBPACK_IMPORTED_MODULE_1__["ɵɵelementStart"](66, "h6");
+
+          _angular_core__WEBPACK_IMPORTED_MODULE_1__["ɵɵtext"](67, "Objeto Recibido:");
+
+          _angular_core__WEBPACK_IMPORTED_MODULE_1__["ɵɵelementEnd"]();
+
+          _angular_core__WEBPACK_IMPORTED_MODULE_1__["ɵɵelementEnd"]();
+
+          _angular_core__WEBPACK_IMPORTED_MODULE_1__["ɵɵelementStart"](68, "P");
+
+          _angular_core__WEBPACK_IMPORTED_MODULE_1__["ɵɵtext"](69);
 
           _angular_core__WEBPACK_IMPORTED_MODULE_1__["ɵɵelementEnd"]();
 
@@ -150749,9 +151135,9 @@ function _classCallCheck(instance, Constructor) { if (!(instance instanceof Cons
 
           _angular_core__WEBPACK_IMPORTED_MODULE_1__["ɵɵelementEnd"]();
 
-          _angular_core__WEBPACK_IMPORTED_MODULE_1__["ɵɵtemplate"](69, RegistrosVentasComponent_div_69_Template, 33, 32, "div", 0);
+          _angular_core__WEBPACK_IMPORTED_MODULE_1__["ɵɵtemplate"](70, RegistrosVentasComponent_div_70_Template, 33, 32, "div", 0);
 
-          _angular_core__WEBPACK_IMPORTED_MODULE_1__["ɵɵtemplate"](70, RegistrosVentasComponent_div_70_Template, 27, 25, "div", 0);
+          _angular_core__WEBPACK_IMPORTED_MODULE_1__["ɵɵtemplate"](71, RegistrosVentasComponent_div_71_Template, 27, 25, "div", 0);
         }
 
         if (rf & 2) {
@@ -150774,6 +151160,10 @@ function _classCallCheck(instance, Constructor) { if (!(instance instanceof Cons
           _angular_core__WEBPACK_IMPORTED_MODULE_1__["ɵɵproperty"]("value", ctx.nowhasta);
 
           _angular_core__WEBPACK_IMPORTED_MODULE_1__["ɵɵadvance"](22);
+
+          _angular_core__WEBPACK_IMPORTED_MODULE_1__["ɵɵproperty"]("ngIf", ctx.tipoBusqueda === "Factura");
+
+          _angular_core__WEBPACK_IMPORTED_MODULE_1__["ɵɵadvance"](1);
 
           _angular_core__WEBPACK_IMPORTED_MODULE_1__["ɵɵproperty"]("ngIf", ctx.mostrarSeccionFacturas);
 
@@ -150803,7 +151193,7 @@ function _classCallCheck(instance, Constructor) { if (!(instance instanceof Cons
         }
       },
       directives: [_angular_common__WEBPACK_IMPORTED_MODULE_24__["NgIf"], devextreme_angular__WEBPACK_IMPORTED_MODULE_25__["DxSelectBoxComponent"], devextreme_angular__WEBPACK_IMPORTED_MODULE_25__["DxDateBoxComponent"], devextreme_angular__WEBPACK_IMPORTED_MODULE_25__["DxPopupComponent"], devextreme_angular_ui_scroll_view__WEBPACK_IMPORTED_MODULE_26__["DxScrollViewComponent"], _loading_message_loading_messagge_component__WEBPACK_IMPORTED_MODULE_27__["LoadingMessaggeComponent"], devextreme_angular__WEBPACK_IMPORTED_MODULE_25__["DxDataGridComponent"], devextreme_angular_ui_nested__WEBPACK_IMPORTED_MODULE_28__["DxoFilterRowComponent"], devextreme_angular_ui_nested__WEBPACK_IMPORTED_MODULE_28__["DxoSearchPanelComponent"], devextreme_angular_ui_nested__WEBPACK_IMPORTED_MODULE_28__["DxoExportComponent"], devextreme_angular_ui_nested__WEBPACK_IMPORTED_MODULE_28__["DxiColumnComponent"], devextreme_angular_core__WEBPACK_IMPORTED_MODULE_29__["DxTemplateDirective"], devextreme_angular_ui_nested__WEBPACK_IMPORTED_MODULE_28__["DxiButtonComponent"], devextreme_angular_ui_nested__WEBPACK_IMPORTED_MODULE_28__["DxoPagingComponent"], devextreme_angular_ui_nested__WEBPACK_IMPORTED_MODULE_28__["DxoGroupPanelComponent"], devextreme_angular_ui_nested__WEBPACK_IMPORTED_MODULE_28__["DxoGroupingComponent"], devextreme_angular_ui_nested__WEBPACK_IMPORTED_MODULE_28__["DxoPagerComponent"], _angular_common__WEBPACK_IMPORTED_MODULE_24__["NgSwitch"], _angular_common__WEBPACK_IMPORTED_MODULE_24__["NgSwitchCase"]],
-      styles: [".menu[_ngcontent-%COMP%] {\n  margin-top: 1em;\n}\n\n  .dx-theme-material-typography h2 {\n  font-weight: bold;\n  font-size: 40px;\n}\n\n.btnSearch[_ngcontent-%COMP%] {\n  text-align: center;\n  margin-top: 0.4em;\n  margin-bottom: 0.4em;\n}\n\n.select[_ngcontent-%COMP%] {\n  text-align: center;\n  background-color: white;\n}\n\n  .remiPro .dx-selectbox input {\n  text-align: center;\n}\n\n  .remiPro .dx-selectbox-popup-wrapper .dx-list-item {\n  text-align: center;\n}\n\n.btn-sect[_ngcontent-%COMP%] {\n  background-color: transparent;\n  color: red;\n  text-align: center;\n  font-size: 1.3em;\n  border: none;\n}\n\n.btn-sect[_ngcontent-%COMP%]:disabled {\n  opacity: 0.45;\n  cursor: not-allowed;\n  pointer-events: none;\n}\n\n.btn-sect-warning[_ngcontent-%COMP%] {\n  background-color: transparent;\n  color: #ff8503;\n  text-align: center;\n  font-size: 1.3em;\n  border: none;\n}\n\n.btn-sect-success[_ngcontent-%COMP%] {\n  background-color: transparent;\n  color: green;\n  text-align: center;\n  font-size: 1.3em;\n  border: none;\n}\n\n.btn-center[_ngcontent-%COMP%] {\n  text-align: center;\n}\n\n.cs-popup[_ngcontent-%COMP%] {\n  margin: 1.5em;\n}\n/*# sourceMappingURL=data:application/json;base64,eyJ2ZXJzaW9uIjozLCJzb3VyY2VzIjpbInNyYy9hcHAvcGFnZXMvcmVnaXN0cm9zLXZlbnRhcy9DOlxcRklERU5TXFxhbG9qYWJhc2VzMjAyNS9zcmNcXGFwcFxccGFnZXNcXHJlZ2lzdHJvcy12ZW50YXNcXHJlZ2lzdHJvcy12ZW50YXMuY29tcG9uZW50LnNjc3MiLCJzcmMvYXBwL3BhZ2VzL3JlZ2lzdHJvcy12ZW50YXMvcmVnaXN0cm9zLXZlbnRhcy5jb21wb25lbnQuc2NzcyJdLCJuYW1lcyI6W10sIm1hcHBpbmdzIjoiQUFFQTtFQUNJLGVBQUE7QUNESjs7QURJQTtFQUNJLGlCQUFBO0VBQ0EsZUFBQTtBQ0RKOztBREtBO0VBQ0ksa0JBQUE7RUFDQSxpQkFBQTtFQUNBLG9CQUFBO0FDRko7O0FES0E7RUFDSSxrQkFBQTtFQUNBLHVCQUFBO0FDRko7O0FES0E7RUFDSSxrQkFBQTtBQ0ZKOztBREtBO0VBQ0ksa0JBQUE7QUNGSjs7QURLQTtFQUNJLDZCQUFBO0VBQ0EsVUFBQTtFQUNBLGtCQUFBO0VBQ0EsZ0JBQUE7RUFDQSxZQUFBO0FDRko7O0FES0E7RUFDSSxhQUFBO0VBQ0EsbUJBQUE7RUFDQSxvQkFBQTtBQ0ZKOztBREtBO0VBQ0ksNkJBQUE7RUFDQSxjQUFBO0VBQ0Esa0JBQUE7RUFDQSxnQkFBQTtFQUNBLFlBQUE7QUNGSjs7QURLQTtFQUNJLDZCQUFBO0VBQ0EsWUFBQTtFQUNBLGtCQUFBO0VBQ0EsZ0JBQUE7RUFDQSxZQUFBO0FDRko7O0FES0E7RUFDSSxrQkFBQTtBQ0ZKOztBREtBO0VBQ0ksYUFBQTtBQ0ZKIiwiZmlsZSI6InNyYy9hcHAvcGFnZXMvcmVnaXN0cm9zLXZlbnRhcy9yZWdpc3Ryb3MtdmVudGFzLmNvbXBvbmVudC5zY3NzIiwic291cmNlc0NvbnRlbnQiOlsiXHJcblxyXG4ubWVudXtcclxuICAgIG1hcmdpbi10b3A6IDFlbTtcclxufVxyXG5cclxuOjpuZy1kZWVwIC5keC10aGVtZS1tYXRlcmlhbC10eXBvZ3JhcGh5IGgyIHtcclxuICAgIGZvbnQtd2VpZ2h0OiBib2xkO1xyXG4gICAgZm9udC1zaXplOiA0MHB4O1xyXG59XHJcblxyXG5cclxuLmJ0blNlYXJjaHtcclxuICAgIHRleHQtYWxpZ246IGNlbnRlcjtcclxuICAgIG1hcmdpbi10b3A6IDAuNGVtO1xyXG4gICAgbWFyZ2luLWJvdHRvbTogMC40ZW07XHJcbn1cclxuXHJcbi5zZWxlY3R7XHJcbiAgICB0ZXh0LWFsaWduOiBjZW50ZXI7XHJcbiAgICBiYWNrZ3JvdW5kLWNvbG9yOiB3aGl0ZTtcclxufVxyXG5cclxuOjpuZy1kZWVwIC5yZW1pUHJvIC5keC1zZWxlY3Rib3ggaW5wdXQgeyAgXHJcbiAgICB0ZXh0LWFsaWduOiBjZW50ZXI7ICBcclxufSBcclxuXHJcbjo6bmctZGVlcCAucmVtaVBybyAuZHgtc2VsZWN0Ym94LXBvcHVwLXdyYXBwZXIgLmR4LWxpc3QtaXRlbSB7ICBcclxuICAgIHRleHQtYWxpZ246IGNlbnRlcjsgIFxyXG59IFxyXG5cclxuLmJ0bi1zZWN0e1xyXG4gICAgYmFja2dyb3VuZC1jb2xvcjogdHJhbnNwYXJlbnQ7XHJcbiAgICBjb2xvcjogcmVkO1xyXG4gICAgdGV4dC1hbGlnbjogY2VudGVyO1xyXG4gICAgZm9udC1zaXplOiAxLjNlbTtcclxuICAgIGJvcmRlcjogbm9uZTtcclxufVxyXG5cclxuLmJ0bi1zZWN0OmRpc2FibGVke1xyXG4gICAgb3BhY2l0eTogMC40NTtcclxuICAgIGN1cnNvcjogbm90LWFsbG93ZWQ7XHJcbiAgICBwb2ludGVyLWV2ZW50czogbm9uZTtcclxufVxyXG5cclxuLmJ0bi1zZWN0LXdhcm5pbmd7XHJcbiAgICBiYWNrZ3JvdW5kLWNvbG9yOiB0cmFuc3BhcmVudDtcclxuICAgIGNvbG9yOiByZ2IoMjU1LCAxMzMsIDMpO1xyXG4gICAgdGV4dC1hbGlnbjogY2VudGVyO1xyXG4gICAgZm9udC1zaXplOiAxLjNlbTtcclxuICAgIGJvcmRlcjogbm9uZTtcclxufVxyXG5cclxuLmJ0bi1zZWN0LXN1Y2Nlc3N7XHJcbiAgICBiYWNrZ3JvdW5kLWNvbG9yOiB0cmFuc3BhcmVudDtcclxuICAgIGNvbG9yOiBncmVlbjtcclxuICAgIHRleHQtYWxpZ246IGNlbnRlcjtcclxuICAgIGZvbnQtc2l6ZTogMS4zZW07XHJcbiAgICBib3JkZXI6IG5vbmU7XHJcbn1cclxuXHJcbi5idG4tY2VudGVye1xyXG4gICAgdGV4dC1hbGlnbjogY2VudGVyO1xyXG59XHJcblxyXG4uY3MtcG9wdXB7XHJcbiAgICBtYXJnaW46IDEuNWVtO1xyXG59IiwiLm1lbnUge1xuICBtYXJnaW4tdG9wOiAxZW07XG59XG5cbjo6bmctZGVlcCAuZHgtdGhlbWUtbWF0ZXJpYWwtdHlwb2dyYXBoeSBoMiB7XG4gIGZvbnQtd2VpZ2h0OiBib2xkO1xuICBmb250LXNpemU6IDQwcHg7XG59XG5cbi5idG5TZWFyY2gge1xuICB0ZXh0LWFsaWduOiBjZW50ZXI7XG4gIG1hcmdpbi10b3A6IDAuNGVtO1xuICBtYXJnaW4tYm90dG9tOiAwLjRlbTtcbn1cblxuLnNlbGVjdCB7XG4gIHRleHQtYWxpZ246IGNlbnRlcjtcbiAgYmFja2dyb3VuZC1jb2xvcjogd2hpdGU7XG59XG5cbjo6bmctZGVlcCAucmVtaVBybyAuZHgtc2VsZWN0Ym94IGlucHV0IHtcbiAgdGV4dC1hbGlnbjogY2VudGVyO1xufVxuXG46Om5nLWRlZXAgLnJlbWlQcm8gLmR4LXNlbGVjdGJveC1wb3B1cC13cmFwcGVyIC5keC1saXN0LWl0ZW0ge1xuICB0ZXh0LWFsaWduOiBjZW50ZXI7XG59XG5cbi5idG4tc2VjdCB7XG4gIGJhY2tncm91bmQtY29sb3I6IHRyYW5zcGFyZW50O1xuICBjb2xvcjogcmVkO1xuICB0ZXh0LWFsaWduOiBjZW50ZXI7XG4gIGZvbnQtc2l6ZTogMS4zZW07XG4gIGJvcmRlcjogbm9uZTtcbn1cblxuLmJ0bi1zZWN0OmRpc2FibGVkIHtcbiAgb3BhY2l0eTogMC40NTtcbiAgY3Vyc29yOiBub3QtYWxsb3dlZDtcbiAgcG9pbnRlci1ldmVudHM6IG5vbmU7XG59XG5cbi5idG4tc2VjdC13YXJuaW5nIHtcbiAgYmFja2dyb3VuZC1jb2xvcjogdHJhbnNwYXJlbnQ7XG4gIGNvbG9yOiAjZmY4NTAzO1xuICB0ZXh0LWFsaWduOiBjZW50ZXI7XG4gIGZvbnQtc2l6ZTogMS4zZW07XG4gIGJvcmRlcjogbm9uZTtcbn1cblxuLmJ0bi1zZWN0LXN1Y2Nlc3Mge1xuICBiYWNrZ3JvdW5kLWNvbG9yOiB0cmFuc3BhcmVudDtcbiAgY29sb3I6IGdyZWVuO1xuICB0ZXh0LWFsaWduOiBjZW50ZXI7XG4gIGZvbnQtc2l6ZTogMS4zZW07XG4gIGJvcmRlcjogbm9uZTtcbn1cblxuLmJ0bi1jZW50ZXIge1xuICB0ZXh0LWFsaWduOiBjZW50ZXI7XG59XG5cbi5jcy1wb3B1cCB7XG4gIG1hcmdpbjogMS41ZW07XG59Il19 */"]
+      styles: ["@charset \"UTF-8\";\n.menu[_ngcontent-%COMP%] {\n  margin-top: 1em;\n}\n  .dx-theme-material-typography h2 {\n  font-weight: bold;\n  font-size: 40px;\n}\n.btnSearch[_ngcontent-%COMP%] {\n  text-align: center;\n  margin-top: 0.4em;\n  margin-bottom: 0.4em;\n}\n.select[_ngcontent-%COMP%] {\n  text-align: center;\n  background-color: white;\n}\n  .remiPro .dx-selectbox input {\n  text-align: center;\n}\n  .remiPro .dx-selectbox-popup-wrapper .dx-list-item {\n  text-align: center;\n}\n.btn-sect[_ngcontent-%COMP%] {\n  background-color: transparent;\n  color: red;\n  text-align: center;\n  font-size: 1.3em;\n  border: none;\n}\n.btn-sect[_ngcontent-%COMP%]:disabled {\n  opacity: 0.45;\n  cursor: not-allowed;\n  pointer-events: none;\n}\n.btn-sect-warning[_ngcontent-%COMP%] {\n  background-color: transparent;\n  color: #ff8503;\n  text-align: center;\n  font-size: 1.3em;\n  border: none;\n}\n\n.btn-sect-warning.veronica-creado[_ngcontent-%COMP%] {\n  color: #1e6fd9;\n}\n.btn-sect-success[_ngcontent-%COMP%] {\n  background-color: transparent;\n  color: green;\n  text-align: center;\n  font-size: 1.3em;\n  border: none;\n}\n.btn-center[_ngcontent-%COMP%] {\n  text-align: center;\n}\n.cs-popup[_ngcontent-%COMP%] {\n  margin: 1.5em;\n}\n/*# sourceMappingURL=data:application/json;base64,eyJ2ZXJzaW9uIjozLCJzb3VyY2VzIjpbInNyYy9hcHAvcGFnZXMvcmVnaXN0cm9zLXZlbnRhcy9yZWdpc3Ryb3MtdmVudGFzLmNvbXBvbmVudC5zY3NzIiwic3JjL2FwcC9wYWdlcy9yZWdpc3Ryb3MtdmVudGFzL0M6XFxGSURFTlNcXGFsb2phYmFzZXMyMDI1L3NyY1xcYXBwXFxwYWdlc1xccmVnaXN0cm9zLXZlbnRhc1xccmVnaXN0cm9zLXZlbnRhcy5jb21wb25lbnQuc2NzcyJdLCJuYW1lcyI6W10sIm1hcHBpbmdzIjoiQUFBQSxnQkFBZ0I7QUNFaEI7RUFDSSxlQUFBO0FEQUo7QUNHQTtFQUNJLGlCQUFBO0VBQ0EsZUFBQTtBREFKO0FDSUE7RUFDSSxrQkFBQTtFQUNBLGlCQUFBO0VBQ0Esb0JBQUE7QURESjtBQ0lBO0VBQ0ksa0JBQUE7RUFDQSx1QkFBQTtBRERKO0FDSUE7RUFDSSxrQkFBQTtBRERKO0FDSUE7RUFDSSxrQkFBQTtBRERKO0FDSUE7RUFDSSw2QkFBQTtFQUNBLFVBQUE7RUFDQSxrQkFBQTtFQUNBLGdCQUFBO0VBQ0EsWUFBQTtBRERKO0FDSUE7RUFDSSxhQUFBO0VBQ0EsbUJBQUE7RUFDQSxvQkFBQTtBRERKO0FDSUE7RUFDSSw2QkFBQTtFQUNBLGNBQUE7RUFDQSxrQkFBQTtFQUNBLGdCQUFBO0VBQ0EsWUFBQTtBRERKO0FDSUEsaUZBQUE7QUFDQTtFQUNJLGNBQUE7QURESjtBQ0lBO0VBQ0ksNkJBQUE7RUFDQSxZQUFBO0VBQ0Esa0JBQUE7RUFDQSxnQkFBQTtFQUNBLFlBQUE7QURESjtBQ0lBO0VBQ0ksa0JBQUE7QURESjtBQ0lBO0VBQ0ksYUFBQTtBRERKIiwiZmlsZSI6InNyYy9hcHAvcGFnZXMvcmVnaXN0cm9zLXZlbnRhcy9yZWdpc3Ryb3MtdmVudGFzLmNvbXBvbmVudC5zY3NzIiwic291cmNlc0NvbnRlbnQiOlsiQGNoYXJzZXQgXCJVVEYtOFwiO1xuLm1lbnUge1xuICBtYXJnaW4tdG9wOiAxZW07XG59XG5cbjo6bmctZGVlcCAuZHgtdGhlbWUtbWF0ZXJpYWwtdHlwb2dyYXBoeSBoMiB7XG4gIGZvbnQtd2VpZ2h0OiBib2xkO1xuICBmb250LXNpemU6IDQwcHg7XG59XG5cbi5idG5TZWFyY2gge1xuICB0ZXh0LWFsaWduOiBjZW50ZXI7XG4gIG1hcmdpbi10b3A6IDAuNGVtO1xuICBtYXJnaW4tYm90dG9tOiAwLjRlbTtcbn1cblxuLnNlbGVjdCB7XG4gIHRleHQtYWxpZ246IGNlbnRlcjtcbiAgYmFja2dyb3VuZC1jb2xvcjogd2hpdGU7XG59XG5cbjo6bmctZGVlcCAucmVtaVBybyAuZHgtc2VsZWN0Ym94IGlucHV0IHtcbiAgdGV4dC1hbGlnbjogY2VudGVyO1xufVxuXG46Om5nLWRlZXAgLnJlbWlQcm8gLmR4LXNlbGVjdGJveC1wb3B1cC13cmFwcGVyIC5keC1saXN0LWl0ZW0ge1xuICB0ZXh0LWFsaWduOiBjZW50ZXI7XG59XG5cbi5idG4tc2VjdCB7XG4gIGJhY2tncm91bmQtY29sb3I6IHRyYW5zcGFyZW50O1xuICBjb2xvcjogcmVkO1xuICB0ZXh0LWFsaWduOiBjZW50ZXI7XG4gIGZvbnQtc2l6ZTogMS4zZW07XG4gIGJvcmRlcjogbm9uZTtcbn1cblxuLmJ0bi1zZWN0OmRpc2FibGVkIHtcbiAgb3BhY2l0eTogMC40NTtcbiAgY3Vyc29yOiBub3QtYWxsb3dlZDtcbiAgcG9pbnRlci1ldmVudHM6IG5vbmU7XG59XG5cbi5idG4tc2VjdC13YXJuaW5nIHtcbiAgYmFja2dyb3VuZC1jb2xvcjogdHJhbnNwYXJlbnQ7XG4gIGNvbG9yOiAjZmY4NTAzO1xuICB0ZXh0LWFsaWduOiBjZW50ZXI7XG4gIGZvbnQtc2l6ZTogMS4zZW07XG4gIGJvcmRlcjogbm9uZTtcbn1cblxuLyogRmFjdHVyYSBlbiBFUlJPUiBxdWUgZW4gVmVyb25pY2EgZXN0w6EgQ1JFQURPIChwZW5kaWVudGUgZGUgYXV0b3JpemFjacOzbiBTUkkpICovXG4uYnRuLXNlY3Qtd2FybmluZy52ZXJvbmljYS1jcmVhZG8ge1xuICBjb2xvcjogIzFlNmZkOTtcbn1cblxuLmJ0bi1zZWN0LXN1Y2Nlc3Mge1xuICBiYWNrZ3JvdW5kLWNvbG9yOiB0cmFuc3BhcmVudDtcbiAgY29sb3I6IGdyZWVuO1xuICB0ZXh0LWFsaWduOiBjZW50ZXI7XG4gIGZvbnQtc2l6ZTogMS4zZW07XG4gIGJvcmRlcjogbm9uZTtcbn1cblxuLmJ0bi1jZW50ZXIge1xuICB0ZXh0LWFsaWduOiBjZW50ZXI7XG59XG5cbi5jcy1wb3B1cCB7XG4gIG1hcmdpbjogMS41ZW07XG59IiwiXHJcblxyXG4ubWVudXtcclxuICAgIG1hcmdpbi10b3A6IDFlbTtcclxufVxyXG5cclxuOjpuZy1kZWVwIC5keC10aGVtZS1tYXRlcmlhbC10eXBvZ3JhcGh5IGgyIHtcclxuICAgIGZvbnQtd2VpZ2h0OiBib2xkO1xyXG4gICAgZm9udC1zaXplOiA0MHB4O1xyXG59XHJcblxyXG5cclxuLmJ0blNlYXJjaHtcclxuICAgIHRleHQtYWxpZ246IGNlbnRlcjtcclxuICAgIG1hcmdpbi10b3A6IDAuNGVtO1xyXG4gICAgbWFyZ2luLWJvdHRvbTogMC40ZW07XHJcbn1cclxuXHJcbi5zZWxlY3R7XHJcbiAgICB0ZXh0LWFsaWduOiBjZW50ZXI7XHJcbiAgICBiYWNrZ3JvdW5kLWNvbG9yOiB3aGl0ZTtcclxufVxyXG5cclxuOjpuZy1kZWVwIC5yZW1pUHJvIC5keC1zZWxlY3Rib3ggaW5wdXQgeyAgXHJcbiAgICB0ZXh0LWFsaWduOiBjZW50ZXI7ICBcclxufSBcclxuXHJcbjo6bmctZGVlcCAucmVtaVBybyAuZHgtc2VsZWN0Ym94LXBvcHVwLXdyYXBwZXIgLmR4LWxpc3QtaXRlbSB7ICBcclxuICAgIHRleHQtYWxpZ246IGNlbnRlcjsgIFxyXG59IFxyXG5cclxuLmJ0bi1zZWN0e1xyXG4gICAgYmFja2dyb3VuZC1jb2xvcjogdHJhbnNwYXJlbnQ7XHJcbiAgICBjb2xvcjogcmVkO1xyXG4gICAgdGV4dC1hbGlnbjogY2VudGVyO1xyXG4gICAgZm9udC1zaXplOiAxLjNlbTtcclxuICAgIGJvcmRlcjogbm9uZTtcclxufVxyXG5cclxuLmJ0bi1zZWN0OmRpc2FibGVke1xyXG4gICAgb3BhY2l0eTogMC40NTtcclxuICAgIGN1cnNvcjogbm90LWFsbG93ZWQ7XHJcbiAgICBwb2ludGVyLWV2ZW50czogbm9uZTtcclxufVxyXG5cclxuLmJ0bi1zZWN0LXdhcm5pbmd7XHJcbiAgICBiYWNrZ3JvdW5kLWNvbG9yOiB0cmFuc3BhcmVudDtcclxuICAgIGNvbG9yOiByZ2IoMjU1LCAxMzMsIDMpO1xyXG4gICAgdGV4dC1hbGlnbjogY2VudGVyO1xyXG4gICAgZm9udC1zaXplOiAxLjNlbTtcclxuICAgIGJvcmRlcjogbm9uZTtcclxufVxyXG5cclxuLyogRmFjdHVyYSBlbiBFUlJPUiBxdWUgZW4gVmVyb25pY2EgZXN0w6EgQ1JFQURPIChwZW5kaWVudGUgZGUgYXV0b3JpemFjacOzbiBTUkkpICovXHJcbi5idG4tc2VjdC13YXJuaW5nLnZlcm9uaWNhLWNyZWFkb3tcclxuICAgIGNvbG9yOiAjMWU2ZmQ5O1xyXG59XHJcblxyXG4uYnRuLXNlY3Qtc3VjY2Vzc3tcclxuICAgIGJhY2tncm91bmQtY29sb3I6IHRyYW5zcGFyZW50O1xyXG4gICAgY29sb3I6IGdyZWVuO1xyXG4gICAgdGV4dC1hbGlnbjogY2VudGVyO1xyXG4gICAgZm9udC1zaXplOiAxLjNlbTtcclxuICAgIGJvcmRlcjogbm9uZTtcclxufVxyXG5cclxuLmJ0bi1jZW50ZXJ7XHJcbiAgICB0ZXh0LWFsaWduOiBjZW50ZXI7XHJcbn1cclxuXHJcbi5jcy1wb3B1cHtcclxuICAgIG1hcmdpbjogMS41ZW07XHJcbn0iXX0= */"]
     });
     /*@__PURE__*/
 
@@ -151533,7 +151923,7 @@ function _classCallCheck(instance, Constructor) { if (!(instance instanceof Cons
 
     var IngresoDiarioComponent = /*#__PURE__*/function () {
       function IngresoDiarioComponent(ingresosService, productoService) {
-        var _this1159 = this;
+        var _this1160 = this;
 
         _classCallCheck(this, IngresoDiarioComponent);
 
@@ -151559,15 +151949,15 @@ function _classCallCheck(instance, Constructor) { if (!(instance instanceof Cons
         this.sucursales = ["matriz", "sucursal1"];
 
         this.mostrarUpdate = function (e) {
-          _this1159.mostrarPopup(e.row.data);
+          _this1160.mostrarPopup(e.row.data);
         };
 
         this.deleteIngreso = function (e) {
-          _this1159.mensajeConfirmacion(e.row.data);
+          _this1160.mensajeConfirmacion(e.row.data);
         };
 
         this.mostrarNotas = function (e) {
-          _this1159.mostrarPopupNotas(e.row.data);
+          _this1160.mostrarPopupNotas(e.row.data);
         };
       }
 
@@ -151580,12 +151970,12 @@ function _classCallCheck(instance, Constructor) { if (!(instance instanceof Cons
       }, {
         key: "traerRegistrosIngresos",
         value: function traerRegistrosIngresos() {
-          var _this1160 = this;
+          var _this1161 = this;
 
           this.ingresosService.getIngresosClientes().subscribe(function (res) {
-            _this1160.ingresosDiarios = res;
+            _this1161.ingresosDiarios = res;
 
-            _this1160.arreglarDatos();
+            _this1161.arreglarDatos();
           });
         }
       }, {
@@ -151600,12 +151990,12 @@ function _classCallCheck(instance, Constructor) { if (!(instance instanceof Cons
       }, {
         key: "traerProductos",
         value: function traerProductos() {
-          var _this1161 = this;
+          var _this1162 = this;
 
           this.productoService.getProducto().subscribe(function (res) {
-            _this1161.productosActivos = res;
+            _this1162.productosActivos = res;
 
-            _this1161.mostrarProductos();
+            _this1162.mostrarProductos();
           });
         }
       }, {
@@ -151637,7 +152027,7 @@ function _classCallCheck(instance, Constructor) { if (!(instance instanceof Cons
       }, {
         key: "mostrarPopupNotas",
         value: function mostrarPopupNotas(e) {
-          var _this1162 = this;
+          var _this1163 = this;
 
           this.arregloNotas = [];
           console.log(e);
@@ -151646,8 +152036,8 @@ function _classCallCheck(instance, Constructor) { if (!(instance instanceof Cons
           this.popupVisibleNotas = true;
           this.mostrarLoading = true;
           this.ingresosDiarios.forEach(function (element) {
-            if (new Date(element.fecha).toLocaleDateString() == _this1162.noteDate) {
-              _this1162.arregloNotas = element.notas;
+            if (new Date(element.fecha).toLocaleDateString() == _this1163.noteDate) {
+              _this1163.arregloNotas = element.notas;
             }
           });
           if (this.arregloNotas.length != 0) this.activeButton = true;
@@ -151668,17 +152058,17 @@ function _classCallCheck(instance, Constructor) { if (!(instance instanceof Cons
       }, {
         key: "actualizarNotas",
         value: function actualizarNotas() {
-          var _this1163 = this;
+          var _this1164 = this;
 
           this.popupVisibleNotas = false;
           var bandera = false;
           this.ingresosDiarios.forEach(function (element) {
-            if (new Date(element.fecha).toLocaleDateString() == _this1163.noteDate) {
+            if (new Date(element.fecha).toLocaleDateString() == _this1164.noteDate) {
               bandera = true;
-              element.notas = _this1163.arregloNotas;
+              element.notas = _this1164.arregloNotas;
 
-              _this1163.ingresosService.updateIngreso(element).subscribe(function (res) {
-                _this1163.mensajeCorrecto();
+              _this1164.ingresosService.updateIngreso(element).subscribe(function (res) {
+                _this1164.mensajeCorrecto();
               }, function (err) {
                 alert("error");
               });
@@ -151700,7 +152090,7 @@ function _classCallCheck(instance, Constructor) { if (!(instance instanceof Cons
       }, {
         key: "mensajeConfirmacion",
         value: function mensajeConfirmacion(e) {
-          var _this1164 = this;
+          var _this1165 = this;
 
           sweetalert2__WEBPACK_IMPORTED_MODULE_1___default.a.fire({
             title: 'Advertencia',
@@ -151710,7 +152100,7 @@ function _classCallCheck(instance, Constructor) { if (!(instance instanceof Cons
             confirmButtonText: 'Si'
           }).then(function (result) {
             if (result.value) {
-              _this1164.deleteIngresoDiario(e);
+              _this1165.deleteIngresoDiario(e);
             } else if (result.dismiss === sweetalert2__WEBPACK_IMPORTED_MODULE_1___default.a.DismissReason.cancel) {
               sweetalert2__WEBPACK_IMPORTED_MODULE_1___default.a.fire('Cancelado!', 'Se ha cancelado su proceso.', 'error');
             }
@@ -151719,10 +152109,10 @@ function _classCallCheck(instance, Constructor) { if (!(instance instanceof Cons
       }, {
         key: "deleteIngresoDiario",
         value: function deleteIngresoDiario(e) {
-          var _this1165 = this;
+          var _this1166 = this;
 
           this.ingresosService.deleteIngresos(e).subscribe(function (res) {
-            _this1165.mensajeEliminado();
+            _this1166.mensajeEliminado();
           }, function (err) {
             sweetalert2__WEBPACK_IMPORTED_MODULE_1___default.a.fire({
               title: "Error",
@@ -151793,7 +152183,7 @@ function _classCallCheck(instance, Constructor) { if (!(instance instanceof Cons
       }, {
         key: "nuevoRegistro",
         value: function nuevoRegistro() {
-          var _this1166 = this;
+          var _this1167 = this;
 
           this.ingresoDiarioIndividual = new _ingreso_diario__WEBPACK_IMPORTED_MODULE_2__["ingresoDiario"]();
           this.ingresoDiarioIndividual.fecha = this.nowdesde;
@@ -151804,7 +152194,7 @@ function _classCallCheck(instance, Constructor) { if (!(instance instanceof Cons
 
           if (this.ingresoDiarioIndividual.sucursal != null && this.ingresoDiarioIndividual.valor != 0) {
             this.ingresosService.newIngresoDiario(this.ingresoDiarioIndividual).subscribe(function (res) {
-              _this1166.mensajeCorrecto();
+              _this1167.mensajeCorrecto();
             }, function (err) {
               sweetalert2__WEBPACK_IMPORTED_MODULE_1___default.a.fire({
                 title: "Error",
@@ -151823,7 +152213,7 @@ function _classCallCheck(instance, Constructor) { if (!(instance instanceof Cons
       }, {
         key: "updateIngreso",
         value: function updateIngreso() {
-          var _this1167 = this;
+          var _this1168 = this;
 
           if (this.ingresoDiarioIndividual._id) {
             this.ingresoDiarioIndividual.fecha = this.nowdesde;
@@ -151831,7 +152221,7 @@ function _classCallCheck(instance, Constructor) { if (!(instance instanceof Cons
             this.ingresoDiarioIndividual.depositos = this.valorDeposito;
             this.ingresoDiarioIndividual.valor = this.valorIngreso;
             this.ingresosService.updateIngreso(this.ingresoDiarioIndividual).subscribe(function (res) {
-              _this1167.mensajeUpdate();
+              _this1168.mensajeUpdate();
             }, function (err) {
               sweetalert2__WEBPACK_IMPORTED_MODULE_1___default.a.fire({
                 title: "Error",
@@ -152367,7 +152757,7 @@ function _classCallCheck(instance, Constructor) { if (!(instance instanceof Cons
 
     var ReporteDetalladoComponent = /*#__PURE__*/function () {
       function ReporteDetalladoComponent(transaccionesService, authenService, reporteDetalladoService, ingresosService) {
-        var _this1168 = this;
+        var _this1169 = this;
 
         _classCallCheck(this, ReporteDetalladoComponent);
 
@@ -152392,7 +152782,7 @@ function _classCallCheck(instance, Constructor) { if (!(instance instanceof Cons
         this.mensajeLoading = "Cargando Datos...";
 
         this.mostrarNotas = function (e) {
-          _this1168.mostrarPopupNotas(e.row.data);
+          _this1169.mostrarPopupNotas(e.row.data);
         };
       }
 
@@ -152405,25 +152795,25 @@ function _classCallCheck(instance, Constructor) { if (!(instance instanceof Cons
       }, {
         key: "traerRegistrosReportes",
         value: function traerRegistrosReportes() {
-          var _this1169 = this;
+          var _this1170 = this;
 
           this.reporteDetalladoService.getReporteDetallado().subscribe(function (res) {
-            _this1169.reportesDetBase = res;
+            _this1170.reportesDetBase = res;
           });
         }
       }, {
         key: "traerRegistrosIngresos",
         value: function traerRegistrosIngresos() {
-          var _this1170 = this;
+          var _this1171 = this;
 
           this.ingresosService.getIngresosClientes().subscribe(function (res) {
-            _this1170.ingresosDiarios = res;
+            _this1171.ingresosDiarios = res;
           });
         }
       }, {
         key: "traerTransaccionesPorRango",
         value: function traerTransaccionesPorRango() {
-          var _this1171 = this;
+          var _this1172 = this;
 
           this.transaccionesGlobales = [];
           this.reporteDetallado = [];
@@ -152437,15 +152827,15 @@ function _classCallCheck(instance, Constructor) { if (!(instance instanceof Cons
           this.obj.fechaActual = fechaHasta;
           this.obj.fechaAnterior = fechaHoy;
           this.transaccionesService.getTransaccionesPorRango(this.obj).subscribe(function (res) {
-            _this1171.transaccionesGlobales = res;
+            _this1172.transaccionesGlobales = res;
 
-            _this1171.separarTransacciones();
+            _this1172.separarTransacciones();
           }, function () {});
         }
       }, {
         key: "separarTransacciones",
         value: function separarTransacciones() {
-          var _this1172 = this;
+          var _this1173 = this;
 
           this.fechaAnteriorDesde.setDate(this.nowdesde.getDate() + 15);
           var start = this.fechaAnteriorDesde;
@@ -152550,8 +152940,8 @@ function _classCallCheck(instance, Constructor) { if (!(instance instanceof Cons
               loop4.setDate(loop4.getDate() - 1);
 
               if (loop4.toLocaleDateString() == loop.toLocaleDateString()) {
-                if (element.sucursal == "matriz") diferenciaIngresoMatriz = Number(element.valor) - Number(_this1172.reporteDIndividual.VDiariaMatriz);
-                if (element.sucursal == "sucursal1") diferenciaIngresoSucursal1 = Number(element.valor) - Number(_this1172.reporteDIndividual.VDiariaSucursal1);
+                if (element.sucursal == "matriz") diferenciaIngresoMatriz = Number(element.valor) - Number(_this1173.reporteDIndividual.VDiariaMatriz);
+                if (element.sucursal == "sucursal1") diferenciaIngresoSucursal1 = Number(element.valor) - Number(_this1173.reporteDIndividual.VDiariaSucursal1);
               }
             });
             this.reportesDetBase.forEach(function (element) {
@@ -152559,7 +152949,7 @@ function _classCallCheck(instance, Constructor) { if (!(instance instanceof Cons
               loop7.setDate(loop7.getDate() - 1);
 
               if (loop7.toLocaleDateString() == loop.toLocaleDateString()) {
-                _this1172.reporteDIndividual.notas = element.notas;
+                _this1173.reporteDIndividual.notas = element.notas;
               }
             });
             this.reporteDIndividual.validacionMatriz = diferenciaIngresoMatriz;
@@ -152639,18 +153029,18 @@ function _classCallCheck(instance, Constructor) { if (!(instance instanceof Cons
       }, {
         key: "actualizarNotas",
         value: function actualizarNotas() {
-          var _this1173 = this;
+          var _this1174 = this;
 
           this.popupVisibleNotas = false;
           var bandera = false;
           this.reportesDetBase.forEach(function (element) {
-            if (new Date(element.fecha).toLocaleDateString() == _this1173.noteDate) {
+            if (new Date(element.fecha).toLocaleDateString() == _this1174.noteDate) {
               console.log("entre", element);
               bandera = true;
-              element.notas = _this1173.arregloNotas;
+              element.notas = _this1174.arregloNotas;
 
-              _this1173.reporteDetalladoService.updateReporteDetallado(element).subscribe(function (res) {
-                _this1173.mensajeCorrecto();
+              _this1174.reporteDetalladoService.updateReporteDetallado(element).subscribe(function (res) {
+                _this1174.mensajeCorrecto();
               }, function (err) {
                 alert("error");
               });
@@ -152663,7 +153053,7 @@ function _classCallCheck(instance, Constructor) { if (!(instance instanceof Cons
             this.reportesDetBaseNuevo.notas = this.arregloNotas;
             console.log("sdsd ", this.reportesDetBaseNuevo);
             this.reporteDetalladoService.newReporteDetallado(this.reportesDetBaseNuevo).subscribe(function (res) {
-              _this1173.mensajeCorrecto();
+              _this1174.mensajeCorrecto();
             }, function (err) {
               alert("error");
             });
@@ -153553,7 +153943,7 @@ function _classCallCheck(instance, Constructor) { if (!(instance instanceof Cons
       }, {
         key: "traerTransaccionesPorRango",
         value: function traerTransaccionesPorRango() {
-          var _this1174 = this;
+          var _this1175 = this;
 
           this.transaccionesGlobales = [];
           this.reporteDetallado = [];
@@ -153562,9 +153952,9 @@ function _classCallCheck(instance, Constructor) { if (!(instance instanceof Cons
           this.obj.fechaActual = this.nowhasta;
           this.obj.fechaAnterior = this.nowdesde;
           this.transaccionesService.getTransaccionesPorRango(this.obj).subscribe(function (res) {
-            _this1174.transaccionesGlobales = res;
+            _this1175.transaccionesGlobales = res;
 
-            _this1174.separarTransacciones();
+            _this1175.separarTransacciones();
           }, function () {});
         }
       }, {
@@ -156742,7 +157132,7 @@ function _classCallCheck(instance, Constructor) { if (!(instance instanceof Cons
 
     var RevionInventarioComponent = /*#__PURE__*/function () {
       function RevionInventarioComponent(_opcionesCatalogoService, _revisionInventarioService, _revisionInventarioProductoService, _contadoresService, _transaccionesService, _transaccionesRevisionProductoService, authService, rutaActiva, authenService, parametrizacionService, sucursalesService, productoService) {
-        var _this1175 = this;
+        var _this1176 = this;
 
         _classCallCheck(this, RevionInventarioComponent);
 
@@ -156830,23 +157220,23 @@ function _classCallCheck(instance, Constructor) { if (!(instance instanceof Cons
         this.mostrarTablaAuditoria = false;
 
         this.verEdit = function (e) {
-          _this1175.editarPro(e.row.data);
+          _this1176.editarPro(e.row.data);
         };
 
         this.verEdit2 = function (e) {
-          _this1175.editarPro2(e.row.data);
+          _this1176.editarPro2(e.row.data);
         };
 
         this.eliminarProd = function (e) {
-          _this1175.eliminarRevisionProducto(e.row.data);
+          _this1176.eliminarRevisionProducto(e.row.data);
         };
 
         this.eliminarProd2 = function (e) {
-          _this1175.eliminarRevisionProducto2(e.row.data);
+          _this1176.eliminarRevisionProducto2(e.row.data);
         };
 
         this.validate = function (e) {
-          _this1175.marcarValidado(e.row.data);
+          _this1176.marcarValidado(e.row.data);
         };
 
         this.proTransaccion = new _consolidado_consolidado__WEBPACK_IMPORTED_MODULE_2__["productoTransaccion"]();
@@ -156871,34 +157261,34 @@ function _classCallCheck(instance, Constructor) { if (!(instance instanceof Cons
       }, {
         key: "traerOpcionesCatalogo",
         value: function traerOpcionesCatalogo() {
-          var _this1176 = this;
+          var _this1177 = this;
 
           this._opcionesCatalogoService.getOpciones().subscribe(function (res) {
-            _this1176.opcionesCatalogo = res;
+            _this1177.opcionesCatalogo = res;
 
-            _this1176.llenarCombos();
+            _this1177.llenarCombos();
           });
         }
       }, {
         key: "traerRevisionesInventario",
         value: function traerRevisionesInventario() {
-          var _this1177 = this;
+          var _this1178 = this;
 
           this.listadoRevisiones = [];
 
           this._revisionInventarioService.getRevisionesIniciadas().subscribe(function (res) {
-            _this1177.listadoRevisiones = res; //if(this.idRevision != "0"){
+            _this1178.listadoRevisiones = res; //if(this.idRevision != "0"){
 
-            var revision = _this1177.listadoRevisiones.find(function (element) {
-              return element.idDocumento == Number(_this1177.idRevision);
+            var revision = _this1178.listadoRevisiones.find(function (element) {
+              return element.idDocumento == Number(_this1178.idRevision);
             });
 
             if (revision != null) {
-              _this1177.revisionIniciada = revision;
-              _this1177.nota.descripcion = _this1177.revisionIniciada.notas;
-              _this1177.CuentaActualizar = _this1177.revisionIniciada;
+              _this1178.revisionIniciada = revision;
+              _this1178.nota.descripcion = _this1178.revisionIniciada.notas;
+              _this1178.CuentaActualizar = _this1178.revisionIniciada;
 
-              _this1177.traerRevisionesInventarioProductosPorId();
+              _this1178.traerRevisionesInventarioProductosPorId();
               /* }
               else{
                 this.bloquearboton = true;
@@ -156907,51 +157297,51 @@ function _classCallCheck(instance, Constructor) { if (!(instance instanceof Cons
 
             }
 
-            _this1177.separarRevisiones();
+            _this1178.separarRevisiones();
           });
         }
       }, {
         key: "traerRevisionesInventarioProductosPorId",
         value: function traerRevisionesInventarioProductosPorId() {
-          var _this1178 = this;
+          var _this1179 = this;
 
           this.listadoProductosRevisados = [];
 
           this._revisionInventarioProductoService.getRevisionesProductosPorId(this.idRevision).subscribe(function (res) {
-            _this1178.listadoProductosRevisados = res;
+            _this1179.listadoProductosRevisados = res;
           });
         }
       }, {
         key: "traertransaccionesProductosRevisados",
         value: function traertransaccionesProductosRevisados() {
-          var _this1179 = this;
+          var _this1180 = this;
 
           this.mostrarLoading = true;
           this.transaccionesProductosRevisados = [];
 
           this._transaccionesRevisionProductoService.getTransacciones().subscribe(function (res) {
-            _this1179.transaccionesProductosRevisados = res;
-            _this1179.mostrarLoading = false;
+            _this1180.transaccionesProductosRevisados = res;
+            _this1180.mostrarLoading = false;
           });
         }
       }, {
         key: "generarListadoControlInventario",
         value: function generarListadoControlInventario(sucursal) {
-          var _this1180 = this;
+          var _this1181 = this;
 
           this.transaccionesProductosRevisados = [];
           this.listadoControlesRevisiones = [];
 
           this._transaccionesRevisionProductoService.getTransacciones().subscribe(function (res) {
-            _this1180.transaccionesProductosRevisados = res;
+            _this1181.transaccionesProductosRevisados = res;
 
-            _this1180.productosActivos.forEach(function (element) {
+            _this1181.productosActivos.forEach(function (element) {
               var _a, _b, _c, _d, _e, _f, _g, _h, _j, _k, _l, _m, _o, _p, _q, _r, _s, _t, _u, _v;
 
               var newControl = new _revision_inventario__WEBPACK_IMPORTED_MODULE_4__["controlRevisionProductos"]();
               newControl.producto = element.PRODUCTO;
 
-              var datos = _this1180.transaccionesProductosRevisados.filter(function (element2) {
+              var datos = _this1181.transaccionesProductosRevisados.filter(function (element2) {
                 return element2.producto == element.PRODUCTO && element2.sucursal == sucursal;
               });
 
@@ -156972,7 +157362,7 @@ function _classCallCheck(instance, Constructor) { if (!(instance instanceof Cons
               newControl.nombreClasificacion = element.CLASIFICA;
               newControl.diferenciaDias = days.toString() != "NaN" ? days.toString() : "";
 
-              _this1180.listadoControlesRevisiones.push(newControl);
+              _this1181.listadoControlesRevisiones.push(newControl);
             });
           }); //this.listadoControlesRevisiones.sort(this.SortArray)
 
@@ -156993,25 +157383,25 @@ function _classCallCheck(instance, Constructor) { if (!(instance instanceof Cons
       }, {
         key: "separarRevisiones",
         value: function separarRevisiones() {
-          var _this1181 = this;
+          var _this1182 = this;
 
           this.listadoRevisionesIniciadas = [];
           this.listadoRevisiones.forEach(function (element) {
-            if (element.estado == "Iniciada") _this1181.listadoRevisionesIniciadas.push(element);
+            if (element.estado == "Iniciada") _this1182.listadoRevisionesIniciadas.push(element);
           });
           this.traerProductos();
         }
       }, {
         key: "llenarCombos",
         value: function llenarCombos() {
-          var _this1182 = this;
+          var _this1183 = this;
 
           this.opcionesCatalogo.forEach(function (element) {
             element.arrayClasificación.forEach(function (element) {
               var clasi = new _consolidado_consolidado__WEBPACK_IMPORTED_MODULE_2__["clasificacionActualizacion"]();
               clasi.nombreClasificacion = element;
 
-              _this1182.listaClasificacion.push(clasi);
+              _this1183.listaClasificacion.push(clasi);
             });
           }); //Esto para agregar la inspeccion general
 
@@ -157025,7 +157415,7 @@ function _classCallCheck(instance, Constructor) { if (!(instance instanceof Cons
       }, {
         key: "obtenerDetallesproducto",
         value: function obtenerDetallesproducto(e) {
-          var _this1183 = this;
+          var _this1184 = this;
 
           if (this.isClean == true) this.isClean = false;else {
             this.bloquearboton = false;
@@ -157039,8 +157429,8 @@ function _classCallCheck(instance, Constructor) { if (!(instance instanceof Cons
                   cancelButtonText: 'NO'
                 }).then(function (result) {
                   if (result.value) {
-                    _this1183.productoRevisado = element;
-                    _this1183.isNew = false;
+                    _this1184.productoRevisado = element;
+                    _this1184.isNew = false;
                   } else if (result.dismiss === sweetalert2__WEBPACK_IMPORTED_MODULE_1___default.a.DismissReason.cancel) {
                     sweetalert2__WEBPACK_IMPORTED_MODULE_1___default.a.fire('Cancelado!', 'Se ha cancelado su proceso.', 'error');
                   }
@@ -157053,61 +157443,61 @@ function _classCallCheck(instance, Constructor) { if (!(instance instanceof Cons
       }, {
         key: "traerTransaccionesPorProducto",
         value: function traerTransaccionesPorProducto(nombreProducto, indice) {
-          var _this1184 = this;
+          var _this1185 = this;
 
           this.mensajeLoading = "Buscando datos";
           this.mostrarLoading = true;
           this.proTransaccion.nombre = nombreProducto;
 
           this._transaccionesService.getTransaccionesPorProducto(this.proTransaccion).subscribe(function (res) {
-            _this1184.transacciones = res;
+            _this1185.transacciones = res;
 
-            _this1184.cargarDatosProductoUnitario(nombreProducto, indice);
+            _this1185.cargarDatosProductoUnitario(nombreProducto, indice);
           });
         }
       }, {
         key: "traerSucursales",
         value: function traerSucursales() {
-          var _this1185 = this;
+          var _this1186 = this;
 
           this.sucursalesService.getSucursales().subscribe(function (res) {
-            _this1185.locales = res;
+            _this1186.locales = res;
           });
         }
       }, {
         key: "traerContadoresDocumentos",
         value: function traerContadoresDocumentos() {
-          var _this1186 = this;
+          var _this1187 = this;
 
           this._contadoresService.getContadores().subscribe(function (res) {
-            _this1186.contadores = res;
-            _this1186.newControlInventario.idDocumento = _this1186.contadores[0].revisionInventario_Ndocumento + 1;
+            _this1187.contadores = res;
+            _this1187.newControlInventario.idDocumento = _this1187.contadores[0].revisionInventario_Ndocumento + 1;
           });
         }
       }, {
         key: "traerProductos",
         value: function traerProductos() {
-          var _this1187 = this;
+          var _this1188 = this;
 
           if (this.productosActivos.length == 0) {
             this.mostrarLoading = true;
             this.productoService.getProductosActivos().subscribe(function (res) {
-              _this1187.productosActivos = res;
+              _this1188.productosActivos = res;
 
-              _this1187.llenarComboProductos();
+              _this1188.llenarComboProductos();
             });
           }
         }
       }, {
         key: "llenarComboProductos",
         value: function llenarComboProductos() {
-          var _this1188 = this;
+          var _this1189 = this;
 
           var _a, _b;
 
           if (this.idRevision != "0") {
             var rev = (_a = this.listadoRevisiones) === null || _a === void 0 ? void 0 : _a.find(function (element) {
-              return element.idDocumento == Number(_this1188.idRevision);
+              return element.idDocumento == Number(_this1189.idRevision);
             });
             var categoria = (_b = rev) === null || _b === void 0 ? void 0 : _b.nombreClasificacion;
 
@@ -157140,7 +157530,7 @@ function _classCallCheck(instance, Constructor) { if (!(instance instanceof Cons
       }, {
         key: "cerrarRevision",
         value: function cerrarRevision() {
-          var _this1189 = this;
+          var _this1190 = this;
 
           var listado = this.listadoComparacionResultados.filter(function (x) {
             return x.estadoRevision == "Pendiente";
@@ -157150,12 +157540,12 @@ function _classCallCheck(instance, Constructor) { if (!(instance instanceof Cons
           this.mensajeLoading = "Guardando Transacciones..";
           this.mostrarLoading = true;
           this.listadoComparacionResultados.forEach(function (element) {
-            _this1189._transaccionesRevisionProductoService.newTransaccion(element).subscribe(function (res) {
+            _this1190._transaccionesRevisionProductoService.newTransaccion(element).subscribe(function (res) {
               cont++;
 
-              _this1189.actualizarEstadoRevision(cont);
+              _this1190.actualizarEstadoRevision(cont);
             }, function (err) {
-              _this1189.mostrarMensajeGenerico(2, "Se ha producido un error al guardar");
+              _this1190.mostrarMensajeGenerico(2, "Se ha producido un error al guardar");
             });
           }); //}else
           //  this.mostrarMensajeGenerico(2,"Hay productos aun sin validar, revise e intente nuevamente");
@@ -157163,11 +157553,11 @@ function _classCallCheck(instance, Constructor) { if (!(instance instanceof Cons
       }, {
         key: "actualizarEstadoRevision",
         value: function actualizarEstadoRevision(contador) {
-          var _this1190 = this;
+          var _this1191 = this;
 
           if (contador == this.listadoComparacionResultados.length) {
             this._revisionInventarioService.updateEstado(this.revisionIniciada._id, "Finalizada").subscribe(function (res) {
-              _this1190.mostrarLoading = false;
+              _this1191.mostrarLoading = false;
               sweetalert2__WEBPACK_IMPORTED_MODULE_1___default.a.close();
               sweetalert2__WEBPACK_IMPORTED_MODULE_1___default.a.fire({
                 title: 'Correcto',
@@ -157178,7 +157568,7 @@ function _classCallCheck(instance, Constructor) { if (!(instance instanceof Cons
                 window.location.reload();
               });
             }, function (err) {
-              _this1190.mostrarMensajeGenerico(2, "Se ha producido un error al guardar");
+              _this1191.mostrarMensajeGenerico(2, "Se ha producido un error al guardar");
             });
           }
         }
@@ -157280,7 +157670,7 @@ function _classCallCheck(instance, Constructor) { if (!(instance instanceof Cons
       }, {
         key: "verLista",
         value: function verLista(id) {
-          var _this1191 = this;
+          var _this1192 = this;
 
           this.mostrarbtn = true;
           this.verListadoComparacion = true;
@@ -157295,9 +157685,9 @@ function _classCallCheck(instance, Constructor) { if (!(instance instanceof Cons
           this.fechaString = new Date(this.revisionIniciada.fecha_inicio).toLocaleString();
 
           this._revisionInventarioProductoService.getRevisionesProductosPorId(id.toString()).subscribe(function (res) {
-            _this1191.listadoProductosRevisados = res;
+            _this1192.listadoProductosRevisados = res;
 
-            _this1191.crearListadoComparacion();
+            _this1192.crearListadoComparacion();
           });
         }
       }, {
@@ -157337,26 +157727,26 @@ function _classCallCheck(instance, Constructor) { if (!(instance instanceof Cons
       }, {
         key: "actualizarComentario",
         value: function actualizarComentario() {
-          var _this1192 = this;
+          var _this1193 = this;
 
           this.mensajeLoading = "Actualizando...";
           this.mostrarLoading = true;
           this.CuentaActualizar.notas = this.nota.descripcion;
 
           this._revisionInventarioService.updateNotas(this.CuentaActualizar).subscribe(function (res) {
-            _this1192.mostrarMensajeGenerico(1, "Se realizo la actualización con éxito");
+            _this1193.mostrarMensajeGenerico(1, "Se realizo la actualización con éxito");
 
-            _this1192.ngOnInit();
+            _this1193.ngOnInit();
 
-            _this1192.mostrarLoading = false;
-            _this1192.popupVisibleEditarNotas = false;
-            _this1192.nota.descripcion = "";
+            _this1193.mostrarLoading = false;
+            _this1193.popupVisibleEditarNotas = false;
+            _this1193.nota.descripcion = "";
           });
         }
       }, {
         key: "crearListadoComparacion",
         value: function crearListadoComparacion() {
-          var _this1193 = this;
+          var _this1194 = this;
 
           this.listadoComparacionResultados = [];
           this.listadoProductosRevisados.forEach(function (element, index) {
@@ -157378,13 +157768,13 @@ function _classCallCheck(instance, Constructor) { if (!(instance instanceof Cons
             newComparacion.detalle = element.detalle;
             newComparacion.fecha = element.fecha;
             newComparacion.fechaString = element.fechaString;
-            newComparacion.sucursal = _this1193.revisionIniciada.sucursal;
-            newComparacion.responsable = _this1193.revisionIniciada.responsable;
-            newComparacion.idReferenciaRevision = _this1193.revisionIniciada.idDocumento;
-            newComparacion.nombreClasificacion = _this1193.revisionIniciada.nombreClasificacion;
+            newComparacion.sucursal = _this1194.revisionIniciada.sucursal;
+            newComparacion.responsable = _this1194.revisionIniciada.responsable;
+            newComparacion.idReferenciaRevision = _this1194.revisionIniciada.idDocumento;
+            newComparacion.nombreClasificacion = _this1194.revisionIniciada.nombreClasificacion;
             console.log(newComparacion.fecha); //this.traerTransaccionesPorProducto(element.producto , index )
 
-            _this1193.listadoComparacionResultados.push(newComparacion);
+            _this1194.listadoComparacionResultados.push(newComparacion);
           });
           this.mostrarLoading = false;
         }
@@ -157456,18 +157846,18 @@ function _classCallCheck(instance, Constructor) { if (!(instance instanceof Cons
       }, {
         key: "guardarRegistro",
         value: function guardarRegistro() {
-          var _this1194 = this;
+          var _this1195 = this;
 
           this._revisionInventarioService.newRevisionInventario(this.newControlInventario).subscribe(function (res) {
-            _this1194.actualizarContador();
+            _this1195.actualizarContador();
           }, function (err) {
-            _this1194.mostrarMensajeGenerico(2, "Se ha producido un error al guardar");
+            _this1195.mostrarMensajeGenerico(2, "Se ha producido un error al guardar");
           });
         }
       }, {
         key: "validarRevision",
         value: function validarRevision() {
-          var _this1195 = this;
+          var _this1196 = this;
 
           this.newControlInventario.fecha_inicio = this.fecha_inicio;
           this.newControlInventario.nombreClasificacion = this.nombreClasificacion;
@@ -157489,7 +157879,7 @@ function _classCallCheck(instance, Constructor) { if (!(instance instanceof Cons
           }
 
           var data = this.listadoRevisionesIniciadas.find(function (element) {
-            return element.sucursal == _this1195.newControlInventario.sucursal && element.nombreClasificacion == _this1195.newControlInventario.nombreClasificacion;
+            return element.sucursal == _this1196.newControlInventario.sucursal && element.nombreClasificacion == _this1196.newControlInventario.nombreClasificacion;
           });
 
           if (data != null) {
@@ -157508,33 +157898,33 @@ function _classCallCheck(instance, Constructor) { if (!(instance instanceof Cons
       }, {
         key: "obtenerId",
         value: function obtenerId() {
-          var _this1196 = this;
+          var _this1197 = this;
 
           this.mensajeLoading = "Guardando";
           this.mostrarLoading = true;
           var IdNum = new Promise(function (resolve, reject) {
             try {
-              _this1196._revisionInventarioService.getRevisionPorIdConsecutivo(_this1196.newControlInventario).subscribe(function (res) {
+              _this1197._revisionInventarioService.getRevisionPorIdConsecutivo(_this1197.newControlInventario).subscribe(function (res) {
                 var listado = res;
 
                 if (listado.length == 0) {
                   resolve("listo");
                 } else {
-                  _this1196.newControlInventario.idDocumento = _this1196.newControlInventario.idDocumento + 1;
+                  _this1197.newControlInventario.idDocumento = _this1197.newControlInventario.idDocumento + 1;
 
-                  _this1196.obtenerId();
+                  _this1197.obtenerId();
                 }
               }, function (err) {});
             } catch (error) {}
           });
           IdNum.then(function (data) {
-            _this1196.guardarRegistro();
+            _this1197.guardarRegistro();
           });
         }
       }, {
         key: "guardarRegistroProducto",
         value: function guardarRegistroProducto() {
-          var _this1197 = this;
+          var _this1198 = this;
 
           this.mensajeLoading = "Guardando..";
           this.mostrarLoading = true;
@@ -157543,31 +157933,31 @@ function _classCallCheck(instance, Constructor) { if (!(instance instanceof Cons
           this.CuentaActualizar.notas = this.nota.descripcion;
 
           this._revisionInventarioProductoService.newRevisionInventarioProducto(this.productoRevisado).subscribe(function (res) {
-            _this1197.mostrarLoading = false;
-            _this1197.CuentaActualizar.notas = _this1197.nota.descripcion;
+            _this1198.mostrarLoading = false;
+            _this1198.CuentaActualizar.notas = _this1198.nota.descripcion;
 
-            _this1197._revisionInventarioService.updateNotas(_this1197.CuentaActualizar).subscribe(function (res) {});
+            _this1198._revisionInventarioService.updateNotas(_this1198.CuentaActualizar).subscribe(function (res) {});
 
-            _this1197.reiniciarFormulario();
+            _this1198.reiniciarFormulario();
 
-            _this1197.mostrarMensajeGenerico(1, "Se ha registrado con éxito");
+            _this1198.mostrarMensajeGenerico(1, "Se ha registrado con éxito");
           }, function (err) {
-            _this1197.mostrarMensajeGenerico(2, "Se ha producido un error al guardar");
+            _this1198.mostrarMensajeGenerico(2, "Se ha producido un error al guardar");
           });
         }
       }, {
         key: "actualizarRegistroProducto",
         value: function actualizarRegistroProducto() {
-          var _this1198 = this;
+          var _this1199 = this;
 
           this.mensajeLoading = "Guardando..";
           this.mostrarLoading = true;
 
           this._revisionInventarioProductoService.updateRevisionProducto(this.productoRevisado).subscribe(function (res) {
-            _this1198.mostrarLoading = false;
-            _this1198.CuentaActualizar.notas = _this1198.nota.descripcion;
+            _this1199.mostrarLoading = false;
+            _this1199.CuentaActualizar.notas = _this1199.nota.descripcion;
 
-            _this1198._revisionInventarioService.updateNotas(_this1198.CuentaActualizar).subscribe(function (res) {});
+            _this1199._revisionInventarioService.updateNotas(_this1199.CuentaActualizar).subscribe(function (res) {});
 
             sweetalert2__WEBPACK_IMPORTED_MODULE_1___default.a.fire({
               title: 'Producto Actualizado',
@@ -157579,7 +157969,7 @@ function _classCallCheck(instance, Constructor) { if (!(instance instanceof Cons
             });
           }, //this.mostrarMensajeGenerico(1,"Se ha actualizado con éxito") }, 
           function (err) {
-            _this1198.mostrarMensajeGenerico(2, "Se ha producido un error al guardar");
+            _this1199.mostrarMensajeGenerico(2, "Se ha producido un error al guardar");
           });
         }
       }, {
@@ -157592,46 +157982,22 @@ function _classCallCheck(instance, Constructor) { if (!(instance instanceof Cons
       }, {
         key: "actualizarContador",
         value: function actualizarContador() {
-          var _this1199 = this;
+          var _this1200 = this;
 
           this.contadores[0].revisionInventario_Ndocumento = this.newControlInventario.idDocumento;
 
           this._contadoresService.updateIdRevisionInventario(this.contadores[0]).subscribe(function (res) {
-            _this1199.mostrarMensajeGenerico(1, "Se ha registrado con éxito");
+            _this1200.mostrarMensajeGenerico(1, "Se ha registrado con éxito");
 
-            _this1199.mostrarLoading = false;
-            _this1199.newControlInventario.responsable = "";
+            _this1200.mostrarLoading = false;
+            _this1200.newControlInventario.responsable = "";
 
-            _this1199.traerRevisionesInventario();
+            _this1200.traerRevisionesInventario();
           }, function (err) {});
         }
       }, {
         key: "eliminarRevisionProducto",
         value: function eliminarRevisionProducto(e) {
-          var _this1200 = this;
-
-          sweetalert2__WEBPACK_IMPORTED_MODULE_1___default.a.fire({
-            title: 'Alerta',
-            text: "Está seguro de eliminar el producto revisado?",
-            icon: 'warning',
-            showCancelButton: true,
-            confirmButtonText: 'Si',
-            cancelButtonText: 'No'
-          }).then(function (result) {
-            if (result.value) {
-              _this1200._revisionInventarioProductoService.deleteRevisionProducto(e).subscribe(function (res) {
-                _this1200.reiniciarFormulario();
-
-                _this1200.mostrarMensajeGenerico(1, "Se realizó su proceso con éxito");
-              });
-            } else if (result.dismiss === sweetalert2__WEBPACK_IMPORTED_MODULE_1___default.a.DismissReason.cancel) {
-              sweetalert2__WEBPACK_IMPORTED_MODULE_1___default.a.fire('Cancelado!', 'Se ha cancelado su proceso.', 'error');
-            }
-          });
-        }
-      }, {
-        key: "eliminarRevisionProducto2",
-        value: function eliminarRevisionProducto2(e) {
           var _this1201 = this;
 
           sweetalert2__WEBPACK_IMPORTED_MODULE_1___default.a.fire({
@@ -157644,9 +158010,7 @@ function _classCallCheck(instance, Constructor) { if (!(instance instanceof Cons
           }).then(function (result) {
             if (result.value) {
               _this1201._revisionInventarioProductoService.deleteRevisionProducto(e).subscribe(function (res) {
-                _this1201.listadoComparacionResultados = _this1201.listadoComparacionResultados.filter(function (element) {
-                  return element._id !== e._id;
-                });
+                _this1201.reiniciarFormulario();
 
                 _this1201.mostrarMensajeGenerico(1, "Se realizó su proceso con éxito");
               });
@@ -157656,9 +158020,35 @@ function _classCallCheck(instance, Constructor) { if (!(instance instanceof Cons
           });
         }
       }, {
+        key: "eliminarRevisionProducto2",
+        value: function eliminarRevisionProducto2(e) {
+          var _this1202 = this;
+
+          sweetalert2__WEBPACK_IMPORTED_MODULE_1___default.a.fire({
+            title: 'Alerta',
+            text: "Está seguro de eliminar el producto revisado?",
+            icon: 'warning',
+            showCancelButton: true,
+            confirmButtonText: 'Si',
+            cancelButtonText: 'No'
+          }).then(function (result) {
+            if (result.value) {
+              _this1202._revisionInventarioProductoService.deleteRevisionProducto(e).subscribe(function (res) {
+                _this1202.listadoComparacionResultados = _this1202.listadoComparacionResultados.filter(function (element) {
+                  return element._id !== e._id;
+                });
+
+                _this1202.mostrarMensajeGenerico(1, "Se realizó su proceso con éxito");
+              });
+            } else if (result.dismiss === sweetalert2__WEBPACK_IMPORTED_MODULE_1___default.a.DismissReason.cancel) {
+              sweetalert2__WEBPACK_IMPORTED_MODULE_1___default.a.fire('Cancelado!', 'Se ha cancelado su proceso.', 'error');
+            }
+          });
+        }
+      }, {
         key: "marcarValidado",
         value: function marcarValidado(e) {
-          var _this1202 = this;
+          var _this1203 = this;
 
           sweetalert2__WEBPACK_IMPORTED_MODULE_1___default.a.fire({
             title: 'Alerta',
@@ -157671,8 +158061,8 @@ function _classCallCheck(instance, Constructor) { if (!(instance instanceof Cons
             if (result.value) {
               e.estadoRevision = "Revisado";
 
-              _this1202._revisionInventarioProductoService.updateEstadoRevision(e).subscribe(function (res) {
-                _this1202.mostrarMensajeGenerico(1, "Se realizó su proceso con éxito");
+              _this1203._revisionInventarioProductoService.updateEstadoRevision(e).subscribe(function (res) {
+                _this1203.mostrarMensajeGenerico(1, "Se realizó su proceso con éxito");
               });
             } else if (result.dismiss === sweetalert2__WEBPACK_IMPORTED_MODULE_1___default.a.DismissReason.cancel) {
               sweetalert2__WEBPACK_IMPORTED_MODULE_1___default.a.fire('Cancelado!', 'Se ha cancelado su proceso.', 'error');
@@ -157682,7 +158072,7 @@ function _classCallCheck(instance, Constructor) { if (!(instance instanceof Cons
       }, {
         key: "eliminarRevisionIniciada",
         value: function eliminarRevisionIniciada(e) {
-          var _this1203 = this;
+          var _this1204 = this;
 
           this.listadoProductosRevisados = [];
 
@@ -157699,54 +158089,54 @@ function _classCallCheck(instance, Constructor) { if (!(instance instanceof Cons
                 cancelButtonText: 'No'
               }).then(function (result) {
                 if (result.value) {
-                  _this1203._revisionInventarioService.deleteRevision(e).subscribe(function (res) {
-                    _this1203.traerRevisionesInventario();
+                  _this1204._revisionInventarioService.deleteRevision(e).subscribe(function (res) {
+                    _this1204.traerRevisionesInventario();
 
-                    _this1203.mostrarMensajeGenerico(1, "Se realizó su proceso con éxito");
+                    _this1204.mostrarMensajeGenerico(1, "Se realizó su proceso con éxito");
                   });
                 } else if (result.dismiss === sweetalert2__WEBPACK_IMPORTED_MODULE_1___default.a.DismissReason.cancel) {
                   sweetalert2__WEBPACK_IMPORTED_MODULE_1___default.a.fire('Cancelado!', 'Se ha cancelado su proceso.', 'error');
                 }
               });
             } else {
-              _this1203.mostrarMensajeGenerico(2, "Ya hay productos revisados para este item");
+              _this1204.mostrarMensajeGenerico(2, "Ya hay productos revisados para este item");
             }
           });
         }
       }, {
         key: "cargarUsuarioLogueado",
         value: function cargarUsuarioLogueado() {
-          var _this1204 = this;
+          var _this1205 = this;
 
           this.menu = this.menuNormal;
           var promesaUser = new Promise(function (res, err) {
-            if (localStorage.getItem("maily") != '') _this1204.correo = localStorage.getItem("maily");
+            if (localStorage.getItem("maily") != '') _this1205.correo = localStorage.getItem("maily");
 
-            _this1204.authenService.getUserLogueado(_this1204.correo).subscribe(function (res) {
-              _this1204.usuarioLogueado = res;
-              if (_this1204.usuarioLogueado[0].status == "Inactivo") _this1204.authService.logOut();
+            _this1205.authenService.getUserLogueado(_this1205.correo).subscribe(function (res) {
+              _this1205.usuarioLogueado = res;
+              if (_this1205.usuarioLogueado[0].status == "Inactivo") _this1205.authService.logOut();
 
-              if (_this1204.usuarioLogueado[0].rol == "Administrador") {
-                _this1204.mostrarBloqueo = true;
-                _this1204.menu = _this1204.menuAdmin;
-              } else if (_this1204.usuarioLogueado[0].rol == "Inspector" && _this1204.idRevision == "0") {
-                _this1204.mostrarCreacion = false;
-                _this1204.mostrarLoading = false;
+              if (_this1205.usuarioLogueado[0].rol == "Administrador") {
+                _this1205.mostrarBloqueo = true;
+                _this1205.menu = _this1205.menuAdmin;
+              } else if (_this1205.usuarioLogueado[0].rol == "Inspector" && _this1205.idRevision == "0") {
+                _this1205.mostrarCreacion = false;
+                _this1205.mostrarLoading = false;
 
-                _this1204.mostrarMensajeGenerico(2, "Ingrese con una revisión Iniciada");
-              } else if ((_this1204.usuarioLogueado[0].rol == "Inspector" || _this1204.usuarioLogueado[0].rol == "Usuario Web" || _this1204.usuarioLogueado[0].rol == "Bodeguero") && _this1204.idRevision != "0") {
-                _this1204.mostrarCreacion = false;
-                _this1204.mostrarLoading = false;
-                _this1204.newIngreso = true;
+                _this1205.mostrarMensajeGenerico(2, "Ingrese con una revisión Iniciada");
+              } else if ((_this1205.usuarioLogueado[0].rol == "Inspector" || _this1205.usuarioLogueado[0].rol == "Usuario Web" || _this1205.usuarioLogueado[0].rol == "Bodeguero") && _this1205.idRevision != "0") {
+                _this1205.mostrarCreacion = false;
+                _this1205.mostrarLoading = false;
+                _this1205.newIngreso = true;
               } else {
                 //seccion para usuarios normales
-                if (_this1204.transaccionesProductosRevisados.length == 0) _this1204.traertransaccionesProductosRevisados();
-                _this1204.seccionNew = false;
-                _this1204.newAud = false;
-                _this1204.newIngreso = false;
-                _this1204.verListadoIngreso = false;
-                _this1204.verListadoTransacciones = true;
-                _this1204.verListadoProductos = false;
+                if (_this1205.transaccionesProductosRevisados.length == 0) _this1205.traertransaccionesProductosRevisados();
+                _this1205.seccionNew = false;
+                _this1205.newAud = false;
+                _this1205.newIngreso = false;
+                _this1205.verListadoIngreso = false;
+                _this1205.verListadoTransacciones = true;
+                _this1205.verListadoProductos = false;
               }
             }, function (err) {});
           });
@@ -157754,7 +158144,7 @@ function _classCallCheck(instance, Constructor) { if (!(instance instanceof Cons
       }, {
         key: "mostrarPopupCodigo",
         value: function mostrarPopupCodigo() {
-          var _this1205 = this;
+          var _this1206 = this;
 
           sweetalert2__WEBPACK_IMPORTED_MODULE_1___default.a.fire({
             title: 'Código de Seguridad',
@@ -157766,8 +158156,8 @@ function _classCallCheck(instance, Constructor) { if (!(instance instanceof Cons
             confirmButtonText: 'Ingresar',
             input: 'password'
           }).then(function (result) {
-            if (_this1205.usuarioLogueado[0].codigo == result.value) {
-              _this1205.mostrarBloqueo = false;
+            if (_this1206.usuarioLogueado[0].codigo == result.value) {
+              _this1206.mostrarBloqueo = false;
             } else {
               sweetalert2__WEBPACK_IMPORTED_MODULE_1___default.a.fire({
                 title: 'Error',
@@ -157775,7 +158165,7 @@ function _classCallCheck(instance, Constructor) { if (!(instance instanceof Cons
                 icon: 'error',
                 confirmButtonText: 'Ok'
               }).then(function (result) {
-                _this1205.mostrarPopupCodigo();
+                _this1206.mostrarPopupCodigo();
               });
             }
           });
@@ -157861,10 +158251,10 @@ function _classCallCheck(instance, Constructor) { if (!(instance instanceof Cons
       }, {
         key: "calcularDiferencia",
         value: function calcularDiferencia(e) {
-          var _this1206 = this;
+          var _this1207 = this;
 
           var prod = this.productosActivos.find(function (element) {
-            return element.PRODUCTO == _this1206.productoRevisado.producto;
+            return element.PRODUCTO == _this1207.productoRevisado.producto;
           });
           this.productoRevisado.m2_conteo = parseFloat((prod.M2 * this.productoRevisado.cajas + this.productoRevisado.piezas * prod.M2 / prod.P_CAJA).toFixed(2));
           this.productoRevisado.m2_diferencia = this.productoRevisado.m2_conteo - this.productoRevisado.m2_sistema;
@@ -157879,7 +158269,7 @@ function _classCallCheck(instance, Constructor) { if (!(instance instanceof Cons
       }, {
         key: "cargarDatosProductoUnitario",
         value: function cargarDatosProductoUnitario(nombreProducto, indice) {
-          var _this1207 = this;
+          var _this1208 = this;
 
           var contCajas = 0;
           var contCajas2 = 0;
@@ -157888,10 +158278,10 @@ function _classCallCheck(instance, Constructor) { if (!(instance instanceof Cons
           var contPiezas2 = 0;
           var contPiezas3 = 0;
 
-          var _loop23 = function _loop23(index) {
-            var element2 = _this1207.productosActivos[index];
+          var _loop24 = function _loop24(index) {
+            var element2 = _this1208.productosActivos[index];
 
-            _this1207.transacciones.forEach(function (element) {
+            _this1208.transacciones.forEach(function (element) {
               if (element2.PRODUCTO == element.producto && element.sucursal == "matriz") {
                 switch (element.tipo_transaccion) {
                   case "devolucion":
@@ -158073,23 +158463,23 @@ function _classCallCheck(instance, Constructor) { if (!(instance instanceof Cons
             });
 
             cantidadRestante = 0;
-            _this1207.invetarioProd = new _consolidado_consolidado__WEBPACK_IMPORTED_MODULE_2__["inventario"]();
-            _this1207.invetarioProd.producto = element2;
-            _this1207.invetarioProd.cantidadCajas = contCajas;
-            _this1207.invetarioProd.cantidadCajas2 = contCajas2;
-            _this1207.invetarioProd.cantidadCajas3 = contCajas3;
-            _this1207.invetarioProd.cantidadPiezas = contPiezas;
-            _this1207.invetarioProd.cantidadPiezas2 = contPiezas2;
-            _this1207.invetarioProd.cantidadPiezas3 = contPiezas3;
-            _this1207.invetarioProd.bodega = "S1 (" + element2.ubicacionSuc1 + " ) S2 (" + element2.ubicacionSuc2 + ") S3(" + element2.ubicacionSuc3 + ")";
-            _this1207.invetarioProd.ultimoPrecioCompra = element2.ultimoPrecioCompra;
-            _this1207.invetarioProd.ultimaFechaCompra = element2.ultimaFechaCompra;
-            _this1207.invetarioProd.notas = element2.notas;
-            _this1207.invetarioProd.execute = false;
+            _this1208.invetarioProd = new _consolidado_consolidado__WEBPACK_IMPORTED_MODULE_2__["inventario"]();
+            _this1208.invetarioProd.producto = element2;
+            _this1208.invetarioProd.cantidadCajas = contCajas;
+            _this1208.invetarioProd.cantidadCajas2 = contCajas2;
+            _this1208.invetarioProd.cantidadCajas3 = contCajas3;
+            _this1208.invetarioProd.cantidadPiezas = contPiezas;
+            _this1208.invetarioProd.cantidadPiezas2 = contPiezas2;
+            _this1208.invetarioProd.cantidadPiezas3 = contPiezas3;
+            _this1208.invetarioProd.bodega = "S1 (" + element2.ubicacionSuc1 + " ) S2 (" + element2.ubicacionSuc2 + ") S3(" + element2.ubicacionSuc3 + ")";
+            _this1208.invetarioProd.ultimoPrecioCompra = element2.ultimoPrecioCompra;
+            _this1208.invetarioProd.ultimaFechaCompra = element2.ultimaFechaCompra;
+            _this1208.invetarioProd.notas = element2.notas;
+            _this1208.invetarioProd.execute = false;
             console.log(contCajas);
             console.log(contPiezas);
-            console.log(_this1207.invetarioProd);
-            if (_this1207.invetarioProd.producto.PRODUCTO == nombreProducto) _this1207.invetarioP.push(_this1207.invetarioProd);
+            console.log(_this1208.invetarioProd);
+            if (_this1208.invetarioProd.producto.PRODUCTO == nombreProducto) _this1208.invetarioP.push(_this1208.invetarioProd);
             contCajas = 0;
             contPiezas = 0;
             contCajas2 = 0;
@@ -158101,7 +158491,7 @@ function _classCallCheck(instance, Constructor) { if (!(instance instanceof Cons
           for (var index = 0; index < this.productosActivos.length; index++) {
             var cantidadRestante;
 
-            _loop23(index);
+            _loop24(index);
           }
 
           this.transformarM2(indice);
@@ -158126,43 +158516,43 @@ function _classCallCheck(instance, Constructor) { if (!(instance instanceof Cons
       }, {
         key: "controlarInventario",
         value: function controlarInventario(indice) {
-          var _this1208 = this;
+          var _this1209 = this;
 
           this.invetarioP.forEach(function (element) {
             if (element.cantidadM2 < 0) {
-              _this1208.invetarioFaltante1 = new _consolidado_consolidado__WEBPACK_IMPORTED_MODULE_2__["invFaltanteSucursal"]();
-              _this1208.invetarioFaltante1.producto = element.producto;
-              _this1208.invetarioFaltante1.cantidadCajas = element.cantidadCajas;
-              _this1208.invetarioFaltante1.cantidadPiezas = element.cantidadPiezas;
-              _this1208.invetarioFaltante1.cantidadM2 = element.cantidadCajas;
-              _this1208.invetarioFaltante1.totalb1 = element.totalb1;
-              _this1208.invetarioFaltante1.sucursal = "Matriz";
+              _this1209.invetarioFaltante1 = new _consolidado_consolidado__WEBPACK_IMPORTED_MODULE_2__["invFaltanteSucursal"]();
+              _this1209.invetarioFaltante1.producto = element.producto;
+              _this1209.invetarioFaltante1.cantidadCajas = element.cantidadCajas;
+              _this1209.invetarioFaltante1.cantidadPiezas = element.cantidadPiezas;
+              _this1209.invetarioFaltante1.cantidadM2 = element.cantidadCajas;
+              _this1209.invetarioFaltante1.totalb1 = element.totalb1;
+              _this1209.invetarioFaltante1.sucursal = "Matriz";
 
-              _this1208.invetarioFaltante.push(_this1208.invetarioFaltante1);
+              _this1209.invetarioFaltante.push(_this1209.invetarioFaltante1);
             }
 
             if (element.cantidadM2b2 < 0) {
-              _this1208.invetarioFaltante1 = new _consolidado_consolidado__WEBPACK_IMPORTED_MODULE_2__["invFaltanteSucursal"]();
-              _this1208.invetarioFaltante1.producto = element.producto;
-              _this1208.invetarioFaltante1.cantidadCajas = element.cantidadCajas2;
-              _this1208.invetarioFaltante1.cantidadPiezas = element.cantidadPiezas2;
-              _this1208.invetarioFaltante1.cantidadM2 = element.cantidadCajas2;
-              _this1208.invetarioFaltante1.totalb1 = element.totalb2;
-              _this1208.invetarioFaltante1.sucursal = "Sucursal 1";
+              _this1209.invetarioFaltante1 = new _consolidado_consolidado__WEBPACK_IMPORTED_MODULE_2__["invFaltanteSucursal"]();
+              _this1209.invetarioFaltante1.producto = element.producto;
+              _this1209.invetarioFaltante1.cantidadCajas = element.cantidadCajas2;
+              _this1209.invetarioFaltante1.cantidadPiezas = element.cantidadPiezas2;
+              _this1209.invetarioFaltante1.cantidadM2 = element.cantidadCajas2;
+              _this1209.invetarioFaltante1.totalb1 = element.totalb2;
+              _this1209.invetarioFaltante1.sucursal = "Sucursal 1";
 
-              _this1208.invetarioFaltante.push(_this1208.invetarioFaltante1);
+              _this1209.invetarioFaltante.push(_this1209.invetarioFaltante1);
             }
 
             if (element.cantidadM2b3 < 0) {
-              _this1208.invetarioFaltante1 = new _consolidado_consolidado__WEBPACK_IMPORTED_MODULE_2__["invFaltanteSucursal"]();
-              _this1208.invetarioFaltante1.producto = element.producto;
-              _this1208.invetarioFaltante1.cantidadCajas = element.cantidadCajas3;
-              _this1208.invetarioFaltante1.cantidadPiezas = element.cantidadPiezas3;
-              _this1208.invetarioFaltante1.cantidadM2 = element.cantidadCajas3;
-              _this1208.invetarioFaltante1.totalb1 = element.totalb3;
-              _this1208.invetarioFaltante1.sucursal = "Sucursal 2";
+              _this1209.invetarioFaltante1 = new _consolidado_consolidado__WEBPACK_IMPORTED_MODULE_2__["invFaltanteSucursal"]();
+              _this1209.invetarioFaltante1.producto = element.producto;
+              _this1209.invetarioFaltante1.cantidadCajas = element.cantidadCajas3;
+              _this1209.invetarioFaltante1.cantidadPiezas = element.cantidadPiezas3;
+              _this1209.invetarioFaltante1.cantidadM2 = element.cantidadCajas3;
+              _this1209.invetarioFaltante1.totalb1 = element.totalb3;
+              _this1209.invetarioFaltante1.sucursal = "Sucursal 2";
 
-              _this1208.invetarioFaltante.push(_this1208.invetarioFaltante1);
+              _this1209.invetarioFaltante.push(_this1209.invetarioFaltante1);
             }
           });
           this.ajustarSaldos(indice);
@@ -158170,29 +158560,29 @@ function _classCallCheck(instance, Constructor) { if (!(instance instanceof Cons
       }, {
         key: "ajustarSaldos",
         value: function ajustarSaldos(indice) {
-          var _this1209 = this;
+          var _this1210 = this;
 
           this.invetarioP.forEach(function (element) {
-            switch (_this1209.revisionIniciada.sucursal) {
+            switch (_this1210.revisionIniciada.sucursal) {
               case "matriz":
                 /* this.listadoComparacionResultados[indice].cajas_sistema = element.cantidadCajas;
                 this.listadoComparacionResultados[indice].piezas_sistema = element.cantidadPiezas;
                 this.listadoComparacionResultados[indice].m2_sistema = element.cantidadM2; */
-                _this1209.productoRevisado.cajas_sistema = element.cantidadCajas;
-                _this1209.productoRevisado.piezas_sistema = element.cantidadPiezas;
-                _this1209.productoRevisado.m2_sistema = element.cantidadM2;
+                _this1210.productoRevisado.cajas_sistema = element.cantidadCajas;
+                _this1210.productoRevisado.piezas_sistema = element.cantidadPiezas;
+                _this1210.productoRevisado.m2_sistema = element.cantidadM2;
                 break;
 
               case "sucursal1":
-                _this1209.productoRevisado.cajas_sistema = element.cantidadCajas2;
-                _this1209.productoRevisado.piezas_sistema = element.cantidadPiezas2;
-                _this1209.productoRevisado.m2_sistema = element.cantidadM2b2;
+                _this1210.productoRevisado.cajas_sistema = element.cantidadCajas2;
+                _this1210.productoRevisado.piezas_sistema = element.cantidadPiezas2;
+                _this1210.productoRevisado.m2_sistema = element.cantidadM2b2;
                 break;
 
               case "sucursal2":
-                _this1209.productoRevisado.cajas_sistema = element.cantidadCajas3;
-                _this1209.productoRevisado.piezas_sistema = element.cantidadPiezas3;
-                _this1209.productoRevisado.m2_sistema = element.cantidadM2b3;
+                _this1210.productoRevisado.cajas_sistema = element.cantidadCajas3;
+                _this1210.productoRevisado.piezas_sistema = element.cantidadPiezas3;
+                _this1210.productoRevisado.m2_sistema = element.cantidadM2b3;
                 break;
 
               default:
@@ -158200,7 +158590,7 @@ function _classCallCheck(instance, Constructor) { if (!(instance instanceof Cons
             }
           });
           var prod = this.productosActivos.find(function (element) {
-            return element.PRODUCTO == _this1209.productoRevisado.producto;
+            return element.PRODUCTO == _this1210.productoRevisado.producto;
           });
           this.productoRevisado.m2_conteo = parseFloat((prod.M2 * this.productoRevisado.cajas + this.productoRevisado.piezas * prod.M2 / prod.P_CAJA).toFixed(2));
           /* if(this.productoRevisado.m2_sistema > 0)
@@ -159363,7 +159753,7 @@ function _classCallCheck(instance, Constructor) { if (!(instance instanceof Cons
 
     var StockLocalesComponent = /*#__PURE__*/function () {
       function StockLocalesComponent(bodegasService, authenService, authService, transaccionesService, productosPendientesService, productoService, opcionesService, _comboService, _catalogoService, _productosLocalesStockService) {
-        var _this1210 = this;
+        var _this1211 = this;
 
         _classCallCheck(this, StockLocalesComponent);
 
@@ -159442,7 +159832,7 @@ function _classCallCheck(instance, Constructor) { if (!(instance instanceof Cons
         this.valor3 = 100;
 
         this.updateInventarioClasificacion = function (e) {
-          _this1210.actualizarInventarioPorClasificacion(e.row.data);
+          _this1211.actualizarInventarioPorClasificacion(e.row.data);
         };
 
         this.proTransaccion = new _consolidado_consolidado__WEBPACK_IMPORTED_MODULE_4__["productoTransaccion"]();
@@ -159479,54 +159869,54 @@ function _classCallCheck(instance, Constructor) { if (!(instance instanceof Cons
       }, {
         key: "traerOpcionesCatalogo",
         value: function traerOpcionesCatalogo() {
-          var _this1211 = this;
+          var _this1212 = this;
 
           this.opcionesService.getOpciones().subscribe(function (res) {
-            _this1211.opcionesCatalogo = res;
+            _this1212.opcionesCatalogo = res;
 
-            _this1211.llenarCombos();
+            _this1212.llenarCombos();
           });
         }
       }, {
         key: "traerCatalogo",
         value: function traerCatalogo() {
-          var _this1212 = this;
+          var _this1213 = this;
 
           this._catalogoService.getCatalogoActivos().subscribe(function (res) {
-            _this1212.productosCatalogo = res;
+            _this1213.productosCatalogo = res;
 
-            _this1212.traerProductos();
+            _this1213.traerProductos();
           });
         }
       }, {
         key: "traerCatalogoUnitario",
         value: function traerCatalogoUnitario() {
-          var _this1213 = this;
+          var _this1214 = this;
 
           this._catalogoService.getCatalogoActivos().subscribe(function (res) {
-            _this1213.productosCatalogo = res;
+            _this1214.productosCatalogo = res;
           });
         }
       }, {
         key: "llenarCombos",
         value: function llenarCombos() {
-          var _this1214 = this;
+          var _this1215 = this;
 
           this.opcionesCatalogo.forEach(function (element) {
             element.arrayClasificación.forEach(function (element) {
               var clasi = new _consolidado_consolidado__WEBPACK_IMPORTED_MODULE_4__["clasificacionActualizacion"]();
               clasi.nombreClasificacion = element;
 
-              _this1214.listaClasificacion.push(clasi);
+              _this1215.listaClasificacion.push(clasi);
 
-              _this1214.listadoCategorias.push(clasi.nombreClasificacion);
+              _this1215.listadoCategorias.push(clasi.nombreClasificacion);
             });
           });
         }
       }, {
         key: "traerTransacciones",
         value: function traerTransacciones() {
-          var _this1215 = this;
+          var _this1216 = this;
 
           this.transacciones = [];
           this.invetarioP = [];
@@ -159535,15 +159925,15 @@ function _classCallCheck(instance, Constructor) { if (!(instance instanceof Cons
           this.productosPendientesNoEN = [];
           this.mostrarLoading = true;
           this.transaccionesService.getTransaccion().subscribe(function (res) {
-            _this1215.transacciones = res;
+            _this1216.transacciones = res;
 
-            _this1215.traerCatalogo();
+            _this1216.traerCatalogo();
           });
         }
       }, {
         key: "traerTransaccionesMultiples",
         value: function traerTransaccionesMultiples() {
-          var _this1216 = this;
+          var _this1217 = this;
 
           this.transacciones = [];
           this.invetarioP = [];
@@ -159558,15 +159948,15 @@ function _classCallCheck(instance, Constructor) { if (!(instance instanceof Cons
           });
           productoM.array = arregloProductos;
           this.transaccionesService.getTransaccionesPorProductoMultiple(productoM).subscribe(function (res) {
-            _this1216.transacciones = res;
+            _this1217.transacciones = res;
 
-            _this1216.cargarDatos();
+            _this1217.cargarDatos();
           });
         }
       }, {
         key: "traerProductosPorFiltros",
         value: function traerProductosPorFiltros() {
-          var _this1217 = this;
+          var _this1218 = this;
 
           var productoFiltro = new _consolidado_consolidado__WEBPACK_IMPORTED_MODULE_4__["productosPorFiltros"]();
           productoFiltro.clasificacion = this.nombreClasificacion;
@@ -159577,34 +159967,34 @@ function _classCallCheck(instance, Constructor) { if (!(instance instanceof Cons
           }
 
           this.productoService.getProductosPorFiltros1(productoFiltro).subscribe(function (res) {
-            _this1217.productosTraidos = res;
+            _this1218.productosTraidos = res;
 
-            _this1217.traerProductosStockLocal(); //this.traerTransaccionesMultiples();
+            _this1218.traerProductosStockLocal(); //this.traerTransaccionesMultiples();
 
           });
         }
       }, {
         key: "traerProductosStockLocal",
         value: function traerProductosStockLocal() {
-          var _this1218 = this;
+          var _this1219 = this;
 
           this.productos = [];
           var productoFiltro = new _consolidado_consolidado__WEBPACK_IMPORTED_MODULE_4__["productosPorFiltros"]();
           productoFiltro.clasificacion = this.nombreClasificacion;
 
           this._productosLocalesStockService.getProductosPorFiltros(productoFiltro).subscribe(function (res) {
-            _this1218.productosStockTraidos = res;
+            _this1219.productosStockTraidos = res;
             var cont = 0;
 
-            _this1218.productosStockTraidos.forEach(function (element2) {
+            _this1219.productosStockTraidos.forEach(function (element2) {
               cont++;
 
-              var prod = _this1218.productosTraidos.find(function (x) {
+              var prod = _this1219.productosTraidos.find(function (x) {
                 return x.PRODUCTO == element2.PRODUCTO;
               });
 
-              if (prod != null) _this1218.productos.push(prod);
-              if (cont == _this1218.productosStockTraidos.length) _this1218.traerTransaccionesMultiples();
+              if (prod != null) _this1219.productos.push(prod);
+              if (cont == _this1219.productosStockTraidos.length) _this1219.traerTransaccionesMultiples();
             });
           });
         }
@@ -159642,12 +160032,12 @@ function _classCallCheck(instance, Constructor) { if (!(instance instanceof Cons
       }, {
         key: "traerTransaccionesPorProducto",
         value: function traerTransaccionesPorProducto() {
-          var _this1219 = this;
+          var _this1220 = this;
 
           var existe = false;
           this.proTransaccion.nombre = this.nombreProducto;
           this.invetarioP.forEach(function (element2) {
-            if (_this1219.proTransaccion.nombre == element2.producto.PRODUCTO) {
+            if (_this1220.proTransaccion.nombre == element2.producto.PRODUCTO) {
               existe = true;
             }
           });
@@ -159656,11 +160046,11 @@ function _classCallCheck(instance, Constructor) { if (!(instance instanceof Cons
             this.mensajeLoading = "Buscando transacciones";
             this.mostrarLoading = true;
             this.transaccionesService.getTransaccionesPorProducto(this.proTransaccion).subscribe(function (res) {
-              _this1219.transacciones = res;
+              _this1220.transacciones = res;
 
-              _this1219.traerProductosPendientesPorNombre();
+              _this1220.traerProductosPendientesPorNombre();
 
-              _this1219.cargarDatosProductoUnitario();
+              _this1220.cargarDatosProductoUnitario();
             });
           } else {
             sweetalert2__WEBPACK_IMPORTED_MODULE_2___default.a.fire("Error!", "El producto ya se encuentra en la lista", "error");
@@ -159669,7 +160059,7 @@ function _classCallCheck(instance, Constructor) { if (!(instance instanceof Cons
       }, {
         key: "buscarCombo",
         value: function buscarCombo(nombreCombo) {
-          var _this1220 = this;
+          var _this1221 = this;
 
           var combo = new _catalogo_catalogo__WEBPACK_IMPORTED_MODULE_3__["ProductoCombo"]();
           combo.PRODUCTO = nombreCombo;
@@ -159677,52 +160067,52 @@ function _classCallCheck(instance, Constructor) { if (!(instance instanceof Cons
           this._comboService.getComboPorNombre(combo).subscribe(function (res) {
             var listado = res;
 
-            _this1220.buscarProductosCombo(listado[0].productosCombo);
+            _this1221.buscarProductosCombo(listado[0].productosCombo);
           });
         }
       }, {
         key: "buscarProductosCombo",
         value: function buscarProductosCombo(listado) {
-          var _this1221 = this;
+          var _this1222 = this;
 
           this.mostrarLoading = true;
           this.cantidadProductos = 0;
           listado.forEach(function (element) {
-            _this1221.productos.forEach(function (element2) {
-              if (element.nombreProducto == element2.PRODUCTO) _this1221.traerTransaccionesPorProductoCombo2(element2, element);
+            _this1222.productos.forEach(function (element2) {
+              if (element.nombreProducto == element2.PRODUCTO) _this1222.traerTransaccionesPorProductoCombo2(element2, element);
             });
           });
         }
       }, {
         key: "traerProductos",
         value: function traerProductos() {
-          var _this1222 = this;
+          var _this1223 = this;
 
           this.productoService.getProductosActivos().subscribe(function (res) {
-            _this1222.productos = res;
+            _this1223.productos = res;
 
-            _this1222.productos.forEach(function (element) {
+            _this1223.productos.forEach(function (element) {
               var _a, _b;
 
-              element.DIMENSION = (_b = (_a = _this1222.productosCatalogo) === null || _a === void 0 ? void 0 : _a.find(function (element2) {
+              element.DIMENSION = (_b = (_a = _this1223.productosCatalogo) === null || _a === void 0 ? void 0 : _a.find(function (element2) {
                 return element.PRODUCTO == element2.PRODUCTO;
               })) === null || _b === void 0 ? void 0 : _b.DIM;
             });
 
-            _this1222.cargarDatos();
+            _this1223.cargarDatos();
 
-            _this1222.cargarClasificacion();
+            _this1223.cargarClasificacion();
           });
         }
       }, {
         key: "cargarClasificacion",
         value: function cargarClasificacion() {
-          var _this1223 = this;
+          var _this1224 = this;
 
           this.listaClasificacion.forEach(function (element) {
             var cont = 0;
 
-            _this1223.productos.forEach(function (element2) {
+            _this1224.productos.forEach(function (element2) {
               if (element.nombreClasificacion == element2.CLASIFICA) cont++;
             });
 
@@ -159732,54 +160122,54 @@ function _classCallCheck(instance, Constructor) { if (!(instance instanceof Cons
       }, {
         key: "traerProductosUnitarios",
         value: function traerProductosUnitarios() {
-          var _this1224 = this;
+          var _this1225 = this;
 
           this.mensajeLoading = "Cargando";
           this.mostrarLoading = true;
           this.productos = [];
           this.productoService.getProductosActivos().subscribe(function (res) {
-            _this1224.productos = res;
+            _this1225.productos = res;
 
-            _this1224.separarProducto();
+            _this1225.separarProducto();
           });
         }
       }, {
         key: "traerStockProductosLocales",
         value: function traerStockProductosLocales() {
-          var _this1225 = this;
+          var _this1226 = this;
 
           this.mostrarLoading = true;
           this.listaProductosStock = [];
 
           this._productosLocalesStockService.getProductosStock().subscribe(function (res) {
-            _this1225.listaProductosStock = res;
-            _this1225.mostrarLoading = false;
+            _this1226.listaProductosStock = res;
+            _this1226.mostrarLoading = false;
           });
         }
       }, {
         key: "traerTransaccionesStockGeneral",
         value: function traerTransaccionesStockGeneral() {
-          var _this1226 = this;
+          var _this1227 = this;
 
           this.mostrarLoading = true;
           this.productosStockTraidos = [];
           this.productoService.getProductosActivos().subscribe(function (res) {
-            _this1226.productos = res;
+            _this1227.productos = res;
 
-            _this1226._productosLocalesStockService.getProductosStock().subscribe(function (res) {
-              _this1226.productosStockTraidos = res;
-              var prodTmp = _this1226.productos;
-              _this1226.productos = [];
+            _this1227._productosLocalesStockService.getProductosStock().subscribe(function (res) {
+              _this1227.productosStockTraidos = res;
+              var prodTmp = _this1227.productos;
+              _this1227.productos = [];
               var cont = 0;
               prodTmp.forEach(function (element) {
                 cont++;
 
-                var prod = _this1226.productosStockTraidos.find(function (x) {
+                var prod = _this1227.productosStockTraidos.find(function (x) {
                   return x.PRODUCTO == element.PRODUCTO;
                 });
 
-                if (prod != null) _this1226.productos.push(element);
-                if (cont == prodTmp.length) _this1226.traerTransaccionesMultiples();
+                if (prod != null) _this1227.productos.push(element);
+                if (cont == prodTmp.length) _this1227.traerTransaccionesMultiples();
               });
             });
           });
@@ -159787,12 +160177,12 @@ function _classCallCheck(instance, Constructor) { if (!(instance instanceof Cons
       }, {
         key: "cargarSeleccion",
         value: function cargarSeleccion() {
-          var _this1227 = this;
+          var _this1228 = this;
 
           this.listadoStockLocales.forEach(function (element) {
             var _a, _b;
 
-            var data = _this1227.listaProductosStock.find(function (el) {
+            var data = _this1228.listaProductosStock.find(function (el) {
               return el.PRODUCTO == element.PRODUCTO;
             });
 
@@ -159807,7 +160197,7 @@ function _classCallCheck(instance, Constructor) { if (!(instance instanceof Cons
       }, {
         key: "separarProducto",
         value: function separarProducto() {
-          var _this1228 = this;
+          var _this1229 = this;
 
           this.mostrarLoading = true;
           this.productos.forEach(function (element) {
@@ -159817,44 +160207,44 @@ function _classCallCheck(instance, Constructor) { if (!(instance instanceof Cons
             producto.precio = element.precio;
             producto.porcentaje = 0;
 
-            _this1228.listadoStockLocales.push(producto);
+            _this1229.listadoStockLocales.push(producto);
           });
           this.cargarSeleccion();
         }
       }, {
         key: "traerBodegas",
         value: function traerBodegas() {
-          var _this1229 = this;
+          var _this1230 = this;
 
           this.bodegasService.getBodegas().subscribe(function (res) {
-            _this1229.bodegas = res;
+            _this1230.bodegas = res;
 
-            _this1229.separarBodegas();
+            _this1230.separarBodegas();
           });
         }
       }, {
         key: "cargarUsuarioLogueado",
         value: function cargarUsuarioLogueado() {
-          var _this1230 = this;
+          var _this1231 = this;
 
           var promesaUser = new Promise(function (res, err) {
-            if (localStorage.getItem("maily") != "") _this1230.correo = localStorage.getItem("maily");
+            if (localStorage.getItem("maily") != "") _this1231.correo = localStorage.getItem("maily");
 
-            _this1230.authenService.getUserLogueado(_this1230.correo).subscribe(function (res) {
-              _this1230.usuarioLogueado = res;
+            _this1231.authenService.getUserLogueado(_this1231.correo).subscribe(function (res) {
+              _this1231.usuarioLogueado = res;
 
-              if (_this1230.usuarioLogueado[0].rol == "Administrador") {
-                _this1230.menu1 = _this1230.menuAdministracion;
-                _this1230.opMenu = "Administracion";
-                _this1230.mostrarAdministracion = true;
+              if (_this1231.usuarioLogueado[0].rol == "Administrador") {
+                _this1231.menu1 = _this1231.menuAdministracion;
+                _this1231.opMenu = "Administracion";
+                _this1231.mostrarAdministracion = true;
               } else {
-                _this1230.menu1 = _this1230.menuUsuario;
-                _this1230.opMenu = "Stock Por Filtros";
-                _this1230.mostrarAdministracion = false;
-                _this1230.mostrarBusquedaPorFiltros = true;
+                _this1231.menu1 = _this1231.menuUsuario;
+                _this1231.opMenu = "Stock Por Filtros";
+                _this1231.mostrarAdministracion = false;
+                _this1231.mostrarBusquedaPorFiltros = true;
               }
 
-              if (_this1230.usuarioLogueado[0].status == "Inactivo") _this1230.authService.logOut();
+              if (_this1231.usuarioLogueado[0].status == "Inactivo") _this1231.authService.logOut();
             }, function (err) {});
           });
         }
@@ -159866,20 +160256,20 @@ function _classCallCheck(instance, Constructor) { if (!(instance instanceof Cons
       }, {
         key: "separarBodegas",
         value: function separarBodegas() {
-          var _this1231 = this;
+          var _this1232 = this;
 
           this.bodegas.forEach(function (element) {
             switch (element.sucursal) {
               case "matriz":
-                _this1231.bodegasMatriz = element.nombre + " , " + _this1231.bodegasMatriz;
+                _this1232.bodegasMatriz = element.nombre + " , " + _this1232.bodegasMatriz;
                 break;
 
               case "sucursal1":
-                _this1231.bodegasSucursal1 = element.nombre + " , " + _this1231.bodegasSucursal1;
+                _this1232.bodegasSucursal1 = element.nombre + " , " + _this1232.bodegasSucursal1;
                 break;
 
               case "sucursal2":
-                _this1231.bodegasSucursal2 = element.nombre + " ,  " + _this1231.bodegasSucursal2;
+                _this1232.bodegasSucursal2 = element.nombre + " ,  " + _this1232.bodegasSucursal2;
                 break;
 
               default:
@@ -159890,23 +160280,23 @@ function _classCallCheck(instance, Constructor) { if (!(instance instanceof Cons
       }, {
         key: "traerProductosPendientes",
         value: function traerProductosPendientes() {
-          var _this1232 = this;
+          var _this1233 = this;
 
           this.productosPendientesService.getProductoPendiente().subscribe(function (res) {
-            _this1232.productosPendientes = res;
+            _this1233.productosPendientes = res;
 
-            _this1232.separarEntregas();
+            _this1233.separarEntregas();
           });
         }
       }, {
         key: "traerProductosPendientesPorNombre",
         value: function traerProductosPendientesPorNombre() {
-          var _this1233 = this;
+          var _this1234 = this;
 
           this.productosPendientesService.getPendientesPorProducto(this.proTransaccion).subscribe(function (res) {
-            _this1233.productosPendientes = res;
+            _this1234.productosPendientes = res;
 
-            _this1233.separarEntregas();
+            _this1234.separarEntregas();
           });
         }
       }, {
@@ -159915,22 +160305,22 @@ function _classCallCheck(instance, Constructor) { if (!(instance instanceof Cons
       }, {
         key: "separarEntregas",
         value: function separarEntregas() {
-          var _this1234 = this;
+          var _this1235 = this;
 
           this.productosPendientes.forEach(function (element) {
-            if (element.estado == "PENDIENTE") _this1234.productosPendientesNoEN.push(element);
+            if (element.estado == "PENDIENTE") _this1235.productosPendientesNoEN.push(element);
           });
           this.calcularPendientes();
         }
       }, {
         key: "calcularPendientes",
         value: function calcularPendientes() {
-          var _this1235 = this;
+          var _this1236 = this;
 
           this.productosPendientes.forEach(function (element) {
-            _this1235.totalCajas += element.cajas;
-            _this1235.totalPiezas += element.piezas;
-            _this1235.totalM2 += element.cantM2;
+            _this1236.totalCajas += element.cajas;
+            _this1236.totalPiezas += element.piezas;
+            _this1236.totalM2 += element.cantM2;
           });
         }
       }, {
@@ -160002,236 +160392,6 @@ function _classCallCheck(instance, Constructor) { if (!(instance instanceof Cons
       }, {
         key: "cargarDatosProductoUnitario",
         value: function cargarDatosProductoUnitario() {
-          var _this1236 = this;
-
-          var contCajas = 0;
-          var contCajas2 = 0;
-          var contCajas3 = 0;
-          var contPiezas = 0;
-          var contPiezas2 = 0;
-          var contPiezas3 = 0;
-
-          var _loop24 = function _loop24(index) {
-            var element2 = _this1236.productos[index];
-
-            _this1236.transacciones.forEach(function (element) {
-              if (element2.PRODUCTO == element.producto && element.sucursal == "matriz") {
-                switch (element.tipo_transaccion) {
-                  case "devolucion":
-                    contCajas = Number(element.cajas) + contCajas;
-                    contPiezas = Number(element.piezas) + contPiezas;
-                    break;
-
-                  case "compra-dir":
-                    contCajas = Number(contCajas) + Number(element.cajas);
-                    contPiezas = Number(contPiezas) + Number(element.piezas);
-                    break;
-
-                  case "compra":
-                    contCajas = Number(contCajas) + Number(element.cajas);
-                    contPiezas = Number(contPiezas) + Number(element.piezas);
-                    break;
-
-                  case "compra_obs":
-                    contCajas = Number(contCajas) + Number(element.cajas);
-                    contPiezas = Number(contPiezas) + Number(element.piezas);
-                    break;
-
-                  case "ajuste-faltante":
-                    contCajas = Number(contCajas) - Number(element.cajas);
-                    contPiezas = Number(contPiezas) - Number(element.piezas);
-                    break;
-
-                  case "baja":
-                    contCajas = Number(contCajas) - Number(element.cajas);
-                    contPiezas = Number(contPiezas) - Number(element.piezas);
-                    break;
-
-                  case "venta-fact":
-                    contCajas = Number(contCajas) - Number(element.cajas);
-                    contPiezas = Number(contPiezas) - Number(element.piezas);
-                    break;
-
-                  case "venta-not":
-                    contCajas = Number(contCajas) - Number(element.cajas);
-                    contPiezas = Number(contPiezas) - Number(element.piezas);
-                    break;
-
-                  case "traslado1":
-                    contCajas = Number(contCajas) - Number(element.cajas);
-                    contPiezas = Number(contPiezas) - Number(element.piezas);
-                    break;
-
-                  case "traslado2":
-                    contCajas = Number(contCajas) + Number(element.cajas);
-                    contPiezas = Number(contPiezas) + Number(element.piezas);
-                    break;
-
-                  case "ajuste-sobrante":
-                    contCajas = Number(contCajas) + Number(element.cajas);
-                    contPiezas = Number(contPiezas) + Number(element.piezas);
-                    break;
-
-                  default:
-                }
-              } else if (element2.PRODUCTO == element.producto && element.sucursal == "sucursal1") {
-                switch (element.tipo_transaccion) {
-                  case "devolucion":
-                    contCajas2 = Number(element.cajas) + contCajas2;
-                    contPiezas2 = Number(element.piezas) + contPiezas2;
-                    break;
-
-                  case "compra-dir":
-                    contCajas2 = Number(contCajas2) + Number(element.cajas);
-                    contPiezas2 = Number(contPiezas2) + Number(element.piezas);
-                    break;
-
-                  case "compra":
-                    contCajas2 = Number(contCajas2) + Number(element.cajas);
-                    contPiezas2 = Number(contPiezas2) + Number(element.piezas);
-                    break;
-
-                  case "compra_obs":
-                    contCajas2 = Number(contCajas2) + Number(element.cajas);
-                    contPiezas2 = Number(contPiezas2) + Number(element.piezas);
-                    break;
-
-                  case "ajuste-faltante":
-                    contCajas2 = Number(contCajas2) - Number(element.cajas);
-                    contPiezas2 = Number(contPiezas2) - Number(element.piezas);
-                    break;
-
-                  case "baja":
-                    contCajas2 = Number(contCajas2) - Number(element.cajas);
-                    contPiezas2 = Number(contPiezas2) - Number(element.piezas);
-                    break;
-
-                  case "venta-fact":
-                    contCajas2 = Number(contCajas2) - Number(element.cajas);
-                    contPiezas2 = Number(contPiezas2) - Number(element.piezas);
-                    break;
-
-                  case "venta-not":
-                    contCajas2 = Number(contCajas2) - Number(element.cajas);
-                    contPiezas2 = Number(contPiezas2) - Number(element.piezas);
-                    break;
-
-                  case "traslado1":
-                    contCajas2 = Number(contCajas2) - Number(element.cajas);
-                    contPiezas2 = Number(contPiezas2) - Number(element.piezas);
-                    break;
-
-                  case "traslado2":
-                    contCajas2 = Number(contCajas2) + Number(element.cajas);
-                    contPiezas2 = Number(contPiezas2) + Number(element.piezas);
-                    break;
-
-                  case "ajuste-sobrante":
-                    contCajas2 = Number(contCajas2) + Number(element.cajas);
-                    contPiezas2 = Number(contPiezas2) + Number(element.piezas);
-                    break;
-
-                  default:
-                }
-              } else if (element2.PRODUCTO == element.producto && element.sucursal == "sucursal2") {
-                switch (element.tipo_transaccion) {
-                  case "devolucion":
-                    contCajas3 = Number(element.cajas) + contCajas3;
-                    contPiezas3 = Number(element.piezas) + contPiezas3;
-                    break;
-
-                  case "compra-dir":
-                    contCajas3 = Number(contCajas3) + Number(element.cajas);
-                    contPiezas3 = Number(contPiezas3) + Number(element.piezas);
-                    break;
-
-                  case "compra":
-                    contCajas3 = Number(contCajas3) + Number(element.cajas);
-                    contPiezas3 = Number(contPiezas3) + Number(element.piezas);
-                    break;
-
-                  case "compra_obs":
-                    contCajas3 = Number(contCajas3) + Number(element.cajas);
-                    contPiezas3 = Number(contPiezas3) + Number(element.piezas);
-                    break;
-
-                  case "ajuste-faltante":
-                    contCajas3 = Number(contCajas3) - Number(element.cajas);
-                    contPiezas3 = Number(contPiezas3) - Number(element.piezas);
-                    break;
-
-                  case "baja":
-                    contCajas3 = Number(contCajas3) - Number(element.cajas);
-                    contPiezas3 = Number(contPiezas3) - Number(element.piezas);
-                    break;
-
-                  case "venta-fact":
-                    contCajas3 = Number(contCajas3) - Number(element.cajas);
-                    contPiezas3 = Number(contPiezas3) - Number(element.piezas);
-                    break;
-
-                  case "venta-not":
-                    contCajas3 = Number(contCajas3) - Number(element.cajas);
-                    contPiezas3 = Number(contPiezas3) - Number(element.piezas);
-                    break;
-
-                  case "traslado1":
-                    contCajas3 = Number(contCajas3) - Number(element.cajas);
-                    contPiezas3 = Number(contPiezas3) - Number(element.piezas);
-                    break;
-
-                  case "traslado2":
-                    contCajas3 = Number(contCajas3) + Number(element.cajas);
-                    contPiezas3 = Number(contPiezas3) + Number(element.piezas);
-                    break;
-
-                  case "ajuste-sobrante":
-                    contCajas3 = Number(contCajas3) + Number(element.cajas);
-                    contPiezas3 = Number(contPiezas3) + Number(element.piezas);
-                    break;
-
-                  default:
-                }
-              }
-            });
-
-            cantidadRestante = 0;
-            _this1236.invetarioProd = new _consolidado_consolidado__WEBPACK_IMPORTED_MODULE_4__["inventario"]();
-            _this1236.invetarioProd.producto = element2;
-            _this1236.invetarioProd.cantidadCajas = contCajas;
-            _this1236.invetarioProd.cantidadCajas2 = contCajas2;
-            _this1236.invetarioProd.cantidadCajas3 = contCajas3;
-            _this1236.invetarioProd.cantidadPiezas = contPiezas;
-            _this1236.invetarioProd.cantidadPiezas2 = contPiezas2;
-            _this1236.invetarioProd.cantidadPiezas3 = contPiezas3; //this.invetarioProd.bodega= "S1 ("+this.bodegasMatriz+" ) S2 ("+this.bodegasSucursal1+") S3("+this.bodegasSucursal2+")"
-
-            _this1236.invetarioProd.bodega = "  S1 (" + element2.ubicacionSuc1 + ") S2 (" + element2.ubicacionSuc2 + ") S3(" + element2.ubicacionSuc3 + ")";
-            _this1236.invetarioProd.ultimoPrecioCompra = element2.ultimoPrecioCompra;
-            _this1236.invetarioProd.ultimaFechaCompra = element2.ultimaFechaCompra;
-            _this1236.invetarioProd.porUtilidad = element2.porcentaje_ganancia;
-            _this1236.invetarioProd.valorProducto = element2.porcentaje_ganancia * element2.precio + element2.precio;
-            _this1236.invetarioProd.notas = element2.notas;
-            _this1236.invetarioProd.execute = false;
-            if (_this1236.invetarioProd.producto.PRODUCTO == _this1236.nombreProducto) _this1236.invetarioP.push(_this1236.invetarioProd);
-            contCajas = 0;
-            contPiezas = 0;
-            contCajas2 = 0;
-            contPiezas2 = 0;
-            contCajas3 = 0;
-            contPiezas3 = 0;
-          };
-
-          for (var index = 0; index < this.productos.length; index++) {
-            var cantidadRestante;
-
-            _loop24(index);
-          }
-
-          this.transformarM2(); //this.sumarProductosRestados()
-        }
-      }, {
-        key: "cargarDatos",
-        value: function cargarDatos() {
           var _this1237 = this;
 
           var contCajas = 0;
@@ -160435,15 +160595,14 @@ function _classCallCheck(instance, Constructor) { if (!(instance instanceof Cons
             _this1237.invetarioProd.cantidadPiezas2 = contPiezas2;
             _this1237.invetarioProd.cantidadPiezas3 = contPiezas3; //this.invetarioProd.bodega= "S1 ("+this.bodegasMatriz+" ) S2 ("+this.bodegasSucursal1+") S3("+this.bodegasSucursal2+")"
 
-            _this1237.invetarioProd.bodega = "S1 (" + element2.ubicacionSuc1 + " ) S2 (" + element2.ubicacionSuc2 + ") S3(" + element2.ubicacionSuc3 + ")";
+            _this1237.invetarioProd.bodega = "  S1 (" + element2.ubicacionSuc1 + ") S2 (" + element2.ubicacionSuc2 + ") S3(" + element2.ubicacionSuc3 + ")";
             _this1237.invetarioProd.ultimoPrecioCompra = element2.ultimoPrecioCompra;
-            _this1237.invetarioProd.porUtilidad = element2.porcentaje_ganancia;
-            _this1237.invetarioProd.valorProducto = element2.porcentaje_ganancia * element2.precio / 100 + element2.precio;
             _this1237.invetarioProd.ultimaFechaCompra = element2.ultimaFechaCompra;
+            _this1237.invetarioProd.porUtilidad = element2.porcentaje_ganancia;
+            _this1237.invetarioProd.valorProducto = element2.porcentaje_ganancia * element2.precio + element2.precio;
             _this1237.invetarioProd.notas = element2.notas;
-
-            _this1237.invetarioP.push(_this1237.invetarioProd);
-
+            _this1237.invetarioProd.execute = false;
+            if (_this1237.invetarioProd.producto.PRODUCTO == _this1237.nombreProducto) _this1237.invetarioP.push(_this1237.invetarioProd);
             contCajas = 0;
             contPiezas = 0;
             contCajas2 = 0;
@@ -160458,18 +160617,249 @@ function _classCallCheck(instance, Constructor) { if (!(instance instanceof Cons
             _loop25(index);
           }
 
+          this.transformarM2(); //this.sumarProductosRestados()
+        }
+      }, {
+        key: "cargarDatos",
+        value: function cargarDatos() {
+          var _this1238 = this;
+
+          var contCajas = 0;
+          var contCajas2 = 0;
+          var contCajas3 = 0;
+          var contPiezas = 0;
+          var contPiezas2 = 0;
+          var contPiezas3 = 0;
+
+          var _loop26 = function _loop26(index) {
+            var element2 = _this1238.productos[index];
+
+            _this1238.transacciones.forEach(function (element) {
+              if (element2.PRODUCTO == element.producto && element.sucursal == "matriz") {
+                switch (element.tipo_transaccion) {
+                  case "devolucion":
+                    contCajas = Number(element.cajas) + contCajas;
+                    contPiezas = Number(element.piezas) + contPiezas;
+                    break;
+
+                  case "compra-dir":
+                    contCajas = Number(contCajas) + Number(element.cajas);
+                    contPiezas = Number(contPiezas) + Number(element.piezas);
+                    break;
+
+                  case "compra":
+                    contCajas = Number(contCajas) + Number(element.cajas);
+                    contPiezas = Number(contPiezas) + Number(element.piezas);
+                    break;
+
+                  case "compra_obs":
+                    contCajas = Number(contCajas) + Number(element.cajas);
+                    contPiezas = Number(contPiezas) + Number(element.piezas);
+                    break;
+
+                  case "ajuste-faltante":
+                    contCajas = Number(contCajas) - Number(element.cajas);
+                    contPiezas = Number(contPiezas) - Number(element.piezas);
+                    break;
+
+                  case "baja":
+                    contCajas = Number(contCajas) - Number(element.cajas);
+                    contPiezas = Number(contPiezas) - Number(element.piezas);
+                    break;
+
+                  case "venta-fact":
+                    contCajas = Number(contCajas) - Number(element.cajas);
+                    contPiezas = Number(contPiezas) - Number(element.piezas);
+                    break;
+
+                  case "venta-not":
+                    contCajas = Number(contCajas) - Number(element.cajas);
+                    contPiezas = Number(contPiezas) - Number(element.piezas);
+                    break;
+
+                  case "traslado1":
+                    contCajas = Number(contCajas) - Number(element.cajas);
+                    contPiezas = Number(contPiezas) - Number(element.piezas);
+                    break;
+
+                  case "traslado2":
+                    contCajas = Number(contCajas) + Number(element.cajas);
+                    contPiezas = Number(contPiezas) + Number(element.piezas);
+                    break;
+
+                  case "ajuste-sobrante":
+                    contCajas = Number(contCajas) + Number(element.cajas);
+                    contPiezas = Number(contPiezas) + Number(element.piezas);
+                    break;
+
+                  default:
+                }
+              } else if (element2.PRODUCTO == element.producto && element.sucursal == "sucursal1") {
+                switch (element.tipo_transaccion) {
+                  case "devolucion":
+                    contCajas2 = Number(element.cajas) + contCajas2;
+                    contPiezas2 = Number(element.piezas) + contPiezas2;
+                    break;
+
+                  case "compra-dir":
+                    contCajas2 = Number(contCajas2) + Number(element.cajas);
+                    contPiezas2 = Number(contPiezas2) + Number(element.piezas);
+                    break;
+
+                  case "compra":
+                    contCajas2 = Number(contCajas2) + Number(element.cajas);
+                    contPiezas2 = Number(contPiezas2) + Number(element.piezas);
+                    break;
+
+                  case "compra_obs":
+                    contCajas2 = Number(contCajas2) + Number(element.cajas);
+                    contPiezas2 = Number(contPiezas2) + Number(element.piezas);
+                    break;
+
+                  case "ajuste-faltante":
+                    contCajas2 = Number(contCajas2) - Number(element.cajas);
+                    contPiezas2 = Number(contPiezas2) - Number(element.piezas);
+                    break;
+
+                  case "baja":
+                    contCajas2 = Number(contCajas2) - Number(element.cajas);
+                    contPiezas2 = Number(contPiezas2) - Number(element.piezas);
+                    break;
+
+                  case "venta-fact":
+                    contCajas2 = Number(contCajas2) - Number(element.cajas);
+                    contPiezas2 = Number(contPiezas2) - Number(element.piezas);
+                    break;
+
+                  case "venta-not":
+                    contCajas2 = Number(contCajas2) - Number(element.cajas);
+                    contPiezas2 = Number(contPiezas2) - Number(element.piezas);
+                    break;
+
+                  case "traslado1":
+                    contCajas2 = Number(contCajas2) - Number(element.cajas);
+                    contPiezas2 = Number(contPiezas2) - Number(element.piezas);
+                    break;
+
+                  case "traslado2":
+                    contCajas2 = Number(contCajas2) + Number(element.cajas);
+                    contPiezas2 = Number(contPiezas2) + Number(element.piezas);
+                    break;
+
+                  case "ajuste-sobrante":
+                    contCajas2 = Number(contCajas2) + Number(element.cajas);
+                    contPiezas2 = Number(contPiezas2) + Number(element.piezas);
+                    break;
+
+                  default:
+                }
+              } else if (element2.PRODUCTO == element.producto && element.sucursal == "sucursal2") {
+                switch (element.tipo_transaccion) {
+                  case "devolucion":
+                    contCajas3 = Number(element.cajas) + contCajas3;
+                    contPiezas3 = Number(element.piezas) + contPiezas3;
+                    break;
+
+                  case "compra-dir":
+                    contCajas3 = Number(contCajas3) + Number(element.cajas);
+                    contPiezas3 = Number(contPiezas3) + Number(element.piezas);
+                    break;
+
+                  case "compra":
+                    contCajas3 = Number(contCajas3) + Number(element.cajas);
+                    contPiezas3 = Number(contPiezas3) + Number(element.piezas);
+                    break;
+
+                  case "compra_obs":
+                    contCajas3 = Number(contCajas3) + Number(element.cajas);
+                    contPiezas3 = Number(contPiezas3) + Number(element.piezas);
+                    break;
+
+                  case "ajuste-faltante":
+                    contCajas3 = Number(contCajas3) - Number(element.cajas);
+                    contPiezas3 = Number(contPiezas3) - Number(element.piezas);
+                    break;
+
+                  case "baja":
+                    contCajas3 = Number(contCajas3) - Number(element.cajas);
+                    contPiezas3 = Number(contPiezas3) - Number(element.piezas);
+                    break;
+
+                  case "venta-fact":
+                    contCajas3 = Number(contCajas3) - Number(element.cajas);
+                    contPiezas3 = Number(contPiezas3) - Number(element.piezas);
+                    break;
+
+                  case "venta-not":
+                    contCajas3 = Number(contCajas3) - Number(element.cajas);
+                    contPiezas3 = Number(contPiezas3) - Number(element.piezas);
+                    break;
+
+                  case "traslado1":
+                    contCajas3 = Number(contCajas3) - Number(element.cajas);
+                    contPiezas3 = Number(contPiezas3) - Number(element.piezas);
+                    break;
+
+                  case "traslado2":
+                    contCajas3 = Number(contCajas3) + Number(element.cajas);
+                    contPiezas3 = Number(contPiezas3) + Number(element.piezas);
+                    break;
+
+                  case "ajuste-sobrante":
+                    contCajas3 = Number(contCajas3) + Number(element.cajas);
+                    contPiezas3 = Number(contPiezas3) + Number(element.piezas);
+                    break;
+
+                  default:
+                }
+              }
+            });
+
+            cantidadRestante = 0;
+            _this1238.invetarioProd = new _consolidado_consolidado__WEBPACK_IMPORTED_MODULE_4__["inventario"]();
+            _this1238.invetarioProd.producto = element2;
+            _this1238.invetarioProd.cantidadCajas = contCajas;
+            _this1238.invetarioProd.cantidadCajas2 = contCajas2;
+            _this1238.invetarioProd.cantidadCajas3 = contCajas3;
+            _this1238.invetarioProd.cantidadPiezas = contPiezas;
+            _this1238.invetarioProd.cantidadPiezas2 = contPiezas2;
+            _this1238.invetarioProd.cantidadPiezas3 = contPiezas3; //this.invetarioProd.bodega= "S1 ("+this.bodegasMatriz+" ) S2 ("+this.bodegasSucursal1+") S3("+this.bodegasSucursal2+")"
+
+            _this1238.invetarioProd.bodega = "S1 (" + element2.ubicacionSuc1 + " ) S2 (" + element2.ubicacionSuc2 + ") S3(" + element2.ubicacionSuc3 + ")";
+            _this1238.invetarioProd.ultimoPrecioCompra = element2.ultimoPrecioCompra;
+            _this1238.invetarioProd.porUtilidad = element2.porcentaje_ganancia;
+            _this1238.invetarioProd.valorProducto = element2.porcentaje_ganancia * element2.precio / 100 + element2.precio;
+            _this1238.invetarioProd.ultimaFechaCompra = element2.ultimaFechaCompra;
+            _this1238.invetarioProd.notas = element2.notas;
+
+            _this1238.invetarioP.push(_this1238.invetarioProd);
+
+            contCajas = 0;
+            contPiezas = 0;
+            contCajas2 = 0;
+            contPiezas2 = 0;
+            contCajas3 = 0;
+            contPiezas3 = 0;
+          };
+
+          for (var index = 0; index < this.productos.length; index++) {
+            var cantidadRestante;
+
+            _loop26(index);
+          }
+
           this.transformarM2();
           this.sumarProductosRestados();
         }
       }, {
         key: "sumarProductosRestados",
         value: function sumarProductosRestados() {
-          var _this1238 = this;
+          var _this1239 = this;
 
-          var _loop26 = function _loop26(index) {
-            var element = _this1238.productos[index];
+          var _loop27 = function _loop27(index) {
+            var element = _this1239.productos[index];
 
-            _this1238.invetarioP.forEach(function (element2) {
+            _this1239.invetarioP.forEach(function (element2) {
               if (!element2.execute) {
                 if (element.PRODUCTO == element2.producto.PRODUCTO) {
                   element2.cantidadM2 = element2.cantidadM2;
@@ -160482,7 +160872,7 @@ function _classCallCheck(instance, Constructor) { if (!(instance instanceof Cons
           };
 
           for (var index = 0; index < this.productos.length; index++) {
-            _loop26(index);
+            _loop27(index);
           } //this.transformarM2()
 
         }
@@ -160511,7 +160901,7 @@ function _classCallCheck(instance, Constructor) { if (!(instance instanceof Cons
       }, {
         key: "guardarProductosStockLocal",
         value: function guardarProductosStockLocal() {
-          var _this1239 = this;
+          var _this1240 = this;
 
           sweetalert2__WEBPACK_IMPORTED_MODULE_2___default.a.fire({
             title: "Alerta",
@@ -160523,11 +160913,11 @@ function _classCallCheck(instance, Constructor) { if (!(instance instanceof Cons
             cancelButtonText: "No"
           }).then(function (result) {
             if (result.value) {
-              var existe = _this1239.selectedRows.filter(function (x) {
+              var existe = _this1240.selectedRows.filter(function (x) {
                 return x.porcentaje == 0;
               });
 
-              if (existe.length == 0) _this1239.actualizarStock();else sweetalert2__WEBPACK_IMPORTED_MODULE_2___default.a.fire("Error!", "Hay productos con porcentaje en 0, revise e intente nuevamente.", "error");
+              if (existe.length == 0) _this1240.actualizarStock();else sweetalert2__WEBPACK_IMPORTED_MODULE_2___default.a.fire("Error!", "Hay productos con porcentaje en 0, revise e intente nuevamente.", "error");
             } else if (result.dismiss === sweetalert2__WEBPACK_IMPORTED_MODULE_2___default.a.DismissReason.cancel) {
               sweetalert2__WEBPACK_IMPORTED_MODULE_2___default.a.fire("Cancelado!", "Se ha cancelado su proceso.", "error");
             }
@@ -160536,7 +160926,7 @@ function _classCallCheck(instance, Constructor) { if (!(instance instanceof Cons
       }, {
         key: "actualizarStock",
         value: function actualizarStock() {
-          var _this1240 = this;
+          var _this1241 = this;
 
           this.mensajeLoading = "Comparando informacion...";
           this.mostrarLoading = true;
@@ -160544,7 +160934,7 @@ function _classCallCheck(instance, Constructor) { if (!(instance instanceof Cons
           var arrayModificar = [];
           var arrayEliminar = [];
           this.selectedRows.forEach(function (element) {
-            var producto = _this1240.listaProductosStock.find(function (x) {
+            var producto = _this1241.listaProductosStock.find(function (x) {
               return x.PRODUCTO == element.PRODUCTO;
             });
 
@@ -160556,7 +160946,7 @@ function _classCallCheck(instance, Constructor) { if (!(instance instanceof Cons
             }
           });
           this.listaProductosStock.forEach(function (element) {
-            var producto = _this1240.selectedRows.find(function (x) {
+            var producto = _this1241.selectedRows.find(function (x) {
               return x.PRODUCTO == element.PRODUCTO;
             });
 
@@ -160567,7 +160957,7 @@ function _classCallCheck(instance, Constructor) { if (!(instance instanceof Cons
             var cont1 = 0;
             if (arrayNuevos.length == 0) resolve(true);
             arrayNuevos.forEach(function (element) {
-              _this1240._productosLocalesStockService.newStockProductoLocal(element).subscribe(function (res) {
+              _this1241._productosLocalesStockService.newStockProductoLocal(element).subscribe(function (res) {
                 cont1++;
                 if (cont1 == arrayNuevos.length) resolve(true);
               }, function (err) {
@@ -160580,7 +160970,7 @@ function _classCallCheck(instance, Constructor) { if (!(instance instanceof Cons
             var cont2 = 0;
             if (arrayModificar.length == 0) resolve(true);
             arrayModificar.forEach(function (element) {
-              _this1240._productosLocalesStockService.updateProductoStock(element).subscribe(function (res) {
+              _this1241._productosLocalesStockService.updateProductoStock(element).subscribe(function (res) {
                 cont2++;
                 if (cont2 == arrayModificar.length) resolve(true);
               }, function (err) {
@@ -160593,7 +160983,7 @@ function _classCallCheck(instance, Constructor) { if (!(instance instanceof Cons
             var cont3 = 0;
             if (arrayEliminar.length == 0) resolve(true);
             arrayEliminar.forEach(function (element) {
-              _this1240._productosLocalesStockService.deleteProductoStock(element).subscribe(function (res) {
+              _this1241._productosLocalesStockService.deleteProductoStock(element).subscribe(function (res) {
                 cont3++;
                 if (cont3 == arrayEliminar.length) resolve(true);
               }, function (err) {
@@ -160607,7 +160997,7 @@ function _classCallCheck(instance, Constructor) { if (!(instance instanceof Cons
             sweetalert2__WEBPACK_IMPORTED_MODULE_2___default.a.fire("Cancelado!", "No existe información que actualizar", "error");
           } else {
             Promise.all([p1, p2, p3]).then(function (values) {
-              _this1240.mostrarLoading = false;
+              _this1241.mostrarLoading = false;
               sweetalert2__WEBPACK_IMPORTED_MODULE_2___default.a.fire({
                 title: "Correcto",
                 text: "Se guardaron sus cambios con éxito",
@@ -160625,13 +161015,13 @@ function _classCallCheck(instance, Constructor) { if (!(instance instanceof Cons
       }, {
         key: "actualizarInventario",
         value: function actualizarInventario() {
-          return Object(tslib__WEBPACK_IMPORTED_MODULE_0__["__awaiter"])(this, void 0, void 0, /*#__PURE__*/regeneratorRuntime.mark(function _callee53() {
-            var _this1241 = this;
+          return Object(tslib__WEBPACK_IMPORTED_MODULE_0__["__awaiter"])(this, void 0, void 0, /*#__PURE__*/regeneratorRuntime.mark(function _callee55() {
+            var _this1242 = this;
 
             var m2s1, m2s2, m2s3, contVal;
-            return regeneratorRuntime.wrap(function _callee53$(_context53) {
+            return regeneratorRuntime.wrap(function _callee55$(_context56) {
               while (1) {
-                switch (_context53.prev = _context53.next) {
+                switch (_context56.prev = _context56.next) {
                   case 0:
                     m2s1 = 0;
                     m2s2 = 0;
@@ -160639,12 +161029,12 @@ function _classCallCheck(instance, Constructor) { if (!(instance instanceof Cons
                     contVal = 0;
                     this.mensajeActualizando();
                     this.invetarioP.forEach(function (element) {
-                      return Object(tslib__WEBPACK_IMPORTED_MODULE_0__["__awaiter"])(_this1241, void 0, void 0, /*#__PURE__*/regeneratorRuntime.mark(function _callee52() {
-                        var _this1242 = this;
+                      return Object(tslib__WEBPACK_IMPORTED_MODULE_0__["__awaiter"])(_this1242, void 0, void 0, /*#__PURE__*/regeneratorRuntime.mark(function _callee54() {
+                        var _this1243 = this;
 
-                        return regeneratorRuntime.wrap(function _callee52$(_context52) {
+                        return regeneratorRuntime.wrap(function _callee54$(_context55) {
                           while (1) {
-                            switch (_context52.prev = _context52.next) {
+                            switch (_context55.prev = _context55.next) {
                               case 0:
                                 m2s1 = parseFloat(element.cantidadM2.toFixed(2));
                                 m2s2 = parseFloat(element.cantidadM2b2.toFixed(2));
@@ -160665,38 +161055,38 @@ function _classCallCheck(instance, Constructor) { if (!(instance instanceof Cons
                                 this.prodActualizable.suc2 = m2s2;
                                 this.prodActualizable.suc3 = m2s3;
                                 this.productoService.updateProductosSucursalesNuevo(this.prodActualizable).subscribe(function (res) {
-                                  contVal++, _this1242.contadorValidaciones2(contVal);
+                                  contVal++, _this1243.contadorValidaciones2(contVal);
                                 }, function (err) {
-                                  contVal++, _this1242.contadorValidaciones2(contVal);
+                                  contVal++, _this1243.contadorValidaciones2(contVal);
                                 });
 
                               case 13:
                               case "end":
-                                return _context52.stop();
+                                return _context55.stop();
                             }
                           }
-                        }, _callee52, this);
+                        }, _callee54, this);
                       }));
                     });
 
                   case 6:
                   case "end":
-                    return _context53.stop();
+                    return _context56.stop();
                 }
               }
-            }, _callee53, this);
+            }, _callee55, this);
           }));
         }
       }, {
         key: "actualizarInventarioPorClasificacion",
         value: function actualizarInventarioPorClasificacion(e) {
-          return Object(tslib__WEBPACK_IMPORTED_MODULE_0__["__awaiter"])(this, void 0, void 0, /*#__PURE__*/regeneratorRuntime.mark(function _callee55() {
-            var _this1243 = this;
+          return Object(tslib__WEBPACK_IMPORTED_MODULE_0__["__awaiter"])(this, void 0, void 0, /*#__PURE__*/regeneratorRuntime.mark(function _callee57() {
+            var _this1244 = this;
 
             var m2s1, m2s2, m2s3, contVal, contador, cont2;
-            return regeneratorRuntime.wrap(function _callee55$(_context55) {
+            return regeneratorRuntime.wrap(function _callee57$(_context58) {
               while (1) {
-                switch (_context55.prev = _context55.next) {
+                switch (_context58.prev = _context58.next) {
                   case 0:
                     m2s1 = 0;
                     m2s2 = 0;
@@ -160709,12 +161099,12 @@ function _classCallCheck(instance, Constructor) { if (!(instance instanceof Cons
                     });
                     cont2 = 0;
                     this.invetarioP.forEach(function (element) {
-                      return Object(tslib__WEBPACK_IMPORTED_MODULE_0__["__awaiter"])(_this1243, void 0, void 0, /*#__PURE__*/regeneratorRuntime.mark(function _callee54() {
-                        var _this1244 = this;
+                      return Object(tslib__WEBPACK_IMPORTED_MODULE_0__["__awaiter"])(_this1244, void 0, void 0, /*#__PURE__*/regeneratorRuntime.mark(function _callee56() {
+                        var _this1245 = this;
 
-                        return regeneratorRuntime.wrap(function _callee54$(_context54) {
+                        return regeneratorRuntime.wrap(function _callee56$(_context57) {
                           while (1) {
-                            switch (_context54.prev = _context54.next) {
+                            switch (_context57.prev = _context57.next) {
                               case 0:
                                 if (element.producto.CLASIFICA == e.nombreClasificacion) {
                                   cont2++;
@@ -160737,27 +161127,27 @@ function _classCallCheck(instance, Constructor) { if (!(instance instanceof Cons
                                   this.prodActualizable.suc2 = m2s2;
                                   this.prodActualizable.suc3 = m2s3;
                                   this.productoService.updateProductosSucursalesNuevo(this.prodActualizable).subscribe(function (res) {
-                                    contVal++, _this1244.contadorValidacionesClasificacion(contVal, contador);
+                                    contVal++, _this1245.contadorValidacionesClasificacion(contVal, contador);
                                   }, function (err) {
-                                    contVal++, _this1244.contadorValidacionesClasificacion(contVal, contador);
+                                    contVal++, _this1245.contadorValidacionesClasificacion(contVal, contador);
                                   });
                                 }
 
                               case 1:
                               case "end":
-                                return _context54.stop();
+                                return _context57.stop();
                             }
                           }
-                        }, _callee54, this);
+                        }, _callee56, this);
                       }));
                     });
 
                   case 9:
                   case "end":
-                    return _context55.stop();
+                    return _context58.stop();
                 }
               }
-            }, _callee55, this);
+            }, _callee57, this);
           }));
         }
       }, {
@@ -160842,43 +161232,43 @@ function _classCallCheck(instance, Constructor) { if (!(instance instanceof Cons
       }, {
         key: "controlarInventario",
         value: function controlarInventario() {
-          var _this1245 = this;
+          var _this1246 = this;
 
           this.invetarioP.forEach(function (element) {
             if (element.cantidadM2 < 0) {
-              _this1245.invetarioFaltante1 = new _consolidado_consolidado__WEBPACK_IMPORTED_MODULE_4__["invFaltanteSucursal"]();
-              _this1245.invetarioFaltante1.producto = element.producto;
-              _this1245.invetarioFaltante1.cantidadCajas = element.cantidadCajas;
-              _this1245.invetarioFaltante1.cantidadPiezas = element.cantidadPiezas;
-              _this1245.invetarioFaltante1.cantidadM2 = element.cantidadCajas;
-              _this1245.invetarioFaltante1.totalb1 = element.totalb1;
-              _this1245.invetarioFaltante1.sucursal = "Matriz";
+              _this1246.invetarioFaltante1 = new _consolidado_consolidado__WEBPACK_IMPORTED_MODULE_4__["invFaltanteSucursal"]();
+              _this1246.invetarioFaltante1.producto = element.producto;
+              _this1246.invetarioFaltante1.cantidadCajas = element.cantidadCajas;
+              _this1246.invetarioFaltante1.cantidadPiezas = element.cantidadPiezas;
+              _this1246.invetarioFaltante1.cantidadM2 = element.cantidadCajas;
+              _this1246.invetarioFaltante1.totalb1 = element.totalb1;
+              _this1246.invetarioFaltante1.sucursal = "Matriz";
 
-              _this1245.invetarioFaltante.push(_this1245.invetarioFaltante1);
+              _this1246.invetarioFaltante.push(_this1246.invetarioFaltante1);
             }
 
             if (element.cantidadM2b2 < 0) {
-              _this1245.invetarioFaltante1 = new _consolidado_consolidado__WEBPACK_IMPORTED_MODULE_4__["invFaltanteSucursal"]();
-              _this1245.invetarioFaltante1.producto = element.producto;
-              _this1245.invetarioFaltante1.cantidadCajas = element.cantidadCajas2;
-              _this1245.invetarioFaltante1.cantidadPiezas = element.cantidadPiezas2;
-              _this1245.invetarioFaltante1.cantidadM2 = element.cantidadCajas2;
-              _this1245.invetarioFaltante1.totalb1 = element.totalb2;
-              _this1245.invetarioFaltante1.sucursal = "Sucursal 1";
+              _this1246.invetarioFaltante1 = new _consolidado_consolidado__WEBPACK_IMPORTED_MODULE_4__["invFaltanteSucursal"]();
+              _this1246.invetarioFaltante1.producto = element.producto;
+              _this1246.invetarioFaltante1.cantidadCajas = element.cantidadCajas2;
+              _this1246.invetarioFaltante1.cantidadPiezas = element.cantidadPiezas2;
+              _this1246.invetarioFaltante1.cantidadM2 = element.cantidadCajas2;
+              _this1246.invetarioFaltante1.totalb1 = element.totalb2;
+              _this1246.invetarioFaltante1.sucursal = "Sucursal 1";
 
-              _this1245.invetarioFaltante.push(_this1245.invetarioFaltante1);
+              _this1246.invetarioFaltante.push(_this1246.invetarioFaltante1);
             }
 
             if (element.cantidadM2b3 < 0) {
-              _this1245.invetarioFaltante1 = new _consolidado_consolidado__WEBPACK_IMPORTED_MODULE_4__["invFaltanteSucursal"]();
-              _this1245.invetarioFaltante1.producto = element.producto;
-              _this1245.invetarioFaltante1.cantidadCajas = element.cantidadCajas3;
-              _this1245.invetarioFaltante1.cantidadPiezas = element.cantidadPiezas3;
-              _this1245.invetarioFaltante1.cantidadM2 = element.cantidadCajas3;
-              _this1245.invetarioFaltante1.totalb1 = element.totalb3;
-              _this1245.invetarioFaltante1.sucursal = "Sucursal 2";
+              _this1246.invetarioFaltante1 = new _consolidado_consolidado__WEBPACK_IMPORTED_MODULE_4__["invFaltanteSucursal"]();
+              _this1246.invetarioFaltante1.producto = element.producto;
+              _this1246.invetarioFaltante1.cantidadCajas = element.cantidadCajas3;
+              _this1246.invetarioFaltante1.cantidadPiezas = element.cantidadPiezas3;
+              _this1246.invetarioFaltante1.cantidadM2 = element.cantidadCajas3;
+              _this1246.invetarioFaltante1.totalb1 = element.totalb3;
+              _this1246.invetarioFaltante1.sucursal = "Sucursal 2";
 
-              _this1245.invetarioFaltante.push(_this1245.invetarioFaltante1);
+              _this1246.invetarioFaltante.push(_this1246.invetarioFaltante1);
             }
           });
           this.ajustarSaldos();
@@ -160886,7 +161276,7 @@ function _classCallCheck(instance, Constructor) { if (!(instance instanceof Cons
       }, {
         key: "ajustarSaldos",
         value: function ajustarSaldos() {
-          var _this1246 = this;
+          var _this1247 = this;
 
           if (this.valorMenu != "Inventario Contable") {
             if (this.tipoBusqueda == "Normal") {
@@ -160916,7 +161306,7 @@ function _classCallCheck(instance, Constructor) { if (!(instance instanceof Cons
 
             if (this.valorMenu == "Busqueda Individual") {
               var producto = this.productos.find(function (element) {
-                return element.PRODUCTO == _this1246.nombreProducto;
+                return element.PRODUCTO == _this1247.nombreProducto;
               });
               if (producto.CLASIFICA == "COMBO") this.buscarCombo(this.nombreProducto);
             }
@@ -160925,7 +161315,7 @@ function _classCallCheck(instance, Constructor) { if (!(instance instanceof Cons
               element.cantidadM2 = element.cantidadM2 + element.cantidadM2b2 + element.cantidadM2b3;
               element.cantidadCajas = Math.trunc(element.cantidadM2 / element.producto.M2);
               element.cantidadPiezas = parseInt((element.cantidadM2 * element.producto.P_CAJA / element.producto.M2 - element.cantidadCajas * element.producto.P_CAJA).toFixed(0));
-              element.valorProducto = parseFloat((element.producto.precio * (_this1246.productosStockTraidos.find(function (x) {
+              element.valorProducto = parseFloat((element.producto.precio * (_this1247.productosStockTraidos.find(function (x) {
                 return x.PRODUCTO == element.producto.PRODUCTO;
               }).porcentaje / 100) + element.producto.precio).toFixed(2));
             });
@@ -160936,7 +161326,7 @@ function _classCallCheck(instance, Constructor) { if (!(instance instanceof Cons
           this.invetarioP.forEach(function (element) {
             var requiere = false;
 
-            _this1246.productos.forEach(function (element2) {
+            _this1247.productos.forEach(function (element2) {
               if (element.producto.PRODUCTO == element2.PRODUCTO) {
                 if (element.cantidadM2 != element2.sucursal1) requiere = true;else if (element.cantidadM2b2 != element2.sucursal2) requiere = true;else if (element.cantidadM2b3 != element2.sucursal3) requiere = true;
               }
@@ -161015,15 +161405,15 @@ function _classCallCheck(instance, Constructor) { if (!(instance instanceof Cons
       }, {
         key: "traerTransaccionesPorProductoCombo2",
         value: function traerTransaccionesPorProductoCombo2(nombreProducto, productoCombo) {
-          var _this1247 = this;
+          var _this1248 = this;
 
           this.cantidadProductos++;
           this.transacciones = [];
           this.proTransaccion.nombre = nombreProducto.PRODUCTO;
           var numero = this.invetarioP.length - 1;
           var p1 = new Promise(function (resolve, reject) {
-            _this1247.transaccionesService.getTransaccionesPorProducto(_this1247.proTransaccion).toPromise().then(function (res) {
-              _this1247.transacciones = res;
+            _this1248.transaccionesService.getTransaccionesPorProducto(_this1248.proTransaccion).toPromise().then(function (res) {
+              _this1248.transacciones = res;
               var contCajas = 0;
               var contCajas2 = 0;
               var contCajas3 = 0;
@@ -161031,7 +161421,7 @@ function _classCallCheck(instance, Constructor) { if (!(instance instanceof Cons
               var contPiezas2 = 0;
               var contPiezas3 = 0;
 
-              _this1247.transacciones.forEach(function (element) {
+              _this1248.transacciones.forEach(function (element) {
                 if (nombreProducto.PRODUCTO == element.producto && element.sucursal == "matriz") {
                   switch (element.tipo_transaccion) {
                     case "devolucion":
@@ -161213,15 +161603,15 @@ function _classCallCheck(instance, Constructor) { if (!(instance instanceof Cons
               });
 
               var invetarioP = [];
-              _this1247.invetarioProd = new _consolidado_consolidado__WEBPACK_IMPORTED_MODULE_4__["inventario"]();
-              _this1247.invetarioProd.producto = nombreProducto;
-              _this1247.invetarioProd.cantidadCajas = contCajas;
-              _this1247.invetarioProd.cantidadCajas2 = contCajas2;
-              _this1247.invetarioProd.cantidadCajas3 = contCajas3;
-              _this1247.invetarioProd.cantidadPiezas = contPiezas;
-              _this1247.invetarioProd.cantidadPiezas2 = contPiezas2;
-              _this1247.invetarioProd.cantidadPiezas3 = contPiezas3;
-              invetarioP.push(_this1247.invetarioProd);
+              _this1248.invetarioProd = new _consolidado_consolidado__WEBPACK_IMPORTED_MODULE_4__["inventario"]();
+              _this1248.invetarioProd.producto = nombreProducto;
+              _this1248.invetarioProd.cantidadCajas = contCajas;
+              _this1248.invetarioProd.cantidadCajas2 = contCajas2;
+              _this1248.invetarioProd.cantidadCajas3 = contCajas3;
+              _this1248.invetarioProd.cantidadPiezas = contPiezas;
+              _this1248.invetarioProd.cantidadPiezas2 = contPiezas2;
+              _this1248.invetarioProd.cantidadPiezas3 = contPiezas3;
+              invetarioP.push(_this1248.invetarioProd);
               contCajas = 0;
               contPiezas = 0;
               contCajas2 = 0;
@@ -161253,17 +161643,17 @@ function _classCallCheck(instance, Constructor) { if (!(instance instanceof Cons
                 if (element.cantidadM2 < 0) element.cantidadM2 = 0;
                 if (element.cantidadM2b2 < 0) element.cantidadM2b2 = 0;
                 if (element.cantidadM2b3 < 0) element.cantidadM2b3 = 0;
-                if (element.cantidadM2 < _this1247.valor1) _this1247.valor1 = Math.trunc(element.cantidadM2);
-                if (element.cantidadM2b2 < _this1247.valor2) _this1247.valor2 = Math.trunc(element.cantidadM2b2);
-                if (element.cantidadM2b3 < _this1247.valor3) _this1247.valor3 = Math.trunc(element.cantidadM2b3);
-                _this1247.invetarioP[numero].cantidadM2 = _this1247.valor1;
-                _this1247.invetarioP[numero].cantidadCajas = _this1247.valor1;
-                _this1247.invetarioP[numero].cantidadM2b2 = _this1247.valor2;
-                _this1247.invetarioP[numero].cantidadCajas2 = _this1247.valor2;
-                _this1247.invetarioP[numero].cantidadM2b3 = _this1247.valor3;
-                _this1247.invetarioP[numero].cantidadCajas3 = _this1247.valor3;
+                if (element.cantidadM2 < _this1248.valor1) _this1248.valor1 = Math.trunc(element.cantidadM2);
+                if (element.cantidadM2b2 < _this1248.valor2) _this1248.valor2 = Math.trunc(element.cantidadM2b2);
+                if (element.cantidadM2b3 < _this1248.valor3) _this1248.valor3 = Math.trunc(element.cantidadM2b3);
+                _this1248.invetarioP[numero].cantidadM2 = _this1248.valor1;
+                _this1248.invetarioP[numero].cantidadCajas = _this1248.valor1;
+                _this1248.invetarioP[numero].cantidadM2b2 = _this1248.valor2;
+                _this1248.invetarioP[numero].cantidadCajas2 = _this1248.valor2;
+                _this1248.invetarioP[numero].cantidadM2b3 = _this1248.valor3;
+                _this1248.invetarioP[numero].cantidadCajas3 = _this1248.valor3;
               });
-              _this1247.mostrarLoading = false;
+              _this1248.mostrarLoading = false;
             })["catch"](function (err) {});
           });
         }
@@ -162285,7 +162675,7 @@ function _classCallCheck(instance, Constructor) { if (!(instance instanceof Cons
 
     var StockMinimoComponent = /*#__PURE__*/function () {
       function StockMinimoComponent(bodegasService, authenService, authService, transaccionesService, productosPendientesService, productoService, opcionesService, _comboService, _catalogoService) {
-        var _this1248 = this;
+        var _this1249 = this;
 
         _classCallCheck(this, StockMinimoComponent);
 
@@ -162353,7 +162743,7 @@ function _classCallCheck(instance, Constructor) { if (!(instance instanceof Cons
         this.valor3 = 100;
 
         this.updateInventarioClasificacion = function (e) {
-          _this1248.actualizarInventarioPorClasificacion(e.row.data);
+          _this1249.actualizarInventarioPorClasificacion(e.row.data);
         };
 
         this.proTransaccion = new _consolidado_consolidado__WEBPACK_IMPORTED_MODULE_5__["productoTransaccion"]();
@@ -162372,58 +162762,58 @@ function _classCallCheck(instance, Constructor) { if (!(instance instanceof Cons
       }, {
         key: "traerOpcionesCatalogo",
         value: function traerOpcionesCatalogo() {
-          var _this1249 = this;
+          var _this1250 = this;
 
           this.opcionesService.getOpciones().subscribe(function (res) {
-            _this1249.opcionesCatalogo = res;
+            _this1250.opcionesCatalogo = res;
 
-            _this1249.llenarCombos();
+            _this1250.llenarCombos();
           });
         }
       }, {
         key: "traerCatalogo",
         value: function traerCatalogo() {
-          var _this1250 = this;
+          var _this1251 = this;
 
           this._catalogoService.getCatalogoActivos().subscribe(function (res) {
-            _this1250.productosCatalogo = res;
+            _this1251.productosCatalogo = res;
 
-            _this1250.traerProductos();
+            _this1251.traerProductos();
           });
         }
       }, {
         key: "traerCatalogoUnitario",
         value: function traerCatalogoUnitario() {
-          var _this1251 = this;
+          var _this1252 = this;
 
           this._catalogoService.getCatalogoActivos().subscribe(function (res) {
-            _this1251.productosCatalogo = res;
+            _this1252.productosCatalogo = res;
           });
         }
       }, {
         key: "llenarCombos",
         value: function llenarCombos() {
-          var _this1252 = this;
+          var _this1253 = this;
 
           this.opcionesCatalogo.forEach(function (element) {
             element.arrayClasificación.forEach(function (element) {
               var clasi = new _consolidado_consolidado__WEBPACK_IMPORTED_MODULE_5__["clasificacionActualizacion"]();
               clasi.nombreClasificacion = element;
 
-              _this1252.listaClasificacion.push(clasi);
+              _this1253.listaClasificacion.push(clasi);
 
-              if (_this1252.listadoCategorias.length === 0) {
-                _this1252.listadoCategorias.push('Todos');
+              if (_this1253.listadoCategorias.length === 0) {
+                _this1253.listadoCategorias.push('Todos');
               }
 
-              _this1252.listadoCategorias.push(clasi.nombreClasificacion);
+              _this1253.listadoCategorias.push(clasi.nombreClasificacion);
             });
           });
         }
       }, {
         key: "traerTransacciones",
         value: function traerTransacciones() {
-          var _this1253 = this;
+          var _this1254 = this;
 
           this.transacciones = [];
           this.invetarioP = [];
@@ -162432,15 +162822,15 @@ function _classCallCheck(instance, Constructor) { if (!(instance instanceof Cons
           this.productosPendientesNoEN = [];
           this.mostrarLoading = true;
           this.transaccionesService.getTransaccion().subscribe(function (res) {
-            _this1253.transacciones = res;
+            _this1254.transacciones = res;
 
-            _this1253.traerCatalogo();
+            _this1254.traerCatalogo();
           });
         }
       }, {
         key: "traerTransaccionesMultiples",
         value: function traerTransaccionesMultiples() {
-          var _this1254 = this;
+          var _this1255 = this;
 
           this.transacciones = [];
           this.invetarioP = [];
@@ -162458,9 +162848,9 @@ function _classCallCheck(instance, Constructor) { if (!(instance instanceof Cons
           });
           productoM.array = arregloProductos;
           this.transaccionesService.getTransaccionesPorProductoMultiple(productoM).subscribe(function (res) {
-            _this1254.transacciones = res;
+            _this1255.transacciones = res;
 
-            _this1254.cargarDatos();
+            _this1255.cargarDatos();
           });
         }
       }, {
@@ -162495,7 +162885,7 @@ function _classCallCheck(instance, Constructor) { if (!(instance instanceof Cons
       }, {
         key: "traerTodosProductosBajoMinimo",
         value: function traerTodosProductosBajoMinimo() {
-          var _this1255 = this;
+          var _this1256 = this;
 
           this.transacciones = [];
           this.invetarioP = [];
@@ -162524,26 +162914,26 @@ function _classCallCheck(instance, Constructor) { if (!(instance instanceof Cons
               });
 
               if (productosConMinimo.length === 0) {
-                _this1255.mostrarLoading = false;
+                _this1256.mostrarLoading = false;
                 sweetalert2__WEBPACK_IMPORTED_MODULE_2___default.a.fire("Info", "No hay productos con cantidad mínima definida", "info");
                 return;
               }
 
-              _this1255.productosCatalogo = catalogosList;
-              _this1255.productos = productosConMinimo;
+              _this1256.productosCatalogo = catalogosList;
+              _this1256.productos = productosConMinimo;
 
-              _this1255.productos.forEach(function (element) {
+              _this1256.productos.forEach(function (element) {
                 var _a, _b;
 
-                element.DIMENSION = (_b = (_a = _this1255.productosCatalogo) === null || _a === void 0 ? void 0 : _a.find(function (c) {
+                element.DIMENSION = (_b = (_a = _this1256.productosCatalogo) === null || _a === void 0 ? void 0 : _a.find(function (c) {
                   return c.PRODUCTO === element.PRODUCTO;
                 })) === null || _b === void 0 ? void 0 : _b.DIM;
               });
 
-              _this1255.traerTransaccionesMultiples();
+              _this1256.traerTransaccionesMultiples();
             },
             error: function error() {
-              _this1255.mostrarLoading = false;
+              _this1256.mostrarLoading = false;
               sweetalert2__WEBPACK_IMPORTED_MODULE_2___default.a.fire("Error", "No se pudo cargar la información", "error");
             }
           });
@@ -162551,7 +162941,7 @@ function _classCallCheck(instance, Constructor) { if (!(instance instanceof Cons
       }, {
         key: "traerProductosFiltrados",
         value: function traerProductosFiltrados(num, productoFiltro) {
-          var _this1256 = this;
+          var _this1257 = this;
 
           this.productos = [];
           this.invetarioMinimoProductos = [];
@@ -162559,57 +162949,57 @@ function _classCallCheck(instance, Constructor) { if (!(instance instanceof Cons
           switch (num) {
             case 1:
               this.productoService.getProductosPorFiltros1(productoFiltro).subscribe(function (res) {
-                _this1256.productos = res;
+                _this1257.productos = res;
 
-                _this1256.traerTransaccionesMultiples();
+                _this1257.traerTransaccionesMultiples();
               });
               break;
 
             case 2:
               this.productoService.getProductosPorFiltros2(productoFiltro).subscribe(function (res) {
-                _this1256.productos = res;
+                _this1257.productos = res;
 
-                _this1256.traerTransaccionesMultiples();
+                _this1257.traerTransaccionesMultiples();
               });
               break;
 
             case 3:
               this.productoService.getProductosPorFiltros3(productoFiltro).subscribe(function (res) {
-                _this1256.productos = res;
+                _this1257.productos = res;
 
-                _this1256.traerTransaccionesMultiples();
+                _this1257.traerTransaccionesMultiples();
               });
               break;
 
             case 4:
               this.productoService.getProductosPorFiltros4(productoFiltro).subscribe(function (res) {
-                _this1256.productos = res;
+                _this1257.productos = res;
 
-                _this1256.traerTransaccionesMultiples();
+                _this1257.traerTransaccionesMultiples();
               });
               break;
 
             case 5:
               this.productoService.getProductosPorFiltros5(productoFiltro).subscribe(function (res) {
-                _this1256.productos = res;
+                _this1257.productos = res;
 
-                _this1256.traerTransaccionesMultiples();
+                _this1257.traerTransaccionesMultiples();
               });
               break;
 
             case 6:
               this.productoService.getProductosPorFiltros6(productoFiltro).subscribe(function (res) {
-                _this1256.productos = res;
+                _this1257.productos = res;
 
-                _this1256.traerTransaccionesMultiples();
+                _this1257.traerTransaccionesMultiples();
               });
               break;
 
             case 7:
               this.productoService.getProductosPorFiltros7(productoFiltro).subscribe(function (res) {
-                _this1256.productos = res;
+                _this1257.productos = res;
 
-                _this1256.traerTransaccionesMultiples();
+                _this1257.traerTransaccionesMultiples();
               });
               break;
 
@@ -162651,12 +163041,12 @@ function _classCallCheck(instance, Constructor) { if (!(instance instanceof Cons
       }, {
         key: "traerTransaccionesPorProducto",
         value: function traerTransaccionesPorProducto() {
-          var _this1257 = this;
+          var _this1258 = this;
 
           var existe = false;
           this.proTransaccion.nombre = this.nombreProducto;
           this.invetarioP.forEach(function (element2) {
-            if (_this1257.proTransaccion.nombre == element2.producto.PRODUCTO) {
+            if (_this1258.proTransaccion.nombre == element2.producto.PRODUCTO) {
               existe = true;
             }
           });
@@ -162665,11 +163055,11 @@ function _classCallCheck(instance, Constructor) { if (!(instance instanceof Cons
             this.mensajeLoading = "Buscando transacciones";
             this.mostrarLoading = true;
             this.transaccionesService.getTransaccionesPorProducto(this.proTransaccion).subscribe(function (res) {
-              _this1257.transacciones = res;
+              _this1258.transacciones = res;
 
-              _this1257.traerProductosPendientesPorNombre();
+              _this1258.traerProductosPendientesPorNombre();
 
-              _this1257.cargarDatosProductoUnitario();
+              _this1258.cargarDatosProductoUnitario();
             });
           } else {
             sweetalert2__WEBPACK_IMPORTED_MODULE_2___default.a.fire("Error!", "El producto ya se encuentra en la lista", "error");
@@ -162678,7 +163068,7 @@ function _classCallCheck(instance, Constructor) { if (!(instance instanceof Cons
       }, {
         key: "buscarCombo",
         value: function buscarCombo(nombreCombo) {
-          var _this1258 = this;
+          var _this1259 = this;
 
           var combo = new _catalogo_catalogo__WEBPACK_IMPORTED_MODULE_4__["ProductoCombo"]();
           combo.PRODUCTO = nombreCombo;
@@ -162686,52 +163076,52 @@ function _classCallCheck(instance, Constructor) { if (!(instance instanceof Cons
           this._comboService.getComboPorNombre(combo).subscribe(function (res) {
             var listado = res;
 
-            _this1258.buscarProductosCombo(listado[0].productosCombo);
+            _this1259.buscarProductosCombo(listado[0].productosCombo);
           });
         }
       }, {
         key: "buscarProductosCombo",
         value: function buscarProductosCombo(listado) {
-          var _this1259 = this;
+          var _this1260 = this;
 
           this.mostrarLoading = true;
           this.cantidadProductos = 0;
           listado.forEach(function (element) {
-            _this1259.productos.forEach(function (element2) {
-              if (element.nombreProducto == element2.PRODUCTO) _this1259.traerTransaccionesPorProductoCombo2(element2, element);
+            _this1260.productos.forEach(function (element2) {
+              if (element.nombreProducto == element2.PRODUCTO) _this1260.traerTransaccionesPorProductoCombo2(element2, element);
             });
           });
         }
       }, {
         key: "traerProductos",
         value: function traerProductos() {
-          var _this1260 = this;
+          var _this1261 = this;
 
           this.productoService.getProductosActivos().subscribe(function (res) {
-            _this1260.productos = res;
+            _this1261.productos = res;
 
-            _this1260.productos.forEach(function (element) {
+            _this1261.productos.forEach(function (element) {
               var _a, _b;
 
-              element.DIMENSION = (_b = (_a = _this1260.productosCatalogo) === null || _a === void 0 ? void 0 : _a.find(function (element2) {
+              element.DIMENSION = (_b = (_a = _this1261.productosCatalogo) === null || _a === void 0 ? void 0 : _a.find(function (element2) {
                 return element.PRODUCTO == element2.PRODUCTO;
               })) === null || _b === void 0 ? void 0 : _b.DIM;
             });
 
-            _this1260.cargarDatos();
+            _this1261.cargarDatos();
 
-            _this1260.cargarClasificacion();
+            _this1261.cargarClasificacion();
           });
         }
       }, {
         key: "cargarClasificacion",
         value: function cargarClasificacion() {
-          var _this1261 = this;
+          var _this1262 = this;
 
           this.listaClasificacion.forEach(function (element) {
             var cont = 0;
 
-            _this1261.productos.forEach(function (element2) {
+            _this1262.productos.forEach(function (element2) {
               if (element.nombreClasificacion == element2.CLASIFICA) cont++;
             });
 
@@ -162741,16 +163131,16 @@ function _classCallCheck(instance, Constructor) { if (!(instance instanceof Cons
       }, {
         key: "traerProductosUnitarios",
         value: function traerProductosUnitarios() {
-          var _this1262 = this;
+          var _this1263 = this;
 
           this.mostrarLoading = true;
           this.productos = [];
           this.productoService.getProductosActivos().subscribe(function (res) {
-            _this1262.productos = res;
+            _this1263.productos = res;
 
-            _this1262.separarProducto();
+            _this1263.separarProducto();
 
-            _this1262.mostrarLoading = false;
+            _this1263.mostrarLoading = false;
           });
         }
       }, {
@@ -162767,27 +163157,27 @@ function _classCallCheck(instance, Constructor) { if (!(instance instanceof Cons
       }, {
         key: "traerBodegas",
         value: function traerBodegas() {
-          var _this1263 = this;
+          var _this1264 = this;
 
           this.bodegasService.getBodegas().subscribe(function (res) {
-            _this1263.bodegas = res;
+            _this1264.bodegas = res;
 
-            _this1263.separarBodegas();
+            _this1264.separarBodegas();
           });
         }
       }, {
         key: "cargarUsuarioLogueado",
         value: function cargarUsuarioLogueado() {
-          var _this1264 = this;
+          var _this1265 = this;
 
           var promesaUser = new Promise(function (res, err) {
             if (localStorage.getItem("maily") != "") {
-              _this1264.correo = localStorage.getItem("maily");
+              _this1265.correo = localStorage.getItem("maily");
             }
 
-            _this1264.authenService.getUserLogueado(_this1264.correo).subscribe(function (res) {
-              _this1264.usuarioLogueado = res;
-              if (_this1264.usuarioLogueado[0].status == "Inactivo") _this1264.authService.logOut();
+            _this1265.authenService.getUserLogueado(_this1265.correo).subscribe(function (res) {
+              _this1265.usuarioLogueado = res;
+              if (_this1265.usuarioLogueado[0].status == "Inactivo") _this1265.authService.logOut();
             }, function (err) {});
           });
         }
@@ -162799,20 +163189,20 @@ function _classCallCheck(instance, Constructor) { if (!(instance instanceof Cons
       }, {
         key: "separarBodegas",
         value: function separarBodegas() {
-          var _this1265 = this;
+          var _this1266 = this;
 
           this.bodegas.forEach(function (element) {
             switch (element.sucursal) {
               case "matriz":
-                _this1265.bodegasMatriz = element.nombre + " , " + _this1265.bodegasMatriz;
+                _this1266.bodegasMatriz = element.nombre + " , " + _this1266.bodegasMatriz;
                 break;
 
               case "sucursal1":
-                _this1265.bodegasSucursal1 = element.nombre + " , " + _this1265.bodegasSucursal1;
+                _this1266.bodegasSucursal1 = element.nombre + " , " + _this1266.bodegasSucursal1;
                 break;
 
               case "sucursal2":
-                _this1265.bodegasSucursal2 = element.nombre + " ,  " + _this1265.bodegasSucursal2;
+                _this1266.bodegasSucursal2 = element.nombre + " ,  " + _this1266.bodegasSucursal2;
                 break;
 
               default:
@@ -162823,23 +163213,23 @@ function _classCallCheck(instance, Constructor) { if (!(instance instanceof Cons
       }, {
         key: "traerProductosPendientes",
         value: function traerProductosPendientes() {
-          var _this1266 = this;
+          var _this1267 = this;
 
           this.productosPendientesService.getProductoPendiente().subscribe(function (res) {
-            _this1266.productosPendientes = res;
+            _this1267.productosPendientes = res;
 
-            _this1266.separarEntregas();
+            _this1267.separarEntregas();
           });
         }
       }, {
         key: "traerProductosPendientesPorNombre",
         value: function traerProductosPendientesPorNombre() {
-          var _this1267 = this;
+          var _this1268 = this;
 
           this.productosPendientesService.getPendientesPorProducto(this.proTransaccion).subscribe(function (res) {
-            _this1267.productosPendientes = res;
+            _this1268.productosPendientes = res;
 
-            _this1267.separarEntregas();
+            _this1268.separarEntregas();
           });
         }
       }, {
@@ -162848,22 +163238,22 @@ function _classCallCheck(instance, Constructor) { if (!(instance instanceof Cons
       }, {
         key: "separarEntregas",
         value: function separarEntregas() {
-          var _this1268 = this;
+          var _this1269 = this;
 
           this.productosPendientes.forEach(function (element) {
-            if (element.estado == "PENDIENTE") _this1268.productosPendientesNoEN.push(element);
+            if (element.estado == "PENDIENTE") _this1269.productosPendientesNoEN.push(element);
           });
           this.calcularPendientes();
         }
       }, {
         key: "calcularPendientes",
         value: function calcularPendientes() {
-          var _this1269 = this;
+          var _this1270 = this;
 
           this.productosPendientes.forEach(function (element) {
-            _this1269.totalCajas += element.cajas;
-            _this1269.totalPiezas += element.piezas;
-            _this1269.totalM2 += element.cantM2;
+            _this1270.totalCajas += element.cajas;
+            _this1270.totalPiezas += element.piezas;
+            _this1270.totalM2 += element.cantM2;
           });
         }
       }, {
@@ -162935,244 +163325,6 @@ function _classCallCheck(instance, Constructor) { if (!(instance instanceof Cons
       }, {
         key: "cargarDatosProductoUnitario",
         value: function cargarDatosProductoUnitario() {
-          var _this1270 = this;
-
-          var contCajas = 0;
-          var contCajas2 = 0;
-          var contCajas3 = 0;
-          var contPiezas = 0;
-          var contPiezas2 = 0;
-          var contPiezas3 = 0;
-
-          var _loop27 = function _loop27(index) {
-            var element2 = _this1270.productos[index];
-
-            _this1270.transacciones.forEach(function (element) {
-              if (element2.PRODUCTO == element.producto && element.sucursal == "matriz") {
-                switch (element.tipo_transaccion) {
-                  case "devolucion":
-                    contCajas = Number(element.cajas) + contCajas;
-                    contPiezas = Number(element.piezas) + contPiezas;
-                    break;
-
-                  case "compra-dir":
-                    contCajas = Number(contCajas) + Number(element.cajas);
-                    contPiezas = Number(contPiezas) + Number(element.piezas);
-                    break;
-
-                  case "compra":
-                    contCajas = Number(contCajas) + Number(element.cajas);
-                    contPiezas = Number(contPiezas) + Number(element.piezas);
-                    break;
-
-                  case "compra_obs":
-                    contCajas = Number(contCajas) + Number(element.cajas);
-                    contPiezas = Number(contPiezas) + Number(element.piezas);
-                    break;
-
-                  case "ajuste-faltante":
-                    contCajas = Number(contCajas) - Number(element.cajas);
-                    contPiezas = Number(contPiezas) - Number(element.piezas);
-                    break;
-
-                  case "baja":
-                    contCajas = Number(contCajas) - Number(element.cajas);
-                    contPiezas = Number(contPiezas) - Number(element.piezas);
-                    break;
-
-                  case "venta-fact":
-                    contCajas = Number(contCajas) - Number(element.cajas);
-                    contPiezas = Number(contPiezas) - Number(element.piezas);
-                    break;
-
-                  case "venta-not":
-                    contCajas = Number(contCajas) - Number(element.cajas);
-                    contPiezas = Number(contPiezas) - Number(element.piezas);
-                    break;
-
-                  case "traslado1":
-                    contCajas = Number(contCajas) - Number(element.cajas);
-                    contPiezas = Number(contPiezas) - Number(element.piezas);
-                    break;
-
-                  case "traslado2":
-                    contCajas = Number(contCajas) + Number(element.cajas);
-                    contPiezas = Number(contPiezas) + Number(element.piezas);
-                    break;
-
-                  case "ajuste-sobrante":
-                    contCajas = Number(contCajas) + Number(element.cajas);
-                    contPiezas = Number(contPiezas) + Number(element.piezas);
-                    break;
-
-                  default:
-                }
-              } else if (element2.PRODUCTO == element.producto && element.sucursal == "sucursal1") {
-                switch (element.tipo_transaccion) {
-                  case "devolucion":
-                    contCajas2 = Number(element.cajas) + contCajas2;
-                    contPiezas2 = Number(element.piezas) + contPiezas2;
-                    break;
-
-                  case "compra-dir":
-                    contCajas2 = Number(contCajas2) + Number(element.cajas);
-                    contPiezas2 = Number(contPiezas2) + Number(element.piezas);
-                    break;
-
-                  case "compra":
-                    contCajas2 = Number(contCajas2) + Number(element.cajas);
-                    contPiezas2 = Number(contPiezas2) + Number(element.piezas);
-                    break;
-
-                  case "compra_obs":
-                    contCajas2 = Number(contCajas2) + Number(element.cajas);
-                    contPiezas2 = Number(contPiezas2) + Number(element.piezas);
-                    break;
-
-                  case "ajuste-faltante":
-                    contCajas2 = Number(contCajas2) - Number(element.cajas);
-                    contPiezas2 = Number(contPiezas2) - Number(element.piezas);
-                    break;
-
-                  case "baja":
-                    contCajas2 = Number(contCajas2) - Number(element.cajas);
-                    contPiezas2 = Number(contPiezas2) - Number(element.piezas);
-                    break;
-
-                  case "venta-fact":
-                    contCajas2 = Number(contCajas2) - Number(element.cajas);
-                    contPiezas2 = Number(contPiezas2) - Number(element.piezas);
-                    break;
-
-                  case "venta-not":
-                    contCajas2 = Number(contCajas2) - Number(element.cajas);
-                    contPiezas2 = Number(contPiezas2) - Number(element.piezas);
-                    break;
-
-                  case "traslado1":
-                    contCajas2 = Number(contCajas2) - Number(element.cajas);
-                    contPiezas2 = Number(contPiezas2) - Number(element.piezas);
-                    break;
-
-                  case "traslado2":
-                    contCajas2 = Number(contCajas2) + Number(element.cajas);
-                    contPiezas2 = Number(contPiezas2) + Number(element.piezas);
-                    break;
-
-                  case "ajuste-sobrante":
-                    contCajas2 = Number(contCajas2) + Number(element.cajas);
-                    contPiezas2 = Number(contPiezas2) + Number(element.piezas);
-                    break;
-
-                  default:
-                }
-              } else if (element2.PRODUCTO == element.producto && element.sucursal == "sucursal2") {
-                switch (element.tipo_transaccion) {
-                  case "devolucion":
-                    contCajas3 = Number(element.cajas) + contCajas3;
-                    contPiezas3 = Number(element.piezas) + contPiezas3;
-                    break;
-
-                  case "compra-dir":
-                    contCajas3 = Number(contCajas3) + Number(element.cajas);
-                    contPiezas3 = Number(contPiezas3) + Number(element.piezas);
-                    break;
-
-                  case "compra":
-                    contCajas3 = Number(contCajas3) + Number(element.cajas);
-                    contPiezas3 = Number(contPiezas3) + Number(element.piezas);
-                    break;
-
-                  case "compra_obs":
-                    contCajas3 = Number(contCajas3) + Number(element.cajas);
-                    contPiezas3 = Number(contPiezas3) + Number(element.piezas);
-                    break;
-
-                  case "ajuste-faltante":
-                    contCajas3 = Number(contCajas3) - Number(element.cajas);
-                    contPiezas3 = Number(contPiezas3) - Number(element.piezas);
-                    break;
-
-                  case "baja":
-                    contCajas3 = Number(contCajas3) - Number(element.cajas);
-                    contPiezas3 = Number(contPiezas3) - Number(element.piezas);
-                    break;
-
-                  case "venta-fact":
-                    contCajas3 = Number(contCajas3) - Number(element.cajas);
-                    contPiezas3 = Number(contPiezas3) - Number(element.piezas);
-                    break;
-
-                  case "venta-not":
-                    contCajas3 = Number(contCajas3) - Number(element.cajas);
-                    contPiezas3 = Number(contPiezas3) - Number(element.piezas);
-                    break;
-
-                  case "traslado1":
-                    contCajas3 = Number(contCajas3) - Number(element.cajas);
-                    contPiezas3 = Number(contPiezas3) - Number(element.piezas);
-                    break;
-
-                  case "traslado2":
-                    contCajas3 = Number(contCajas3) + Number(element.cajas);
-                    contPiezas3 = Number(contPiezas3) + Number(element.piezas);
-                    break;
-
-                  case "ajuste-sobrante":
-                    contCajas3 = Number(contCajas3) + Number(element.cajas);
-                    contPiezas3 = Number(contPiezas3) + Number(element.piezas);
-                    break;
-
-                  default:
-                }
-              }
-            });
-
-            cantidadRestante = 0;
-            _this1270.invetarioProd = new _consolidado_consolidado__WEBPACK_IMPORTED_MODULE_5__["inventario"]();
-            _this1270.invetarioProd.producto = element2;
-            casas = _this1270.transacciones.filter(function (element) {
-              return element.producto == element2.PRODUCTO && element.tipo_transaccion == "compra";
-            }); //this.invetarioProd.producto.CASA = casas[casas.length-1]?.proveedor;
-
-            console.log(element2);
-            _this1270.invetarioProd.producto.CASA = element2.CASA;
-            _this1270.invetarioProd.cantidadCajas = contCajas;
-            _this1270.invetarioProd.cantidadCajas2 = contCajas2;
-            _this1270.invetarioProd.cantidadCajas3 = contCajas3;
-            _this1270.invetarioProd.cantidadPiezas = contPiezas;
-            _this1270.invetarioProd.cantidadPiezas2 = contPiezas2;
-            _this1270.invetarioProd.cantidadPiezas3 = contPiezas3; //this.invetarioProd.bodega= "S1 ("+this.bodegasMatriz+" ) S2 ("+this.bodegasSucursal1+") S3("+this.bodegasSucursal2+")"
-
-            _this1270.invetarioProd.bodega = "  S1 (" + element2.ubicacionSuc1 + ") S2 (" + element2.ubicacionSuc2 + ") S3(" + element2.ubicacionSuc3 + ")";
-            _this1270.invetarioProd.ultimoPrecioCompra = element2.ultimoPrecioCompra;
-            _this1270.invetarioProd.ultimaFechaCompra = element2.ultimaFechaCompra;
-            _this1270.invetarioProd.porUtilidad = element2.porcentaje_ganancia;
-            _this1270.invetarioProd.valorProducto = element2.porcentaje_ganancia * element2.precio + element2.precio;
-            _this1270.invetarioProd.notas = element2.notas;
-            _this1270.invetarioProd.execute = false;
-            console.log(_this1270.invetarioProd);
-            if (_this1270.invetarioProd.producto.PRODUCTO == _this1270.nombreProducto) _this1270.invetarioP.push(_this1270.invetarioProd);
-            contCajas = 0;
-            contPiezas = 0;
-            contCajas2 = 0;
-            contPiezas2 = 0;
-            contCajas3 = 0;
-            contPiezas3 = 0;
-          };
-
-          for (var index = 0; index < this.productos.length; index++) {
-            var cantidadRestante;
-            var casas;
-
-            _loop27(index);
-          }
-
-          this.transformarM2(); //this.sumarProductosRestados()
-        }
-      }, {
-        key: "cargarDatos",
-        value: function cargarDatos() {
           var _this1271 = this;
 
           var contCajas = 0;
@@ -163366,12 +163518,14 @@ function _classCallCheck(instance, Constructor) { if (!(instance instanceof Cons
               }
             });
 
+            cantidadRestante = 0;
             _this1271.invetarioProd = new _consolidado_consolidado__WEBPACK_IMPORTED_MODULE_5__["inventario"]();
             _this1271.invetarioProd.producto = element2;
             casas = _this1271.transacciones.filter(function (element) {
               return element.producto == element2.PRODUCTO && element.tipo_transaccion == "compra";
             }); //this.invetarioProd.producto.CASA = casas[casas.length-1]?.proveedor;
 
+            console.log(element2);
             _this1271.invetarioProd.producto.CASA = element2.CASA;
             _this1271.invetarioProd.cantidadCajas = contCajas;
             _this1271.invetarioProd.cantidadCajas2 = contCajas2;
@@ -163380,14 +163534,250 @@ function _classCallCheck(instance, Constructor) { if (!(instance instanceof Cons
             _this1271.invetarioProd.cantidadPiezas2 = contPiezas2;
             _this1271.invetarioProd.cantidadPiezas3 = contPiezas3; //this.invetarioProd.bodega= "S1 ("+this.bodegasMatriz+" ) S2 ("+this.bodegasSucursal1+") S3("+this.bodegasSucursal2+")"
 
-            _this1271.invetarioProd.bodega = "S1 (" + element2.ubicacionSuc1 + " ) S2 (" + element2.ubicacionSuc2 + ") S3(" + element2.ubicacionSuc3 + ")";
+            _this1271.invetarioProd.bodega = "  S1 (" + element2.ubicacionSuc1 + ") S2 (" + element2.ubicacionSuc2 + ") S3(" + element2.ubicacionSuc3 + ")";
             _this1271.invetarioProd.ultimoPrecioCompra = element2.ultimoPrecioCompra;
-            _this1271.invetarioProd.porUtilidad = element2.porcentaje_ganancia;
-            _this1271.invetarioProd.valorProducto = element2.porcentaje_ganancia * element2.precio / 100 + element2.precio;
             _this1271.invetarioProd.ultimaFechaCompra = element2.ultimaFechaCompra;
+            _this1271.invetarioProd.porUtilidad = element2.porcentaje_ganancia;
+            _this1271.invetarioProd.valorProducto = element2.porcentaje_ganancia * element2.precio + element2.precio;
             _this1271.invetarioProd.notas = element2.notas;
+            _this1271.invetarioProd.execute = false;
+            console.log(_this1271.invetarioProd);
+            if (_this1271.invetarioProd.producto.PRODUCTO == _this1271.nombreProducto) _this1271.invetarioP.push(_this1271.invetarioProd);
+            contCajas = 0;
+            contPiezas = 0;
+            contCajas2 = 0;
+            contPiezas2 = 0;
+            contCajas3 = 0;
+            contPiezas3 = 0;
+          };
 
-            _this1271.invetarioP.push(_this1271.invetarioProd);
+          for (var index = 0; index < this.productos.length; index++) {
+            var cantidadRestante;
+            var casas;
+
+            _loop28(index);
+          }
+
+          this.transformarM2(); //this.sumarProductosRestados()
+        }
+      }, {
+        key: "cargarDatos",
+        value: function cargarDatos() {
+          var _this1272 = this;
+
+          var contCajas = 0;
+          var contCajas2 = 0;
+          var contCajas3 = 0;
+          var contPiezas = 0;
+          var contPiezas2 = 0;
+          var contPiezas3 = 0;
+
+          var _loop29 = function _loop29(index) {
+            var element2 = _this1272.productos[index];
+
+            _this1272.transacciones.forEach(function (element) {
+              if (element2.PRODUCTO == element.producto && element.sucursal == "matriz") {
+                switch (element.tipo_transaccion) {
+                  case "devolucion":
+                    contCajas = Number(element.cajas) + contCajas;
+                    contPiezas = Number(element.piezas) + contPiezas;
+                    break;
+
+                  case "compra-dir":
+                    contCajas = Number(contCajas) + Number(element.cajas);
+                    contPiezas = Number(contPiezas) + Number(element.piezas);
+                    break;
+
+                  case "compra":
+                    contCajas = Number(contCajas) + Number(element.cajas);
+                    contPiezas = Number(contPiezas) + Number(element.piezas);
+                    break;
+
+                  case "compra_obs":
+                    contCajas = Number(contCajas) + Number(element.cajas);
+                    contPiezas = Number(contPiezas) + Number(element.piezas);
+                    break;
+
+                  case "ajuste-faltante":
+                    contCajas = Number(contCajas) - Number(element.cajas);
+                    contPiezas = Number(contPiezas) - Number(element.piezas);
+                    break;
+
+                  case "baja":
+                    contCajas = Number(contCajas) - Number(element.cajas);
+                    contPiezas = Number(contPiezas) - Number(element.piezas);
+                    break;
+
+                  case "venta-fact":
+                    contCajas = Number(contCajas) - Number(element.cajas);
+                    contPiezas = Number(contPiezas) - Number(element.piezas);
+                    break;
+
+                  case "venta-not":
+                    contCajas = Number(contCajas) - Number(element.cajas);
+                    contPiezas = Number(contPiezas) - Number(element.piezas);
+                    break;
+
+                  case "traslado1":
+                    contCajas = Number(contCajas) - Number(element.cajas);
+                    contPiezas = Number(contPiezas) - Number(element.piezas);
+                    break;
+
+                  case "traslado2":
+                    contCajas = Number(contCajas) + Number(element.cajas);
+                    contPiezas = Number(contPiezas) + Number(element.piezas);
+                    break;
+
+                  case "ajuste-sobrante":
+                    contCajas = Number(contCajas) + Number(element.cajas);
+                    contPiezas = Number(contPiezas) + Number(element.piezas);
+                    break;
+
+                  default:
+                }
+              } else if (element2.PRODUCTO == element.producto && element.sucursal == "sucursal1") {
+                switch (element.tipo_transaccion) {
+                  case "devolucion":
+                    contCajas2 = Number(element.cajas) + contCajas2;
+                    contPiezas2 = Number(element.piezas) + contPiezas2;
+                    break;
+
+                  case "compra-dir":
+                    contCajas2 = Number(contCajas2) + Number(element.cajas);
+                    contPiezas2 = Number(contPiezas2) + Number(element.piezas);
+                    break;
+
+                  case "compra":
+                    contCajas2 = Number(contCajas2) + Number(element.cajas);
+                    contPiezas2 = Number(contPiezas2) + Number(element.piezas);
+                    break;
+
+                  case "compra_obs":
+                    contCajas2 = Number(contCajas2) + Number(element.cajas);
+                    contPiezas2 = Number(contPiezas2) + Number(element.piezas);
+                    break;
+
+                  case "ajuste-faltante":
+                    contCajas2 = Number(contCajas2) - Number(element.cajas);
+                    contPiezas2 = Number(contPiezas2) - Number(element.piezas);
+                    break;
+
+                  case "baja":
+                    contCajas2 = Number(contCajas2) - Number(element.cajas);
+                    contPiezas2 = Number(contPiezas2) - Number(element.piezas);
+                    break;
+
+                  case "venta-fact":
+                    contCajas2 = Number(contCajas2) - Number(element.cajas);
+                    contPiezas2 = Number(contPiezas2) - Number(element.piezas);
+                    break;
+
+                  case "venta-not":
+                    contCajas2 = Number(contCajas2) - Number(element.cajas);
+                    contPiezas2 = Number(contPiezas2) - Number(element.piezas);
+                    break;
+
+                  case "traslado1":
+                    contCajas2 = Number(contCajas2) - Number(element.cajas);
+                    contPiezas2 = Number(contPiezas2) - Number(element.piezas);
+                    break;
+
+                  case "traslado2":
+                    contCajas2 = Number(contCajas2) + Number(element.cajas);
+                    contPiezas2 = Number(contPiezas2) + Number(element.piezas);
+                    break;
+
+                  case "ajuste-sobrante":
+                    contCajas2 = Number(contCajas2) + Number(element.cajas);
+                    contPiezas2 = Number(contPiezas2) + Number(element.piezas);
+                    break;
+
+                  default:
+                }
+              } else if (element2.PRODUCTO == element.producto && element.sucursal == "sucursal2") {
+                switch (element.tipo_transaccion) {
+                  case "devolucion":
+                    contCajas3 = Number(element.cajas) + contCajas3;
+                    contPiezas3 = Number(element.piezas) + contPiezas3;
+                    break;
+
+                  case "compra-dir":
+                    contCajas3 = Number(contCajas3) + Number(element.cajas);
+                    contPiezas3 = Number(contPiezas3) + Number(element.piezas);
+                    break;
+
+                  case "compra":
+                    contCajas3 = Number(contCajas3) + Number(element.cajas);
+                    contPiezas3 = Number(contPiezas3) + Number(element.piezas);
+                    break;
+
+                  case "compra_obs":
+                    contCajas3 = Number(contCajas3) + Number(element.cajas);
+                    contPiezas3 = Number(contPiezas3) + Number(element.piezas);
+                    break;
+
+                  case "ajuste-faltante":
+                    contCajas3 = Number(contCajas3) - Number(element.cajas);
+                    contPiezas3 = Number(contPiezas3) - Number(element.piezas);
+                    break;
+
+                  case "baja":
+                    contCajas3 = Number(contCajas3) - Number(element.cajas);
+                    contPiezas3 = Number(contPiezas3) - Number(element.piezas);
+                    break;
+
+                  case "venta-fact":
+                    contCajas3 = Number(contCajas3) - Number(element.cajas);
+                    contPiezas3 = Number(contPiezas3) - Number(element.piezas);
+                    break;
+
+                  case "venta-not":
+                    contCajas3 = Number(contCajas3) - Number(element.cajas);
+                    contPiezas3 = Number(contPiezas3) - Number(element.piezas);
+                    break;
+
+                  case "traslado1":
+                    contCajas3 = Number(contCajas3) - Number(element.cajas);
+                    contPiezas3 = Number(contPiezas3) - Number(element.piezas);
+                    break;
+
+                  case "traslado2":
+                    contCajas3 = Number(contCajas3) + Number(element.cajas);
+                    contPiezas3 = Number(contPiezas3) + Number(element.piezas);
+                    break;
+
+                  case "ajuste-sobrante":
+                    contCajas3 = Number(contCajas3) + Number(element.cajas);
+                    contPiezas3 = Number(contPiezas3) + Number(element.piezas);
+                    break;
+
+                  default:
+                }
+              }
+            });
+
+            _this1272.invetarioProd = new _consolidado_consolidado__WEBPACK_IMPORTED_MODULE_5__["inventario"]();
+            _this1272.invetarioProd.producto = element2;
+            casas = _this1272.transacciones.filter(function (element) {
+              return element.producto == element2.PRODUCTO && element.tipo_transaccion == "compra";
+            }); //this.invetarioProd.producto.CASA = casas[casas.length-1]?.proveedor;
+
+            _this1272.invetarioProd.producto.CASA = element2.CASA;
+            _this1272.invetarioProd.cantidadCajas = contCajas;
+            _this1272.invetarioProd.cantidadCajas2 = contCajas2;
+            _this1272.invetarioProd.cantidadCajas3 = contCajas3;
+            _this1272.invetarioProd.cantidadPiezas = contPiezas;
+            _this1272.invetarioProd.cantidadPiezas2 = contPiezas2;
+            _this1272.invetarioProd.cantidadPiezas3 = contPiezas3; //this.invetarioProd.bodega= "S1 ("+this.bodegasMatriz+" ) S2 ("+this.bodegasSucursal1+") S3("+this.bodegasSucursal2+")"
+
+            _this1272.invetarioProd.bodega = "S1 (" + element2.ubicacionSuc1 + " ) S2 (" + element2.ubicacionSuc2 + ") S3(" + element2.ubicacionSuc3 + ")";
+            _this1272.invetarioProd.ultimoPrecioCompra = element2.ultimoPrecioCompra;
+            _this1272.invetarioProd.porUtilidad = element2.porcentaje_ganancia;
+            _this1272.invetarioProd.valorProducto = element2.porcentaje_ganancia * element2.precio / 100 + element2.precio;
+            _this1272.invetarioProd.ultimaFechaCompra = element2.ultimaFechaCompra;
+            _this1272.invetarioProd.notas = element2.notas;
+
+            _this1272.invetarioP.push(_this1272.invetarioProd);
 
             contCajas = 0;
             contPiezas = 0;
@@ -163400,7 +163790,7 @@ function _classCallCheck(instance, Constructor) { if (!(instance instanceof Cons
           for (var index = 0; index < this.productos.length; index++) {
             var casas;
 
-            _loop28(index);
+            _loop29(index);
           }
 
           this.transformarM2();
@@ -163409,12 +163799,12 @@ function _classCallCheck(instance, Constructor) { if (!(instance instanceof Cons
       }, {
         key: "sumarProductosRestados",
         value: function sumarProductosRestados() {
-          var _this1272 = this;
+          var _this1273 = this;
 
-          var _loop29 = function _loop29(index) {
-            var element = _this1272.productos[index];
+          var _loop30 = function _loop30(index) {
+            var element = _this1273.productos[index];
 
-            _this1272.invetarioP.forEach(function (element2) {
+            _this1273.invetarioP.forEach(function (element2) {
               if (!element2.execute) {
                 if (element.PRODUCTO == element2.producto.PRODUCTO) {
                   element2.cantidadM2 = element2.cantidadM2;
@@ -163427,7 +163817,7 @@ function _classCallCheck(instance, Constructor) { if (!(instance instanceof Cons
           };
 
           for (var index = 0; index < this.productos.length; index++) {
-            _loop29(index);
+            _loop30(index);
           } //this.transformarM2()
 
         }
@@ -163456,7 +163846,7 @@ function _classCallCheck(instance, Constructor) { if (!(instance instanceof Cons
       }, {
         key: "mensajeActualizar",
         value: function mensajeActualizar() {
-          var _this1273 = this;
+          var _this1274 = this;
 
           sweetalert2__WEBPACK_IMPORTED_MODULE_2___default.a.fire({
             title: "Alerta",
@@ -163468,7 +163858,7 @@ function _classCallCheck(instance, Constructor) { if (!(instance instanceof Cons
             cancelButtonText: "No"
           }).then(function (result) {
             if (result.value) {
-              _this1273.actualizarInventario();
+              _this1274.actualizarInventario();
             } else if (result.dismiss === sweetalert2__WEBPACK_IMPORTED_MODULE_2___default.a.DismissReason.cancel) {
               sweetalert2__WEBPACK_IMPORTED_MODULE_2___default.a.fire("Cancelado!", "Se ha cancelado su proceso.", "error");
             }
@@ -163477,13 +163867,13 @@ function _classCallCheck(instance, Constructor) { if (!(instance instanceof Cons
       }, {
         key: "actualizarInventario",
         value: function actualizarInventario() {
-          return Object(tslib__WEBPACK_IMPORTED_MODULE_0__["__awaiter"])(this, void 0, void 0, /*#__PURE__*/regeneratorRuntime.mark(function _callee57() {
-            var _this1274 = this;
+          return Object(tslib__WEBPACK_IMPORTED_MODULE_0__["__awaiter"])(this, void 0, void 0, /*#__PURE__*/regeneratorRuntime.mark(function _callee59() {
+            var _this1275 = this;
 
             var m2s1, m2s2, m2s3, contVal;
-            return regeneratorRuntime.wrap(function _callee57$(_context57) {
+            return regeneratorRuntime.wrap(function _callee59$(_context60) {
               while (1) {
-                switch (_context57.prev = _context57.next) {
+                switch (_context60.prev = _context60.next) {
                   case 0:
                     m2s1 = 0;
                     m2s2 = 0;
@@ -163491,12 +163881,12 @@ function _classCallCheck(instance, Constructor) { if (!(instance instanceof Cons
                     contVal = 0;
                     this.mensajeActualizando();
                     this.invetarioP.forEach(function (element) {
-                      return Object(tslib__WEBPACK_IMPORTED_MODULE_0__["__awaiter"])(_this1274, void 0, void 0, /*#__PURE__*/regeneratorRuntime.mark(function _callee56() {
-                        var _this1275 = this;
+                      return Object(tslib__WEBPACK_IMPORTED_MODULE_0__["__awaiter"])(_this1275, void 0, void 0, /*#__PURE__*/regeneratorRuntime.mark(function _callee58() {
+                        var _this1276 = this;
 
-                        return regeneratorRuntime.wrap(function _callee56$(_context56) {
+                        return regeneratorRuntime.wrap(function _callee58$(_context59) {
                           while (1) {
-                            switch (_context56.prev = _context56.next) {
+                            switch (_context59.prev = _context59.next) {
                               case 0:
                                 m2s1 = parseFloat(element.cantidadM2.toFixed(2));
                                 m2s2 = parseFloat(element.cantidadM2b2.toFixed(2));
@@ -163517,38 +163907,38 @@ function _classCallCheck(instance, Constructor) { if (!(instance instanceof Cons
                                 this.prodActualizable.suc2 = m2s2;
                                 this.prodActualizable.suc3 = m2s3;
                                 this.productoService.updateProductosSucursalesNuevo(this.prodActualizable).subscribe(function (res) {
-                                  contVal++, _this1275.contadorValidaciones2(contVal);
+                                  contVal++, _this1276.contadorValidaciones2(contVal);
                                 }, function (err) {
-                                  contVal++, _this1275.contadorValidaciones2(contVal);
+                                  contVal++, _this1276.contadorValidaciones2(contVal);
                                 });
 
                               case 13:
                               case "end":
-                                return _context56.stop();
+                                return _context59.stop();
                             }
                           }
-                        }, _callee56, this);
+                        }, _callee58, this);
                       }));
                     });
 
                   case 6:
                   case "end":
-                    return _context57.stop();
+                    return _context60.stop();
                 }
               }
-            }, _callee57, this);
+            }, _callee59, this);
           }));
         }
       }, {
         key: "actualizarInventarioPorClasificacion",
         value: function actualizarInventarioPorClasificacion(e) {
-          return Object(tslib__WEBPACK_IMPORTED_MODULE_0__["__awaiter"])(this, void 0, void 0, /*#__PURE__*/regeneratorRuntime.mark(function _callee59() {
-            var _this1276 = this;
+          return Object(tslib__WEBPACK_IMPORTED_MODULE_0__["__awaiter"])(this, void 0, void 0, /*#__PURE__*/regeneratorRuntime.mark(function _callee61() {
+            var _this1277 = this;
 
             var m2s1, m2s2, m2s3, contVal, contador, cont2;
-            return regeneratorRuntime.wrap(function _callee59$(_context59) {
+            return regeneratorRuntime.wrap(function _callee61$(_context62) {
               while (1) {
-                switch (_context59.prev = _context59.next) {
+                switch (_context62.prev = _context62.next) {
                   case 0:
                     m2s1 = 0;
                     m2s2 = 0;
@@ -163561,12 +163951,12 @@ function _classCallCheck(instance, Constructor) { if (!(instance instanceof Cons
                     });
                     cont2 = 0;
                     this.invetarioP.forEach(function (element) {
-                      return Object(tslib__WEBPACK_IMPORTED_MODULE_0__["__awaiter"])(_this1276, void 0, void 0, /*#__PURE__*/regeneratorRuntime.mark(function _callee58() {
-                        var _this1277 = this;
+                      return Object(tslib__WEBPACK_IMPORTED_MODULE_0__["__awaiter"])(_this1277, void 0, void 0, /*#__PURE__*/regeneratorRuntime.mark(function _callee60() {
+                        var _this1278 = this;
 
-                        return regeneratorRuntime.wrap(function _callee58$(_context58) {
+                        return regeneratorRuntime.wrap(function _callee60$(_context61) {
                           while (1) {
-                            switch (_context58.prev = _context58.next) {
+                            switch (_context61.prev = _context61.next) {
                               case 0:
                                 if (element.producto.CLASIFICA == e.nombreClasificacion) {
                                   cont2++;
@@ -163589,27 +163979,27 @@ function _classCallCheck(instance, Constructor) { if (!(instance instanceof Cons
                                   this.prodActualizable.suc2 = m2s2;
                                   this.prodActualizable.suc3 = m2s3;
                                   this.productoService.updateProductosSucursalesNuevo(this.prodActualizable).subscribe(function (res) {
-                                    contVal++, _this1277.contadorValidacionesClasificacion(contVal, contador);
+                                    contVal++, _this1278.contadorValidacionesClasificacion(contVal, contador);
                                   }, function (err) {
-                                    contVal++, _this1277.contadorValidacionesClasificacion(contVal, contador);
+                                    contVal++, _this1278.contadorValidacionesClasificacion(contVal, contador);
                                   });
                                 }
 
                               case 1:
                               case "end":
-                                return _context58.stop();
+                                return _context61.stop();
                             }
                           }
-                        }, _callee58, this);
+                        }, _callee60, this);
                       }));
                     });
 
                   case 9:
                   case "end":
-                    return _context59.stop();
+                    return _context62.stop();
                 }
               }
-            }, _callee59, this);
+            }, _callee61, this);
           }));
         }
       }, {
@@ -163685,43 +164075,43 @@ function _classCallCheck(instance, Constructor) { if (!(instance instanceof Cons
       }, {
         key: "controlarInventario",
         value: function controlarInventario() {
-          var _this1278 = this;
+          var _this1279 = this;
 
           this.invetarioP.forEach(function (element) {
             if (element.cantidadM2 < 0) {
-              _this1278.invetarioFaltante1 = new _consolidado_consolidado__WEBPACK_IMPORTED_MODULE_5__["invFaltanteSucursal"]();
-              _this1278.invetarioFaltante1.producto = element.producto;
-              _this1278.invetarioFaltante1.cantidadCajas = element.cantidadCajas;
-              _this1278.invetarioFaltante1.cantidadPiezas = element.cantidadPiezas;
-              _this1278.invetarioFaltante1.cantidadM2 = element.cantidadCajas;
-              _this1278.invetarioFaltante1.totalb1 = element.totalb1;
-              _this1278.invetarioFaltante1.sucursal = "Matriz";
+              _this1279.invetarioFaltante1 = new _consolidado_consolidado__WEBPACK_IMPORTED_MODULE_5__["invFaltanteSucursal"]();
+              _this1279.invetarioFaltante1.producto = element.producto;
+              _this1279.invetarioFaltante1.cantidadCajas = element.cantidadCajas;
+              _this1279.invetarioFaltante1.cantidadPiezas = element.cantidadPiezas;
+              _this1279.invetarioFaltante1.cantidadM2 = element.cantidadCajas;
+              _this1279.invetarioFaltante1.totalb1 = element.totalb1;
+              _this1279.invetarioFaltante1.sucursal = "Matriz";
 
-              _this1278.invetarioFaltante.push(_this1278.invetarioFaltante1);
+              _this1279.invetarioFaltante.push(_this1279.invetarioFaltante1);
             }
 
             if (element.cantidadM2b2 < 0) {
-              _this1278.invetarioFaltante1 = new _consolidado_consolidado__WEBPACK_IMPORTED_MODULE_5__["invFaltanteSucursal"]();
-              _this1278.invetarioFaltante1.producto = element.producto;
-              _this1278.invetarioFaltante1.cantidadCajas = element.cantidadCajas2;
-              _this1278.invetarioFaltante1.cantidadPiezas = element.cantidadPiezas2;
-              _this1278.invetarioFaltante1.cantidadM2 = element.cantidadCajas2;
-              _this1278.invetarioFaltante1.totalb1 = element.totalb2;
-              _this1278.invetarioFaltante1.sucursal = "Sucursal 1";
+              _this1279.invetarioFaltante1 = new _consolidado_consolidado__WEBPACK_IMPORTED_MODULE_5__["invFaltanteSucursal"]();
+              _this1279.invetarioFaltante1.producto = element.producto;
+              _this1279.invetarioFaltante1.cantidadCajas = element.cantidadCajas2;
+              _this1279.invetarioFaltante1.cantidadPiezas = element.cantidadPiezas2;
+              _this1279.invetarioFaltante1.cantidadM2 = element.cantidadCajas2;
+              _this1279.invetarioFaltante1.totalb1 = element.totalb2;
+              _this1279.invetarioFaltante1.sucursal = "Sucursal 1";
 
-              _this1278.invetarioFaltante.push(_this1278.invetarioFaltante1);
+              _this1279.invetarioFaltante.push(_this1279.invetarioFaltante1);
             }
 
             if (element.cantidadM2b3 < 0) {
-              _this1278.invetarioFaltante1 = new _consolidado_consolidado__WEBPACK_IMPORTED_MODULE_5__["invFaltanteSucursal"]();
-              _this1278.invetarioFaltante1.producto = element.producto;
-              _this1278.invetarioFaltante1.cantidadCajas = element.cantidadCajas3;
-              _this1278.invetarioFaltante1.cantidadPiezas = element.cantidadPiezas3;
-              _this1278.invetarioFaltante1.cantidadM2 = element.cantidadCajas3;
-              _this1278.invetarioFaltante1.totalb1 = element.totalb3;
-              _this1278.invetarioFaltante1.sucursal = "Sucursal 2";
+              _this1279.invetarioFaltante1 = new _consolidado_consolidado__WEBPACK_IMPORTED_MODULE_5__["invFaltanteSucursal"]();
+              _this1279.invetarioFaltante1.producto = element.producto;
+              _this1279.invetarioFaltante1.cantidadCajas = element.cantidadCajas3;
+              _this1279.invetarioFaltante1.cantidadPiezas = element.cantidadPiezas3;
+              _this1279.invetarioFaltante1.cantidadM2 = element.cantidadCajas3;
+              _this1279.invetarioFaltante1.totalb1 = element.totalb3;
+              _this1279.invetarioFaltante1.sucursal = "Sucursal 2";
 
-              _this1278.invetarioFaltante.push(_this1278.invetarioFaltante1);
+              _this1279.invetarioFaltante.push(_this1279.invetarioFaltante1);
             }
           });
           this.ajustarSaldos();
@@ -163729,7 +164119,7 @@ function _classCallCheck(instance, Constructor) { if (!(instance instanceof Cons
       }, {
         key: "ajustarSaldos",
         value: function ajustarSaldos() {
-          var _this1279 = this;
+          var _this1280 = this;
 
           if (this.valorMenu != "Inventario Contable") {
             if (this.tipoBusqueda == "Normal") {
@@ -163759,13 +164149,13 @@ function _classCallCheck(instance, Constructor) { if (!(instance instanceof Cons
 
             if (this.valorMenu == "Busqueda Individual") {
               var producto = this.productos.find(function (element) {
-                return element.PRODUCTO == _this1279.nombreProducto;
+                return element.PRODUCTO == _this1280.nombreProducto;
               });
               if (producto.CLASIFICA == "COMBO") this.buscarCombo(this.nombreProducto);
             }
 
             this.invetarioP.forEach(function (element) {
-              var catal = _this1279.productosCatalogo.find(function (p) {
+              var catal = _this1280.productosCatalogo.find(function (p) {
                 return p.PRODUCTO == element.producto.PRODUCTO;
               });
 
@@ -163773,7 +164163,7 @@ function _classCallCheck(instance, Constructor) { if (!(instance instanceof Cons
                 element.producto.cantidad = catal.CANT_MINIMA;
 
                 if (catal.CANT_MINIMA != 0) {
-                  if (element.cantidadM2 <= catal.CANT_MINIMA) _this1279.invetarioMinimoProductosMatriz.push(element);else if (element.cantidadM2b2 <= catal.CANT_MINIMA) _this1279.invetarioMinimoProductosSucursal1.push(element);else if (element.cantidadM2b3 <= catal.CANT_MINIMA) _this1279.invetarioMinimoProductosSucursal2.push(element);
+                  if (element.cantidadM2 <= catal.CANT_MINIMA) _this1280.invetarioMinimoProductosMatriz.push(element);else if (element.cantidadM2b2 <= catal.CANT_MINIMA) _this1280.invetarioMinimoProductosSucursal1.push(element);else if (element.cantidadM2b3 <= catal.CANT_MINIMA) _this1280.invetarioMinimoProductosSucursal2.push(element);
                 }
               }
             });
@@ -163792,7 +164182,7 @@ function _classCallCheck(instance, Constructor) { if (!(instance instanceof Cons
           this.invetarioP.forEach(function (element) {
             var requiere = false;
 
-            _this1279.productos.forEach(function (element2) {
+            _this1280.productos.forEach(function (element2) {
               if (element.producto.PRODUCTO == element2.PRODUCTO) {
                 if (element.cantidadM2 != element2.sucursal1) requiere = true;else if (element.cantidadM2b2 != element2.sucursal2) requiere = true;else if (element.cantidadM2b3 != element2.sucursal3) requiere = true;
               }
@@ -163871,15 +164261,15 @@ function _classCallCheck(instance, Constructor) { if (!(instance instanceof Cons
       }, {
         key: "traerTransaccionesPorProductoCombo2",
         value: function traerTransaccionesPorProductoCombo2(nombreProducto, productoCombo) {
-          var _this1280 = this;
+          var _this1281 = this;
 
           this.cantidadProductos++;
           this.transacciones = [];
           this.proTransaccion.nombre = nombreProducto.PRODUCTO;
           var numero = this.invetarioP.length - 1;
           var p1 = new Promise(function (resolve, reject) {
-            _this1280.transaccionesService.getTransaccionesPorProducto(_this1280.proTransaccion).toPromise().then(function (res) {
-              _this1280.transacciones = res;
+            _this1281.transaccionesService.getTransaccionesPorProducto(_this1281.proTransaccion).toPromise().then(function (res) {
+              _this1281.transacciones = res;
               var contCajas = 0;
               var contCajas2 = 0;
               var contCajas3 = 0;
@@ -163887,7 +164277,7 @@ function _classCallCheck(instance, Constructor) { if (!(instance instanceof Cons
               var contPiezas2 = 0;
               var contPiezas3 = 0;
 
-              _this1280.transacciones.forEach(function (element) {
+              _this1281.transacciones.forEach(function (element) {
                 if (nombreProducto.PRODUCTO == element.producto && element.sucursal == "matriz") {
                   switch (element.tipo_transaccion) {
                     case "devolucion":
@@ -164069,15 +164459,15 @@ function _classCallCheck(instance, Constructor) { if (!(instance instanceof Cons
               });
 
               var invetarioP = [];
-              _this1280.invetarioProd = new _consolidado_consolidado__WEBPACK_IMPORTED_MODULE_5__["inventario"]();
-              _this1280.invetarioProd.producto = nombreProducto;
-              _this1280.invetarioProd.cantidadCajas = contCajas;
-              _this1280.invetarioProd.cantidadCajas2 = contCajas2;
-              _this1280.invetarioProd.cantidadCajas3 = contCajas3;
-              _this1280.invetarioProd.cantidadPiezas = contPiezas;
-              _this1280.invetarioProd.cantidadPiezas2 = contPiezas2;
-              _this1280.invetarioProd.cantidadPiezas3 = contPiezas3;
-              invetarioP.push(_this1280.invetarioProd);
+              _this1281.invetarioProd = new _consolidado_consolidado__WEBPACK_IMPORTED_MODULE_5__["inventario"]();
+              _this1281.invetarioProd.producto = nombreProducto;
+              _this1281.invetarioProd.cantidadCajas = contCajas;
+              _this1281.invetarioProd.cantidadCajas2 = contCajas2;
+              _this1281.invetarioProd.cantidadCajas3 = contCajas3;
+              _this1281.invetarioProd.cantidadPiezas = contPiezas;
+              _this1281.invetarioProd.cantidadPiezas2 = contPiezas2;
+              _this1281.invetarioProd.cantidadPiezas3 = contPiezas3;
+              invetarioP.push(_this1281.invetarioProd);
               contCajas = 0;
               contPiezas = 0;
               contCajas2 = 0;
@@ -164109,17 +164499,17 @@ function _classCallCheck(instance, Constructor) { if (!(instance instanceof Cons
                 if (element.cantidadM2 < 0) element.cantidadM2 = 0;
                 if (element.cantidadM2b2 < 0) element.cantidadM2b2 = 0;
                 if (element.cantidadM2b3 < 0) element.cantidadM2b3 = 0;
-                if (element.cantidadM2 < _this1280.valor1) _this1280.valor1 = Math.trunc(element.cantidadM2);
-                if (element.cantidadM2b2 < _this1280.valor2) _this1280.valor2 = Math.trunc(element.cantidadM2b2);
-                if (element.cantidadM2b3 < _this1280.valor3) _this1280.valor3 = Math.trunc(element.cantidadM2b3);
-                _this1280.invetarioP[numero].cantidadM2 = _this1280.valor1;
-                _this1280.invetarioP[numero].cantidadCajas = _this1280.valor1;
-                _this1280.invetarioP[numero].cantidadM2b2 = _this1280.valor2;
-                _this1280.invetarioP[numero].cantidadCajas2 = _this1280.valor2;
-                _this1280.invetarioP[numero].cantidadM2b3 = _this1280.valor3;
-                _this1280.invetarioP[numero].cantidadCajas3 = _this1280.valor3;
+                if (element.cantidadM2 < _this1281.valor1) _this1281.valor1 = Math.trunc(element.cantidadM2);
+                if (element.cantidadM2b2 < _this1281.valor2) _this1281.valor2 = Math.trunc(element.cantidadM2b2);
+                if (element.cantidadM2b3 < _this1281.valor3) _this1281.valor3 = Math.trunc(element.cantidadM2b3);
+                _this1281.invetarioP[numero].cantidadM2 = _this1281.valor1;
+                _this1281.invetarioP[numero].cantidadCajas = _this1281.valor1;
+                _this1281.invetarioP[numero].cantidadM2b2 = _this1281.valor2;
+                _this1281.invetarioP[numero].cantidadCajas2 = _this1281.valor2;
+                _this1281.invetarioP[numero].cantidadM2b3 = _this1281.valor3;
+                _this1281.invetarioP[numero].cantidadCajas3 = _this1281.valor3;
               });
-              _this1280.mostrarLoading = false;
+              _this1281.mostrarLoading = false;
             })["catch"](function (err) {});
           });
         }
@@ -164512,7 +164902,7 @@ function _classCallCheck(instance, Constructor) { if (!(instance instanceof Cons
 
     var TransaccionesComponent = /*#__PURE__*/function () {
       function TransaccionesComponent(transaccionesService, authenService, authService, _productoService, _decimalPipe) {
-        var _this1281 = this;
+        var _this1282 = this;
 
         _classCallCheck(this, TransaccionesComponent);
 
@@ -164547,20 +164937,20 @@ function _classCallCheck(instance, Constructor) { if (!(instance instanceof Cons
             cancelButtonText: 'No'
           }).then(function (result) {
             if (result.value) {
-              _this1281.mensajeLoading = "Actualizando";
-              _this1281.mostrarLoading = true;
+              _this1282.mensajeLoading = "Actualizando";
+              _this1282.mostrarLoading = true;
 
-              _this1281.transaccionesService.updateTransaccionEntrega(data).subscribe(function (res) {
-                _this1281.mostrarLoading = false;
+              _this1282.transaccionesService.updateTransaccionEntrega(data).subscribe(function (res) {
+                _this1282.mostrarLoading = false;
                 sweetalert2__WEBPACK_IMPORTED_MODULE_4___default.a.fire({
                   title: "Correcto",
                   text: "Se ha actualizado su transacción",
                   icon: 'success'
                 });
 
-                _this1281.traerTransaccionesPorRango();
+                _this1282.traerTransaccionesPorRango();
               }, function (err) {
-                _this1281.mostrarLoading = false;
+                _this1282.mostrarLoading = false;
                 sweetalert2__WEBPACK_IMPORTED_MODULE_4___default.a.fire({
                   title: "Error",
                   text: "Error al actualizar estado",
@@ -164568,7 +164958,7 @@ function _classCallCheck(instance, Constructor) { if (!(instance instanceof Cons
                 });
               });
             } else if (result.dismiss === sweetalert2__WEBPACK_IMPORTED_MODULE_4___default.a.DismissReason.cancel) {
-              _this1281.mostrarLoading = false;
+              _this1282.mostrarLoading = false;
               sweetalert2__WEBPACK_IMPORTED_MODULE_4___default.a.fire({
                 title: "Error",
                 text: "Se ha cancelado su proceso",
@@ -164589,7 +164979,7 @@ function _classCallCheck(instance, Constructor) { if (!(instance instanceof Cons
       }, {
         key: "traerTransaccionesPorRango",
         value: function traerTransaccionesPorRango() {
-          var _this1282 = this;
+          var _this1283 = this;
 
           this.transaccionesGlobales = [];
           this.mensajeLoading = "Cargando Transacciones";
@@ -164601,25 +164991,25 @@ function _classCallCheck(instance, Constructor) { if (!(instance instanceof Cons
 
           if (this.isBusqGeneral) {
             this.transaccionesService.getTransaccionesPorRango(this.obj).subscribe(function (res) {
-              _this1282.transaccionesGlobales = res;
+              _this1283.transaccionesGlobales = res;
 
-              _this1282.separarTransacciones();
+              _this1283.separarTransacciones();
             }, function () {});
           } else {
             this.proTransaccion.nombre = this.nombreProducto;
             this.proTransaccion.fechaActual = this.obj.fechaActual;
             this.proTransaccion.fechaAnterior = this.obj.fechaAnterior;
             this.transaccionesService.getTransaccionesPorProductoYFecha(this.proTransaccion).subscribe(function (res) {
-              _this1282.transaccionesGlobales = res;
+              _this1283.transaccionesGlobales = res;
 
-              _this1282.separarTransacciones();
+              _this1283.separarTransacciones();
             });
           }
         }
       }, {
         key: "traerTransacciones",
         value: function traerTransacciones() {
-          var _this1283 = this;
+          var _this1284 = this;
 
           this.transaccionesGlobales = [];
           this.mensajeLoading = "Cargando Transacciones";
@@ -164627,34 +165017,34 @@ function _classCallCheck(instance, Constructor) { if (!(instance instanceof Cons
 
           if (this.isBusqGeneral) {
             this.transaccionesService.getTransaccionesGenerales().subscribe(function (res) {
-              _this1283.transaccionesGlobales = res;
+              _this1284.transaccionesGlobales = res;
 
-              _this1283.separarTransacciones();
+              _this1284.separarTransacciones();
             }, function () {});
           } else {
             this.proTransaccion.nombre = this.nombreProducto;
             this.transaccionesService.getTransaccionesPorProductoGeneral(this.proTransaccion).subscribe(function (res) {
-              _this1283.transaccionesGlobales = res;
+              _this1284.transaccionesGlobales = res;
 
-              _this1283.separarTransacciones();
+              _this1284.separarTransacciones();
             });
           }
         }
       }, {
         key: "traerProductosUnitarios",
         value: function traerProductosUnitarios() {
-          var _this1284 = this;
+          var _this1285 = this;
 
           this.mensajeLoading = "Cargando Productos";
           this.mostrarLoading = true;
           this.productos = [];
 
           this._productoService.getProductosActivos().subscribe(function (res) {
-            _this1284.productos = res;
+            _this1285.productos = res;
 
-            _this1284.separarProducto();
+            _this1285.separarProducto();
 
-            _this1284.mostrarLoading = false;
+            _this1285.mostrarLoading = false;
           });
         }
       }, {
@@ -164687,7 +165077,7 @@ function _classCallCheck(instance, Constructor) { if (!(instance instanceof Cons
       }, {
         key: "separarTransacciones",
         value: function separarTransacciones() {
-          var _this1285 = this;
+          var _this1286 = this;
 
           this.transacciones = [];
 
@@ -164696,7 +165086,7 @@ function _classCallCheck(instance, Constructor) { if (!(instance instanceof Cons
               case "matriz":
                 this.transaccionesGlobales.forEach(function (element) {
                   if (element.sucursal == "matriz") {
-                    _this1285.transacciones.push(element);
+                    _this1286.transacciones.push(element);
                   }
                 });
                 this.terminarLoading();
@@ -164705,7 +165095,7 @@ function _classCallCheck(instance, Constructor) { if (!(instance instanceof Cons
               case "sucursal1":
                 this.transaccionesGlobales.forEach(function (element) {
                   if (element.sucursal == "sucursal1") {
-                    _this1285.transacciones.push(element);
+                    _this1286.transacciones.push(element);
                   }
                 });
                 this.terminarLoading();
@@ -164714,7 +165104,7 @@ function _classCallCheck(instance, Constructor) { if (!(instance instanceof Cons
               case "sucursal2":
                 this.transaccionesGlobales.forEach(function (element) {
                   if (element.sucursal == "sucursal2") {
-                    _this1285.transacciones.push(element);
+                    _this1286.transacciones.push(element);
                   }
                 });
                 this.terminarLoading();
@@ -164742,17 +165132,17 @@ function _classCallCheck(instance, Constructor) { if (!(instance instanceof Cons
       }, {
         key: "cargarUsuarioLogueado",
         value: function cargarUsuarioLogueado() {
-          var _this1286 = this;
+          var _this1287 = this;
 
           new Promise(function (res, err) {
-            if (localStorage.getItem("maily") != "") _this1286.correo = localStorage.getItem("maily");
+            if (localStorage.getItem("maily") != "") _this1287.correo = localStorage.getItem("maily");
 
-            _this1286.authenService.getUserLogueado(_this1286.correo).subscribe(function (res) {
-              _this1286.usuarioLogueado = res;
+            _this1287.authenService.getUserLogueado(_this1287.correo).subscribe(function (res) {
+              _this1287.usuarioLogueado = res;
 
-              _this1286.traerTransaccionesPorRango();
+              _this1287.traerTransaccionesPorRango();
 
-              if (_this1286.usuarioLogueado[0].status == "Inactivo") _this1286.authService.logOut();
+              if (_this1287.usuarioLogueado[0].status == "Inactivo") _this1287.authService.logOut();
             }, function (err) {});
           });
         }
@@ -165586,20 +165976,20 @@ function _classCallCheck(instance, Constructor) { if (!(instance instanceof Cons
       }, {
         key: "traerListaTransacciones",
         value: function traerListaTransacciones() {
-          var _this1287 = this;
+          var _this1288 = this;
 
           this.listaTransacciones = [];
           this.mostrarLoading = true;
 
           this._transaccionFinancieraService.getTransaccionesFinancieras().subscribe(function (res) {
-            _this1287.listaTransacciones = res;
-            _this1287.mostrarLoading = false;
+            _this1288.listaTransacciones = res;
+            _this1288.mostrarLoading = false;
           });
         }
       }, {
         key: "traerTransaccionesPorRango",
         value: function traerTransaccionesPorRango() {
-          var _this1288 = this;
+          var _this1289 = this;
 
           this.listaTransacciones = [];
           this.mostrarLoading = true;
@@ -165610,8 +166000,8 @@ function _classCallCheck(instance, Constructor) { if (!(instance instanceof Cons
           this.obj.fechaActual.setHours(24);
 
           this._transaccionFinancieraService.getTransaccionesFinancierasPorRango(this.obj).subscribe(function (res) {
-            _this1288.listaTransacciones = res;
-            _this1288.mostrarLoading = false;
+            _this1289.listaTransacciones = res;
+            _this1289.mostrarLoading = false;
           }, function () {});
         }
       }, {
@@ -166382,7 +166772,7 @@ function _classCallCheck(instance, Constructor) { if (!(instance instanceof Cons
 
     var TransaccionesNominasComponent = /*#__PURE__*/function () {
       function TransaccionesNominasComponent(_transaccionFinancieraService, _notasService, _comprobantePagoService, _beneficiarioService) {
-        var _this1289 = this;
+        var _this1290 = this;
 
         _classCallCheck(this, TransaccionesNominasComponent);
 
@@ -166422,11 +166812,11 @@ function _classCallCheck(instance, Constructor) { if (!(instance instanceof Cons
         };
 
         this.deleteNota = function (e) {
-          _this1289.eliminarNota(e.row.data);
+          _this1290.eliminarNota(e.row.data);
         };
 
         this.mostrarNotas = function (e) {
-          _this1289.mostrarPopupNotasTabla(e.row.data);
+          _this1290.mostrarPopupNotasTabla(e.row.data);
         };
       }
 
@@ -166440,32 +166830,32 @@ function _classCallCheck(instance, Constructor) { if (!(instance instanceof Cons
       }, {
         key: "traerBeneficiarios",
         value: function traerBeneficiarios() {
-          var _this1290 = this;
+          var _this1291 = this;
 
           this._beneficiarioService.getBeneficiarios().subscribe(function (res) {
-            _this1290.beneficiarios = res;
+            _this1291.beneficiarios = res;
           });
         }
       }, {
         key: "traerListaTransacciones",
         value: function traerListaTransacciones() {
-          var _this1291 = this;
+          var _this1292 = this;
 
           this.listaTransacciones = [];
           this.mostrarLoading = true;
 
           this._transaccionFinancieraService.getTransaccionesFinancierasNominas().subscribe(function (res) {
-            _this1291.listaTransacciones = res;
+            _this1292.listaTransacciones = res;
 
-            _this1291.obtenerDatos();
+            _this1292.obtenerDatos();
 
-            _this1291.mostrarLoading = false;
+            _this1292.mostrarLoading = false;
           });
         }
       }, {
         key: "traerTransaccionesPorRango",
         value: function traerTransaccionesPorRango() {
-          var _this1292 = this;
+          var _this1293 = this;
 
           this.listaTransacciones = [];
           this.mostrarLoading = true;
@@ -166476,17 +166866,17 @@ function _classCallCheck(instance, Constructor) { if (!(instance instanceof Cons
           this.obj.fechaActual.setHours(24);
 
           this._transaccionFinancieraService.getTransaccionesFinancierasNominasPorRango(this.obj).subscribe(function (res) {
-            _this1292.listaTransacciones = res;
+            _this1293.listaTransacciones = res;
 
-            _this1292.obtenerDatos();
+            _this1293.obtenerDatos();
 
-            _this1292.mostrarLoading = false;
+            _this1293.mostrarLoading = false;
           }, function () {});
         }
       }, {
         key: "traerTransaccionesPorRangoYBeneficiario",
         value: function traerTransaccionesPorRangoYBeneficiario() {
-          var _this1293 = this;
+          var _this1294 = this;
 
           this.listaTransacciones = [];
           this.mostrarLoading = true;
@@ -166498,17 +166888,17 @@ function _classCallCheck(instance, Constructor) { if (!(instance instanceof Cons
           this.obj.sucursal = this.beneficiario;
 
           this._transaccionFinancieraService.getTransaccionesFinancierasNominasPorRangoYBeneficiario(this.obj).subscribe(function (res) {
-            _this1293.listaTransacciones = res;
+            _this1294.listaTransacciones = res;
 
-            _this1293.obtenerDatos();
+            _this1294.obtenerDatos();
 
-            _this1293.mostrarLoading = false;
+            _this1294.mostrarLoading = false;
           }, function () {});
         }
       }, {
         key: "obtenerDatos",
         value: function obtenerDatos() {
-          var _this1294 = this;
+          var _this1295 = this;
 
           this.valorAnticipos = 0;
           this.valorDescuentos = 0;
@@ -166519,17 +166909,17 @@ function _classCallCheck(instance, Constructor) { if (!(instance instanceof Cons
           this.resultado = 0;
           this.listaTransacciones.forEach(function (element) {
             if (element.subCuenta == "1.5.2 Nominas" || element.subCuenta == "1.7.1 Nominas" || element.subCuenta == "1.7.2 Nominas_Dominicales" || element.subCuenta == "1.7.3 Nominas_Complementarios") {
-              _this1294.valorNominas = element.valor + _this1294.valorNominas;
+              _this1295.valorNominas = element.valor + _this1295.valorNominas;
             } else if (element.subCuenta == "1.5.3 Anticipos nomina" || (element.subCuenta || "").toLowerCase().indexOf("anticipo") >= 0) {
-              _this1294.valorAnticipos = element.valor + _this1294.valorAnticipos;
+              _this1295.valorAnticipos = element.valor + _this1295.valorAnticipos;
             } else if (element.subCuenta == "1.5.7 Descuentos" || element.subCuenta == "1.7.4 Nominas - Descuentos" || element.subCuenta == "1.3.3 Nominas_Seguridad Social" || element.subCuenta == "1.3.4 Nominas_Descuentos") {
-              _this1294.valorDescuentos = element.valor + _this1294.valorDescuentos;
+              _this1295.valorDescuentos = element.valor + _this1295.valorDescuentos;
             } else if (element.subCuenta == "1.5.4 Pagos extras" || element.subCuenta == "1.7.4 Nominas_Extras" || element.subCuenta == "1.7.2 Arriendos" || element.subCuenta == "1.7.5 Servicios") {
-              _this1294.valorPagosExtras = element.valor + _this1294.valorPagosExtras;
+              _this1295.valorPagosExtras = element.valor + _this1295.valorPagosExtras;
             } else if (element.subCuenta == "1.5.5 Comisiones x Fletes") {
-              _this1294.valorComisiones = element.valor + _this1294.valorComisiones;
+              _this1295.valorComisiones = element.valor + _this1295.valorComisiones;
             } else if (element.subCuenta == "1.3.3 Pago o Abono Préstamo") {
-              _this1294.valorPagoPrestamos = element.valor + _this1294.valorPagoPrestamos;
+              _this1295.valorPagoPrestamos = element.valor + _this1295.valorPagoPrestamos;
             }
           });
           this.resultado = this.valorNominas + this.valorAnticipos - this.valorPagoPrestamos - this.valorDescuentos + this.valorPagosExtras + this.valorComisiones;
@@ -166561,13 +166951,13 @@ function _classCallCheck(instance, Constructor) { if (!(instance instanceof Cons
       }, {
         key: "traerListadoNotas",
         value: function traerListadoNotas() {
-          var _this1295 = this;
+          var _this1296 = this;
 
           this.mostrarLoading = true, this.listadoNotas = [];
 
           this._notasService.getNotasPorTipo("TNomina").subscribe(function (res) {
-            _this1295.listadoNotas = res;
-            _this1295.mostrarLoading = false;
+            _this1296.listadoNotas = res;
+            _this1296.mostrarLoading = false;
           });
         }
       }, {
@@ -166591,7 +166981,7 @@ function _classCallCheck(instance, Constructor) { if (!(instance instanceof Cons
       }, {
         key: "mostrarPopupNotasTabla",
         value: function mostrarPopupNotasTabla(e) {
-          var _this1296 = this;
+          var _this1297 = this;
 
           this.nombre = e.cliente;
           this.nombreSubCuenta = e.subCuenta;
@@ -166601,7 +166991,7 @@ function _classCallCheck(instance, Constructor) { if (!(instance instanceof Cons
 
           this._comprobantePagoService.getComprobantePorIdConsecutivo(comprobante).subscribe(function (res) {
             var notas = res;
-            _this1296.textoNota = notas[0].observaciones;
+            _this1297.textoNota = notas[0].observaciones;
           }, function (err) {
             alert("error");
           });
@@ -166609,10 +166999,10 @@ function _classCallCheck(instance, Constructor) { if (!(instance instanceof Cons
       }, {
         key: "eliminarNota",
         value: function eliminarNota(e) {
-          var _this1297 = this;
+          var _this1298 = this;
 
           this._notasService.deleteNotas(e).subscribe(function (res) {
-            _this1297.popupVisibleNotas = false;
+            _this1298.popupVisibleNotas = false;
             sweetalert2__WEBPACK_IMPORTED_MODULE_1___default.a.fire({
               title: 'Correcto',
               text: 'Se eliminó la nota con éxito',
@@ -166626,7 +167016,7 @@ function _classCallCheck(instance, Constructor) { if (!(instance instanceof Cons
       }, {
         key: "guardarNuevaNota",
         value: function guardarNuevaNota() {
-          var _this1298 = this;
+          var _this1299 = this;
 
           if (this.nota.descripcion != null) {
             this.popupVisibleNotas = false;
@@ -166634,16 +167024,16 @@ function _classCallCheck(instance, Constructor) { if (!(instance instanceof Cons
             this.nota.tipo = "TNomina";
 
             this._notasService.newNota(this.nota).subscribe(function (res) {
-              _this1298.mostrarLoading = false;
+              _this1299.mostrarLoading = false;
 
-              _this1298.mostrarMensajeGenerico(1, "Se registró su nota con éxito");
+              _this1299.mostrarMensajeGenerico(1, "Se registró su nota con éxito");
 
-              _this1298.nota.descripcion = "";
-              _this1298.valorOption = "Lista Notas";
-              _this1298.mostrarListaNotas = true;
-              _this1298.mostrarNuevaNotas = false;
+              _this1299.nota.descripcion = "";
+              _this1299.valorOption = "Lista Notas";
+              _this1299.mostrarListaNotas = true;
+              _this1299.mostrarNuevaNotas = false;
 
-              _this1298.traerListadoNotas();
+              _this1299.traerListadoNotas();
             });
           } else {
             this.mostrarMensajeGenerico(2, "Hay campos vacios");
@@ -167606,7 +167996,7 @@ function _classCallCheck(instance, Constructor) { if (!(instance instanceof Cons
 
     var TrasladosComponent = /*#__PURE__*/function () {
       function TrasladosComponent(db, parametrizacionService, authenService, trasladosService, transportistasService, contadoresService, productoService, bodegasService, authService, _comboService, _configuracionService, transaccionesService, sucursalesService) {
-        var _this1299 = this;
+        var _this1300 = this;
 
         _classCallCheck(this, TrasladosComponent);
 
@@ -167676,27 +168066,27 @@ function _classCallCheck(instance, Constructor) { if (!(instance instanceof Cons
         this.mostrarLoading = false;
 
         this.anadirProducto = function (e) {
-          _this1299.detalleTraslados.push(new _traslados__WEBPACK_IMPORTED_MODULE_2__["detalleTraslados"]());
+          _this1300.detalleTraslados.push(new _traslados__WEBPACK_IMPORTED_MODULE_2__["detalleTraslados"]());
         };
 
         this.getCourseFile = function (e) {
-          _this1299.cargarDatosRemisión(e.row.data);
+          _this1300.cargarDatosRemisión(e.row.data);
         };
 
         this.getCourseFile3 = function (e) {
-          _this1299.rechazarTraslado(e.row.data);
+          _this1300.rechazarTraslado(e.row.data);
         };
 
         this.getCourseFile4 = function (e) {
-          _this1299.eliminarTraslado(e.row.data);
+          _this1300.eliminarTraslado(e.row.data);
         };
 
         this.getCourseRecibido = function (e) {
-          _this1299.guardarTrasladoRecpcion(e.row.data);
+          _this1300.guardarTrasladoRecpcion(e.row.data);
         };
 
         this.rechazarIngresoTras = function (e) {
-          _this1299.rechazarIngresoTraslado(e.row.data);
+          _this1300.rechazarIngresoTraslado(e.row.data);
         };
 
         this.traslados = new _traslados__WEBPACK_IMPORTED_MODULE_2__["traslados"]();
@@ -167724,35 +168114,35 @@ function _classCallCheck(instance, Constructor) { if (!(instance instanceof Cons
       }, {
         key: "traerDatosConfiguracion",
         value: function traerDatosConfiguracion() {
-          var _this1300 = this;
+          var _this1301 = this;
 
           this._configuracionService.getDatosConfiguracion().subscribe(function (res) {
-            _this1300.imagenLogotipo = res[0].urlImage;
+            _this1301.imagenLogotipo = res[0].urlImage;
           });
         }
       }, {
         key: "cargarUsuarioLogueado",
         value: function cargarUsuarioLogueado() {
-          var _this1301 = this;
+          var _this1302 = this;
 
           this.sucursalUsuario = "matriz";
           new Promise(function (res, err) {
-            if (localStorage.getItem("maily") != "") _this1301.correo = localStorage.getItem("maily");
+            if (localStorage.getItem("maily") != "") _this1302.correo = localStorage.getItem("maily");
 
-            _this1301.authenService.getUserLogueado(_this1301.correo).subscribe(function (res) {
-              _this1301.usuarioLogueado = res;
-              _this1301.sucursalUsuario = _this1301.usuarioLogueado[0].sucursal;
-              localStorage.setItem('sucursal', _this1301.sucursalUsuario);
-              localStorage.setItem('rol', _this1301.usuarioLogueado[0].rol);
+            _this1302.authenService.getUserLogueado(_this1302.correo).subscribe(function (res) {
+              _this1302.usuarioLogueado = res;
+              _this1302.sucursalUsuario = _this1302.usuarioLogueado[0].sucursal;
+              localStorage.setItem('sucursal', _this1302.sucursalUsuario);
+              localStorage.setItem('rol', _this1302.usuarioLogueado[0].rol);
 
-              if (_this1301.usuarioLogueado[0].rol == "Usuario") {
+              if (_this1302.usuarioLogueado[0].rol == "Usuario") {
                 var z = document.getElementById("admin1");
                 z.style.display = "none";
-              } else if (_this1301.usuarioLogueado[0].rol == "Administrador") _this1301.mostrar = true;
+              } else if (_this1302.usuarioLogueado[0].rol == "Administrador") _this1302.mostrar = true;
 
-              if (_this1301.usuarioLogueado[0].status == "Inactivo") _this1301.authService.logOut();
+              if (_this1302.usuarioLogueado[0].status == "Inactivo") _this1302.authService.logOut();
 
-              _this1301.validarRol();
+              _this1302.validarRol();
             }, function (err) {});
           });
         }
@@ -167767,14 +168157,14 @@ function _classCallCheck(instance, Constructor) { if (!(instance instanceof Cons
       }, {
         key: "separarRegistrosTraslados",
         value: function separarRegistrosTraslados() {
-          var _this1302 = this;
+          var _this1303 = this;
 
           if (this.usuarioLogueado[0].rol != "Administrador") {
             switch (this.usuarioLogueado[0].sucursal) {
               case "matriz":
                 this.trasladosGlobales.forEach(function (element) {
                   if (element.sucursal_origen.nombre == "matriz") {
-                    _this1302.trasladosG.push(element);
+                    _this1303.trasladosG.push(element);
                   }
                 });
                 this.asignarValores();
@@ -167783,7 +168173,7 @@ function _classCallCheck(instance, Constructor) { if (!(instance instanceof Cons
               case "sucursal1":
                 this.trasladosGlobales.forEach(function (element) {
                   if (element.sucursal_origen.nombre == "sucursal1") {
-                    _this1302.trasladosG.push(element);
+                    _this1303.trasladosG.push(element);
                   }
                 });
                 this.asignarValores();
@@ -167792,7 +168182,7 @@ function _classCallCheck(instance, Constructor) { if (!(instance instanceof Cons
               case "sucursal2":
                 this.trasladosGlobales.forEach(function (element) {
                   if (element.sucursal_origen.nombre == "sucursal2") {
-                    _this1302.trasladosG.push(element);
+                    _this1303.trasladosG.push(element);
                   }
                 });
                 this.asignarValores();
@@ -167810,14 +168200,14 @@ function _classCallCheck(instance, Constructor) { if (!(instance instanceof Cons
       }, {
         key: "validarRol",
         value: function validarRol() {
-          var _this1303 = this;
+          var _this1304 = this;
 
           this.sucursal_origen = this.usuarioLogueado[0].sucursal;
           this.variablesucursal = this.usuarioLogueado[0].sucursal;
           this.obtenerDatos(this.variablesucursal);
           this.bodegas.forEach(function (element) {
-            if (element.sucursal == _this1303.sucursal_origen) {
-              _this1303.bodegasorigen.push(element);
+            if (element.sucursal == _this1304.sucursal_origen) {
+              _this1304.bodegasorigen.push(element);
             }
           });
 
@@ -167830,51 +168220,51 @@ function _classCallCheck(instance, Constructor) { if (!(instance instanceof Cons
       }, {
         key: "traerParametrizaciones",
         value: function traerParametrizaciones() {
-          var _this1304 = this;
+          var _this1305 = this;
 
           this.parametrizacionService.getParametrizacion().subscribe(function (res) {
-            _this1304.parametrizaciones = res;
+            _this1305.parametrizaciones = res;
           });
         }
       }, {
         key: "traerSucursales",
         value: function traerSucursales() {
-          var _this1305 = this;
+          var _this1306 = this;
 
           this.sucursalesService.getSucursales().subscribe(function (res) {
-            _this1305.locales = res;
+            _this1306.locales = res;
 
-            _this1305.cargarUsuarioLogueado();
+            _this1306.cargarUsuarioLogueado();
           });
         }
       }, {
         key: "traerBodegas",
         value: function traerBodegas() {
-          var _this1306 = this;
+          var _this1307 = this;
 
           this.bodegasService.getBodegas().subscribe(function (res) {
-            _this1306.bodegas = res;
+            _this1307.bodegas = res;
           });
         }
       }, {
         key: "traerTransacciones",
         value: function traerTransacciones() {
-          var _this1307 = this;
+          var _this1308 = this;
 
           this.transaccionesService.getTransaccion().subscribe(function (res) {
-            _this1307.transacciones = res;
+            _this1308.transacciones = res;
           });
         }
       }, {
         key: "traerProductos",
         value: function traerProductos() {
-          var _this1308 = this;
+          var _this1309 = this;
 
           this.productoService.getProductosActivos().subscribe(function (res) {
-            _this1308.productosActivos = res;
-            _this1308.productos = res;
+            _this1309.productosActivos = res;
+            _this1309.productos = res;
 
-            _this1308.llenarC();
+            _this1309.llenarC();
           });
         }
       }, {
@@ -167891,32 +168281,15 @@ function _classCallCheck(instance, Constructor) { if (!(instance instanceof Cons
       }, {
         key: "traerTransportistas",
         value: function traerTransportistas() {
-          var _this1309 = this;
+          var _this1310 = this;
 
           this.transportistasService.getTransportistas().subscribe(function (res) {
-            _this1309.transportistas = res;
+            _this1310.transportistas = res;
           });
         }
       }, {
         key: "traerTraslados",
         value: function traerTraslados() {
-          var _this1310 = this;
-
-          this.trasladosG = [];
-          this.trasladosGR = [];
-          this.trasladosEnviados = [];
-          this.trasladosEliminados = [];
-          this.trasladosRecibidos = [];
-          this.mostrarLoading = true;
-          this.trasladosService.getTraslado().subscribe(function (res) {
-            _this1310.trasladosG = res;
-
-            _this1310.asignarValores();
-          });
-        }
-      }, {
-        key: "traerTrasladosMensuales",
-        value: function traerTrasladosMensuales() {
           var _this1311 = this;
 
           this.trasladosG = [];
@@ -167925,21 +168298,38 @@ function _classCallCheck(instance, Constructor) { if (!(instance instanceof Cons
           this.trasladosEliminados = [];
           this.trasladosRecibidos = [];
           this.mostrarLoading = true;
-          this.trasladosService.getTrasladosMensuales(this.obj).subscribe(function (res) {
+          this.trasladosService.getTraslado().subscribe(function (res) {
             _this1311.trasladosG = res;
 
             _this1311.asignarValores();
           });
         }
       }, {
-        key: "traerContadoresDocumentos",
-        value: function traerContadoresDocumentos() {
+        key: "traerTrasladosMensuales",
+        value: function traerTrasladosMensuales() {
           var _this1312 = this;
 
-          this.contadoresService.getContadores().subscribe(function (res) {
-            _this1312.contadores = res;
+          this.trasladosG = [];
+          this.trasladosGR = [];
+          this.trasladosEnviados = [];
+          this.trasladosEliminados = [];
+          this.trasladosRecibidos = [];
+          this.mostrarLoading = true;
+          this.trasladosService.getTrasladosMensuales(this.obj).subscribe(function (res) {
+            _this1312.trasladosG = res;
 
-            _this1312.asignarIDdocumentos();
+            _this1312.asignarValores();
+          });
+        }
+      }, {
+        key: "traerContadoresDocumentos",
+        value: function traerContadoresDocumentos() {
+          var _this1313 = this;
+
+          this.contadoresService.getContadores().subscribe(function (res) {
+            _this1313.contadores = res;
+
+            _this1313.asignarIDdocumentos();
           });
         }
       }, {
@@ -167961,26 +168351,26 @@ function _classCallCheck(instance, Constructor) { if (!(instance instanceof Cons
       }, {
         key: "getIDDocumentos",
         value: function getIDDocumentos() {
-          return Object(tslib__WEBPACK_IMPORTED_MODULE_0__["__awaiter"])(this, void 0, void 0, /*#__PURE__*/regeneratorRuntime.mark(function _callee60() {
-            var _this1313 = this;
+          return Object(tslib__WEBPACK_IMPORTED_MODULE_0__["__awaiter"])(this, void 0, void 0, /*#__PURE__*/regeneratorRuntime.mark(function _callee62() {
+            var _this1314 = this;
 
-            return regeneratorRuntime.wrap(function _callee60$(_context60) {
+            return regeneratorRuntime.wrap(function _callee62$(_context63) {
               while (1) {
-                switch (_context60.prev = _context60.next) {
+                switch (_context63.prev = _context63.next) {
                   case 0:
-                    _context60.next = 2;
+                    _context63.next = 2;
                     return this.db.collection("consectivosBaseMongoDB").valueChanges().subscribe(function (data) {
-                      if (data != null) _this1313.contadorFirebase = data;
+                      if (data != null) _this1314.contadorFirebase = data;
 
-                      _this1313.asignarIDdocumentos2();
+                      _this1314.asignarIDdocumentos2();
                     });
 
                   case 2:
                   case "end":
-                    return _context60.stop();
+                    return _context63.stop();
                 }
               }
-            }, _callee60, this);
+            }, _callee62, this);
           }));
         }
       }, {
@@ -167991,17 +168381,17 @@ function _classCallCheck(instance, Constructor) { if (!(instance instanceof Cons
       }, {
         key: "asignarValores",
         value: function asignarValores() {
-          var _this1314 = this;
+          var _this1315 = this;
 
           this.trasladosG.forEach(function (element) {
             if (element.estado == "Rechazado") {
-              _this1314.trasladosGR.push(element);
+              _this1315.trasladosGR.push(element);
             } else if (element.estado == "ENVIADO") {
-              _this1314.trasladosEnviados.push(element);
+              _this1315.trasladosEnviados.push(element);
             } else if (element.estado == "RECIBIDO") {
-              _this1314.trasladosRecibidos.push(element);
+              _this1315.trasladosRecibidos.push(element);
             } else if (element.estado == "ELIMINADO") {
-              _this1314.trasladosEliminados.push(element);
+              _this1315.trasladosEliminados.push(element);
             }
           });
           this.mostrarLoading = false;
@@ -168038,11 +168428,11 @@ function _classCallCheck(instance, Constructor) { if (!(instance instanceof Cons
       }, {
         key: "llenarComboProductos2",
         value: function llenarComboProductos2() {
-          var _this1315 = this;
+          var _this1316 = this;
 
           this.productosActivos.forEach(function (element) {
             if (element.ESTADO == "ACTIVO") {
-              _this1315.productos.push(element);
+              _this1316.productos.push(element);
             }
           });
         }
@@ -168055,17 +168445,17 @@ function _classCallCheck(instance, Constructor) { if (!(instance instanceof Cons
       }, {
         key: "obtenerDatos",
         value: function obtenerDatos(sucursal) {
-          var _this1316 = this;
+          var _this1317 = this;
 
           this.locales.forEach(function (element) {
             if (element.nombre == sucursal) {
-              _this1316.traslados.sucursal_origen = element;
+              _this1317.traslados.sucursal_origen = element;
             }
           });
           this.bodegasorigen = [];
           this.bodegas.forEach(function (element) {
             if (element.sucursal == sucursal) {
-              _this1316.bodegasorigen.push(element);
+              _this1317.bodegasorigen.push(element);
             }
           });
           this.compararlocales();
@@ -168073,14 +168463,14 @@ function _classCallCheck(instance, Constructor) { if (!(instance instanceof Cons
       }, {
         key: "obtenerDatosSucursalOrigen",
         value: function obtenerDatosSucursalOrigen(e) {
-          var _this1317 = this;
+          var _this1318 = this;
 
           this.locales.forEach(function (element) {
-            if (element.nombre == e.value) _this1317.traslados.sucursal_origen = element;
+            if (element.nombre == e.value) _this1318.traslados.sucursal_origen = element;
           });
           this.bodegasorigen = [];
           this.bodegas.forEach(function (element) {
-            if (element.sucursal == e.value) _this1317.bodegasorigen.push(element);
+            if (element.sucursal == e.value) _this1318.bodegasorigen.push(element);
           });
           this.compararlocales();
           this.llenarComboProductos(e);
@@ -168088,16 +168478,16 @@ function _classCallCheck(instance, Constructor) { if (!(instance instanceof Cons
       }, {
         key: "setTransportista",
         value: function setTransportista(e) {
-          var _this1318 = this;
+          var _this1319 = this;
 
           this.transportistas.forEach(function (element) {
-            if (element.nombre == _this1318.nombre_transportista) {
-              _this1318.traslados.transportista = element;
-              _this1318.nombre_transportista = element.nombre;
-              _this1318.celular = element.celular;
-              _this1318.identificacion = element.identificacion;
-              _this1318.placa = element.placa;
-              _this1318.tipo_vehiculo = element.vehiculo;
+            if (element.nombre == _this1319.nombre_transportista) {
+              _this1319.traslados.transportista = element;
+              _this1319.nombre_transportista = element.nombre;
+              _this1319.celular = element.celular;
+              _this1319.identificacion = element.identificacion;
+              _this1319.placa = element.placa;
+              _this1319.tipo_vehiculo = element.vehiculo;
             }
           });
         }
@@ -168109,17 +168499,17 @@ function _classCallCheck(instance, Constructor) { if (!(instance instanceof Cons
       }, {
         key: "obtenerDatosSucursalDestino",
         value: function obtenerDatosSucursalDestino(e) {
-          var _this1319 = this;
+          var _this1320 = this;
 
           this.locales.forEach(function (element) {
             if (element.nombre == e.value) {
-              _this1319.traslados.sucursal_destino = element;
+              _this1320.traslados.sucursal_destino = element;
             }
           });
           this.bodegasdestino = [];
           this.bodegas.forEach(function (element) {
             if (element.sucursal == e.value) {
-              _this1319.bodegasdestino.push(element);
+              _this1320.bodegasdestino.push(element);
             }
           });
         }
@@ -168141,17 +168531,17 @@ function _classCallCheck(instance, Constructor) { if (!(instance instanceof Cons
       }, {
         key: "cargarDatosRemisi\xF3n",
         value: function cargarDatosRemisiN(e) {
-          var _this1320 = this;
+          var _this1321 = this;
 
           this.detalleTraslados = [];
           this.trasladosG.forEach(function (element) {
             if (e.idT == element.idT) {
-              _this1320.traslados = element;
-              _this1320.detalleTraslados = element.detalleTraslados;
+              _this1321.traslados = element;
+              _this1321.detalleTraslados = element.detalleTraslados;
             }
           });
           this.parametrizaciones.forEach(function (element) {
-            if (element.sucursal == _this1320.traslados.sucursal_origen.nombre) _this1320.parametrizacionSucu = element;
+            if (element.sucursal == _this1321.traslados.sucursal_origen.nombre) _this1321.parametrizacionSucu = element;
           });
           this.crearPDF();
         }
@@ -168208,7 +168598,7 @@ function _classCallCheck(instance, Constructor) { if (!(instance instanceof Cons
       }, {
         key: "rechazarTraslado",
         value: function rechazarTraslado(e) {
-          var _this1321 = this;
+          var _this1322 = this;
 
           sweetalert2__WEBPACK_IMPORTED_MODULE_5___default.a.fire({
             title: "Eliminar Traslado",
@@ -168219,7 +168609,7 @@ function _classCallCheck(instance, Constructor) { if (!(instance instanceof Cons
             cancelButtonText: "No"
           }).then(function (result) {
             if (result.value) {
-              _this1321.trasladosService.updateEstadoTraslado(e, "Rechazado").subscribe(function (res) {}, function (err) {
+              _this1322.trasladosService.updateEstadoTraslado(e, "Rechazado").subscribe(function (res) {}, function (err) {
                 alert("error");
               });
 
@@ -168239,7 +168629,7 @@ function _classCallCheck(instance, Constructor) { if (!(instance instanceof Cons
       }, {
         key: "eliminarTraslado",
         value: function eliminarTraslado(e) {
-          var _this1322 = this;
+          var _this1323 = this;
 
           sweetalert2__WEBPACK_IMPORTED_MODULE_5___default.a.fire({
             title: "Eliminar Traslado",
@@ -168250,10 +168640,10 @@ function _classCallCheck(instance, Constructor) { if (!(instance instanceof Cons
             cancelButtonText: "No"
           }).then(function (result) {
             if (result.value) {
-              _this1322.mensajeGuardando();
+              _this1323.mensajeGuardando();
 
-              _this1322.trasladosService.updateEstadoTraslado(e, "ELIMINADO").subscribe(function (res) {
-                _this1322.bajarTransaccionesTraslados(e);
+              _this1323.trasladosService.updateEstadoTraslado(e, "ELIMINADO").subscribe(function (res) {
+                _this1323.bajarTransaccionesTraslados(e);
               }, function (err) {
                 alert("error");
               });
@@ -168265,28 +168655,28 @@ function _classCallCheck(instance, Constructor) { if (!(instance instanceof Cons
       }, {
         key: "bajarTransaccionesTraslados",
         value: function bajarTransaccionesTraslados(e) {
-          var _this1323 = this;
+          var _this1324 = this;
 
           this.transacciones = [];
           this.busquedaTransaccion = new _transacciones_transacciones__WEBPACK_IMPORTED_MODULE_4__["tipoBusquedaTransaccion"]();
           this.busquedaTransaccion.NumDocumento = e.idT.toString();
           this.busquedaTransaccion.tipoTransaccion = "traslado1";
           this.transaccionesService.getTransaccionesPorNumeroDocumento(this.busquedaTransaccion).subscribe(function (res) {
-            _this1323.transacciones = res;
+            _this1324.transacciones = res;
 
-            var listado = _this1323.transacciones.filter(function (x) {
+            var listado = _this1324.transacciones.filter(function (x) {
               return x.documento == e.idT.toString() && (x.tipo_transaccion == "traslado1" || x.tipo_transaccion == "traslado2");
             });
 
-            _this1323.transacciones = listado;
+            _this1324.transacciones = listado;
 
-            if (_this1323.transacciones.length == 0) {
+            if (_this1324.transacciones.length == 0) {
               sweetalert2__WEBPACK_IMPORTED_MODULE_5___default.a.close();
 
-              _this1323.mostrarMensajeGenerico(2, "No se encontraron transacciones para este traslado");
+              _this1324.mostrarMensajeGenerico(2, "No se encontraron transacciones para este traslado");
             } else {
-              _this1323.trasladosService.updateEstadoTraslado(e, "ELIMINADO").subscribe(function (res) {
-                _this1323.eliminarTransacciones(e);
+              _this1324.trasladosService.updateEstadoTraslado(e, "ELIMINADO").subscribe(function (res) {
+                _this1324.eliminarTransacciones(e);
               }, function (err) {
                 alert("error");
               });
@@ -168296,15 +168686,15 @@ function _classCallCheck(instance, Constructor) { if (!(instance instanceof Cons
       }, {
         key: "eliminarTransacciones",
         value: function eliminarTransacciones(e) {
-          var _this1324 = this;
+          var _this1325 = this;
 
           var cont = 0;
           this.transacciones.forEach(function (element) {
             if (element.documento == e.idT && (element.tipo_transaccion == "traslado1" || element.tipo_transaccion == "traslado2")) {
-              _this1324.transaccionesService.deleteTransaccion(element).subscribe(function (res) {
+              _this1325.transaccionesService.deleteTransaccion(element).subscribe(function (res) {
                 cont++;
 
-                _this1324.validarMensaje(cont);
+                _this1325.validarMensaje(cont);
               }, function (err) {
                 alert("error");
               });
@@ -168390,7 +168780,7 @@ function _classCallCheck(instance, Constructor) { if (!(instance instanceof Cons
       }, {
         key: "guardarTrasladoRecpcion",
         value: function guardarTrasladoRecpcion(e) {
-          var _this1325 = this;
+          var _this1326 = this;
 
           var contVal = 0;
           this.traslados = e;
@@ -168399,41 +168789,41 @@ function _classCallCheck(instance, Constructor) { if (!(instance instanceof Cons
           this.detalleTraslados.forEach(function (element) {
             var _a;
 
-            element.id = _this1325.id2;
-            _this1325.transaccion = new _transacciones_transacciones__WEBPACK_IMPORTED_MODULE_4__["transaccion"]();
-            _this1325.transaccion.fecha_mov = new Date().toLocaleString();
-            _this1325.transaccion.fecha_transaccion = _this1325.traslados.fecha;
-            _this1325.transaccion.sucursal = _this1325.traslados.sucursal_destino.nombre;
-            _this1325.transaccion.totalsuma = 0;
-            _this1325.transaccion.bodega = _this1325.traslados.bodega_destino;
-            _this1325.transaccion.documento = _this1325.traslados.idT + "";
-            _this1325.transaccion.factPro = _this1325.traslados.idT + "";
-            _this1325.transaccion.producto = element.producto;
-            _this1325.transaccion.cajas = element.cajas;
-            _this1325.transaccion.piezas = element.piezas;
-            _this1325.transaccion.cantM2 = element.cantidadm2;
-            _this1325.transaccion.observaciones = _this1325.traslados.observaciones;
-            _this1325.transaccion.tipo_transaccion = "traslado2";
-            _this1325.transaccion.movimiento = 1;
-            _this1325.transaccion.usu_autorizado = _this1325.usuarioLogueado[0].username;
-            _this1325.transaccion.usuario = _this1325.usuarioLogueado[0].username;
-            _this1325.transaccion.idTransaccion = _this1325.number_transaccion++;
+            element.id = _this1326.id2;
+            _this1326.transaccion = new _transacciones_transacciones__WEBPACK_IMPORTED_MODULE_4__["transaccion"]();
+            _this1326.transaccion.fecha_mov = new Date().toLocaleString();
+            _this1326.transaccion.fecha_transaccion = _this1326.traslados.fecha;
+            _this1326.transaccion.sucursal = _this1326.traslados.sucursal_destino.nombre;
+            _this1326.transaccion.totalsuma = 0;
+            _this1326.transaccion.bodega = _this1326.traslados.bodega_destino;
+            _this1326.transaccion.documento = _this1326.traslados.idT + "";
+            _this1326.transaccion.factPro = _this1326.traslados.idT + "";
+            _this1326.transaccion.producto = element.producto;
+            _this1326.transaccion.cajas = element.cajas;
+            _this1326.transaccion.piezas = element.piezas;
+            _this1326.transaccion.cantM2 = element.cantidadm2;
+            _this1326.transaccion.observaciones = _this1326.traslados.observaciones;
+            _this1326.transaccion.tipo_transaccion = "traslado2";
+            _this1326.transaccion.movimiento = 1;
+            _this1326.transaccion.usu_autorizado = _this1326.usuarioLogueado[0].username;
+            _this1326.transaccion.usuario = _this1326.usuarioLogueado[0].username;
+            _this1326.transaccion.idTransaccion = _this1326.number_transaccion++;
 
-            var producto = _this1325.productos.find(function (element2) {
+            var producto = _this1326.productos.find(function (element2) {
               return element2.PRODUCTO == element.producto;
             });
 
-            if (((_a = producto) === null || _a === void 0 ? void 0 : _a.CLASIFICA) == "COMBO") _this1325.generarTransaccionesComboProductos(element.producto, 2);
+            if (((_a = producto) === null || _a === void 0 ? void 0 : _a.CLASIFICA) == "COMBO") _this1326.generarTransaccionesComboProductos(element.producto, 2);
 
-            _this1325.transaccionesService.newTransaccion(_this1325.transaccion).subscribe(function (res) {
-              contVal++, _this1325.contadorValidacionesRecibidos(e, contVal);
+            _this1326.transaccionesService.newTransaccion(_this1326.transaccion).subscribe(function (res) {
+              contVal++, _this1326.contadorValidacionesRecibidos(e, contVal);
             }, function (err) {});
           });
         }
       }, {
         key: "guardarTraslado",
         value: function guardarTraslado() {
-          var _this1326 = this;
+          var _this1327 = this;
 
           var _a;
 
@@ -168464,48 +168854,48 @@ function _classCallCheck(instance, Constructor) { if (!(instance instanceof Cons
           if (this.traslados.transportista.identificacion != undefined && this.traslados.transportista.nombre != undefined && this.traslados.transportista.celular != undefined && this.traslados.transportista.placa != undefined && this.traslados.transportista.vehiculo != undefined && this.traslados.sucursal_destino != undefined && this.traslados.sucursal_origen != undefined && this.traslados.bodega_destino != undefined && this.traslados.bodega_origen != undefined && bandera == true) {
             this.mensajeGuardando();
             new Promise(function (resolve, reject) {
-              _this1326.crearTransportista();
+              _this1327.crearTransportista();
 
-              _this1326.trasladosService.newTraslado(_this1326.traslados).subscribe(function (res) {
-                _this1326.contadores[0].contTraslados_Ndocumento = _this1326.id2;
+              _this1327.trasladosService.newTraslado(_this1327.traslados).subscribe(function (res) {
+                _this1327.contadores[0].contTraslados_Ndocumento = _this1327.id2;
 
-                _this1326.contadoresService.updateContadoresTraslados(_this1326.contadores[0]).subscribe(function (res) {}, function (err) {});
+                _this1327.contadoresService.updateContadoresTraslados(_this1327.contadores[0]).subscribe(function (res) {}, function (err) {});
               }, function (err) {});
 
-              _this1326.detalleTraslados.forEach(function (element) {
+              _this1327.detalleTraslados.forEach(function (element) {
                 var _a;
 
-                element.id = _this1326.id2;
-                _this1326.transaccion = new _transacciones_transacciones__WEBPACK_IMPORTED_MODULE_4__["transaccion"]();
-                _this1326.transaccion.fecha_mov = new Date().toLocaleString();
-                _this1326.transaccion.fecha_transaccion = _this1326.traslados.fecha;
-                _this1326.transaccion.sucursal = _this1326.traslados.sucursal_origen.nombre;
-                _this1326.transaccion.totalsuma = 0;
-                _this1326.transaccion.bodega = _this1326.traslados.bodega_origen;
-                _this1326.transaccion.documento = _this1326.id2 + "";
-                _this1326.transaccion.factPro = _this1326.id2 + "";
-                _this1326.transaccion.producto = element.producto;
-                _this1326.transaccion.cajas = element.cajas;
-                _this1326.transaccion.piezas = element.piezas;
-                _this1326.transaccion.cantM2 = element.cantidadm2;
-                _this1326.transaccion.observaciones = _this1326.traslados.observaciones;
-                _this1326.transaccion.movimiento = -1;
-                _this1326.transaccion.tipo_transaccion = "traslado1";
-                _this1326.transaccion.usu_autorizado = _this1326.usuarioLogueado[0].username;
-                _this1326.transaccion.usuario = _this1326.usuarioLogueado[0].username;
-                _this1326.transaccion.idTransaccion = _this1326.number_transaccion++;
+                element.id = _this1327.id2;
+                _this1327.transaccion = new _transacciones_transacciones__WEBPACK_IMPORTED_MODULE_4__["transaccion"]();
+                _this1327.transaccion.fecha_mov = new Date().toLocaleString();
+                _this1327.transaccion.fecha_transaccion = _this1327.traslados.fecha;
+                _this1327.transaccion.sucursal = _this1327.traslados.sucursal_origen.nombre;
+                _this1327.transaccion.totalsuma = 0;
+                _this1327.transaccion.bodega = _this1327.traslados.bodega_origen;
+                _this1327.transaccion.documento = _this1327.id2 + "";
+                _this1327.transaccion.factPro = _this1327.id2 + "";
+                _this1327.transaccion.producto = element.producto;
+                _this1327.transaccion.cajas = element.cajas;
+                _this1327.transaccion.piezas = element.piezas;
+                _this1327.transaccion.cantM2 = element.cantidadm2;
+                _this1327.transaccion.observaciones = _this1327.traslados.observaciones;
+                _this1327.transaccion.movimiento = -1;
+                _this1327.transaccion.tipo_transaccion = "traslado1";
+                _this1327.transaccion.usu_autorizado = _this1327.usuarioLogueado[0].username;
+                _this1327.transaccion.usuario = _this1327.usuarioLogueado[0].username;
+                _this1327.transaccion.idTransaccion = _this1327.number_transaccion++;
 
-                var producto = _this1326.productos.find(function (element2) {
+                var producto = _this1327.productos.find(function (element2) {
                   return element2.PRODUCTO == element.producto;
                 });
 
-                if (((_a = producto) === null || _a === void 0 ? void 0 : _a.CLASIFICA) == "COMBO") _this1326.generarTransaccionesComboProductos(element.producto, 1);
+                if (((_a = producto) === null || _a === void 0 ? void 0 : _a.CLASIFICA) == "COMBO") _this1327.generarTransaccionesComboProductos(element.producto, 1);
 
-                _this1326.transaccionesService.newTransaccion(_this1326.transaccion).subscribe(function (res) {
-                  _this1326.contadores[0].transacciones_Ndocumento = _this1326.number_transaccion++;
+                _this1327.transaccionesService.newTransaccion(_this1327.transaccion).subscribe(function (res) {
+                  _this1327.contadores[0].transacciones_Ndocumento = _this1327.number_transaccion++;
                   contVal++;
 
-                  _this1326.contadorValidaciones(contVal);
+                  _this1327.contadorValidaciones(contVal);
                 }, function (err) {});
               }); //this.actualizarProductosBase();
 
@@ -168517,7 +168907,7 @@ function _classCallCheck(instance, Constructor) { if (!(instance instanceof Cons
       }, {
         key: "generarTransaccionesComboProductos",
         value: function generarTransaccionesComboProductos(nombreCombo, tipo) {
-          var _this1327 = this;
+          var _this1328 = this;
 
           var combo = new _catalogo_catalogo__WEBPACK_IMPORTED_MODULE_8__["ProductoCombo"]();
           combo.PRODUCTO = nombreCombo;
@@ -168526,52 +168916,13 @@ function _classCallCheck(instance, Constructor) { if (!(instance instanceof Cons
             var listado = res;
 
             if (listado.length > 0) {
-              if (tipo == 1) _this1327.agregarTransacciones(listado[0].productosCombo, nombreCombo);else if (tipo == 2) _this1327.agregarTransaccionesRecepcion(listado[0].productosCombo, nombreCombo);
+              if (tipo == 1) _this1328.agregarTransacciones(listado[0].productosCombo, nombreCombo);else if (tipo == 2) _this1328.agregarTransaccionesRecepcion(listado[0].productosCombo, nombreCombo);
             }
           });
         }
       }, {
         key: "agregarTransacciones",
         value: function agregarTransacciones(productos, nombreCombo) {
-          var _this1328 = this;
-
-          var contVal = 0;
-          productos.forEach(function (element) {
-            var proV = _this1328.detalleTraslados.find(function (el) {
-              return el.producto == nombreCombo;
-            });
-
-            _this1328.transaccion = new _transacciones_transacciones__WEBPACK_IMPORTED_MODULE_4__["transaccion"]();
-            _this1328.transaccion.fecha_mov = new Date().toLocaleString();
-            _this1328.transaccion.fecha_transaccion = _this1328.traslados.fecha;
-            _this1328.transaccion.sucursal = _this1328.traslados.sucursal_origen.nombre;
-            _this1328.transaccion.totalsuma = 0;
-            _this1328.transaccion.bodega = "12";
-            _this1328.transaccion.valor = element.precioCombo;
-            _this1328.transaccion.cantM2 = proV.cantidadm2 * element.cantidad;
-            _this1328.transaccion.costo_unitario = element.precioMin;
-            _this1328.transaccion.documento = _this1328.id2 + "";
-            _this1328.transaccion.factPro = _this1328.id2 + "";
-            _this1328.transaccion.producto = element.producto.PRODUCTO;
-            _this1328.transaccion.cajas = proV.cantidadm2 * element.cantidad;
-            _this1328.transaccion.piezas = 0;
-            _this1328.transaccion.observaciones = _this1328.traslados.observaciones;
-            _this1328.transaccion.tipo_transaccion = "traslado1";
-            _this1328.transaccion.movimiento = -1;
-            _this1328.transaccion.usu_autorizado = _this1328.usuarioLogueado[0].username;
-            _this1328.transaccion.usuario = _this1328.usuarioLogueado[0].username;
-            _this1328.transaccion.idTransaccion = _this1328.number_transaccion++;
-
-            _this1328.transaccionesService.newTransaccion(_this1328.transaccion).subscribe(function (res) {
-              contVal++, _this1328.contadorGenerico(contVal, productos.length);
-            }, function (err) {
-              _this1328.mostrarMensajeGenerico(2, "Revise e intente nuevamente");
-            });
-          });
-        }
-      }, {
-        key: "agregarTransaccionesRecepcion",
-        value: function agregarTransaccionesRecepcion(productos, nombreCombo) {
           var _this1329 = this;
 
           var contVal = 0;
@@ -168583,20 +168934,20 @@ function _classCallCheck(instance, Constructor) { if (!(instance instanceof Cons
             _this1329.transaccion = new _transacciones_transacciones__WEBPACK_IMPORTED_MODULE_4__["transaccion"]();
             _this1329.transaccion.fecha_mov = new Date().toLocaleString();
             _this1329.transaccion.fecha_transaccion = _this1329.traslados.fecha;
-            _this1329.transaccion.sucursal = _this1329.traslados.sucursal_destino.nombre;
+            _this1329.transaccion.sucursal = _this1329.traslados.sucursal_origen.nombre;
             _this1329.transaccion.totalsuma = 0;
-            _this1329.transaccion.bodega = _this1329.traslados.bodega_destino;
+            _this1329.transaccion.bodega = "12";
             _this1329.transaccion.valor = element.precioCombo;
             _this1329.transaccion.cantM2 = proV.cantidadm2 * element.cantidad;
             _this1329.transaccion.costo_unitario = element.precioMin;
-            _this1329.transaccion.documento = _this1329.traslados.idT + "";
-            _this1329.transaccion.factPro = _this1329.traslados.idT + "";
+            _this1329.transaccion.documento = _this1329.id2 + "";
+            _this1329.transaccion.factPro = _this1329.id2 + "";
             _this1329.transaccion.producto = element.producto.PRODUCTO;
             _this1329.transaccion.cajas = proV.cantidadm2 * element.cantidad;
             _this1329.transaccion.piezas = 0;
             _this1329.transaccion.observaciones = _this1329.traslados.observaciones;
-            _this1329.transaccion.tipo_transaccion = "traslado2";
-            _this1329.transaccion.movimiento = 1;
+            _this1329.transaccion.tipo_transaccion = "traslado1";
+            _this1329.transaccion.movimiento = -1;
             _this1329.transaccion.usu_autorizado = _this1329.usuarioLogueado[0].username;
             _this1329.transaccion.usuario = _this1329.usuarioLogueado[0].username;
             _this1329.transaccion.idTransaccion = _this1329.number_transaccion++;
@@ -168609,6 +168960,45 @@ function _classCallCheck(instance, Constructor) { if (!(instance instanceof Cons
           });
         }
       }, {
+        key: "agregarTransaccionesRecepcion",
+        value: function agregarTransaccionesRecepcion(productos, nombreCombo) {
+          var _this1330 = this;
+
+          var contVal = 0;
+          productos.forEach(function (element) {
+            var proV = _this1330.detalleTraslados.find(function (el) {
+              return el.producto == nombreCombo;
+            });
+
+            _this1330.transaccion = new _transacciones_transacciones__WEBPACK_IMPORTED_MODULE_4__["transaccion"]();
+            _this1330.transaccion.fecha_mov = new Date().toLocaleString();
+            _this1330.transaccion.fecha_transaccion = _this1330.traslados.fecha;
+            _this1330.transaccion.sucursal = _this1330.traslados.sucursal_destino.nombre;
+            _this1330.transaccion.totalsuma = 0;
+            _this1330.transaccion.bodega = _this1330.traslados.bodega_destino;
+            _this1330.transaccion.valor = element.precioCombo;
+            _this1330.transaccion.cantM2 = proV.cantidadm2 * element.cantidad;
+            _this1330.transaccion.costo_unitario = element.precioMin;
+            _this1330.transaccion.documento = _this1330.traslados.idT + "";
+            _this1330.transaccion.factPro = _this1330.traslados.idT + "";
+            _this1330.transaccion.producto = element.producto.PRODUCTO;
+            _this1330.transaccion.cajas = proV.cantidadm2 * element.cantidad;
+            _this1330.transaccion.piezas = 0;
+            _this1330.transaccion.observaciones = _this1330.traslados.observaciones;
+            _this1330.transaccion.tipo_transaccion = "traslado2";
+            _this1330.transaccion.movimiento = 1;
+            _this1330.transaccion.usu_autorizado = _this1330.usuarioLogueado[0].username;
+            _this1330.transaccion.usuario = _this1330.usuarioLogueado[0].username;
+            _this1330.transaccion.idTransaccion = _this1330.number_transaccion++;
+
+            _this1330.transaccionesService.newTransaccion(_this1330.transaccion).subscribe(function (res) {
+              contVal++, _this1330.contadorGenerico(contVal, productos.length);
+            }, function (err) {
+              _this1330.mostrarMensajeGenerico(2, "Revise e intente nuevamente");
+            });
+          });
+        }
+      }, {
         key: "contadorGenerico",
         value: function contadorGenerico(cont1, cont2) {
           if (cont1 == cont2) return true;
@@ -168616,67 +169006,15 @@ function _classCallCheck(instance, Constructor) { if (!(instance instanceof Cons
       }, {
         key: "buscarDatosSucursal",
         value: function buscarDatosSucursal() {
-          var _this1330 = this;
+          var _this1331 = this;
 
           this.parametrizaciones.forEach(function (element) {
-            if (element.sucursal == _this1330.traslados.sucursal_origen.nombre) _this1330.parametrizacionSucu = element;
+            if (element.sucursal == _this1331.traslados.sucursal_origen.nombre) _this1331.parametrizacionSucu = element;
           });
         }
       }, {
         key: "actualizarProductosBaseRecibios",
         value: function actualizarProductosBaseRecibios() {
-          var _this1331 = this;
-
-          var restProd = 0;
-          var sumProd = 0;
-
-          var _loop30 = function _loop30(index) {
-            var element = _this1331.productos[index];
-
-            _this1331.detalleTraslados.forEach(function (element2) {
-              sumProd = 0;
-
-              if (element2.producto == element.PRODUCTO) {
-                switch (_this1331.traslados.sucursal_destino.nombre) {
-                  case "matriz":
-                    sumProd = element.sucursal1 + element2.cantidadm2;
-                    element.sucursal1 = sumProd;
-
-                    _this1331.productoService.updateProductoSucursal1(element).subscribe(function (res) {}, function (err) {
-                      alert("error");
-                    });
-
-                    break;
-
-                  case "sucursal1":
-                    sumProd = element.sucursal2 + element2.cantidadm2;
-                    element.sucursal2 = sumProd;
-
-                    _this1331.productoService.updateProductoSucursal2(element).subscribe(function (res) {}, function (err) {
-                      alert("error");
-                    });
-
-                    break;
-
-                  case "sucursal2":
-                    sumProd = element.sucursal3 + element2.cantidadm2;
-                    element.sucursal3 = sumProd;
-
-                    _this1331.productoService.updateProductoSucursal3(element).subscribe(function (res) {}, function (err) {});
-
-                  default:
-                }
-              }
-            });
-          };
-
-          for (var index = 0; index < this.productos.length; index++) {
-            _loop30(index);
-          }
-        }
-      }, {
-        key: "actualizarProductosBase",
-        value: function actualizarProductosBase() {
           var _this1332 = this;
 
           var restProd = 0;
@@ -168686,13 +169024,13 @@ function _classCallCheck(instance, Constructor) { if (!(instance instanceof Cons
             var element = _this1332.productos[index];
 
             _this1332.detalleTraslados.forEach(function (element2) {
-              restProd = 0;
+              sumProd = 0;
 
               if (element2.producto == element.PRODUCTO) {
-                switch (_this1332.traslados.sucursal_origen.nombre) {
+                switch (_this1332.traslados.sucursal_destino.nombre) {
                   case "matriz":
-                    restProd = element.sucursal1 - element2.cantidadm2;
-                    element.sucursal1 = restProd;
+                    sumProd = element.sucursal1 + element2.cantidadm2;
+                    element.sucursal1 = sumProd;
 
                     _this1332.productoService.updateProductoSucursal1(element).subscribe(function (res) {}, function (err) {
                       alert("error");
@@ -168701,8 +169039,8 @@ function _classCallCheck(instance, Constructor) { if (!(instance instanceof Cons
                     break;
 
                   case "sucursal1":
-                    restProd = element.sucursal2 - element2.cantidadm2;
-                    element.sucursal2 = restProd;
+                    sumProd = element.sucursal2 + element2.cantidadm2;
+                    element.sucursal2 = sumProd;
 
                     _this1332.productoService.updateProductoSucursal2(element).subscribe(function (res) {}, function (err) {
                       alert("error");
@@ -168711,12 +169049,10 @@ function _classCallCheck(instance, Constructor) { if (!(instance instanceof Cons
                     break;
 
                   case "sucursal2":
-                    restProd = element.sucursal3 - element2.cantidadm2;
-                    element.sucursal3 = restProd;
+                    sumProd = element.sucursal3 + element2.cantidadm2;
+                    element.sucursal3 = sumProd;
 
-                    _this1332.productoService.updateProductoSucursal3(element).subscribe(function (res) {}, function (err) {
-                      alert("error");
-                    });
+                    _this1332.productoService.updateProductoSucursal3(element).subscribe(function (res) {}, function (err) {});
 
                   default:
                 }
@@ -168729,21 +169065,12 @@ function _classCallCheck(instance, Constructor) { if (!(instance instanceof Cons
           }
         }
       }, {
-        key: "actualizarProductosBase2",
-        value: function actualizarProductosBase2(e) {
+        key: "actualizarProductosBase",
+        value: function actualizarProductosBase() {
           var _this1333 = this;
 
           var restProd = 0;
           var sumProd = 0;
-          var cont = 0;
-          var contex = 0;
-          this.detalleTraslados = [];
-          this.trasladosGR.forEach(function (element) {
-            if (e.idT == element.idT) {
-              _this1333.traslados = element;
-              _this1333.detalleTraslados = element.detalleTraslados;
-            }
-          });
 
           var _loop32 = function _loop32(index) {
             var element = _this1333.productos[index];
@@ -168754,7 +169081,7 @@ function _classCallCheck(instance, Constructor) { if (!(instance instanceof Cons
               if (element2.producto == element.PRODUCTO) {
                 switch (_this1333.traslados.sucursal_origen.nombre) {
                   case "matriz":
-                    restProd = element.sucursal1 + element2.cantidadm2;
+                    restProd = element.sucursal1 - element2.cantidadm2;
                     element.sucursal1 = restProd;
 
                     _this1333.productoService.updateProductoSucursal1(element).subscribe(function (res) {}, function (err) {
@@ -168764,7 +169091,7 @@ function _classCallCheck(instance, Constructor) { if (!(instance instanceof Cons
                     break;
 
                   case "sucursal1":
-                    restProd = element.sucursal3 + element2.cantidadm2;
+                    restProd = element.sucursal2 - element2.cantidadm2;
                     element.sucursal2 = restProd;
 
                     _this1333.productoService.updateProductoSucursal2(element).subscribe(function (res) {}, function (err) {
@@ -168774,7 +169101,7 @@ function _classCallCheck(instance, Constructor) { if (!(instance instanceof Cons
                     break;
 
                   case "sucursal2":
-                    restProd = element.sucursal3 + element2.cantidadm2;
+                    restProd = element.sucursal3 - element2.cantidadm2;
                     element.sucursal3 = restProd;
 
                     _this1333.productoService.updateProductoSucursal3(element).subscribe(function (res) {}, function (err) {
@@ -168790,22 +169117,85 @@ function _classCallCheck(instance, Constructor) { if (!(instance instanceof Cons
           for (var index = 0; index < this.productos.length; index++) {
             _loop32(index);
           }
+        }
+      }, {
+        key: "actualizarProductosBase2",
+        value: function actualizarProductosBase2(e) {
+          var _this1334 = this;
+
+          var restProd = 0;
+          var sumProd = 0;
+          var cont = 0;
+          var contex = 0;
+          this.detalleTraslados = [];
+          this.trasladosGR.forEach(function (element) {
+            if (e.idT == element.idT) {
+              _this1334.traslados = element;
+              _this1334.detalleTraslados = element.detalleTraslados;
+            }
+          });
+
+          var _loop33 = function _loop33(index) {
+            var element = _this1334.productos[index];
+
+            _this1334.detalleTraslados.forEach(function (element2) {
+              restProd = 0;
+
+              if (element2.producto == element.PRODUCTO) {
+                switch (_this1334.traslados.sucursal_origen.nombre) {
+                  case "matriz":
+                    restProd = element.sucursal1 + element2.cantidadm2;
+                    element.sucursal1 = restProd;
+
+                    _this1334.productoService.updateProductoSucursal1(element).subscribe(function (res) {}, function (err) {
+                      alert("error");
+                    });
+
+                    break;
+
+                  case "sucursal1":
+                    restProd = element.sucursal3 + element2.cantidadm2;
+                    element.sucursal2 = restProd;
+
+                    _this1334.productoService.updateProductoSucursal2(element).subscribe(function (res) {}, function (err) {
+                      alert("error");
+                    });
+
+                    break;
+
+                  case "sucursal2":
+                    restProd = element.sucursal3 + element2.cantidadm2;
+                    element.sucursal3 = restProd;
+
+                    _this1334.productoService.updateProductoSucursal3(element).subscribe(function (res) {}, function (err) {
+                      alert("error");
+                    });
+
+                  default:
+                }
+              }
+            });
+          };
+
+          for (var index = 0; index < this.productos.length; index++) {
+            _loop33(index);
+          }
 
           new Promise(function (resolve, reject) {
-            var _loop33 = function _loop33(_index13) {
-              var element = _this1333.productos[_index13];
+            var _loop34 = function _loop34(_index13) {
+              var element = _this1334.productos[_index13];
 
-              _this1333.detalleTraslados.forEach(function (element2) {
+              _this1334.detalleTraslados.forEach(function (element2) {
                 sumProd = 0;
 
                 if (element2.producto == element.PRODUCTO) {
-                  switch (_this1333.traslados.sucursal_destino.nombre) {
+                  switch (_this1334.traslados.sucursal_destino.nombre) {
                     case "matriz":
                       sumProd = element.sucursal1 - element2.cantidadm2;
                       element.sucursal1 = sumProd;
 
-                      _this1333.productoService.updateProductoSucursal1(element).subscribe(function (res) {
-                        contex++, _this1333.contadorValidaciones2(contex);
+                      _this1334.productoService.updateProductoSucursal1(element).subscribe(function (res) {
+                        contex++, _this1334.contadorValidaciones2(contex);
                       }, function (err) {
                         alert("error");
                       });
@@ -168816,8 +169206,8 @@ function _classCallCheck(instance, Constructor) { if (!(instance instanceof Cons
                       sumProd = element.sucursal2 - element2.cantidadm2;
                       element.sucursal2 = sumProd;
 
-                      _this1333.productoService.updateProductoSucursal2(element).subscribe(function (res) {
-                        contex++, _this1333.contadorValidaciones2(contex);
+                      _this1334.productoService.updateProductoSucursal2(element).subscribe(function (res) {
+                        contex++, _this1334.contadorValidaciones2(contex);
                       }, function (err) {
                         alert("error");
                       });
@@ -168828,21 +169218,21 @@ function _classCallCheck(instance, Constructor) { if (!(instance instanceof Cons
                       sumProd = element.sucursal3 - element2.cantidadm2;
                       element.sucursal3 = sumProd;
 
-                      _this1333.productoService.updateProductoSucursal3(element).subscribe(function (res) {
-                        contex++, _this1333.contadorValidaciones2(contex);
+                      _this1334.productoService.updateProductoSucursal3(element).subscribe(function (res) {
+                        contex++, _this1334.contadorValidaciones2(contex);
                       }, function (err) {
                         alert("error");
                       });
 
                     default:
-                      contex++, _this1333.contadorValidaciones2(contex);
+                      contex++, _this1334.contadorValidaciones2(contex);
                   }
                 }
               });
             };
 
-            for (var _index13 = 0; _index13 < _this1333.productos.length; _index13++) {
-              _loop33(_index13);
+            for (var _index13 = 0; _index13 < _this1334.productos.length; _index13++) {
+              _loop34(_index13);
             }
           });
         }
@@ -168864,7 +169254,7 @@ function _classCallCheck(instance, Constructor) { if (!(instance instanceof Cons
       }, {
         key: "obtenerDetallesProducto",
         value: function obtenerDetallesProducto(e, i) {
-          var _this1334 = this;
+          var _this1335 = this;
 
           var producto = this.detalleTraslados.filter(function (element) {
             return element.producto == e.value;
@@ -168878,20 +169268,20 @@ function _classCallCheck(instance, Constructor) { if (!(instance instanceof Cons
 
           this.productos.forEach(function (element) {
             if (element.PRODUCTO == e.value) {
-              if (element.CLASIFICA == "COMBO") _this1334.buscarCombo(e.value, i);else _this1334.traerTransaccionesPorProducto(element, i);
+              if (element.CLASIFICA == "COMBO") _this1335.buscarCombo(e.value, i);else _this1335.traerTransaccionesPorProducto(element, i);
 
               switch (element.UNIDAD) {
                 case "Metros":
-                  _this1334.detalleTraslados[i].tipo = "Cajas / Piezas";
+                  _this1335.detalleTraslados[i].tipo = "Cajas / Piezas";
                   break;
 
                 case "Unidad":
-                  _this1334.detalleTraslados[i].tipo = "Unidades";
-                  _this1334.detalleTraslados[i].desPiezas = true;
+                  _this1335.detalleTraslados[i].tipo = "Unidades";
+                  _this1335.detalleTraslados[i].desPiezas = true;
                   break;
 
                 default:
-                  _this1334.detalleTraslados[i].tipo = element.UNIDAD;
+                  _this1335.detalleTraslados[i].tipo = element.UNIDAD;
                   break;
               }
             }
@@ -168900,7 +169290,7 @@ function _classCallCheck(instance, Constructor) { if (!(instance instanceof Cons
       }, {
         key: "buscarCombo",
         value: function buscarCombo(nombreCombo, num) {
-          var _this1335 = this;
+          var _this1336 = this;
 
           var combo = new _catalogo_catalogo__WEBPACK_IMPORTED_MODULE_8__["ProductoCombo"]();
           combo.PRODUCTO = nombreCombo;
@@ -168908,77 +169298,77 @@ function _classCallCheck(instance, Constructor) { if (!(instance instanceof Cons
           this._comboService.getComboPorNombre(combo).subscribe(function (res) {
             var listado = res;
 
-            _this1335.buscarProductosCombo(listado[0].productosCombo, num);
+            _this1336.buscarProductosCombo(listado[0].productosCombo, num);
           });
         }
       }, {
         key: "buscarProductosCombo",
         value: function buscarProductosCombo(listado, num) {
-          var _this1336 = this;
+          var _this1337 = this;
 
           this.mostrarLoading = true;
           this.cantidadProductos = 0;
           listado.forEach(function (element) {
-            _this1336.productos.forEach(function (element2) {
-              if (element.nombreProducto == element2.PRODUCTO) _this1336.traerTransaccionesPorProductoCombo2(element2, num, listado.length, element);
+            _this1337.productos.forEach(function (element2) {
+              if (element.nombreProducto == element2.PRODUCTO) _this1337.traerTransaccionesPorProductoCombo2(element2, num, listado.length, element);
             });
           });
         }
       }, {
         key: "traerTransaccionesPorProducto",
         value: function traerTransaccionesPorProducto(nombreProducto, numero) {
-          var _this1337 = this;
+          var _this1338 = this;
 
           this.invetarioP = [];
           this.mostrarLoading = true;
           this.proTransaccion.nombre = nombreProducto.PRODUCTO;
           this.transaccionesService.getTransaccionesPorProducto(this.proTransaccion).subscribe(function (res) {
-            _this1337.transacciones = res;
+            _this1338.transacciones = res;
 
-            _this1337.cargarDatosProductoUnitario(nombreProducto, numero);
+            _this1338.cargarDatosProductoUnitario(nombreProducto, numero);
           });
         }
       }, {
         key: "validarCantidad",
         value: function validarCantidad(i) {
-          var _this1338 = this;
+          var _this1339 = this;
 
           var cantm2 = 0;
           this.productos.forEach(function (element) {
-            if (element.PRODUCTO == _this1338.detalleTraslados[i].producto) {
-              cantm2 = parseFloat((element.M2 * _this1338.detalleTraslados[i].cajas + _this1338.detalleTraslados[i].piezas * element.M2 / element.P_CAJA).toFixed(2));
-              _this1338.detalleTraslados[i].cantidadm2 = cantm2;
+            if (element.PRODUCTO == _this1339.detalleTraslados[i].producto) {
+              cantm2 = parseFloat((element.M2 * _this1339.detalleTraslados[i].cajas + _this1339.detalleTraslados[i].piezas * element.M2 / element.P_CAJA).toFixed(2));
+              _this1339.detalleTraslados[i].cantidadm2 = cantm2;
 
-              switch (_this1338.traslados.sucursal_origen.nombre) {
+              switch (_this1339.traslados.sucursal_origen.nombre) {
                 case "matriz":
                   if (cantm2 > element.sucursal1) {
-                    _this1338.detalleTraslados[i].cajas = 0;
-                    _this1338.detalleTraslados[i].piezas = 0;
-                    _this1338.detalleTraslados[i].cantidadm2 = 0;
+                    _this1339.detalleTraslados[i].cajas = 0;
+                    _this1339.detalleTraslados[i].piezas = 0;
+                    _this1339.detalleTraslados[i].cantidadm2 = 0;
 
-                    _this1338.mensajeExceso();
+                    _this1339.mensajeExceso();
                   }
 
                   break;
 
                 case "sucursal1":
                   if (cantm2 > element.sucursal2) {
-                    _this1338.detalleTraslados[i].cajas = 0;
-                    _this1338.detalleTraslados[i].piezas = 0;
-                    _this1338.detalleTraslados[i].cantidadm2 = 0;
+                    _this1339.detalleTraslados[i].cajas = 0;
+                    _this1339.detalleTraslados[i].piezas = 0;
+                    _this1339.detalleTraslados[i].cantidadm2 = 0;
 
-                    _this1338.mensajeExceso();
+                    _this1339.mensajeExceso();
                   }
 
                   break;
 
                 case "sucursal2":
                   if (cantm2 > element.sucursal3) {
-                    _this1338.detalleTraslados[i].cajas = 0;
-                    _this1338.detalleTraslados[i].piezas = 0;
-                    _this1338.detalleTraslados[i].cantidadm2 = 0;
+                    _this1339.detalleTraslados[i].cajas = 0;
+                    _this1339.detalleTraslados[i].piezas = 0;
+                    _this1339.detalleTraslados[i].cantidadm2 = 0;
 
-                    _this1338.mensajeExceso();
+                    _this1339.mensajeExceso();
                   }
 
                 default:
@@ -169021,7 +169411,7 @@ function _classCallCheck(instance, Constructor) { if (!(instance instanceof Cons
       }, {
         key: "rechazarIngresoTraslado",
         value: function rechazarIngresoTraslado(e) {
-          var _this1339 = this;
+          var _this1340 = this;
 
           sweetalert2__WEBPACK_IMPORTED_MODULE_5___default.a.fire({
             title: "Rechazar Ingreso Traslado",
@@ -169032,22 +169422,22 @@ function _classCallCheck(instance, Constructor) { if (!(instance instanceof Cons
             cancelButtonText: "No"
           }).then(function (result) {
             if (result.value) {
-              _this1339.mensajeGuardando();
+              _this1340.mensajeGuardando();
 
-              _this1339.busquedaTransaccion = new _transacciones_transacciones__WEBPACK_IMPORTED_MODULE_4__["tipoBusquedaTransaccion"]();
-              _this1339.busquedaTransaccion.NumDocumento = e.idT.toString();
-              _this1339.busquedaTransaccion.tipoTransaccion = "traslado1";
+              _this1340.busquedaTransaccion = new _transacciones_transacciones__WEBPACK_IMPORTED_MODULE_4__["tipoBusquedaTransaccion"]();
+              _this1340.busquedaTransaccion.NumDocumento = e.idT.toString();
+              _this1340.busquedaTransaccion.tipoTransaccion = "traslado1";
 
-              _this1339.transaccionesService.getTransaccionesPorTipoDocumento(_this1339.busquedaTransaccion).subscribe(function (res) {
-                _this1339.transacciones = res;
+              _this1340.transaccionesService.getTransaccionesPorTipoDocumento(_this1340.busquedaTransaccion).subscribe(function (res) {
+                _this1340.transacciones = res;
 
-                if (_this1339.transacciones.length == 0) {
+                if (_this1340.transacciones.length == 0) {
                   sweetalert2__WEBPACK_IMPORTED_MODULE_5___default.a.close();
 
-                  _this1339.mostrarMensajeGenerico(2, "No se encontraron transacciones para este traslado");
+                  _this1340.mostrarMensajeGenerico(2, "No se encontraron transacciones para este traslado");
                 } else {
-                  _this1339.trasladosService.updateEstadoTraslado(e, "ELIMINADO").subscribe(function (res) {
-                    _this1339.eliminarTransacciones(e);
+                  _this1340.trasladosService.updateEstadoTraslado(e, "ELIMINADO").subscribe(function (res) {
+                    _this1340.eliminarTransacciones(e);
                   }, function (err) {
                     alert("error");
                   });
@@ -169088,7 +169478,7 @@ function _classCallCheck(instance, Constructor) { if (!(instance instanceof Cons
       }, {
         key: "compararlocales",
         value: function compararlocales() {
-          var _this1340 = this;
+          var _this1341 = this;
 
           var cont = 0;
           this.locales2.forEach(function (element) {
@@ -169097,13 +169487,13 @@ function _classCallCheck(instance, Constructor) { if (!(instance instanceof Cons
 
           if (cont >= 0) {
             this.locales2.forEach(function (element) {
-              _this1340.locales2.splice(0);
+              _this1341.locales2.splice(0);
             });
           }
 
           this.locales.forEach(function (element) {
-            if (element.nombre != _this1340.traslados.sucursal_origen.nombre) {
-              _this1340.locales2.push(element);
+            if (element.nombre != _this1341.traslados.sucursal_origen.nombre) {
+              _this1341.locales2.push(element);
             }
           });
         }
@@ -169678,7 +170068,7 @@ function _classCallCheck(instance, Constructor) { if (!(instance instanceof Cons
       }, {
         key: "cambiarValores2",
         value: function cambiarValores2(numero) {
-          var _this1341 = this;
+          var _this1342 = this;
 
           this.invetarioP.forEach(function (element) {
             element.cantidadCajas = Math.trunc(element.cantidadM2 / element.producto.M2);
@@ -169692,10 +170082,10 @@ function _classCallCheck(instance, Constructor) { if (!(instance instanceof Cons
             element.cantidadM2b3 = parseFloat(element.cantidadM2b3.toFixed(2));
           });
           this.productos.forEach(function (element) {
-            if (element.PRODUCTO == _this1341.detalleTraslados[numero].producto) {
-              element.sucursal1 = _this1341.invetarioP[0].cantidadM2;
-              element.sucursal2 = _this1341.invetarioP[0].cantidadM2b2;
-              element.sucursal3 = _this1341.invetarioP[0].cantidadM2b3;
+            if (element.PRODUCTO == _this1342.detalleTraslados[numero].producto) {
+              element.sucursal1 = _this1342.invetarioP[0].cantidadM2;
+              element.sucursal2 = _this1342.invetarioP[0].cantidadM2b2;
+              element.sucursal3 = _this1342.invetarioP[0].cantidadM2b3;
             }
           });
           this.mostrarLoading = false;
@@ -169704,15 +170094,15 @@ function _classCallCheck(instance, Constructor) { if (!(instance instanceof Cons
       }, {
         key: "traerTransaccionesPorProductoCombo2",
         value: function traerTransaccionesPorProductoCombo2(nombreProducto, num, cantidadP, productoCombo) {
-          var _this1342 = this;
+          var _this1343 = this;
 
           this.cantidadProductos++;
           this.invetarioP = [];
           this.transacciones = [];
           this.proTransaccion.nombre = nombreProducto.PRODUCTO;
           var p1 = new Promise(function (resolve, reject) {
-            _this1342.transaccionesService.getTransaccionesPorProducto(_this1342.proTransaccion).toPromise().then(function (res) {
-              _this1342.transacciones = res;
+            _this1343.transaccionesService.getTransaccionesPorProducto(_this1343.proTransaccion).toPromise().then(function (res) {
+              _this1343.transacciones = res;
               var contCajas = 0;
               var contCajas2 = 0;
               var contCajas3 = 0;
@@ -169720,7 +170110,7 @@ function _classCallCheck(instance, Constructor) { if (!(instance instanceof Cons
               var contPiezas2 = 0;
               var contPiezas3 = 0;
 
-              _this1342.transacciones.forEach(function (element) {
+              _this1343.transacciones.forEach(function (element) {
                 if (nombreProducto.PRODUCTO == element.producto && element.sucursal == "matriz") {
                   switch (element.tipo_transaccion) {
                     case "devolucion":
@@ -169901,17 +170291,17 @@ function _classCallCheck(instance, Constructor) { if (!(instance instanceof Cons
                 }
               });
 
-              _this1342.invetarioP = [];
-              _this1342.invetarioProd = new _consolidado_consolidado__WEBPACK_IMPORTED_MODULE_9__["inventario"]();
-              _this1342.invetarioProd.producto = nombreProducto;
-              _this1342.invetarioProd.cantidadCajas = contCajas;
-              _this1342.invetarioProd.cantidadCajas2 = contCajas2;
-              _this1342.invetarioProd.cantidadCajas3 = contCajas3;
-              _this1342.invetarioProd.cantidadPiezas = contPiezas;
-              _this1342.invetarioProd.cantidadPiezas2 = contPiezas2;
-              _this1342.invetarioProd.cantidadPiezas3 = contPiezas3;
+              _this1343.invetarioP = [];
+              _this1343.invetarioProd = new _consolidado_consolidado__WEBPACK_IMPORTED_MODULE_9__["inventario"]();
+              _this1343.invetarioProd.producto = nombreProducto;
+              _this1343.invetarioProd.cantidadCajas = contCajas;
+              _this1343.invetarioProd.cantidadCajas2 = contCajas2;
+              _this1343.invetarioProd.cantidadCajas3 = contCajas3;
+              _this1343.invetarioProd.cantidadPiezas = contPiezas;
+              _this1343.invetarioProd.cantidadPiezas2 = contPiezas2;
+              _this1343.invetarioProd.cantidadPiezas3 = contPiezas3;
 
-              _this1342.invetarioP.push(_this1342.invetarioProd);
+              _this1343.invetarioP.push(_this1343.invetarioProd);
 
               contCajas = 0;
               contPiezas = 0;
@@ -169920,7 +170310,7 @@ function _classCallCheck(instance, Constructor) { if (!(instance instanceof Cons
               contCajas3 = 0;
               contPiezas3 = 0; //seccion2
 
-              _this1342.invetarioP.forEach(function (element) {
+              _this1343.invetarioP.forEach(function (element) {
                 element.cantidadM2 = parseFloat((element.producto.M2 * element.cantidadCajas + element.cantidadPiezas * element.producto.M2 / element.producto.P_CAJA).toFixed(2));
                 element.cantidadM2b2 = parseFloat((element.producto.M2 * element.cantidadCajas2 + element.cantidadPiezas2 * element.producto.M2 / element.producto.P_CAJA).toFixed(2));
                 element.cantidadM2b3 = parseFloat((element.producto.M2 * element.cantidadCajas3 + element.cantidadPiezas3 * element.producto.M2 / element.producto.P_CAJA).toFixed(2));
@@ -169930,7 +170320,7 @@ function _classCallCheck(instance, Constructor) { if (!(instance instanceof Cons
               }); //seccion3
 
 
-              _this1342.invetarioP.forEach(function (element) {
+              _this1343.invetarioP.forEach(function (element) {
                 element.cantidadCajas = Math.trunc(element.cantidadM2 / element.producto.M2);
                 element.cantidadPiezas = parseInt((element.cantidadM2 * element.producto.P_CAJA / element.producto.M2 - element.cantidadCajas * element.producto.P_CAJA).toFixed(0));
                 element.cantidadM2 = parseFloat(element.cantidadM2.toFixed(2));
@@ -169944,39 +170334,39 @@ function _classCallCheck(instance, Constructor) { if (!(instance instanceof Cons
 
               var disponible = 0;
 
-              switch (_this1342.traslados.sucursal_origen.nombre) {
+              switch (_this1343.traslados.sucursal_origen.nombre) {
                 case "matriz":
-                  disponible = _this1342.invetarioP[0].cantidadM2;
+                  disponible = _this1343.invetarioP[0].cantidadM2;
                   break;
 
                 case "sucursal1":
-                  disponible = _this1342.invetarioP[0].cantidadM2b2;
+                  disponible = _this1343.invetarioP[0].cantidadM2b2;
                   break;
 
                 case "sucursal2":
-                  disponible = _this1342.invetarioP[0].cantidadM2b3;
+                  disponible = _this1343.invetarioP[0].cantidadM2b3;
                   break;
 
                 default:
               }
 
               if (disponible < 0) disponible = 0;
-              _this1342.valor2 = Math.trunc(Number(disponible) / productoCombo.cantidad);
-              if (_this1342.valor2 < _this1342.valor3) _this1342.valor3 = _this1342.valor2;
+              _this1343.valor2 = Math.trunc(Number(disponible) / productoCombo.cantidad);
+              if (_this1343.valor2 < _this1343.valor3) _this1343.valor3 = _this1343.valor2;
 
-              _this1342.productos.forEach(function (element) {
-                if (element.PRODUCTO == _this1342.detalleTraslados[num].producto) {
-                  switch (_this1342.traslados.sucursal_origen.nombre) {
+              _this1343.productos.forEach(function (element) {
+                if (element.PRODUCTO == _this1343.detalleTraslados[num].producto) {
+                  switch (_this1343.traslados.sucursal_origen.nombre) {
                     case "matriz":
-                      element.sucursal1 = _this1342.valor3;
+                      element.sucursal1 = _this1343.valor3;
                       break;
 
                     case "sucursal1":
-                      element.sucursal2 = _this1342.valor3;
+                      element.sucursal2 = _this1343.valor3;
                       break;
 
                     case "sucursal2":
-                      element.sucursal3 = _this1342.valor3;
+                      element.sucursal3 = _this1343.valor3;
                       break;
 
                     default:
@@ -169984,7 +170374,7 @@ function _classCallCheck(instance, Constructor) { if (!(instance instanceof Cons
                 }
               });
 
-              if (cantidadP == _this1342.cantidadProductos) _this1342.mostrarLoading = false;
+              if (cantidadP == _this1343.cantidadProductos) _this1343.mostrarLoading = false;
               resolve(disponible);
             })["catch"](function (err) {
               resolve(false);
@@ -172075,7 +172465,7 @@ function _classCallCheck(instance, Constructor) { if (!(instance instanceof Cons
       }, {
         key: "mostrarPopupCodigo",
         value: function mostrarPopupCodigo() {
-          var _this1343 = this;
+          var _this1344 = this;
 
           sweetalert2__WEBPACK_IMPORTED_MODULE_1___default.a.fire({
             title: 'Código de Seguridad',
@@ -172087,14 +172477,14 @@ function _classCallCheck(instance, Constructor) { if (!(instance instanceof Cons
             confirmButtonText: 'Ingresar',
             input: 'password'
           }).then(function (result) {
-            if (_this1343.usuarioLogueado.codigo == result.value) _this1343.mostrarBloqueo = false;else {
+            if (_this1344.usuarioLogueado.codigo == result.value) _this1344.mostrarBloqueo = false;else {
               sweetalert2__WEBPACK_IMPORTED_MODULE_1___default.a.fire({
                 title: 'Error',
                 text: 'El código ingresado no es el correcto',
                 icon: 'error',
                 confirmButtonText: 'Ok'
               }).then(function (result) {
-                _this1343.mostrarPopupCodigo();
+                _this1344.mostrarPopupCodigo();
               });
             }
           });
@@ -172102,41 +172492,41 @@ function _classCallCheck(instance, Constructor) { if (!(instance instanceof Cons
       }, {
         key: "cargarUsuarioLogueado",
         value: function cargarUsuarioLogueado() {
-          var _this1344 = this;
+          var _this1345 = this;
 
           var correo = "";
           var promesaUser = new Promise(function (res, err) {
             if (localStorage.getItem("maily") != '') correo = localStorage.getItem("maily");
 
-            _this1344._authenService.getUserLogueado(correo).subscribe(function (res) {
+            _this1345._authenService.getUserLogueado(correo).subscribe(function (res) {
               var usuario = res;
-              _this1344.usuarioLogueado = usuario[0];
+              _this1345.usuarioLogueado = usuario[0];
 
-              _this1344.mostrarPopupCodigo();
+              _this1345.mostrarPopupCodigo();
             });
           });
         }
       }, {
         key: "traerSucursales",
         value: function traerSucursales() {
-          var _this1345 = this;
+          var _this1346 = this;
 
           this.sucursalesService.getSucursales().subscribe(function (res) {
-            _this1345.locales = res;
+            _this1346.locales = res;
           });
         }
       }, {
         key: "traerUsuarios",
         value: function traerUsuarios() {
-          var _this1346 = this;
+          var _this1347 = this;
 
           this.mensajeLoading = 'Cargando usuarios...';
           this.mostrarLoading = true;
           this.userService.getUsers().subscribe(function (res) {
-            _this1346.usuarios = res;
-            _this1346.mostrarLoading = false;
+            _this1347.usuarios = res;
+            _this1347.mostrarLoading = false;
           }, function () {
-            _this1346.mostrarLoading = false;
+            _this1347.mostrarLoading = false;
             sweetalert2__WEBPACK_IMPORTED_MODULE_1___default.a.fire('Error', 'No se pudieron cargar los usuarios', 'error');
           });
         }
@@ -172216,7 +172606,7 @@ function _classCallCheck(instance, Constructor) { if (!(instance instanceof Cons
       }, {
         key: "guardarUsuario",
         value: function guardarUsuario() {
-          var _this1347 = this;
+          var _this1348 = this;
 
           var _a, _b, _c, _d, _e;
 
@@ -172252,23 +172642,23 @@ function _classCallCheck(instance, Constructor) { if (!(instance instanceof Cons
           this.mostrarLoading = true;
           var peticion = this.esEdicion ? this.userService.updateUsuario(this.usuario) : this.userService.newUser(this.usuario);
           peticion.subscribe(function () {
-            _this1347.mostrarLoading = false;
-            sweetalert2__WEBPACK_IMPORTED_MODULE_1___default.a.fire('Éxito', _this1347.esEdicion ? 'Usuario actualizado' : 'Usuario creado', 'success');
+            _this1348.mostrarLoading = false;
+            sweetalert2__WEBPACK_IMPORTED_MODULE_1___default.a.fire('Éxito', _this1348.esEdicion ? 'Usuario actualizado' : 'Usuario creado', 'success');
 
-            _this1347.cerrarPopup();
+            _this1348.cerrarPopup();
 
-            _this1347.traerUsuarios();
+            _this1348.traerUsuarios();
           }, function (err) {
             var _a;
 
-            _this1347.mostrarLoading = false;
+            _this1348.mostrarLoading = false;
             sweetalert2__WEBPACK_IMPORTED_MODULE_1___default.a.fire('Error', ((_a = err) === null || _a === void 0 ? void 0 : _a.error) || 'No se pudo guardar el usuario. Revise e intente nuevamente', 'error');
           });
         }
       }, {
         key: "eliminarUsuario",
         value: function eliminarUsuario(registro) {
-          var _this1348 = this;
+          var _this1349 = this;
 
           sweetalert2__WEBPACK_IMPORTED_MODULE_1___default.a.fire({
             title: '¿Eliminar usuario?',
@@ -172279,16 +172669,16 @@ function _classCallCheck(instance, Constructor) { if (!(instance instanceof Cons
             cancelButtonText: 'Cancelar'
           }).then(function (result) {
             if (result.value) {
-              _this1348.mensajeLoading = 'Eliminando...';
-              _this1348.mostrarLoading = true;
+              _this1349.mensajeLoading = 'Eliminando...';
+              _this1349.mostrarLoading = true;
 
-              _this1348.userService.deleteUsuario(registro).subscribe(function () {
-                _this1348.mostrarLoading = false;
+              _this1349.userService.deleteUsuario(registro).subscribe(function () {
+                _this1349.mostrarLoading = false;
                 sweetalert2__WEBPACK_IMPORTED_MODULE_1___default.a.fire('Eliminado', 'Usuario eliminado', 'success');
 
-                _this1348.traerUsuarios();
+                _this1349.traerUsuarios();
               }, function () {
-                _this1348.mostrarLoading = false;
+                _this1349.mostrarLoading = false;
                 sweetalert2__WEBPACK_IMPORTED_MODULE_1___default.a.fire('Error', 'No se pudo eliminar el usuario', 'error');
               });
             }
@@ -174411,7 +174801,7 @@ function _classCallCheck(instance, Constructor) { if (!(instance instanceof Cons
 
     var VentasNuevoComponent = /*#__PURE__*/function () {
       function VentasNuevoComponent(db, preciosEspecialesService, notasVentService, productosPendientesService, authenService, proformasService, transaccionesService, productosVenService, parametrizacionService, contadoresService, facturasService, preciosService, clienteService, catalogoService, productoService, sucursalesService, userService, _configuracionService, _reciboCajaService, authService, _cuentaPorCobrar, _transaccionFinancieraService, _cajaMenorService, _comboService, _apiVeronicaService, _logApiVeronicaService, _controlMercaderiaService, cdRef, router) {
-        var _this1349 = this;
+        var _this1350 = this;
 
         _classCallCheck(this, VentasNuevoComponent);
 
@@ -174555,29 +174945,29 @@ function _classCallCheck(instance, Constructor) { if (!(instance instanceof Cons
         this.cantidadProductos = 0;
 
         this.anadirProducto = function (e) {
-          _this1349.newButtonEnabled = true;
-          _this1349.contadoProductos = 0;
+          _this1350.newButtonEnabled = true;
+          _this1350.contadoProductos = 0;
 
-          _this1349.productosVendidos.forEach(function (element) {
-            _this1349.contadoProductos++;
+          _this1350.productosVendidos.forEach(function (element) {
+            _this1350.contadoProductos++;
           });
 
-          if (_this1349.contadoProductos <= 11) {
-            _this1349.productosVendidos.push(new _venta_nuevo__WEBPACK_IMPORTED_MODULE_4__["venta"]());
+          if (_this1350.contadoProductos <= 11) {
+            _this1350.productosVendidos.push(new _venta_nuevo__WEBPACK_IMPORTED_MODULE_4__["venta"]());
           } else {
             sweetalert2__WEBPACK_IMPORTED_MODULE_8___default.a.fire('Alerta', 'Ya no se pueden ingresar mas items', 'warning');
           }
 
-          if (_this1349.contadoProductos >= 5 && _this1349.contadoProductos <= 10) {
-            _this1349.dataContainer.cssClass = "altura1";
-          } else if (_this1349.contadoProductos >= 11 && _this1349.contadoProductos <= 15) {
-            _this1349.dataContainer.cssClass = "altura2";
-          } else if (_this1349.contadoProductos >= 16 && _this1349.contadoProductos <= 20) {
-            _this1349.dataContainer.cssClass = "altura3";
-          } else if (_this1349.contadoProductos >= 21 && _this1349.contadoProductos <= 25) {
-            _this1349.dataContainer.cssClass = "altura4";
-          } else if (_this1349.contadoProductos >= 26) {
-            _this1349.dataContainer.cssClass = "altura5";
+          if (_this1350.contadoProductos >= 5 && _this1350.contadoProductos <= 10) {
+            _this1350.dataContainer.cssClass = "altura1";
+          } else if (_this1350.contadoProductos >= 11 && _this1350.contadoProductos <= 15) {
+            _this1350.dataContainer.cssClass = "altura2";
+          } else if (_this1350.contadoProductos >= 16 && _this1350.contadoProductos <= 20) {
+            _this1350.dataContainer.cssClass = "altura3";
+          } else if (_this1350.contadoProductos >= 21 && _this1350.contadoProductos <= 25) {
+            _this1350.dataContainer.cssClass = "altura4";
+          } else if (_this1350.contadoProductos >= 26) {
+            _this1350.dataContainer.cssClass = "altura5";
           }
         };
 
@@ -174622,58 +175012,58 @@ function _classCallCheck(instance, Constructor) { if (!(instance instanceof Cons
       }, {
         key: "traerDatosConfiguracion",
         value: function traerDatosConfiguracion() {
-          var _this1350 = this;
+          var _this1351 = this;
 
           this._configuracionService.getDatosConfiguracion().subscribe(function (res) {
-            _this1350.imagenLogotipo = res[0].urlImage;
+            _this1351.imagenLogotipo = res[0].urlImage;
           });
         }
       }, {
         key: "traerParametrizacionesMercaderia",
         value: function traerParametrizacionesMercaderia() {
-          var _this1351 = this;
+          var _this1352 = this;
 
           this._controlMercaderiaService.getParametrizaciones().subscribe(function (res) {
-            _this1351.listaParametrizaciones = res;
+            _this1352.listaParametrizaciones = res;
           });
         }
       }, {
         key: "traerIva",
         value: function traerIva() {
-          var _this1352 = this;
+          var _this1353 = this;
 
           this.parametrizacionService.getParametrizacionPorNombre("iva").subscribe(function (res) {
-            _this1352.ivaPorcentaje = res["value"];
+            _this1353.ivaPorcentaje = res["value"];
           });
         }
       }, {
         key: "cargarUsuarioLogueado",
         value: function cargarUsuarioLogueado() {
-          var _this1353 = this;
+          var _this1354 = this;
 
           new Promise(function (res, err) {
-            if (localStorage.getItem("maily") != '') _this1353.correo = localStorage.getItem("maily");
+            if (localStorage.getItem("maily") != '') _this1354.correo = localStorage.getItem("maily");
 
-            _this1353.authenService.getUserLogueado(_this1353.correo).subscribe(function (res) {
-              _this1353.usuarioLogueado = res;
-              _this1353.factura.username = _this1353.usuarioLogueado[0].username;
-              _this1353.username = _this1353.factura.username;
-              _this1353.nombreUsuario = _this1353.usuarioLogueado[0].name;
-              _this1353.factura.nombreUsuario = _this1353.usuarioLogueado[0].name;
-              _this1353.sucursalUsuario = _this1353.usuarioLogueado[0].sucursal;
-              _this1353.factura.sucursal = _this1353.usuarioLogueado[0].sucursal;
-              if (_this1353.usuarioLogueado[0].status == "Inactivo") _this1353.authService.logOut();
+            _this1354.authenService.getUserLogueado(_this1354.correo).subscribe(function (res) {
+              _this1354.usuarioLogueado = res;
+              _this1354.factura.username = _this1354.usuarioLogueado[0].username;
+              _this1354.username = _this1354.factura.username;
+              _this1354.nombreUsuario = _this1354.usuarioLogueado[0].name;
+              _this1354.factura.nombreUsuario = _this1354.usuarioLogueado[0].name;
+              _this1354.sucursalUsuario = _this1354.usuarioLogueado[0].sucursal;
+              _this1354.factura.sucursal = _this1354.usuarioLogueado[0].sucursal;
+              if (_this1354.usuarioLogueado[0].status == "Inactivo") _this1354.authService.logOut();
 
-              _this1353.buscarDatosSucursal();
+              _this1354.buscarDatosSucursal();
 
-              _this1353.validarRol();
+              _this1354.validarRol();
             }, function (err) {});
           });
         }
       }, {
         key: "mostrarPopupCodigo",
         value: function mostrarPopupCodigo() {
-          var _this1354 = this;
+          var _this1355 = this;
 
           sweetalert2__WEBPACK_IMPORTED_MODULE_8___default.a.fire({
             title: 'Vendedor',
@@ -174686,41 +175076,41 @@ function _classCallCheck(instance, Constructor) { if (!(instance instanceof Cons
             confirmButtonText: 'Ingresar',
             input: 'password'
           }).then(function (result) {
-            var usuarioClave = _this1354.usuarios.find(function (el) {
+            var usuarioClave = _this1355.usuarios.find(function (el) {
               return el.codigoFacturacion == result.value;
             });
 
             if (usuarioClave != null) {
-              _this1354.factura.nombreVendedor = usuarioClave.name;
+              _this1355.factura.nombreVendedor = usuarioClave.name;
 
-              switch (_this1354.factura.tipoDocumento) {
+              switch (_this1355.factura.tipoDocumento) {
                 case "Factura":
-                  var existe = _this1354.clientesGenerales.find(function (x) {
-                    return x.ruc == _this1354.factura.cliente.ruc;
+                  var existe = _this1355.clientesGenerales.find(function (x) {
+                    return x.ruc == _this1355.factura.cliente.ruc;
                   });
 
                   if (existe != undefined) {
                     if (existe.estado == "Inactivo") {
-                      _this1354.botonFactura = false;
+                      _this1355.botonFactura = false;
 
-                      _this1354.mostrarMensajeGenerico(2, "Ya existe en base un usuario con el mismo RUC inactivo, ingrese otro RUC para poder continuar");
-                    } else _this1354.validarEstadoCajaFactura();
-                  } else _this1354.validarEstadoCajaFactura();
+                      _this1355.mostrarMensajeGenerico(2, "Ya existe en base un usuario con el mismo RUC inactivo, ingrese otro RUC para poder continuar");
+                    } else _this1355.validarEstadoCajaFactura();
+                  } else _this1355.validarEstadoCajaFactura();
 
                   break;
 
                 case "Nota de Venta":
-                  var existe = _this1354.clientesGenerales.find(function (x) {
-                    return x.ruc == _this1354.factura.cliente.ruc;
+                  var existe = _this1355.clientesGenerales.find(function (x) {
+                    return x.ruc == _this1355.factura.cliente.ruc;
                   });
 
                   if (existe != undefined) {
                     if (existe.estado == "Inactivo") {
-                      _this1354.botonNotaVenta = false;
+                      _this1355.botonNotaVenta = false;
 
-                      _this1354.mostrarMensajeGenerico(2, "Ya existe en base un usuario con el mismo RUC inactivo, ingrese otro RUC para poder continuar");
-                    } else _this1354.validarEstadoCajaNotaVenta();
-                  } else _this1354.validarEstadoCajaNotaVenta();
+                      _this1355.mostrarMensajeGenerico(2, "Ya existe en base un usuario con el mismo RUC inactivo, ingrese otro RUC para poder continuar");
+                    } else _this1355.validarEstadoCajaNotaVenta();
+                  } else _this1355.validarEstadoCajaNotaVenta();
 
                   break;
 
@@ -174737,7 +175127,7 @@ function _classCallCheck(instance, Constructor) { if (!(instance instanceof Cons
                 icon: 'error',
                 confirmButtonText: 'Ok'
               }).then(function (result) {
-                _this1354.mostrarPopupCodigo();
+                _this1355.mostrarPopupCodigo();
               });
             }
           });
@@ -174745,10 +175135,10 @@ function _classCallCheck(instance, Constructor) { if (!(instance instanceof Cons
       }, {
         key: "traerUsuarios",
         value: function traerUsuarios() {
-          var _this1355 = this;
+          var _this1356 = this;
 
           this.userService.getUsers().subscribe(function (res) {
-            _this1355.usuarios = res;
+            _this1356.usuarios = res;
           }, function (err) {});
         }
       }, {
@@ -174759,147 +175149,147 @@ function _classCallCheck(instance, Constructor) { if (!(instance instanceof Cons
       }, {
         key: "traerSucursales",
         value: function traerSucursales() {
-          var _this1356 = this;
+          var _this1357 = this;
 
           this.sucursalesService.getSucursales().subscribe(function (res) {
-            _this1356.sucursales = res;
+            _this1357.sucursales = res;
           });
         }
       }, {
         key: "traerProductos",
         value: function traerProductos() {
-          var _this1357 = this;
+          var _this1358 = this;
 
           this.mostrarLoading = true;
           this.productoService.getProductosActivos().subscribe(function (res) {
-            _this1357.productosActivos = res;
+            _this1358.productosActivos = res;
 
-            _this1357.llenarPR();
+            _this1358.llenarPR();
 
-            _this1357.llenarComboProductos();
+            _this1358.llenarComboProductos();
           });
         }
       }, {
         key: "traerProductosCatalogo",
         value: function traerProductosCatalogo() {
-          var _this1358 = this;
+          var _this1359 = this;
 
           this.catalogoService.getCatalogo().subscribe(function (res) {
-            _this1358.productosCatalogo = res;
+            _this1359.productosCatalogo = res;
           });
         }
       }, {
         key: "traerClientes",
         value: function traerClientes() {
-          var _this1359 = this;
+          var _this1360 = this;
 
           this.clienteService.getCliente().subscribe(function (res) {
-            _this1359.clientesGenerales = res;
+            _this1360.clientesGenerales = res;
 
-            _this1359.separarClientes();
+            _this1360.separarClientes();
           });
         }
       }, {
         key: "traerProformas",
         value: function traerProformas() {
-          var _this1360 = this;
+          var _this1361 = this;
 
           this.proformasService.getProformas().subscribe(function (res) {
-            _this1360.proformas = res;
+            _this1361.proformas = res;
           });
         }
       }, {
         key: "traerFacturas",
         value: function traerFacturas() {
-          var _this1361 = this;
+          var _this1362 = this;
 
           this.facturasService.getFacturas().subscribe(function (res) {
-            _this1361.facturas = res;
+            _this1362.facturas = res;
           });
         }
       }, {
         key: "traerPrecios",
         value: function traerPrecios() {
-          var _this1362 = this;
+          var _this1363 = this;
 
           this.preciosService.getPrecio().subscribe(function (res) {
-            _this1362.precios = res;
+            _this1363.precios = res;
           });
         }
       }, {
         key: "traerPreciosEspeciales",
         value: function traerPreciosEspeciales() {
-          var _this1363 = this;
+          var _this1364 = this;
 
           this.preciosEspecialesService.getPrecio().subscribe(function (res) {
-            _this1363.preciosEspeciales = res;
+            _this1364.preciosEspeciales = res;
           });
         }
       }, {
         key: "traerParametrizaciones",
         value: function traerParametrizaciones() {
-          var _this1364 = this;
+          var _this1365 = this;
 
           this.parametrizacionService.getParametrizacion().subscribe(function (res) {
-            _this1364.parametrizaciones = res;
+            _this1365.parametrizaciones = res;
 
-            _this1364.buscarDatosSucursal();
+            _this1365.buscarDatosSucursal();
           });
         }
       }, {
         key: "traerProductosVendidos",
         value: function traerProductosVendidos() {
-          var _this1365 = this;
+          var _this1366 = this;
 
           this.productosVenService.getProductoVendido().subscribe(function (res) {
-            _this1365.productosVendidos2 = res;
+            _this1366.productosVendidos2 = res;
           });
         }
       }, {
         key: "traerContadores",
         value: function traerContadores() {
-          return Object(tslib__WEBPACK_IMPORTED_MODULE_0__["__awaiter"])(this, void 0, void 0, /*#__PURE__*/regeneratorRuntime.mark(function _callee61() {
-            var _this1366 = this;
+          return Object(tslib__WEBPACK_IMPORTED_MODULE_0__["__awaiter"])(this, void 0, void 0, /*#__PURE__*/regeneratorRuntime.mark(function _callee63() {
+            var _this1367 = this;
 
-            return regeneratorRuntime.wrap(function _callee61$(_context61) {
+            return regeneratorRuntime.wrap(function _callee63$(_context64) {
               while (1) {
-                switch (_context61.prev = _context61.next) {
+                switch (_context64.prev = _context64.next) {
                   case 0:
-                    _context61.next = 2;
+                    _context64.next = 2;
                     return this.contadoresService.getContadores().subscribe(function (res) {
-                      _this1366.contadores = res;
+                      _this1367.contadores = res;
                     });
 
                   case 2:
                   case "end":
-                    return _context61.stop();
+                    return _context64.stop();
                 }
               }
-            }, _callee61, this);
+            }, _callee63, this);
           }));
         }
       }, {
         key: "traerContadoresDocumentos",
         value: function traerContadoresDocumentos() {
-          var _this1367 = this;
+          var _this1368 = this;
 
           this.contadoresService.getContadores().subscribe(function (res) {
-            _this1367.contadores = res;
-            _this1367.numeroID = _this1367.contadores[0].contProductosPendientes_Ndocumento + 1;
+            _this1368.contadores = res;
+            _this1368.numeroID = _this1368.contadores[0].contProductosPendientes_Ndocumento + 1;
 
-            _this1367.asignarIDdocumentos();
+            _this1368.asignarIDdocumentos();
           });
         }
       }, {
         key: "traerConsecutivoVeronica",
         value: function traerConsecutivoVeronica(ruc) {
-          var _this1368 = this;
+          var _this1369 = this;
 
           this._apiVeronicaService.obtenerSecuencia(ruc).subscribe(function (res) {
-            _this1368.consecutivoVeronica = res;
-            _this1368.secuencialFactura = _this1368.consecutivoVeronica.result[0].establecimiento.puntosEmision[0].secuencialFactura;
+            _this1369.consecutivoVeronica = res;
+            _this1369.secuencialFactura = _this1369.consecutivoVeronica.result[0].establecimiento.puntosEmision[0].secuencialFactura;
           }, function (err) {
-            _this1368.mostrarMensajeGenerico(2, "No se ha podido establecer conexión con el SRI");
+            _this1369.mostrarMensajeGenerico(2, "No se ha podido establecer conexión con el SRI");
           });
         }
       }, {
@@ -175063,7 +175453,7 @@ function _classCallCheck(instance, Constructor) { if (!(instance instanceof Cons
       }, {
         key: "mostrarPopup",
         value: function mostrarPopup(e, i) {
-          var _this1369 = this;
+          var _this1370 = this;
 
           if (this.productosVendidos[i].producto.CLASIFICA == "COMBO") {
             this.nombreCombo = this.productosVendidos[i].producto.PRODUCTO;
@@ -175074,31 +175464,31 @@ function _classCallCheck(instance, Constructor) { if (!(instance instanceof Cons
 
             this._comboService.getComboPorNombre(combo).subscribe(function (res) {
               var listado = res;
-              _this1369.productosComboLeidos = listado[0].productosCombo;
-              _this1369.mostrarLoading = false;
+              _this1370.productosComboLeidos = listado[0].productosCombo;
+              _this1370.mostrarLoading = false;
             });
 
             this.popupVisibleCombos = true;
           } else {
             this.productosCatalogo.forEach(function (element) {
-              if (element.PRODUCTO == _this1369.productosVendidos[i].producto.PRODUCTO) {
-                _this1369.imagenes = element.IMAGEN;
-                _this1369.titulo = element.PRODUCTO;
-                _this1369.catalogoLeido = element;
-                _this1369.catalogoLeido.precio = _this1369.productosVendidos[i].producto.precio;
-                _this1369.catalogoLeido.ubicacion1 = _this1369.productosVendidos[i].producto.ubicacionSuc1;
-                _this1369.catalogoLeido.ubicacion2 = _this1369.productosVendidos[i].producto.ubicacionSuc2;
-                _this1369.catalogoLeido.ubicacion3 = _this1369.productosVendidos[i].producto.ubicacionSuc3;
+              if (element.PRODUCTO == _this1370.productosVendidos[i].producto.PRODUCTO) {
+                _this1370.imagenes = element.IMAGEN;
+                _this1370.titulo = element.PRODUCTO;
+                _this1370.catalogoLeido = element;
+                _this1370.catalogoLeido.precio = _this1370.productosVendidos[i].producto.precio;
+                _this1370.catalogoLeido.ubicacion1 = _this1370.productosVendidos[i].producto.ubicacionSuc1;
+                _this1370.catalogoLeido.ubicacion2 = _this1370.productosVendidos[i].producto.ubicacionSuc2;
+                _this1370.catalogoLeido.ubicacion3 = _this1370.productosVendidos[i].producto.ubicacionSuc3;
                 /* var suc1=this.productosVendidos[i].producto.sucursal1+this.productosVendidos[i].producto.suc1Pendiente
                 var suc2=this.productosVendidos[i].producto.sucursal2+this.productosVendidos[i].producto.suc2Pendiente
                 var suc3=this.productosVendidos[i].producto.sucursal3+this.productosVendidos[i].producto.suc3Pendiente */
 
-                _this1369.disponibilidadProducto = "MATRIZ: " + _this1369.productosVendidos[i].cantM2_1_Original.toFixed(2) + "M /-/ " + _this1369.productosVendidos[i].cantCajas_1_Original.toFixed(0) + "C /-/ " + _this1369.productosVendidos[i].cantPiezas_1_Original.toFixed(0) + "P";
-                _this1369.disponibilidadProductoS1 = "SUC1: " + _this1369.productosVendidos[i].cantM2_2_Original.toFixed(2) + "M /-/ " + _this1369.productosVendidos[i].cantCajas_2_Original.toFixed(0) + "C /-/ " + _this1369.productosVendidos[i].cantPiezas_2_Original.toFixed(0) + "P";
-                _this1369.disponibilidadProductoS2 = "SUC2: " + _this1369.productosVendidos[i].cantM2_3_Original.toFixed(2) + "M /-/ " + _this1369.productosVendidos[i].cantCajas_3_Original.toFixed(0) + "C /-/ " + _this1369.productosVendidos[i].cantPiezas_3_Original.toFixed(0) + "P";
-                _this1369.flagDisProdMatriz = _this1369.productosVendidos[i].cantM2_1_Original < 0 ? true : false;
-                _this1369.flagDisProdSuc1 = _this1369.productosVendidos[i].cantM2_2_Original < 0 ? true : false;
-                _this1369.flagDisProdSuc2 = _this1369.productosVendidos[i].cantM2_3_Original < 0 ? true : false; //this.productosVendidos[i].cantM2_2.toFixed(0)+"S1 - "+
+                _this1370.disponibilidadProducto = "MATRIZ: " + _this1370.productosVendidos[i].cantM2_1_Original.toFixed(2) + "M /-/ " + _this1370.productosVendidos[i].cantCajas_1_Original.toFixed(0) + "C /-/ " + _this1370.productosVendidos[i].cantPiezas_1_Original.toFixed(0) + "P";
+                _this1370.disponibilidadProductoS1 = "SUC1: " + _this1370.productosVendidos[i].cantM2_2_Original.toFixed(2) + "M /-/ " + _this1370.productosVendidos[i].cantCajas_2_Original.toFixed(0) + "C /-/ " + _this1370.productosVendidos[i].cantPiezas_2_Original.toFixed(0) + "P";
+                _this1370.disponibilidadProductoS2 = "SUC2: " + _this1370.productosVendidos[i].cantM2_3_Original.toFixed(2) + "M /-/ " + _this1370.productosVendidos[i].cantCajas_3_Original.toFixed(0) + "C /-/ " + _this1370.productosVendidos[i].cantPiezas_3_Original.toFixed(0) + "P";
+                _this1370.flagDisProdMatriz = _this1370.productosVendidos[i].cantM2_1_Original < 0 ? true : false;
+                _this1370.flagDisProdSuc1 = _this1370.productosVendidos[i].cantM2_2_Original < 0 ? true : false;
+                _this1370.flagDisProdSuc2 = _this1370.productosVendidos[i].cantM2_3_Original < 0 ? true : false; //this.productosVendidos[i].cantM2_2.toFixed(0)+"S1 - "+
                 //this.productosVendidos[i].cantM2_3.toFixed(0)+"S2 - "
                 //this.productosVendidos[i].producto.bodegaProveedor.toFixed(0)+"P  "
               }
@@ -175125,19 +175515,6 @@ function _classCallCheck(instance, Constructor) { if (!(instance instanceof Cons
       }, {
         key: "obtenerDatosCalculadora",
         value: function obtenerDatosCalculadora(e) {
-          var _this1370 = this;
-
-          this.productos2.forEach(function (element) {
-            if (element.PRODUCTO == e.value) {
-              _this1370.calp = element.P_CAJA;
-              _this1370.calmetros = element.M2;
-            }
-          });
-          this.calcularMetros(e);
-        }
-      }, {
-        key: "obtenerDatosCalculadora2",
-        value: function obtenerDatosCalculadora2(e) {
           var _this1371 = this;
 
           this.productos2.forEach(function (element) {
@@ -175146,12 +175523,25 @@ function _classCallCheck(instance, Constructor) { if (!(instance instanceof Cons
               _this1371.calmetros = element.M2;
             }
           });
+          this.calcularMetros(e);
+        }
+      }, {
+        key: "obtenerDatosCalculadora2",
+        value: function obtenerDatosCalculadora2(e) {
+          var _this1372 = this;
+
+          this.productos2.forEach(function (element) {
+            if (element.PRODUCTO == e.value) {
+              _this1372.calp = element.P_CAJA;
+              _this1372.calmetros = element.M2;
+            }
+          });
           this.calcularMetros2(e);
         }
       }, {
         key: "obtenerDatosDeProductoParaUnDetalle",
         value: function obtenerDatosDeProductoParaUnDetalle(e, i) {
-          var _this1372 = this;
+          var _this1373 = this;
 
           //this.productosVendidos[i].precio_venta = 0;
           this.productosVendidos[i].total = 0;
@@ -175165,31 +175555,31 @@ function _classCallCheck(instance, Constructor) { if (!(instance instanceof Cons
           if (cont == 0) {
             this.productos.forEach(function (element) {
               if (element.PRODUCTO == e.value) {
-                if (element.CLASIFICA == "COMBO") _this1372.buscarCombo(e.value, i);else _this1372.traerTransaccionesPorProducto(element, i);
+                if (element.CLASIFICA == "COMBO") _this1373.buscarCombo(e.value, i);else _this1373.traerTransaccionesPorProducto(element, i);
 
-                switch (_this1372.factura.sucursal) {
+                switch (_this1373.factura.sucursal) {
                   case "matriz":
-                    _this1372.productosVendidos[i].disponible = element.sucursal1;
-                    _this1372.productosVendidos[i].producto = element;
+                    _this1373.productosVendidos[i].disponible = element.sucursal1;
+                    _this1373.productosVendidos[i].producto = element;
                     break;
 
                   case "sucursal1":
-                    _this1372.productosVendidos[i].disponible = element.sucursal2;
-                    _this1372.productosVendidos[i].producto = element;
+                    _this1373.productosVendidos[i].disponible = element.sucursal2;
+                    _this1373.productosVendidos[i].producto = element;
                     break;
 
                   case "sucursal2":
-                    _this1372.productosVendidos[i].disponible = element.sucursal3;
-                    _this1372.productosVendidos[i].producto = element;
+                    _this1373.productosVendidos[i].disponible = element.sucursal3;
+                    _this1373.productosVendidos[i].producto = element;
                     break;
 
                   default:
                 }
 
-                if (_this1372.productosVendidos[i].disponible < 0 || _this1372.productosVendidos[i].disponible == null) _this1372.productosVendidos[i].disponible = 0;
-                _this1372.productosVendidos[i].precio_min = parseFloat((element.precio * element.porcentaje_ganancia / 100 + element.precio).toFixed(2));
-                _this1372.productosVendidos[i].equivalencia = "0C 0P";
-                _this1372.productosVendidos[i].tipoDocumentoVenta = _this1372.tDocumento;
+                if (_this1373.productosVendidos[i].disponible < 0 || _this1373.productosVendidos[i].disponible == null) _this1373.productosVendidos[i].disponible = 0;
+                _this1373.productosVendidos[i].precio_min = parseFloat((element.precio * element.porcentaje_ganancia / 100 + element.precio).toFixed(2));
+                _this1373.productosVendidos[i].equivalencia = "0C 0P";
+                _this1373.productosVendidos[i].tipoDocumentoVenta = _this1373.tDocumento;
               }
             });
           } else {
@@ -175211,7 +175601,7 @@ function _classCallCheck(instance, Constructor) { if (!(instance instanceof Cons
       }, {
         key: "buscarCombo",
         value: function buscarCombo(nombreCombo, num) {
-          var _this1373 = this;
+          var _this1374 = this;
 
           var combo = new _catalogo_catalogo__WEBPACK_IMPORTED_MODULE_11__["ProductoCombo"]();
           combo.PRODUCTO = nombreCombo;
@@ -175219,19 +175609,19 @@ function _classCallCheck(instance, Constructor) { if (!(instance instanceof Cons
           this._comboService.getComboPorNombre(combo).subscribe(function (res) {
             var listado = res;
 
-            _this1373.buscarProductosCombo(listado[0].productosCombo, num);
+            _this1374.buscarProductosCombo(listado[0].productosCombo, num);
           });
         }
       }, {
         key: "buscarProductosCombo",
         value: function buscarProductosCombo(listado, num) {
-          var _this1374 = this;
+          var _this1375 = this;
 
           this.mostrarLoading = true;
           this.cantidadProductos = 0;
           listado.forEach(function (element) {
-            _this1374.productos.forEach(function (element2) {
-              if (element.nombreProducto == element2.PRODUCTO) _this1374.traerTransaccionesPorProductoCombo2(element2, num, listado.length, element);
+            _this1375.productos.forEach(function (element2) {
+              if (element.nombreProducto == element2.PRODUCTO) _this1375.traerTransaccionesPorProductoCombo2(element2, num, listado.length, element);
             });
           });
         }
@@ -175270,27 +175660,27 @@ function _classCallCheck(instance, Constructor) { if (!(instance instanceof Cons
       }, {
         key: "setClienteData",
         value: function setClienteData(e) {
-          var _this1375 = this;
+          var _this1376 = this;
 
           this.clientes.forEach(function (element) {
             if (element.cliente_nombre == e.component._changedValue) {
-              console.log(_this1375.factura.cliente);
+              console.log(_this1376.factura.cliente);
 
-              if (_this1375.factura.cliente == undefined || _this1375.factura.cliente.cliente_nombre == undefined) {
-                _this1375.factura.cliente = element;
-                _this1375.factura.cliente.cliente_nombre = element.cliente_nombre;
-                _this1375.factura.cliente.direccion = element.direccion;
-                _this1375.factura.cliente.celular = element.celular;
-                _this1375.factura.tipo_venta = element.tventa;
-                _this1375.factura.cliente.nombreContacto = element.nombreContacto;
+              if (_this1376.factura.cliente == undefined || _this1376.factura.cliente.cliente_nombre == undefined) {
+                _this1376.factura.cliente = element;
+                _this1376.factura.cliente.cliente_nombre = element.cliente_nombre;
+                _this1376.factura.cliente.direccion = element.direccion;
+                _this1376.factura.cliente.celular = element.celular;
+                _this1376.factura.tipo_venta = element.tventa;
+                _this1376.factura.cliente.nombreContacto = element.nombreContacto;
               } else {
-                if (_this1375.factura.cliente.tventa == element.tventa) {
-                  _this1375.factura.cliente = element;
-                  _this1375.factura.cliente.cliente_nombre = element.cliente_nombre;
-                  _this1375.factura.cliente.direccion = element.direccion;
-                  _this1375.factura.cliente.celular = element.celular;
-                  _this1375.factura.tipo_venta = element.tventa;
-                  _this1375.factura.cliente.nombreContacto = element.nombreContacto;
+                if (_this1376.factura.cliente.tventa == element.tventa) {
+                  _this1376.factura.cliente = element;
+                  _this1376.factura.cliente.cliente_nombre = element.cliente_nombre;
+                  _this1376.factura.cliente.direccion = element.direccion;
+                  _this1376.factura.cliente.celular = element.celular;
+                  _this1376.factura.tipo_venta = element.tventa;
+                  _this1376.factura.cliente.nombreContacto = element.nombreContacto;
                 } else {
                   sweetalert2__WEBPACK_IMPORTED_MODULE_8___default.a.fire({
                     title: 'Error tipo Cliente',
@@ -175301,20 +175691,20 @@ function _classCallCheck(instance, Constructor) { if (!(instance instanceof Cons
                     cancelButtonText: 'No'
                   }).then(function (result) {
                     if (result.value) {
-                      _this1375.productosVendidos = [];
+                      _this1376.productosVendidos = [];
 
-                      _this1375.productosVendidos.push(new _venta_nuevo__WEBPACK_IMPORTED_MODULE_4__["venta"]());
+                      _this1376.productosVendidos.push(new _venta_nuevo__WEBPACK_IMPORTED_MODULE_4__["venta"]());
 
-                      _this1375.factura.cliente = element;
-                      _this1375.factura.cliente.cliente_nombre = element.cliente_nombre;
-                      _this1375.factura.cliente.direccion = element.direccion;
-                      _this1375.factura.cliente.celular = element.celular;
-                      _this1375.factura.tipo_venta = element.tventa;
-                      _this1375.factura.cliente.nombreContacto = element.nombreContacto;
+                      _this1376.factura.cliente = element;
+                      _this1376.factura.cliente.cliente_nombre = element.cliente_nombre;
+                      _this1376.factura.cliente.direccion = element.direccion;
+                      _this1376.factura.cliente.celular = element.celular;
+                      _this1376.factura.tipo_venta = element.tventa;
+                      _this1376.factura.cliente.nombreContacto = element.nombreContacto;
                     } else if (result.dismiss === sweetalert2__WEBPACK_IMPORTED_MODULE_8___default.a.DismissReason.cancel) {
                       console.log("si entre");
-                      _this1375.factura.cliente = _this1375.factura.cliente;
-                      _this1375.mensaje = _this1375.factura.cliente.cliente_nombre;
+                      _this1376.factura.cliente = _this1376.factura.cliente;
+                      _this1376.mensaje = _this1376.factura.cliente.cliente_nombre;
                     }
                   });
                 }
@@ -175337,7 +175727,7 @@ function _classCallCheck(instance, Constructor) { if (!(instance instanceof Cons
       }, {
         key: "asignarsucursalD",
         value: function asignarsucursalD(e) {
-          var _this1376 = this;
+          var _this1377 = this;
 
           this.factura.sucursal = e.value;
 
@@ -175351,13 +175741,13 @@ function _classCallCheck(instance, Constructor) { if (!(instance instanceof Cons
               cancelButtonText: 'No'
             }).then(function (result) {
               if (result.value) {
-                _this1376.limpiarArreglo();
+                _this1377.limpiarArreglo();
 
-                _this1376.asignarIDdocumentos();
+                _this1377.asignarIDdocumentos();
 
-                _this1376.buscarDatosSucursal();
+                _this1377.buscarDatosSucursal();
 
-                _this1376.productosVendidos.push(new _venta_nuevo__WEBPACK_IMPORTED_MODULE_4__["venta"]());
+                _this1377.productosVendidos.push(new _venta_nuevo__WEBPACK_IMPORTED_MODULE_4__["venta"]());
               }
             });
           } else {
@@ -175368,7 +175758,7 @@ function _classCallCheck(instance, Constructor) { if (!(instance instanceof Cons
       }, {
         key: "limpiarArreglo",
         value: function limpiarArreglo() {
-          var _this1377 = this;
+          var _this1378 = this;
 
           var cont = 0;
           this.productosVendidos.forEach(function (element) {
@@ -175377,14 +175767,14 @@ function _classCallCheck(instance, Constructor) { if (!(instance instanceof Cons
 
           if (cont >= 0) {
             this.productosVendidos.forEach(function (element) {
-              _this1377.productosVendidos.splice(0);
+              _this1378.productosVendidos.splice(0);
             });
           }
         }
       }, {
         key: "eliminarData",
         value: function eliminarData(e) {
-          var _this1378 = this;
+          var _this1379 = this;
 
           sweetalert2__WEBPACK_IMPORTED_MODULE_8___default.a.fire({
             title: 'Borrar Datos Cliente',
@@ -175395,12 +175785,12 @@ function _classCallCheck(instance, Constructor) { if (!(instance instanceof Cons
             cancelButtonText: 'No'
           }).then(function (result) {
             if (result.value) {
-              _this1378.factura.cliente = null;
-              _this1378.mensaje = null;
-              _this1378.factura.tipo_venta = "Normal";
-              _this1378.productosVendidos = [];
+              _this1379.factura.cliente = null;
+              _this1379.mensaje = null;
+              _this1379.factura.tipo_venta = "Normal";
+              _this1379.productosVendidos = [];
 
-              _this1378.productosVendidos.push(new _venta_nuevo__WEBPACK_IMPORTED_MODULE_4__["venta"]());
+              _this1379.productosVendidos.push(new _venta_nuevo__WEBPACK_IMPORTED_MODULE_4__["venta"]());
             } else if (result.dismiss === sweetalert2__WEBPACK_IMPORTED_MODULE_8___default.a.DismissReason.cancel) {
               console.log("nada");
             }
@@ -175409,15 +175799,15 @@ function _classCallCheck(instance, Constructor) { if (!(instance instanceof Cons
       }, {
         key: "buscarCliente",
         value: function buscarCliente(e) {
-          var _this1379 = this;
+          var _this1380 = this;
 
           this.clientes.forEach(function (element) {
-            if (_this1379.factura.cliente.ruc == element.ruc) {
-              _this1379.factura.cliente = element;
-              _this1379.factura.cliente.cliente_nombre = element.cliente_nombre;
-              _this1379.factura.cliente.direccion = element.direccion;
-              _this1379.factura.cliente.celular = element.celular;
-              _this1379.mensaje = element.cliente_nombre;
+            if (_this1380.factura.cliente.ruc == element.ruc) {
+              _this1380.factura.cliente = element;
+              _this1380.factura.cliente.cliente_nombre = element.cliente_nombre;
+              _this1380.factura.cliente.direccion = element.direccion;
+              _this1380.factura.cliente.celular = element.celular;
+              _this1380.mensaje = element.cliente_nombre;
             }
           });
           this.calcularTipoCliente();
@@ -175442,15 +175832,15 @@ function _classCallCheck(instance, Constructor) { if (!(instance instanceof Cons
       }, {
         key: "calcularTipoCliente",
         value: function calcularTipoCliente() {
-          var _this1380 = this;
+          var _this1381 = this;
 
           this.factura.cliente.cliente_nombre = this.factura.cliente.cliente_nombre;
           this.factura.cliente.direccion = this.factura.cliente.direccion;
           this.factura.cliente.celular = this.factura.cliente.celular;
           var contador = 0;
           this.facturas.forEach(function (element) {
-            if (element.dni_comprador == _this1380.factura.cliente.ruc) {
-              _this1380.totalcomprador = _this1380.totalcomprador + element.total;
+            if (element.dni_comprador == _this1381.factura.cliente.ruc) {
+              _this1381.totalcomprador = _this1381.totalcomprador + element.total;
               contador++;
             }
           });
@@ -175532,23 +175922,23 @@ function _classCallCheck(instance, Constructor) { if (!(instance instanceof Cons
       }, {
         key: "calcularPrecioMinino",
         value: function calcularPrecioMinino(e, i) {
-          var _this1381 = this;
+          var _this1382 = this;
 
           switch (this.factura.tipo_venta) {
             case "Normal":
               this.productosVendidos[i].producto;
               this.precios.forEach(function (element) {
-                if (element.aplicacion == _this1381.productosVendidos[i].producto.APLICACION) {
-                  if (_this1381.productosVendidos[i].cantidad > 0 && _this1381.productosVendidos[i].cantidad <= element.cant1) {
-                    _this1381.productosVendidos[i].precio_min = parseFloat((_this1381.productosVendidos[i].producto.precio * element.percent1 / 100 + _this1381.productosVendidos[i].producto.precio).toFixed(2));
+                if (element.aplicacion == _this1382.productosVendidos[i].producto.APLICACION) {
+                  if (_this1382.productosVendidos[i].cantidad > 0 && _this1382.productosVendidos[i].cantidad <= element.cant1) {
+                    _this1382.productosVendidos[i].precio_min = parseFloat((_this1382.productosVendidos[i].producto.precio * element.percent1 / 100 + _this1382.productosVendidos[i].producto.precio).toFixed(2));
                   }
 
-                  if (_this1381.productosVendidos[i].cantidad > element.cant1 && _this1381.productosVendidos[i].cantidad <= element.cant2) {
-                    _this1381.productosVendidos[i].precio_min = parseFloat((_this1381.productosVendidos[i].producto.precio * element.percent2 / 100 + _this1381.productosVendidos[i].producto.precio).toFixed(2));
+                  if (_this1382.productosVendidos[i].cantidad > element.cant1 && _this1382.productosVendidos[i].cantidad <= element.cant2) {
+                    _this1382.productosVendidos[i].precio_min = parseFloat((_this1382.productosVendidos[i].producto.precio * element.percent2 / 100 + _this1382.productosVendidos[i].producto.precio).toFixed(2));
                   }
 
-                  if (_this1381.productosVendidos[i].cantidad > element.cant2) {
-                    _this1381.productosVendidos[i].precio_min = parseFloat((_this1381.productosVendidos[i].producto.precio * element.percent3 / 100 + _this1381.productosVendidos[i].producto.precio).toFixed(2));
+                  if (_this1382.productosVendidos[i].cantidad > element.cant2) {
+                    _this1382.productosVendidos[i].precio_min = parseFloat((_this1382.productosVendidos[i].producto.precio * element.percent3 / 100 + _this1382.productosVendidos[i].producto.precio).toFixed(2));
                   }
                 }
               });
@@ -175569,17 +175959,17 @@ function _classCallCheck(instance, Constructor) { if (!(instance instanceof Cons
       }, {
         key: "calcularTotalFactura",
         value: function calcularTotalFactura() {
-          var _this1382 = this;
+          var _this1383 = this;
 
           this.factura.total = 0;
           this.factura.subtotalF1 = 0;
           this.factura.subtotalF2 = 0;
           this.factura.totalIva = 0;
           this.productosVendidos.forEach(function (element) {
-            if (element.seleccionado) _this1382.factura.total = element.subtotal + _this1382.factura.total;
-            _this1382.factura.subtotalF1 = element.subtP1 + _this1382.factura.subtotalF1;
-            _this1382.factura.subtotalF2 = element.subtP2 + _this1382.factura.subtotalF2;
-            _this1382.factura.totalIva = element.subtIva + _this1382.factura.totalIva;
+            if (element.seleccionado) _this1383.factura.total = element.subtotal + _this1383.factura.total;
+            _this1383.factura.subtotalF1 = element.subtP1 + _this1383.factura.subtotalF1;
+            _this1383.factura.subtotalF2 = element.subtP2 + _this1383.factura.subtotalF2;
+            _this1383.factura.totalIva = element.subtIva + _this1383.factura.totalIva;
           });
           this.factura.total = parseFloat((this.factura.total + this.factura.coste_transporte).toFixed(2));
         }
@@ -175592,22 +175982,22 @@ function _classCallCheck(instance, Constructor) { if (!(instance instanceof Cons
       }, {
         key: "llenarPR",
         value: function llenarPR() {
-          var _this1383 = this;
+          var _this1384 = this;
 
           this.productosActivos.forEach(function (element) {
             if (element.UNIDAD == "Metros") {
-              _this1383.productos2.push(element);
+              _this1384.productos2.push(element);
             }
           });
         }
       }, {
         key: "llenarComboProductos",
         value: function llenarComboProductos() {
-          var _this1384 = this;
+          var _this1385 = this;
 
           this.productosActivos.forEach(function (element) {
             if (element.ESTADO == "ACTIVO") {
-              _this1384.productos.push(element);
+              _this1385.productos.push(element);
             }
           });
           this.productos22 = new devextreme_data_data_source__WEBPACK_IMPORTED_MODULE_12___default.a({
@@ -175622,7 +176012,7 @@ function _classCallCheck(instance, Constructor) { if (!(instance instanceof Cons
       }, {
         key: "buscarCotizacion",
         value: function buscarCotizacion() {
-          var _this1385 = this;
+          var _this1386 = this;
 
           this.mensajeLoading = "Buscando Proforma...";
           this.mostrarLoading = true;
@@ -175632,55 +176022,55 @@ function _classCallCheck(instance, Constructor) { if (!(instance instanceof Cons
             var proform = res;
 
             if (proform.length != 0) {
-              _this1385.factura.cliente = proform[0].cliente;
-              _this1385.factura.cliente.celular = proform[0].cliente.celular;
-              _this1385.factura.cliente.cliente_nombre = proform[0].cliente.cliente_nombre;
-              _this1385.mensaje = proform[0].cliente.cliente_nombre;
-              _this1385.factura.cliente.direccion = proform[0].cliente.direccion;
-              _this1385.factura.cliente.ruc = proform[0].cliente.ruc;
-              _this1385.factura.tipo_cliente = proform[0].cliente.t_cliente;
-              _this1385.factura.tipo_venta = proform[0].cliente.tventa;
-              _this1385.factura.cliente.t_cliente = proform[0].cliente.t_cliente;
-              _this1385.factura.cliente.tventa = proform[0].cliente.tventa;
-              _this1385.factura.total = proform[0].total;
-              _this1385.factura.totalDescuento = proform[0].totalDescuento;
-              _this1385.factura.coste_transporte = proform[0].coste_transporte;
-              _this1385.factura.observaciones = proform[0].observaciones;
-              _this1385.factura.cotizacion = proform[0].documento_n;
-              _this1385.productosVendidos = proform[0].productosVendidos;
-              _this1385.nCotizacionFact = "Referecia Cotización: #" + proform[0].documento_n;
+              _this1386.factura.cliente = proform[0].cliente;
+              _this1386.factura.cliente.celular = proform[0].cliente.celular;
+              _this1386.factura.cliente.cliente_nombre = proform[0].cliente.cliente_nombre;
+              _this1386.mensaje = proform[0].cliente.cliente_nombre;
+              _this1386.factura.cliente.direccion = proform[0].cliente.direccion;
+              _this1386.factura.cliente.ruc = proform[0].cliente.ruc;
+              _this1386.factura.tipo_cliente = proform[0].cliente.t_cliente;
+              _this1386.factura.tipo_venta = proform[0].cliente.tventa;
+              _this1386.factura.cliente.t_cliente = proform[0].cliente.t_cliente;
+              _this1386.factura.cliente.tventa = proform[0].cliente.tventa;
+              _this1386.factura.total = proform[0].total;
+              _this1386.factura.totalDescuento = proform[0].totalDescuento;
+              _this1386.factura.coste_transporte = proform[0].coste_transporte;
+              _this1386.factura.observaciones = proform[0].observaciones;
+              _this1386.factura.cotizacion = proform[0].documento_n;
+              _this1386.productosVendidos = proform[0].productosVendidos;
+              _this1386.nCotizacionFact = "Referecia Cotización: #" + proform[0].documento_n;
 
-              if (_this1385.productosVendidos.length >= 5 && _this1385.productosVendidos.length <= 10) {
-                _this1385.dataContainer.cssClass = "altura1";
-              } else if (_this1385.productosVendidos.length >= 11 && _this1385.productosVendidos.length <= 15) {
-                _this1385.dataContainer.cssClass = "altura2";
-              } else if (_this1385.productosVendidos.length >= 16 && _this1385.productosVendidos.length <= 20) {
-                _this1385.dataContainer.cssClass = "altura3";
+              if (_this1386.productosVendidos.length >= 5 && _this1386.productosVendidos.length <= 10) {
+                _this1386.dataContainer.cssClass = "altura1";
+              } else if (_this1386.productosVendidos.length >= 11 && _this1386.productosVendidos.length <= 15) {
+                _this1386.dataContainer.cssClass = "altura2";
+              } else if (_this1386.productosVendidos.length >= 16 && _this1386.productosVendidos.length <= 20) {
+                _this1386.dataContainer.cssClass = "altura3";
               }
 
-              _this1385.mostrarLoading = false;
+              _this1386.mostrarLoading = false;
 
-              _this1385.buscarCantidadesPRODUCTOS();
+              _this1386.buscarCantidadesPRODUCTOS();
 
-              _this1385.newButtonEnabled = false;
-              _this1385.costoTr = true;
+              _this1386.newButtonEnabled = false;
+              _this1386.costoTr = true;
             } else {
-              _this1385.mostrarLoading = false;
+              _this1386.mostrarLoading = false;
 
-              _this1385.mostrarMensajeGenerico(2, "No se encontro ningun registro con el número ingresado");
+              _this1386.mostrarMensajeGenerico(2, "No se encontro ningun registro con el número ingresado");
             }
           });
         }
       }, {
         key: "buscarCantidadesPRODUCTOS",
         value: function buscarCantidadesPRODUCTOS() {
-          var _this1386 = this;
+          var _this1387 = this;
 
           var contP = 0;
           this.productosVendidos.forEach(function (element) {
-            _this1386.productos.forEach(function (element2) {
+            _this1387.productos.forEach(function (element2) {
               if (element.producto.PRODUCTO == element2.PRODUCTO) {
-                switch (_this1386.factura.sucursal) {
+                switch (_this1387.factura.sucursal) {
                   case "matriz":
                     element.disponible = element2.sucursal1;
 
@@ -175722,16 +176112,16 @@ function _classCallCheck(instance, Constructor) { if (!(instance instanceof Cons
       }, {
         key: "compararCantidad2",
         value: function compararCantidad2() {
-          return Object(tslib__WEBPACK_IMPORTED_MODULE_0__["__awaiter"])(this, void 0, void 0, /*#__PURE__*/regeneratorRuntime.mark(function _callee62() {
-            var _this1387 = this;
+          return Object(tslib__WEBPACK_IMPORTED_MODULE_0__["__awaiter"])(this, void 0, void 0, /*#__PURE__*/regeneratorRuntime.mark(function _callee64() {
+            var _this1388 = this;
 
             var cont;
-            return regeneratorRuntime.wrap(function _callee62$(_context62) {
+            return regeneratorRuntime.wrap(function _callee64$(_context65) {
               while (1) {
-                switch (_context62.prev = _context62.next) {
+                switch (_context65.prev = _context65.next) {
                   case 0:
                     cont = 0;
-                    _context62.next = 3;
+                    _context65.next = 3;
                     return this.productosVendidos.forEach(function (element) {
                       cont++;
 
@@ -175749,30 +176139,30 @@ function _classCallCheck(instance, Constructor) { if (!(instance instanceof Cons
                           } else if (result.dismiss === sweetalert2__WEBPACK_IMPORTED_MODULE_8___default.a.DismissReason.cancel) {
                             sweetalert2__WEBPACK_IMPORTED_MODULE_8___default.a.fire('Cancelado!', 'Se ha cancelado su orden.', 'error');
 
-                            _this1387.deleteProductoVendido(cont - 2);
+                            _this1388.deleteProductoVendido(cont - 2);
                           }
                         });
                       }
 
-                      _this1387.carcularTotalProducto(null, cont);
+                      _this1388.carcularTotalProducto(null, cont);
                     });
 
                   case 3:
                   case "end":
-                    return _context62.stop();
+                    return _context65.stop();
                 }
               }
-            }, _callee62, this);
+            }, _callee64, this);
           }));
         }
       }, {
         key: "compararCantidad",
         value: function compararCantidad(nombre, i, o) {
-          var _this1388 = this;
+          var _this1389 = this;
 
           this.productos.forEach(function (element) {
             if (nombre == element.PRODUCTO) {
-              _this1388.productosVendidos[o - 1].disponible = element.cantidad;
+              _this1389.productosVendidos[o - 1].disponible = element.cantidad;
 
               if (i > element.cantidad) {
                 sweetalert2__WEBPACK_IMPORTED_MODULE_8___default.a.fire({
@@ -175788,7 +176178,7 @@ function _classCallCheck(instance, Constructor) { if (!(instance instanceof Cons
                   } else if (result.dismiss === sweetalert2__WEBPACK_IMPORTED_MODULE_8___default.a.DismissReason.cancel) {
                     sweetalert2__WEBPACK_IMPORTED_MODULE_8___default.a.fire('Cancelado!', 'Se ha cancelado su orden.', 'error');
 
-                    _this1388.deleteProductoVendido(0);
+                    _this1389.deleteProductoVendido(0);
                   }
                 });
               }
@@ -175798,18 +176188,18 @@ function _classCallCheck(instance, Constructor) { if (!(instance instanceof Cons
       }, {
         key: "actualizarProductos",
         value: function actualizarProductos() {
-          var _this1389 = this;
+          var _this1390 = this;
 
           var resta = 0;
           new Promise(function (resolve, reject) {
-            _this1389.productosVendidos.forEach(function (element) {
-              switch (_this1389.factura.sucursal) {
+            _this1390.productosVendidos.forEach(function (element) {
+              switch (_this1390.factura.sucursal) {
                 case "matriz":
                   resta = 0;
                   resta = element.producto.sucursal1 - element.cantidad;
                   element.producto.sucursal1 = resta;
 
-                  _this1389.productoService.updateProductoSucursal1(element.producto).subscribe(function (res) {
+                  _this1390.productoService.updateProductoSucursal1(element.producto).subscribe(function (res) {
                     console.log(res + "entre por si");
                   }, function (err) {});
 
@@ -175820,7 +176210,7 @@ function _classCallCheck(instance, Constructor) { if (!(instance instanceof Cons
                   resta = element.producto.sucursal2 - element.cantidad;
                   element.producto.sucursal2 = resta;
 
-                  _this1389.productoService.updateProductoSucursal2(element.producto).subscribe(function (res) {
+                  _this1390.productoService.updateProductoSucursal2(element.producto).subscribe(function (res) {
                     console.log(res + "entre por si");
                   }, function (err) {});
 
@@ -175831,7 +176221,7 @@ function _classCallCheck(instance, Constructor) { if (!(instance instanceof Cons
                   resta = element.producto.sucursal3 - element.cantidad;
                   element.producto.sucursal3 = resta;
 
-                  _this1389.productoService.updateProductoSucursal3(element.producto).subscribe(function (res) {
+                  _this1390.productoService.updateProductoSucursal3(element.producto).subscribe(function (res) {
                     console.log(res + "entre por si");
                   }, function (err) {});
 
@@ -175873,26 +176263,26 @@ function _classCallCheck(instance, Constructor) { if (!(instance instanceof Cons
       }, {
         key: "calcularEquivalencia",
         value: function calcularEquivalencia(e, i) {
-          var _this1390 = this;
+          var _this1391 = this;
 
           this.productos.forEach(function (element) {
-            if (element.PRODUCTO == _this1390.productosVendidos[i].producto.PRODUCTO) {
-              var cajas = Math.trunc((_this1390.productosVendidos[i].cantidad + 0.01) / element.M2);
-              var piezas = Math.trunc((_this1390.productosVendidos[i].cantidad + 0.01) * element.P_CAJA / element.M2) - cajas * element.P_CAJA;
+            if (element.PRODUCTO == _this1391.productosVendidos[i].producto.PRODUCTO) {
+              var cajas = Math.trunc((_this1391.productosVendidos[i].cantidad + 0.01) / element.M2);
+              var piezas = Math.trunc((_this1391.productosVendidos[i].cantidad + 0.01) * element.P_CAJA / element.M2) - cajas * element.P_CAJA;
 
-              if (_this1390.productosVendidos[i].producto.CLASIFICA == "Ceramicas" || _this1390.productosVendidos[i].producto.CLASIFICA == "Porcelanatos" || _this1390.productosVendidos[i].producto.CLASIFICA == "Porcelanato") {
-                if (_this1390.productosVendidos[i].producto.CLASIFICA == "Porcelanato") _this1390.productosVendidos[i].producto.CLASIFICA = "Porcelanatos";
+              if (_this1391.productosVendidos[i].producto.CLASIFICA == "Ceramicas" || _this1391.productosVendidos[i].producto.CLASIFICA == "Porcelanatos" || _this1391.productosVendidos[i].producto.CLASIFICA == "Porcelanato") {
+                if (_this1391.productosVendidos[i].producto.CLASIFICA == "Porcelanato") _this1391.productosVendidos[i].producto.CLASIFICA = "Porcelanatos";
 
-                var confProd = _this1390.listaParametrizaciones.find(function (x) {
-                  return x.nombreGrupo == _this1390.productosVendidos[i].producto.CLASIFICA;
+                var confProd = _this1391.listaParametrizaciones.find(function (x) {
+                  return x.nombreGrupo == _this1391.productosVendidos[i].producto.CLASIFICA;
                 });
 
                 if (confProd != null) {
                   if (cajas >= confProd.cajasLimite && piezas >= confProd.piezasRestantes) piezas = piezas - confProd.piezasRestantes;
                 }
 
-                _this1390.productosVendidos[i].equivalencia = cajas + "C " + piezas + "P";
-              } else _this1390.productosVendidos[i].equivalencia = cajas + "C " + piezas + "P";
+                _this1391.productosVendidos[i].equivalencia = cajas + "C " + piezas + "P";
+              } else _this1391.productosVendidos[i].equivalencia = cajas + "C " + piezas + "P";
             }
           });
         }
@@ -175934,50 +176324,12 @@ function _classCallCheck(instance, Constructor) { if (!(instance instanceof Cons
       }, {
         key: "mostrarMensaje",
         value: function mostrarMensaje() {
-          var _this1391 = this;
-
-          var timerInterval;
-          sweetalert2__WEBPACK_IMPORTED_MODULE_8___default.a.fire({
-            title: 'Guardando Documento!',
-            html: 'Procesando',
-            timerProgressBar: true,
-            onBeforeOpen: function onBeforeOpen() {
-              sweetalert2__WEBPACK_IMPORTED_MODULE_8___default.a.showLoading();
-              timerInterval = setInterval(function () {
-                var content = sweetalert2__WEBPACK_IMPORTED_MODULE_8___default.a.getContent();
-
-                if (content) {
-                  var b = content.querySelector('b');
-                }
-              }, 100);
-            },
-            onClose: function onClose() {
-              clearInterval(timerInterval);
-            }
-          }).then(function (result) {
-            /* Read more about handling dismissals below */
-            if (result.dismiss === sweetalert2__WEBPACK_IMPORTED_MODULE_8___default.a.DismissReason.timer) {
-              sweetalert2__WEBPACK_IMPORTED_MODULE_8___default.a.fire({
-                title: _this1391.tDocumento + ' guardada',
-                text: 'Su ' + _this1391.tDocumento + ' fue guardada con éxito',
-                icon: 'success',
-                confirmButtonText: 'Ok'
-              }).then(function (result) {
-                window.location.reload();
-              });
-            }
-          });
-        }
-      }, {
-        key: "mostrarMensaje2",
-        value: function mostrarMensaje2() {
           var _this1392 = this;
 
           var timerInterval;
           sweetalert2__WEBPACK_IMPORTED_MODULE_8___default.a.fire({
             title: 'Guardando Documento!',
             html: 'Procesando',
-            timer: 3000,
             timerProgressBar: true,
             onBeforeOpen: function onBeforeOpen() {
               sweetalert2__WEBPACK_IMPORTED_MODULE_8___default.a.showLoading();
@@ -176007,9 +176359,47 @@ function _classCallCheck(instance, Constructor) { if (!(instance instanceof Cons
           });
         }
       }, {
+        key: "mostrarMensaje2",
+        value: function mostrarMensaje2() {
+          var _this1393 = this;
+
+          var timerInterval;
+          sweetalert2__WEBPACK_IMPORTED_MODULE_8___default.a.fire({
+            title: 'Guardando Documento!',
+            html: 'Procesando',
+            timer: 3000,
+            timerProgressBar: true,
+            onBeforeOpen: function onBeforeOpen() {
+              sweetalert2__WEBPACK_IMPORTED_MODULE_8___default.a.showLoading();
+              timerInterval = setInterval(function () {
+                var content = sweetalert2__WEBPACK_IMPORTED_MODULE_8___default.a.getContent();
+
+                if (content) {
+                  var b = content.querySelector('b');
+                }
+              }, 100);
+            },
+            onClose: function onClose() {
+              clearInterval(timerInterval);
+            }
+          }).then(function (result) {
+            /* Read more about handling dismissals below */
+            if (result.dismiss === sweetalert2__WEBPACK_IMPORTED_MODULE_8___default.a.DismissReason.timer) {
+              sweetalert2__WEBPACK_IMPORTED_MODULE_8___default.a.fire({
+                title: _this1393.tDocumento + ' guardada',
+                text: 'Su ' + _this1393.tDocumento + ' fue guardada con éxito',
+                icon: 'success',
+                confirmButtonText: 'Ok'
+              }).then(function (result) {
+                window.location.reload();
+              });
+            }
+          });
+        }
+      }, {
         key: "showModal",
         value: function showModal(e, i) {
-          var _this1393 = this;
+          var _this1394 = this;
 
           sweetalert2__WEBPACK_IMPORTED_MODULE_8___default.a.fire({
             title: 'Cantidad no disponible',
@@ -176024,14 +176414,14 @@ function _classCallCheck(instance, Constructor) { if (!(instance instanceof Cons
             } else if (result.dismiss === sweetalert2__WEBPACK_IMPORTED_MODULE_8___default.a.DismissReason.cancel) {
               sweetalert2__WEBPACK_IMPORTED_MODULE_8___default.a.fire('Cancelado!', 'Se ha cancelado su orden.', 'error');
 
-              _this1393.deleteProductoVendido(i);
+              _this1394.deleteProductoVendido(i);
             }
           });
         }
       }, {
         key: "crearPDF",
         value: function crearPDF() {
-          var _this1394 = this;
+          var _this1395 = this;
 
           if (this.factura.cliente.celular == undefined || this.factura.cliente.celular == null) this.factura.cliente.celular = "xxxxxxxxxx";
 
@@ -176039,7 +176429,7 @@ function _classCallCheck(instance, Constructor) { if (!(instance instanceof Cons
             this.textoTipoDocumento2 = "ed.producto.PRODUCTO";
             var documentDefinition = this.getDocumentDefinition();
             var generacion = new Promise(function (resolve, reject) {
-              pdfmake_build_pdfmake__WEBPACK_IMPORTED_MODULE_6___default.a.createPdf(documentDefinition).download('Factura ' + _this1394.variab, function (response) {
+              pdfmake_build_pdfmake__WEBPACK_IMPORTED_MODULE_6___default.a.createPdf(documentDefinition).download('Factura ' + _this1395.variab, function (response) {
                 sweetalert2__WEBPACK_IMPORTED_MODULE_8___default.a.close(), sweetalert2__WEBPACK_IMPORTED_MODULE_8___default.a.fire({
                   title: 'Factura guardada',
                   text: 'Su factura fue guardada con éxito',
@@ -176051,9 +176441,9 @@ function _classCallCheck(instance, Constructor) { if (!(instance instanceof Cons
               });
             });
             generacion.then(function (data) {
-              if (_this1394.formaPago == "Otros medios Pago" || _this1394.formaPago == "Abonos") _this1394.router.navigate(['/recibo-caja'], {
+              if (_this1395.formaPago == "Otros medios Pago" || _this1395.formaPago == "Abonos") _this1395.router.navigate(['/recibo-caja'], {
                 queryParams: {
-                  id: _this1394.factura.documento_n,
+                  id: _this1395.factura.documento_n,
                   tipo: 1
                 }
               });else window.location.reload();
@@ -176065,7 +176455,7 @@ function _classCallCheck(instance, Constructor) { if (!(instance instanceof Cons
             var _documentDefinition6 = this.getDocumentDefinitionNotaVenta();
 
             var generacion = new Promise(function (resolve, reject) {
-              pdfmake_build_pdfmake__WEBPACK_IMPORTED_MODULE_6___default.a.createPdf(_documentDefinition6).download('Nota/Venta ' + _this1394.variab, function (response) {
+              pdfmake_build_pdfmake__WEBPACK_IMPORTED_MODULE_6___default.a.createPdf(_documentDefinition6).download('Nota/Venta ' + _this1395.variab, function (response) {
                 sweetalert2__WEBPACK_IMPORTED_MODULE_8___default.a.close(), sweetalert2__WEBPACK_IMPORTED_MODULE_8___default.a.fire({
                   title: 'Nota de Venta guardada',
                   text: 'Su nota de Venta fue guardada con éxito',
@@ -176077,9 +176467,9 @@ function _classCallCheck(instance, Constructor) { if (!(instance instanceof Cons
               });
             });
             generacion.then(function (data) {
-              if (_this1394.formaPago == "Otros medios Pago" || _this1394.formaPago == "Abonos") _this1394.router.navigate(['/recibo-caja'], {
+              if (_this1395.formaPago == "Otros medios Pago" || _this1395.formaPago == "Abonos") _this1395.router.navigate(['/recibo-caja'], {
                 queryParams: {
-                  id: _this1394.factura.documento_n,
+                  id: _this1395.factura.documento_n,
                   tipo: 2
                 }
               });else window.location.reload();
@@ -177478,7 +177868,7 @@ function _classCallCheck(instance, Constructor) { if (!(instance instanceof Cons
       }, {
         key: "validarExistencias",
         value: function validarExistencias(element) {
-          var _this1395 = this;
+          var _this1396 = this;
 
           var resta = 0;
           var sumad = 0;
@@ -177509,11 +177899,11 @@ function _classCallCheck(instance, Constructor) { if (!(instance instanceof Cons
             this.productoPendienteE.total = resta * element.precio_venta;
             this.productoPendienteEntregas.push(this.productoPendienteE);
             new Promise(function (resolve, reject) {
-              switch (_this1395.factura.sucursal) {
+              switch (_this1396.factura.sucursal) {
                 case "matriz":
                   sumad = resta + element.producto.suc1Pendiente;
 
-                  _this1395.productoService.updateProductoPendienteSucursal1(element.producto, sumad).subscribe(function (res) {
+                  _this1396.productoService.updateProductoPendienteSucursal1(element.producto, sumad).subscribe(function (res) {
                     console.log(res + "entre por si");
                   }, function (err) {});
 
@@ -177522,7 +177912,7 @@ function _classCallCheck(instance, Constructor) { if (!(instance instanceof Cons
                 case "sucursal1":
                   sumad = resta + element.producto.suc2Pendiente;
 
-                  _this1395.productoService.updateProductoPendienteSucursal2(element.producto, sumad).subscribe(function (res) {
+                  _this1396.productoService.updateProductoPendienteSucursal2(element.producto, sumad).subscribe(function (res) {
                     console.log(res + "entre por si");
                   }, function (err) {});
 
@@ -177531,7 +177921,7 @@ function _classCallCheck(instance, Constructor) { if (!(instance instanceof Cons
                 case "sucursal2":
                   sumad = resta + element.producto.suc3Pendiente;
 
-                  _this1395.productoService.updateProductoPendienteSucursal3(element.producto, sumad).subscribe(function (res) {
+                  _this1396.productoService.updateProductoPendienteSucursal3(element.producto, sumad).subscribe(function (res) {
                     console.log(res + "entre por si");
                   }, function (err) {});
 
@@ -177540,20 +177930,20 @@ function _classCallCheck(instance, Constructor) { if (!(instance instanceof Cons
                 default:
               }
 
-              _this1395.productosPendientesService.newProductoPendiente(_this1395.productoPendienteE).subscribe(function (res) {
-                _this1395.contadores[0].contProductosPendientes_Ndocumento = _this1395.numeroID;
+              _this1396.productosPendientesService.newProductoPendiente(_this1396.productoPendienteE).subscribe(function (res) {
+                _this1396.contadores[0].contProductosPendientes_Ndocumento = _this1396.numeroID;
 
-                _this1395.contadoresService.updateContadoresIDProductosPendientes(_this1395.contadores[0]).subscribe(function (res) {
-                  _this1395.db.collection("/consectivosBaseMongoDB").doc("base").update({
-                    contProductosPendientes_Ndocumento: _this1395.contadores[0].contProductosPendientes_Ndocumento
+                _this1396.contadoresService.updateContadoresIDProductosPendientes(_this1396.contadores[0]).subscribe(function (res) {
+                  _this1396.db.collection("/consectivosBaseMongoDB").doc("base").update({
+                    contProductosPendientes_Ndocumento: _this1396.contadores[0].contProductosPendientes_Ndocumento
                   }).then(function (res) {}, function (err) {
-                    return _this1395.mostrarMensajeGenerico(2, "Error al guardar");
+                    return _this1396.mostrarMensajeGenerico(2, "Error al guardar");
                   });
                 }, function (err) {
-                  _this1395.mostrarMensajeGenerico(2, "Error al guardar");
+                  _this1396.mostrarMensajeGenerico(2, "Error al guardar");
                 });
               }, function (err) {
-                _this1395.mostrarMensajeGenerico(2, "Error al guardar");
+                _this1396.mostrarMensajeGenerico(2, "Error al guardar");
               });
             });
           }
@@ -177561,24 +177951,24 @@ function _classCallCheck(instance, Constructor) { if (!(instance instanceof Cons
       }, {
         key: "buscarDatosSucursal",
         value: function buscarDatosSucursal() {
-          var _this1396 = this;
+          var _this1397 = this;
 
           this.parametrizaciones.forEach(function (element) {
-            if (element.sucursal == _this1396.factura.sucursal) {
-              _this1396.parametrizacionSucu = element;
+            if (element.sucursal == _this1397.factura.sucursal) {
+              _this1397.parametrizacionSucu = element;
               console.log(element);
-              _this1396.factura.rucFactura = element.ruc;
-              _this1396.RucSucursal = element.ruc;
-              _this1396.textoConsecutivo = element.cabeceraData;
+              _this1397.factura.rucFactura = element.ruc;
+              _this1397.RucSucursal = element.ruc;
+              _this1397.textoConsecutivo = element.cabeceraData;
 
-              _this1396.traerConsecutivoVeronica(_this1396.RucSucursal);
+              _this1397.traerConsecutivoVeronica(_this1397.RucSucursal);
             }
           });
         }
       }, {
         key: "crearCliente",
         value: function crearCliente() {
-          var _this1397 = this;
+          var _this1398 = this;
 
           if (this.factura.cliente._id) {
             console.log("No actualizo");
@@ -177587,7 +177977,7 @@ function _classCallCheck(instance, Constructor) { if (!(instance instanceof Cons
               err => {this.mostrarMensajeGenerico(2,"Recise e intente nuevamente")}) */
           } else {
             this.clienteService.newCliente(this.factura.cliente).subscribe(function (res) {}, function (err) {
-              _this1397.mostrarMensajeGenerico(2, "Recise e intente nuevamente");
+              _this1398.mostrarMensajeGenerico(2, "Recise e intente nuevamente");
             });
           }
         }
@@ -177611,12 +178001,12 @@ function _classCallCheck(instance, Constructor) { if (!(instance instanceof Cons
       }, {
         key: "guardarFactura",
         value: function guardarFactura() {
-          return Object(tslib__WEBPACK_IMPORTED_MODULE_0__["__awaiter"])(this, void 0, void 0, /*#__PURE__*/regeneratorRuntime.mark(function _callee63() {
-            var _this1398 = this;
+          return Object(tslib__WEBPACK_IMPORTED_MODULE_0__["__awaiter"])(this, void 0, void 0, /*#__PURE__*/regeneratorRuntime.mark(function _callee65() {
+            var _this1399 = this;
 
-            return regeneratorRuntime.wrap(function _callee63$(_context63) {
+            return regeneratorRuntime.wrap(function _callee65$(_context66) {
               while (1) {
-                switch (_context63.prev = _context63.next) {
+                switch (_context66.prev = _context66.next) {
                   case 0:
                     this.contadorVenta++;
                     this.factura.username = this.username;
@@ -177624,27 +178014,27 @@ function _classCallCheck(instance, Constructor) { if (!(instance instanceof Cons
                     this.factura.fecha2 = new Date().toLocaleString();
                     this.factura.productosVendidos = this.productosVendidos;
                     this.facturasService.newFactura(this.factura).subscribe(function (res) {
-                      _this1398.validarFormaPago();
+                      _this1399.validarFormaPago();
 
-                      _this1398.registrarFacturaSRI();
+                      _this1399.registrarFacturaSRI();
 
-                      _this1398.actualizarFacturero();
+                      _this1399.actualizarFacturero();
                     }, function (err) {
-                      _this1398.mostrarMensajeGenerico(2, "Error al guardar");
+                      _this1399.mostrarMensajeGenerico(2, "Error al guardar");
                     });
 
                   case 6:
                   case "end":
-                    return _context63.stop();
+                    return _context66.stop();
                 }
               }
-            }, _callee63, this);
+            }, _callee65, this);
           }));
         }
       }, {
         key: "registrarFacturaSRI",
         value: function registrarFacturaSRI() {
-          var _this1399 = this;
+          var _this1400 = this;
 
           this.mensajeLoading = "Enviando Factura SRI";
           this.mostrarLoading = true; //--------------INICIO LLENADO DE OBJETO SRI VERONICA--------------------
@@ -177671,15 +178061,15 @@ function _classCallCheck(instance, Constructor) { if (!(instance instanceof Cons
             detalle.codigoAuxiliar = "000000";
             detalle.descripcion = element.producto.PRODUCTO;
             detalle.cantidad = element.cantidad;
-            detalle.precioUnitario = element.precio_venta / (_this1399.ivaPorcentaje / 100 + 1);
+            detalle.precioUnitario = element.precio_venta / (_this1400.ivaPorcentaje / 100 + 1);
             detalle.descuento = 0;
             var impuesto = new _api_veronica_api_veronica__WEBPACK_IMPORTED_MODULE_16__["ImpuestoModel"]();
-            impuesto.tarifa = _this1399.ivaPorcentaje;
+            impuesto.tarifa = _this1400.ivaPorcentaje;
             impuesto.baseImponible = Number(element.subtP1.toFixed(2));
-            impuesto.valor = impuesto.baseImponible * (_this1399.ivaPorcentaje / 100);
+            impuesto.valor = impuesto.baseImponible * (_this1400.ivaPorcentaje / 100);
             detalle.impuesto.push(impuesto);
 
-            _this1399.facturaVeronica.detalles.push(detalle);
+            _this1400.facturaVeronica.detalles.push(detalle);
           }); //*************FORMA DE PAGO*********** */
 
           var pago = new _api_veronica_api_veronica__WEBPACK_IMPORTED_MODULE_16__["PagosModel"]();
@@ -177711,17 +178101,17 @@ function _classCallCheck(instance, Constructor) { if (!(instance instanceof Cons
             logApiVeronica.claveAcceso = resultado.result.claveAccesoConsultada;
             logApiVeronica.resultado = "OK";
 
-            _this1399._logApiVeronicaService.newLog(logApiVeronica).subscribe(function (res) {
-              _this1399.mostrarLoading = false;
+            _this1400._logApiVeronicaService.newLog(logApiVeronica).subscribe(function (res) {
+              _this1400.mostrarLoading = false;
               sweetalert2__WEBPACK_IMPORTED_MODULE_8___default.a.fire({
                 title: 'Correcto',
                 text: 'Factura registrada con éxito',
                 icon: 'success',
                 confirmButtonText: 'Ok'
               }).then(function (result) {
-                if (_this1399.formaPago == "Otros medios Pago" || _this1399.formaPago == "Abonos") _this1399.router.navigate(['/recibo-caja'], {
+                if (_this1400.formaPago == "Otros medios Pago" || _this1400.formaPago == "Abonos") _this1400.router.navigate(['/recibo-caja'], {
                   queryParams: {
-                    id: _this1399.factura.documento_n,
+                    id: _this1400.factura.documento_n,
                     tipo: 1
                   }
                 });else window.location.reload();
@@ -177732,70 +178122,70 @@ function _classCallCheck(instance, Constructor) { if (!(instance instanceof Cons
             logApiVeronica.claveAcceso = null;
             logApiVeronica.resultado = "NOK";
 
-            _this1399._logApiVeronicaService.newLog(logApiVeronica).subscribe(function (res) {
-              _this1399.mostrarLoading = false;
+            _this1400._logApiVeronicaService.newLog(logApiVeronica).subscribe(function (res) {
+              _this1400.mostrarLoading = false;
 
-              _this1399.mostrarMensajeGenerico(2, "Error al establecer coneccion con el SRI");
+              _this1400.mostrarMensajeGenerico(2, "Error al establecer coneccion con el SRI");
             }, function (err) {});
           });
         }
       }, {
         key: "guardarNotaVenta",
         value: function guardarNotaVenta() {
-          var _this1400 = this;
-
-          this.factura.username = this.username;
-          this.factura.fecha = this.now;
-          this.factura.fecha2 = new Date().toLocaleString();
-          this.factura.productosVendidos = this.productosVendidos;
-          this.notasVentService.newNotaVenta(this.factura).subscribe(function (res) {
-            _this1400.actualizarFactureroNotasVenta();
-
-            _this1400.validarFormaPago();
-          }, function (err) {
-            _this1400.mostrarMensajeGenerico(2, "Error al guardar");
-          });
-        }
-      }, {
-        key: "guardarCotizaci\xF3n",
-        value: function guardarCotizaciN() {
           var _this1401 = this;
 
           this.factura.username = this.username;
           this.factura.fecha = this.now;
           this.factura.fecha2 = new Date().toLocaleString();
           this.factura.productosVendidos = this.productosVendidos;
-          this.proformasService.newProforma(this.factura).subscribe(function (res) {
-            _this1401.actualizarFactureroProformas();
+          this.notasVentService.newNotaVenta(this.factura).subscribe(function (res) {
+            _this1401.actualizarFactureroNotasVenta();
+
+            _this1401.validarFormaPago();
           }, function (err) {
             _this1401.mostrarMensajeGenerico(2, "Error al guardar");
           });
         }
       }, {
+        key: "guardarCotizaci\xF3n",
+        value: function guardarCotizaciN() {
+          var _this1402 = this;
+
+          this.factura.username = this.username;
+          this.factura.fecha = this.now;
+          this.factura.fecha2 = new Date().toLocaleString();
+          this.factura.productosVendidos = this.productosVendidos;
+          this.proformasService.newProforma(this.factura).subscribe(function (res) {
+            _this1402.actualizarFactureroProformas();
+          }, function (err) {
+            _this1402.mostrarMensajeGenerico(2, "Error al guardar");
+          });
+        }
+      }, {
         key: "actualizarFacturero",
         value: function actualizarFacturero() {
-          var _this1402 = this;
+          var _this1403 = this;
 
           switch (this.factura.sucursal) {
             case "matriz":
               this.contadores[0].facturaMatriz_Ndocumento = this.factura.documento_n;
               console.log(this.factura.documento_n);
               this.contadoresService.updateContadoresIDFacturaMatriz(this.contadores[0]).subscribe(function (res) {}, function (err) {
-                _this1402.mostrarMensajeGenerico(2, "Error al guardar");
+                _this1403.mostrarMensajeGenerico(2, "Error al guardar");
               });
               break;
 
             case "sucursal1":
               this.contadores[0].facturaSucursal1_Ndocumento = this.factura.documento_n;
               this.contadoresService.updateContadoresIDFacturaSuc1(this.contadores[0]).subscribe(function (res) {}, function (err) {
-                _this1402.mostrarMensajeGenerico(2, "Error al guardar");
+                _this1403.mostrarMensajeGenerico(2, "Error al guardar");
               });
               break;
 
             case "sucursal2":
               this.contadores[0].facturaSucursal2_Ndocumento = this.factura.documento_n;
               this.contadoresService.updateContadoresIDFacturaSuc2(this.contadores[0]).subscribe(function (res) {}, function (err) {
-                _this1402.mostrarMensajeGenerico(2, "Error al guardar");
+                _this1403.mostrarMensajeGenerico(2, "Error al guardar");
               });
               break;
 
@@ -177806,21 +178196,21 @@ function _classCallCheck(instance, Constructor) { if (!(instance instanceof Cons
       }, {
         key: "actualizarFactureroNotasVenta",
         value: function actualizarFactureroNotasVenta() {
-          var _this1403 = this;
+          var _this1404 = this;
 
           this.contadores[0].notasVenta_Ndocumento = this.factura.documento_n;
           this.contadoresService.updateContadoresIDNotasVenta(this.contadores[0]).subscribe(function (res) {}, function (err) {
-            _this1403.mostrarMensajeGenerico(2, "Revise e intente nuevamente");
+            _this1404.mostrarMensajeGenerico(2, "Revise e intente nuevamente");
           });
         }
       }, {
         key: "actualizarFactureroProformas",
         value: function actualizarFactureroProformas() {
-          var _this1404 = this;
+          var _this1405 = this;
 
           this.contadores[0].proformas_Ndocumento = this.factura.documento_n;
           this.contadoresService.updateContadoresIDProformas(this.contadores[0]).subscribe(function (res) {}, function (err) {
-            _this1404.mostrarMensajeGenerico(2, "Revise e intente nuevamente");
+            _this1405.mostrarMensajeGenerico(2, "Revise e intente nuevamente");
           });
         }
       }, {
@@ -177838,40 +178228,11 @@ function _classCallCheck(instance, Constructor) { if (!(instance instanceof Cons
       }, {
         key: "validarEstadoCajaFactura",
         value: function validarEstadoCajaFactura() {
-          var _this1405 = this;
+          var _this1406 = this;
 
           if (this.factura.cliente.ruc != this.rucAnterior) {
             this.botonFactura = false;
             this.mostrarMensajeGenerico(2, "Error no se puede generar la factura con un ruc diferente al inicial");
-          } else {
-            this.factura.fecha.setHours(0, 0, 0, 0);
-
-            this._cajaMenorService.getCajaMenorPorFecha(this.factura).subscribe(function (res) {
-              var listaCaja = res;
-
-              if (listaCaja.length != 0) {
-                var caja = listaCaja.find(function (element) {
-                  return element.sucursal == _this1405.factura.sucursal;
-                });
-
-                if (caja != undefined) {
-                  if (caja.sucursal == _this1405.factura.sucursal && caja.estado == "Cerrada") {
-                    _this1405.botonFactura = false;
-                    sweetalert2__WEBPACK_IMPORTED_MODULE_8___default.a.fire("Atención", "No puede generar registros para la fecha establecida, la caja menor se encuentra cerrada", 'error');
-                  } else _this1405.obtenerIdFactura();
-                } else _this1405.obtenerIdFactura();
-              } else _this1405.obtenerIdFactura();
-            }, function (err) {});
-          }
-        }
-      }, {
-        key: "validarEstadoCajaNotaVenta",
-        value: function validarEstadoCajaNotaVenta() {
-          var _this1406 = this;
-
-          if (this.factura.cliente.ruc != this.rucAnterior) {
-            this.botonNotaVenta = false;
-            this.mostrarMensajeGenerico(2, "Error no se puede generar la nota venta con un ruc diferente al inicial");
           } else {
             this.factura.fecha.setHours(0, 0, 0, 0);
 
@@ -177885,68 +178246,72 @@ function _classCallCheck(instance, Constructor) { if (!(instance instanceof Cons
 
                 if (caja != undefined) {
                   if (caja.sucursal == _this1406.factura.sucursal && caja.estado == "Cerrada") {
-                    _this1406.botonNotaVenta = false;
+                    _this1406.botonFactura = false;
                     sweetalert2__WEBPACK_IMPORTED_MODULE_8___default.a.fire("Atención", "No puede generar registros para la fecha establecida, la caja menor se encuentra cerrada", 'error');
-                  } else _this1406.obtenerIdNotasVenta();
-                } else _this1406.obtenerIdNotasVenta();
-              } else _this1406.obtenerIdNotasVenta();
+                  } else _this1406.obtenerIdFactura();
+                } else _this1406.obtenerIdFactura();
+              } else _this1406.obtenerIdFactura();
+            }, function (err) {});
+          }
+        }
+      }, {
+        key: "validarEstadoCajaNotaVenta",
+        value: function validarEstadoCajaNotaVenta() {
+          var _this1407 = this;
+
+          if (this.factura.cliente.ruc != this.rucAnterior) {
+            this.botonNotaVenta = false;
+            this.mostrarMensajeGenerico(2, "Error no se puede generar la nota venta con un ruc diferente al inicial");
+          } else {
+            this.factura.fecha.setHours(0, 0, 0, 0);
+
+            this._cajaMenorService.getCajaMenorPorFecha(this.factura).subscribe(function (res) {
+              var listaCaja = res;
+
+              if (listaCaja.length != 0) {
+                var caja = listaCaja.find(function (element) {
+                  return element.sucursal == _this1407.factura.sucursal;
+                });
+
+                if (caja != undefined) {
+                  if (caja.sucursal == _this1407.factura.sucursal && caja.estado == "Cerrada") {
+                    _this1407.botonNotaVenta = false;
+                    sweetalert2__WEBPACK_IMPORTED_MODULE_8___default.a.fire("Atención", "No puede generar registros para la fecha establecida, la caja menor se encuentra cerrada", 'error');
+                  } else _this1407.obtenerIdNotasVenta();
+                } else _this1407.obtenerIdNotasVenta();
+              } else _this1407.obtenerIdNotasVenta();
             }, function (err) {});
           }
         }
       }, {
         key: "obtenerIdFactura",
         value: function obtenerIdFactura() {
-          var _this1407 = this;
+          var _this1408 = this;
 
           this.mostrarLoading = true;
           var IdNum = new Promise(function (resolve, reject) {
             try {
-              _this1407.facturasService.getFacturasPorIdConsecutivo(_this1407.factura).subscribe(function (res) {
-                _this1407.facturasEctdas = res;
+              _this1408.facturasService.getFacturasPorIdConsecutivo(_this1408.factura).subscribe(function (res) {
+                _this1408.facturasEctdas = res;
 
-                if (_this1407.facturasEctdas.length == 0) {
+                if (_this1408.facturasEctdas.length == 0) {
                   resolve("listo");
                 } else {
-                  _this1407.factura.documento_n = _this1407.factura.documento_n + 1;
+                  _this1408.factura.documento_n = _this1408.factura.documento_n + 1;
 
-                  _this1407.obtenerIdFactura();
+                  _this1408.obtenerIdFactura();
                 }
               }, function (err) {});
             } catch (error) {}
           });
           IdNum.then(function (data) {
-            _this1407.validarFechaFactura(); //this.generarFactura();
+            _this1408.validarFechaFactura(); //this.generarFactura();
 
           });
         }
       }, {
         key: "validarFechaFactura",
         value: function validarFechaFactura() {
-          var _this1408 = this;
-
-          var fechaActual = new Date();
-
-          if (fechaActual.toLocaleDateString() != this.now.toLocaleDateString()) {
-            this.mostrarLoading = false;
-            sweetalert2__WEBPACK_IMPORTED_MODULE_8___default.a.fire({
-              title: 'Alerta',
-              text: "La fecha es distinta a la de hoy",
-              icon: 'warning',
-              showCancelButton: true,
-              confirmButtonText: 'Si',
-              cancelButtonText: 'No'
-            }).then(function (result) {
-              if (result.value) {
-                _this1408.generarFactura();
-              } else if (result.dismiss === sweetalert2__WEBPACK_IMPORTED_MODULE_8___default.a.DismissReason.cancel) {
-                console.log("hare algo");
-              }
-            });
-          } else this.generarFactura();
-        }
-      }, {
-        key: "validarNotaVenta",
-        value: function validarNotaVenta() {
           var _this1409 = this;
 
           var fechaActual = new Date();
@@ -177962,7 +178327,32 @@ function _classCallCheck(instance, Constructor) { if (!(instance instanceof Cons
               cancelButtonText: 'No'
             }).then(function (result) {
               if (result.value) {
-                _this1409.generarNotaDeVenta();
+                _this1409.generarFactura();
+              } else if (result.dismiss === sweetalert2__WEBPACK_IMPORTED_MODULE_8___default.a.DismissReason.cancel) {
+                console.log("hare algo");
+              }
+            });
+          } else this.generarFactura();
+        }
+      }, {
+        key: "validarNotaVenta",
+        value: function validarNotaVenta() {
+          var _this1410 = this;
+
+          var fechaActual = new Date();
+
+          if (fechaActual.toLocaleDateString() != this.now.toLocaleDateString()) {
+            this.mostrarLoading = false;
+            sweetalert2__WEBPACK_IMPORTED_MODULE_8___default.a.fire({
+              title: 'Alerta',
+              text: "La fecha es distinta a la de hoy",
+              icon: 'warning',
+              showCancelButton: true,
+              confirmButtonText: 'Si',
+              cancelButtonText: 'No'
+            }).then(function (result) {
+              if (result.value) {
+                _this1410.generarNotaDeVenta();
               } else if (result.dismiss === sweetalert2__WEBPACK_IMPORTED_MODULE_8___default.a.DismissReason.cancel) {
                 console.log("hare algo");
               }
@@ -177972,7 +178362,7 @@ function _classCallCheck(instance, Constructor) { if (!(instance instanceof Cons
       }, {
         key: "generarFactura",
         value: function generarFactura() {
-          var _this1410 = this;
+          var _this1411 = this;
 
           this.mostrarLoading = false;
           this.telefonoCliente = this.factura.cliente.celular;
@@ -178001,63 +178391,63 @@ function _classCallCheck(instance, Constructor) { if (!(instance instanceof Cons
                 this.factura.cliente = this.factura.cliente;
                 if (this.factura.cliente.nombreContacto == "" || this.factura.cliente.nombreContacto == undefined) this.factura.cliente.nombreContacto = this.factura.cliente.cliente_nombre;
                 new Promise(function (resolve, reject) {
-                  _this1410.crearCliente();
+                  _this1411.crearCliente();
 
-                  _this1410.guardarFactura();
+                  _this1411.guardarFactura();
 
-                  _this1410.productosVendidos.forEach(function (element) {
-                    _this1410.validarExistencias(element);
+                  _this1411.productosVendidos.forEach(function (element) {
+                    _this1411.validarExistencias(element);
 
-                    element.factura_id = _this1410.factura.documento_n;
-                    _this1410.transaccion = new _transacciones_transacciones__WEBPACK_IMPORTED_MODULE_2__["transaccion"]();
-                    _this1410.transaccion.fecha_mov = new Date().toLocaleString();
-                    _this1410.transaccion.fecha_transaccion = _this1410.factura.fecha;
-                    _this1410.transaccion.sucursal = _this1410.factura.sucursal;
-                    _this1410.transaccion.totalsuma = element.subtotal;
-                    _this1410.transaccion.bodega = "12";
-                    _this1410.transaccion.valor = element.precio_venta - element.precio_venta * (element.descuento / 100);
-                    _this1410.transaccion.cantM2 = element.cantidad;
-                    _this1410.transaccion.costo_unitario = element.producto.precio;
-                    _this1410.transaccion.documento = _this1410.factura.documento_n + "";
-                    _this1410.transaccion.rucSucursal = _this1410.factura.rucFactura;
-                    _this1410.transaccion.factPro = _this1410.factura.documento_n + "";
-                    _this1410.transaccion.maestro = _this1410.factura.maestro;
-                    _this1410.transaccion.producto = element.producto.PRODUCTO;
-                    _this1410.transaccion.cajas = Math.trunc((element.cantidad + 0.01) / element.producto.M2);
-                    _this1410.transaccion.piezas = Math.trunc((element.cantidad + 0.01) * element.producto.P_CAJA / element.producto.M2) - Math.trunc((element.cantidad + 0.01) / element.producto.M2) * element.producto.P_CAJA;
-                    _this1410.transaccion.observaciones = _this1410.factura.observaciones;
-                    _this1410.transaccion.tipo_transaccion = "venta-fact";
-                    _this1410.transaccion.movimiento = -1;
-                    _this1410.transaccion.usu_autorizado = _this1410.factura.username;
-                    _this1410.transaccion.usuario = _this1410.factura.username;
-                    _this1410.transaccion.idTransaccion = _this1410.number_transaccion++;
-                    _this1410.transaccion.cliente = _this1410.factura.cliente.cliente_nombre;
-                    _this1410.transaccion.nombreUsuario = _this1410.factura.nombreUsuario;
-                    _this1410.transaccion.nombreVendedor = _this1410.factura.nombreVendedor;
-                    _this1410.transaccion.mcaEntregado = element.entregar == true ? "SI" : "NO";
+                    element.factura_id = _this1411.factura.documento_n;
+                    _this1411.transaccion = new _transacciones_transacciones__WEBPACK_IMPORTED_MODULE_2__["transaccion"]();
+                    _this1411.transaccion.fecha_mov = new Date().toLocaleString();
+                    _this1411.transaccion.fecha_transaccion = _this1411.factura.fecha;
+                    _this1411.transaccion.sucursal = _this1411.factura.sucursal;
+                    _this1411.transaccion.totalsuma = element.subtotal;
+                    _this1411.transaccion.bodega = "12";
+                    _this1411.transaccion.valor = element.precio_venta - element.precio_venta * (element.descuento / 100);
+                    _this1411.transaccion.cantM2 = element.cantidad;
+                    _this1411.transaccion.costo_unitario = element.producto.precio;
+                    _this1411.transaccion.documento = _this1411.factura.documento_n + "";
+                    _this1411.transaccion.rucSucursal = _this1411.factura.rucFactura;
+                    _this1411.transaccion.factPro = _this1411.factura.documento_n + "";
+                    _this1411.transaccion.maestro = _this1411.factura.maestro;
+                    _this1411.transaccion.producto = element.producto.PRODUCTO;
+                    _this1411.transaccion.cajas = Math.trunc((element.cantidad + 0.01) / element.producto.M2);
+                    _this1411.transaccion.piezas = Math.trunc((element.cantidad + 0.01) * element.producto.P_CAJA / element.producto.M2) - Math.trunc((element.cantidad + 0.01) / element.producto.M2) * element.producto.P_CAJA;
+                    _this1411.transaccion.observaciones = _this1411.factura.observaciones;
+                    _this1411.transaccion.tipo_transaccion = "venta-fact";
+                    _this1411.transaccion.movimiento = -1;
+                    _this1411.transaccion.usu_autorizado = _this1411.factura.username;
+                    _this1411.transaccion.usuario = _this1411.factura.username;
+                    _this1411.transaccion.idTransaccion = _this1411.number_transaccion++;
+                    _this1411.transaccion.cliente = _this1411.factura.cliente.cliente_nombre;
+                    _this1411.transaccion.nombreUsuario = _this1411.factura.nombreUsuario;
+                    _this1411.transaccion.nombreVendedor = _this1411.factura.nombreVendedor;
+                    _this1411.transaccion.mcaEntregado = element.entregar == true ? "SI" : "NO";
 
                     if (element.producto.CLASIFICA == "COMBO") {
-                      _this1410.generarTransaccionesComboProductos(element.producto.PRODUCTO);
+                      _this1411.generarTransaccionesComboProductos(element.producto.PRODUCTO);
 
-                      if (_this1410.transaccion.valor == element.producto.precio) {
-                        _this1410.transaccion.valor = 0;
-                        _this1410.transaccion.totalsuma = 0;
+                      if (_this1411.transaccion.valor == element.producto.precio) {
+                        _this1411.transaccion.valor = 0;
+                        _this1411.transaccion.totalsuma = 0;
                       } else {
-                        _this1410.transaccion.valor = _this1410.transaccion.valor - element.producto.precio;
-                        _this1410.transaccion.totalsuma = _this1410.transaccion.valor * _this1410.transaccion.cantM2;
+                        _this1411.transaccion.valor = _this1411.transaccion.valor - element.producto.precio;
+                        _this1411.transaccion.totalsuma = _this1411.transaccion.valor * _this1411.transaccion.cantM2;
                       }
                     }
 
-                    _this1410.transaccionesService.newTransaccion(_this1410.transaccion).subscribe(function (res) {
-                      _this1410.contadores[0].transacciones_Ndocumento = _this1410.number_transaccion;
+                    _this1411.transaccionesService.newTransaccion(_this1411.transaccion).subscribe(function (res) {
+                      _this1411.contadores[0].transacciones_Ndocumento = _this1411.number_transaccion;
 
-                      _this1410.contadoresService.updateContadoresIDTransacciones(_this1410.contadores[0]).subscribe(function (res) {
-                        contVal++, _this1410.contadorValidaciones(contVal);
+                      _this1411.contadoresService.updateContadoresIDTransacciones(_this1411.contadores[0]).subscribe(function (res) {
+                        contVal++, _this1411.contadorValidaciones(contVal);
                       }, function (err) {
-                        _this1410.mostrarMensajeGenerico(2, "Revise e intente nuevamente");
+                        _this1411.mostrarMensajeGenerico(2, "Revise e intente nuevamente");
                       });
                     }, function (err) {
-                      _this1410.mostrarMensajeGenerico(2, "Revise e intente nuevamente");
+                      _this1411.mostrarMensajeGenerico(2, "Revise e intente nuevamente");
                     });
                   });
                 }); //}else{ this.mostrarMensajeGenerico(2,"Error al crear el documento"),this.botonFactura = false }
@@ -178082,58 +178472,58 @@ function _classCallCheck(instance, Constructor) { if (!(instance instanceof Cons
       }, {
         key: "generarTransaccionesComboProductos",
         value: function generarTransaccionesComboProductos(nombreCombo) {
-          var _this1411 = this;
+          var _this1412 = this;
 
           var combo = new _catalogo_catalogo__WEBPACK_IMPORTED_MODULE_11__["ProductoCombo"]();
           combo.PRODUCTO = nombreCombo;
 
           this._comboService.getComboPorNombre(combo).subscribe(function (res) {
             var listado = res;
-            if (listado.length > 0) _this1411.agregarTransacciones(listado[0].productosCombo, nombreCombo);
+            if (listado.length > 0) _this1412.agregarTransacciones(listado[0].productosCombo, nombreCombo);
           });
         }
       }, {
         key: "agregarTransacciones",
         value: function agregarTransacciones(productos, nombreCombo) {
-          var _this1412 = this;
+          var _this1413 = this;
 
           var contVal = 0;
           productos.forEach(function (element) {
-            var proV = _this1412.productosVendidos.find(function (el) {
+            var proV = _this1413.productosVendidos.find(function (el) {
               return el.producto.PRODUCTO == nombreCombo;
             });
 
-            _this1412.transaccion = new _transacciones_transacciones__WEBPACK_IMPORTED_MODULE_2__["transaccion"]();
-            _this1412.transaccion.fecha_mov = new Date().toLocaleString();
-            _this1412.transaccion.fecha_transaccion = _this1412.factura.fecha;
-            _this1412.transaccion.sucursal = _this1412.factura.sucursal;
-            _this1412.transaccion.totalsuma = element.precioCombo * proV.cantidad;
-            _this1412.transaccion.bodega = "12";
-            _this1412.transaccion.valor = element.precioCombo;
-            _this1412.transaccion.cantM2 = proV.cantidad * element.cantidad;
-            _this1412.transaccion.costo_unitario = element.precioMin;
-            _this1412.transaccion.documento = _this1412.factura.documento_n.toString();
-            _this1412.transaccion.rucSucursal = _this1412.factura.rucFactura;
-            _this1412.transaccion.factPro = _this1412.factura.documento_n.toString();
-            _this1412.transaccion.maestro = _this1412.factura.maestro;
-            _this1412.transaccion.producto = element.producto.PRODUCTO;
-            _this1412.transaccion.cajas = proV.cantidad * element.cantidad;
-            _this1412.transaccion.piezas = 0;
-            _this1412.transaccion.observaciones = _this1412.factura.observaciones;
-            _this1412.transaccion.tipo_transaccion = _this1412.factura.tipoDocumento == "Factura" ? "venta-fact" : "venta-not";
-            _this1412.transaccion.movimiento = -1;
-            _this1412.transaccion.usu_autorizado = _this1412.factura.username;
-            _this1412.transaccion.usuario = _this1412.factura.username;
-            _this1412.transaccion.idTransaccion = _this1412.number_transaccion++;
-            _this1412.transaccion.cliente = _this1412.factura.cliente.cliente_nombre;
-            _this1412.transaccion.nombreUsuario = _this1412.factura.nombreUsuario;
-            _this1412.transaccion.nombreVendedor = _this1412.factura.nombreVendedor;
-            _this1412.transaccion.mcaEntregado = proV.entregar == true ? "SI" : "NO";
+            _this1413.transaccion = new _transacciones_transacciones__WEBPACK_IMPORTED_MODULE_2__["transaccion"]();
+            _this1413.transaccion.fecha_mov = new Date().toLocaleString();
+            _this1413.transaccion.fecha_transaccion = _this1413.factura.fecha;
+            _this1413.transaccion.sucursal = _this1413.factura.sucursal;
+            _this1413.transaccion.totalsuma = element.precioCombo * proV.cantidad;
+            _this1413.transaccion.bodega = "12";
+            _this1413.transaccion.valor = element.precioCombo;
+            _this1413.transaccion.cantM2 = proV.cantidad * element.cantidad;
+            _this1413.transaccion.costo_unitario = element.precioMin;
+            _this1413.transaccion.documento = _this1413.factura.documento_n.toString();
+            _this1413.transaccion.rucSucursal = _this1413.factura.rucFactura;
+            _this1413.transaccion.factPro = _this1413.factura.documento_n.toString();
+            _this1413.transaccion.maestro = _this1413.factura.maestro;
+            _this1413.transaccion.producto = element.producto.PRODUCTO;
+            _this1413.transaccion.cajas = proV.cantidad * element.cantidad;
+            _this1413.transaccion.piezas = 0;
+            _this1413.transaccion.observaciones = _this1413.factura.observaciones;
+            _this1413.transaccion.tipo_transaccion = _this1413.factura.tipoDocumento == "Factura" ? "venta-fact" : "venta-not";
+            _this1413.transaccion.movimiento = -1;
+            _this1413.transaccion.usu_autorizado = _this1413.factura.username;
+            _this1413.transaccion.usuario = _this1413.factura.username;
+            _this1413.transaccion.idTransaccion = _this1413.number_transaccion++;
+            _this1413.transaccion.cliente = _this1413.factura.cliente.cliente_nombre;
+            _this1413.transaccion.nombreUsuario = _this1413.factura.nombreUsuario;
+            _this1413.transaccion.nombreVendedor = _this1413.factura.nombreVendedor;
+            _this1413.transaccion.mcaEntregado = proV.entregar == true ? "SI" : "NO";
 
-            _this1412.transaccionesService.newTransaccion(_this1412.transaccion).subscribe(function (res) {
-              contVal++, _this1412.contadorGenerico(contVal, productos.length);
+            _this1413.transaccionesService.newTransaccion(_this1413.transaccion).subscribe(function (res) {
+              contVal++, _this1413.contadorGenerico(contVal, productos.length);
             }, function (err) {
-              _this1412.mostrarMensajeGenerico(2, "Revise e intente nuevamente");
+              _this1413.mostrarMensajeGenerico(2, "Revise e intente nuevamente");
             });
           });
         }
@@ -178145,7 +178535,7 @@ function _classCallCheck(instance, Constructor) { if (!(instance instanceof Cons
       }, {
         key: "generarCotizacion",
         value: function generarCotizacion(e) {
-          var _this1413 = this;
+          var _this1414 = this;
 
           this.factura.cliente.cliente_nombre = this.mensaje;
 
@@ -178170,15 +178560,15 @@ function _classCallCheck(instance, Constructor) { if (!(instance instanceof Cons
                 this.factura.dni_comprador = this.factura.cliente.ruc;
                 this.factura.cliente = this.factura.cliente;
                 new Promise(function (resolve, reject) {
-                  _this1413.crearCliente();
+                  _this1414.crearCliente();
 
-                  _this1413.guardarCotización();
+                  _this1414.guardarCotización();
 
-                  _this1413.productosVendidos.forEach(function (element) {
-                    element.factura_id = _this1413.factura.documento_n;
+                  _this1414.productosVendidos.forEach(function (element) {
+                    element.factura_id = _this1414.factura.documento_n;
 
-                    _this1413.productosVenService.newProductoVendido(element).subscribe(function (res) {}, function (err) {
-                      _this1413.mostrarMensajeGenerico(2, "Revise e intente nuevamente");
+                    _this1414.productosVenService.newProductoVendido(element).subscribe(function (res) {}, function (err) {
+                      _this1414.mostrarMensajeGenerico(2, "Revise e intente nuevamente");
                     });
                   });
                 });
@@ -178196,32 +178586,32 @@ function _classCallCheck(instance, Constructor) { if (!(instance instanceof Cons
       }, {
         key: "obtenerIdNotasVenta",
         value: function obtenerIdNotasVenta() {
-          var _this1414 = this;
+          var _this1415 = this;
 
           this.mostrarLoading = true;
           var IdNum = new Promise(function (resolve, reject) {
             try {
-              _this1414.notasVentService.getNotasVentaPorIdConsecutivo(_this1414.factura).subscribe(function (res) {
-                _this1414.facturasEctdas = res;
+              _this1415.notasVentService.getNotasVentaPorIdConsecutivo(_this1415.factura).subscribe(function (res) {
+                _this1415.facturasEctdas = res;
 
-                if (_this1414.facturasEctdas.length == 0) {
+                if (_this1415.facturasEctdas.length == 0) {
                   resolve("listo");
                 } else {
-                  _this1414.factura.documento_n = _this1414.factura.documento_n + 1;
+                  _this1415.factura.documento_n = _this1415.factura.documento_n + 1;
 
-                  _this1414.obtenerIdNotasVenta();
+                  _this1415.obtenerIdNotasVenta();
                 }
               }, function (err) {});
             } catch (error) {}
           });
           IdNum.then(function (data) {
-            _this1414.validarNotaVenta();
+            _this1415.validarNotaVenta();
           });
         }
       }, {
         key: "generarNotaDeVenta",
         value: function generarNotaDeVenta() {
-          var _this1415 = this;
+          var _this1416 = this;
 
           this.mostrarLoading = false;
           this.factura.cliente.cliente_nombre = this.mensaje;
@@ -178245,72 +178635,72 @@ function _classCallCheck(instance, Constructor) { if (!(instance instanceof Cons
                 this.factura.dni_comprador = this.factura.cliente.ruc;
                 this.factura.cliente = this.factura.cliente;
                 new Promise(function (resolve, reject) {
-                  _this1415.setearNFactura();
+                  _this1416.setearNFactura();
 
-                  _this1415.crearCliente();
+                  _this1416.crearCliente();
 
-                  _this1415.guardarNotaVenta();
+                  _this1416.guardarNotaVenta();
 
-                  _this1415.productosVendidos.forEach(function (element) {
-                    _this1415.validarExistencias(element);
+                  _this1416.productosVendidos.forEach(function (element) {
+                    _this1416.validarExistencias(element);
 
-                    element.factura_id = _this1415.factura.documento_n;
-                    _this1415.transaccion = new _transacciones_transacciones__WEBPACK_IMPORTED_MODULE_2__["transaccion"]();
-                    _this1415.transaccion.fecha_mov = new Date().toLocaleString();
-                    _this1415.transaccion.fecha_transaccion = _this1415.factura.fecha;
-                    _this1415.transaccion.sucursal = _this1415.factura.sucursal;
-                    _this1415.transaccion.totalsuma = element.subtotal;
-                    _this1415.transaccion.bodega = "12";
-                    _this1415.transaccion.valor = element.precio_venta;
-                    _this1415.transaccion.costo_unitario = element.producto.precio;
-                    _this1415.transaccion.documento = _this1415.factura.documento_n + "";
-                    _this1415.transaccion.factPro = _this1415.factura.documento_n + "";
-                    _this1415.transaccion.producto = element.producto.PRODUCTO;
-                    _this1415.transaccion.rucSucursal = _this1415.factura.rucFactura;
-                    _this1415.transaccion.maestro = _this1415.factura.maestro;
-                    _this1415.transaccion.valor = element.precio_venta - element.precio_venta * (element.descuento / 100);
-                    _this1415.transaccion.cantM2 = element.cantidad;
-                    _this1415.transaccion.cajas = Math.trunc((element.cantidad + 0.01) / element.producto.M2);
-                    _this1415.transaccion.piezas = Math.trunc((element.cantidad + 0.01) * element.producto.P_CAJA / element.producto.M2) - Math.trunc((element.cantidad + 0.01) / element.producto.M2) * element.producto.P_CAJA;
-                    _this1415.transaccion.observaciones = _this1415.factura.observaciones;
-                    _this1415.transaccion.tipo_transaccion = "venta-not";
-                    _this1415.transaccion.movimiento = -1;
-                    _this1415.transaccion.usu_autorizado = _this1415.factura.username;
-                    _this1415.transaccion.usuario = _this1415.factura.username;
-                    _this1415.transaccion.idTransaccion = _this1415.number_transaccion++;
-                    _this1415.transaccion.cliente = _this1415.factura.cliente.cliente_nombre;
-                    _this1415.transaccion.nombreUsuario = _this1415.factura.nombreUsuario;
-                    _this1415.transaccion.nombreVendedor = _this1415.factura.nombreVendedor;
-                    _this1415.transaccion.mcaEntregado = element.entregar == true ? "SI" : "NO";
+                    element.factura_id = _this1416.factura.documento_n;
+                    _this1416.transaccion = new _transacciones_transacciones__WEBPACK_IMPORTED_MODULE_2__["transaccion"]();
+                    _this1416.transaccion.fecha_mov = new Date().toLocaleString();
+                    _this1416.transaccion.fecha_transaccion = _this1416.factura.fecha;
+                    _this1416.transaccion.sucursal = _this1416.factura.sucursal;
+                    _this1416.transaccion.totalsuma = element.subtotal;
+                    _this1416.transaccion.bodega = "12";
+                    _this1416.transaccion.valor = element.precio_venta;
+                    _this1416.transaccion.costo_unitario = element.producto.precio;
+                    _this1416.transaccion.documento = _this1416.factura.documento_n + "";
+                    _this1416.transaccion.factPro = _this1416.factura.documento_n + "";
+                    _this1416.transaccion.producto = element.producto.PRODUCTO;
+                    _this1416.transaccion.rucSucursal = _this1416.factura.rucFactura;
+                    _this1416.transaccion.maestro = _this1416.factura.maestro;
+                    _this1416.transaccion.valor = element.precio_venta - element.precio_venta * (element.descuento / 100);
+                    _this1416.transaccion.cantM2 = element.cantidad;
+                    _this1416.transaccion.cajas = Math.trunc((element.cantidad + 0.01) / element.producto.M2);
+                    _this1416.transaccion.piezas = Math.trunc((element.cantidad + 0.01) * element.producto.P_CAJA / element.producto.M2) - Math.trunc((element.cantidad + 0.01) / element.producto.M2) * element.producto.P_CAJA;
+                    _this1416.transaccion.observaciones = _this1416.factura.observaciones;
+                    _this1416.transaccion.tipo_transaccion = "venta-not";
+                    _this1416.transaccion.movimiento = -1;
+                    _this1416.transaccion.usu_autorizado = _this1416.factura.username;
+                    _this1416.transaccion.usuario = _this1416.factura.username;
+                    _this1416.transaccion.idTransaccion = _this1416.number_transaccion++;
+                    _this1416.transaccion.cliente = _this1416.factura.cliente.cliente_nombre;
+                    _this1416.transaccion.nombreUsuario = _this1416.factura.nombreUsuario;
+                    _this1416.transaccion.nombreVendedor = _this1416.factura.nombreVendedor;
+                    _this1416.transaccion.mcaEntregado = element.entregar == true ? "SI" : "NO";
 
                     if (element.producto.CLASIFICA == "COMBO") {
-                      _this1415.generarTransaccionesComboProductos(element.producto.PRODUCTO);
+                      _this1416.generarTransaccionesComboProductos(element.producto.PRODUCTO);
 
-                      if (_this1415.transaccion.valor == element.producto.precio) {
-                        _this1415.transaccion.valor = 0;
-                        _this1415.transaccion.totalsuma = 0;
+                      if (_this1416.transaccion.valor == element.producto.precio) {
+                        _this1416.transaccion.valor = 0;
+                        _this1416.transaccion.totalsuma = 0;
                       } else {
-                        _this1415.transaccion.valor = _this1415.transaccion.valor - element.producto.precio;
-                        _this1415.transaccion.totalsuma = _this1415.transaccion.valor * _this1415.transaccion.cantM2;
+                        _this1416.transaccion.valor = _this1416.transaccion.valor - element.producto.precio;
+                        _this1416.transaccion.totalsuma = _this1416.transaccion.valor * _this1416.transaccion.cantM2;
                       }
                     }
 
-                    _this1415.transaccionesService.newTransaccion(_this1415.transaccion).subscribe(function (res) {
-                      _this1415.contadores[0].transacciones_Ndocumento = _this1415.number_transaccion;
+                    _this1416.transaccionesService.newTransaccion(_this1416.transaccion).subscribe(function (res) {
+                      _this1416.contadores[0].transacciones_Ndocumento = _this1416.number_transaccion;
 
-                      _this1415.contadoresService.updateContadoresIDTransacciones(_this1415.contadores[0]).subscribe(function (res) {
-                        _this1415.db.collection("/consectivosBaseMongoDB").doc("base").update({
-                          transacciones_Ndocumento: _this1415.number_transaccion
+                      _this1416.contadoresService.updateContadoresIDTransacciones(_this1416.contadores[0]).subscribe(function (res) {
+                        _this1416.db.collection("/consectivosBaseMongoDB").doc("base").update({
+                          transacciones_Ndocumento: _this1416.number_transaccion
                         }).then(function (res) {
-                          contVal++, _this1415.contadorValidaciones(contVal);
+                          contVal++, _this1416.contadorValidaciones(contVal);
                         }, function (err) {
                           return err;
                         });
                       }, function (err) {
-                        _this1415.mostrarMensajeGenerico(2, "Revise e intente nuevamente");
+                        _this1416.mostrarMensajeGenerico(2, "Revise e intente nuevamente");
                       });
                     }, function (err) {
-                      _this1415.mostrarMensajeGenerico(2, "Revise e intente nuevamente");
+                      _this1416.mostrarMensajeGenerico(2, "Revise e intente nuevamente");
                     });
                   });
                 });
@@ -178425,33 +178815,33 @@ function _classCallCheck(instance, Constructor) { if (!(instance instanceof Cons
       }, {
         key: "obtenerIdRecibo",
         value: function obtenerIdRecibo() {
-          var _this1416 = this;
+          var _this1417 = this;
 
           var idRecibo = 0;
           var IdNum = new Promise(function (resolve, reject) {
             try {
-              _this1416._reciboCajaService.getReciboCajaPorIdConsecutivo(_this1416.newRecibo).subscribe(function (res) {
-                _this1416.recibosEncontrados = res;
+              _this1417._reciboCajaService.getReciboCajaPorIdConsecutivo(_this1417.newRecibo).subscribe(function (res) {
+                _this1417.recibosEncontrados = res;
 
-                if (_this1416.recibosEncontrados.length == 0) {
-                  idRecibo = _this1416.newRecibo.idDocumento;
+                if (_this1417.recibosEncontrados.length == 0) {
+                  idRecibo = _this1417.newRecibo.idDocumento;
                   resolve("listo");
                 } else {
-                  _this1416.newRecibo.idDocumento = _this1416.newRecibo.idDocumento + 1;
+                  _this1417.newRecibo.idDocumento = _this1417.newRecibo.idDocumento + 1;
 
-                  _this1416.obtenerIdRecibo();
+                  _this1417.obtenerIdRecibo();
                 }
               }, function (err) {});
             } catch (error) {}
           });
           IdNum.then(function (data) {
-            _this1416.generarReciboCaja(idRecibo);
+            _this1417.generarReciboCaja(idRecibo);
           });
         }
       }, {
         key: "generarReciboCaja",
         value: function generarReciboCaja(idRecibo) {
-          var _this1417 = this;
+          var _this1418 = this;
 
           var recibo = new _reciboCaja_recibo_caja__WEBPACK_IMPORTED_MODULE_13__["ReciboCaja"]();
           recibo.idDocumento = idRecibo;
@@ -178483,9 +178873,9 @@ function _classCallCheck(instance, Constructor) { if (!(instance instanceof Cons
 
           try {
             this._reciboCajaService.newReciboCaja(recibo).subscribe(function (res) {
-              _this1417.generarTransaccionesFinancieras(recibo);
+              _this1418.generarTransaccionesFinancieras(recibo);
 
-              _this1417.actualizarContador(recibo);
+              _this1418.actualizarContador(recibo);
             }, function (err) {});
           } catch (error) {
             this.mostrarMensajeGenerico(2, "Error al guardar la transaccion");
@@ -178531,12 +178921,12 @@ function _classCallCheck(instance, Constructor) { if (!(instance instanceof Cons
       }, {
         key: "generarTransaccionesFinancieras",
         value: function generarTransaccionesFinancieras(recibo) {
-          var _this1418 = this;
+          var _this1419 = this;
 
           this.generarCuentaPorCobrar(recibo.idDocumento);
           recibo.operacionesComercialesList.forEach(function (element) {
             var transaccion = new _transaccionesFinancieras_transaccionesFinancieras__WEBPACK_IMPORTED_MODULE_14__["TransaccionesFinancieras"]();
-            transaccion.fecha = _this1418.factura.fecha;
+            transaccion.fecha = _this1419.factura.fecha;
             transaccion.sucursal = recibo.sucursal;
             transaccion.cliente = recibo.cliente;
             transaccion.isContabilizada = true;
@@ -178544,7 +178934,7 @@ function _classCallCheck(instance, Constructor) { if (!(instance instanceof Cons
             transaccion.tipoTransaccion = "recibo-caja";
             transaccion.id_documento = recibo.idDocumento;
             transaccion.documentoVenta = recibo.docVenta;
-            transaccion.cedula = _this1418.factura.cliente.ruc;
+            transaccion.cedula = _this1419.factura.cliente.ruc;
             transaccion.numDocumento = recibo.numDocumento;
             transaccion.valor = element.valor;
             transaccion.tipoPago = "";
@@ -178556,9 +178946,9 @@ function _classCallCheck(instance, Constructor) { if (!(instance instanceof Cons
             transaccion.tipoCuenta = element.tipoCuenta;
 
             try {
-              _this1418._transaccionFinancieraService.newTransaccionFinanciera(transaccion).subscribe(function (res) {}, function (err) {});
+              _this1419._transaccionFinancieraService.newTransaccionFinanciera(transaccion).subscribe(function (res) {}, function (err) {});
             } catch (error) {
-              _this1418.mostrarMensajeGenerico(2, "Error al guardar la transaccion");
+              _this1419.mostrarMensajeGenerico(2, "Error al guardar la transaccion");
             }
           });
           return true;
@@ -178566,15 +178956,15 @@ function _classCallCheck(instance, Constructor) { if (!(instance instanceof Cons
       }, {
         key: "traerTransaccionesPorProducto",
         value: function traerTransaccionesPorProducto(nombreProducto, numero) {
-          var _this1419 = this;
+          var _this1420 = this;
 
           this.invetarioP = [];
           this.mostrarLoading = true;
           this.proTransaccion.nombre = nombreProducto.PRODUCTO;
           this.transaccionesService.getTransaccionesPorProducto(this.proTransaccion).subscribe(function (res) {
-            _this1419.transacciones = res;
+            _this1420.transacciones = res;
 
-            _this1419.cargarDatosProductoUnitario(nombreProducto, numero);
+            _this1420.cargarDatosProductoUnitario(nombreProducto, numero);
           });
         }
       }, {
@@ -178861,7 +179251,7 @@ function _classCallCheck(instance, Constructor) { if (!(instance instanceof Cons
       }, {
         key: "traerTransaccionesPorProductoCombo2",
         value: function traerTransaccionesPorProductoCombo2(nombreProducto, num, cantidadP, productoCombo) {
-          var _this1420 = this;
+          var _this1421 = this;
 
           this.cantidadProductos++;
           this.invetarioP = [];
@@ -178869,8 +179259,8 @@ function _classCallCheck(instance, Constructor) { if (!(instance instanceof Cons
           this.productosVendidos[num].disponible = 100;
           this.proTransaccion.nombre = nombreProducto.PRODUCTO;
           var p1 = new Promise(function (resolve, reject) {
-            _this1420.transaccionesService.getTransaccionesPorProducto(_this1420.proTransaccion).toPromise().then(function (res) {
-              _this1420.transacciones = res;
+            _this1421.transaccionesService.getTransaccionesPorProducto(_this1421.proTransaccion).toPromise().then(function (res) {
+              _this1421.transacciones = res;
               var contCajas = 0;
               var contCajas2 = 0;
               var contCajas3 = 0;
@@ -178878,7 +179268,7 @@ function _classCallCheck(instance, Constructor) { if (!(instance instanceof Cons
               var contPiezas2 = 0;
               var contPiezas3 = 0;
 
-              _this1420.transacciones.forEach(function (element) {
+              _this1421.transacciones.forEach(function (element) {
                 if (nombreProducto.PRODUCTO == element.producto && element.sucursal == "matriz") {
                   switch (element.tipo_transaccion) {
                     case "devolucion":
@@ -179059,17 +179449,17 @@ function _classCallCheck(instance, Constructor) { if (!(instance instanceof Cons
                 }
               });
 
-              _this1420.invetarioP = [];
-              _this1420.invetarioProd = new _consolidado_consolidado__WEBPACK_IMPORTED_MODULE_10__["inventario"]();
-              _this1420.invetarioProd.producto = nombreProducto;
-              _this1420.invetarioProd.cantidadCajas = contCajas;
-              _this1420.invetarioProd.cantidadCajas2 = contCajas2;
-              _this1420.invetarioProd.cantidadCajas3 = contCajas3;
-              _this1420.invetarioProd.cantidadPiezas = contPiezas;
-              _this1420.invetarioProd.cantidadPiezas2 = contPiezas2;
-              _this1420.invetarioProd.cantidadPiezas3 = contPiezas3;
+              _this1421.invetarioP = [];
+              _this1421.invetarioProd = new _consolidado_consolidado__WEBPACK_IMPORTED_MODULE_10__["inventario"]();
+              _this1421.invetarioProd.producto = nombreProducto;
+              _this1421.invetarioProd.cantidadCajas = contCajas;
+              _this1421.invetarioProd.cantidadCajas2 = contCajas2;
+              _this1421.invetarioProd.cantidadCajas3 = contCajas3;
+              _this1421.invetarioProd.cantidadPiezas = contPiezas;
+              _this1421.invetarioProd.cantidadPiezas2 = contPiezas2;
+              _this1421.invetarioProd.cantidadPiezas3 = contPiezas3;
 
-              _this1420.invetarioP.push(_this1420.invetarioProd);
+              _this1421.invetarioP.push(_this1421.invetarioProd);
 
               contCajas = 0;
               contPiezas = 0;
@@ -179078,7 +179468,7 @@ function _classCallCheck(instance, Constructor) { if (!(instance instanceof Cons
               contCajas3 = 0;
               contPiezas3 = 0; //seccion2
 
-              _this1420.invetarioP.forEach(function (element) {
+              _this1421.invetarioP.forEach(function (element) {
                 element.cantidadM2 = parseFloat((element.producto.M2 * element.cantidadCajas + element.cantidadPiezas * element.producto.M2 / element.producto.P_CAJA).toFixed(2));
                 element.cantidadM2b2 = parseFloat((element.producto.M2 * element.cantidadCajas2 + element.cantidadPiezas2 * element.producto.M2 / element.producto.P_CAJA).toFixed(2));
                 element.cantidadM2b3 = parseFloat((element.producto.M2 * element.cantidadCajas3 + element.cantidadPiezas3 * element.producto.M2 / element.producto.P_CAJA).toFixed(2));
@@ -179088,7 +179478,7 @@ function _classCallCheck(instance, Constructor) { if (!(instance instanceof Cons
               }); //seccion3
 
 
-              _this1420.invetarioP.forEach(function (element) {
+              _this1421.invetarioP.forEach(function (element) {
                 element.cantidadCajas = Math.trunc(element.cantidadM2 / element.producto.M2);
                 element.cantidadPiezas = parseInt((element.cantidadM2 * element.producto.P_CAJA / element.producto.M2 - element.cantidadCajas * element.producto.P_CAJA).toFixed(0));
                 element.cantidadM2 = parseFloat(element.cantidadM2.toFixed(2));
@@ -179102,26 +179492,26 @@ function _classCallCheck(instance, Constructor) { if (!(instance instanceof Cons
 
               var disponible = 0;
 
-              switch (_this1420.factura.sucursal) {
+              switch (_this1421.factura.sucursal) {
                 case "matriz":
-                  disponible = _this1420.invetarioP[0].cantidadM2;
+                  disponible = _this1421.invetarioP[0].cantidadM2;
                   break;
 
                 case "sucursal1":
-                  disponible = _this1420.invetarioP[0].cantidadM2b2;
+                  disponible = _this1421.invetarioP[0].cantidadM2b2;
                   break;
 
                 case "sucursal2":
-                  disponible = _this1420.invetarioP[0].cantidadM2b3;
+                  disponible = _this1421.invetarioP[0].cantidadM2b3;
                   break;
 
                 default:
               }
 
               if (disponible < 0) disponible = 0;
-              _this1420.valor2 = Math.trunc(Number(disponible) / productoCombo.cantidad);
-              if (_this1420.valor2 < _this1420.productosVendidos[num].disponible) _this1420.productosVendidos[num].disponible = _this1420.valor2;
-              if (cantidadP == _this1420.cantidadProductos) _this1420.mostrarLoading = false;
+              _this1421.valor2 = Math.trunc(Number(disponible) / productoCombo.cantidad);
+              if (_this1421.valor2 < _this1421.productosVendidos[num].disponible) _this1421.productosVendidos[num].disponible = _this1421.valor2;
+              if (cantidadP == _this1421.cantidadProductos) _this1421.mostrarLoading = false;
               resolve(disponible);
             })["catch"](function (err) {
               resolve(false);
@@ -182179,7 +182569,7 @@ function _classCallCheck(instance, Constructor) { if (!(instance instanceof Cons
 
     var VentasComponent = /*#__PURE__*/function () {
       function VentasComponent(db, preciosEspecialesService, notasVentService, productosPendientesService, authenService, proformasService, transaccionesService, productosVenService, parametrizacionService, contadoresService, facturasService, preciosService, clienteService, catalogoService, productoService, sucursalesService, userService, _configuracionService, _reciboCajaService, authService, _cuentaPorCobrar, _transaccionFinancieraService, _cajaMenorService, _comboService, _apiVeronicaService, _logApiVeronicaService, cdRef, _controlMercaderiaService, router) {
-        var _this1421 = this;
+        var _this1422 = this;
 
         _classCallCheck(this, VentasComponent);
 
@@ -182323,29 +182713,29 @@ function _classCallCheck(instance, Constructor) { if (!(instance instanceof Cons
         this.nroActualFactura = 0;
 
         this.anadirProducto = function (e) {
-          _this1421.newButtonEnabled = true;
-          _this1421.contadoProductos = 0;
+          _this1422.newButtonEnabled = true;
+          _this1422.contadoProductos = 0;
 
-          _this1421.productosVendidos.forEach(function (element) {
-            _this1421.contadoProductos++;
+          _this1422.productosVendidos.forEach(function (element) {
+            _this1422.contadoProductos++;
           });
 
-          if (_this1421.contadoProductos <= 11) {
-            _this1421.productosVendidos.push(new _venta__WEBPACK_IMPORTED_MODULE_5__["venta"]());
+          if (_this1422.contadoProductos <= 11) {
+            _this1422.productosVendidos.push(new _venta__WEBPACK_IMPORTED_MODULE_5__["venta"]());
           } else {
             sweetalert2__WEBPACK_IMPORTED_MODULE_9___default.a.fire('Alerta', 'Ya no se pueden ingresar mas items', 'warning');
           }
 
-          if (_this1421.contadoProductos >= 5 && _this1421.contadoProductos <= 10) {
-            _this1421.dataContainer.cssClass = "altura1";
-          } else if (_this1421.contadoProductos >= 11 && _this1421.contadoProductos <= 15) {
-            _this1421.dataContainer.cssClass = "altura2";
-          } else if (_this1421.contadoProductos >= 16 && _this1421.contadoProductos <= 20) {
-            _this1421.dataContainer.cssClass = "altura3";
-          } else if (_this1421.contadoProductos >= 21 && _this1421.contadoProductos <= 25) {
-            _this1421.dataContainer.cssClass = "altura4";
-          } else if (_this1421.contadoProductos >= 26) {
-            _this1421.dataContainer.cssClass = "altura5";
+          if (_this1422.contadoProductos >= 5 && _this1422.contadoProductos <= 10) {
+            _this1422.dataContainer.cssClass = "altura1";
+          } else if (_this1422.contadoProductos >= 11 && _this1422.contadoProductos <= 15) {
+            _this1422.dataContainer.cssClass = "altura2";
+          } else if (_this1422.contadoProductos >= 16 && _this1422.contadoProductos <= 20) {
+            _this1422.dataContainer.cssClass = "altura3";
+          } else if (_this1422.contadoProductos >= 21 && _this1422.contadoProductos <= 25) {
+            _this1422.dataContainer.cssClass = "altura4";
+          } else if (_this1422.contadoProductos >= 26) {
+            _this1422.dataContainer.cssClass = "altura5";
           }
         };
 
@@ -182393,58 +182783,58 @@ function _classCallCheck(instance, Constructor) { if (!(instance instanceof Cons
       }, {
         key: "traerDatosConfiguracion",
         value: function traerDatosConfiguracion() {
-          var _this1422 = this;
+          var _this1423 = this;
 
           this._configuracionService.getDatosConfiguracion().subscribe(function (res) {
-            _this1422.imagenLogotipo = res[0].urlImage;
+            _this1423.imagenLogotipo = res[0].urlImage;
           });
         }
       }, {
         key: "traerParametrizacionesMercaderia",
         value: function traerParametrizacionesMercaderia() {
-          var _this1423 = this;
+          var _this1424 = this;
 
           this._controlMercaderiaService.getParametrizaciones().subscribe(function (res) {
-            _this1423.listaParametrizaciones = res;
+            _this1424.listaParametrizaciones = res;
           });
         }
       }, {
         key: "traerIva",
         value: function traerIva() {
-          var _this1424 = this;
+          var _this1425 = this;
 
           this.parametrizacionService.getParametrizacionPorNombre("iva").subscribe(function (res) {
-            _this1424.ivaPorcentaje = res["value"];
+            _this1425.ivaPorcentaje = res["value"];
           });
         }
       }, {
         key: "cargarUsuarioLogueado",
         value: function cargarUsuarioLogueado() {
-          var _this1425 = this;
+          var _this1426 = this;
 
           new Promise(function (res, err) {
-            if (localStorage.getItem("maily") != '') _this1425.correo = localStorage.getItem("maily");
+            if (localStorage.getItem("maily") != '') _this1426.correo = localStorage.getItem("maily");
 
-            _this1425.authenService.getUserLogueado(_this1425.correo).subscribe(function (res) {
-              _this1425.usuarioLogueado = res;
-              _this1425.factura.username = _this1425.usuarioLogueado[0].username;
-              _this1425.username = _this1425.factura.username;
-              _this1425.nombreUsuario = _this1425.usuarioLogueado[0].name;
-              _this1425.factura.nombreUsuario = _this1425.usuarioLogueado[0].name;
-              _this1425.sucursalUsuario = _this1425.usuarioLogueado[0].sucursal;
-              _this1425.factura.sucursal = _this1425.usuarioLogueado[0].sucursal;
-              if (_this1425.usuarioLogueado[0].status == "Inactivo") _this1425.authService.logOut();
+            _this1426.authenService.getUserLogueado(_this1426.correo).subscribe(function (res) {
+              _this1426.usuarioLogueado = res;
+              _this1426.factura.username = _this1426.usuarioLogueado[0].username;
+              _this1426.username = _this1426.factura.username;
+              _this1426.nombreUsuario = _this1426.usuarioLogueado[0].name;
+              _this1426.factura.nombreUsuario = _this1426.usuarioLogueado[0].name;
+              _this1426.sucursalUsuario = _this1426.usuarioLogueado[0].sucursal;
+              _this1426.factura.sucursal = _this1426.usuarioLogueado[0].sucursal;
+              if (_this1426.usuarioLogueado[0].status == "Inactivo") _this1426.authService.logOut();
 
-              _this1425.buscarDatosSucursal();
+              _this1426.buscarDatosSucursal();
 
-              _this1425.validarRol();
+              _this1426.validarRol();
             }, function (err) {});
           });
         }
       }, {
         key: "mostrarPopupCodigo",
         value: function mostrarPopupCodigo() {
-          var _this1426 = this;
+          var _this1427 = this;
 
           sweetalert2__WEBPACK_IMPORTED_MODULE_9___default.a.fire({
             title: 'Vendedor',
@@ -182457,44 +182847,44 @@ function _classCallCheck(instance, Constructor) { if (!(instance instanceof Cons
             confirmButtonText: 'Ingresar',
             input: 'password'
           }).then(function (result) {
-            var usuarioClave = _this1426.usuarios.find(function (el) {
+            var usuarioClave = _this1427.usuarios.find(function (el) {
               return el.codigoFacturacion == result.value;
             });
 
             console.log(usuarioClave);
 
             if (usuarioClave != null) {
-              _this1426.factura.nombreVendedor = usuarioClave.name;
-              _this1426.factura.usernameVendedor = usuarioClave.username;
+              _this1427.factura.nombreVendedor = usuarioClave.name;
+              _this1427.factura.usernameVendedor = usuarioClave.username;
 
-              switch (_this1426.factura.tipoDocumento) {
+              switch (_this1427.factura.tipoDocumento) {
                 case "Factura":
-                  var existe = _this1426.clientesGenerales.find(function (x) {
-                    return x.ruc == _this1426.factura.cliente.ruc;
+                  var existe = _this1427.clientesGenerales.find(function (x) {
+                    return x.ruc == _this1427.factura.cliente.ruc;
                   });
 
                   if (existe != undefined) {
                     if (existe.estado == "Inactivo") {
-                      _this1426.botonFactura = false;
+                      _this1427.botonFactura = false;
 
-                      _this1426.mostrarMensajeGenerico(2, "Ya existe en base un usuario con el mismo RUC inactivo, ingrese otro RUC para poder continuar");
-                    } else _this1426.validarEstadoCajaFactura();
-                  } else _this1426.validarEstadoCajaFactura();
+                      _this1427.mostrarMensajeGenerico(2, "Ya existe en base un usuario con el mismo RUC inactivo, ingrese otro RUC para poder continuar");
+                    } else _this1427.validarEstadoCajaFactura();
+                  } else _this1427.validarEstadoCajaFactura();
 
                   break;
 
                 case "Nota de Venta":
-                  var existe = _this1426.clientesGenerales.find(function (x) {
-                    return x.ruc == _this1426.factura.cliente.ruc;
+                  var existe = _this1427.clientesGenerales.find(function (x) {
+                    return x.ruc == _this1427.factura.cliente.ruc;
                   });
 
                   if (existe != undefined) {
                     if (existe.estado == "Inactivo") {
-                      _this1426.botonNotaVenta = false;
+                      _this1427.botonNotaVenta = false;
 
-                      _this1426.mostrarMensajeGenerico(2, "Ya existe en base un usuario con el mismo RUC inactivo, ingrese otro RUC para poder continuar");
-                    } else _this1426.validarEstadoCajaNotaVenta();
-                  } else _this1426.validarEstadoCajaNotaVenta();
+                      _this1427.mostrarMensajeGenerico(2, "Ya existe en base un usuario con el mismo RUC inactivo, ingrese otro RUC para poder continuar");
+                    } else _this1427.validarEstadoCajaNotaVenta();
+                  } else _this1427.validarEstadoCajaNotaVenta();
 
                   break;
 
@@ -182511,7 +182901,7 @@ function _classCallCheck(instance, Constructor) { if (!(instance instanceof Cons
                 icon: 'error',
                 confirmButtonText: 'Ok'
               }).then(function (result) {
-                _this1426.mostrarPopupCodigo();
+                _this1427.mostrarPopupCodigo();
               });
             }
           });
@@ -182519,10 +182909,10 @@ function _classCallCheck(instance, Constructor) { if (!(instance instanceof Cons
       }, {
         key: "traerUsuarios",
         value: function traerUsuarios() {
-          var _this1427 = this;
+          var _this1428 = this;
 
           this.userService.getUsers().subscribe(function (res) {
-            _this1427.usuarios = res;
+            _this1428.usuarios = res;
           }, function (err) {});
         }
       }, {
@@ -182533,150 +182923,150 @@ function _classCallCheck(instance, Constructor) { if (!(instance instanceof Cons
       }, {
         key: "traerSucursales",
         value: function traerSucursales() {
-          var _this1428 = this;
+          var _this1429 = this;
 
           this.sucursalesService.getSucursales().subscribe(function (res) {
-            _this1428.sucursales = res;
+            _this1429.sucursales = res;
           });
         }
       }, {
         key: "traerProductos",
         value: function traerProductos() {
-          var _this1429 = this;
+          var _this1430 = this;
 
           this.mostrarLoading = true;
           this.productoService.getProductosActivos().subscribe(function (res) {
-            _this1429.productosActivos = res;
+            _this1430.productosActivos = res;
 
-            _this1429.llenarPR();
+            _this1430.llenarPR();
 
-            _this1429.llenarComboProductos();
+            _this1430.llenarComboProductos();
           });
         }
       }, {
         key: "traerProductosCatalogo",
         value: function traerProductosCatalogo() {
-          var _this1430 = this;
+          var _this1431 = this;
 
           this.catalogoService.getCatalogo().subscribe(function (res) {
-            _this1430.productosCatalogo = res;
+            _this1431.productosCatalogo = res;
           });
         }
       }, {
         key: "traerClientes",
         value: function traerClientes() {
-          var _this1431 = this;
+          var _this1432 = this;
 
           this.clienteService.getCliente().subscribe(function (res) {
-            _this1431.clientesGenerales = res;
+            _this1432.clientesGenerales = res;
 
-            _this1431.separarClientes();
+            _this1432.separarClientes();
           });
         }
       }, {
         key: "traerProformas",
         value: function traerProformas() {
-          var _this1432 = this;
+          var _this1433 = this;
 
           this.proformasService.getProformas().subscribe(function (res) {
-            _this1432.proformas = res;
+            _this1433.proformas = res;
           });
         }
       }, {
         key: "traerFacturas",
         value: function traerFacturas() {
-          var _this1433 = this;
+          var _this1434 = this;
 
           this.facturasService.getFacturas().subscribe(function (res) {
-            _this1433.facturas = res;
+            _this1434.facturas = res;
           });
         }
       }, {
         key: "traerPrecios",
         value: function traerPrecios() {
-          var _this1434 = this;
+          var _this1435 = this;
 
           this.preciosService.getPrecio().subscribe(function (res) {
-            _this1434.precios = res;
+            _this1435.precios = res;
           });
         }
       }, {
         key: "traerPreciosEspeciales",
         value: function traerPreciosEspeciales() {
-          var _this1435 = this;
+          var _this1436 = this;
 
           this.preciosEspecialesService.getPrecio().subscribe(function (res) {
-            _this1435.preciosEspeciales = res;
+            _this1436.preciosEspeciales = res;
           });
         }
       }, {
         key: "traerParametrizaciones",
         value: function traerParametrizaciones() {
-          var _this1436 = this;
+          var _this1437 = this;
 
           this.parametrizacionService.getParametrizacion().subscribe(function (res) {
-            _this1436.parametrizaciones = res;
+            _this1437.parametrizaciones = res;
 
-            _this1436.buscarDatosSucursal();
+            _this1437.buscarDatosSucursal();
           });
         }
       }, {
         key: "traerProductosVendidos",
         value: function traerProductosVendidos() {
-          var _this1437 = this;
+          var _this1438 = this;
 
           this.productosVenService.getProductoVendido().subscribe(function (res) {
-            _this1437.productosVendidos2 = res;
+            _this1438.productosVendidos2 = res;
           });
         }
       }, {
         key: "traerContadores",
         value: function traerContadores() {
-          return Object(tslib__WEBPACK_IMPORTED_MODULE_0__["__awaiter"])(this, void 0, void 0, /*#__PURE__*/regeneratorRuntime.mark(function _callee64() {
-            var _this1438 = this;
+          return Object(tslib__WEBPACK_IMPORTED_MODULE_0__["__awaiter"])(this, void 0, void 0, /*#__PURE__*/regeneratorRuntime.mark(function _callee66() {
+            var _this1439 = this;
 
-            return regeneratorRuntime.wrap(function _callee64$(_context64) {
+            return regeneratorRuntime.wrap(function _callee66$(_context67) {
               while (1) {
-                switch (_context64.prev = _context64.next) {
+                switch (_context67.prev = _context67.next) {
                   case 0:
-                    _context64.next = 2;
+                    _context67.next = 2;
                     return this.contadoresService.getContadores().subscribe(function (res) {
-                      _this1438.contadores = res;
+                      _this1439.contadores = res;
                     });
 
                   case 2:
                   case "end":
-                    return _context64.stop();
+                    return _context67.stop();
                 }
               }
-            }, _callee64, this);
+            }, _callee66, this);
           }));
         }
       }, {
         key: "traerContadoresDocumentos",
         value: function traerContadoresDocumentos() {
-          var _this1439 = this;
+          var _this1440 = this;
 
           this.contadoresService.getContadores().subscribe(function (res) {
-            _this1439.contadores = res;
-            _this1439.numeroID = _this1439.contadores[0].contProductosPendientes_Ndocumento + 1;
+            _this1440.contadores = res;
+            _this1440.numeroID = _this1440.contadores[0].contProductosPendientes_Ndocumento + 1;
 
-            _this1439.asignarIDdocumentos();
+            _this1440.asignarIDdocumentos();
           });
         }
       }, {
         key: "traerConsecutivoVeronica",
         value: function traerConsecutivoVeronica(ruc) {
-          var _this1440 = this;
+          var _this1441 = this;
 
           var observable = this._apiVeronicaService.obtenerSecuencia(ruc).pipe(Object(rxjs_operators__WEBPACK_IMPORTED_MODULE_2__["tap"])(function (res) {
             console.log("Respuesta de obtenerSecuencia Veronica:", res);
-            _this1440.consecutivoVeronica = res;
-            _this1440.secuencialFactura = _this1440.consecutivoVeronica.result[0].establecimiento.puntosEmision[0].secuencialFactura;
+            _this1441.consecutivoVeronica = res;
+            _this1441.secuencialFactura = _this1441.consecutivoVeronica.result[0].establecimiento.puntosEmision[0].secuencialFactura;
           }), Object(rxjs_operators__WEBPACK_IMPORTED_MODULE_2__["catchError"])(function (error) {
             console.error("Error al obtener la secuencia de facturación de Veronica:", error);
 
-            _this1440.mostrarMensajeGenerico(2, "No se ha podido establecer conexión con el SRI");
+            _this1441.mostrarMensajeGenerico(2, "No se ha podido establecer conexión con el SRI");
 
             throw error;
           })); // Adjuntar para poder rastrear en el network tab el observable
@@ -182850,7 +183240,7 @@ function _classCallCheck(instance, Constructor) { if (!(instance instanceof Cons
       }, {
         key: "mostrarPopup",
         value: function mostrarPopup(e, i) {
-          var _this1441 = this;
+          var _this1442 = this;
 
           if (this.productosVendidos[i].producto.CLASIFICA == "COMBO") {
             this.nombreCombo = this.productosVendidos[i].producto.PRODUCTO;
@@ -182861,27 +183251,27 @@ function _classCallCheck(instance, Constructor) { if (!(instance instanceof Cons
 
             this._comboService.getComboPorNombre(combo).subscribe(function (res) {
               var listado = res;
-              _this1441.productosComboLeidos = listado[0].productosCombo;
-              _this1441.mostrarLoading = false;
+              _this1442.productosComboLeidos = listado[0].productosCombo;
+              _this1442.mostrarLoading = false;
             });
 
             this.popupVisibleCombos = true;
           } else {
             this.productosCatalogo.forEach(function (element) {
-              if (element.PRODUCTO == _this1441.productosVendidos[i].producto.PRODUCTO) {
-                _this1441.imagenes = element.IMAGEN;
-                _this1441.titulo = element.PRODUCTO;
-                _this1441.catalogoLeido = element;
-                _this1441.catalogoLeido.precio = _this1441.productosVendidos[i].producto.precio;
-                _this1441.catalogoLeido.ubicacion1 = _this1441.productosVendidos[i].producto.ubicacionSuc1;
-                _this1441.catalogoLeido.ubicacion2 = _this1441.productosVendidos[i].producto.ubicacionSuc2;
-                _this1441.catalogoLeido.ubicacion3 = _this1441.productosVendidos[i].producto.ubicacionSuc3;
-                _this1441.disponibilidadProducto = "MATRIZ: " + _this1441.productosVendidos[i].cantM2_1_Original.toFixed(2) + "M /-/ " + _this1441.productosVendidos[i].cantCajas_1_Original.toFixed(0) + "C /-/ " + _this1441.productosVendidos[i].cantPiezas_1_Original.toFixed(0) + "P";
-                _this1441.disponibilidadProductoS1 = "SUC1: " + _this1441.productosVendidos[i].cantM2_2_Original.toFixed(2) + "M /-/ " + _this1441.productosVendidos[i].cantCajas_2_Original.toFixed(0) + "C /-/ " + _this1441.productosVendidos[i].cantPiezas_2_Original.toFixed(0) + "P";
-                _this1441.disponibilidadProductoS2 = "SUC2: " + _this1441.productosVendidos[i].cantM2_3_Original.toFixed(2) + "M /-/ " + _this1441.productosVendidos[i].cantCajas_3_Original.toFixed(0) + "C /-/ " + _this1441.productosVendidos[i].cantPiezas_3_Original.toFixed(0) + "P";
-                _this1441.flagDisProdMatriz = _this1441.productosVendidos[i].cantM2_1_Original < 0 ? true : false;
-                _this1441.flagDisProdSuc1 = _this1441.productosVendidos[i].cantM2_2_Original < 0 ? true : false;
-                _this1441.flagDisProdSuc2 = _this1441.productosVendidos[i].cantM2_3_Original < 0 ? true : false;
+              if (element.PRODUCTO == _this1442.productosVendidos[i].producto.PRODUCTO) {
+                _this1442.imagenes = element.IMAGEN;
+                _this1442.titulo = element.PRODUCTO;
+                _this1442.catalogoLeido = element;
+                _this1442.catalogoLeido.precio = _this1442.productosVendidos[i].producto.precio;
+                _this1442.catalogoLeido.ubicacion1 = _this1442.productosVendidos[i].producto.ubicacionSuc1;
+                _this1442.catalogoLeido.ubicacion2 = _this1442.productosVendidos[i].producto.ubicacionSuc2;
+                _this1442.catalogoLeido.ubicacion3 = _this1442.productosVendidos[i].producto.ubicacionSuc3;
+                _this1442.disponibilidadProducto = "MATRIZ: " + _this1442.productosVendidos[i].cantM2_1_Original.toFixed(2) + "M /-/ " + _this1442.productosVendidos[i].cantCajas_1_Original.toFixed(0) + "C /-/ " + _this1442.productosVendidos[i].cantPiezas_1_Original.toFixed(0) + "P";
+                _this1442.disponibilidadProductoS1 = "SUC1: " + _this1442.productosVendidos[i].cantM2_2_Original.toFixed(2) + "M /-/ " + _this1442.productosVendidos[i].cantCajas_2_Original.toFixed(0) + "C /-/ " + _this1442.productosVendidos[i].cantPiezas_2_Original.toFixed(0) + "P";
+                _this1442.disponibilidadProductoS2 = "SUC2: " + _this1442.productosVendidos[i].cantM2_3_Original.toFixed(2) + "M /-/ " + _this1442.productosVendidos[i].cantCajas_3_Original.toFixed(0) + "C /-/ " + _this1442.productosVendidos[i].cantPiezas_3_Original.toFixed(0) + "P";
+                _this1442.flagDisProdMatriz = _this1442.productosVendidos[i].cantM2_1_Original < 0 ? true : false;
+                _this1442.flagDisProdSuc1 = _this1442.productosVendidos[i].cantM2_2_Original < 0 ? true : false;
+                _this1442.flagDisProdSuc2 = _this1442.productosVendidos[i].cantM2_3_Original < 0 ? true : false;
               }
             });
             this.popupvisible = true;
@@ -182906,19 +183296,6 @@ function _classCallCheck(instance, Constructor) { if (!(instance instanceof Cons
       }, {
         key: "obtenerDatosCalculadora",
         value: function obtenerDatosCalculadora(e) {
-          var _this1442 = this;
-
-          this.productos2.forEach(function (element) {
-            if (element.PRODUCTO == e.value) {
-              _this1442.calp = element.P_CAJA;
-              _this1442.calmetros = element.M2;
-            }
-          });
-          this.calcularMetros(e);
-        }
-      }, {
-        key: "obtenerDatosCalculadora2",
-        value: function obtenerDatosCalculadora2(e) {
           var _this1443 = this;
 
           this.productos2.forEach(function (element) {
@@ -182927,12 +183304,25 @@ function _classCallCheck(instance, Constructor) { if (!(instance instanceof Cons
               _this1443.calmetros = element.M2;
             }
           });
+          this.calcularMetros(e);
+        }
+      }, {
+        key: "obtenerDatosCalculadora2",
+        value: function obtenerDatosCalculadora2(e) {
+          var _this1444 = this;
+
+          this.productos2.forEach(function (element) {
+            if (element.PRODUCTO == e.value) {
+              _this1444.calp = element.P_CAJA;
+              _this1444.calmetros = element.M2;
+            }
+          });
           this.calcularMetros2(e);
         }
       }, {
         key: "obtenerDatosDeProductoParaUnDetalle",
         value: function obtenerDatosDeProductoParaUnDetalle(e, i) {
-          var _this1444 = this;
+          var _this1445 = this;
 
           //this.productosVendidos[i].precio_venta = 0;
           this.productosVendidos[i].total = 0;
@@ -182945,35 +183335,35 @@ function _classCallCheck(instance, Constructor) { if (!(instance instanceof Cons
           if (cont == 0) {
             this.productos.forEach(function (element) {
               if (element.PRODUCTO == e.value) {
-                if (element.CLASIFICA == "COMBO") _this1444.buscarCombo(e.value, i);else _this1444.traerTransaccionesPorProducto(element, i);
+                if (element.CLASIFICA == "COMBO") _this1445.buscarCombo(e.value, i);else _this1445.traerTransaccionesPorProducto(element, i);
 
-                switch (_this1444.factura.sucursal) {
+                switch (_this1445.factura.sucursal) {
                   case "matriz":
-                    _this1444.productosVendidos[i].disponible = element.sucursal1;
-                    _this1444.productosVendidos[i].producto = element;
+                    _this1445.productosVendidos[i].disponible = element.sucursal1;
+                    _this1445.productosVendidos[i].producto = element;
                     break;
 
                   case "sucursal1":
-                    _this1444.productosVendidos[i].disponible = element.sucursal2;
-                    _this1444.productosVendidos[i].producto = element;
+                    _this1445.productosVendidos[i].disponible = element.sucursal2;
+                    _this1445.productosVendidos[i].producto = element;
                     break;
 
                   case "sucursal2":
-                    _this1444.productosVendidos[i].disponible = element.sucursal3;
-                    _this1444.productosVendidos[i].producto = element;
+                    _this1445.productosVendidos[i].disponible = element.sucursal3;
+                    _this1445.productosVendidos[i].producto = element;
                     break;
 
                   default:
                 }
 
-                if (_this1444.productosVendidos[i].disponible < 0 || _this1444.productosVendidos[i].disponible == null) {
-                  _this1444.productosVendidos[i].disponible = 0;
+                if (_this1445.productosVendidos[i].disponible < 0 || _this1445.productosVendidos[i].disponible == null) {
+                  _this1445.productosVendidos[i].disponible = 0;
                 }
 
-                _this1444.productosVendidos[i].precio_min = parseFloat((element.precio * (element.porcentaje_ganancia - (element.ivaExcepcion || _this1444.ivaPorcentaje)) / 100 + element.precio).toFixed(2));
-                _this1444.productosVendidos[i].precio_minConIVA = parseFloat((element.precio * element.porcentaje_ganancia / 100 + element.precio).toFixed(2));
-                _this1444.productosVendidos[i].equivalencia = "0C 0P";
-                _this1444.productosVendidos[i].tipoDocumentoVenta = _this1444.tDocumento;
+                _this1445.productosVendidos[i].precio_min = parseFloat((element.precio * (element.porcentaje_ganancia - (element.ivaExcepcion || _this1445.ivaPorcentaje)) / 100 + element.precio).toFixed(2));
+                _this1445.productosVendidos[i].precio_minConIVA = parseFloat((element.precio * element.porcentaje_ganancia / 100 + element.precio).toFixed(2));
+                _this1445.productosVendidos[i].equivalencia = "0C 0P";
+                _this1445.productosVendidos[i].tipoDocumentoVenta = _this1445.tDocumento;
               }
             });
           } else {
@@ -182995,7 +183385,7 @@ function _classCallCheck(instance, Constructor) { if (!(instance instanceof Cons
       }, {
         key: "buscarCombo",
         value: function buscarCombo(nombreCombo, num) {
-          var _this1445 = this;
+          var _this1446 = this;
 
           var combo = new _catalogo_catalogo__WEBPACK_IMPORTED_MODULE_12__["ProductoCombo"]();
           combo.PRODUCTO = nombreCombo;
@@ -183003,19 +183393,19 @@ function _classCallCheck(instance, Constructor) { if (!(instance instanceof Cons
           this._comboService.getComboPorNombre(combo).subscribe(function (res) {
             var listado = res;
 
-            _this1445.buscarProductosCombo(listado[0].productosCombo, num);
+            _this1446.buscarProductosCombo(listado[0].productosCombo, num);
           });
         }
       }, {
         key: "buscarProductosCombo",
         value: function buscarProductosCombo(listado, num) {
-          var _this1446 = this;
+          var _this1447 = this;
 
           this.mostrarLoading = true;
           this.cantidadProductos = 0;
           listado.forEach(function (element) {
-            _this1446.productos.forEach(function (element2) {
-              if (element.nombreProducto == element2.PRODUCTO) _this1446.traerTransaccionesPorProductoCombo2(element2, num, listado.length, element);
+            _this1447.productos.forEach(function (element2) {
+              if (element.nombreProducto == element2.PRODUCTO) _this1447.traerTransaccionesPorProductoCombo2(element2, num, listado.length, element);
             });
           });
         }
@@ -183054,17 +183444,17 @@ function _classCallCheck(instance, Constructor) { if (!(instance instanceof Cons
       }, {
         key: "setClienteData",
         value: function setClienteData(e) {
-          var _this1447 = this;
+          var _this1448 = this;
 
           this.clientes.forEach(function (element) {
             if (element.cliente_nombre == e.component._changedValue) {
               //if(this.factura.cliente == undefined){
-              _this1447.factura.cliente = element;
-              _this1447.factura.cliente.cliente_nombre = element.cliente_nombre;
-              _this1447.factura.cliente.direccion = element.direccion;
-              _this1447.factura.cliente.celular = element.celular;
-              _this1447.factura.tipo_venta = element.tventa;
-              _this1447.factura.cliente.nombreContacto = element.nombreContacto; //}
+              _this1448.factura.cliente = element;
+              _this1448.factura.cliente.cliente_nombre = element.cliente_nombre;
+              _this1448.factura.cliente.direccion = element.direccion;
+              _this1448.factura.cliente.celular = element.celular;
+              _this1448.factura.tipo_venta = element.tventa;
+              _this1448.factura.cliente.nombreContacto = element.nombreContacto; //}
 
               /* else{
                 if(this.factura.cliente.tventa == element.tventa){
@@ -183125,7 +183515,7 @@ function _classCallCheck(instance, Constructor) { if (!(instance instanceof Cons
       }, {
         key: "asignarsucursalD",
         value: function asignarsucursalD(e) {
-          var _this1448 = this;
+          var _this1449 = this;
 
           this.factura.sucursal = e.value;
 
@@ -183139,13 +183529,13 @@ function _classCallCheck(instance, Constructor) { if (!(instance instanceof Cons
               cancelButtonText: 'No'
             }).then(function (result) {
               if (result.value) {
-                _this1448.limpiarArreglo();
+                _this1449.limpiarArreglo();
 
-                _this1448.asignarIDdocumentos();
+                _this1449.asignarIDdocumentos();
 
-                _this1448.buscarDatosSucursal();
+                _this1449.buscarDatosSucursal();
 
-                _this1448.productosVendidos.push(new _venta__WEBPACK_IMPORTED_MODULE_5__["venta"]());
+                _this1449.productosVendidos.push(new _venta__WEBPACK_IMPORTED_MODULE_5__["venta"]());
               }
             });
           } else {
@@ -183156,7 +183546,7 @@ function _classCallCheck(instance, Constructor) { if (!(instance instanceof Cons
       }, {
         key: "limpiarArreglo",
         value: function limpiarArreglo() {
-          var _this1449 = this;
+          var _this1450 = this;
 
           var cont = 0;
           this.productosVendidos.forEach(function (element) {
@@ -183165,7 +183555,7 @@ function _classCallCheck(instance, Constructor) { if (!(instance instanceof Cons
 
           if (cont >= 0) {
             this.productosVendidos.forEach(function (element) {
-              _this1449.productosVendidos.splice(0);
+              _this1450.productosVendidos.splice(0);
             });
           }
         }
@@ -183196,15 +183586,15 @@ function _classCallCheck(instance, Constructor) { if (!(instance instanceof Cons
       }, {
         key: "buscarCliente",
         value: function buscarCliente(e) {
-          var _this1450 = this;
+          var _this1451 = this;
 
           this.clientes.forEach(function (element) {
-            if (_this1450.factura.cliente.ruc == element.ruc) {
-              _this1450.factura.cliente = element;
-              _this1450.factura.cliente.cliente_nombre = element.cliente_nombre;
-              _this1450.factura.cliente.direccion = element.direccion;
-              _this1450.factura.cliente.celular = element.celular;
-              _this1450.mensaje = element.cliente_nombre;
+            if (_this1451.factura.cliente.ruc == element.ruc) {
+              _this1451.factura.cliente = element;
+              _this1451.factura.cliente.cliente_nombre = element.cliente_nombre;
+              _this1451.factura.cliente.direccion = element.direccion;
+              _this1451.factura.cliente.celular = element.celular;
+              _this1451.mensaje = element.cliente_nombre;
             }
           });
           this.calcularTipoCliente();
@@ -183229,15 +183619,15 @@ function _classCallCheck(instance, Constructor) { if (!(instance instanceof Cons
       }, {
         key: "calcularTipoCliente",
         value: function calcularTipoCliente() {
-          var _this1451 = this;
+          var _this1452 = this;
 
           this.factura.cliente.cliente_nombre = this.factura.cliente.cliente_nombre;
           this.factura.cliente.direccion = this.factura.cliente.direccion;
           this.factura.cliente.celular = this.factura.cliente.celular;
           var contador = 0;
           this.facturas.forEach(function (element) {
-            if (element.dni_comprador == _this1451.factura.cliente.ruc) {
-              _this1451.totalcomprador = _this1451.totalcomprador + element.total;
+            if (element.dni_comprador == _this1452.factura.cliente.ruc) {
+              _this1452.totalcomprador = _this1452.totalcomprador + element.total;
               contador++;
             }
           });
@@ -183319,23 +183709,23 @@ function _classCallCheck(instance, Constructor) { if (!(instance instanceof Cons
       }, {
         key: "calcularPrecioMinino",
         value: function calcularPrecioMinino(e, i) {
-          var _this1452 = this;
+          var _this1453 = this;
 
           switch (this.factura.tipo_venta) {
             case "Normal":
               this.productosVendidos[i].producto;
               this.precios.forEach(function (element) {
-                if (element.aplicacion == _this1452.productosVendidos[i].producto.APLICACION) {
-                  if (_this1452.productosVendidos[i].cantidad > 0 && _this1452.productosVendidos[i].cantidad <= element.cant1) {
-                    _this1452.productosVendidos[i].precio_minConIVA = parseFloat((_this1452.productosVendidos[i].producto.precio * element.percent1 / 100 + _this1452.productosVendidos[i].producto.precio).toFixed(2));
+                if (element.aplicacion == _this1453.productosVendidos[i].producto.APLICACION) {
+                  if (_this1453.productosVendidos[i].cantidad > 0 && _this1453.productosVendidos[i].cantidad <= element.cant1) {
+                    _this1453.productosVendidos[i].precio_minConIVA = parseFloat((_this1453.productosVendidos[i].producto.precio * element.percent1 / 100 + _this1453.productosVendidos[i].producto.precio).toFixed(2));
                   }
 
-                  if (_this1452.productosVendidos[i].cantidad > element.cant1 && _this1452.productosVendidos[i].cantidad <= element.cant2) {
-                    _this1452.productosVendidos[i].precio_minConIVA = parseFloat((_this1452.productosVendidos[i].producto.precio * element.percent2 / 100 + _this1452.productosVendidos[i].producto.precio).toFixed(2));
+                  if (_this1453.productosVendidos[i].cantidad > element.cant1 && _this1453.productosVendidos[i].cantidad <= element.cant2) {
+                    _this1453.productosVendidos[i].precio_minConIVA = parseFloat((_this1453.productosVendidos[i].producto.precio * element.percent2 / 100 + _this1453.productosVendidos[i].producto.precio).toFixed(2));
                   }
 
-                  if (_this1452.productosVendidos[i].cantidad > element.cant2) {
-                    _this1452.productosVendidos[i].precio_minConIVA = parseFloat((_this1452.productosVendidos[i].producto.precio * element.percent3 / 100 + _this1452.productosVendidos[i].producto.precio).toFixed(2));
+                  if (_this1453.productosVendidos[i].cantidad > element.cant2) {
+                    _this1453.productosVendidos[i].precio_minConIVA = parseFloat((_this1453.productosVendidos[i].producto.precio * element.percent3 / 100 + _this1453.productosVendidos[i].producto.precio).toFixed(2));
                   }
                 }
               });
@@ -183356,17 +183746,17 @@ function _classCallCheck(instance, Constructor) { if (!(instance instanceof Cons
       }, {
         key: "calcularTotalFactura",
         value: function calcularTotalFactura() {
-          var _this1453 = this;
+          var _this1454 = this;
 
           this.factura.total = 0;
           this.factura.subtotalF1 = 0;
           this.factura.subtotalF2 = 0;
           this.factura.totalIva = 0;
           this.productosVendidos.forEach(function (element) {
-            if (element.seleccionado) _this1453.factura.total = element.subtotal + _this1453.factura.total;
-            _this1453.factura.subtotalF1 = element.subtP1 + _this1453.factura.subtotalF1;
-            _this1453.factura.subtotalF2 = element.subtP2 + _this1453.factura.subtotalF2;
-            _this1453.factura.totalIva = element.subtIva + _this1453.factura.totalIva;
+            if (element.seleccionado) _this1454.factura.total = element.subtotal + _this1454.factura.total;
+            _this1454.factura.subtotalF1 = element.subtP1 + _this1454.factura.subtotalF1;
+            _this1454.factura.subtotalF2 = element.subtP2 + _this1454.factura.subtotalF2;
+            _this1454.factura.totalIva = element.subtIva + _this1454.factura.totalIva;
           });
           this.factura.total = parseFloat((this.factura.total + this.factura.coste_transporte).toFixed(2));
         }
@@ -183379,22 +183769,22 @@ function _classCallCheck(instance, Constructor) { if (!(instance instanceof Cons
       }, {
         key: "llenarPR",
         value: function llenarPR() {
-          var _this1454 = this;
+          var _this1455 = this;
 
           this.productosActivos.forEach(function (element) {
             if (element.UNIDAD == "Metros") {
-              _this1454.productos2.push(element);
+              _this1455.productos2.push(element);
             }
           });
         }
       }, {
         key: "llenarComboProductos",
         value: function llenarComboProductos() {
-          var _this1455 = this;
+          var _this1456 = this;
 
           this.productosActivos.forEach(function (element) {
             if (element.ESTADO == "ACTIVO") {
-              _this1455.productos.push(element);
+              _this1456.productos.push(element);
             }
           });
           this.productos22 = new devextreme_data_data_source__WEBPACK_IMPORTED_MODULE_13___default.a({
@@ -183409,7 +183799,7 @@ function _classCallCheck(instance, Constructor) { if (!(instance instanceof Cons
       }, {
         key: "buscarCotizacion",
         value: function buscarCotizacion() {
-          var _this1456 = this;
+          var _this1457 = this;
 
           this.mensajeLoading = "Buscando Proforma...";
           this.mostrarLoading = true;
@@ -183419,55 +183809,55 @@ function _classCallCheck(instance, Constructor) { if (!(instance instanceof Cons
             var proform = res;
 
             if (proform.length != 0) {
-              _this1456.factura.cliente = proform[0].cliente;
-              _this1456.factura.cliente.celular = proform[0].cliente.celular;
-              _this1456.factura.cliente.cliente_nombre = proform[0].cliente.cliente_nombre;
-              _this1456.mensaje = proform[0].cliente.cliente_nombre;
-              _this1456.factura.cliente.direccion = proform[0].cliente.direccion;
-              _this1456.factura.cliente.ruc = proform[0].cliente.ruc;
-              _this1456.factura.tipo_cliente = proform[0].cliente.t_cliente;
-              _this1456.factura.tipo_venta = proform[0].cliente.tventa;
-              _this1456.factura.cliente.t_cliente = proform[0].cliente.t_cliente;
-              _this1456.factura.cliente.tventa = proform[0].cliente.tventa;
-              _this1456.factura.total = proform[0].total;
-              _this1456.factura.totalDescuento = proform[0].totalDescuento;
-              _this1456.factura.coste_transporte = proform[0].coste_transporte;
-              _this1456.factura.observaciones = proform[0].observaciones;
-              _this1456.factura.cotizacion = proform[0].documento_n;
-              _this1456.productosVendidos = proform[0].productosVendidos;
-              _this1456.nCotizacionFact = "Referecia Cotización: #" + proform[0].documento_n;
+              _this1457.factura.cliente = proform[0].cliente;
+              _this1457.factura.cliente.celular = proform[0].cliente.celular;
+              _this1457.factura.cliente.cliente_nombre = proform[0].cliente.cliente_nombre;
+              _this1457.mensaje = proform[0].cliente.cliente_nombre;
+              _this1457.factura.cliente.direccion = proform[0].cliente.direccion;
+              _this1457.factura.cliente.ruc = proform[0].cliente.ruc;
+              _this1457.factura.tipo_cliente = proform[0].cliente.t_cliente;
+              _this1457.factura.tipo_venta = proform[0].cliente.tventa;
+              _this1457.factura.cliente.t_cliente = proform[0].cliente.t_cliente;
+              _this1457.factura.cliente.tventa = proform[0].cliente.tventa;
+              _this1457.factura.total = proform[0].total;
+              _this1457.factura.totalDescuento = proform[0].totalDescuento;
+              _this1457.factura.coste_transporte = proform[0].coste_transporte;
+              _this1457.factura.observaciones = proform[0].observaciones;
+              _this1457.factura.cotizacion = proform[0].documento_n;
+              _this1457.productosVendidos = proform[0].productosVendidos;
+              _this1457.nCotizacionFact = "Referecia Cotización: #" + proform[0].documento_n;
 
-              if (_this1456.productosVendidos.length >= 5 && _this1456.productosVendidos.length <= 10) {
-                _this1456.dataContainer.cssClass = "altura1";
-              } else if (_this1456.productosVendidos.length >= 11 && _this1456.productosVendidos.length <= 15) {
-                _this1456.dataContainer.cssClass = "altura2";
-              } else if (_this1456.productosVendidos.length >= 16 && _this1456.productosVendidos.length <= 20) {
-                _this1456.dataContainer.cssClass = "altura3";
+              if (_this1457.productosVendidos.length >= 5 && _this1457.productosVendidos.length <= 10) {
+                _this1457.dataContainer.cssClass = "altura1";
+              } else if (_this1457.productosVendidos.length >= 11 && _this1457.productosVendidos.length <= 15) {
+                _this1457.dataContainer.cssClass = "altura2";
+              } else if (_this1457.productosVendidos.length >= 16 && _this1457.productosVendidos.length <= 20) {
+                _this1457.dataContainer.cssClass = "altura3";
               }
 
-              _this1456.mostrarLoading = false;
+              _this1457.mostrarLoading = false;
 
-              _this1456.buscarCantidadesPRODUCTOS();
+              _this1457.buscarCantidadesPRODUCTOS();
 
-              _this1456.newButtonEnabled = false;
-              _this1456.costoTr = true;
+              _this1457.newButtonEnabled = false;
+              _this1457.costoTr = true;
             } else {
-              _this1456.mostrarLoading = false;
+              _this1457.mostrarLoading = false;
 
-              _this1456.mostrarMensajeGenerico(2, "No se encontro ningun registro con el número ingresado");
+              _this1457.mostrarMensajeGenerico(2, "No se encontro ningun registro con el número ingresado");
             }
           });
         }
       }, {
         key: "buscarCantidadesPRODUCTOS",
         value: function buscarCantidadesPRODUCTOS() {
-          var _this1457 = this;
+          var _this1458 = this;
 
           var contP = 0;
           this.productosVendidos.forEach(function (element) {
-            _this1457.productos.forEach(function (element2) {
+            _this1458.productos.forEach(function (element2) {
               if (element.producto.PRODUCTO == element2.PRODUCTO) {
-                switch (_this1457.factura.sucursal) {
+                switch (_this1458.factura.sucursal) {
                   case "matriz":
                     element.disponible = element2.sucursal1;
 
@@ -183509,16 +183899,16 @@ function _classCallCheck(instance, Constructor) { if (!(instance instanceof Cons
       }, {
         key: "compararCantidad2",
         value: function compararCantidad2() {
-          return Object(tslib__WEBPACK_IMPORTED_MODULE_0__["__awaiter"])(this, void 0, void 0, /*#__PURE__*/regeneratorRuntime.mark(function _callee65() {
-            var _this1458 = this;
+          return Object(tslib__WEBPACK_IMPORTED_MODULE_0__["__awaiter"])(this, void 0, void 0, /*#__PURE__*/regeneratorRuntime.mark(function _callee67() {
+            var _this1459 = this;
 
             var cont;
-            return regeneratorRuntime.wrap(function _callee65$(_context65) {
+            return regeneratorRuntime.wrap(function _callee67$(_context68) {
               while (1) {
-                switch (_context65.prev = _context65.next) {
+                switch (_context68.prev = _context68.next) {
                   case 0:
                     cont = 0;
-                    _context65.next = 3;
+                    _context68.next = 3;
                     return this.productosVendidos.forEach(function (element) {
                       if (element.disponible < element.cantidad) {
                         sweetalert2__WEBPACK_IMPORTED_MODULE_9___default.a.fire({
@@ -183534,32 +183924,32 @@ function _classCallCheck(instance, Constructor) { if (!(instance instanceof Cons
                           } else if (result.dismiss === sweetalert2__WEBPACK_IMPORTED_MODULE_9___default.a.DismissReason.cancel) {
                             sweetalert2__WEBPACK_IMPORTED_MODULE_9___default.a.fire('Cancelado!', 'Se ha cancelado su orden.', 'error');
 
-                            _this1458.deleteProductoVendido(cont - 2);
+                            _this1459.deleteProductoVendido(cont - 2);
                           }
                         });
                       }
 
-                      _this1458.carcularTotalProducto(null, cont);
+                      _this1459.carcularTotalProducto(null, cont);
 
                       cont++;
                     });
 
                   case 3:
                   case "end":
-                    return _context65.stop();
+                    return _context68.stop();
                 }
               }
-            }, _callee65, this);
+            }, _callee67, this);
           }));
         }
       }, {
         key: "compararCantidad",
         value: function compararCantidad(nombre, i, o) {
-          var _this1459 = this;
+          var _this1460 = this;
 
           this.productos.forEach(function (element) {
             if (nombre == element.PRODUCTO) {
-              _this1459.productosVendidos[o - 1].disponible = element.cantidad;
+              _this1460.productosVendidos[o - 1].disponible = element.cantidad;
 
               if (i > element.cantidad) {
                 sweetalert2__WEBPACK_IMPORTED_MODULE_9___default.a.fire({
@@ -183575,7 +183965,7 @@ function _classCallCheck(instance, Constructor) { if (!(instance instanceof Cons
                   } else if (result.dismiss === sweetalert2__WEBPACK_IMPORTED_MODULE_9___default.a.DismissReason.cancel) {
                     sweetalert2__WEBPACK_IMPORTED_MODULE_9___default.a.fire('Cancelado!', 'Se ha cancelado su orden.', 'error');
 
-                    _this1459.deleteProductoVendido(0);
+                    _this1460.deleteProductoVendido(0);
                   }
                 });
               }
@@ -183585,18 +183975,18 @@ function _classCallCheck(instance, Constructor) { if (!(instance instanceof Cons
       }, {
         key: "actualizarProductos",
         value: function actualizarProductos() {
-          var _this1460 = this;
+          var _this1461 = this;
 
           var resta = 0;
           new Promise(function (resolve, reject) {
-            _this1460.productosVendidos.forEach(function (element) {
-              switch (_this1460.factura.sucursal) {
+            _this1461.productosVendidos.forEach(function (element) {
+              switch (_this1461.factura.sucursal) {
                 case "matriz":
                   resta = 0;
                   resta = element.producto.sucursal1 - element.cantidad;
                   element.producto.sucursal1 = resta;
 
-                  _this1460.productoService.updateProductoSucursal1(element.producto).subscribe(function (res) {
+                  _this1461.productoService.updateProductoSucursal1(element.producto).subscribe(function (res) {
                     console.log(res + "entre por si");
                   }, function (err) {});
 
@@ -183607,7 +183997,7 @@ function _classCallCheck(instance, Constructor) { if (!(instance instanceof Cons
                   resta = element.producto.sucursal2 - element.cantidad;
                   element.producto.sucursal2 = resta;
 
-                  _this1460.productoService.updateProductoSucursal2(element.producto).subscribe(function (res) {
+                  _this1461.productoService.updateProductoSucursal2(element.producto).subscribe(function (res) {
                     console.log(res + "entre por si");
                   }, function (err) {});
 
@@ -183618,7 +184008,7 @@ function _classCallCheck(instance, Constructor) { if (!(instance instanceof Cons
                   resta = element.producto.sucursal3 - element.cantidad;
                   element.producto.sucursal3 = resta;
 
-                  _this1460.productoService.updateProductoSucursal3(element.producto).subscribe(function (res) {
+                  _this1461.productoService.updateProductoSucursal3(element.producto).subscribe(function (res) {
                     console.log(res + "entre por si");
                   }, function (err) {});
 
@@ -183660,26 +184050,26 @@ function _classCallCheck(instance, Constructor) { if (!(instance instanceof Cons
       }, {
         key: "calcularEquivalencia",
         value: function calcularEquivalencia(e, i) {
-          var _this1461 = this;
+          var _this1462 = this;
 
           this.productos.forEach(function (element) {
-            if (element.PRODUCTO == _this1461.productosVendidos[i].producto.PRODUCTO) {
-              var cajas = Math.trunc((_this1461.productosVendidos[i].cantidad + 0.01) / element.M2);
-              var piezas = Math.trunc((_this1461.productosVendidos[i].cantidad + 0.01) * element.P_CAJA / element.M2) - cajas * element.P_CAJA;
+            if (element.PRODUCTO == _this1462.productosVendidos[i].producto.PRODUCTO) {
+              var cajas = Math.trunc((_this1462.productosVendidos[i].cantidad + 0.01) / element.M2);
+              var piezas = Math.trunc((_this1462.productosVendidos[i].cantidad + 0.01) * element.P_CAJA / element.M2) - cajas * element.P_CAJA;
 
-              if (_this1461.productosVendidos[i].producto.CLASIFICA == "Ceramicas" || _this1461.productosVendidos[i].producto.CLASIFICA == "Porcelanatos" || _this1461.productosVendidos[i].producto.CLASIFICA == "Porcelanato") {
-                if (_this1461.productosVendidos[i].producto.CLASIFICA == "Porcelanato") _this1461.productosVendidos[i].producto.CLASIFICA = "Porcelanatos";
+              if (_this1462.productosVendidos[i].producto.CLASIFICA == "Ceramicas" || _this1462.productosVendidos[i].producto.CLASIFICA == "Porcelanatos" || _this1462.productosVendidos[i].producto.CLASIFICA == "Porcelanato") {
+                if (_this1462.productosVendidos[i].producto.CLASIFICA == "Porcelanato") _this1462.productosVendidos[i].producto.CLASIFICA = "Porcelanatos";
 
-                var confProd = _this1461.listaParametrizaciones.find(function (x) {
-                  return x.nombreGrupo == _this1461.productosVendidos[i].producto.CLASIFICA;
+                var confProd = _this1462.listaParametrizaciones.find(function (x) {
+                  return x.nombreGrupo == _this1462.productosVendidos[i].producto.CLASIFICA;
                 });
 
                 if (confProd != null) {
                   if (cajas >= confProd.cajasLimite && piezas >= confProd.piezasRestantes) piezas = piezas - confProd.piezasRestantes;
                 }
 
-                _this1461.productosVendidos[i].equivalencia = cajas + "C " + piezas + "P";
-              } else _this1461.productosVendidos[i].equivalencia = cajas + "C " + piezas + "P";
+                _this1462.productosVendidos[i].equivalencia = cajas + "C " + piezas + "P";
+              } else _this1462.productosVendidos[i].equivalencia = cajas + "C " + piezas + "P";
             }
           });
         }
@@ -183723,50 +184113,12 @@ function _classCallCheck(instance, Constructor) { if (!(instance instanceof Cons
       }, {
         key: "mostrarMensaje",
         value: function mostrarMensaje() {
-          var _this1462 = this;
-
-          var timerInterval;
-          sweetalert2__WEBPACK_IMPORTED_MODULE_9___default.a.fire({
-            title: 'Guardando Documento!',
-            html: 'Procesando',
-            timerProgressBar: true,
-            onBeforeOpen: function onBeforeOpen() {
-              sweetalert2__WEBPACK_IMPORTED_MODULE_9___default.a.showLoading();
-              timerInterval = setInterval(function () {
-                var content = sweetalert2__WEBPACK_IMPORTED_MODULE_9___default.a.getContent();
-
-                if (content) {
-                  var b = content.querySelector('b');
-                }
-              }, 100);
-            },
-            onClose: function onClose() {
-              clearInterval(timerInterval);
-            }
-          }).then(function (result) {
-            /* Read more about handling dismissals below */
-            if (result.dismiss === sweetalert2__WEBPACK_IMPORTED_MODULE_9___default.a.DismissReason.timer) {
-              sweetalert2__WEBPACK_IMPORTED_MODULE_9___default.a.fire({
-                title: _this1462.tDocumento + ' guardada',
-                text: 'Su ' + _this1462.tDocumento + ' fue guardada con éxito',
-                icon: 'success',
-                confirmButtonText: 'Ok'
-              }).then(function (result) {
-                window.location.reload();
-              });
-            }
-          });
-        }
-      }, {
-        key: "mostrarMensaje2",
-        value: function mostrarMensaje2() {
           var _this1463 = this;
 
           var timerInterval;
           sweetalert2__WEBPACK_IMPORTED_MODULE_9___default.a.fire({
             title: 'Guardando Documento!',
             html: 'Procesando',
-            timer: 3000,
             timerProgressBar: true,
             onBeforeOpen: function onBeforeOpen() {
               sweetalert2__WEBPACK_IMPORTED_MODULE_9___default.a.showLoading();
@@ -183796,9 +184148,47 @@ function _classCallCheck(instance, Constructor) { if (!(instance instanceof Cons
           });
         }
       }, {
+        key: "mostrarMensaje2",
+        value: function mostrarMensaje2() {
+          var _this1464 = this;
+
+          var timerInterval;
+          sweetalert2__WEBPACK_IMPORTED_MODULE_9___default.a.fire({
+            title: 'Guardando Documento!',
+            html: 'Procesando',
+            timer: 3000,
+            timerProgressBar: true,
+            onBeforeOpen: function onBeforeOpen() {
+              sweetalert2__WEBPACK_IMPORTED_MODULE_9___default.a.showLoading();
+              timerInterval = setInterval(function () {
+                var content = sweetalert2__WEBPACK_IMPORTED_MODULE_9___default.a.getContent();
+
+                if (content) {
+                  var b = content.querySelector('b');
+                }
+              }, 100);
+            },
+            onClose: function onClose() {
+              clearInterval(timerInterval);
+            }
+          }).then(function (result) {
+            /* Read more about handling dismissals below */
+            if (result.dismiss === sweetalert2__WEBPACK_IMPORTED_MODULE_9___default.a.DismissReason.timer) {
+              sweetalert2__WEBPACK_IMPORTED_MODULE_9___default.a.fire({
+                title: _this1464.tDocumento + ' guardada',
+                text: 'Su ' + _this1464.tDocumento + ' fue guardada con éxito',
+                icon: 'success',
+                confirmButtonText: 'Ok'
+              }).then(function (result) {
+                window.location.reload();
+              });
+            }
+          });
+        }
+      }, {
         key: "showModal",
         value: function showModal(e, i) {
-          var _this1464 = this;
+          var _this1465 = this;
 
           sweetalert2__WEBPACK_IMPORTED_MODULE_9___default.a.fire({
             title: 'Cantidad no disponible',
@@ -183813,14 +184203,14 @@ function _classCallCheck(instance, Constructor) { if (!(instance instanceof Cons
             } else if (result.dismiss === sweetalert2__WEBPACK_IMPORTED_MODULE_9___default.a.DismissReason.cancel) {
               sweetalert2__WEBPACK_IMPORTED_MODULE_9___default.a.fire('Cancelado!', 'Se ha cancelado su orden.', 'error');
 
-              _this1464.deleteProductoVendido(i);
+              _this1465.deleteProductoVendido(i);
             }
           });
         }
       }, {
         key: "crearPDF",
         value: function crearPDF() {
-          var _this1465 = this;
+          var _this1466 = this;
 
           if (this.factura.cliente.celular == undefined || this.factura.cliente.celular == null) this.factura.cliente.celular = "xxxxxxxxxx";
 
@@ -183828,7 +184218,7 @@ function _classCallCheck(instance, Constructor) { if (!(instance instanceof Cons
             this.textoTipoDocumento2 = "ed.producto.PRODUCTO";
             var documentDefinition = this.getDocumentDefinition();
             var generacion = new Promise(function (resolve, reject) {
-              pdfmake_build_pdfmake__WEBPACK_IMPORTED_MODULE_7___default.a.createPdf(documentDefinition).download('Factura ' + _this1465.variab, function (response) {
+              pdfmake_build_pdfmake__WEBPACK_IMPORTED_MODULE_7___default.a.createPdf(documentDefinition).download('Factura ' + _this1466.variab, function (response) {
                 sweetalert2__WEBPACK_IMPORTED_MODULE_9___default.a.close(), sweetalert2__WEBPACK_IMPORTED_MODULE_9___default.a.fire({
                   title: 'Factura guardada',
                   text: 'Su factura fue guardada con éxito',
@@ -183840,9 +184230,9 @@ function _classCallCheck(instance, Constructor) { if (!(instance instanceof Cons
               });
             });
             generacion.then(function (data) {
-              if (_this1465.formaPago == "Otros medios Pago" || _this1465.formaPago == "Abonos" || _this1465.formaPago == "Crédito Aliado") _this1465.router.navigate(['/recibo-caja'], {
+              if (_this1466.formaPago == "Otros medios Pago" || _this1466.formaPago == "Abonos" || _this1466.formaPago == "Crédito Aliado") _this1466.router.navigate(['/recibo-caja'], {
                 queryParams: {
-                  id: _this1465.factura.documento_n,
+                  id: _this1466.factura.documento_n,
                   tipo: 1
                 }
               });else window.location.reload();
@@ -183854,7 +184244,7 @@ function _classCallCheck(instance, Constructor) { if (!(instance instanceof Cons
             var _documentDefinition8 = this.getDocumentDefinitionNotaVenta();
 
             var generacion = new Promise(function (resolve, reject) {
-              pdfmake_build_pdfmake__WEBPACK_IMPORTED_MODULE_7___default.a.createPdf(_documentDefinition8).download('Nota/Venta ' + _this1465.variab, function (response) {
+              pdfmake_build_pdfmake__WEBPACK_IMPORTED_MODULE_7___default.a.createPdf(_documentDefinition8).download('Nota/Venta ' + _this1466.variab, function (response) {
                 sweetalert2__WEBPACK_IMPORTED_MODULE_9___default.a.close(), sweetalert2__WEBPACK_IMPORTED_MODULE_9___default.a.fire({
                   title: 'Nota de Venta guardada',
                   text: 'Su nota de Venta fue guardada con éxito',
@@ -183866,9 +184256,9 @@ function _classCallCheck(instance, Constructor) { if (!(instance instanceof Cons
               });
             });
             generacion.then(function (data) {
-              if (_this1465.formaPago == "Otros medios Pago" || _this1465.formaPago == "Abonos" || _this1465.formaPago == "Crédito Aliado") _this1465.router.navigate(['/recibo-caja'], {
+              if (_this1466.formaPago == "Otros medios Pago" || _this1466.formaPago == "Abonos" || _this1466.formaPago == "Crédito Aliado") _this1466.router.navigate(['/recibo-caja'], {
                 queryParams: {
-                  id: _this1465.factura.documento_n,
+                  id: _this1466.factura.documento_n,
                   tipo: 2
                 }
               });else window.location.reload();
@@ -185271,7 +185661,7 @@ function _classCallCheck(instance, Constructor) { if (!(instance instanceof Cons
       }, {
         key: "validarExistencias",
         value: function validarExistencias(element) {
-          var _this1466 = this;
+          var _this1467 = this;
 
           var resta = 0;
           var sumad = 0;
@@ -185302,11 +185692,11 @@ function _classCallCheck(instance, Constructor) { if (!(instance instanceof Cons
             this.productoPendienteE.total = resta * element.precio_venta;
             this.productoPendienteEntregas.push(this.productoPendienteE);
             new Promise(function (resolve, reject) {
-              switch (_this1466.factura.sucursal) {
+              switch (_this1467.factura.sucursal) {
                 case "matriz":
                   sumad = resta + element.producto.suc1Pendiente;
 
-                  _this1466.productoService.updateProductoPendienteSucursal1(element.producto, sumad).subscribe(function (res) {
+                  _this1467.productoService.updateProductoPendienteSucursal1(element.producto, sumad).subscribe(function (res) {
                     console.log(res + "entre por si");
                   }, function (err) {});
 
@@ -185315,7 +185705,7 @@ function _classCallCheck(instance, Constructor) { if (!(instance instanceof Cons
                 case "sucursal1":
                   sumad = resta + element.producto.suc2Pendiente;
 
-                  _this1466.productoService.updateProductoPendienteSucursal2(element.producto, sumad).subscribe(function (res) {
+                  _this1467.productoService.updateProductoPendienteSucursal2(element.producto, sumad).subscribe(function (res) {
                     console.log(res + "entre por si");
                   }, function (err) {});
 
@@ -185324,7 +185714,7 @@ function _classCallCheck(instance, Constructor) { if (!(instance instanceof Cons
                 case "sucursal2":
                   sumad = resta + element.producto.suc3Pendiente;
 
-                  _this1466.productoService.updateProductoPendienteSucursal3(element.producto, sumad).subscribe(function (res) {
+                  _this1467.productoService.updateProductoPendienteSucursal3(element.producto, sumad).subscribe(function (res) {
                     console.log(res + "entre por si");
                   }, function (err) {});
 
@@ -185333,20 +185723,20 @@ function _classCallCheck(instance, Constructor) { if (!(instance instanceof Cons
                 default:
               }
 
-              _this1466.productosPendientesService.newProductoPendiente(_this1466.productoPendienteE).subscribe(function (res) {
-                _this1466.contadores[0].contProductosPendientes_Ndocumento = _this1466.numeroID;
+              _this1467.productosPendientesService.newProductoPendiente(_this1467.productoPendienteE).subscribe(function (res) {
+                _this1467.contadores[0].contProductosPendientes_Ndocumento = _this1467.numeroID;
 
-                _this1466.contadoresService.updateContadoresIDProductosPendientes(_this1466.contadores[0]).subscribe(function (res) {
-                  _this1466.db.collection("/consectivosBaseMongoDB").doc("base").update({
-                    contProductosPendientes_Ndocumento: _this1466.contadores[0].contProductosPendientes_Ndocumento
+                _this1467.contadoresService.updateContadoresIDProductosPendientes(_this1467.contadores[0]).subscribe(function (res) {
+                  _this1467.db.collection("/consectivosBaseMongoDB").doc("base").update({
+                    contProductosPendientes_Ndocumento: _this1467.contadores[0].contProductosPendientes_Ndocumento
                   }).then(function (res) {}, function (err) {
-                    return _this1466.mostrarMensajeGenerico(2, "Error al guardar");
+                    return _this1467.mostrarMensajeGenerico(2, "Error al guardar");
                   });
                 }, function (err) {
-                  _this1466.mostrarMensajeGenerico(2, "Error al guardar");
+                  _this1467.mostrarMensajeGenerico(2, "Error al guardar");
                 });
               }, function (err) {
-                _this1466.mostrarMensajeGenerico(2, "Error al guardar");
+                _this1467.mostrarMensajeGenerico(2, "Error al guardar");
               });
             });
           }
@@ -185354,32 +185744,32 @@ function _classCallCheck(instance, Constructor) { if (!(instance instanceof Cons
       }, {
         key: "buscarDatosSucursal",
         value: function buscarDatosSucursal() {
-          var _this1467 = this;
+          var _this1468 = this;
 
           this.parametrizaciones.forEach(function (element) {
-            if (element.sucursal == _this1467.factura.sucursal) {
-              _this1467.parametrizacionSucu = element;
-              _this1467.factura.rucFactura = element.ruc;
-              _this1467.RucSucursal = element.ruc;
-              _this1467.textoConsecutivo = element.cabeceraData; //TODO --- COMENTAR CUANDO SE HAGAN PRUEBAS
+            if (element.sucursal == _this1468.factura.sucursal) {
+              _this1468.parametrizacionSucu = element;
+              _this1468.factura.rucFactura = element.ruc;
+              _this1468.RucSucursal = element.ruc;
+              _this1468.textoConsecutivo = element.cabeceraData; //TODO --- COMENTAR CUANDO SE HAGAN PRUEBAS
 
-              _this1467.traerConsecutivoVeronica(_this1467.RucSucursal);
+              _this1468.traerConsecutivoVeronica(_this1468.RucSucursal);
             }
           });
         }
       }, {
         key: "crearCliente",
         value: function crearCliente() {
-          var _this1468 = this;
+          var _this1469 = this;
 
           if (this.factura.cliente._id) {
             console.log("entre a actualizar");
             this.clienteService.updateClienteDataContacto(this.factura.cliente).subscribe(function (res) {}, function (err) {
-              _this1468.mostrarMensajeGenerico(2, "Revise e intente nuevamente");
+              _this1469.mostrarMensajeGenerico(2, "Revise e intente nuevamente");
             });
           } else {
             this.clienteService.newCliente(this.factura.cliente).subscribe(function (res) {}, function (err) {
-              _this1468.mostrarMensajeGenerico(2, "Recise e intente nuevamente");
+              _this1469.mostrarMensajeGenerico(2, "Recise e intente nuevamente");
             });
           }
         }
@@ -185403,12 +185793,12 @@ function _classCallCheck(instance, Constructor) { if (!(instance instanceof Cons
       }, {
         key: "guardarFactura",
         value: function guardarFactura() {
-          return Object(tslib__WEBPACK_IMPORTED_MODULE_0__["__awaiter"])(this, void 0, void 0, /*#__PURE__*/regeneratorRuntime.mark(function _callee66() {
-            var _this1469 = this;
+          return Object(tslib__WEBPACK_IMPORTED_MODULE_0__["__awaiter"])(this, void 0, void 0, /*#__PURE__*/regeneratorRuntime.mark(function _callee68() {
+            var _this1470 = this;
 
-            return regeneratorRuntime.wrap(function _callee66$(_context66) {
+            return regeneratorRuntime.wrap(function _callee68$(_context69) {
               while (1) {
-                switch (_context66.prev = _context66.next) {
+                switch (_context69.prev = _context69.next) {
                   case 0:
                     this.contadorVenta++;
                     this.factura.username = this.username;
@@ -185416,25 +185806,25 @@ function _classCallCheck(instance, Constructor) { if (!(instance instanceof Cons
                     this.factura.fecha2 = new Date().toLocaleString();
                     this.factura.productosVendidos = this.productosVendidos;
                     this.facturasService.newFactura(this.factura).subscribe(function (res) {
-                      _this1469.validarFormaPago();
+                      _this1470.validarFormaPago();
 
-                      _this1469.registrarFacturaSRI();
+                      _this1470.registrarFacturaSRI();
                     }, function (err) {
-                      _this1469.mostrarMensajeGenerico(2, "Error al guardar");
+                      _this1470.mostrarMensajeGenerico(2, "Error al guardar");
                     });
 
                   case 6:
                   case "end":
-                    return _context66.stop();
+                    return _context69.stop();
                 }
               }
-            }, _callee66, this);
+            }, _callee68, this);
           }));
         }
       }, {
         key: "registrarFacturaSRI",
         value: function registrarFacturaSRI() {
-          var _this1470 = this;
+          var _this1471 = this;
 
           var _a, _b, _c, _d, _e;
 
@@ -185463,16 +185853,16 @@ function _classCallCheck(instance, Constructor) { if (!(instance instanceof Cons
             detalle.codigoAuxiliar = "000000";
             detalle.descripcion = element.producto.PRODUCTO;
             detalle.cantidad = element.cantidad;
-            detalle.precioUnitario = element.precio_venta / ((element.producto.ivaExcepcion || _this1470.ivaPorcentaje) / 100 + 1);
+            detalle.precioUnitario = element.precio_venta / ((element.producto.ivaExcepcion || _this1471.ivaPorcentaje) / 100 + 1);
             detalle.descuento = 0;
             var impuesto = new _api_veronica_api_veronica__WEBPACK_IMPORTED_MODULE_17__["ImpuestoModel"]();
             if (element.producto.ivaExcepcion) impuesto.codigoPorcentaje = '5';
-            impuesto.tarifa = element.producto.ivaExcepcion || _this1470.ivaPorcentaje;
+            impuesto.tarifa = element.producto.ivaExcepcion || _this1471.ivaPorcentaje;
             impuesto.baseImponible = Number(element.subtP1.toFixed(2));
-            impuesto.valor = impuesto.baseImponible * ((element.producto.ivaExcepcion || _this1470.ivaPorcentaje) / 100);
+            impuesto.valor = impuesto.baseImponible * ((element.producto.ivaExcepcion || _this1471.ivaPorcentaje) / 100);
             detalle.impuesto.push(impuesto);
 
-            _this1470.facturaVeronica.detalles.push(detalle);
+            _this1471.facturaVeronica.detalles.push(detalle);
           }); //*************FORMA DE PAGO*********** */
 
           var pago = new _api_veronica_api_veronica__WEBPACK_IMPORTED_MODULE_17__["PagosModel"]();
@@ -185549,17 +185939,17 @@ function _classCallCheck(instance, Constructor) { if (!(instance instanceof Cons
             logApiVeronica.claveAcceso = resultado.result.claveAccesoConsultada;
             logApiVeronica.resultado = "OK";
 
-            _this1470._logApiVeronicaService.newLog(logApiVeronica).subscribe(function (res) {
-              _this1470.mostrarLoading = false;
+            _this1471._logApiVeronicaService.newLog(logApiVeronica).subscribe(function (res) {
+              _this1471.mostrarLoading = false;
               sweetalert2__WEBPACK_IMPORTED_MODULE_9___default.a.fire({
                 title: 'Correcto',
                 text: 'Factura registrada con éxito',
                 icon: 'success',
                 confirmButtonText: 'Ok'
               }).then(function (result) {
-                if (_this1470.formaPago == "Otros medios Pago" || _this1470.formaPago == "Abonos" || _this1470.formaPago == "Crédito Aliado") _this1470.router.navigate(['/recibo-caja'], {
+                if (_this1471.formaPago == "Otros medios Pago" || _this1471.formaPago == "Abonos" || _this1471.formaPago == "Crédito Aliado") _this1471.router.navigate(['/recibo-caja'], {
                   queryParams: {
-                    id: _this1470.factura.documento_n,
+                    id: _this1471.factura.documento_n,
                     tipo: 1
                   }
                 });else window.location.reload();
@@ -185570,17 +185960,17 @@ function _classCallCheck(instance, Constructor) { if (!(instance instanceof Cons
             logApiVeronica.claveAcceso = "";
             logApiVeronica.resultado = "NOK";
 
-            _this1470._logApiVeronicaService.newLog(logApiVeronica).subscribe(function (res) {
-              _this1470.mostrarLoading = false;
+            _this1471._logApiVeronicaService.newLog(logApiVeronica).subscribe(function (res) {
+              _this1471.mostrarLoading = false;
               sweetalert2__WEBPACK_IMPORTED_MODULE_9___default.a.fire({
                 title: 'Error',
                 text: 'Error al establecer coneccion con el SRI',
                 icon: 'error',
                 confirmButtonText: 'Ok'
               }).then(function (result) {
-                if (_this1470.formaPago == "Otros medios Pago" || _this1470.formaPago == "Abonos" || _this1470.formaPago == "Crédito Aliado") _this1470.router.navigate(['/recibo-caja'], {
+                if (_this1471.formaPago == "Otros medios Pago" || _this1471.formaPago == "Abonos" || _this1471.formaPago == "Crédito Aliado") _this1471.router.navigate(['/recibo-caja'], {
                   queryParams: {
-                    id: _this1470.factura.documento_n,
+                    id: _this1471.factura.documento_n,
                     tipo: 1
                   }
                 });else window.location.reload();
@@ -185591,7 +185981,7 @@ function _classCallCheck(instance, Constructor) { if (!(instance instanceof Cons
       }, {
         key: "guardarNotaVenta",
         value: function guardarNotaVenta() {
-          var _this1471 = this;
+          var _this1472 = this;
 
           this.factura.username = this.username;
           this.factura.fecha = this.now;
@@ -185599,57 +185989,57 @@ function _classCallCheck(instance, Constructor) { if (!(instance instanceof Cons
           this.factura.productosVendidos = this.productosVendidos;
           this.obtenerConsecutivoNotaVentaYActualizar().subscribe({
             next: function next() {
-              console.log('nroActualFactura', _this1471.nroActualFactura);
+              console.log('nroActualFactura', _this1472.nroActualFactura);
 
-              _this1471.notasVentService.newNotaVenta(_this1471.factura).subscribe(function (res) {
-                _this1471.validarFormaPago();
+              _this1472.notasVentService.newNotaVenta(_this1472.factura).subscribe(function (res) {
+                _this1472.validarFormaPago();
               }, function (err) {
-                _this1471.mostrarMensajeGenerico(2, "Error al guardar");
+                _this1472.mostrarMensajeGenerico(2, "Error al guardar");
               });
             },
             error: function error(err) {
-              _this1471.mostrarMensajeGenerico(2, "Error al guardar el consecutivo de Nota de Venta");
+              _this1472.mostrarMensajeGenerico(2, "Error al guardar el consecutivo de Nota de Venta");
             }
           });
         }
       }, {
         key: "guardarCotizaci\xF3n",
         value: function guardarCotizaciN() {
-          var _this1472 = this;
+          var _this1473 = this;
 
           this.factura.username = this.username;
           this.factura.fecha = this.now;
           this.factura.fecha2 = new Date().toLocaleString();
           this.factura.productosVendidos = this.productosVendidos;
           this.proformasService.newProforma(this.factura).subscribe(function (res) {}, function (err) {
-            _this1472.mostrarMensajeGenerico(2, "Error al guardar");
+            _this1473.mostrarMensajeGenerico(2, "Error al guardar");
           });
         }
       }, {
         key: "actualizarFacturero",
         value: function actualizarFacturero() {
-          var _this1473 = this;
+          var _this1474 = this;
 
           switch (this.factura.sucursal) {
             case "matriz":
               this.contadores[0].facturaMatriz_Ndocumento = this.factura.documento_n;
               console.log(this.factura.documento_n);
               this.contadoresService.updateContadoresIDFacturaMatriz(this.contadores[0]).subscribe(function (res) {}, function (err) {
-                _this1473.mostrarMensajeGenerico(2, "Error al guardar");
+                _this1474.mostrarMensajeGenerico(2, "Error al guardar");
               });
               break;
 
             case "sucursal1":
               this.contadores[0].facturaSucursal1_Ndocumento = this.factura.documento_n;
               this.contadoresService.updateContadoresIDFacturaSuc1(this.contadores[0]).subscribe(function (res) {}, function (err) {
-                _this1473.mostrarMensajeGenerico(2, "Error al guardar");
+                _this1474.mostrarMensajeGenerico(2, "Error al guardar");
               });
               break;
 
             case "sucursal2":
               this.contadores[0].facturaSucursal2_Ndocumento = this.factura.documento_n;
               this.contadoresService.updateContadoresIDFacturaSuc2(this.contadores[0]).subscribe(function (res) {}, function (err) {
-                _this1473.mostrarMensajeGenerico(2, "Error al guardar");
+                _this1474.mostrarMensajeGenerico(2, "Error al guardar");
               });
               break;
 
@@ -185660,21 +186050,21 @@ function _classCallCheck(instance, Constructor) { if (!(instance instanceof Cons
       }, {
         key: "actualizarFactureroNotasVenta",
         value: function actualizarFactureroNotasVenta() {
-          var _this1474 = this;
+          var _this1475 = this;
 
           this.contadores[0].notasVenta_Ndocumento = this.factura.documento_n;
           this.contadoresService.updateContadoresIDNotasVenta(this.contadores[0]).subscribe(function (res) {}, function (err) {
-            _this1474.mostrarMensajeGenerico(2, "Revise e intente nuevamente");
+            _this1475.mostrarMensajeGenerico(2, "Revise e intente nuevamente");
           });
         }
       }, {
         key: "obtenerConsecutivoProformasYActualizar",
         value: function obtenerConsecutivoProformasYActualizar() {
-          var _this1475 = this;
+          var _this1476 = this;
 
           if (this.contadores && this.contadores[0] && this.contadores[0]._id) {
             return this.contadoresService.getAndIncrementProformas(this.contadores[0]._id).pipe(Object(rxjs_operators__WEBPACK_IMPORTED_MODULE_2__["tap"])(function (res) {
-              _this1475.factura.documento_n = res.proformas_Ndocumento;
+              _this1476.factura.documento_n = res.proformas_Ndocumento;
             }));
           } else {
             return Object(rxjs__WEBPACK_IMPORTED_MODULE_18__["throwError"])("No se encontró información de contadores"); // <-- RxJS 6
@@ -185683,11 +186073,11 @@ function _classCallCheck(instance, Constructor) { if (!(instance instanceof Cons
       }, {
         key: "obtenerConsecutivoNotaVentaYActualizar",
         value: function obtenerConsecutivoNotaVentaYActualizar() {
-          var _this1476 = this;
+          var _this1477 = this;
 
           if (this.contadores && this.contadores[0] && this.contadores[0]._id) {
             return this.contadoresService.getAndIncrementNotaVentas(this.contadores[0]._id).pipe(Object(rxjs_operators__WEBPACK_IMPORTED_MODULE_2__["tap"])(function (res) {
-              _this1476.factura.documento_n = res.notasVenta_Ndocumento;
+              _this1477.factura.documento_n = res.notasVenta_Ndocumento;
             }));
           } else {
             return Object(rxjs__WEBPACK_IMPORTED_MODULE_18__["throwError"])("No se encontró información de contadores"); // <-- RxJS 6
@@ -185696,23 +186086,23 @@ function _classCallCheck(instance, Constructor) { if (!(instance instanceof Cons
       }, {
         key: "obtenerConsecutivoFacturasYActualizar",
         value: function obtenerConsecutivoFacturasYActualizar() {
-          var _this1477 = this;
+          var _this1478 = this;
 
           if (this.contadores && this.contadores[0] && this.contadores[0]._id) {
             switch (this.factura.sucursal) {
               case "matriz":
                 return this.contadoresService.getAndIncrementFactMatriz(this.contadores[0]._id).pipe(Object(rxjs_operators__WEBPACK_IMPORTED_MODULE_2__["tap"])(function (res) {
-                  _this1477.factura.documento_n = res.facturaMatriz_Ndocumento;
+                  _this1478.factura.documento_n = res.facturaMatriz_Ndocumento;
                 }));
 
               case "sucursal1":
                 return this.contadoresService.getAndIncrementFactSuc1(this.contadores[0]._id).pipe(Object(rxjs_operators__WEBPACK_IMPORTED_MODULE_2__["tap"])(function (res) {
-                  _this1477.factura.documento_n = res.facturaSucursal1_Ndocumento;
+                  _this1478.factura.documento_n = res.facturaSucursal1_Ndocumento;
                 }));
 
               case "sucursal2":
                 return this.contadoresService.getAndIncrementFactSuc2(this.contadores[0]._id).pipe(Object(rxjs_operators__WEBPACK_IMPORTED_MODULE_2__["tap"])(function (res) {
-                  _this1477.factura.documento_n = res.facturaSucursal2_Ndocumento;
+                  _this1478.factura.documento_n = res.facturaSucursal2_Ndocumento;
                 }));
 
               default:
@@ -185725,11 +186115,11 @@ function _classCallCheck(instance, Constructor) { if (!(instance instanceof Cons
       }, {
         key: "actualizarFactureroProformas",
         value: function actualizarFactureroProformas() {
-          var _this1478 = this;
+          var _this1479 = this;
 
           this.contadores[0].proformas_Ndocumento = this.factura.documento_n;
           this.contadoresService.updateContadoresIDProformas(this.contadores[0]).subscribe(function (res) {}, function (err) {
-            _this1478.mostrarMensajeGenerico(2, "Revise e intente nuevamente");
+            _this1479.mostrarMensajeGenerico(2, "Revise e intente nuevamente");
           });
         }
       }, {
@@ -185747,40 +186137,11 @@ function _classCallCheck(instance, Constructor) { if (!(instance instanceof Cons
       }, {
         key: "validarEstadoCajaFactura",
         value: function validarEstadoCajaFactura() {
-          var _this1479 = this;
+          var _this1480 = this;
 
           /* if(this.factura.cliente.ruc != this.rucAnterior){
             this.botonFactura = false;
             this.mostrarMensajeGenerico(2,"Error no se puede generar la factura con un ruc diferente al inicial")
-          }else{ */
-          this.factura.fecha.setHours(0, 0, 0, 0);
-
-          this._cajaMenorService.getCajaMenorPorFecha(this.factura).subscribe(function (res) {
-            var listaCaja = res;
-
-            if (listaCaja.length != 0) {
-              var caja = listaCaja.find(function (element) {
-                return element.sucursal == _this1479.factura.sucursal;
-              });
-
-              if (caja != undefined) {
-                if (caja.sucursal == _this1479.factura.sucursal && caja.estado == "Cerrada") {
-                  _this1479.botonFactura = false;
-                  sweetalert2__WEBPACK_IMPORTED_MODULE_9___default.a.fire("Atención", "No puede generar registros para la fecha establecida, la caja menor se encuentra cerrada", 'error');
-                } else _this1479.obtenerIdFactura();
-              } else _this1479.obtenerIdFactura();
-            } else _this1479.obtenerIdFactura();
-          }, function (err) {}); //}
-
-        }
-      }, {
-        key: "validarEstadoCajaNotaVenta",
-        value: function validarEstadoCajaNotaVenta() {
-          var _this1480 = this;
-
-          /* if(this.factura.cliente.ruc != this.rucAnterior){
-           this.botonNotaVenta = false;
-           this.mostrarMensajeGenerico(2,"Error no se puede generar la nota venta con un ruc diferente al inicial")
           }else{ */
           this.factura.fecha.setHours(0, 0, 0, 0);
 
@@ -185794,69 +186155,71 @@ function _classCallCheck(instance, Constructor) { if (!(instance instanceof Cons
 
               if (caja != undefined) {
                 if (caja.sucursal == _this1480.factura.sucursal && caja.estado == "Cerrada") {
-                  _this1480.botonNotaVenta = false;
+                  _this1480.botonFactura = false;
                   sweetalert2__WEBPACK_IMPORTED_MODULE_9___default.a.fire("Atención", "No puede generar registros para la fecha establecida, la caja menor se encuentra cerrada", 'error');
-                } else _this1480.obtenerIdNotasVenta();
-              } else _this1480.obtenerIdNotasVenta();
-            } else _this1480.obtenerIdNotasVenta();
+                } else _this1480.obtenerIdFactura();
+              } else _this1480.obtenerIdFactura();
+            } else _this1480.obtenerIdFactura();
+          }, function (err) {}); //}
+
+        }
+      }, {
+        key: "validarEstadoCajaNotaVenta",
+        value: function validarEstadoCajaNotaVenta() {
+          var _this1481 = this;
+
+          /* if(this.factura.cliente.ruc != this.rucAnterior){
+           this.botonNotaVenta = false;
+           this.mostrarMensajeGenerico(2,"Error no se puede generar la nota venta con un ruc diferente al inicial")
+          }else{ */
+          this.factura.fecha.setHours(0, 0, 0, 0);
+
+          this._cajaMenorService.getCajaMenorPorFecha(this.factura).subscribe(function (res) {
+            var listaCaja = res;
+
+            if (listaCaja.length != 0) {
+              var caja = listaCaja.find(function (element) {
+                return element.sucursal == _this1481.factura.sucursal;
+              });
+
+              if (caja != undefined) {
+                if (caja.sucursal == _this1481.factura.sucursal && caja.estado == "Cerrada") {
+                  _this1481.botonNotaVenta = false;
+                  sweetalert2__WEBPACK_IMPORTED_MODULE_9___default.a.fire("Atención", "No puede generar registros para la fecha establecida, la caja menor se encuentra cerrada", 'error');
+                } else _this1481.obtenerIdNotasVenta();
+              } else _this1481.obtenerIdNotasVenta();
+            } else _this1481.obtenerIdNotasVenta();
           }, function (err) {}); //}
 
         }
       }, {
         key: "obtenerIdFactura",
         value: function obtenerIdFactura() {
-          var _this1481 = this;
+          var _this1482 = this;
 
           this.mostrarLoading = true;
           var IdNum = new Promise(function (resolve, reject) {
             try {
-              _this1481.facturasService.getFacturasPorIdConsecutivo(_this1481.factura).subscribe(function (res) {
-                _this1481.facturasEctdas = res;
+              _this1482.facturasService.getFacturasPorIdConsecutivo(_this1482.factura).subscribe(function (res) {
+                _this1482.facturasEctdas = res;
 
-                if (_this1481.facturasEctdas.length == 0) {
+                if (_this1482.facturasEctdas.length == 0) {
                   resolve("listo");
                 } else {
-                  _this1481.factura.documento_n = _this1481.factura.documento_n + 1;
+                  _this1482.factura.documento_n = _this1482.factura.documento_n + 1;
 
-                  _this1481.obtenerIdFactura();
+                  _this1482.obtenerIdFactura();
                 }
               }, function (err) {});
             } catch (error) {}
           });
           IdNum.then(function (data) {
-            _this1481.validarFechaFactura();
+            _this1482.validarFechaFactura();
           });
         }
       }, {
         key: "validarFechaFactura",
         value: function validarFechaFactura() {
-          var _this1482 = this;
-
-          var fechaActual = new Date();
-
-          if (fechaActual.toLocaleDateString() != this.now.toLocaleDateString()) {
-            this.mostrarLoading = false;
-            sweetalert2__WEBPACK_IMPORTED_MODULE_9___default.a.fire({
-              title: 'Alerta',
-              text: "La fecha es distinta a la de hoy",
-              icon: 'warning',
-              showCancelButton: true,
-              confirmButtonText: 'Si',
-              cancelButtonText: 'No'
-            }).then(function (result) {
-              if (result.value) {
-                _this1482.extraerNroFactura(); //this.generarFactura();
-
-              } else if (result.dismiss === sweetalert2__WEBPACK_IMPORTED_MODULE_9___default.a.DismissReason.cancel) {
-                console.log("hare algo");
-              }
-            });
-          } else this.extraerNroFactura(); //this.generarFactura();
-
-        }
-      }, {
-        key: "validarNotaVenta",
-        value: function validarNotaVenta() {
           var _this1483 = this;
 
           var fechaActual = new Date();
@@ -185872,7 +186235,34 @@ function _classCallCheck(instance, Constructor) { if (!(instance instanceof Cons
               cancelButtonText: 'No'
             }).then(function (result) {
               if (result.value) {
-                _this1483.generarNotaDeVenta();
+                _this1483.extraerNroFactura(); //this.generarFactura();
+
+              } else if (result.dismiss === sweetalert2__WEBPACK_IMPORTED_MODULE_9___default.a.DismissReason.cancel) {
+                console.log("hare algo");
+              }
+            });
+          } else this.extraerNroFactura(); //this.generarFactura();
+
+        }
+      }, {
+        key: "validarNotaVenta",
+        value: function validarNotaVenta() {
+          var _this1484 = this;
+
+          var fechaActual = new Date();
+
+          if (fechaActual.toLocaleDateString() != this.now.toLocaleDateString()) {
+            this.mostrarLoading = false;
+            sweetalert2__WEBPACK_IMPORTED_MODULE_9___default.a.fire({
+              title: 'Alerta',
+              text: "La fecha es distinta a la de hoy",
+              icon: 'warning',
+              showCancelButton: true,
+              confirmButtonText: 'Si',
+              cancelButtonText: 'No'
+            }).then(function (result) {
+              if (result.value) {
+                _this1484.generarNotaDeVenta();
               } else if (result.dismiss === sweetalert2__WEBPACK_IMPORTED_MODULE_9___default.a.DismissReason.cancel) {
                 console.log("hare algo");
               }
@@ -185882,21 +186272,21 @@ function _classCallCheck(instance, Constructor) { if (!(instance instanceof Cons
       }, {
         key: "extraerNroFactura",
         value: function extraerNroFactura() {
-          var _this1484 = this;
+          var _this1485 = this;
 
           this.obtenerConsecutivoFacturasYActualizar().subscribe({
             next: function next() {
-              _this1484.generarFactura();
+              _this1485.generarFactura();
             },
             error: function error(err) {
-              _this1484.mostrarMensajeGenerico(2, "Error al guardar el consecutivo de Nota de Venta");
+              _this1485.mostrarMensajeGenerico(2, "Error al guardar el consecutivo de Nota de Venta");
             }
           });
         }
       }, {
         key: "generarFactura",
         value: function generarFactura() {
-          var _this1485 = this;
+          var _this1486 = this;
 
           this.mostrarLoading = false;
           this.telefonoCliente = this.factura.cliente.celular;
@@ -185931,58 +186321,58 @@ function _classCallCheck(instance, Constructor) { if (!(instance instanceof Cons
                   this.nroActualFactura = numeroDocFactura;
                   this.guardarFactura();
                   this.productosVendidos.forEach(function (element) {
-                    _this1485.validarExistencias(element);
+                    _this1486.validarExistencias(element);
 
                     element.factura_id = numeroDocFactura;
-                    _this1485.transaccion = new _transacciones_transacciones__WEBPACK_IMPORTED_MODULE_3__["transaccion"]();
-                    _this1485.transaccion.fecha_mov = new Date().toLocaleString();
-                    _this1485.transaccion.fecha_transaccion = _this1485.factura.fecha;
-                    _this1485.transaccion.sucursal = _this1485.factura.sucursal;
-                    _this1485.transaccion.totalsuma = element.subtotal;
-                    _this1485.transaccion.bodega = "12";
-                    _this1485.transaccion.valor = element.precio_venta - element.precio_venta * (element.descuento / 100);
-                    _this1485.transaccion.cantM2 = element.cantidad;
-                    _this1485.transaccion.costo_unitario = element.producto.precio;
-                    _this1485.transaccion.documento = numeroDocFactura.toString();
-                    _this1485.transaccion.rucSucursal = _this1485.factura.rucFactura;
-                    _this1485.transaccion.factPro = numeroDocFactura + "";
-                    _this1485.transaccion.maestro = _this1485.factura.maestro;
-                    _this1485.transaccion.producto = element.producto.PRODUCTO;
-                    _this1485.transaccion.cajas = Math.trunc((element.cantidad + 0.01) / element.producto.M2);
-                    _this1485.transaccion.piezas = Math.trunc((element.cantidad + 0.01) * element.producto.P_CAJA / element.producto.M2) - Math.trunc((element.cantidad + 0.01) / element.producto.M2) * element.producto.P_CAJA;
-                    _this1485.transaccion.observaciones = _this1485.formaPago == "Crédito Aliado" ? "CRÉDITO ALIADO SAG" + _this1485.factura.observaciones : _this1485.factura.observaciones;
-                    _this1485.transaccion.tipo_transaccion = "venta-fact";
-                    _this1485.transaccion.movimiento = -1;
-                    _this1485.transaccion.usu_autorizado = _this1485.factura.username;
-                    _this1485.transaccion.usuario = _this1485.factura.username;
-                    _this1485.transaccion.idTransaccion = _this1485.number_transaccion++;
-                    _this1485.transaccion.cliente = _this1485.factura.cliente.cliente_nombre;
-                    _this1485.transaccion.nombreUsuario = _this1485.factura.nombreUsuario;
-                    _this1485.transaccion.nombreVendedor = _this1485.factura.nombreVendedor;
-                    _this1485.transaccion.mcaEntregado = element.entregar == true ? "SI" : "NO";
+                    _this1486.transaccion = new _transacciones_transacciones__WEBPACK_IMPORTED_MODULE_3__["transaccion"]();
+                    _this1486.transaccion.fecha_mov = new Date().toLocaleString();
+                    _this1486.transaccion.fecha_transaccion = _this1486.factura.fecha;
+                    _this1486.transaccion.sucursal = _this1486.factura.sucursal;
+                    _this1486.transaccion.totalsuma = element.subtotal;
+                    _this1486.transaccion.bodega = "12";
+                    _this1486.transaccion.valor = element.precio_venta - element.precio_venta * (element.descuento / 100);
+                    _this1486.transaccion.cantM2 = element.cantidad;
+                    _this1486.transaccion.costo_unitario = element.producto.precio;
+                    _this1486.transaccion.documento = numeroDocFactura.toString();
+                    _this1486.transaccion.rucSucursal = _this1486.factura.rucFactura;
+                    _this1486.transaccion.factPro = numeroDocFactura + "";
+                    _this1486.transaccion.maestro = _this1486.factura.maestro;
+                    _this1486.transaccion.producto = element.producto.PRODUCTO;
+                    _this1486.transaccion.cajas = Math.trunc((element.cantidad + 0.01) / element.producto.M2);
+                    _this1486.transaccion.piezas = Math.trunc((element.cantidad + 0.01) * element.producto.P_CAJA / element.producto.M2) - Math.trunc((element.cantidad + 0.01) / element.producto.M2) * element.producto.P_CAJA;
+                    _this1486.transaccion.observaciones = _this1486.formaPago == "Crédito Aliado" ? "CRÉDITO ALIADO SAG" + _this1486.factura.observaciones : _this1486.factura.observaciones;
+                    _this1486.transaccion.tipo_transaccion = "venta-fact";
+                    _this1486.transaccion.movimiento = -1;
+                    _this1486.transaccion.usu_autorizado = _this1486.factura.username;
+                    _this1486.transaccion.usuario = _this1486.factura.username;
+                    _this1486.transaccion.idTransaccion = _this1486.number_transaccion++;
+                    _this1486.transaccion.cliente = _this1486.factura.cliente.cliente_nombre;
+                    _this1486.transaccion.nombreUsuario = _this1486.factura.nombreUsuario;
+                    _this1486.transaccion.nombreVendedor = _this1486.factura.nombreVendedor;
+                    _this1486.transaccion.mcaEntregado = element.entregar == true ? "SI" : "NO";
 
                     if (element.producto.CLASIFICA == "COMBO") {
-                      _this1485.generarTransaccionesComboProductos(element.producto.PRODUCTO);
+                      _this1486.generarTransaccionesComboProductos(element.producto.PRODUCTO);
 
-                      if (_this1485.transaccion.valor == element.producto.precio) {
-                        _this1485.transaccion.valor = 0;
-                        _this1485.transaccion.totalsuma = 0;
+                      if (_this1486.transaccion.valor == element.producto.precio) {
+                        _this1486.transaccion.valor = 0;
+                        _this1486.transaccion.totalsuma = 0;
                       } else {
-                        _this1485.transaccion.valor = _this1485.transaccion.valor - element.producto.precio;
-                        _this1485.transaccion.totalsuma = _this1485.transaccion.valor * _this1485.transaccion.cantM2;
+                        _this1486.transaccion.valor = _this1486.transaccion.valor - element.producto.precio;
+                        _this1486.transaccion.totalsuma = _this1486.transaccion.valor * _this1486.transaccion.cantM2;
                       }
                     }
 
-                    _this1485.transaccionesService.newTransaccion(_this1485.transaccion).subscribe(function (res) {
-                      _this1485.contadores[0].transacciones_Ndocumento = _this1485.number_transaccion;
+                    _this1486.transaccionesService.newTransaccion(_this1486.transaccion).subscribe(function (res) {
+                      _this1486.contadores[0].transacciones_Ndocumento = _this1486.number_transaccion;
 
-                      _this1485.contadoresService.updateContadoresIDTransacciones(_this1485.contadores[0]).subscribe(function (res) {
-                        contVal++, _this1485.contadorValidaciones(contVal);
+                      _this1486.contadoresService.updateContadoresIDTransacciones(_this1486.contadores[0]).subscribe(function (res) {
+                        contVal++, _this1486.contadorValidaciones(contVal);
                       }, function (err) {
-                        _this1485.mostrarMensajeGenerico(2, "Revise e intente nuevamente");
+                        _this1486.mostrarMensajeGenerico(2, "Revise e intente nuevamente");
                       });
                     }, function (err) {
-                      _this1485.mostrarMensajeGenerico(2, "Revise e intente nuevamente");
+                      _this1486.mostrarMensajeGenerico(2, "Revise e intente nuevamente");
                     });
                   });
                 } else {
@@ -186009,58 +186399,58 @@ function _classCallCheck(instance, Constructor) { if (!(instance instanceof Cons
       }, {
         key: "generarTransaccionesComboProductos",
         value: function generarTransaccionesComboProductos(nombreCombo) {
-          var _this1486 = this;
+          var _this1487 = this;
 
           var combo = new _catalogo_catalogo__WEBPACK_IMPORTED_MODULE_12__["ProductoCombo"]();
           combo.PRODUCTO = nombreCombo;
 
           this._comboService.getComboPorNombre(combo).subscribe(function (res) {
             var listado = res;
-            if (listado.length > 0) _this1486.agregarTransacciones(listado[0].productosCombo, nombreCombo);
+            if (listado.length > 0) _this1487.agregarTransacciones(listado[0].productosCombo, nombreCombo);
           });
         }
       }, {
         key: "agregarTransacciones",
         value: function agregarTransacciones(productos, nombreCombo) {
-          var _this1487 = this;
+          var _this1488 = this;
 
           var contVal = 0;
           productos.forEach(function (element) {
-            var proV = _this1487.productosVendidos.find(function (el) {
+            var proV = _this1488.productosVendidos.find(function (el) {
               return el.producto.PRODUCTO == nombreCombo;
             });
 
-            _this1487.transaccion = new _transacciones_transacciones__WEBPACK_IMPORTED_MODULE_3__["transaccion"]();
-            _this1487.transaccion.fecha_mov = new Date().toLocaleString();
-            _this1487.transaccion.fecha_transaccion = _this1487.factura.fecha;
-            _this1487.transaccion.sucursal = _this1487.factura.sucursal;
-            _this1487.transaccion.totalsuma = element.precioCombo * proV.cantidad;
-            _this1487.transaccion.bodega = "12";
-            _this1487.transaccion.valor = element.precioCombo;
-            _this1487.transaccion.cantM2 = proV.cantidad * element.cantidad;
-            _this1487.transaccion.costo_unitario = element.precioMin;
-            _this1487.transaccion.documento = _this1487.factura.documento_n - 1 + "";
-            _this1487.transaccion.rucSucursal = _this1487.factura.rucFactura;
-            _this1487.transaccion.factPro = _this1487.factura.documento_n.toString();
-            _this1487.transaccion.maestro = _this1487.factura.maestro;
-            _this1487.transaccion.producto = element.producto.PRODUCTO;
-            _this1487.transaccion.cajas = proV.cantidad * element.cantidad;
-            _this1487.transaccion.piezas = 0;
-            _this1487.transaccion.observaciones = _this1487.formaPago == "Crédito Aliado" ? "CRÉDITO ALIADO SAG" + _this1487.factura.observaciones : _this1487.factura.observaciones;
-            _this1487.transaccion.tipo_transaccion = _this1487.factura.tipoDocumento == "Factura" ? "venta-fact" : "venta-not";
-            _this1487.transaccion.movimiento = -1;
-            _this1487.transaccion.usu_autorizado = _this1487.factura.username;
-            _this1487.transaccion.usuario = _this1487.factura.username;
-            _this1487.transaccion.idTransaccion = _this1487.number_transaccion++;
-            _this1487.transaccion.cliente = _this1487.factura.cliente.cliente_nombre;
-            _this1487.transaccion.nombreUsuario = _this1487.factura.nombreUsuario;
-            _this1487.transaccion.nombreVendedor = _this1487.factura.nombreVendedor;
-            _this1487.transaccion.mcaEntregado = proV.entregar == true ? "SI" : "NO";
+            _this1488.transaccion = new _transacciones_transacciones__WEBPACK_IMPORTED_MODULE_3__["transaccion"]();
+            _this1488.transaccion.fecha_mov = new Date().toLocaleString();
+            _this1488.transaccion.fecha_transaccion = _this1488.factura.fecha;
+            _this1488.transaccion.sucursal = _this1488.factura.sucursal;
+            _this1488.transaccion.totalsuma = element.precioCombo * proV.cantidad;
+            _this1488.transaccion.bodega = "12";
+            _this1488.transaccion.valor = element.precioCombo;
+            _this1488.transaccion.cantM2 = proV.cantidad * element.cantidad;
+            _this1488.transaccion.costo_unitario = element.precioMin;
+            _this1488.transaccion.documento = _this1488.factura.documento_n - 1 + "";
+            _this1488.transaccion.rucSucursal = _this1488.factura.rucFactura;
+            _this1488.transaccion.factPro = _this1488.factura.documento_n.toString();
+            _this1488.transaccion.maestro = _this1488.factura.maestro;
+            _this1488.transaccion.producto = element.producto.PRODUCTO;
+            _this1488.transaccion.cajas = proV.cantidad * element.cantidad;
+            _this1488.transaccion.piezas = 0;
+            _this1488.transaccion.observaciones = _this1488.formaPago == "Crédito Aliado" ? "CRÉDITO ALIADO SAG" + _this1488.factura.observaciones : _this1488.factura.observaciones;
+            _this1488.transaccion.tipo_transaccion = _this1488.factura.tipoDocumento == "Factura" ? "venta-fact" : "venta-not";
+            _this1488.transaccion.movimiento = -1;
+            _this1488.transaccion.usu_autorizado = _this1488.factura.username;
+            _this1488.transaccion.usuario = _this1488.factura.username;
+            _this1488.transaccion.idTransaccion = _this1488.number_transaccion++;
+            _this1488.transaccion.cliente = _this1488.factura.cliente.cliente_nombre;
+            _this1488.transaccion.nombreUsuario = _this1488.factura.nombreUsuario;
+            _this1488.transaccion.nombreVendedor = _this1488.factura.nombreVendedor;
+            _this1488.transaccion.mcaEntregado = proV.entregar == true ? "SI" : "NO";
 
-            _this1487.transaccionesService.newTransaccion(_this1487.transaccion).subscribe(function (res) {
-              contVal++, _this1487.contadorGenerico(contVal, productos.length);
+            _this1488.transaccionesService.newTransaccion(_this1488.transaccion).subscribe(function (res) {
+              contVal++, _this1488.contadorGenerico(contVal, productos.length);
             }, function (err) {
-              _this1487.mostrarMensajeGenerico(2, "Revise e intente nuevamente");
+              _this1488.mostrarMensajeGenerico(2, "Revise e intente nuevamente");
             });
           });
         }
@@ -186072,7 +186462,7 @@ function _classCallCheck(instance, Constructor) { if (!(instance instanceof Cons
       }, {
         key: "generarCotizacion",
         value: function generarCotizacion(e) {
-          var _this1488 = this;
+          var _this1489 = this;
 
           this.factura.cliente.cliente_nombre = this.mensaje;
 
@@ -186080,12 +186470,12 @@ function _classCallCheck(instance, Constructor) { if (!(instance instanceof Cons
             if (this.factura.cliente.cliente_nombre != undefined) {
               this.obtenerConsecutivoProformasYActualizar().subscribe({
                 next: function next() {
-                  _this1488.buscarDatosSucursal();
+                  _this1489.buscarDatosSucursal();
 
                   var contpro = 0;
                   var bandera = true;
 
-                  _this1488.productosVendidos.forEach(function (element) {
+                  _this1489.productosVendidos.forEach(function (element) {
                     contpro++;
 
                     if (element.total == 0) {
@@ -186094,40 +186484,40 @@ function _classCallCheck(instance, Constructor) { if (!(instance instanceof Cons
                   });
 
                   if (contpro >= 1 && bandera) {
-                    _this1488.factura.dni_comprador = _this1488.factura.cliente.ruc;
-                    _this1488.factura.cliente.cliente_nombre = _this1488.mensaje;
-                    _this1488.factura.productosVendidos = _this1488.productosVendidos;
+                    _this1489.factura.dni_comprador = _this1489.factura.cliente.ruc;
+                    _this1489.factura.cliente.cliente_nombre = _this1489.mensaje;
+                    _this1489.factura.productosVendidos = _this1489.productosVendidos;
 
-                    _this1488.guardarDatosCliente();
+                    _this1489.guardarDatosCliente();
 
-                    _this1488.factura.dni_comprador = _this1488.factura.cliente.ruc;
+                    _this1489.factura.dni_comprador = _this1489.factura.cliente.ruc;
 
-                    if (_this1488.ventasForm.instance.validate().isValid) {
-                      _this1488.factura.cliente = _this1488.factura.cliente;
+                    if (_this1489.ventasForm.instance.validate().isValid) {
+                      _this1489.factura.cliente = _this1489.factura.cliente;
                       new Promise(function (resolve, reject) {
-                        _this1488.crearCliente();
+                        _this1489.crearCliente();
 
-                        _this1488.guardarCotización();
+                        _this1489.guardarCotización();
 
-                        _this1488.productosVendidos.forEach(function (element) {
-                          element.factura_id = _this1488.factura.documento_n;
+                        _this1489.productosVendidos.forEach(function (element) {
+                          element.factura_id = _this1489.factura.documento_n;
 
-                          _this1488.productosVenService.newProductoVendido(element).subscribe(function (res) {}, function (err) {
-                            _this1488.mostrarMensajeGenerico(2, "Revise e intente nuevamente");
+                          _this1489.productosVenService.newProductoVendido(element).subscribe(function (res) {}, function (err) {
+                            _this1489.mostrarMensajeGenerico(2, "Revise e intente nuevamente");
                           });
                         });
                       });
 
-                      _this1488.crearPDF();
+                      _this1489.crearPDF();
                     } else {
-                      _this1488.mostrarMensajeGenerico(2, "Error al crear el documento");
+                      _this1489.mostrarMensajeGenerico(2, "Error al crear el documento");
                     }
                   } else {
-                    _this1488.mostrarMensajeGenerico(2, "Error no hay productos en la lista");
+                    _this1489.mostrarMensajeGenerico(2, "Error no hay productos en la lista");
                   }
                 },
                 error: function error(err) {
-                  _this1488.mostrarMensajeGenerico(2, "Error al guardar el consecutivo de Nota de Venta");
+                  _this1489.mostrarMensajeGenerico(2, "Error al guardar el consecutivo de Nota de Venta");
                 }
               });
             } else {
@@ -186140,33 +186530,33 @@ function _classCallCheck(instance, Constructor) { if (!(instance instanceof Cons
       }, {
         key: "obtenerIdNotasVenta",
         value: function obtenerIdNotasVenta() {
-          var _this1489 = this;
+          var _this1490 = this;
 
           this.mostrarLoading = true;
           var IdNum = new Promise(function (resolve, reject) {
             try {
-              _this1489.notasVentService.getNotasVentaPorIdConsecutivo(_this1489.factura).subscribe(function (res) {
-                _this1489.facturasEctdas = res;
+              _this1490.notasVentService.getNotasVentaPorIdConsecutivo(_this1490.factura).subscribe(function (res) {
+                _this1490.facturasEctdas = res;
 
-                if (_this1489.facturasEctdas.length == 0) {
+                if (_this1490.facturasEctdas.length == 0) {
                   resolve("listo");
                 } else {
-                  _this1489.factura.documento_n = _this1489.factura.documento_n + 1;
+                  _this1490.factura.documento_n = _this1490.factura.documento_n + 1;
 
-                  _this1489.obtenerIdNotasVenta();
+                  _this1490.obtenerIdNotasVenta();
                 }
               }, function (err) {});
             } catch (error) {}
           });
           IdNum.then(function (data) {
-            _this1489.validarNotaVenta(); //this.generarNotaDeVenta();
+            _this1490.validarNotaVenta(); //this.generarNotaDeVenta();
 
           });
         }
       }, {
         key: "generarNotaDeVenta",
         value: function generarNotaDeVenta() {
-          var _this1490 = this;
+          var _this1491 = this;
 
           this.mostrarLoading = false;
           this.factura.cliente.cliente_nombre = this.mensaje;
@@ -186201,83 +186591,83 @@ function _classCallCheck(instance, Constructor) { if (!(instance instanceof Cons
                   this.factura.productosVendidos = this.productosVendidos;
                   this.obtenerConsecutivoNotaVentaYActualizar().subscribe({
                     next: function next() {
-                      var numeroDoc = _this1490.factura.documento_n;
+                      var numeroDoc = _this1491.factura.documento_n;
 
-                      _this1490.setearNFactura();
+                      _this1491.setearNFactura();
 
-                      _this1490.nroActualFactura = numeroDoc;
+                      _this1491.nroActualFactura = numeroDoc;
 
-                      _this1490.notasVentService.newNotaVenta(_this1490.factura).subscribe(function (res) {
-                        _this1490.validarFormaPago();
+                      _this1491.notasVentService.newNotaVenta(_this1491.factura).subscribe(function (res) {
+                        _this1491.validarFormaPago();
                       }, function (err) {
-                        _this1490.mostrarMensajeGenerico(2, "Error al guardar");
+                        _this1491.mostrarMensajeGenerico(2, "Error al guardar");
                       });
 
-                      _this1490.productosVendidos.forEach(function (element) {
-                        _this1490.validarExistencias(element);
+                      _this1491.productosVendidos.forEach(function (element) {
+                        _this1491.validarExistencias(element);
 
                         element.factura_id = numeroDoc;
-                        _this1490.transaccion = new _transacciones_transacciones__WEBPACK_IMPORTED_MODULE_3__["transaccion"]();
-                        _this1490.transaccion.fecha_mov = new Date().toLocaleString();
-                        _this1490.transaccion.fecha_transaccion = _this1490.factura.fecha;
-                        _this1490.transaccion.sucursal = _this1490.factura.sucursal;
-                        _this1490.transaccion.totalsuma = element.subtotal;
-                        _this1490.transaccion.bodega = "12";
-                        _this1490.transaccion.valor = element.precio_venta;
-                        _this1490.transaccion.costo_unitario = element.producto.precio;
-                        _this1490.transaccion.documento = numeroDoc.toString();
-                        _this1490.transaccion.factPro = numeroDoc + "";
-                        _this1490.transaccion.producto = element.producto.PRODUCTO;
-                        _this1490.transaccion.rucSucursal = _this1490.factura.rucFactura;
-                        _this1490.transaccion.maestro = _this1490.factura.maestro;
-                        _this1490.transaccion.valor = element.precio_venta - element.precio_venta * (element.descuento / 100);
-                        _this1490.transaccion.cantM2 = element.cantidad;
-                        _this1490.transaccion.cajas = Math.trunc((element.cantidad + 0.01) / element.producto.M2);
-                        _this1490.transaccion.piezas = Math.trunc((element.cantidad + 0.01) * element.producto.P_CAJA / element.producto.M2) - Math.trunc((element.cantidad + 0.01) / element.producto.M2) * element.producto.P_CAJA;
-                        _this1490.transaccion.observaciones = _this1490.formaPago == "Crédito Aliado" ? "CRÉDITO ALIADO SAG" + _this1490.factura.observaciones : _this1490.factura.observaciones;
-                        _this1490.transaccion.tipo_transaccion = "venta-not";
-                        _this1490.transaccion.movimiento = -1;
-                        _this1490.transaccion.usu_autorizado = _this1490.factura.username;
-                        _this1490.transaccion.usuario = _this1490.factura.username;
-                        _this1490.transaccion.idTransaccion = _this1490.number_transaccion++;
-                        _this1490.transaccion.cliente = _this1490.factura.cliente.cliente_nombre;
-                        _this1490.transaccion.nombreUsuario = _this1490.factura.nombreUsuario;
-                        _this1490.transaccion.nombreVendedor = _this1490.factura.nombreVendedor;
-                        _this1490.transaccion.mcaEntregado = element.entregar == true ? "SI" : "NO";
+                        _this1491.transaccion = new _transacciones_transacciones__WEBPACK_IMPORTED_MODULE_3__["transaccion"]();
+                        _this1491.transaccion.fecha_mov = new Date().toLocaleString();
+                        _this1491.transaccion.fecha_transaccion = _this1491.factura.fecha;
+                        _this1491.transaccion.sucursal = _this1491.factura.sucursal;
+                        _this1491.transaccion.totalsuma = element.subtotal;
+                        _this1491.transaccion.bodega = "12";
+                        _this1491.transaccion.valor = element.precio_venta;
+                        _this1491.transaccion.costo_unitario = element.producto.precio;
+                        _this1491.transaccion.documento = numeroDoc.toString();
+                        _this1491.transaccion.factPro = numeroDoc + "";
+                        _this1491.transaccion.producto = element.producto.PRODUCTO;
+                        _this1491.transaccion.rucSucursal = _this1491.factura.rucFactura;
+                        _this1491.transaccion.maestro = _this1491.factura.maestro;
+                        _this1491.transaccion.valor = element.precio_venta - element.precio_venta * (element.descuento / 100);
+                        _this1491.transaccion.cantM2 = element.cantidad;
+                        _this1491.transaccion.cajas = Math.trunc((element.cantidad + 0.01) / element.producto.M2);
+                        _this1491.transaccion.piezas = Math.trunc((element.cantidad + 0.01) * element.producto.P_CAJA / element.producto.M2) - Math.trunc((element.cantidad + 0.01) / element.producto.M2) * element.producto.P_CAJA;
+                        _this1491.transaccion.observaciones = _this1491.formaPago == "Crédito Aliado" ? "CRÉDITO ALIADO SAG" + _this1491.factura.observaciones : _this1491.factura.observaciones;
+                        _this1491.transaccion.tipo_transaccion = "venta-not";
+                        _this1491.transaccion.movimiento = -1;
+                        _this1491.transaccion.usu_autorizado = _this1491.factura.username;
+                        _this1491.transaccion.usuario = _this1491.factura.username;
+                        _this1491.transaccion.idTransaccion = _this1491.number_transaccion++;
+                        _this1491.transaccion.cliente = _this1491.factura.cliente.cliente_nombre;
+                        _this1491.transaccion.nombreUsuario = _this1491.factura.nombreUsuario;
+                        _this1491.transaccion.nombreVendedor = _this1491.factura.nombreVendedor;
+                        _this1491.transaccion.mcaEntregado = element.entregar == true ? "SI" : "NO";
 
                         if (element.producto.CLASIFICA == "COMBO") {
-                          _this1490.generarTransaccionesComboProductos(element.producto.PRODUCTO);
+                          _this1491.generarTransaccionesComboProductos(element.producto.PRODUCTO);
 
-                          if (_this1490.transaccion.valor == element.producto.precio) {
-                            _this1490.transaccion.valor = 0;
-                            _this1490.transaccion.totalsuma = 0;
+                          if (_this1491.transaccion.valor == element.producto.precio) {
+                            _this1491.transaccion.valor = 0;
+                            _this1491.transaccion.totalsuma = 0;
                           } else {
-                            _this1490.transaccion.valor = _this1490.transaccion.valor - element.producto.precio;
-                            _this1490.transaccion.totalsuma = _this1490.transaccion.valor * _this1490.transaccion.cantM2;
+                            _this1491.transaccion.valor = _this1491.transaccion.valor - element.producto.precio;
+                            _this1491.transaccion.totalsuma = _this1491.transaccion.valor * _this1491.transaccion.cantM2;
                           }
                         }
 
-                        _this1490.transaccionesService.newTransaccion(_this1490.transaccion).subscribe(function (res) {
-                          _this1490.contadores[0].transacciones_Ndocumento = _this1490.number_transaccion;
+                        _this1491.transaccionesService.newTransaccion(_this1491.transaccion).subscribe(function (res) {
+                          _this1491.contadores[0].transacciones_Ndocumento = _this1491.number_transaccion;
 
-                          _this1490.contadoresService.updateContadoresIDTransacciones(_this1490.contadores[0]).subscribe(function (res) {
-                            _this1490.db.collection("/consectivosBaseMongoDB").doc("base").update({
-                              transacciones_Ndocumento: _this1490.number_transaccion
+                          _this1491.contadoresService.updateContadoresIDTransacciones(_this1491.contadores[0]).subscribe(function (res) {
+                            _this1491.db.collection("/consectivosBaseMongoDB").doc("base").update({
+                              transacciones_Ndocumento: _this1491.number_transaccion
                             }).then(function (res) {
-                              contVal++, _this1490.contadorValidaciones(contVal);
+                              contVal++, _this1491.contadorValidaciones(contVal);
                             }, function (err) {
                               return err;
                             });
                           }, function (err) {
-                            _this1490.mostrarMensajeGenerico(2, "Revise e intente nuevamente");
+                            _this1491.mostrarMensajeGenerico(2, "Revise e intente nuevamente");
                           });
                         }, function (err) {
-                          _this1490.mostrarMensajeGenerico(2, "Revise e intente nuevamente");
+                          _this1491.mostrarMensajeGenerico(2, "Revise e intente nuevamente");
                         });
                       });
                     },
                     error: function error(err) {
-                      _this1490.mostrarMensajeGenerico(2, "Error al guardar el consecutivo de Nota de Venta");
+                      _this1491.mostrarMensajeGenerico(2, "Error al guardar el consecutivo de Nota de Venta");
                     }
                   });
                 } else {
@@ -186401,96 +186791,96 @@ function _classCallCheck(instance, Constructor) { if (!(instance instanceof Cons
       }, {
         key: "obtenerIdRecibo",
         value: function obtenerIdRecibo() {
-          return Object(tslib__WEBPACK_IMPORTED_MODULE_0__["__awaiter"])(this, void 0, void 0, /*#__PURE__*/regeneratorRuntime.mark(function _callee68() {
-            var _this1491 = this;
+          return Object(tslib__WEBPACK_IMPORTED_MODULE_0__["__awaiter"])(this, void 0, void 0, /*#__PURE__*/regeneratorRuntime.mark(function _callee70() {
+            var _this1492 = this;
 
             var idRecibo, getFreeReciboId;
-            return regeneratorRuntime.wrap(function _callee68$(_context68) {
+            return regeneratorRuntime.wrap(function _callee70$(_context71) {
               while (1) {
-                switch (_context68.prev = _context68.next) {
+                switch (_context71.prev = _context71.next) {
                   case 0:
                     idRecibo = this.newRecibo.idDocumento;
 
                     getFreeReciboId = function getFreeReciboId() {
-                      return Object(tslib__WEBPACK_IMPORTED_MODULE_0__["__awaiter"])(_this1491, void 0, void 0, /*#__PURE__*/regeneratorRuntime.mark(function _callee67() {
+                      return Object(tslib__WEBPACK_IMPORTED_MODULE_0__["__awaiter"])(_this1492, void 0, void 0, /*#__PURE__*/regeneratorRuntime.mark(function _callee69() {
                         var res;
-                        return regeneratorRuntime.wrap(function _callee67$(_context67) {
+                        return regeneratorRuntime.wrap(function _callee69$(_context70) {
                           while (1) {
-                            switch (_context67.prev = _context67.next) {
+                            switch (_context70.prev = _context70.next) {
                               case 0:
                                 if (!true) {
-                                  _context67.next = 18;
+                                  _context70.next = 18;
                                   break;
                                 }
 
-                                _context67.prev = 1;
-                                _context67.next = 4;
+                                _context70.prev = 1;
+                                _context70.next = 4;
                                 return this._reciboCajaService.getReciboCajaPorIdConsecutivo(this.newRecibo).toPromise();
 
                               case 4:
-                                res = _context67.sent;
+                                res = _context70.sent;
                                 this.recibosEncontrados = res;
 
                                 if (!(this.recibosEncontrados.length === 0)) {
-                                  _context67.next = 10;
+                                  _context70.next = 10;
                                   break;
                                 }
 
-                                return _context67.abrupt("return", this.newRecibo.idDocumento);
+                                return _context70.abrupt("return", this.newRecibo.idDocumento);
 
                               case 10:
                                 this.newRecibo.idDocumento = this.newRecibo.idDocumento + 1; // continue loop with incremented id
 
                               case 11:
-                                _context67.next = 16;
+                                _context70.next = 16;
                                 break;
 
                               case 13:
-                                _context67.prev = 13;
-                                _context67.t0 = _context67["catch"](1);
-                                return _context67.abrupt("continue", 0);
+                                _context70.prev = 13;
+                                _context70.t0 = _context70["catch"](1);
+                                return _context70.abrupt("continue", 0);
 
                               case 16:
-                                _context67.next = 0;
+                                _context70.next = 0;
                                 break;
 
                               case 18:
                               case "end":
-                                return _context67.stop();
+                                return _context70.stop();
                             }
                           }
-                        }, _callee67, this, [[1, 13]]);
+                        }, _callee69, this, [[1, 13]]);
                       }));
                     };
 
-                    _context68.prev = 2;
-                    _context68.next = 5;
+                    _context71.prev = 2;
+                    _context71.next = 5;
                     return getFreeReciboId();
 
                   case 5:
-                    idRecibo = _context68.sent;
+                    idRecibo = _context71.sent;
                     this.generarReciboCaja(idRecibo);
-                    _context68.next = 12;
+                    _context71.next = 12;
                     break;
 
                   case 9:
-                    _context68.prev = 9;
-                    _context68.t0 = _context68["catch"](2);
+                    _context71.prev = 9;
+                    _context71.t0 = _context71["catch"](2);
                     // Si ocurre cualquier error inesperado, informar al usuario.
                     this.mostrarMensajeGenerico(2, "Error al obtener un ID de Recibo disponible.");
 
                   case 12:
                   case "end":
-                    return _context68.stop();
+                    return _context71.stop();
                 }
               }
-            }, _callee68, this, [[2, 9]]);
+            }, _callee70, this, [[2, 9]]);
           }));
         }
       }, {
         key: "generarReciboCaja",
         value: function generarReciboCaja(idRecibo) {
-          var _this1492 = this;
+          var _this1493 = this;
 
           var _a, _b, _c, _d, _e, _f, _g, _h, _j, _k;
 
@@ -186524,9 +186914,9 @@ function _classCallCheck(instance, Constructor) { if (!(instance instanceof Cons
 
           try {
             this._reciboCajaService.newReciboCaja(recibo).subscribe(function (res) {
-              _this1492.generarTransaccionesFinancieras(recibo);
+              _this1493.generarTransaccionesFinancieras(recibo);
 
-              _this1492.actualizarContador(recibo);
+              _this1493.actualizarContador(recibo);
             }, function (err) {});
           } catch (error) {
             this.mostrarMensajeGenerico(2, "Error al guardar la transaccion");
@@ -186572,12 +186962,12 @@ function _classCallCheck(instance, Constructor) { if (!(instance instanceof Cons
       }, {
         key: "generarTransaccionesFinancieras",
         value: function generarTransaccionesFinancieras(recibo) {
-          var _this1493 = this;
+          var _this1494 = this;
 
           this.generarCuentaPorCobrar(recibo.idDocumento);
           recibo.operacionesComercialesList.forEach(function (element) {
             var transaccion = new _transaccionesFinancieras_transaccionesFinancieras__WEBPACK_IMPORTED_MODULE_15__["TransaccionesFinancieras"]();
-            transaccion.fecha = _this1493.factura.fecha;
+            transaccion.fecha = _this1494.factura.fecha;
             transaccion.sucursal = recibo.sucursal;
             transaccion.cliente = recibo.cliente;
             transaccion.isContabilizada = true;
@@ -186585,7 +186975,7 @@ function _classCallCheck(instance, Constructor) { if (!(instance instanceof Cons
             transaccion.tipoTransaccion = "recibo-caja";
             transaccion.id_documento = recibo.idDocumento;
             transaccion.documentoVenta = recibo.docVenta;
-            transaccion.cedula = _this1493.factura.cliente.ruc;
+            transaccion.cedula = _this1494.factura.cliente.ruc;
             transaccion.numDocumento = recibo.numDocumento;
             transaccion.valor = element.valor;
             transaccion.tipoPago = "";
@@ -186597,9 +186987,9 @@ function _classCallCheck(instance, Constructor) { if (!(instance instanceof Cons
             transaccion.tipoCuenta = element.tipoCuenta;
 
             try {
-              _this1493._transaccionFinancieraService.newTransaccionFinanciera(transaccion).subscribe(function (res) {}, function (err) {});
+              _this1494._transaccionFinancieraService.newTransaccionFinanciera(transaccion).subscribe(function (res) {}, function (err) {});
             } catch (error) {
-              _this1493.mostrarMensajeGenerico(2, "Error al guardar la transaccion");
+              _this1494.mostrarMensajeGenerico(2, "Error al guardar la transaccion");
             }
           });
           return true;
@@ -186607,15 +186997,15 @@ function _classCallCheck(instance, Constructor) { if (!(instance instanceof Cons
       }, {
         key: "traerTransaccionesPorProducto",
         value: function traerTransaccionesPorProducto(nombreProducto, numero) {
-          var _this1494 = this;
+          var _this1495 = this;
 
           this.invetarioP = [];
           this.mostrarLoading = true;
           this.proTransaccion.nombre = nombreProducto.PRODUCTO;
           this.transaccionesService.getTransaccionesPorProducto(this.proTransaccion).subscribe(function (res) {
-            _this1494.transacciones = res;
+            _this1495.transacciones = res;
 
-            _this1494.cargarDatosProductoUnitario(nombreProducto, numero);
+            _this1495.cargarDatosProductoUnitario(nombreProducto, numero);
           });
         }
       }, {
@@ -186903,7 +187293,7 @@ function _classCallCheck(instance, Constructor) { if (!(instance instanceof Cons
       }, {
         key: "traerTransaccionesPorProductoCombo2",
         value: function traerTransaccionesPorProductoCombo2(nombreProducto, num, cantidadP, productoCombo) {
-          var _this1495 = this;
+          var _this1496 = this;
 
           this.cantidadProductos++;
           this.invetarioP = [];
@@ -186911,8 +187301,8 @@ function _classCallCheck(instance, Constructor) { if (!(instance instanceof Cons
           this.productosVendidos[num].disponible = 100;
           this.proTransaccion.nombre = nombreProducto.PRODUCTO;
           var p1 = new Promise(function (resolve, reject) {
-            _this1495.transaccionesService.getTransaccionesPorProducto(_this1495.proTransaccion).toPromise().then(function (res) {
-              _this1495.transacciones = res;
+            _this1496.transaccionesService.getTransaccionesPorProducto(_this1496.proTransaccion).toPromise().then(function (res) {
+              _this1496.transacciones = res;
               var contCajas = 0;
               var contCajas2 = 0;
               var contCajas3 = 0;
@@ -186920,7 +187310,7 @@ function _classCallCheck(instance, Constructor) { if (!(instance instanceof Cons
               var contPiezas2 = 0;
               var contPiezas3 = 0;
 
-              _this1495.transacciones.forEach(function (element) {
+              _this1496.transacciones.forEach(function (element) {
                 if (nombreProducto.PRODUCTO == element.producto && element.sucursal == "matriz") {
                   switch (element.tipo_transaccion) {
                     case "devolucion":
@@ -187101,17 +187491,17 @@ function _classCallCheck(instance, Constructor) { if (!(instance instanceof Cons
                 }
               });
 
-              _this1495.invetarioP = [];
-              _this1495.invetarioProd = new _consolidado_consolidado__WEBPACK_IMPORTED_MODULE_11__["inventario"]();
-              _this1495.invetarioProd.producto = nombreProducto;
-              _this1495.invetarioProd.cantidadCajas = contCajas;
-              _this1495.invetarioProd.cantidadCajas2 = contCajas2;
-              _this1495.invetarioProd.cantidadCajas3 = contCajas3;
-              _this1495.invetarioProd.cantidadPiezas = contPiezas;
-              _this1495.invetarioProd.cantidadPiezas2 = contPiezas2;
-              _this1495.invetarioProd.cantidadPiezas3 = contPiezas3;
+              _this1496.invetarioP = [];
+              _this1496.invetarioProd = new _consolidado_consolidado__WEBPACK_IMPORTED_MODULE_11__["inventario"]();
+              _this1496.invetarioProd.producto = nombreProducto;
+              _this1496.invetarioProd.cantidadCajas = contCajas;
+              _this1496.invetarioProd.cantidadCajas2 = contCajas2;
+              _this1496.invetarioProd.cantidadCajas3 = contCajas3;
+              _this1496.invetarioProd.cantidadPiezas = contPiezas;
+              _this1496.invetarioProd.cantidadPiezas2 = contPiezas2;
+              _this1496.invetarioProd.cantidadPiezas3 = contPiezas3;
 
-              _this1495.invetarioP.push(_this1495.invetarioProd);
+              _this1496.invetarioP.push(_this1496.invetarioProd);
 
               contCajas = 0;
               contPiezas = 0;
@@ -187120,7 +187510,7 @@ function _classCallCheck(instance, Constructor) { if (!(instance instanceof Cons
               contCajas3 = 0;
               contPiezas3 = 0; //seccion2
 
-              _this1495.invetarioP.forEach(function (element) {
+              _this1496.invetarioP.forEach(function (element) {
                 element.cantidadM2 = parseFloat((element.producto.M2 * element.cantidadCajas + element.cantidadPiezas * element.producto.M2 / element.producto.P_CAJA).toFixed(2));
                 element.cantidadM2b2 = parseFloat((element.producto.M2 * element.cantidadCajas2 + element.cantidadPiezas2 * element.producto.M2 / element.producto.P_CAJA).toFixed(2));
                 element.cantidadM2b3 = parseFloat((element.producto.M2 * element.cantidadCajas3 + element.cantidadPiezas3 * element.producto.M2 / element.producto.P_CAJA).toFixed(2));
@@ -187130,7 +187520,7 @@ function _classCallCheck(instance, Constructor) { if (!(instance instanceof Cons
               }); //seccion3
 
 
-              _this1495.invetarioP.forEach(function (element) {
+              _this1496.invetarioP.forEach(function (element) {
                 element.cantidadCajas = Math.trunc(element.cantidadM2 / element.producto.M2);
                 element.cantidadPiezas = parseInt((element.cantidadM2 * element.producto.P_CAJA / element.producto.M2 - element.cantidadCajas * element.producto.P_CAJA).toFixed(0));
                 element.cantidadM2 = parseFloat(element.cantidadM2.toFixed(2));
@@ -187144,26 +187534,26 @@ function _classCallCheck(instance, Constructor) { if (!(instance instanceof Cons
 
               var disponible = 0;
 
-              switch (_this1495.factura.sucursal) {
+              switch (_this1496.factura.sucursal) {
                 case "matriz":
-                  disponible = _this1495.invetarioP[0].cantidadM2;
+                  disponible = _this1496.invetarioP[0].cantidadM2;
                   break;
 
                 case "sucursal1":
-                  disponible = _this1495.invetarioP[0].cantidadM2b2;
+                  disponible = _this1496.invetarioP[0].cantidadM2b2;
                   break;
 
                 case "sucursal2":
-                  disponible = _this1495.invetarioP[0].cantidadM2b3;
+                  disponible = _this1496.invetarioP[0].cantidadM2b3;
                   break;
 
                 default:
               }
 
               if (disponible < 0) disponible = 0;
-              _this1495.valor2 = Math.trunc(Number(disponible) / productoCombo.cantidad);
-              if (_this1495.valor2 < _this1495.productosVendidos[num].disponible) _this1495.productosVendidos[num].disponible = _this1495.valor2;
-              if (cantidadP == _this1495.cantidadProductos) _this1495.mostrarLoading = false;
+              _this1496.valor2 = Math.trunc(Number(disponible) / productoCombo.cantidad);
+              if (_this1496.valor2 < _this1496.productosVendidos[num].disponible) _this1496.productosVendidos[num].disponible = _this1496.valor2;
+              if (cantidadP == _this1496.cantidadProductos) _this1496.mostrarLoading = false;
               resolve(disponible);
             })["catch"](function (err) {
               resolve(false);
@@ -188632,6 +189022,8 @@ function _classCallCheck(instance, Constructor) { if (!(instance instanceof Cons
         this.URLFACTURACION = "https://api.veronica.ec/api/v2.0/sri"; //INTEGRACION DIRECTA PRODUCCION
 
         this.URLFACTURACIONMANUAL = "https://api.veronica.ec/api/v2.0/comprobantes"; //INTEGRACION MANUAL PRODUCCION
+
+        this.URLCONSULTACOMPROBANTES = "https://api.veronica.ec/api/v1.0/comprobantes"; //CONSULTA DE FACTURAS EMITIDAS PRODUCCION
       }
 
       _createClass(ApiVeronicaService, [{
@@ -188641,6 +189033,20 @@ function _classCallCheck(instance, Constructor) { if (!(instance instanceof Cons
           return this.http.post(this.URLFACTURACION + "/facturas?logo=true&notificar=true", factura, {
             'headers': headers
           }); //return this.http.post<any>(this.URL + "/facturas", factura, {'headers': headers});
+        }
+        /** Facturas emitidas en Veronica entre dos fechas (formato dd/MM/yyyy), paginadas. */
+
+      }, {
+        key: "consultarFacturasEmitidas",
+        value: function consultarFacturasEmitidas(numeroRUC, fechaInicial, fechaFinal) {
+          var page = arguments.length > 3 && arguments[3] !== undefined ? arguments[3] : 0;
+          var size = arguments.length > 4 && arguments[4] !== undefined ? arguments[4] : 200;
+          var params = "fechaInicial=".concat(encodeURIComponent(fechaInicial)) + "&fechaFinal=".concat(encodeURIComponent(fechaFinal)) + "&numero-ruc=".concat(encodeURIComponent(numeroRUC)) + "&page=".concat(page, "&size=").concat(size);
+          return this.http.get("".concat(this.URLCONSULTACOMPROBANTES, "/facturas?").concat(params), {
+            headers: new _angular_common_http__WEBPACK_IMPORTED_MODULE_1__["HttpHeaders"]({
+              accept: "application/json"
+            }).set("x-api-key", this.APIKEY)
+          });
         }
       }, {
         key: "obtenerSecuencia",
@@ -196286,7 +196692,7 @@ function _classCallCheck(instance, Constructor) { if (!(instance instanceof Cons
       _createClass(StockMinimoDataService, [{
         key: "getProductosBajoMinimoAgrupadosPorCategoria",
         value: function getProductosBajoMinimoAgrupadosPorCategoria() {
-          var _this1496 = this;
+          var _this1497 = this;
 
           return Object(rxjs__WEBPACK_IMPORTED_MODULE_1__["forkJoin"])({
             productos: this.productoService.getProductosActivosLigero(),
@@ -196297,7 +196703,7 @@ function _classCallCheck(instance, Constructor) { if (!(instance instanceof Cons
             var productosList = productos || [];
             var catalogosList = catalogos || [];
 
-            var productosConStockMinimo = _this1496.filtrarProductosConStockMinimoDefinido(productosList, catalogosList);
+            var productosConStockMinimo = _this1497.filtrarProductosConStockMinimoDefinido(productosList, catalogosList);
 
             if (productosConStockMinimo.length === 0) {
               return Object(rxjs__WEBPACK_IMPORTED_MODULE_1__["of"])([]);
@@ -196307,7 +196713,7 @@ function _classCallCheck(instance, Constructor) { if (!(instance instanceof Cons
             productoM.array = productosConStockMinimo.map(function (p) {
               return p.PRODUCTO;
             });
-            return _this1496.transaccionesService.getTransaccionesPorProductoMultiple(productoM).pipe(Object(rxjs_operators__WEBPACK_IMPORTED_MODULE_2__["map"])(function (transacciones) {
+            return _this1497.transaccionesService.getTransaccionesPorProductoMultiple(productoM).pipe(Object(rxjs_operators__WEBPACK_IMPORTED_MODULE_2__["map"])(function (transacciones) {
               return {
                 productos: productosConStockMinimo,
                 transacciones: transacciones || [],
@@ -196325,15 +196731,15 @@ function _classCallCheck(instance, Constructor) { if (!(instance instanceof Cons
                 transacciones = payload.transacciones,
                 catalogos = payload.catalogos;
 
-            var inventarioCompleto = _this1496.cargarDatosMatriz(productos, transacciones);
+            var inventarioCompleto = _this1497.cargarDatosMatriz(productos, transacciones);
 
-            _this1496.transformarM2(inventarioCompleto);
+            _this1497.transformarM2(inventarioCompleto);
 
-            _this1496.ajustarSaldosCero(inventarioCompleto);
+            _this1497.ajustarSaldosCero(inventarioCompleto);
 
-            var bajoMinimo = _this1496.filtrarBajoMinimo(inventarioCompleto, catalogos);
+            var bajoMinimo = _this1497.filtrarBajoMinimo(inventarioCompleto, catalogos);
 
-            return _this1496.agruparPorCategoria(bajoMinimo);
+            return _this1497.agruparPorCategoria(bajoMinimo);
           }), Object(rxjs_operators__WEBPACK_IMPORTED_MODULE_2__["catchError"])(function () {
             return Object(rxjs__WEBPACK_IMPORTED_MODULE_1__["of"])([]);
           }));
@@ -196359,7 +196765,7 @@ function _classCallCheck(instance, Constructor) { if (!(instance instanceof Cons
         value: function cargarDatosMatriz(productos, transacciones) {
           var invetarioP = [];
 
-          var _loop34 = function _loop34(index) {
+          var _loop35 = function _loop35(index) {
             var element2 = productos[index];
             var contCajas = 0;
             var contPiezas = 0;
@@ -196413,7 +196819,7 @@ function _classCallCheck(instance, Constructor) { if (!(instance instanceof Cons
           };
 
           for (var index = 0; index < productos.length; index++) {
-            _loop34(index);
+            _loop35(index);
           }
 
           return invetarioP;
@@ -196913,13 +197319,13 @@ function _classCallCheck(instance, Constructor) { if (!(instance instanceof Cons
       }, {
         key: "traerTransaccionesPorProducto",
         value: function traerTransaccionesPorProducto(nombreProducto) {
-          var _this1497 = this;
+          var _this1498 = this;
 
           this.proTransaccion.nombre = nombreProducto.PRODUCTO;
           this.getTransaccionesPorProducto(this.proTransaccion).subscribe(function (res) {
-            _this1497.transacciones = res;
+            _this1498.transacciones = res;
 
-            _this1497.cargarDatosProductoUnitario(nombreProducto);
+            _this1498.cargarDatosProductoUnitario(nombreProducto);
           });
         }
       }, {
@@ -198534,7 +198940,7 @@ function _classCallCheck(instance, Constructor) { if (!(instance instanceof Cons
     }
 
     var HeaderComponent = function HeaderComponent(authService) {
-      var _this1498 = this;
+      var _this1499 = this;
 
       _classCallCheck(this, HeaderComponent);
 
@@ -198545,12 +198951,12 @@ function _classCallCheck(instance, Constructor) { if (!(instance instanceof Cons
         text: 'Salir',
         icon: 'runner',
         onClick: function onClick() {
-          _this1498.authService.logOut();
+          _this1499.authService.logOut();
         }
       }];
 
       this.toggleMenu = function () {
-        _this1498.menuToggle.emit();
+        _this1499.menuToggle.emit();
       };
 
       this.title = "SOFTWARE VERSIÓN DE PRUEBAS";
@@ -199002,10 +199408,10 @@ function _classCallCheck(instance, Constructor) { if (!(instance instanceof Cons
       }, {
         key: "traerUsuarios",
         value: function traerUsuarios() {
-          var _this1499 = this;
+          var _this1500 = this;
 
           this.authenService.getUsers().subscribe(function (res) {
-            _this1499.authenService.usuarios = res;
+            _this1500.authenService.usuarios = res;
           });
         }
       }, {
@@ -199016,7 +199422,7 @@ function _classCallCheck(instance, Constructor) { if (!(instance instanceof Cons
       }, {
         key: "signIn",
         value: function signIn(e) {
-          var _this1500 = this;
+          var _this1501 = this;
 
           var _a;
 
@@ -199030,14 +199436,14 @@ function _classCallCheck(instance, Constructor) { if (!(instance instanceof Cons
           this.loginError = '';
           this.authService.logIn(this.login, this.password).subscribe({
             error: function error(_error2) {
-              _this1500.isError = true;
+              _this1501.isError = true;
 
               if (_error2.status === 401) {
-                _this1500.loginError = 'Credenciales incorrectas. Verifique su usuario y contraseña.';
+                _this1501.loginError = 'Credenciales incorrectas. Verifique su usuario y contraseña.';
               } else if (_error2.status === 404) {
-                _this1500.loginError = 'El usuario se encuentra bloqueado.';
+                _this1501.loginError = 'El usuario se encuentra bloqueado.';
               } else {
-                _this1500.loginError = 'No se pudo iniciar sesión. Intente nuevamente.';
+                _this1501.loginError = 'No se pudo iniciar sesión. Intente nuevamente.';
               }
             }
           });
@@ -199340,10 +199746,10 @@ function _classCallCheck(instance, Constructor) { if (!(instance instanceof Cons
       }, {
         key: "ngAfterViewInit",
         value: function ngAfterViewInit() {
-          var _this1501 = this;
+          var _this1502 = this;
 
           devextreme_events__WEBPACK_IMPORTED_MODULE_2__["on"](this.elementRef.nativeElement, 'dxclick', function (e) {
-            _this1501.openMenu.next(e);
+            _this1502.openMenu.next(e);
           });
         }
       }, {
@@ -199627,18 +200033,18 @@ function _classCallCheck(instance, Constructor) { if (!(instance instanceof Cons
       }, {
         key: "cargarUsuarioLogueado",
         value: function cargarUsuarioLogueado() {
-          var _this1502 = this;
+          var _this1503 = this;
 
           var promesaUser = new Promise(function (res, err) {
-            if (localStorage.getItem("maily") != '') _this1502.correo = localStorage.getItem("maily");
+            if (localStorage.getItem("maily") != '') _this1503.correo = localStorage.getItem("maily");
 
-            _this1502.authenService.getUserLogueado(_this1502.correo).subscribe(function (res) {
-              _this1502.usuarioLogueado = res;
-              console.log(_this1502.usuarioLogueado[0].status);
-              if (_this1502.usuarioLogueado[0].status == "Inactivo") _this1502.authService.logOut();else {
-                _this1502.user = _this1502.usuarioLogueado[0].username;
-                sessionStorage.setItem("user", _this1502.usuarioLogueado[0].username);
-                sessionStorage.setItem("rol", _this1502.usuarioLogueado[0].rol);
+            _this1503.authenService.getUserLogueado(_this1503.correo).subscribe(function (res) {
+              _this1503.usuarioLogueado = res;
+              console.log(_this1503.usuarioLogueado[0].status);
+              if (_this1503.usuarioLogueado[0].status == "Inactivo") _this1503.authService.logOut();else {
+                _this1503.user = _this1503.usuarioLogueado[0].username;
+                sessionStorage.setItem("user", _this1503.usuarioLogueado[0].username);
+                sessionStorage.setItem("rol", _this1503.usuarioLogueado[0].rol);
               }
             }, function (err) {});
           });
@@ -199844,7 +200250,7 @@ function _classCallCheck(instance, Constructor) { if (!(instance instanceof Cons
       _createClass(SessionExpiredInterceptor, [{
         key: "intercept",
         value: function intercept(request, next) {
-          var _this1503 = this;
+          var _this1504 = this;
 
           var isExternalApi = request.url.includes('veronica.ec');
           var token = this.authenService.getToken();
@@ -199864,9 +200270,9 @@ function _classCallCheck(instance, Constructor) { if (!(instance instanceof Cons
             var isOwnBackend401 = err.status === 401 && hasToken && !isExternalApi && !isLoginOrRegister;
 
             if (isOwnBackend401) {
-              _this1503.authService.logOut(true);
+              _this1504.authService.logOut(true);
 
-              _this1503.router.navigate(['/login-form']);
+              _this1504.router.navigate(['/login-form']);
             }
 
             return Object(rxjs__WEBPACK_IMPORTED_MODULE_1__["throwError"])(err);
@@ -200036,7 +200442,7 @@ function _classCallCheck(instance, Constructor) { if (!(instance instanceof Cons
 
     var AuthService = /*#__PURE__*/function () {
       function AuthService(router, authenService, afAuth, inactivityService) {
-        var _this1504 = this;
+        var _this1505 = this;
 
         _classCallCheck(this, AuthService);
 
@@ -200058,8 +200464,8 @@ function _classCallCheck(instance, Constructor) { if (!(instance instanceof Cons
         console.log(this.loggedIn);
         this.afAuth.auth.onAuthStateChanged(function (user) {
           if (user) {
-            _this1504.user = user;
-            localStorage.setItem('user', JSON.stringify(_this1504.user.email));
+            _this1505.user = user;
+            localStorage.setItem('user', JSON.stringify(_this1505.user.email));
           } else {
             localStorage.setItem('user', null);
           }
@@ -200069,29 +200475,29 @@ function _classCallCheck(instance, Constructor) { if (!(instance instanceof Cons
       _createClass(AuthService, [{
         key: "logIn",
         value: function logIn(login, password) {
-          var _this1505 = this;
+          var _this1506 = this;
 
           this.user2.email = login;
           this.user2.password = password;
           return this.authenService.signIn(this.user2).pipe(Object(rxjs_operators__WEBPACK_IMPORTED_MODULE_2__["tap"])(function (res) {
             localStorage.setItem('token', res.token);
-            _this1505.loggedIn = true;
-            localStorage.setItem('logged', _this1505.loggedIn.toString());
+            _this1506.loggedIn = true;
+            localStorage.setItem('logged', _this1506.loggedIn.toString());
 
-            _this1505.inactivityService.startWatching(function () {
-              return _this1505.logOut(true);
+            _this1506.inactivityService.startWatching(function () {
+              return _this1506.logOut(true);
             });
 
-            _this1505.router.navigate(['/']);
+            _this1506.router.navigate(['/']);
           }));
         }
       }, {
         key: "loginIn",
         value: function loginIn() {
-          return Object(tslib__WEBPACK_IMPORTED_MODULE_0__["__awaiter"])(this, void 0, void 0, /*#__PURE__*/regeneratorRuntime.mark(function _callee69() {
-            return regeneratorRuntime.wrap(function _callee69$(_context69) {
+          return Object(tslib__WEBPACK_IMPORTED_MODULE_0__["__awaiter"])(this, void 0, void 0, /*#__PURE__*/regeneratorRuntime.mark(function _callee71() {
+            return regeneratorRuntime.wrap(function _callee71$(_context72) {
               while (1) {
-                switch (_context69.prev = _context69.next) {
+                switch (_context72.prev = _context72.next) {
                   case 0:
                     try {
                       if ("token" in localStorage) this.router.navigate(['/home']);
@@ -200099,22 +200505,22 @@ function _classCallCheck(instance, Constructor) { if (!(instance instanceof Cons
 
                   case 1:
                   case "end":
-                    return _context69.stop();
+                    return _context72.stop();
                 }
               }
-            }, _callee69, this);
+            }, _callee71, this);
           }));
         }
       }, {
         key: "logOut",
         value: function logOut(porInactividad) {
-          return Object(tslib__WEBPACK_IMPORTED_MODULE_0__["__awaiter"])(this, void 0, void 0, /*#__PURE__*/regeneratorRuntime.mark(function _callee70() {
-            return regeneratorRuntime.wrap(function _callee70$(_context70) {
+          return Object(tslib__WEBPACK_IMPORTED_MODULE_0__["__awaiter"])(this, void 0, void 0, /*#__PURE__*/regeneratorRuntime.mark(function _callee72() {
+            return regeneratorRuntime.wrap(function _callee72$(_context73) {
               while (1) {
-                switch (_context70.prev = _context70.next) {
+                switch (_context73.prev = _context73.next) {
                   case 0:
                     this.inactivityService.stopWatching();
-                    _context70.next = 3;
+                    _context73.next = 3;
                     return this.afAuth.auth.signOut();
 
                   case 3:
@@ -200132,10 +200538,10 @@ function _classCallCheck(instance, Constructor) { if (!(instance instanceof Cons
 
                   case 10:
                   case "end":
-                    return _context70.stop();
+                    return _context73.stop();
                 }
               }
-            }, _callee70, this);
+            }, _callee72, this);
           }));
         }
       }, {
@@ -200293,7 +200699,7 @@ function _classCallCheck(instance, Constructor) { if (!(instance instanceof Cons
       _createClass(InactivityService, [{
         key: "startWatching",
         value: function startWatching(onInactivity) {
-          var _this1506 = this;
+          var _this1507 = this;
 
           this.stopWatching();
           this.onInactivityCallback = onInactivity;
@@ -200302,29 +200708,29 @@ function _classCallCheck(instance, Constructor) { if (!(instance instanceof Cons
               var _a, _b, _c;
 
               var minutos = (_c = (_b = (_a = config) === null || _a === void 0 ? void 0 : _a[0]) === null || _b === void 0 ? void 0 : _b.minutosInactividad, _c !== null && _c !== void 0 ? _c : DEFAULT_MINUTOS_INACTIVIDAD);
-              _this1506.inactivityTimeoutMs = minutos * 60 * 1000;
+              _this1507.inactivityTimeoutMs = minutos * 60 * 1000;
               console.log('Tiempo de inactividad configurado:', minutos, 'min');
 
-              _this1506.initializeListeners();
+              _this1507.initializeListeners();
 
-              _this1506.startIntervalCheck();
+              _this1507.startIntervalCheck();
             },
             error: function error() {
-              _this1506.inactivityTimeoutMs = DEFAULT_MINUTOS_INACTIVIDAD * 60 * 1000;
+              _this1507.inactivityTimeoutMs = DEFAULT_MINUTOS_INACTIVIDAD * 60 * 1000;
 
-              _this1506.initializeListeners();
+              _this1507.initializeListeners();
 
-              _this1506.startIntervalCheck();
+              _this1507.startIntervalCheck();
             }
           });
         }
       }, {
         key: "initializeListeners",
         value: function initializeListeners() {
-          var _this1507 = this;
+          var _this1508 = this;
 
           var updateActivity = function updateActivity() {
-            _this1507.lastActivity = Date.now();
+            _this1508.lastActivity = Date.now();
           };
 
           var events = ['pointerdown', 'pointermove', 'keydown', 'scroll', 'touchstart', 'touchmove'];
@@ -200335,7 +200741,7 @@ function _classCallCheck(instance, Constructor) { if (!(instance instanceof Cons
 
             document.addEventListener(event, handler, true);
 
-            _this1507.listeners.push(function () {
+            _this1508.listeners.push(function () {
               return document.removeEventListener(event, handler, true);
             });
           }); // Al volver a la pestaña/app: preguntamos al SERVIDOR si la sesión sigue vigente.
@@ -200345,10 +200751,10 @@ function _classCallCheck(instance, Constructor) { if (!(instance instanceof Cons
           var checkSessionOnReturn = function checkSessionOnReturn() {
             if (!localStorage.getItem('token')) return;
 
-            _this1507.ngZone.run(function () {
-              _this1507.authenService.checkSession().subscribe({
+            _this1508.ngZone.run(function () {
+              _this1508.authenService.checkSession().subscribe({
                 next: function next() {
-                  _this1507.lastActivity = Date.now();
+                  _this1508.lastActivity = Date.now();
                 },
                 error: function error() {}
               });
@@ -200360,9 +200766,9 @@ function _classCallCheck(instance, Constructor) { if (!(instance instanceof Cons
             if (!document.hidden) {
               checkSessionOnReturn();
 
-              _this1507.startHeartbeat();
+              _this1508.startHeartbeat();
             } else {
-              _this1507.stopHeartbeat();
+              _this1508.stopHeartbeat();
             }
           };
 
@@ -200373,7 +200779,7 @@ function _classCallCheck(instance, Constructor) { if (!(instance instanceof Cons
 
           var focusHandler = function focusHandler() {
             checkSessionOnReturn();
-            if (!document.hidden) _this1507.startHeartbeat();
+            if (!document.hidden) _this1508.startHeartbeat();
           };
 
           window.addEventListener('focus', focusHandler);
@@ -200385,7 +200791,7 @@ function _classCallCheck(instance, Constructor) { if (!(instance instanceof Cons
             if (e.persisted || !document.hidden) {
               checkSessionOnReturn();
 
-              _this1507.startHeartbeat();
+              _this1508.startHeartbeat();
             }
           };
 
@@ -200401,15 +200807,15 @@ function _classCallCheck(instance, Constructor) { if (!(instance instanceof Cons
       }, {
         key: "startHeartbeat",
         value: function startHeartbeat() {
-          var _this1508 = this;
+          var _this1509 = this;
 
           this.stopHeartbeat();
           this.heartbeatIntervalId = setInterval(function () {
             if (document.hidden || !localStorage.getItem('token')) return;
 
-            _this1508.authenService.checkSession().subscribe({
+            _this1509.authenService.checkSession().subscribe({
               next: function next() {
-                _this1508.lastActivity = Date.now();
+                _this1509.lastActivity = Date.now();
               },
               error: function error() {}
             });
@@ -200426,16 +200832,16 @@ function _classCallCheck(instance, Constructor) { if (!(instance instanceof Cons
       }, {
         key: "startIntervalCheck",
         value: function startIntervalCheck() {
-          var _this1509 = this;
+          var _this1510 = this;
 
           this.ngZone.runOutsideAngular(function () {
-            _this1509.checkIntervalId = setInterval(function () {
+            _this1510.checkIntervalId = setInterval(function () {
               var now = Date.now();
-              var diff = now - _this1509.lastActivity;
+              var diff = now - _this1510.lastActivity;
 
-              if (diff > _this1509.inactivityTimeoutMs) {
-                _this1509.ngZone.run(function () {
-                  _this1509.handleInactivity();
+              if (diff > _this1510.inactivityTimeoutMs) {
+                _this1510.ngZone.run(function () {
+                  _this1510.handleInactivity();
                 });
               }
             }, 10000); // revisa cada 10 segundos
@@ -200607,14 +201013,14 @@ function _classCallCheck(instance, Constructor) { if (!(instance instanceof Cons
 
     var ScreenService = /*#__PURE__*/function () {
       function ScreenService(breakpointObserver) {
-        var _this1510 = this;
+        var _this1511 = this;
 
         _classCallCheck(this, ScreenService);
 
         this.breakpointObserver = breakpointObserver;
         this.changed = new _angular_core__WEBPACK_IMPORTED_MODULE_0__["EventEmitter"]();
         this.breakpointObserver.observe([_angular_cdk_layout__WEBPACK_IMPORTED_MODULE_1__["Breakpoints"].XSmall, _angular_cdk_layout__WEBPACK_IMPORTED_MODULE_1__["Breakpoints"].Small, _angular_cdk_layout__WEBPACK_IMPORTED_MODULE_1__["Breakpoints"].Medium, _angular_cdk_layout__WEBPACK_IMPORTED_MODULE_1__["Breakpoints"].Large]).subscribe(function () {
-          return _this1510.changed.next();
+          return _this1511.changed.next();
         });
       }
 

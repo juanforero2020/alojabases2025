@@ -174,6 +174,8 @@ export class factura {
     usernameVendedor : string
     iva: number
     estadoFacturaVeronica:string
+    /** Estado en Veronica al validar (p. ej. CREADO = aún no autorizada por el SRI). */
+    estadoVeronicaSri?: string
     logVeronica:ServicioWebVeronicaLectura
     constructor() { 
         this.estado  = "CONTABILIZADA"

@@ -19,6 +19,7 @@ export class ApiVeronicaService {
   private URLSECUENCIAL = "https://api.veronica.ec/api/v1.0/empresas" //PRODUCCION
   private URLFACTURACION = "https://api.veronica.ec/api/v2.0/sri";   //INTEGRACION DIRECTA PRODUCCION
   private URLFACTURACIONMANUAL = "https://api.veronica.ec/api/v2.0/comprobantes";   //INTEGRACION MANUAL PRODUCCION
+  private URLCONSULTACOMPROBANTES = "https://api.veronica.ec/api/v1.0/comprobantes"; //CONSULTA DE FACTURAS EMITIDAS PRODUCCION
 
 
   constructor(public http: HttpClient, public router: Router) {}
@@ -29,6 +30,18 @@ export class ApiVeronicaService {
     //return this.http.post<any>(this.URL + "/facturas", factura, {'headers': headers});
   }
 
+
+  /** Facturas emitidas en Veronica entre dos fechas (formato dd/MM/yyyy), paginadas. */
+  consultarFacturasEmitidas(numeroRUC: string, fechaInicial: string, fechaFinal: string, page = 0, size = 200) {
+    const params =
+      `fechaInicial=${encodeURIComponent(fechaInicial)}` +
+      `&fechaFinal=${encodeURIComponent(fechaFinal)}` +
+      `&numero-ruc=${encodeURIComponent(numeroRUC)}` +
+      `&page=${page}&size=${size}`;
+    return this.http.get<any>(`${this.URLCONSULTACOMPROBANTES}/facturas?${params}`, {
+      headers: new HttpHeaders({ accept: "application/json" }).set("x-api-key", this.APIKEY),
+    });
+  }
 
   obtenerSecuencia(numeroRUC : string) {
     return this.http.get<any>(this.URLSECUENCIAL + `/${numeroRUC}/secuenciales?codDoc=01`,  

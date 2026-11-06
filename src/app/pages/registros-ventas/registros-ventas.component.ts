@@ -207,6 +207,7 @@ export class RegistrosVentasComponent implements OnInit {
     this.obj = new objDate();
     this.obj.fechaActual = fechaHoy;
     this.obj.fechaAnterior = fechaAnterior;
+    this.nowdesde = fechaAnterior;
   }
 
 
@@ -779,6 +780,120 @@ export class RegistrosVentasComponent implements OnInit {
     })
 
     
+  }
+
+  validandoFacturasVeronica = false;
+
+  private fechaVeronica(fecha: Date): string {
+    const d = new Date(fecha);
+    const dd = String(d.getDate()).padStart(2, '0');
+    const mm = String(d.getMonth() + 1).padStart(2, '0');
+    return `${dd}/${mm}/${d.getFullYear()}`;
+  }
+
+  private claveComprobanteVeronica(identificacion: any, secuencial: any): string {
+    const ident = String(identificacion || '').trim();
+    const sec = String(secuencial || '').trim().replace(/^0+/, '');
+    return ident && sec ? `${ident}|${sec}` : '';
+  }
+
+  /** Todas las páginas de facturas emitidas en Veronica para un RUC y rango. */
+  private async consultarTodasFacturasVeronica(ruc: string, desde: string, hasta: string): Promise<any[]> {
+    const todas: any[] = [];
+    for (let page = 0; page < 100; page++) {
+      const resp = await this._apiVeronicaService
+        .consultarFacturasEmitidas(ruc, desde, hasta, page, 200)
+        .toPromise();
+      const result = (resp && resp.result) || {};
+      const contenido = result.content || [];
+      todas.push(...contenido);
+      if (result.last !== false || !contenido.length) break;
+    }
+    return todas;
+  }
+
+  /**
+   * Cruza las facturas en ERROR con las emitidas en Veronica (mismo rango de
+   * fechas), por identificación del receptor y secuencial enviados en el log:
+   * AUTORIZADO -> log en OK (ENVIADA); CREADO -> botón en azul.
+   */
+  async validarFacturasVeronica() {
+    // Solo la empresa de matriz.
+    const esMatriz = (sucursal: any) => String(sucursal || '').trim().toLowerCase() === 'matriz';
+    const enError = (this.facturas || []).filter(
+      f => f.estadoFacturaVeronica === 'ERROR' && esMatriz(f.sucursal)
+    );
+    if (!enError.length) {
+      Swal.fire('Sin pendientes', 'No hay facturas de matriz en estado ERROR en la consulta actual.', 'info');
+      return;
+    }
+    const rucs = Array.from(new Set((this.parametrizaciones || [])
+      .filter((p: any) => esMatriz(p.sucursal))
+      .map((p: any) => String(p.ruc || '').trim())
+      .filter(Boolean)));
+    if (!rucs.length) {
+      Swal.fire('Validación', 'No hay RUC configurado en la parametrización de matriz.', 'warning');
+      return;
+    }
+    const desde = this.fechaVeronica(this.nowdesde);
+    const hasta = this.fechaVeronica(this.nowhasta);
+
+    this.validandoFacturasVeronica = true;
+    this.mensajeLoading = 'Validando facturas con Veronica';
+    this.mostrarLoading = true;
+    try {
+      // identificación|secuencial -> estatus (AUTORIZADO tiene prioridad)
+      const estados = new Map<string, string>();
+      for (const ruc of rucs) {
+        const emitidas = await this.consultarTodasFacturasVeronica(ruc, desde, hasta);
+        for (const c of emitidas) {
+          const clave = this.claveComprobanteVeronica(c.identificacionReceptor, c.secuencial);
+          if (!clave) continue;
+          const estatus = String(c.estatus || '').toUpperCase();
+          if (estados.get(clave) !== 'AUTORIZADO') estados.set(clave, estatus);
+        }
+      }
+
+      let autorizadas = 0;
+      let creadas = 0;
+      for (const f of enError) {
+        f.estadoVeronicaSri = undefined;
+        const logs = (this.logsVeronica || []).filter(l => l.nroDocumento === String(f.documento_n));
+        for (const log of logs) {
+          let enviado: any = null;
+          try { enviado = JSON.parse(log.objetoRequest || '{}'); } catch (e) { enviado = null; }
+          const clave = this.claveComprobanteVeronica(
+            (enviado && enviado.receptor && enviado.receptor.identificacion) || (f.cliente && f.cliente.ruc),
+            enviado && enviado.secuencial
+          );
+          const estatus = clave ? estados.get(clave) : undefined;
+          if (estatus === 'AUTORIZADO') {
+            await this._logApiVeronicaService.updateEstadoLog(log, 'OK').toPromise();
+            autorizadas++;
+            break;
+          }
+          if (estatus === 'CREADO' && f.estadoVeronicaSri !== 'CREADO') {
+            f.estadoVeronicaSri = 'CREADO';
+            creadas++;
+          }
+        }
+      }
+
+      this.mostrarLoading = false;
+      Swal.fire(
+        'Validación con Veronica',
+        `Facturas en ERROR revisadas: ${enError.length}.<br>` +
+        `Autorizadas (pasan a ENVIADA): <strong>${autorizadas}</strong>.<br>` +
+        `En estado CREADO (botón azul): <strong>${creadas}</strong>.`,
+        'success'
+      );
+      if (autorizadas) this.obtenerLogsVeronica();
+    } catch (err) {
+      this.mostrarLoading = false;
+      Swal.fire('Error', 'No se pudo consultar Veronica. Intente nuevamente.', 'error');
+    } finally {
+      this.validandoFacturasVeronica = false;
+    }
   }
 
   cambiarEstadoLogValidacion(dataFactura: factura){
