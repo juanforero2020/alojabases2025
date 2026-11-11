@@ -436,7 +436,15 @@ async function ejecutarEventoProgramado(eventoId, opciones = {}) {
   }
 
   const regla = await ReglaPagoNomina.findById(evento.reglaPagoId);
-  if (!regla || regla.estadoRegla !== "Autorizada") {
+  // El desembolso de un préstamo/anticipo se puede pagar aunque la regla ya
+  // esté Finalizada: el descuento en nómina pudo cubrir el saldo antes de
+  // entregar el dinero (p. ej. cierre automático de un pago con neto $0).
+  const esDesembolsoDeReglaFinalizada =
+    !!regla &&
+    regla.tipoRegla === "D" &&
+    evento.tipoRegla === "D" &&
+    regla.estadoRegla === "Finalizada";
+  if (!regla || (regla.estadoRegla !== "Autorizada" && !esDesembolsoDeReglaFinalizada)) {
     throw new Error("La regla de pago no está activa");
   }
 
@@ -1214,7 +1222,81 @@ async function reporteEstadoEmpleado(filtros = {}) {
   return resumen;
 }
 
+/**
+ * Pagos pendientes cuyo neto llegó a $0 porque los descuentos (anticipos,
+ * préstamos, otros) cubren todo el bruto: se cierran automáticamente SIN
+ * transacciones financieras (no hay egreso ni ingreso: no se entrega dinero).
+ * Solo se marca el pago como Ejecutado y se cancelan los anticipos/préstamos
+ * descontados (saldo y bitácora del préstamo).
+ */
+async function cerrarPagosCubiertosPorDescuentos(cedula, opciones = {}) {
+  const doc = (cedula || "").trim();
+  if (!doc) return [];
+  const candidatos = await EventoPagoProgramado.find({
+    cedulaBeneficiario: doc,
+    estado: "Pendiente",
+    tipoRegla: { $ne: "D" },
+  });
+  const cerrados = [];
+  for (const evento of candidatos) {
+    const bruto = redondear2(evento.montoBruto);
+    const neto = redondear2(evento.monto);
+    const descuento = redondear2(evento.montoDescuento);
+    const yaPagado = redondear2(evento.montoPagado);
+    if (!(bruto > 0.009) || neto > 0.009 || yaPagado > 0.009) continue;
+    if (descuento < bruto - 0.01) continue;
+    const regla = await ReglaPagoNomina.findById(evento.reglaPagoId).lean();
+    if (!regla || regla.estadoRegla !== "Autorizada") continue;
+    if (esEventoMontoVariable(evento, regla)) continue;
+    try {
+      // Se toman las líneas antes de cerrar: al cancelar los anticipos el
+      // recálculo ya no las asignaría a este pago.
+      const lineas = await obtenerLineasDescuentoEvento(evento, regla);
+      const lineasPrestamo = lineas.filter((l) => {
+        if (l.tipoTransaccion === "DESCUENTO_PRESTAMO_NOMINA") return true;
+        const tx = (l.transaccionNomina || "").toLowerCase();
+        const et = (l.etiqueta || "").toLowerCase();
+        return ["prestamo", "préstamo", "anticipo"].some(
+          (p) => tx.includes(p) || et.includes(p)
+        );
+      });
+      const usuario = opciones.usuario || "Sistema";
+      const nota =
+        "Cerrado automáticamente: los descuentos cubren el total del pago (neto $0). Sin transacciones financieras.";
+
+      // 1) Cerrar el pago (sin transacciones financieras).
+      evento.pagosParciales = evento.pagosParciales || [];
+      evento.pagosParciales.push({
+        monto: 0,
+        fecha: new Date(),
+        ejecutadoPor: usuario,
+        notas: nota,
+      });
+      evento.montoPagado = 0;
+      evento.estado = "Ejecutado";
+      evento.ejecutadoPor = usuario;
+      evento.fechaEjecucion = new Date();
+      evento.notas = textoNotas(evento.notas, nota);
+      await evento.save();
+
+      // 2) Cancelar anticipos/préstamos descontados: saldo y bitácora del
+      //    préstamo, sin transacción financiera asociada.
+      if (lineasPrestamo.length) {
+        await registrarAbonosPrestamo(evento, lineasPrestamo, { usuario });
+      }
+      cerrados.push(evento._id);
+    } catch (err) {
+      console.error(
+        `No se pudo cerrar el pago neto $0 ${evento._id}:`,
+        err.message
+      );
+    }
+  }
+  return cerrados;
+}
+
 module.exports = {
+  cerrarPagosCubiertosPorDescuentos,
   normalizarReglaTipoB,
   validarReglaTipoB,
   generarEventosProgramados,

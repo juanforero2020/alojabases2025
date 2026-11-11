@@ -944,6 +944,9 @@ router.put("/reglas-pago/:id/autorizar", async (req, res) => {
         regla.asociarFacturaPendiente = false;
       }
       await regla.save();
+      await tipoBNominaService.cerrarPagosCubiertosPorDescuentos(
+        regla.cedulaBeneficiario
+      );
       return res.json({
         status: esExternoDesc
           ? porEventos
@@ -1003,6 +1006,9 @@ router.put("/reglas-pago/:id/autorizar", async (req, res) => {
       regla.proyeccion = proyeccion;
       regla.cuotaEvento = cuotaDescuento;
       await regla.save();
+      await tipoBNominaService.cerrarPagosCubiertosPorDescuentos(
+        regla.cedulaBeneficiario
+      );
       const esAnticipo = tipoDNominaService.esReglaAnticipo(regla);
       const esExterno =
         (regla.tipoBeneficiario || "").toString().trim().toLowerCase() ===
@@ -1370,6 +1376,9 @@ router.put("/eventos-programados/:id/omitir-prestamo", async (req, res) => {
         omitir: req.body.omitir !== false,
         usuario: req.body.usuario,
       }
+    );
+    await tipoBNominaService.cerrarPagosCubiertosPorDescuentos(
+      evento.cedulaBeneficiario
     );
     res.json({
       status: evento.omitirDescuentoPrestamo

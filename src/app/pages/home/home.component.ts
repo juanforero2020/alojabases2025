@@ -56,10 +56,18 @@ export class HomeComponent implements OnInit {
   errorIndicadoresCajaMenor = false;
   cargandoIndicadoresCajaMenor = false;
   listadoCajaMenorReciente: CajaMenor[] = [];
+  /** Rango por defecto de los indicadores: últimos 3 meses hasta hoy. */
+  static haceTresMeses(): Date {
+    const d = new Date();
+    d.setMonth(d.getMonth() - 3);
+    d.setHours(0, 0, 0, 0);
+    return d;
+  }
+
   /** Todas las cajas (vista global); el rango se aplica sobre la fecha de cada caja. */
   listadoCajaMenorTodas: CajaMenor[] = [];
-  filtroCajaMenorDesde: Date | null = null;
-  filtroCajaMenorHasta: Date | null = null;
+  filtroCajaMenorDesde: Date | null = HomeComponent.haceTresMeses();
+  filtroCajaMenorHasta: Date | null = new Date();
   popupCajaMenorVisible = false;
   tituloPopupCajaMenor = "";
   tipoDetalleCajaMenorActivo: TipoDetalleIndicadorCajaMenor | null = null;
@@ -76,8 +84,8 @@ export class HomeComponent implements OnInit {
   listadoOrdenCompraReciente: OrdenDeCompra[] = [];
   /** Todas las órdenes (vista global); el rango se aplica sobre la fecha de cada orden. */
   listadoOrdenCompraTodas: OrdenDeCompra[] = [];
-  filtroOrdenCompraDesde: Date | null = null;
-  filtroOrdenCompraHasta: Date | null = null;
+  filtroOrdenCompraDesde: Date | null = HomeComponent.haceTresMeses();
+  filtroOrdenCompraHasta: Date | null = new Date();
   popupOrdenCompraVisible = false;
   tituloPopupOrdenCompra = "";
   tipoDetalleOrdenCompraActivo: TipoDetalleIndicadorOrdenCompra | null = null;
