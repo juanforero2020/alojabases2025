@@ -1031,10 +1031,10 @@ export class RegistrosVentasComponent implements OnInit {
         console.log(this.facturaVeronica)
         console.log(logApiVeronica)
         this.mostrarLoading = false;
-        //this.marcarReprocesoVeronica(dataFactura, false);
+        this.marcarReprocesoVeronica(dataFactura, false);
                    
         //TO-DO, DESCOMENTAR LUEGO DE PRUEBAS
-        /* this._apiVeronicaService.newFactura(this.facturaVeronica).subscribe(
+        this._apiVeronicaService.newFactura(this.facturaVeronica).subscribe(
           res => {  var resultado = res as ResponseVeronicaDto;
                     logApiVeronica.objetoResponse = JSON.stringify(res)
                     logApiVeronica.claveAcceso = resultado.result.claveAccesoConsultada
@@ -1067,7 +1067,7 @@ export class RegistrosVentasComponent implements OnInit {
                                 })
                             },
                       err => { this.marcarReprocesoVeronica(dataFactura, false); });              
-                  });  */
+                  }); 
 
       },
       err => {
