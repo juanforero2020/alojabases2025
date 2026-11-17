@@ -1031,10 +1031,10 @@ export class RegistrosVentasComponent implements OnInit {
         console.log(this.facturaVeronica)
         console.log(logApiVeronica)
         this.mostrarLoading = false;
-        this.marcarReprocesoVeronica(dataFactura, false);
+        //this.marcarReprocesoVeronica(dataFactura, false);
                    
         //TO-DO, DESCOMENTAR LUEGO DE PRUEBAS
-        this._apiVeronicaService.newFactura(this.facturaVeronica).subscribe(
+        /* this._apiVeronicaService.newFactura(this.facturaVeronica).subscribe(
           res => {  var resultado = res as ResponseVeronicaDto;
                     logApiVeronica.objetoResponse = JSON.stringify(res)
                     logApiVeronica.claveAcceso = resultado.result.claveAccesoConsultada
@@ -1067,7 +1067,7 @@ export class RegistrosVentasComponent implements OnInit {
                                 })
                             },
                       err => { this.marcarReprocesoVeronica(dataFactura, false); });              
-                  }); 
+                  });  */
 
       },
       err => {
@@ -1427,13 +1427,22 @@ export class RegistrosVentasComponent implements OnInit {
     e.component.endUpdate();
   }
 
+  /** Porcentaje de IVA parametrizado en el sistema (antes estaba fijo en 12%). */
+  get porcentajeIvaVigente(): number {
+    const p = Number(this.ivaPorcentaje);
+    return p > 0 ? p : 12;
+  }
+
   calcularValoresFactura(){
-   this.subtotal1=(((this.factura.total+this.factura.coste_transporte)-this.factura.coste_transporte)/1.12)+this.factura.coste_transporte
+   const tasa = this.porcentajeIvaVigente / 100;
+   const transporte = Number(this.factura.coste_transporte) || 0;
+   // El total incluye el transporte (tarifa 0): solo el resto lleva IVA.
+   this.subtotal1=((this.factura.total - transporte)/(1 + tasa)) + transporte
    this.Sdescuento=this.factura.subtotalF1-this.factura.subtotalF2
    this.subtotal2=this.subtotal1-this.Sdescuento
-   this.sIva0= this.factura.coste_transporte;
+   this.sIva0= transporte;
    this.sIva12=this.subtotal2-this.sIva0
-   this.iva= this.sIva12*0.12
+   this.iva= this.sIva12*tasa
   }
 
   setearNFactura(){
@@ -2106,6 +2115,21 @@ export class RegistrosVentasComponent implements OnInit {
 
 
 
+  /** dd/MM/yyyy HH:mm en hora local. */
+  textoFechaHora(valor: any): string {
+    const d = valor ? new Date(valor) : null;
+    if (!d || isNaN(d.getTime())) return "";
+    const p = (n: number) => String(n).padStart(2, "0");
+    return `${p(d.getDate())}/${p(d.getMonth() + 1)}/${d.getFullYear()} ${p(d.getHours())}:${p(d.getMinutes())}`;
+  }
+
+  /** Fecha del documento: la registrada en la nota (fecha2) o, si no, su fecha. */
+  textoFechaDocumentoNotaVenta(): string {
+    const f2 = (this.factura as any)?.fecha2;
+    if (f2) return String(f2);
+    return this.textoFechaHora(this.factura?.fecha);
+  }
+
   getDocumentDefinitionNotaVenta() {
     this.setearNFactura()
     this.calcularValoresFactura()
@@ -2115,124 +2139,84 @@ export class RegistrosVentasComponent implements OnInit {
       pageSize: 'A4',
       content: [
         {
-          columns: [{
-          image:this.imagenLogotipo,
+          image: this.imagenLogotipo,
           width: 100,
-          margin: [0, 20, 0, 10],
-          },
-          {
-            width:410,
-            margin: [0, 20, 0, 10],
-            text: "Fecha:   "+this.factura.fecha2,
-            alignment:"right"
-          },
-          ]
-          
-          //alignment: 'center'
-        }, {
-    
+          margin: [0, 10, 0, 6],
         },
-        
+        {
+          text: "NOTA DE VENTA",
+          bold: true,
+          fontSize: 18,
+          margin: [0, 0, 0, 2],
+        },
+        {
+          text: "Venta de materiales para acabados de construcción, porcelanatos, cerámicas",
+          fontSize: 8,
+          margin: [0, 0, 0, 4],
+        },
+        {
+          // Datos de la sucursal (parametrización)
+          table: {
+            widths: ["*"],
+            body: [[{
+              stack: [
+                { text: "Dirección: " + (this.parametrizacionSucu?.direccion || ""), fontSize: 10 },
+                { text: "Teléfonos: " + (this.parametrizacionSucu?.telefonos || ""), fontSize: 10 },
+              ],
+            }]],
+          },
+          margin: [0, 0, 0, 8],
+        },
         {
           columns: [
-            
-            [
-            {
-              text: "Fecha de impresión: "+this.factura.fecha, fontSize:10
-            },
-            {
-              text: "Venta de materiales para acabados de construcción, porcelanatos, cerámicas ", fontSize:9
-            },
-            {
-              text: "Dirección: "+this.parametrizacionSucu.direccion,
-            },
-            {
-              text: "Teléfonos: "+this.parametrizacionSucu.telefonos,
-            },
-            {
-              columns: [{
-              width:300,
-              text: " "+this.tDocumento,
-              bold: true,
-              fontSize: 20,
-            },
-            {
-              width:215,
-              text: "NO "+this.numeroFactura,
-              color: 'red',
-              bold: true,
-              fontSize: 20,
-              alignment:"right"
-            },
-            ]
-            },
-            {
-              columns: [{
-              width:300,
-              text: "Fecha de Autorización "+this.parametrizacionSucu.fecha,
-            },
-            {
-              width:215,
-              text: "Usuario: " + this.factura.username,
-              alignment:"right"
-            },
-            ]
-            
-            },{
-            //Desde aqui comienza los datos del cliente
-            style: 'tableExample',
-            table: {
-              widths: [100,395],
-              body: [
-                [
-                  {
-                    stack: [
-                      {
-                        type: 'none',
-                        bold: true,
-                        ul: [
-                          'Cliente',
-                          'Contacto',
-                          "Dirección",
-                          "Teléfonos",
-                          "Correo"
-                        ]
-                      }
-                    ]
-                  },
-                  [{
-                    stack: [
-                      {
-                        type: 'none',
-                        ul: [
-                          ''+this.factura.cliente?.cliente_nombre,
-                          ''+this.factura.cliente?.direccion,
-                          ''+this.factura.cliente?.direccion,
-                          ''+this.factura.cliente?.celular,
-                          ''+this.factura.cliente?.correo,
-                        ]
-                      }
-                    ]
-                  },
-                  ],
-                 
-                ]
-              ]
-            }
-            },
-
-            //aqui termina
-            
-            
-            
-            ],
-            [
-              
-            ]
-          ]
+            { width: "*", text: "Proforma No", bold: true, fontSize: 18 },
+            { width: "auto", text: "NO " + this.numeroFactura, color: "red", bold: true, fontSize: 18 },
+          ],
         },
-       
-        
+        {
+          columns: [
+            { width: "*", text: "Fecha de Autorización " + (this.parametrizacionSucu?.fecha || ""), fontSize: 10 },
+            { width: "auto", text: "Usuario: " + (this.factura.username || ""), fontSize: 10 },
+          ],
+        },
+        {
+          // Datos del cliente + fechas del documento
+          style: "tableExample",
+          table: {
+            widths: [100, "*", 175],
+            body: [[
+              {
+                stack: [
+                  { type: "none", bold: true, ul: ["Cliente", "Ruc / Cédula", "Dirección", "Teléfonos", "Correo"] },
+                ],
+                // Borde derecho = línea divisoria entre etiquetas y datos.
+                border: [true, true, true, true],
+              },
+              {
+                stack: [
+                  {
+                    type: "none",
+                    ul: [
+                      this.factura.cliente?.cliente_nombre || "",
+                      this.factura.cliente?.ruc || "",
+                      this.factura.cliente?.direccion || "",
+                      this.factura.cliente?.celular || "",
+                      this.factura.cliente?.correo || "",
+                    ],
+                  },
+                ],
+                border: [true, true, false, true],
+              },
+              {
+                stack: [
+                  { text: "Fecha: " + this.textoFechaDocumentoNotaVenta(), fontSize: 10 },
+                  { text: "Fecha de impresión: " + this.textoFechaHora(new Date()), fontSize: 8, margin: [0, 4, 0, 0] },
+                ],
+                border: [false, true, true, true],
+              },
+            ]],
+          },
+        },
         this.getProductosVendidos(this.productosVendidos2),
         {
           //espacio en blanco despues de detalle de productos
@@ -2252,7 +2236,7 @@ export class RegistrosVentasComponent implements OnInit {
             style: 'tableExample',
                     table: {
                       widths: [250],
-                      heights:70,
+                      heights:90,
                       body: [
                         [
                           {
@@ -2281,13 +2265,14 @@ export class RegistrosVentasComponent implements OnInit {
               [ { text: 'Valor', bold: true ,style: "detalleTotales"}, {text:this.subtotal1.toFixed(2), style:"totales" }],
               [ { text: 'Otros descuentos', bold: true ,style: "detalleTotales"}, {text:this.Sdescuento.toFixed(2), style:"totales" } ],
               [ { text: 'Subtotal', bold: true, style: "detalleTotales" }, {text:this.subtotal2.toFixed(2), style:"totales" } ],
+              [ { text: 'IVA ' + this.porcentajeIvaVigente + '%', bold: true, style: "detalleTotales" }, {text:this.iva.toFixed(2), style:"totales" } ],
               [ { text: 'Total', bold: true, style: "detalleTotales" }, {text:this.factura.total.toFixed(2), style:"totales" } ]
             ]
           }
           },
         ]
         },
-        this.getDatosFooter(),
+
        
         
       ],

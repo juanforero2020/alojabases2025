@@ -149535,52 +149535,43 @@ function _classCallCheck(instance, Constructor) { if (!(instance instanceof Cons
             logApiVeronica.sucursal = dataFactura.sucursal;
             console.log(_this1152.facturaVeronica);
             console.log(logApiVeronica);
-            _this1152.mostrarLoading = false;
+            _this1152.mostrarLoading = false; //this.marcarReprocesoVeronica(dataFactura, false);
+            //TO-DO, DESCOMENTAR LUEGO DE PRUEBAS
 
-            _this1152.marcarReprocesoVeronica(dataFactura, false); //TO-DO, DESCOMENTAR LUEGO DE PRUEBAS
-
-
-            _this1152._apiVeronicaService.newFactura(_this1152.facturaVeronica).subscribe(function (res) {
-              var resultado = res;
-              logApiVeronica.objetoResponse = JSON.stringify(res);
-              logApiVeronica.claveAcceso = resultado.result.claveAccesoConsultada;
-              logApiVeronica.resultado = "OK";
-
-              _this1152._logApiVeronicaService.newLog(logApiVeronica).subscribe(function (res) {
-                _this1152.mostrarLoading = false;
-
-                _this1152.marcarReprocesoVeronica(dataFactura, false);
-
-                sweetalert2__WEBPACK_IMPORTED_MODULE_4___default.a.fire({
-                  title: 'Correcto',
-                  text: 'Factura registrada con éxito',
-                  icon: 'success'
-                });
-
-                _this1152.traerFacturasMensuales();
-              }, function (err) {
-                _this1152.marcarReprocesoVeronica(dataFactura, false);
-              });
-            }, function (err) {
-              logApiVeronica.objetoResponse = JSON.stringify(err);
-              logApiVeronica.claveAcceso = "";
-              logApiVeronica.resultado = "NOK";
-
-              _this1152._logApiVeronicaService.newLog(logApiVeronica).subscribe(function (res) {
-                _this1152.mostrarLoading = false;
-
-                _this1152.marcarReprocesoVeronica(dataFactura, false);
-
-                sweetalert2__WEBPACK_IMPORTED_MODULE_4___default.a.fire({
-                  title: 'Error',
-                  text: 'Error al establecer coneccion con el SRI',
-                  icon: 'error',
-                  confirmButtonText: 'Ok'
-                });
-              }, function (err) {
-                _this1152.marcarReprocesoVeronica(dataFactura, false);
-              });
-            });
+            /* this._apiVeronicaService.newFactura(this.facturaVeronica).subscribe(
+              res => {  var resultado = res as ResponseVeronicaDto;
+                        logApiVeronica.objetoResponse = JSON.stringify(res)
+                        logApiVeronica.claveAcceso = resultado.result.claveAccesoConsultada
+                        logApiVeronica.resultado = "OK"
+                        this._logApiVeronicaService.newLog(logApiVeronica).subscribe(
+                          res =>{   this.mostrarLoading = false;
+                                    this.marcarReprocesoVeronica(dataFactura, false);
+                                    Swal.fire({
+                                      title: 'Correcto',
+                                      text: 'Factura registrada con éxito',
+                                      icon: 'success'
+                                    })
+                                    this.traerFacturasMensuales();
+                                },
+                          err => { this.marcarReprocesoVeronica(dataFactura, false); });
+                    },
+              err => {
+                      
+                        logApiVeronica.objetoResponse = JSON.stringify(err);
+                        logApiVeronica.claveAcceso = "";
+                        logApiVeronica.resultado = "NOK"
+                        this._logApiVeronicaService.newLog(logApiVeronica).subscribe(
+                          res =>{   this.mostrarLoading = false;
+                                    this.marcarReprocesoVeronica(dataFactura, false);
+                                    Swal.fire({
+                                      title: 'Error',
+                                      text: 'Error al establecer coneccion con el SRI',
+                                      icon: 'error',
+                                      confirmButtonText: 'Ok'
+                                    })
+                                },
+                          err => { this.marcarReprocesoVeronica(dataFactura, false); });
+                      });  */
           }, function (err) {
             _this1152.marcarReprocesoVeronica(dataFactura, false);
 
@@ -149930,15 +149921,20 @@ function _classCallCheck(instance, Constructor) { if (!(instance instanceof Cons
           e.component.columnOption("nota", "visible", false);
           e.component.endUpdate();
         }
+        /** Porcentaje de IVA parametrizado en el sistema (antes estaba fijo en 12%). */
+
       }, {
         key: "calcularValoresFactura",
         value: function calcularValoresFactura() {
-          this.subtotal1 = (this.factura.total + this.factura.coste_transporte - this.factura.coste_transporte) / 1.12 + this.factura.coste_transporte;
+          var tasa = this.porcentajeIvaVigente / 100;
+          var transporte = Number(this.factura.coste_transporte) || 0; // El total incluye el transporte (tarifa 0): solo el resto lleva IVA.
+
+          this.subtotal1 = (this.factura.total - transporte) / (1 + tasa) + transporte;
           this.Sdescuento = this.factura.subtotalF1 - this.factura.subtotalF2;
           this.subtotal2 = this.subtotal1 - this.Sdescuento;
-          this.sIva0 = this.factura.coste_transporte;
+          this.sIva0 = transporte;
           this.sIva12 = this.subtotal2 - this.sIva0;
-          this.iva = this.sIva12 * 0.12;
+          this.iva = this.sIva12 * tasa;
         }
       }, {
         key: "setearNFactura",
@@ -150525,10 +150521,35 @@ function _classCallCheck(instance, Constructor) { if (!(instance instanceof Cons
             }
           };
         }
+        /** dd/MM/yyyy HH:mm en hora local. */
+
+      }, {
+        key: "textoFechaHora",
+        value: function textoFechaHora(valor) {
+          var d = valor ? new Date(valor) : null;
+          if (!d || isNaN(d.getTime())) return "";
+
+          var p = function p(n) {
+            return String(n).padStart(2, "0");
+          };
+
+          return "".concat(p(d.getDate()), "/").concat(p(d.getMonth() + 1), "/").concat(d.getFullYear(), " ").concat(p(d.getHours()), ":").concat(p(d.getMinutes()));
+        }
+        /** Fecha del documento: la registrada en la nota (fecha2) o, si no, su fecha. */
+
+      }, {
+        key: "textoFechaDocumentoNotaVenta",
+        value: function textoFechaDocumentoNotaVenta() {
+          var _a, _b;
+
+          var f2 = (_a = this.factura) === null || _a === void 0 ? void 0 : _a.fecha2;
+          if (f2) return String(f2);
+          return this.textoFechaHora((_b = this.factura) === null || _b === void 0 ? void 0 : _b.fecha);
+        }
       }, {
         key: "getDocumentDefinitionNotaVenta",
         value: function getDocumentDefinitionNotaVenta() {
-          var _a, _b, _c, _d, _e;
+          var _a, _b, _c, _d, _e, _f, _g, _h;
 
           this.setearNFactura();
           this.calcularValoresFactura();
@@ -150537,70 +150558,87 @@ function _classCallCheck(instance, Constructor) { if (!(instance instanceof Cons
           return {
             pageSize: 'A4',
             content: [{
+              image: this.imagenLogotipo,
+              width: 100,
+              margin: [0, 10, 0, 6]
+            }, {
+              text: "NOTA DE VENTA",
+              bold: true,
+              fontSize: 18,
+              margin: [0, 0, 0, 2]
+            }, {
+              text: "Venta de materiales para acabados de construcción, porcelanatos, cerámicas",
+              fontSize: 8,
+              margin: [0, 0, 0, 4]
+            }, {
+              // Datos de la sucursal (parametrización)
+              table: {
+                widths: ["*"],
+                body: [[{
+                  stack: [{
+                    text: "Dirección: " + (((_a = this.parametrizacionSucu) === null || _a === void 0 ? void 0 : _a.direccion) || ""),
+                    fontSize: 10
+                  }, {
+                    text: "Teléfonos: " + (((_b = this.parametrizacionSucu) === null || _b === void 0 ? void 0 : _b.telefonos) || ""),
+                    fontSize: 10
+                  }]
+                }]]
+              },
+              margin: [0, 0, 0, 8]
+            }, {
               columns: [{
-                image: this.imagenLogotipo,
-                width: 100,
-                margin: [0, 20, 0, 10]
+                width: "*",
+                text: "Proforma No",
+                bold: true,
+                fontSize: 18
               }, {
-                width: 410,
-                margin: [0, 20, 0, 10],
-                text: "Fecha:   " + this.factura.fecha2,
-                alignment: "right"
-              }] //alignment: 'center'
-
-            }, {}, {
-              columns: [[{
-                text: "Fecha de impresión: " + this.factura.fecha,
+                width: "auto",
+                text: "NO " + this.numeroFactura,
+                color: "red",
+                bold: true,
+                fontSize: 18
+              }]
+            }, {
+              columns: [{
+                width: "*",
+                text: "Fecha de Autorización " + (((_c = this.parametrizacionSucu) === null || _c === void 0 ? void 0 : _c.fecha) || ""),
                 fontSize: 10
               }, {
-                text: "Venta de materiales para acabados de construcción, porcelanatos, cerámicas ",
-                fontSize: 9
-              }, {
-                text: "Dirección: " + this.parametrizacionSucu.direccion
-              }, {
-                text: "Teléfonos: " + this.parametrizacionSucu.telefonos
-              }, {
-                columns: [{
-                  width: 300,
-                  text: " " + this.tDocumento,
-                  bold: true,
-                  fontSize: 20
+                width: "auto",
+                text: "Usuario: " + (this.factura.username || ""),
+                fontSize: 10
+              }]
+            }, {
+              // Datos del cliente + fechas del documento
+              style: "tableExample",
+              table: {
+                widths: [100, "*", 175],
+                body: [[{
+                  stack: [{
+                    type: "none",
+                    bold: true,
+                    ul: ["Cliente", "Ruc / Cédula", "Dirección", "Teléfonos", "Correo"]
+                  }],
+                  // Borde derecho = línea divisoria entre etiquetas y datos.
+                  border: [true, true, true, true]
                 }, {
-                  width: 215,
-                  text: "NO " + this.numeroFactura,
-                  color: 'red',
-                  bold: true,
-                  fontSize: 20,
-                  alignment: "right"
-                }]
-              }, {
-                columns: [{
-                  width: 300,
-                  text: "Fecha de Autorización " + this.parametrizacionSucu.fecha
+                  stack: [{
+                    type: "none",
+                    ul: [((_d = this.factura.cliente) === null || _d === void 0 ? void 0 : _d.cliente_nombre) || "", ((_e = this.factura.cliente) === null || _e === void 0 ? void 0 : _e.ruc) || "", ((_f = this.factura.cliente) === null || _f === void 0 ? void 0 : _f.direccion) || "", ((_g = this.factura.cliente) === null || _g === void 0 ? void 0 : _g.celular) || "", ((_h = this.factura.cliente) === null || _h === void 0 ? void 0 : _h.correo) || ""]
+                  }],
+                  border: [true, true, false, true]
                 }, {
-                  width: 215,
-                  text: "Usuario: " + this.factura.username,
-                  alignment: "right"
-                }]
-              }, {
-                //Desde aqui comienza los datos del cliente
-                style: 'tableExample',
-                table: {
-                  widths: [100, 395],
-                  body: [[{
-                    stack: [{
-                      type: 'none',
-                      bold: true,
-                      ul: ['Cliente', 'Contacto', "Dirección", "Teléfonos", "Correo"]
-                    }]
-                  }, [{
-                    stack: [{
-                      type: 'none',
-                      ul: ['' + ((_a = this.factura.cliente) === null || _a === void 0 ? void 0 : _a.cliente_nombre), '' + ((_b = this.factura.cliente) === null || _b === void 0 ? void 0 : _b.direccion), '' + ((_c = this.factura.cliente) === null || _c === void 0 ? void 0 : _c.direccion), '' + ((_d = this.factura.cliente) === null || _d === void 0 ? void 0 : _d.celular), '' + ((_e = this.factura.cliente) === null || _e === void 0 ? void 0 : _e.correo)]
-                    }]
-                  }]]]
-                }
-              }], []]
+                  stack: [{
+                    text: "Fecha: " + this.textoFechaDocumentoNotaVenta(),
+                    fontSize: 10
+                  }, {
+                    text: "Fecha de impresión: " + this.textoFechaHora(new Date()),
+                    fontSize: 8,
+                    margin: [0, 4, 0, 0]
+                  }],
+                  border: [false, true, true, true]
+                }]]
+              }
             }, this.getProductosVendidos(this.productosVendidos2), {
               //espacio en blanco despues de detalle de productos
               text: " "
@@ -150614,7 +150652,7 @@ function _classCallCheck(instance, Constructor) { if (!(instance instanceof Cons
                 style: 'tableExample',
                 table: {
                   widths: [250],
-                  heights: 70,
+                  heights: 90,
                   body: [[{
                     stack: [{
                       type: 'none',
@@ -150655,6 +150693,13 @@ function _classCallCheck(instance, Constructor) { if (!(instance instanceof Cons
                     text: this.subtotal2.toFixed(2),
                     style: "totales"
                   }], [{
+                    text: 'IVA ' + this.porcentajeIvaVigente + '%',
+                    bold: true,
+                    style: "detalleTotales"
+                  }, {
+                    text: this.iva.toFixed(2),
+                    style: "totales"
+                  }], [{
                     text: 'Total',
                     bold: true,
                     style: "detalleTotales"
@@ -150664,7 +150709,7 @@ function _classCallCheck(instance, Constructor) { if (!(instance instanceof Cons
                   }]]
                 }
               }]
-            }, this.getDatosFooter()],
+            }],
             footer: function footer(currentPage, pageCount) {
               return {
                 table: {
@@ -150876,6 +150921,12 @@ function _classCallCheck(instance, Constructor) { if (!(instance instanceof Cons
               })))
             }
           };
+        }
+      }, {
+        key: "porcentajeIvaVigente",
+        get: function get() {
+          var p = Number(this.ivaPorcentaje);
+          return p > 0 ? p : 12;
         }
       }]);
 
@@ -185945,51 +185996,50 @@ function _classCallCheck(instance, Constructor) { if (!(instance instanceof Cons
             });
           }, function (err) {}); //TO-DO, DESCOMENTAR LUEGO DE PRUEBAS
 
+          /* this._apiVeronicaService.newFactura(this.facturaVeronica).subscribe(
+            res => {  var resultado = res as ResponseVeronicaDto;
+                      logApiVeronica.objetoResponse = JSON.stringify(res)
+                      logApiVeronica.claveAcceso = resultado.result.claveAccesoConsultada
+                      logApiVeronica.resultado = "OK"
+                      this._logApiVeronicaService.newLog(logApiVeronica).subscribe(
+                        res =>{   this.mostrarLoading = false;
+                                  Swal.fire({
+                                    title: 'Correcto',
+                                    text: 'Factura registrada con éxito',
+                                    icon: 'success',
+                                    confirmButtonText: 'Ok'
+                                  }).then((result) => {
+                                    if(this.formaPago == "Otros medios Pago" || this.formaPago == "Abonos" || this.formaPago == "Crédito Aliado")
+                                      this.router.navigate(['/recibo-caja'], { queryParams: { id: this.factura.documento_n , tipo: 1 } });
+                                    else
+                                      window.location.reload();
+                                  })
+                              },
+                        err => {  });
+                  },
+            err => {
+                    
+                      logApiVeronica.objetoResponse = JSON.stringify(err);
+                      logApiVeronica.claveAcceso = "";
+                      logApiVeronica.resultado = "NOK"
+                      this._logApiVeronicaService.newLog(logApiVeronica).subscribe(
+                        res =>{
+                                  this.mostrarLoading = false;
+                                  Swal.fire({
+                                    title: 'Error',
+                                    text: 'Error al establecer coneccion con el SRI',
+                                    icon: 'error',
+                                    confirmButtonText: 'Ok'
+                                  }).then((result) => {
+                                    if(this.formaPago == "Otros medios Pago" || this.formaPago == "Abonos" || this.formaPago == "Crédito Aliado")
+                                      this.router.navigate(['/recibo-caja'], { queryParams: { id: this.factura.documento_n , tipo: 1 } });
+                                    else
+                                      window.location.reload();
+                                  })
+                              },
+                        err => {  });
+                    });  */
 
-          this._apiVeronicaService.newFactura(this.facturaVeronica).subscribe(function (res) {
-            var resultado = res;
-            logApiVeronica.objetoResponse = JSON.stringify(res);
-            logApiVeronica.claveAcceso = resultado.result.claveAccesoConsultada;
-            logApiVeronica.resultado = "OK";
-
-            _this1471._logApiVeronicaService.newLog(logApiVeronica).subscribe(function (res) {
-              _this1471.mostrarLoading = false;
-              sweetalert2__WEBPACK_IMPORTED_MODULE_9___default.a.fire({
-                title: 'Correcto',
-                text: 'Factura registrada con éxito',
-                icon: 'success',
-                confirmButtonText: 'Ok'
-              }).then(function (result) {
-                if (_this1471.formaPago == "Otros medios Pago" || _this1471.formaPago == "Abonos" || _this1471.formaPago == "Crédito Aliado") _this1471.router.navigate(['/recibo-caja'], {
-                  queryParams: {
-                    id: _this1471.factura.documento_n,
-                    tipo: 1
-                  }
-                });else window.location.reload();
-              });
-            }, function (err) {});
-          }, function (err) {
-            logApiVeronica.objetoResponse = JSON.stringify(err);
-            logApiVeronica.claveAcceso = "";
-            logApiVeronica.resultado = "NOK";
-
-            _this1471._logApiVeronicaService.newLog(logApiVeronica).subscribe(function (res) {
-              _this1471.mostrarLoading = false;
-              sweetalert2__WEBPACK_IMPORTED_MODULE_9___default.a.fire({
-                title: 'Error',
-                text: 'Error al establecer coneccion con el SRI',
-                icon: 'error',
-                confirmButtonText: 'Ok'
-              }).then(function (result) {
-                if (_this1471.formaPago == "Otros medios Pago" || _this1471.formaPago == "Abonos" || _this1471.formaPago == "Crédito Aliado") _this1471.router.navigate(['/recibo-caja'], {
-                  queryParams: {
-                    id: _this1471.factura.documento_n,
-                    tipo: 1
-                  }
-                });else window.location.reload();
-              });
-            }, function (err) {});
-          });
         }
       }, {
         key: "guardarNotaVenta",
@@ -201122,8 +201172,8 @@ function _classCallCheck(instance, Constructor) { if (!(instance instanceof Cons
         measurementId: "G-338L2LR9XQ"
       },
       services: {
-        //urlServices : "http://143.198.60.33:3000"   //NUEVO SERVIDOR PRUEBAS
-        urlServices: "http://104.131.82.174:3000" //SERVIDOR PRODUCCIÓN
+        urlServices: "http://143.198.60.33:3000" //NUEVO SERVIDOR PRUEBAS
+        //urlServices : "http://104.131.82.174:3000"   //SERVIDOR PRODUCCIÓN
         //urlServices : "http://localhost:3000"   //LOCAL
 
       }
