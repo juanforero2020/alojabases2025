@@ -439,12 +439,45 @@ export class RegistrosVentasComponent implements OnInit {
    */
   actualizarEstadoReciboCajaEnLista(lista: factura[], docVenta: string) {
     if (!lista) return;
+    const rCajaIds: string[] = [];
     lista.forEach(f => {
-      const match = this.listadoRecibosCaja.some(
+      const recibo = this.listadoRecibosCaja.find(
         rc => rc.docVenta === docVenta && String(rc.numDocumento) === String(f.documento_n)
       );
-      f['tieneReciboCaja'] = match;
+      f['tieneReciboCaja'] = !!recibo;
+      f['reciboCajaAsociado'] = recibo || null;
+      f['tieneTransaccionFinanciera'] = undefined;
+      f['estadoReciboCaja'] = recibo ? 'VERIFICANDO' : 'SIN_RECIBO';
+      if (recibo) rCajaIds.push('RC' + recibo.idDocumento);
     });
+    this.verificarTransaccionesRecibos(lista, rCajaIds);
+  }
+
+  /**
+   * Valida que cada recibo de caja tenga su transacción financiera
+   * (rCajaId = "RC" + número de recibo). Estados:
+   * COMPLETO, SIN_TRANSACCION (recibo sin transacción) o SIN_RECIBO.
+   */
+  verificarTransaccionesRecibos(lista: factura[], rCajaIds: string[]) {
+    if (!rCajaIds.length) return;
+    this._transaccionFinancieraService.obtenerTransaccionesPorRecibosCaja(rCajaIds).subscribe(
+      (res: any) => {
+        const conTransaccion = new Set(((res || []) as any[]).map(t => String(t.rCajaId)));
+        lista.forEach(f => {
+          const recibo = f['reciboCajaAsociado'];
+          if (!recibo) return;
+          const tiene = conTransaccion.has('RC' + recibo.idDocumento);
+          f['tieneTransaccionFinanciera'] = tiene;
+          f['estadoReciboCaja'] = tiene ? 'COMPLETO' : 'SIN_TRANSACCION';
+        });
+      },
+      () => {
+        // Si no se pudo verificar, no se ofrece crear nada para no duplicar.
+        lista.forEach(f => {
+          if (f['reciboCajaAsociado']) f['estadoReciboCaja'] = 'NO_VERIFICADO';
+        });
+      }
+    );
   }
 
   /**
@@ -453,8 +486,12 @@ export class RegistrosVentasComponent implements OnInit {
   generarReciboCajaParaFactura = (e) => {
     const dataFactura = e.row.data as factura;
     const tDocumento = this.mostrarSeccionFacturas ? 'Factura' : 'Nota de Venta';
-    if (dataFactura['tieneReciboCaja']) return;
     if (this.generandoReciboParaFactura) return;
+    if (dataFactura['estadoReciboCaja'] === 'SIN_TRANSACCION') {
+      this.generarSoloTransaccionParaRecibo(dataFactura, tDocumento);
+      return;
+    }
+    if (dataFactura['tieneReciboCaja']) return;
     Swal.fire({
       title: 'Generar recibo de caja',
       text: `¿Generar recibo de caja y transacciones para ${tDocumento} #${dataFactura.documento_n}?`,
@@ -543,13 +580,22 @@ export class RegistrosVentasComponent implements OnInit {
     recibo.operacionesComercialesList = listaOperaciones;
 
     this._reciboCajaService.newReciboCaja(recibo).subscribe(
-      (res) => {
-        this.generarTransaccionesFinancierasDesdeRegistro(recibo, facturaItem);
+      async (res) => {
         this.generarCuentaPorCobrarDesdeRegistro(facturaItem, recibo.idDocumento, formaPago);
         this.actualizarContadorRecibo(recibo);
         facturaItem['tieneReciboCaja'] = true;
+        facturaItem['reciboCajaAsociado'] = recibo;
         this.listadoRecibosCaja = [...this.listadoRecibosCaja, recibo];
-        Swal.fire('Éxito', 'Recibo de caja y transacciones generados correctamente.', 'success');
+        try {
+          await this.generarTransaccionesFinancierasDesdeRegistro(recibo, facturaItem);
+          facturaItem['tieneTransaccionFinanciera'] = true;
+          facturaItem['estadoReciboCaja'] = 'COMPLETO';
+          Swal.fire('Éxito', 'Recibo de caja y transacciones generados correctamente.', 'success');
+        } catch (e) {
+          facturaItem['tieneTransaccionFinanciera'] = false;
+          facturaItem['estadoReciboCaja'] = 'SIN_TRANSACCION';
+          Swal.fire('Atención', 'Se guardó el recibo de caja, pero no su transacción financiera. Use el botón de la fila para generarla.', 'warning');
+        }
       },
       (err) => {
         Swal.fire('Error', 'No se pudo guardar el recibo de caja.', 'error');
@@ -584,7 +630,39 @@ export class RegistrosVentasComponent implements OnInit {
     return operacionCC;
   }
 
-  generarTransaccionesFinancierasDesdeRegistro(recibo: ReciboCaja, facturaItem: factura) {
+  /** Recibo ya existe pero sin transacción financiera: crea solo la transacción. */
+  generarSoloTransaccionParaRecibo(facturaItem: factura, tDocumento: string) {
+    const recibo: ReciboCaja = facturaItem['reciboCajaAsociado'];
+    if (!recibo) return;
+    Swal.fire({
+      title: 'Generar transacción financiera',
+      text: `${tDocumento} #${facturaItem.documento_n} tiene el recibo de caja RC${recibo.idDocumento} pero no su transacción financiera. ¿Generarla?`,
+      icon: 'question',
+      showCancelButton: true,
+      confirmButtonText: 'Sí',
+      cancelButtonText: 'No'
+    }).then(async (result) => {
+      if (!result.value) return;
+      if (!recibo.operacionesComercialesList || !recibo.operacionesComercialesList.length) {
+        recibo.operacionesComercialesList = [this.generarOperacionPrincipalDesdeRegistro(facturaItem, tDocumento)];
+      }
+      this.generandoReciboParaFactura = true;
+      try {
+        await this.generarTransaccionesFinancierasDesdeRegistro(recibo, facturaItem);
+        facturaItem['tieneTransaccionFinanciera'] = true;
+        facturaItem['estadoReciboCaja'] = 'COMPLETO';
+        Swal.fire('Éxito', 'Transacción financiera generada correctamente.', 'success');
+      } catch (e) {
+        Swal.fire('Error', 'No se pudo guardar la transacción financiera.', 'error');
+      } finally {
+        this.generandoReciboParaFactura = false;
+      }
+    });
+  }
+
+  /** Crea las transacciones del recibo y espera a que todas se guarden. */
+  generarTransaccionesFinancierasDesdeRegistro(recibo: ReciboCaja, facturaItem: factura): Promise<any[]> {
+    const pendientes: Promise<any>[] = [];
     (recibo.operacionesComercialesList || []).forEach(element => {
       const transaccion = new TransaccionesFinancieras();
       transaccion.fecha = facturaItem.fecha;
@@ -605,10 +683,9 @@ export class RegistrosVentasComponent implements OnInit {
       transaccion.subCuenta = element.nombreSubcuenta;
       transaccion.notas = recibo.observaciones;
       transaccion.tipoCuenta = element.tipoCuenta;
-      try {
-        this._transaccionFinancieraService.newTransaccionFinanciera(transaccion).subscribe(() => {}, () => {});
-      } catch (error) {}
+      pendientes.push(this._transaccionFinancieraService.newTransaccionFinanciera(transaccion).toPromise());
     });
+    return Promise.all(pendientes);
   }
 
   generarCuentaPorCobrarDesdeRegistro(facturaItem: factura, idRecibo: number, formaPago: string) {
@@ -1433,16 +1510,29 @@ export class RegistrosVentasComponent implements OnInit {
     return p > 0 ? p : 12;
   }
 
+  /** Tasa de IVA de un producto: su excepción (p. ej. 5% Bondex) o la parametrizada. */
+  tasaIvaProducto(ed: any): number {
+    const excepcion = Number(ed?.producto?.ivaExcepcion);
+    return excepcion > 0 ? excepcion : this.porcentajeIvaVigente;
+  }
+
+  /** Valor sin IVA de un monto de ese producto (los precios guardados incluyen IVA). */
+  valorSinIvaProducto(ed: any, valorConIva: any): number {
+    return (Number(valorConIva) || 0) / (1 + this.tasaIvaProducto(ed) / 100);
+  }
+
   calcularValoresFactura(){
-   const tasa = this.porcentajeIvaVigente / 100;
    const transporte = Number(this.factura.coste_transporte) || 0;
-   // El total incluye el transporte (tarifa 0): solo el resto lleva IVA.
-   this.subtotal1=((this.factura.total - transporte)/(1 + tasa)) + transporte
+   // Base sin IVA sumando cada producto con su propia tasa (15%, 5%, ...).
+   const base = (this.productosVendidos2 || []).reduce(
+     (suma, ed) => suma + this.valorSinIvaProducto(ed, ed.total), 0);
    this.Sdescuento=this.factura.subtotalF1-this.factura.subtotalF2
-   this.subtotal2=this.subtotal1-this.Sdescuento
+   this.subtotal2 = base + transporte
+   this.subtotal1 = this.subtotal2 + (Number(this.Sdescuento) || 0)
    this.sIva0= transporte;
-   this.sIva12=this.subtotal2-this.sIva0
-   this.iva= this.sIva12*tasa
+   this.sIva12= base
+   // IVA = total - subtotal: así el documento siempre cuadra con el total cobrado.
+   this.iva= Math.max(0, (Number(this.factura.total) || 0) - this.subtotal2)
   }
 
   setearNFactura(){
@@ -1796,6 +1886,7 @@ export class RegistrosVentasComponent implements OnInit {
     let tipoDocumento="Factura";
     return {
       pageSize: 'A4',
+      defaultStyle: { fontSize: 9 },
       content: [
         {
           columns: [{
@@ -1806,7 +1897,7 @@ export class RegistrosVentasComponent implements OnInit {
           {
             width:410,
             margin: [0, 20, 0, 10],
-            text: "Fecha:   "+this.factura.fecha2,
+            text: "Fecha: " + this.textoFechaDocumentoNotaVenta(),
             alignment:"right"
           },
           ]
@@ -1829,10 +1920,10 @@ export class RegistrosVentasComponent implements OnInit {
               text: "RUC: "+this.parametrizacionSucu.ruc,
             },
             {
-              text: "Fecha de impresión: "+this.factura.fecha, fontSize:10
+              text: "Fecha de impresión: " + this.textoFechaHora(new Date())
             },
             {
-              text: "Venta de materiales para acabados de construcción, porcelanatos, cerámicas ", fontSize:9
+              text: "Venta de materiales para acabados de construcción, porcelanatos, cerámicas ", fontSize:8
             },
             {
               text: "Dirección: "+this.parametrizacionSucu.direccion,
@@ -1847,14 +1938,14 @@ export class RegistrosVentasComponent implements OnInit {
               width:300,
               text: "FACTURA 001-001-000 ",
               bold: true,
-              fontSize: 20,
+              fontSize: 14,
             },
             {
               width:215,
               text: "NO "+this.numeroFactura,
               color: 'red',
               bold: true,
-              fontSize: 20,
+              fontSize: 14,
               alignment:"right"
             },
             ]
@@ -1862,7 +1953,7 @@ export class RegistrosVentasComponent implements OnInit {
             {
               columns: [{
               width:300,
-              text: "Fecha de Autorización "+this.parametrizacionSucu.fecha,
+              text: "Fecha de Autorización: " + this.textoSoloFecha(this.parametrizacionSucu.fecha),
             },
             {
               width:215,
@@ -1885,7 +1976,7 @@ export class RegistrosVentasComponent implements OnInit {
                         bold: true,
                         ul: [
                           'Cliente',
-                          'Contacto',
+                          'Ruc / Cédula',
                           "Dirección",
                           "Teléfonos",
                           "Correo"
@@ -1898,9 +1989,9 @@ export class RegistrosVentasComponent implements OnInit {
                       {
                         type: 'none',
                         ul: [
-                          ''+this.factura.cliente?.cliente_nombre,
-                          ''+this.factura.cliente?.direccion,
-                          ''+this.factura.cliente?.direccion,
+                          ''+(this.factura.cliente?.cliente_nombre || ''),
+                          ''+(this.factura.cliente?.ruc || ''),
+                          ''+(this.factura.cliente?.direccion || ''),
                           ''+this.factura.cliente?.celular,
                           ''+this.factura.cliente?.correo,
                         ]
@@ -1939,87 +2030,59 @@ export class RegistrosVentasComponent implements OnInit {
   
   
         {
-          //absolutePosition: {x: 40, y: 600},
-          columns: [{
-
-            type: 'none',
-            ul: [
-                  {
-                    style: 'tableExample2',
-                    table: {
-                      widths: [250],
-                      heights:70,
-                      body: [
-                        [
-                          {
-                            stack: [
-                              {
-                                type: 'none',
-                                fontSize: 9,
-                                ul: [
-                                  {text:'Vendedor: ' + this.factura.nombreVendedor, alignment:'left'},
-                                  {text: 'Observaciones: '+this.factura.observaciones+ " / "}
-                                ]
-                              }
-                            ]
-                          }
-                        ]
-                      ]
-                    },
-
-                  },{
-                    style: 'tableExample3',
-                  
-                    table: {
-                      widths: ["*"],
-                      heights:40,
-                      body: [
-                        [
-                          {
-                            stack: [
-                              {
-                                type: 'none',
-                                
-                                fontSize: 8,
-                                ul: [
-                                  'Nota: despues de 30 dias no se aceptan reclamos ni devoluciones',
-                                  ' ',
-                                  ' ',
-                                  ' ',
-                                  {text:'Firma de recibo a conformidad' , alignment:'center'}
-                                ]
-                              }
-                            ]
-                          }
-                        ]
-                      ]
-                    },
-
-                  }
-            ]
-            
-            
+          // Dos columnas al ras de los bordes de la página (igual que "Otros valores"):
+          // izquierda Vendedor / Nota, derecha Totales.
+          columnGap: 15,
+          margin: [0, 5, 0, 15],
+          columns: [
+            {
+              width: "*",
+              stack: [
+                {
+                  table: {
+                    widths: ["*"],
+                    heights: 70,
+                    body: [[{
+                      stack: [
+                        { text: 'Vendedor: ' + (this.factura.nombreVendedor || '') },
+                        { text: 'Observaciones: ' + (this.factura.observaciones || '') + " / " },
+                      ],
+                      margin: [4, 2, 4, 2],
+                    }]],
+                  },
+                },
+                {
+                  margin: [0, 6, 0, 0],
+                  table: {
+                    widths: ["*"],
+                    heights: 40,
+                    body: [[{
+                      stack: [
+                        { text: 'Nota: despues de 30 dias no se aceptan reclamos ni devoluciones', fontSize: 8, alignment: 'center' },
+                        { text: ' ', margin: [0, 10, 0, 0] },
+                        { text: 'Firma de recibo a conformidad', fontSize: 8, alignment: 'center' },
+                      ],
+                      margin: [4, 2, 4, 2],
+                    }]],
+                  },
+                },
+              ],
+            },
+            {
+              width: 230,
+              table: {
+                widths: ["*", 90],
+                body: [
+                  [ { text: 'Valor', bold: true ,style: "detalleTotales"}, {text:this.subtotal1.toFixed(2), style:"totales" }],
+                  [ { text: 'Otros descuentos', bold: true ,style: "detalleTotales"}, {text:this.Sdescuento.toFixed(2), style:"totales" } ],
+                  [ { text: 'Subtotal', bold: true, style: "detalleTotales" }, {text:this.subtotal2.toFixed(2), style:"totales" } ],
+                  [ { text: 'IVA', bold: true, style: "detalleTotales" }, {text:this.iva.toFixed(2), style:"totales" } ],
+                  [ { text: 'Total', bold: true, style: "detalleTotales" }, {text:this.factura.total.toFixed(2), style:"totales" } ]
+                ]
+              },
+            },
+          ],
         },
-        {
-          //Desde aqui comienza los datos del cliente
-          style: 'tableExample',
-         
-          table: {
-            widths: [125,100],
-            body: [
-              [ { text: 'Subtotal', bold: true ,style: "detalleTotales"}, {text: this.factura.subtotalF1.toFixed(2), style:"totales" }],
-              [ { text: 'Otros descuentos', bold: true ,style: "detalleTotales"}, {text:this.Sdescuento.toFixed(2), style:"totales" } ],
-              [ { text: 'Subtotal', bold: true, style: "detalleTotales" }, {text: this.factura.subtotalF2.toFixed(2), style:"totales" } ],
-              [ { text: 'Tarifa 0', bold: true , style: "detalleTotales" }, {text:this.sIva0.toFixed(2), style:"totales" } ],
-              [ { text: 'Tarifa 12', bold: true ,style: "detalleTotales"}, {text: this.factura.subtotalF2.toFixed(2) , style:"totales" }],
-              [ { text: '12% IVA', bold: true ,style: "detalleTotales"}, {text: this.factura.totalIva.toFixed(2), style:"totales" } ],
-              [ { text: 'Total', bold: true, style: "detalleTotales" }, {text:this.factura.total.toFixed(2), style:"totales" } ]
-            ]
-          }
-          },
-        ]
-        },
-        this.getDatosFooter(),
        
         
       ],
@@ -2067,7 +2130,7 @@ export class RegistrosVentasComponent implements OnInit {
             margin: [10, -5, 0, 15]
           },
           texto6: {
-            fontSize: 14,
+            fontSize: 10,
             bold: true,
             alignment: "center"
           },
@@ -2091,7 +2154,7 @@ export class RegistrosVentasComponent implements OnInit {
           },
           tableHeader2: {
             bold: true,
-            fontSize:10,
+            fontSize:9,
           },
           
           fondoFooter: {
@@ -2123,10 +2186,29 @@ export class RegistrosVentasComponent implements OnInit {
     return `${p(d.getDate())}/${p(d.getMonth() + 1)}/${d.getFullYear()} ${p(d.getHours())}:${p(d.getMinutes())}`;
   }
 
-  /** Fecha del documento: la registrada en la nota (fecha2) o, si no, su fecha. */
+  /** dd/MM/yyyy (sin hora). Un texto "YYYY-MM-DD" se toma tal cual, sin zona horaria. */
+  textoSoloFecha(valor: any): string {
+    if (!valor) return "";
+    const m = String(valor).match(/^(\d{4})-(\d{2})-(\d{2})/);
+    if (m) return `${m[3]}/${m[2]}/${m[1]}`;
+    return this.textoFechaHora(valor).slice(0, 10);
+  }
+
+  /**
+   * Fecha del documento en el mismo formato que la de impresión (dd/MM/yyyy HH:mm).
+   * fecha2 viene como "28/10/2026, 5:45:25 p. m.": se convierte a 24 horas.
+   */
   textoFechaDocumentoNotaVenta(): string {
-    const f2 = (this.factura as any)?.fecha2;
-    if (f2) return String(f2);
+    const f2 = String((this.factura as any)?.fecha2 || "");
+    const m = f2.match(/^(\d{1,2})\/(\d{1,2})\/(\d{4}),?\s+(\d{1,2}):(\d{2})(?::\d{2})?\s*([ap])?/i);
+    if (m) {
+      let h = Number(m[4]);
+      const ap = (m[6] || "").toLowerCase();
+      if (ap === "p" && h < 12) h += 12;
+      if (ap === "a" && h === 12) h = 0;
+      const p = (n: any) => String(n).padStart(2, "0");
+      return `${p(m[1])}/${p(m[2])}/${m[3]} ${p(h)}:${m[5]}`;
+    }
     return this.textoFechaHora(this.factura?.fecha);
   }
 
@@ -2137,6 +2219,7 @@ export class RegistrosVentasComponent implements OnInit {
     let tipoDocumento="Factura";
     return {
       pageSize: 'A4',
+      defaultStyle: { fontSize: 9 },
       content: [
         {
           image: this.imagenLogotipo,
@@ -2146,7 +2229,7 @@ export class RegistrosVentasComponent implements OnInit {
         {
           text: "NOTA DE VENTA",
           bold: true,
-          fontSize: 18,
+          fontSize: 14,
           margin: [0, 0, 0, 2],
         },
         {
@@ -2160,8 +2243,8 @@ export class RegistrosVentasComponent implements OnInit {
             widths: ["*"],
             body: [[{
               stack: [
-                { text: "Dirección: " + (this.parametrizacionSucu?.direccion || ""), fontSize: 10 },
-                { text: "Teléfonos: " + (this.parametrizacionSucu?.telefonos || ""), fontSize: 10 },
+                { text: "Dirección: " + (this.parametrizacionSucu?.direccion || "") },
+                { text: "Teléfonos: " + (this.parametrizacionSucu?.telefonos || "") },
               ],
             }]],
           },
@@ -2169,14 +2252,14 @@ export class RegistrosVentasComponent implements OnInit {
         },
         {
           columns: [
-            { width: "*", text: "Proforma No", bold: true, fontSize: 18 },
-            { width: "auto", text: "NO " + this.numeroFactura, color: "red", bold: true, fontSize: 18 },
+            { width: "*", text: "Proforma No", bold: true, fontSize: 14 },
+            { width: "auto", text: "NO " + this.numeroFactura, color: "red", bold: true, fontSize: 14 },
           ],
         },
         {
           columns: [
-            { width: "*", text: "Fecha de Autorización " + (this.parametrizacionSucu?.fecha || ""), fontSize: 10 },
-            { width: "auto", text: "Usuario: " + (this.factura.username || ""), fontSize: 10 },
+            { width: "*", text: "Fecha de Autorización: " + this.textoSoloFecha(this.parametrizacionSucu?.fecha) },
+            { width: "auto", text: "Usuario: " + (this.factura.username || "") },
           ],
         },
         {
@@ -2209,8 +2292,8 @@ export class RegistrosVentasComponent implements OnInit {
               },
               {
                 stack: [
-                  { text: "Fecha: " + this.textoFechaDocumentoNotaVenta(), fontSize: 10 },
-                  { text: "Fecha de impresión: " + this.textoFechaHora(new Date()), fontSize: 8, margin: [0, 4, 0, 0] },
+                  { text: "Fecha: " + this.textoFechaDocumentoNotaVenta() },
+                  { text: "Fecha de impresión: " + this.textoFechaHora(new Date()), margin: [0, 2, 0, 0] },
                 ],
                 border: [false, true, true, true],
               },
@@ -2265,7 +2348,7 @@ export class RegistrosVentasComponent implements OnInit {
               [ { text: 'Valor', bold: true ,style: "detalleTotales"}, {text:this.subtotal1.toFixed(2), style:"totales" }],
               [ { text: 'Otros descuentos', bold: true ,style: "detalleTotales"}, {text:this.Sdescuento.toFixed(2), style:"totales" } ],
               [ { text: 'Subtotal', bold: true, style: "detalleTotales" }, {text:this.subtotal2.toFixed(2), style:"totales" } ],
-              [ { text: 'IVA ' + this.porcentajeIvaVigente + '%', bold: true, style: "detalleTotales" }, {text:this.iva.toFixed(2), style:"totales" } ],
+              [ { text: 'IVA', bold: true, style: "detalleTotales" }, {text:this.iva.toFixed(2), style:"totales" } ],
               [ { text: 'Total', bold: true, style: "detalleTotales" }, {text:this.factura.total.toFixed(2), style:"totales" } ]
             ]
           }
@@ -2307,7 +2390,7 @@ export class RegistrosVentasComponent implements OnInit {
             decoration: 'underline'
           },
           texto6: {
-            fontSize: 14,
+            fontSize: 10,
             bold: true,
             alignment: "center"
           },
@@ -2343,7 +2426,7 @@ export class RegistrosVentasComponent implements OnInit {
           },
           tableHeader2: {
             bold: true,
-            fontSize:10,
+            fontSize:9,
           },
           
           fondoFooter: {
@@ -2487,7 +2570,8 @@ export class RegistrosVentasComponent implements OnInit {
           ],
           
           ...productos2.map(ed =>{
-            return [ { text: ed.cantidad, alignment: 'center' },{text:ed.producto.UNIDAD,fontSize:8,alignment:"center"},ed.producto.PRODUCTO, {text:ed.precio_venta.toFixed(2), alignment:"center"}, {text:ed.descuento, alignment:"center"}, {text:ed.total.toFixed(2), alignment:"right",style:"totales2"},
+            // Valores SIN IVA, con la tasa de cada producto.
+            return [ { text: ed.cantidad, alignment: 'center' },{text:ed.producto.UNIDAD,fontSize:8,alignment:"center"},ed.producto.PRODUCTO, {text:this.valorSinIvaProducto(ed, ed.precio_venta).toFixed(2), alignment:"center"}, {text:ed.descuento, alignment:"center"}, {text:this.valorSinIvaProducto(ed, ed.total).toFixed(2), alignment:"right",style:"totales2"},
             {text:ed.tipoDocumentoVenta, alignment:"center",style:"totales2"}];
             
           }),

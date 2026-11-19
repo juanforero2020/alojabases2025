@@ -87483,33 +87483,61 @@ function RegistrosVentasComponent_div_50_div_29_ng_container_1_Template(rf, ctx)
     _angular_core__WEBPACK_IMPORTED_MODULE_1__["ɵɵelementContainerEnd"]();
 } }
 function RegistrosVentasComponent_div_50_div_29_ng_container_2_Template(rf, ctx) { if (rf & 1) {
-    const _r31 = _angular_core__WEBPACK_IMPORTED_MODULE_1__["ɵɵgetCurrentView"]();
+    const _r33 = _angular_core__WEBPACK_IMPORTED_MODULE_1__["ɵɵgetCurrentView"]();
     _angular_core__WEBPACK_IMPORTED_MODULE_1__["ɵɵelementContainerStart"](0);
     _angular_core__WEBPACK_IMPORTED_MODULE_1__["ɵɵelementStart"](1, "button", 83);
-    _angular_core__WEBPACK_IMPORTED_MODULE_1__["ɵɵlistener"]("click", function RegistrosVentasComponent_div_50_div_29_ng_container_2_Template_button_click_1_listener() { _angular_core__WEBPACK_IMPORTED_MODULE_1__["ɵɵrestoreView"](_r31); const data_r26 = _angular_core__WEBPACK_IMPORTED_MODULE_1__["ɵɵnextContext"]().$implicit; const ctx_r29 = _angular_core__WEBPACK_IMPORTED_MODULE_1__["ɵɵnextContext"](2); return ctx_r29.generarReciboCajaParaFactura({ row: { data: data_r26.data } }); });
+    _angular_core__WEBPACK_IMPORTED_MODULE_1__["ɵɵlistener"]("click", function RegistrosVentasComponent_div_50_div_29_ng_container_2_Template_button_click_1_listener() { _angular_core__WEBPACK_IMPORTED_MODULE_1__["ɵɵrestoreView"](_r33); const data_r26 = _angular_core__WEBPACK_IMPORTED_MODULE_1__["ɵɵnextContext"]().$implicit; const ctx_r31 = _angular_core__WEBPACK_IMPORTED_MODULE_1__["ɵɵnextContext"](2); return ctx_r31.generarReciboCajaParaFactura({ row: { data: data_r26.data } }); });
     _angular_core__WEBPACK_IMPORTED_MODULE_1__["ɵɵelement"](2, "i", 84);
+    _angular_core__WEBPACK_IMPORTED_MODULE_1__["ɵɵelementEnd"]();
+    _angular_core__WEBPACK_IMPORTED_MODULE_1__["ɵɵelementContainerEnd"]();
+} if (rf & 2) {
+    const ctx_r28 = _angular_core__WEBPACK_IMPORTED_MODULE_1__["ɵɵnextContext"](3);
+    _angular_core__WEBPACK_IMPORTED_MODULE_1__["ɵɵadvance"](1);
+    _angular_core__WEBPACK_IMPORTED_MODULE_1__["ɵɵproperty"]("disabled", ctx_r28.generandoReciboParaFactura);
+} }
+function RegistrosVentasComponent_div_50_div_29_ng_container_3_Template(rf, ctx) { if (rf & 1) {
+    _angular_core__WEBPACK_IMPORTED_MODULE_1__["ɵɵelementContainerStart"](0);
+    _angular_core__WEBPACK_IMPORTED_MODULE_1__["ɵɵelement"](1, "i", 85);
+    _angular_core__WEBPACK_IMPORTED_MODULE_1__["ɵɵelementContainerEnd"]();
+} if (rf & 2) {
+    const data_r26 = _angular_core__WEBPACK_IMPORTED_MODULE_1__["ɵɵnextContext"]().$implicit;
+    _angular_core__WEBPACK_IMPORTED_MODULE_1__["ɵɵadvance"](1);
+    _angular_core__WEBPACK_IMPORTED_MODULE_1__["ɵɵproperty"]("title", data_r26.data.estadoReciboCaja === "VERIFICANDO" ? "Verificando transacci\u00F3n financiera\u2026" : "No se pudo verificar la transacci\u00F3n financiera");
+} }
+function RegistrosVentasComponent_div_50_div_29_ng_container_4_Template(rf, ctx) { if (rf & 1) {
+    const _r37 = _angular_core__WEBPACK_IMPORTED_MODULE_1__["ɵɵgetCurrentView"]();
+    _angular_core__WEBPACK_IMPORTED_MODULE_1__["ɵɵelementContainerStart"](0);
+    _angular_core__WEBPACK_IMPORTED_MODULE_1__["ɵɵelementStart"](1, "button", 86);
+    _angular_core__WEBPACK_IMPORTED_MODULE_1__["ɵɵlistener"]("click", function RegistrosVentasComponent_div_50_div_29_ng_container_4_Template_button_click_1_listener() { _angular_core__WEBPACK_IMPORTED_MODULE_1__["ɵɵrestoreView"](_r37); const data_r26 = _angular_core__WEBPACK_IMPORTED_MODULE_1__["ɵɵnextContext"]().$implicit; const ctx_r35 = _angular_core__WEBPACK_IMPORTED_MODULE_1__["ɵɵnextContext"](2); return ctx_r35.generarReciboCajaParaFactura({ row: { data: data_r26.data } }); });
+    _angular_core__WEBPACK_IMPORTED_MODULE_1__["ɵɵelement"](2, "i", 87);
     _angular_core__WEBPACK_IMPORTED_MODULE_1__["ɵɵelementEnd"]();
     _angular_core__WEBPACK_IMPORTED_MODULE_1__["ɵɵelementContainerEnd"]();
 } }
 function RegistrosVentasComponent_div_50_div_29_Template(rf, ctx) { if (rf & 1) {
     _angular_core__WEBPACK_IMPORTED_MODULE_1__["ɵɵelementStart"](0, "div", 68);
     _angular_core__WEBPACK_IMPORTED_MODULE_1__["ɵɵtemplate"](1, RegistrosVentasComponent_div_50_div_29_ng_container_1_Template, 3, 0, "ng-container", 0);
-    _angular_core__WEBPACK_IMPORTED_MODULE_1__["ɵɵtemplate"](2, RegistrosVentasComponent_div_50_div_29_ng_container_2_Template, 3, 0, "ng-container", 0);
+    _angular_core__WEBPACK_IMPORTED_MODULE_1__["ɵɵtemplate"](2, RegistrosVentasComponent_div_50_div_29_ng_container_2_Template, 3, 1, "ng-container", 0);
+    _angular_core__WEBPACK_IMPORTED_MODULE_1__["ɵɵtemplate"](3, RegistrosVentasComponent_div_50_div_29_ng_container_3_Template, 2, 1, "ng-container", 0);
+    _angular_core__WEBPACK_IMPORTED_MODULE_1__["ɵɵtemplate"](4, RegistrosVentasComponent_div_50_div_29_ng_container_4_Template, 3, 0, "ng-container", 0);
     _angular_core__WEBPACK_IMPORTED_MODULE_1__["ɵɵelementEnd"]();
 } if (rf & 2) {
     const data_r26 = ctx.$implicit;
     _angular_core__WEBPACK_IMPORTED_MODULE_1__["ɵɵadvance"](1);
-    _angular_core__WEBPACK_IMPORTED_MODULE_1__["ɵɵproperty"]("ngIf", data_r26.data.tieneReciboCaja);
+    _angular_core__WEBPACK_IMPORTED_MODULE_1__["ɵɵproperty"]("ngIf", data_r26.data.tieneReciboCaja && data_r26.data.estadoReciboCaja === "COMPLETO");
+    _angular_core__WEBPACK_IMPORTED_MODULE_1__["ɵɵadvance"](1);
+    _angular_core__WEBPACK_IMPORTED_MODULE_1__["ɵɵproperty"]("ngIf", data_r26.data.tieneReciboCaja && data_r26.data.estadoReciboCaja === "SIN_TRANSACCION");
+    _angular_core__WEBPACK_IMPORTED_MODULE_1__["ɵɵadvance"](1);
+    _angular_core__WEBPACK_IMPORTED_MODULE_1__["ɵɵproperty"]("ngIf", data_r26.data.tieneReciboCaja && (data_r26.data.estadoReciboCaja === "VERIFICANDO" || data_r26.data.estadoReciboCaja === "NO_VERIFICADO"));
     _angular_core__WEBPACK_IMPORTED_MODULE_1__["ɵɵadvance"](1);
     _angular_core__WEBPACK_IMPORTED_MODULE_1__["ɵɵproperty"]("ngIf", !data_r26.data.tieneReciboCaja);
 } }
 const _c0 = function () { return [8, 12, 20]; };
 function RegistrosVentasComponent_div_50_Template(rf, ctx) { if (rf & 1) {
-    const _r33 = _angular_core__WEBPACK_IMPORTED_MODULE_1__["ɵɵgetCurrentView"]();
+    const _r39 = _angular_core__WEBPACK_IMPORTED_MODULE_1__["ɵɵgetCurrentView"]();
     _angular_core__WEBPACK_IMPORTED_MODULE_1__["ɵɵelementStart"](0, "div");
     _angular_core__WEBPACK_IMPORTED_MODULE_1__["ɵɵelement"](1, "br");
     _angular_core__WEBPACK_IMPORTED_MODULE_1__["ɵɵelementStart"](2, "dx-data-grid", 33);
-    _angular_core__WEBPACK_IMPORTED_MODULE_1__["ɵɵlistener"]("onExporting", function RegistrosVentasComponent_div_50_Template_dx_data_grid_onExporting_2_listener($event) { _angular_core__WEBPACK_IMPORTED_MODULE_1__["ɵɵrestoreView"](_r33); const ctx_r32 = _angular_core__WEBPACK_IMPORTED_MODULE_1__["ɵɵnextContext"](); return ctx_r32.onExporting($event); })("onExported", function RegistrosVentasComponent_div_50_Template_dx_data_grid_onExported_2_listener($event) { _angular_core__WEBPACK_IMPORTED_MODULE_1__["ɵɵrestoreView"](_r33); const ctx_r34 = _angular_core__WEBPACK_IMPORTED_MODULE_1__["ɵɵnextContext"](); return ctx_r34.onExported($event); });
+    _angular_core__WEBPACK_IMPORTED_MODULE_1__["ɵɵlistener"]("onExporting", function RegistrosVentasComponent_div_50_Template_dx_data_grid_onExporting_2_listener($event) { _angular_core__WEBPACK_IMPORTED_MODULE_1__["ɵɵrestoreView"](_r39); const ctx_r38 = _angular_core__WEBPACK_IMPORTED_MODULE_1__["ɵɵnextContext"](); return ctx_r38.onExporting($event); })("onExported", function RegistrosVentasComponent_div_50_Template_dx_data_grid_onExported_2_listener($event) { _angular_core__WEBPACK_IMPORTED_MODULE_1__["ɵɵrestoreView"](_r39); const ctx_r40 = _angular_core__WEBPACK_IMPORTED_MODULE_1__["ɵɵnextContext"](); return ctx_r40.onExported($event); });
     _angular_core__WEBPACK_IMPORTED_MODULE_1__["ɵɵelement"](3, "dxo-filter-row", 34);
     _angular_core__WEBPACK_IMPORTED_MODULE_1__["ɵɵelement"](4, "dxo-search-panel", 35);
     _angular_core__WEBPACK_IMPORTED_MODULE_1__["ɵɵelement"](5, "dxo-export", 36);
@@ -87536,7 +87564,7 @@ function RegistrosVentasComponent_div_50_Template(rf, ctx) { if (rf & 1) {
     _angular_core__WEBPACK_IMPORTED_MODULE_1__["ɵɵelement"](26, "dxi-column", 57);
     _angular_core__WEBPACK_IMPORTED_MODULE_1__["ɵɵelement"](27, "dxi-column", 58);
     _angular_core__WEBPACK_IMPORTED_MODULE_1__["ɵɵtemplate"](28, RegistrosVentasComponent_div_50_div_28_Template, 6, 5, "div", 59);
-    _angular_core__WEBPACK_IMPORTED_MODULE_1__["ɵɵtemplate"](29, RegistrosVentasComponent_div_50_div_29_Template, 3, 2, "div", 59);
+    _angular_core__WEBPACK_IMPORTED_MODULE_1__["ɵɵtemplate"](29, RegistrosVentasComponent_div_50_div_29_Template, 5, 4, "div", 59);
     _angular_core__WEBPACK_IMPORTED_MODULE_1__["ɵɵelementStart"](30, "dxi-column", 60);
     _angular_core__WEBPACK_IMPORTED_MODULE_1__["ɵɵelement"](31, "dxi-button", 61);
     _angular_core__WEBPACK_IMPORTED_MODULE_1__["ɵɵelementEnd"]();
@@ -87612,15 +87640,15 @@ function RegistrosVentasComponent_div_50_Template(rf, ctx) { if (rf & 1) {
 } }
 function RegistrosVentasComponent_div_70_div_26_ng_container_1_Template(rf, ctx) { if (rf & 1) {
     _angular_core__WEBPACK_IMPORTED_MODULE_1__["ɵɵelementContainerStart"](0);
-    _angular_core__WEBPACK_IMPORTED_MODULE_1__["ɵɵelement"](1, "i", 89);
+    _angular_core__WEBPACK_IMPORTED_MODULE_1__["ɵɵelement"](1, "i", 92);
     _angular_core__WEBPACK_IMPORTED_MODULE_1__["ɵɵelementContainerEnd"]();
 } }
 function RegistrosVentasComponent_div_70_div_26_ng_container_2_Template(rf, ctx) { if (rf & 1) {
-    const _r41 = _angular_core__WEBPACK_IMPORTED_MODULE_1__["ɵɵgetCurrentView"]();
+    const _r47 = _angular_core__WEBPACK_IMPORTED_MODULE_1__["ɵɵgetCurrentView"]();
     _angular_core__WEBPACK_IMPORTED_MODULE_1__["ɵɵelementContainerStart"](0);
-    _angular_core__WEBPACK_IMPORTED_MODULE_1__["ɵɵelement"](1, "i", 90);
-    _angular_core__WEBPACK_IMPORTED_MODULE_1__["ɵɵelementStart"](2, "button", 91);
-    _angular_core__WEBPACK_IMPORTED_MODULE_1__["ɵɵlistener"]("click", function RegistrosVentasComponent_div_70_div_26_ng_container_2_Template_button_click_2_listener() { _angular_core__WEBPACK_IMPORTED_MODULE_1__["ɵɵrestoreView"](_r41); const data_r36 = _angular_core__WEBPACK_IMPORTED_MODULE_1__["ɵɵnextContext"]().$implicit; const ctx_r39 = _angular_core__WEBPACK_IMPORTED_MODULE_1__["ɵɵnextContext"](2); return ctx_r39.generarReciboCajaParaFactura({ row: { data: data_r36.data } }); });
+    _angular_core__WEBPACK_IMPORTED_MODULE_1__["ɵɵelement"](1, "i", 93);
+    _angular_core__WEBPACK_IMPORTED_MODULE_1__["ɵɵelementStart"](2, "button", 94);
+    _angular_core__WEBPACK_IMPORTED_MODULE_1__["ɵɵlistener"]("click", function RegistrosVentasComponent_div_70_div_26_ng_container_2_Template_button_click_2_listener() { _angular_core__WEBPACK_IMPORTED_MODULE_1__["ɵɵrestoreView"](_r47); const data_r42 = _angular_core__WEBPACK_IMPORTED_MODULE_1__["ɵɵnextContext"]().$implicit; const ctx_r45 = _angular_core__WEBPACK_IMPORTED_MODULE_1__["ɵɵnextContext"](2); return ctx_r45.generarReciboCajaParaFactura({ row: { data: data_r42.data } }); });
     _angular_core__WEBPACK_IMPORTED_MODULE_1__["ɵɵtext"](3, " Generar recibo ");
     _angular_core__WEBPACK_IMPORTED_MODULE_1__["ɵɵelementEnd"]();
     _angular_core__WEBPACK_IMPORTED_MODULE_1__["ɵɵelementContainerEnd"]();
@@ -87631,26 +87659,26 @@ function RegistrosVentasComponent_div_70_div_26_Template(rf, ctx) { if (rf & 1) 
     _angular_core__WEBPACK_IMPORTED_MODULE_1__["ɵɵtemplate"](2, RegistrosVentasComponent_div_70_div_26_ng_container_2_Template, 4, 0, "ng-container", 0);
     _angular_core__WEBPACK_IMPORTED_MODULE_1__["ɵɵelementEnd"]();
 } if (rf & 2) {
-    const data_r36 = ctx.$implicit;
+    const data_r42 = ctx.$implicit;
     _angular_core__WEBPACK_IMPORTED_MODULE_1__["ɵɵadvance"](1);
-    _angular_core__WEBPACK_IMPORTED_MODULE_1__["ɵɵproperty"]("ngIf", data_r36.data.tieneReciboCaja);
+    _angular_core__WEBPACK_IMPORTED_MODULE_1__["ɵɵproperty"]("ngIf", data_r42.data.tieneReciboCaja);
     _angular_core__WEBPACK_IMPORTED_MODULE_1__["ɵɵadvance"](1);
-    _angular_core__WEBPACK_IMPORTED_MODULE_1__["ɵɵproperty"]("ngIf", !data_r36.data.tieneReciboCaja);
+    _angular_core__WEBPACK_IMPORTED_MODULE_1__["ɵɵproperty"]("ngIf", !data_r42.data.tieneReciboCaja);
 } }
 function RegistrosVentasComponent_div_70_Template(rf, ctx) { if (rf & 1) {
-    const _r43 = _angular_core__WEBPACK_IMPORTED_MODULE_1__["ɵɵgetCurrentView"]();
+    const _r49 = _angular_core__WEBPACK_IMPORTED_MODULE_1__["ɵɵgetCurrentView"]();
     _angular_core__WEBPACK_IMPORTED_MODULE_1__["ɵɵelementStart"](0, "div");
     _angular_core__WEBPACK_IMPORTED_MODULE_1__["ɵɵelement"](1, "br");
     _angular_core__WEBPACK_IMPORTED_MODULE_1__["ɵɵelementStart"](2, "dx-data-grid", 33);
-    _angular_core__WEBPACK_IMPORTED_MODULE_1__["ɵɵlistener"]("onExporting", function RegistrosVentasComponent_div_70_Template_dx_data_grid_onExporting_2_listener($event) { _angular_core__WEBPACK_IMPORTED_MODULE_1__["ɵɵrestoreView"](_r43); const ctx_r42 = _angular_core__WEBPACK_IMPORTED_MODULE_1__["ɵɵnextContext"](); return ctx_r42.onExporting($event); })("onExported", function RegistrosVentasComponent_div_70_Template_dx_data_grid_onExported_2_listener($event) { _angular_core__WEBPACK_IMPORTED_MODULE_1__["ɵɵrestoreView"](_r43); const ctx_r44 = _angular_core__WEBPACK_IMPORTED_MODULE_1__["ɵɵnextContext"](); return ctx_r44.onExported($event); });
+    _angular_core__WEBPACK_IMPORTED_MODULE_1__["ɵɵlistener"]("onExporting", function RegistrosVentasComponent_div_70_Template_dx_data_grid_onExporting_2_listener($event) { _angular_core__WEBPACK_IMPORTED_MODULE_1__["ɵɵrestoreView"](_r49); const ctx_r48 = _angular_core__WEBPACK_IMPORTED_MODULE_1__["ɵɵnextContext"](); return ctx_r48.onExporting($event); })("onExported", function RegistrosVentasComponent_div_70_Template_dx_data_grid_onExported_2_listener($event) { _angular_core__WEBPACK_IMPORTED_MODULE_1__["ɵɵrestoreView"](_r49); const ctx_r50 = _angular_core__WEBPACK_IMPORTED_MODULE_1__["ɵɵnextContext"](); return ctx_r50.onExported($event); });
     _angular_core__WEBPACK_IMPORTED_MODULE_1__["ɵɵelement"](3, "dxo-filter-row", 34);
-    _angular_core__WEBPACK_IMPORTED_MODULE_1__["ɵɵelement"](4, "dxo-export", 85);
+    _angular_core__WEBPACK_IMPORTED_MODULE_1__["ɵɵelement"](4, "dxo-export", 88);
     _angular_core__WEBPACK_IMPORTED_MODULE_1__["ɵɵelement"](5, "dxo-search-panel", 35);
     _angular_core__WEBPACK_IMPORTED_MODULE_1__["ɵɵelement"](6, "dxi-column", 37);
     _angular_core__WEBPACK_IMPORTED_MODULE_1__["ɵɵelement"](7, "dxi-column", 38);
     _angular_core__WEBPACK_IMPORTED_MODULE_1__["ɵɵelement"](8, "dxi-column", 39);
     _angular_core__WEBPACK_IMPORTED_MODULE_1__["ɵɵelement"](9, "dxi-column", 40);
-    _angular_core__WEBPACK_IMPORTED_MODULE_1__["ɵɵelement"](10, "dxi-column", 86);
+    _angular_core__WEBPACK_IMPORTED_MODULE_1__["ɵɵelement"](10, "dxi-column", 89);
     _angular_core__WEBPACK_IMPORTED_MODULE_1__["ɵɵelement"](11, "dxi-column", 43);
     _angular_core__WEBPACK_IMPORTED_MODULE_1__["ɵɵelement"](12, "dxi-column", 44);
     _angular_core__WEBPACK_IMPORTED_MODULE_1__["ɵɵelement"](13, "dxi-column", 45);
@@ -87659,13 +87687,13 @@ function RegistrosVentasComponent_div_70_Template(rf, ctx) { if (rf & 1) {
     _angular_core__WEBPACK_IMPORTED_MODULE_1__["ɵɵelement"](16, "dxi-column", 48);
     _angular_core__WEBPACK_IMPORTED_MODULE_1__["ɵɵelement"](17, "dxi-column", 49);
     _angular_core__WEBPACK_IMPORTED_MODULE_1__["ɵɵelement"](18, "dxi-column", 50);
-    _angular_core__WEBPACK_IMPORTED_MODULE_1__["ɵɵelement"](19, "dxi-column", 87);
+    _angular_core__WEBPACK_IMPORTED_MODULE_1__["ɵɵelement"](19, "dxi-column", 90);
     _angular_core__WEBPACK_IMPORTED_MODULE_1__["ɵɵelement"](20, "dxi-column", 52);
     _angular_core__WEBPACK_IMPORTED_MODULE_1__["ɵɵelement"](21, "dxi-column", 54);
     _angular_core__WEBPACK_IMPORTED_MODULE_1__["ɵɵelement"](22, "dxi-column", 53);
     _angular_core__WEBPACK_IMPORTED_MODULE_1__["ɵɵelement"](23, "dxi-column", 55);
     _angular_core__WEBPACK_IMPORTED_MODULE_1__["ɵɵelement"](24, "dxi-column", 56);
-    _angular_core__WEBPACK_IMPORTED_MODULE_1__["ɵɵelement"](25, "dxi-column", 88);
+    _angular_core__WEBPACK_IMPORTED_MODULE_1__["ɵɵelement"](25, "dxi-column", 91);
     _angular_core__WEBPACK_IMPORTED_MODULE_1__["ɵɵtemplate"](26, RegistrosVentasComponent_div_70_div_26_Template, 3, 2, "div", 59);
     _angular_core__WEBPACK_IMPORTED_MODULE_1__["ɵɵelementStart"](27, "dxi-column", 60);
     _angular_core__WEBPACK_IMPORTED_MODULE_1__["ɵɵelement"](28, "dxi-button", 61);
@@ -87731,19 +87759,19 @@ function RegistrosVentasComponent_div_70_Template(rf, ctx) { if (rf & 1) {
     _angular_core__WEBPACK_IMPORTED_MODULE_1__["ɵɵproperty"]("showPageSizeSelector", true)("allowedPageSizes", _angular_core__WEBPACK_IMPORTED_MODULE_1__["ɵɵpureFunction0"](31, _c0));
 } }
 function RegistrosVentasComponent_div_71_Template(rf, ctx) { if (rf & 1) {
-    const _r46 = _angular_core__WEBPACK_IMPORTED_MODULE_1__["ɵɵgetCurrentView"]();
+    const _r52 = _angular_core__WEBPACK_IMPORTED_MODULE_1__["ɵɵgetCurrentView"]();
     _angular_core__WEBPACK_IMPORTED_MODULE_1__["ɵɵelementStart"](0, "div");
     _angular_core__WEBPACK_IMPORTED_MODULE_1__["ɵɵelement"](1, "br");
     _angular_core__WEBPACK_IMPORTED_MODULE_1__["ɵɵelementStart"](2, "dx-data-grid", 33);
-    _angular_core__WEBPACK_IMPORTED_MODULE_1__["ɵɵlistener"]("onExporting", function RegistrosVentasComponent_div_71_Template_dx_data_grid_onExporting_2_listener($event) { _angular_core__WEBPACK_IMPORTED_MODULE_1__["ɵɵrestoreView"](_r46); const ctx_r45 = _angular_core__WEBPACK_IMPORTED_MODULE_1__["ɵɵnextContext"](); return ctx_r45.onExporting($event); })("onExported", function RegistrosVentasComponent_div_71_Template_dx_data_grid_onExported_2_listener($event) { _angular_core__WEBPACK_IMPORTED_MODULE_1__["ɵɵrestoreView"](_r46); const ctx_r47 = _angular_core__WEBPACK_IMPORTED_MODULE_1__["ɵɵnextContext"](); return ctx_r47.onExported($event); });
+    _angular_core__WEBPACK_IMPORTED_MODULE_1__["ɵɵlistener"]("onExporting", function RegistrosVentasComponent_div_71_Template_dx_data_grid_onExporting_2_listener($event) { _angular_core__WEBPACK_IMPORTED_MODULE_1__["ɵɵrestoreView"](_r52); const ctx_r51 = _angular_core__WEBPACK_IMPORTED_MODULE_1__["ɵɵnextContext"](); return ctx_r51.onExporting($event); })("onExported", function RegistrosVentasComponent_div_71_Template_dx_data_grid_onExported_2_listener($event) { _angular_core__WEBPACK_IMPORTED_MODULE_1__["ɵɵrestoreView"](_r52); const ctx_r53 = _angular_core__WEBPACK_IMPORTED_MODULE_1__["ɵɵnextContext"](); return ctx_r53.onExported($event); });
     _angular_core__WEBPACK_IMPORTED_MODULE_1__["ɵɵelement"](3, "dxo-filter-row", 34);
     _angular_core__WEBPACK_IMPORTED_MODULE_1__["ɵɵelement"](4, "dxo-search-panel", 35);
-    _angular_core__WEBPACK_IMPORTED_MODULE_1__["ɵɵelement"](5, "dxo-export", 92);
+    _angular_core__WEBPACK_IMPORTED_MODULE_1__["ɵɵelement"](5, "dxo-export", 95);
     _angular_core__WEBPACK_IMPORTED_MODULE_1__["ɵɵelement"](6, "dxi-column", 37);
-    _angular_core__WEBPACK_IMPORTED_MODULE_1__["ɵɵelement"](7, "dxi-column", 93);
+    _angular_core__WEBPACK_IMPORTED_MODULE_1__["ɵɵelement"](7, "dxi-column", 96);
     _angular_core__WEBPACK_IMPORTED_MODULE_1__["ɵɵelement"](8, "dxi-column", 39);
     _angular_core__WEBPACK_IMPORTED_MODULE_1__["ɵɵelement"](9, "dxi-column", 40);
-    _angular_core__WEBPACK_IMPORTED_MODULE_1__["ɵɵelement"](10, "dxi-column", 86);
+    _angular_core__WEBPACK_IMPORTED_MODULE_1__["ɵɵelement"](10, "dxi-column", 89);
     _angular_core__WEBPACK_IMPORTED_MODULE_1__["ɵɵelement"](11, "dxi-column", 43);
     _angular_core__WEBPACK_IMPORTED_MODULE_1__["ɵɵelement"](12, "dxi-column", 44);
     _angular_core__WEBPACK_IMPORTED_MODULE_1__["ɵɵelement"](13, "dxi-column", 45);
@@ -87872,9 +87900,13 @@ class RegistrosVentasComponent {
         this.generarReciboCajaParaFactura = (e) => {
             const dataFactura = e.row.data;
             const tDocumento = this.mostrarSeccionFacturas ? 'Factura' : 'Nota de Venta';
-            if (dataFactura['tieneReciboCaja'])
-                return;
             if (this.generandoReciboParaFactura)
+                return;
+            if (dataFactura['estadoReciboCaja'] === 'SIN_TRANSACCION') {
+                this.generarSoloTransaccionParaRecibo(dataFactura, tDocumento);
+                return;
+            }
+            if (dataFactura['tieneReciboCaja'])
                 return;
             sweetalert2__WEBPACK_IMPORTED_MODULE_4___default.a.fire({
                 title: 'Generar recibo de caja',
@@ -88281,9 +88313,42 @@ class RegistrosVentasComponent {
     actualizarEstadoReciboCajaEnLista(lista, docVenta) {
         if (!lista)
             return;
+        const rCajaIds = [];
         lista.forEach(f => {
-            const match = this.listadoRecibosCaja.some(rc => rc.docVenta === docVenta && String(rc.numDocumento) === String(f.documento_n));
-            f['tieneReciboCaja'] = match;
+            const recibo = this.listadoRecibosCaja.find(rc => rc.docVenta === docVenta && String(rc.numDocumento) === String(f.documento_n));
+            f['tieneReciboCaja'] = !!recibo;
+            f['reciboCajaAsociado'] = recibo || null;
+            f['tieneTransaccionFinanciera'] = undefined;
+            f['estadoReciboCaja'] = recibo ? 'VERIFICANDO' : 'SIN_RECIBO';
+            if (recibo)
+                rCajaIds.push('RC' + recibo.idDocumento);
+        });
+        this.verificarTransaccionesRecibos(lista, rCajaIds);
+    }
+    /**
+     * Valida que cada recibo de caja tenga su transacción financiera
+     * (rCajaId = "RC" + número de recibo). Estados:
+     * COMPLETO, SIN_TRANSACCION (recibo sin transacción) o SIN_RECIBO.
+     */
+    verificarTransaccionesRecibos(lista, rCajaIds) {
+        if (!rCajaIds.length)
+            return;
+        this._transaccionFinancieraService.obtenerTransaccionesPorRecibosCaja(rCajaIds).subscribe((res) => {
+            const conTransaccion = new Set((res || []).map(t => String(t.rCajaId)));
+            lista.forEach(f => {
+                const recibo = f['reciboCajaAsociado'];
+                if (!recibo)
+                    return;
+                const tiene = conTransaccion.has('RC' + recibo.idDocumento);
+                f['tieneTransaccionFinanciera'] = tiene;
+                f['estadoReciboCaja'] = tiene ? 'COMPLETO' : 'SIN_TRANSACCION';
+            });
+        }, () => {
+            // Si no se pudo verificar, no se ofrece crear nada para no duplicar.
+            lista.forEach(f => {
+                if (f['reciboCajaAsociado'])
+                    f['estadoReciboCaja'] = 'NO_VERIFICADO';
+            });
         });
     }
     /**
@@ -88360,14 +88425,24 @@ class RegistrosVentasComponent {
           listaOperaciones.push(this.generarOperacionSaldoDesdeRegistro(facturaItem));
         } */
         recibo.operacionesComercialesList = listaOperaciones;
-        this._reciboCajaService.newReciboCaja(recibo).subscribe((res) => {
-            this.generarTransaccionesFinancierasDesdeRegistro(recibo, facturaItem);
+        this._reciboCajaService.newReciboCaja(recibo).subscribe((res) => Object(tslib__WEBPACK_IMPORTED_MODULE_0__["__awaiter"])(this, void 0, void 0, function* () {
             this.generarCuentaPorCobrarDesdeRegistro(facturaItem, recibo.idDocumento, formaPago);
             this.actualizarContadorRecibo(recibo);
             facturaItem['tieneReciboCaja'] = true;
+            facturaItem['reciboCajaAsociado'] = recibo;
             this.listadoRecibosCaja = [...this.listadoRecibosCaja, recibo];
-            sweetalert2__WEBPACK_IMPORTED_MODULE_4___default.a.fire('Éxito', 'Recibo de caja y transacciones generados correctamente.', 'success');
-        }, (err) => {
+            try {
+                yield this.generarTransaccionesFinancierasDesdeRegistro(recibo, facturaItem);
+                facturaItem['tieneTransaccionFinanciera'] = true;
+                facturaItem['estadoReciboCaja'] = 'COMPLETO';
+                sweetalert2__WEBPACK_IMPORTED_MODULE_4___default.a.fire('Éxito', 'Recibo de caja y transacciones generados correctamente.', 'success');
+            }
+            catch (e) {
+                facturaItem['tieneTransaccionFinanciera'] = false;
+                facturaItem['estadoReciboCaja'] = 'SIN_TRANSACCION';
+                sweetalert2__WEBPACK_IMPORTED_MODULE_4___default.a.fire('Atención', 'Se guardó el recibo de caja, pero no su transacción financiera. Use el botón de la fila para generarla.', 'warning');
+            }
+        }), (err) => {
             sweetalert2__WEBPACK_IMPORTED_MODULE_4___default.a.fire('Error', 'No se pudo guardar el recibo de caja.', 'error');
         });
     }
@@ -88397,7 +88472,42 @@ class RegistrosVentasComponent {
         operacionCC.idSubCuenta = '61c50005270abc667ec3f8f7';
         return operacionCC;
     }
+    /** Recibo ya existe pero sin transacción financiera: crea solo la transacción. */
+    generarSoloTransaccionParaRecibo(facturaItem, tDocumento) {
+        const recibo = facturaItem['reciboCajaAsociado'];
+        if (!recibo)
+            return;
+        sweetalert2__WEBPACK_IMPORTED_MODULE_4___default.a.fire({
+            title: 'Generar transacción financiera',
+            text: `${tDocumento} #${facturaItem.documento_n} tiene el recibo de caja RC${recibo.idDocumento} pero no su transacción financiera. ¿Generarla?`,
+            icon: 'question',
+            showCancelButton: true,
+            confirmButtonText: 'Sí',
+            cancelButtonText: 'No'
+        }).then((result) => Object(tslib__WEBPACK_IMPORTED_MODULE_0__["__awaiter"])(this, void 0, void 0, function* () {
+            if (!result.value)
+                return;
+            if (!recibo.operacionesComercialesList || !recibo.operacionesComercialesList.length) {
+                recibo.operacionesComercialesList = [this.generarOperacionPrincipalDesdeRegistro(facturaItem, tDocumento)];
+            }
+            this.generandoReciboParaFactura = true;
+            try {
+                yield this.generarTransaccionesFinancierasDesdeRegistro(recibo, facturaItem);
+                facturaItem['tieneTransaccionFinanciera'] = true;
+                facturaItem['estadoReciboCaja'] = 'COMPLETO';
+                sweetalert2__WEBPACK_IMPORTED_MODULE_4___default.a.fire('Éxito', 'Transacción financiera generada correctamente.', 'success');
+            }
+            catch (e) {
+                sweetalert2__WEBPACK_IMPORTED_MODULE_4___default.a.fire('Error', 'No se pudo guardar la transacción financiera.', 'error');
+            }
+            finally {
+                this.generandoReciboParaFactura = false;
+            }
+        }));
+    }
+    /** Crea las transacciones del recibo y espera a que todas se guarden. */
     generarTransaccionesFinancierasDesdeRegistro(recibo, facturaItem) {
+        const pendientes = [];
         (recibo.operacionesComercialesList || []).forEach(element => {
             var _a;
             const transaccion = new _transaccionesFinancieras_transaccionesFinancieras__WEBPACK_IMPORTED_MODULE_8__["TransaccionesFinancieras"]();
@@ -88419,11 +88529,9 @@ class RegistrosVentasComponent {
             transaccion.subCuenta = element.nombreSubcuenta;
             transaccion.notas = recibo.observaciones;
             transaccion.tipoCuenta = element.tipoCuenta;
-            try {
-                this._transaccionFinancieraService.newTransaccionFinanciera(transaccion).subscribe(() => { }, () => { });
-            }
-            catch (error) { }
+            pendientes.push(this._transaccionFinancieraService.newTransaccionFinanciera(transaccion).toPromise());
         });
+        return Promise.all(pendientes);
     }
     generarCuentaPorCobrarDesdeRegistro(facturaItem, idRecibo, formaPago) {
         var _a, _b;
@@ -89076,16 +89184,27 @@ class RegistrosVentasComponent {
         const p = Number(this.ivaPorcentaje);
         return p > 0 ? p : 12;
     }
+    /** Tasa de IVA de un producto: su excepción (p. ej. 5% Bondex) o la parametrizada. */
+    tasaIvaProducto(ed) {
+        var _a, _b;
+        const excepcion = Number((_b = (_a = ed) === null || _a === void 0 ? void 0 : _a.producto) === null || _b === void 0 ? void 0 : _b.ivaExcepcion);
+        return excepcion > 0 ? excepcion : this.porcentajeIvaVigente;
+    }
+    /** Valor sin IVA de un monto de ese producto (los precios guardados incluyen IVA). */
+    valorSinIvaProducto(ed, valorConIva) {
+        return (Number(valorConIva) || 0) / (1 + this.tasaIvaProducto(ed) / 100);
+    }
     calcularValoresFactura() {
-        const tasa = this.porcentajeIvaVigente / 100;
         const transporte = Number(this.factura.coste_transporte) || 0;
-        // El total incluye el transporte (tarifa 0): solo el resto lleva IVA.
-        this.subtotal1 = ((this.factura.total - transporte) / (1 + tasa)) + transporte;
+        // Base sin IVA sumando cada producto con su propia tasa (15%, 5%, ...).
+        const base = (this.productosVendidos2 || []).reduce((suma, ed) => suma + this.valorSinIvaProducto(ed, ed.total), 0);
         this.Sdescuento = this.factura.subtotalF1 - this.factura.subtotalF2;
-        this.subtotal2 = this.subtotal1 - this.Sdescuento;
+        this.subtotal2 = base + transporte;
+        this.subtotal1 = this.subtotal2 + (Number(this.Sdescuento) || 0);
         this.sIva0 = transporte;
-        this.sIva12 = this.subtotal2 - this.sIva0;
-        this.iva = this.sIva12 * tasa;
+        this.sIva12 = base;
+        // IVA = total - subtotal: así el documento siempre cuadra con el total cobrado.
+        this.iva = Math.max(0, (Number(this.factura.total) || 0) - this.subtotal2);
     }
     setearNFactura() {
         let nf = this.factura.documento_n;
@@ -89411,6 +89530,7 @@ class RegistrosVentasComponent {
         let tipoDocumento = "Factura";
         return {
             pageSize: 'A4',
+            defaultStyle: { fontSize: 9 },
             content: [
                 {
                     columns: [{
@@ -89421,7 +89541,7 @@ class RegistrosVentasComponent {
                         {
                             width: 410,
                             margin: [0, 20, 0, 10],
-                            text: "Fecha:   " + this.factura.fecha2,
+                            text: "Fecha: " + this.textoFechaDocumentoNotaVenta(),
                             alignment: "right"
                         },
                     ]
@@ -89437,10 +89557,10 @@ class RegistrosVentasComponent {
                                 text: "RUC: " + this.parametrizacionSucu.ruc,
                             },
                             {
-                                text: "Fecha de impresión: " + this.factura.fecha, fontSize: 10
+                                text: "Fecha de impresión: " + this.textoFechaHora(new Date())
                             },
                             {
-                                text: "Venta de materiales para acabados de construcción, porcelanatos, cerámicas ", fontSize: 9
+                                text: "Venta de materiales para acabados de construcción, porcelanatos, cerámicas ", fontSize: 8
                             },
                             {
                                 text: "Dirección: " + this.parametrizacionSucu.direccion,
@@ -89455,14 +89575,14 @@ class RegistrosVentasComponent {
                                         width: 300,
                                         text: "FACTURA 001-001-000 ",
                                         bold: true,
-                                        fontSize: 20,
+                                        fontSize: 14,
                                     },
                                     {
                                         width: 215,
                                         text: "NO " + this.numeroFactura,
                                         color: 'red',
                                         bold: true,
-                                        fontSize: 20,
+                                        fontSize: 14,
                                         alignment: "right"
                                     },
                                 ]
@@ -89470,7 +89590,7 @@ class RegistrosVentasComponent {
                             {
                                 columns: [{
                                         width: 300,
-                                        text: "Fecha de Autorización " + this.parametrizacionSucu.fecha,
+                                        text: "Fecha de Autorización: " + this.textoSoloFecha(this.parametrizacionSucu.fecha),
                                     },
                                     {
                                         width: 215,
@@ -89492,7 +89612,7 @@ class RegistrosVentasComponent {
                                                         bold: true,
                                                         ul: [
                                                             'Cliente',
-                                                            'Contacto',
+                                                            'Ruc / Cédula',
                                                             "Dirección",
                                                             "Teléfonos",
                                                             "Correo"
@@ -89505,9 +89625,9 @@ class RegistrosVentasComponent {
                                                         {
                                                             type: 'none',
                                                             ul: [
-                                                                '' + ((_a = this.factura.cliente) === null || _a === void 0 ? void 0 : _a.cliente_nombre),
-                                                                '' + ((_b = this.factura.cliente) === null || _b === void 0 ? void 0 : _b.direccion),
-                                                                '' + ((_c = this.factura.cliente) === null || _c === void 0 ? void 0 : _c.direccion),
+                                                                '' + (((_a = this.factura.cliente) === null || _a === void 0 ? void 0 : _a.cliente_nombre) || ''),
+                                                                '' + (((_b = this.factura.cliente) === null || _b === void 0 ? void 0 : _b.ruc) || ''),
+                                                                '' + (((_c = this.factura.cliente) === null || _c === void 0 ? void 0 : _c.direccion) || ''),
                                                                 '' + ((_d = this.factura.cliente) === null || _d === void 0 ? void 0 : _d.celular),
                                                                 '' + ((_e = this.factura.cliente) === null || _e === void 0 ? void 0 : _e.correo),
                                                             ]
@@ -89534,79 +89654,59 @@ class RegistrosVentasComponent {
                 },
                 this.getOtrosValores(),
                 {
-                    //absolutePosition: {x: 40, y: 600},
-                    columns: [{
-                            type: 'none',
-                            ul: [
+                    // Dos columnas al ras de los bordes de la página (igual que "Otros valores"):
+                    // izquierda Vendedor / Nota, derecha Totales.
+                    columnGap: 15,
+                    margin: [0, 5, 0, 15],
+                    columns: [
+                        {
+                            width: "*",
+                            stack: [
                                 {
-                                    style: 'tableExample2',
                                     table: {
-                                        widths: [250],
+                                        widths: ["*"],
                                         heights: 70,
-                                        body: [
-                                            [
-                                                {
+                                        body: [[{
                                                     stack: [
-                                                        {
-                                                            type: 'none',
-                                                            fontSize: 9,
-                                                            ul: [
-                                                                { text: 'Vendedor: ' + this.factura.nombreVendedor, alignment: 'left' },
-                                                                { text: 'Observaciones: ' + this.factura.observaciones + " / " }
-                                                            ]
-                                                        }
-                                                    ]
-                                                }
-                                            ]
-                                        ]
+                                                        { text: 'Vendedor: ' + (this.factura.nombreVendedor || '') },
+                                                        { text: 'Observaciones: ' + (this.factura.observaciones || '') + " / " },
+                                                    ],
+                                                    margin: [4, 2, 4, 2],
+                                                }]],
                                     },
-                                }, {
-                                    style: 'tableExample3',
+                                },
+                                {
+                                    margin: [0, 6, 0, 0],
                                     table: {
                                         widths: ["*"],
                                         heights: 40,
-                                        body: [
-                                            [
-                                                {
+                                        body: [[{
                                                     stack: [
-                                                        {
-                                                            type: 'none',
-                                                            fontSize: 8,
-                                                            ul: [
-                                                                'Nota: despues de 30 dias no se aceptan reclamos ni devoluciones',
-                                                                ' ',
-                                                                ' ',
-                                                                ' ',
-                                                                { text: 'Firma de recibo a conformidad', alignment: 'center' }
-                                                            ]
-                                                        }
-                                                    ]
-                                                }
-                                            ]
-                                        ]
+                                                        { text: 'Nota: despues de 30 dias no se aceptan reclamos ni devoluciones', fontSize: 8, alignment: 'center' },
+                                                        { text: ' ', margin: [0, 10, 0, 0] },
+                                                        { text: 'Firma de recibo a conformidad', fontSize: 8, alignment: 'center' },
+                                                    ],
+                                                    margin: [4, 2, 4, 2],
+                                                }]],
                                     },
-                                }
-                            ]
+                                },
+                            ],
                         },
                         {
-                            //Desde aqui comienza los datos del cliente
-                            style: 'tableExample',
+                            width: 230,
                             table: {
-                                widths: [125, 100],
+                                widths: ["*", 90],
                                 body: [
-                                    [{ text: 'Subtotal', bold: true, style: "detalleTotales" }, { text: this.factura.subtotalF1.toFixed(2), style: "totales" }],
+                                    [{ text: 'Valor', bold: true, style: "detalleTotales" }, { text: this.subtotal1.toFixed(2), style: "totales" }],
                                     [{ text: 'Otros descuentos', bold: true, style: "detalleTotales" }, { text: this.Sdescuento.toFixed(2), style: "totales" }],
-                                    [{ text: 'Subtotal', bold: true, style: "detalleTotales" }, { text: this.factura.subtotalF2.toFixed(2), style: "totales" }],
-                                    [{ text: 'Tarifa 0', bold: true, style: "detalleTotales" }, { text: this.sIva0.toFixed(2), style: "totales" }],
-                                    [{ text: 'Tarifa 12', bold: true, style: "detalleTotales" }, { text: this.factura.subtotalF2.toFixed(2), style: "totales" }],
-                                    [{ text: '12% IVA', bold: true, style: "detalleTotales" }, { text: this.factura.totalIva.toFixed(2), style: "totales" }],
+                                    [{ text: 'Subtotal', bold: true, style: "detalleTotales" }, { text: this.subtotal2.toFixed(2), style: "totales" }],
+                                    [{ text: 'IVA', bold: true, style: "detalleTotales" }, { text: this.iva.toFixed(2), style: "totales" }],
                                     [{ text: 'Total', bold: true, style: "detalleTotales" }, { text: this.factura.total.toFixed(2), style: "totales" }]
                                 ]
-                            }
+                            },
                         },
-                    ]
+                    ],
                 },
-                this.getDatosFooter(),
             ],
             footer: function (currentPage, pageCount) {
                 return {
@@ -89649,7 +89749,7 @@ class RegistrosVentasComponent {
                     margin: [10, -5, 0, 15]
                 },
                 texto6: {
-                    fontSize: 14,
+                    fontSize: 10,
                     bold: true,
                     alignment: "center"
                 },
@@ -89673,7 +89773,7 @@ class RegistrosVentasComponent {
                 },
                 tableHeader2: {
                     bold: true,
-                    fontSize: 10,
+                    fontSize: 9,
                 },
                 fondoFooter: {
                     fontSize: 8,
@@ -89701,12 +89801,33 @@ class RegistrosVentasComponent {
         const p = (n) => String(n).padStart(2, "0");
         return `${p(d.getDate())}/${p(d.getMonth() + 1)}/${d.getFullYear()} ${p(d.getHours())}:${p(d.getMinutes())}`;
     }
-    /** Fecha del documento: la registrada en la nota (fecha2) o, si no, su fecha. */
+    /** dd/MM/yyyy (sin hora). Un texto "YYYY-MM-DD" se toma tal cual, sin zona horaria. */
+    textoSoloFecha(valor) {
+        if (!valor)
+            return "";
+        const m = String(valor).match(/^(\d{4})-(\d{2})-(\d{2})/);
+        if (m)
+            return `${m[3]}/${m[2]}/${m[1]}`;
+        return this.textoFechaHora(valor).slice(0, 10);
+    }
+    /**
+     * Fecha del documento en el mismo formato que la de impresión (dd/MM/yyyy HH:mm).
+     * fecha2 viene como "28/10/2026, 5:45:25 p. m.": se convierte a 24 horas.
+     */
     textoFechaDocumentoNotaVenta() {
         var _a, _b;
-        const f2 = (_a = this.factura) === null || _a === void 0 ? void 0 : _a.fecha2;
-        if (f2)
-            return String(f2);
+        const f2 = String(((_a = this.factura) === null || _a === void 0 ? void 0 : _a.fecha2) || "");
+        const m = f2.match(/^(\d{1,2})\/(\d{1,2})\/(\d{4}),?\s+(\d{1,2}):(\d{2})(?::\d{2})?\s*([ap])?/i);
+        if (m) {
+            let h = Number(m[4]);
+            const ap = (m[6] || "").toLowerCase();
+            if (ap === "p" && h < 12)
+                h += 12;
+            if (ap === "a" && h === 12)
+                h = 0;
+            const p = (n) => String(n).padStart(2, "0");
+            return `${p(m[1])}/${p(m[2])}/${m[3]} ${p(h)}:${m[5]}`;
+        }
         return this.textoFechaHora((_b = this.factura) === null || _b === void 0 ? void 0 : _b.fecha);
     }
     getDocumentDefinitionNotaVenta() {
@@ -89717,6 +89838,7 @@ class RegistrosVentasComponent {
         let tipoDocumento = "Factura";
         return {
             pageSize: 'A4',
+            defaultStyle: { fontSize: 9 },
             content: [
                 {
                     image: this.imagenLogotipo,
@@ -89726,7 +89848,7 @@ class RegistrosVentasComponent {
                 {
                     text: "NOTA DE VENTA",
                     bold: true,
-                    fontSize: 18,
+                    fontSize: 14,
                     margin: [0, 0, 0, 2],
                 },
                 {
@@ -89740,8 +89862,8 @@ class RegistrosVentasComponent {
                         widths: ["*"],
                         body: [[{
                                     stack: [
-                                        { text: "Dirección: " + (((_a = this.parametrizacionSucu) === null || _a === void 0 ? void 0 : _a.direccion) || ""), fontSize: 10 },
-                                        { text: "Teléfonos: " + (((_b = this.parametrizacionSucu) === null || _b === void 0 ? void 0 : _b.telefonos) || ""), fontSize: 10 },
+                                        { text: "Dirección: " + (((_a = this.parametrizacionSucu) === null || _a === void 0 ? void 0 : _a.direccion) || "") },
+                                        { text: "Teléfonos: " + (((_b = this.parametrizacionSucu) === null || _b === void 0 ? void 0 : _b.telefonos) || "") },
                                     ],
                                 }]],
                     },
@@ -89749,14 +89871,14 @@ class RegistrosVentasComponent {
                 },
                 {
                     columns: [
-                        { width: "*", text: "Proforma No", bold: true, fontSize: 18 },
-                        { width: "auto", text: "NO " + this.numeroFactura, color: "red", bold: true, fontSize: 18 },
+                        { width: "*", text: "Proforma No", bold: true, fontSize: 14 },
+                        { width: "auto", text: "NO " + this.numeroFactura, color: "red", bold: true, fontSize: 14 },
                     ],
                 },
                 {
                     columns: [
-                        { width: "*", text: "Fecha de Autorización " + (((_c = this.parametrizacionSucu) === null || _c === void 0 ? void 0 : _c.fecha) || ""), fontSize: 10 },
-                        { width: "auto", text: "Usuario: " + (this.factura.username || ""), fontSize: 10 },
+                        { width: "*", text: "Fecha de Autorización: " + this.textoSoloFecha((_c = this.parametrizacionSucu) === null || _c === void 0 ? void 0 : _c.fecha) },
+                        { width: "auto", text: "Usuario: " + (this.factura.username || "") },
                     ],
                 },
                 {
@@ -89789,8 +89911,8 @@ class RegistrosVentasComponent {
                                 },
                                 {
                                     stack: [
-                                        { text: "Fecha: " + this.textoFechaDocumentoNotaVenta(), fontSize: 10 },
-                                        { text: "Fecha de impresión: " + this.textoFechaHora(new Date()), fontSize: 8, margin: [0, 4, 0, 0] },
+                                        { text: "Fecha: " + this.textoFechaDocumentoNotaVenta() },
+                                        { text: "Fecha de impresión: " + this.textoFechaHora(new Date()), margin: [0, 2, 0, 0] },
                                     ],
                                     border: [false, true, true, true],
                                 },
@@ -89842,7 +89964,7 @@ class RegistrosVentasComponent {
                                     [{ text: 'Valor', bold: true, style: "detalleTotales" }, { text: this.subtotal1.toFixed(2), style: "totales" }],
                                     [{ text: 'Otros descuentos', bold: true, style: "detalleTotales" }, { text: this.Sdescuento.toFixed(2), style: "totales" }],
                                     [{ text: 'Subtotal', bold: true, style: "detalleTotales" }, { text: this.subtotal2.toFixed(2), style: "totales" }],
-                                    [{ text: 'IVA ' + this.porcentajeIvaVigente + '%', bold: true, style: "detalleTotales" }, { text: this.iva.toFixed(2), style: "totales" }],
+                                    [{ text: 'IVA', bold: true, style: "detalleTotales" }, { text: this.iva.toFixed(2), style: "totales" }],
                                     [{ text: 'Total', bold: true, style: "detalleTotales" }, { text: this.factura.total.toFixed(2), style: "totales" }]
                                 ]
                             }
@@ -89879,7 +90001,7 @@ class RegistrosVentasComponent {
                     decoration: 'underline'
                 },
                 texto6: {
-                    fontSize: 14,
+                    fontSize: 10,
                     bold: true,
                     alignment: "center"
                 },
@@ -89915,7 +90037,7 @@ class RegistrosVentasComponent {
                 },
                 tableHeader2: {
                     bold: true,
-                    fontSize: 10,
+                    fontSize: 9,
                 },
                 fondoFooter: {
                     fontSize: 8,
@@ -90048,7 +90170,8 @@ class RegistrosVentasComponent {
                         }
                     ],
                     ...productos2.map(ed => {
-                        return [{ text: ed.cantidad, alignment: 'center' }, { text: ed.producto.UNIDAD, fontSize: 8, alignment: "center" }, ed.producto.PRODUCTO, { text: ed.precio_venta.toFixed(2), alignment: "center" }, { text: ed.descuento, alignment: "center" }, { text: ed.total.toFixed(2), alignment: "right", style: "totales2" },
+                        // Valores SIN IVA, con la tasa de cada producto.
+                        return [{ text: ed.cantidad, alignment: 'center' }, { text: ed.producto.UNIDAD, fontSize: 8, alignment: "center" }, ed.producto.PRODUCTO, { text: this.valorSinIvaProducto(ed, ed.precio_venta).toFixed(2), alignment: "center" }, { text: ed.descuento, alignment: "center" }, { text: this.valorSinIvaProducto(ed, ed.total).toFixed(2), alignment: "right", style: "totales2" },
                             { text: ed.tipoDocumentoVenta, alignment: "center", style: "totales2" }];
                     }),
                 ]
@@ -90057,7 +90180,7 @@ class RegistrosVentasComponent {
     }
 }
 RegistrosVentasComponent.ɵfac = function RegistrosVentasComponent_Factory(t) { return new (t || RegistrosVentasComponent)(_angular_core__WEBPACK_IMPORTED_MODULE_1__["ɵɵdirectiveInject"](src_app_servicios_parametrizaciones_service__WEBPACK_IMPORTED_MODULE_10__["ParametrizacionesService"]), _angular_core__WEBPACK_IMPORTED_MODULE_1__["ɵɵdirectiveInject"](src_app_shared_services__WEBPACK_IMPORTED_MODULE_11__["AuthService"]), _angular_core__WEBPACK_IMPORTED_MODULE_1__["ɵɵdirectiveInject"](src_app_servicios_notas_ventas_service__WEBPACK_IMPORTED_MODULE_12__["NotasVentasService"]), _angular_core__WEBPACK_IMPORTED_MODULE_1__["ɵɵdirectiveInject"](src_app_servicios_facturas_service__WEBPACK_IMPORTED_MODULE_13__["FacturasService"]), _angular_core__WEBPACK_IMPORTED_MODULE_1__["ɵɵdirectiveInject"](src_app_servicios_authen_service__WEBPACK_IMPORTED_MODULE_14__["AuthenService"]), _angular_core__WEBPACK_IMPORTED_MODULE_1__["ɵɵdirectiveInject"](src_app_servicios_datosConfiguracion_service__WEBPACK_IMPORTED_MODULE_15__["DatosConfiguracionService"]), _angular_core__WEBPACK_IMPORTED_MODULE_1__["ɵɵdirectiveInject"](src_app_servicios_servicioWebVeronica_service__WEBPACK_IMPORTED_MODULE_16__["ServicioWebVeronicaService"]), _angular_core__WEBPACK_IMPORTED_MODULE_1__["ɵɵdirectiveInject"](src_app_servicios_api_veronica_service__WEBPACK_IMPORTED_MODULE_17__["ApiVeronicaService"]), _angular_core__WEBPACK_IMPORTED_MODULE_1__["ɵɵdirectiveInject"](src_app_servicios_user_service__WEBPACK_IMPORTED_MODULE_18__["UserService"]), _angular_core__WEBPACK_IMPORTED_MODULE_1__["ɵɵdirectiveInject"](src_app_servicios_proformas_service__WEBPACK_IMPORTED_MODULE_19__["ProformasService"]), _angular_core__WEBPACK_IMPORTED_MODULE_1__["ɵɵdirectiveInject"](src_app_servicios_reciboCaja_service__WEBPACK_IMPORTED_MODULE_20__["ReciboCajaService"]), _angular_core__WEBPACK_IMPORTED_MODULE_1__["ɵɵdirectiveInject"](src_app_servicios_contadores_documentos_service__WEBPACK_IMPORTED_MODULE_21__["ContadoresDocumentosService"]), _angular_core__WEBPACK_IMPORTED_MODULE_1__["ɵɵdirectiveInject"](src_app_servicios_transaccionesFinancieras_service__WEBPACK_IMPORTED_MODULE_22__["TransaccionesFinancierasService"]), _angular_core__WEBPACK_IMPORTED_MODULE_1__["ɵɵdirectiveInject"](src_app_servicios_cuentasPorCobrar_service__WEBPACK_IMPORTED_MODULE_23__["CuentasPorCobrarService"])); };
-RegistrosVentasComponent.ɵcmp = _angular_core__WEBPACK_IMPORTED_MODULE_1__["ɵɵdefineComponent"]({ type: RegistrosVentasComponent, selectors: [["app-registros-ventas"]], decls: 72, vars: 21, consts: [[4, "ngIf"], [1, "row", "menu", "remiPro"], [1, "col-md-8"], [1, ""], [1, "col-md-4"], [1, "form-control", "select", 3, "items", "value", "readOnly", "disabled", "onValueChanged"], [1, "card"], [1, "card-header", "text-center", "font-weight-bold", "text-uppercase"], [1, "card-body"], [1, "row"], [1, "col-md-2"], [1, "col-md-12", 2, "text-align", "center", "font-weight", "bold"], [1, "row", "card"], [1, "col-md-12"], [1, "col-md-3", 2, "margin-top", "0.5em"], [1, "col-md-9"], ["type", "date", 3, "value", "valueChange"], [1, "col-md-4", "btnSearch"], [1, "btn", "btn-block", "btn-success", 2, "background-color", "#ff5722", "border-color", "#ff5722", 3, "click"], [1, "col-md-4", 2, "margin-left", "1em"], [1, "col-md-3"], [1, "col-md-6", "btnSearch"], ["class", "row mt-2", 4, "ngIf"], ["title", "Informaci\u00F3n", 3, "visible", "width", "height", "showTitle", "dragEnabled", "closeOnOutsideClick", "visibleChange"], ["width", "100%", "height", "100%"], [1, "cs-popup"], [2, "font-weight", "bold"], [2, "background-color", "#f8ff18"], [3, "messagge"], [1, "row", "mt-2"], [1, "col-12", "d-flex", "justify-content-end"], ["title", "Consulta en Veronica las facturas de matriz del rango Desde/Hasta y actualiza las que est\u00E1n en ERROR", 1, "btn", "btn-primary", 3, "disabled", "click"], [1, "fa", "fa-solid", "fa-check-double"], ["id", "gridContainer", 3, "dataSource", "showBorders", "remoteOperations", "onExporting", "onExported"], [3, "visible"], ["placeholder", "Buscar...", 3, "visible", "width"], ["fileName", "Facturas_ingresadas", 3, "enabled", "allowExportSelectedData"], ["dataField", "createdAt", "caption", "Fecha de creaci\u00F3n", "dataType", "date", "sortOrder", "desc", 3, "visible"], ["dataField", "documento_n", "caption", "Factura #", "dataType", "string"], ["dataField", "fecha", "caption", "Fecha", "dataType", "date"], ["dataField", "fecha2", "caption", "Fecha Transaccion", "dataType", "string", 3, "visible"], ["dataField", "rucFactura", "caption", "RUC Suc"], ["dataField", "sucursal", "caption", "Sucursal", "dataType", "string", 3, "groupIndex"], ["dataField", "cliente.cliente_nombre", "caption", "Cliente", "dataType", "string"], ["dataField", "cliente.ruc", "caption", "Cliente", "dataType", "string", 3, "visible"], ["dataField", "tipo_venta", "caption", "Tipo Venta", "dataType", "string", 3, "visible"], ["dataField", "cotizacion", "caption", "Cotizaci\u00F3n", "dataType", "string", 3, "visible"], ["dataField", "coste_transporte", "caption", "Transporte", "dataType", "string", 3, "visible"], ["dataField", "totalIva", "caption", "Iva", "dataType", "number", 3, "visible"], ["dataField", "total", "caption", "Total", "dataType", "number", 3, "visible"], ["dataField", "estado", "caption", "Estado", "dataType", "string", 3, "visible"], ["dataField", "caja", "caption", "Caja", "dataType", "number", 3, "visible"], ["dataField", "username", "caption", "Vendedor", "dataType", "string", 3, "visible"], ["dataField", "username", "caption", "Usuario", "dataType", "string", 3, "visible"], ["dataField", "maestro", "caption", "Maestro", "dataType", "string", 3, "visible"], ["dataField", "observaciones", "caption", "Observaciones", "dataType", "string", 3, "visible"], ["dataField", "nota", "caption", "Notas", "dataType", "string", 3, "visible"], ["dataField", "estadoFacturaVeronica", "caption", "Est.Facturaci\u00F3n", "cellTemplate", "estadoVeronicaTemplate"], ["caption", "Recibo Caja", "cellTemplate", "reciboCajaTemplate", "width", "120", 3, "allowSorting", "allowFiltering"], ["style", "text-align: center;", 4, "dxTemplate", "dxTemplateOf"], ["type", "buttons", "caption", "Ver"], ["icon", "fa fa-arrow-down", 3, "onClick"], ["type", "buttons", "dataField", "bt1", "caption", "Notas", "width", "7%"], ["hint", "Notas", "icon", "fa fa-list-alt", 3, "onClick"], [3, "pageSize"], [3, "autoExpandAll"], ["expand", ""], [3, "showPageSizeSelector", "allowedPageSizes"], [2, "text-align", "center"], [1, "btn-center", 3, "ngSwitch"], ["class", "btn-sect-warning btn btn-danger btn-sm", 3, "veronica-creado", "title", "click", 4, "ngSwitchCase"], ["class", "btn-sect btn btn-warning btn-sm", 3, "disabled", "click", 4, "ngSwitchCase"], ["class", "btn-sect-success btn btn-warning btn-sm", 3, "click", 4, "ngSwitchCase"], ["class", "btn-sect-success btn btn-success btn-sm", 4, "ngSwitchCase"], [1, "btn-sect-warning", "btn", "btn-danger", "btn-sm", 3, "title", "click"], [1, "fa", "fa-solid", "fa-exclamation"], [1, "btn-sect", "btn", "btn-warning", "btn-sm", 3, "disabled", "click"], [1, "fa", "fa-solid", "fa-rotate-right"], [1, "btn-sect-success", "btn", "btn-warning", "btn-sm", 3, "click"], [1, "fa", "fa-solid", "fa-check"], [1, "btn-sect-success", "btn", "btn-success", "btn-sm"], [1, "fa", "fa-solid", "fa-check-circle"], ["title", "Recibo de caja generado", 1, "fa", "fa-solid", "fa-check-circle", "text-success"], ["type", "button", "title", "Generar recibo de caja", 1, "btn", "btn-sm", "btn-sect", 3, "click"], [1, "fa", "fa-solid", "fa-times-circle", "text-danger"], ["fileName", "NotasVenta_ingresadas", 3, "enabled", "allowExportSelectedData"], ["dataField", "sucursal", "caption", "Sucursal", "dataType", "string"], ["dataField", "caja", "caption", "Caja", "dataType", "string", 3, "visible"], ["caption", "Recibo Caja", "cellTemplate", "reciboCajaTemplateNotas", "width", "120", 3, "allowSorting", "allowFiltering"], ["title", "Recibo de caja generado", 1, "fa", "fa-check-circle", "text-success"], ["title", "Sin recibo de caja", 1, "fa", "fa-times-circle", "text-danger"], ["type", "button", "title", "Generar recibo de caja", 1, "btn", "btn-sm", "btn-outline-primary", "ml-1", 3, "click"], ["fileName", "Cotizaciones_ingresadas", 3, "enabled", "allowExportSelectedData"], ["dataField", "documento_n", "caption", "ID #", "dataType", "string"]], template: function RegistrosVentasComponent_Template(rf, ctx) { if (rf & 1) {
+RegistrosVentasComponent.ɵcmp = _angular_core__WEBPACK_IMPORTED_MODULE_1__["ɵɵdefineComponent"]({ type: RegistrosVentasComponent, selectors: [["app-registros-ventas"]], decls: 72, vars: 21, consts: [[4, "ngIf"], [1, "row", "menu", "remiPro"], [1, "col-md-8"], [1, ""], [1, "col-md-4"], [1, "form-control", "select", 3, "items", "value", "readOnly", "disabled", "onValueChanged"], [1, "card"], [1, "card-header", "text-center", "font-weight-bold", "text-uppercase"], [1, "card-body"], [1, "row"], [1, "col-md-2"], [1, "col-md-12", 2, "text-align", "center", "font-weight", "bold"], [1, "row", "card"], [1, "col-md-12"], [1, "col-md-3", 2, "margin-top", "0.5em"], [1, "col-md-9"], ["type", "date", 3, "value", "valueChange"], [1, "col-md-4", "btnSearch"], [1, "btn", "btn-block", "btn-success", 2, "background-color", "#ff5722", "border-color", "#ff5722", 3, "click"], [1, "col-md-4", 2, "margin-left", "1em"], [1, "col-md-3"], [1, "col-md-6", "btnSearch"], ["class", "row mt-2", 4, "ngIf"], ["title", "Informaci\u00F3n", 3, "visible", "width", "height", "showTitle", "dragEnabled", "closeOnOutsideClick", "visibleChange"], ["width", "100%", "height", "100%"], [1, "cs-popup"], [2, "font-weight", "bold"], [2, "background-color", "#f8ff18"], [3, "messagge"], [1, "row", "mt-2"], [1, "col-12", "d-flex", "justify-content-end"], ["title", "Consulta en Veronica las facturas de matriz del rango Desde/Hasta y actualiza las que est\u00E1n en ERROR", 1, "btn", "btn-primary", 3, "disabled", "click"], [1, "fa", "fa-solid", "fa-check-double"], ["id", "gridContainer", 3, "dataSource", "showBorders", "remoteOperations", "onExporting", "onExported"], [3, "visible"], ["placeholder", "Buscar...", 3, "visible", "width"], ["fileName", "Facturas_ingresadas", 3, "enabled", "allowExportSelectedData"], ["dataField", "createdAt", "caption", "Fecha de creaci\u00F3n", "dataType", "date", "sortOrder", "desc", 3, "visible"], ["dataField", "documento_n", "caption", "Factura #", "dataType", "string"], ["dataField", "fecha", "caption", "Fecha", "dataType", "date"], ["dataField", "fecha2", "caption", "Fecha Transaccion", "dataType", "string", 3, "visible"], ["dataField", "rucFactura", "caption", "RUC Suc"], ["dataField", "sucursal", "caption", "Sucursal", "dataType", "string", 3, "groupIndex"], ["dataField", "cliente.cliente_nombre", "caption", "Cliente", "dataType", "string"], ["dataField", "cliente.ruc", "caption", "Cliente", "dataType", "string", 3, "visible"], ["dataField", "tipo_venta", "caption", "Tipo Venta", "dataType", "string", 3, "visible"], ["dataField", "cotizacion", "caption", "Cotizaci\u00F3n", "dataType", "string", 3, "visible"], ["dataField", "coste_transporte", "caption", "Transporte", "dataType", "string", 3, "visible"], ["dataField", "totalIva", "caption", "Iva", "dataType", "number", 3, "visible"], ["dataField", "total", "caption", "Total", "dataType", "number", 3, "visible"], ["dataField", "estado", "caption", "Estado", "dataType", "string", 3, "visible"], ["dataField", "caja", "caption", "Caja", "dataType", "number", 3, "visible"], ["dataField", "username", "caption", "Vendedor", "dataType", "string", 3, "visible"], ["dataField", "username", "caption", "Usuario", "dataType", "string", 3, "visible"], ["dataField", "maestro", "caption", "Maestro", "dataType", "string", 3, "visible"], ["dataField", "observaciones", "caption", "Observaciones", "dataType", "string", 3, "visible"], ["dataField", "nota", "caption", "Notas", "dataType", "string", 3, "visible"], ["dataField", "estadoFacturaVeronica", "caption", "Est.Facturaci\u00F3n", "cellTemplate", "estadoVeronicaTemplate"], ["caption", "Recibo Caja", "cellTemplate", "reciboCajaTemplate", "width", "120", 3, "allowSorting", "allowFiltering"], ["style", "text-align: center;", 4, "dxTemplate", "dxTemplateOf"], ["type", "buttons", "caption", "Ver"], ["icon", "fa fa-arrow-down", 3, "onClick"], ["type", "buttons", "dataField", "bt1", "caption", "Notas", "width", "7%"], ["hint", "Notas", "icon", "fa fa-list-alt", 3, "onClick"], [3, "pageSize"], [3, "autoExpandAll"], ["expand", ""], [3, "showPageSizeSelector", "allowedPageSizes"], [2, "text-align", "center"], [1, "btn-center", 3, "ngSwitch"], ["class", "btn-sect-warning btn btn-danger btn-sm", 3, "veronica-creado", "title", "click", 4, "ngSwitchCase"], ["class", "btn-sect btn btn-warning btn-sm", 3, "disabled", "click", 4, "ngSwitchCase"], ["class", "btn-sect-success btn btn-warning btn-sm", 3, "click", 4, "ngSwitchCase"], ["class", "btn-sect-success btn btn-success btn-sm", 4, "ngSwitchCase"], [1, "btn-sect-warning", "btn", "btn-danger", "btn-sm", 3, "title", "click"], [1, "fa", "fa-solid", "fa-exclamation"], [1, "btn-sect", "btn", "btn-warning", "btn-sm", 3, "disabled", "click"], [1, "fa", "fa-solid", "fa-rotate-right"], [1, "btn-sect-success", "btn", "btn-warning", "btn-sm", 3, "click"], [1, "fa", "fa-solid", "fa-check"], [1, "btn-sect-success", "btn", "btn-success", "btn-sm"], [1, "fa", "fa-solid", "fa-check-circle"], ["title", "Recibo de caja y transacci\u00F3n financiera generados", 1, "fa", "fa-solid", "fa-check-circle", "text-success"], ["type", "button", "title", "Tiene recibo de caja pero no transacci\u00F3n financiera: generar transacci\u00F3n", 1, "btn", "btn-sm", "btn-sect", 3, "disabled", "click"], [1, "fa", "fa-solid", "fa-exclamation-triangle", 2, "color", "#f0ad4e"], [1, "fa", "fa-solid", "fa-question-circle", "text-muted", 3, "title"], ["type", "button", "title", "Sin recibo de caja: generar recibo y transacci\u00F3n financiera", 1, "btn", "btn-sm", "btn-sect", 3, "click"], [1, "fa", "fa-solid", "fa-times-circle", "text-danger"], ["fileName", "NotasVenta_ingresadas", 3, "enabled", "allowExportSelectedData"], ["dataField", "sucursal", "caption", "Sucursal", "dataType", "string"], ["dataField", "caja", "caption", "Caja", "dataType", "string", 3, "visible"], ["caption", "Recibo Caja", "cellTemplate", "reciboCajaTemplateNotas", "width", "120", 3, "allowSorting", "allowFiltering"], ["title", "Recibo de caja generado", 1, "fa", "fa-check-circle", "text-success"], ["title", "Sin recibo de caja", 1, "fa", "fa-times-circle", "text-danger"], ["type", "button", "title", "Generar recibo de caja", 1, "btn", "btn-sm", "btn-outline-primary", "ml-1", 3, "click"], ["fileName", "Cotizaciones_ingresadas", 3, "enabled", "allowExportSelectedData"], ["dataField", "documento_n", "caption", "ID #", "dataType", "string"]], template: function RegistrosVentasComponent_Template(rf, ctx) { if (rf & 1) {
         _angular_core__WEBPACK_IMPORTED_MODULE_1__["ɵɵtemplate"](0, RegistrosVentasComponent_div_0_Template, 2, 1, "div", 0);
         _angular_core__WEBPACK_IMPORTED_MODULE_1__["ɵɵelementStart"](1, "div", 1);
         _angular_core__WEBPACK_IMPORTED_MODULE_1__["ɵɵelementStart"](2, "div", 2);
@@ -119408,6 +119531,10 @@ class TransaccionesFinancierasService {
     }
     getTransaccionesPorOrdenCompra(tipobusqueda) {
         return this.http.post(this.URL + "/getTransaccionesPorOrdenCompra", tipobusqueda);
+    }
+    /** Transacciones de varios recibos de caja (rCajaIds: ["RC123", ...]). */
+    obtenerTransaccionesPorRecibosCaja(rCajaIds) {
+        return this.http.post(this.URL + "/getTransaccionesPorRecibosCaja", { rCajaIds });
     }
     obtenerTransaccionesPorDocumentoYRecibo(tipobusqueda) {
         return this.http.post(this.URL + "/getTransaccionesPorTipoDocumentoYRecibo", tipobusqueda);

@@ -44,6 +44,11 @@ export class TransaccionesFinancierasService {
     return this.http.post(this.URL + "/getTransaccionesPorOrdenCompra", tipobusqueda);
   }
 
+  /** Transacciones de varios recibos de caja (rCajaIds: ["RC123", ...]). */
+  obtenerTransaccionesPorRecibosCaja(rCajaIds: string[]) {
+    return this.http.post(this.URL + "/getTransaccionesPorRecibosCaja", { rCajaIds });
+  }
+
   obtenerTransaccionesPorDocumentoYRecibo(tipobusqueda) {
     return this.http.post(this.URL + "/getTransaccionesPorTipoDocumentoYRecibo", tipobusqueda);
   }

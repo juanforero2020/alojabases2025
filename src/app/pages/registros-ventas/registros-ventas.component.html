@@ -156,16 +156,34 @@
         </div>
 
         <div *dxTemplate="let data of 'reciboCajaTemplate'" style="text-align: center;">
-            <ng-container *ngIf="data.data.tieneReciboCaja">
+            <!-- Recibo y transacción financiera: completo -->
+            <ng-container *ngIf="data.data.tieneReciboCaja && data.data.estadoReciboCaja === 'COMPLETO'">
                 <button class="btn-sect-success btn btn-success btn-sm">
-                    <i class="fa fa-solid fa-check-circle text-success" title="Recibo de caja generado"></i> 
+                    <i class="fa fa-solid fa-check-circle text-success" title="Recibo de caja y transacción financiera generados"></i>
                 </button>
             </ng-container>
+            <!-- Recibo sin transacción financiera: se puede generar la transacción -->
+            <ng-container *ngIf="data.data.tieneReciboCaja && data.data.estadoReciboCaja === 'SIN_TRANSACCION'">
+                <button
+                    type="button"
+                    class="btn btn-sm btn-sect"
+                    title="Tiene recibo de caja pero no transacción financiera: generar transacción"
+                    [disabled]="generandoReciboParaFactura"
+                    (click)="generarReciboCajaParaFactura({ row: { data: data.data } })">
+                    <i class="fa fa-solid fa-exclamation-triangle" style="color: #f0ad4e;"></i>
+                </button>
+            </ng-container>
+            <!-- Verificando o no se pudo verificar la transacción -->
+            <ng-container *ngIf="data.data.tieneReciboCaja && (data.data.estadoReciboCaja === 'VERIFICANDO' || data.data.estadoReciboCaja === 'NO_VERIFICADO')">
+                <i class="fa fa-solid fa-question-circle text-muted"
+                   [title]="data.data.estadoReciboCaja === 'VERIFICANDO' ? 'Verificando transacción financiera…' : 'No se pudo verificar la transacción financiera'"></i>
+            </ng-container>
+            <!-- Sin recibo: se generan recibo y transacción -->
             <ng-container *ngIf="!data.data.tieneReciboCaja">
                 <button 
                     type="button" 
                     class="btn btn-sm btn-sect"
-                    title="Generar recibo de caja"
+                    title="Sin recibo de caja: generar recibo y transacción financiera"
                     (click)="generarReciboCajaParaFactura({ row: { data: data.data } })">
                     <i class="fa fa-solid fa-times-circle text-danger"></i>
                 </button>

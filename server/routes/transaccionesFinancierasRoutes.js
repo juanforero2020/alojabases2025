@@ -89,6 +89,22 @@ router.post("/getTransaccionesPorOrdenCompra", async (req, res, next) => {
   res.json(transacciones);
 });
 
+// Transacciones financieras de una lista de recibos de caja (rCajaId = "RC" + número).
+router.post("/getTransaccionesPorRecibosCaja", async (req, res, next) => {
+  try {
+    const ids = Array.isArray(req.body.rCajaIds)
+      ? req.body.rCajaIds.map((x) => String(x || "").trim()).filter(Boolean)
+      : [];
+    if (!ids.length) return res.json([]);
+    const transacciones = await TransaccionFinanciera.find({ rCajaId: { $in: ids } })
+      .select("rCajaId valor isContabilizada documentoVenta numDocumento")
+      .lean();
+    res.json(transacciones);
+  } catch (err) {
+    res.status(400).json({ mensaje: err.message });
+  }
+});
+
 router.post("/getTransaccionesPorTipoDocumentoYRecibo", async (req, res, next) => {
   const transacciones = await TransaccionFinanciera.find({ numDocumento: req.body.NumDocumento ,rCajaId:req.body.rCajaId, tipoTransaccion : req.body.tipoTransaccion});
   res.json(transacciones);
