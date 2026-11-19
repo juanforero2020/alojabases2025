@@ -44,6 +44,11 @@ export class TransaccionesFinancierasService {
     return this.http.post(this.URL + "/getTransaccionesPorOrdenCompra", tipobusqueda);
   }
 
+  /** Caja menor: facturas / notas de venta del día sin recibo de caja o sin transacción financiera. */
+  validarVentasCajaMenor(filtro: { fechaAnterior: Date; fechaActual: Date; sucursal: string }) {
+    return this.http.post<{ revisados: number; pendientes: any[] }>(this.URL + "/validarVentasCajaMenor", filtro);
+  }
+
   /** Transacciones de varios recibos de caja (rCajaIds: ["RC123", ...]). */
   obtenerTransaccionesPorRecibosCaja(rCajaIds: string[]) {
     return this.http.post(this.URL + "/getTransaccionesPorRecibosCaja", { rCajaIds });

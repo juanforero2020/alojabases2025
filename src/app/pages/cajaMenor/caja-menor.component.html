@@ -21,8 +21,27 @@
 <div class="row" *ngIf="newCaja" id="content" #content>
     <div class="col-md-1"></div>
     <div class="col-md-10">
-        <div class="card">
-            <h5 class="card-header text-center font-weight-bold text-uppercase ">CAJA MENOR</h5>
+        <div class="card" [class.caja-ventas-pendientes]="estadoValidacionVentas === 'PENDIENTES'">
+            <h5 class="card-header text-center font-weight-bold text-uppercase header-caja">
+                CAJA MENOR
+                <button type="button" class="btn-notif-ventas"
+                    [ngClass]="{
+                        'notif-ok': estadoValidacionVentas === 'OK',
+                        'notif-pendiente': estadoValidacionVentas === 'PENDIENTES',
+                        'notif-neutral': estadoValidacionVentas === 'VERIFICANDO' || estadoValidacionVentas === 'ERROR'
+                    }"
+                    [title]="tooltipValidacionVentas"
+                    (click)="verValidacionVentas()">
+                    <i class="fa"
+                        [ngClass]="estadoValidacionVentas === 'VERIFICANDO' ? 'fa-spinner fa-spin' : (estadoValidacionVentas === 'ERROR' ? 'fa-bell-slash' : 'fa-bell')"></i>
+                    <span class="badge-notif" *ngIf="estadoValidacionVentas === 'PENDIENTES'">{{ventasPendientesTransaccion.length}}</span>
+                </button>
+            </h5>
+            <div class="alerta-ventas-pendientes" *ngIf="estadoValidacionVentas === 'PENDIENTES'" (click)="verValidacionVentas()">
+                <i class="fa fa-exclamation-triangle"></i>
+                {{ventasPendientesTransaccion.length}} factura(s) / nota(s) de venta de este día sin transacción financiera.
+                <u>Ver detalle</u>
+            </div>
             <div class="card-body">
                 <div class="row">
                     <div class="col-md-8">
@@ -295,7 +314,42 @@
     <div *dxTemplate="let data of 'content'">
         <dx-scroll-view width="100%" height="100%">
         <div class="col-md-12"><h5>Notas:</h5> </div>
-        <div class="col-md-12" style="text-align: center;"><h6>{{notas}}</h6> </div>     
+        <div class="col-md-12" style="text-align: center;"><h6>{{notas}}</h6> </div>
     </dx-scroll-view>
+    </div>
+</dx-popup>
+
+<dx-popup [width]="1000" [height]="600" maxHeight="90vh" [showTitle]="true" title="Ventas del día sin transacción financiera"
+    [dragEnabled]="true" [closeOnOutsideClick]="true" [(visible)]="popupVisibleValidacionVentas">
+    <div *dxTemplate="let data of 'content'" class="contenido-validacion">
+        <div class="resumen-validacion" [class.texto-ok]="!ventasPendientesTransaccion.length">
+            <span *ngIf="ventasPendientesTransaccion.length">
+                Se revisaron {{ventasRevisadas}} factura(s)/nota(s) de venta de {{cajaMenor.sucursal}} del
+                {{cajaMenor.fecha | date:'dd/MM/yyyy'}}: <b>{{ventasPendientesTransaccion.length}}</b> sin transacción financiera.
+                Genérelas desde <b>Registros de ventas</b> (columna Recibo Caja).
+            </span>
+            <span *ngIf="!ventasPendientesTransaccion.length">
+                Todas las ventas del día ({{ventasRevisadas}}) tienen su transacción financiera.
+            </span>
+        </div>
+        <div class="grid-validacion" *ngIf="ventasPendientesTransaccion.length">
+        <dx-data-grid
+            [dataSource]="ventasPendientesTransaccion"
+            [showBorders]="true"
+            [wordWrapEnabled]="true"
+            height="100%"
+            (onRowPrepared)="marcarFilaVentaPendiente($event)">
+            <dxo-export [enabled]="true" fileName="Ventas_sin_transaccion"></dxo-export>
+            <dxi-column dataField="tipo" caption="Tipo" width="11%"></dxi-column>
+            <dxi-column dataField="documento" caption="N°" width="8%"></dxi-column>
+            <dxi-column dataField="fecha" caption="Fecha" width="15%"></dxi-column>
+            <dxi-column dataField="cliente" caption="Cliente" width="18%"></dxi-column>
+            <dxi-column dataField="total" caption="Total" width="9%" alignment="right">
+                <dxo-format type="fixedPoint" [precision]="2"></dxo-format>
+            </dxi-column>
+            <dxi-column dataField="recibo" caption="Recibo" width="9%"></dxi-column>
+            <dxi-column dataField="detalle" caption="Comentario"></dxi-column>
+        </dx-data-grid>
+        </div>
     </div>
 </dx-popup>

@@ -58,3 +58,94 @@ input .cons {
 .centrar{
     text-align: center;
 }
+
+/* ---- Validación de ventas del día (transacción financiera) ---- */
+.header-caja{
+    position: relative;
+}
+
+.btn-notif-ventas{
+    position: absolute;
+    right: 1rem;
+    top: 50%;
+    transform: translateY(-50%);
+    border: none;
+    background: transparent;
+    font-size: 1.3rem;
+    line-height: 1;
+    padding: 0.2rem 0.4rem;
+    cursor: pointer;
+}
+
+.notif-ok{ color: #28a745; }
+.notif-neutral{ color: #9e9e9e; }
+.notif-pendiente{
+    color: #dc3545;
+    animation: notif-alerta 1.2s ease-in-out infinite;
+}
+
+.badge-notif{
+    position: absolute;
+    top: -0.35rem;
+    right: -0.45rem;
+    min-width: 1.15rem;
+    padding: 0.1rem 0.3rem;
+    border-radius: 1rem;
+    background: #dc3545;
+    color: #fff;
+    font-size: 0.7rem;
+    font-weight: bold;
+}
+
+@keyframes notif-alerta{
+    0%, 100% { transform: translateY(-50%) rotate(0); }
+    20% { transform: translateY(-50%) rotate(-15deg); }
+    40% { transform: translateY(-50%) rotate(15deg); }
+    60% { transform: translateY(-50%) rotate(0); }
+}
+
+.caja-ventas-pendientes{
+    border: 2px solid #dc3545;
+
+    .card-header{
+        background-color: #dc3545;
+        color: #fff;
+    }
+
+    .notif-pendiente{ color: #fff; }
+    .badge-notif{ background: #fff; color: #dc3545; }
+}
+
+.alerta-ventas-pendientes{
+    background-color: #f8d7da;
+    color: #a71d2a;
+    font-weight: bold;
+    text-align: center;
+    padding: 0.4rem;
+    cursor: pointer;
+}
+
+/* El grid ocupa solo el espacio que queda en el popup y hace scroll por dentro. */
+.contenido-validacion{
+    display: flex;
+    flex-direction: column;
+    height: 100%;
+}
+
+.grid-validacion{
+    flex: 1 1 auto;
+    min-height: 0;
+}
+
+.resumen-validacion{
+    flex: 0 0 auto;
+    color: #a71d2a;
+    margin-bottom: 0.6rem;
+}
+
+.resumen-validacion.texto-ok{ color: #28a745; }
+
+::ng-deep .fila-venta-pendiente td{
+    color: #a71d2a;
+    background-color: #fdecee;
+}

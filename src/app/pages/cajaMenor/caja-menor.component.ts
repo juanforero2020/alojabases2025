@@ -71,7 +71,14 @@ export class CajaMenorComponent implements OnInit {
   listaCuentas: CuentaPorCobrar [] = []
   listaCuentasActivas: CuentaPorCobrar [] = []
   listaPrestamosActivos: PrestamoAbonoResumen [] = []
-  
+
+  // Validación de ventas del día: facturas / notas de venta sin transacción financiera.
+  estadoValidacionVentas: 'VERIFICANDO' | 'OK' | 'PENDIENTES' | 'ERROR' = 'VERIFICANDO';
+  ventasPendientesTransaccion: any[] = [];
+  ventasRevisadas = 0;
+  popupVisibleValidacionVentas = false;
+  private consultaValidacionVentas = 0;
+
   constructor(
     public _transaccionesFinancierasService : TransaccionesFinancierasService,
     public _authenService: AuthenService,
@@ -207,6 +214,7 @@ export class CajaMenorComponent implements OnInit {
       this.crearTransaccionesCaja();
     })
     this.validarEstadoCaja();
+    this.validarVentasDelDia();
   }
 
 
@@ -305,6 +313,60 @@ export class CajaMenorComponent implements OnInit {
       this.crearTransaccionesCaja();
     })
     this.validarEstadoCaja();
+    this.validarVentasDelDia();
+  }
+
+  /**
+   * Revisa las facturas y notas de venta del día/sucursal de la caja:
+   * si alguna no tiene su transacción financiera (o ni siquiera recibo de caja),
+   * la notificación se pone en rojo con el detalle.
+   */
+  validarVentasDelDia() {
+    if (!this.cajaMenor.sucursal || !this.cajaMenor.fecha) return;
+    const desde = new Date(this.cajaMenor.fecha);
+    desde.setHours(0, 0, 0, 0);
+    const hasta = new Date(desde);
+    hasta.setDate(hasta.getDate() + 1);
+
+    const consulta = ++this.consultaValidacionVentas;
+    this.estadoValidacionVentas = 'VERIFICANDO';
+    this._transaccionesFinancierasService
+      .validarVentasCajaMenor({ fechaAnterior: desde, fechaActual: hasta, sucursal: this.cajaMenor.sucursal })
+      .subscribe(
+        (res) => {
+          if (consulta !== this.consultaValidacionVentas) return; // llegó una respuesta vieja
+          this.ventasRevisadas = res?.revisados || 0;
+          this.ventasPendientesTransaccion = res?.pendientes || [];
+          this.estadoValidacionVentas = this.ventasPendientesTransaccion.length ? 'PENDIENTES' : 'OK';
+        },
+        () => {
+          if (consulta !== this.consultaValidacionVentas) return;
+          this.ventasPendientesTransaccion = [];
+          this.estadoValidacionVentas = 'ERROR';
+        }
+      );
+  }
+
+  verValidacionVentas() {
+    if (this.estadoValidacionVentas === 'VERIFICANDO') return;
+    if (this.estadoValidacionVentas === 'ERROR') {
+      this.validarVentasDelDia();
+      return;
+    }
+    this.popupVisibleValidacionVentas = true;
+  }
+
+  marcarFilaVentaPendiente(e) {
+    if (e.rowType === 'data') e.rowElement.classList.add('fila-venta-pendiente');
+  }
+
+  get tooltipValidacionVentas(): string {
+    switch (this.estadoValidacionVentas) {
+      case 'VERIFICANDO': return 'Validando facturas y notas de venta del día...';
+      case 'OK': return `Ventas del día validadas (${this.ventasRevisadas}): todas tienen su transacción financiera`;
+      case 'PENDIENTES': return `${this.ventasPendientesTransaccion.length} venta(s) del día sin transacción financiera. Clic para ver el detalle`;
+      default: return 'No se pudo validar las ventas del día. Clic para reintentar';
+    }
   }
 
 

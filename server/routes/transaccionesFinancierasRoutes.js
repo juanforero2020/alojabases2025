@@ -1,6 +1,9 @@
 const { Router } = require("express");
 const router = Router();
 const TransaccionFinanciera = require("../models/transaccionFinanciera");
+const Factura = require("../models/factura");
+const NotasVenta = require("../models/notasVenta");
+const ReciboCaja = require("../models/reciboCaja");
 const {
   SUBCUENTAS_CONSULTA_NOMINAS,
 } = require("../utils/cuentasContablesNomina");
@@ -87,6 +90,101 @@ router.post("/getTransaccionesPorTipoDocumento", async (req, res, next) => {
 router.post("/getTransaccionesPorOrdenCompra", async (req, res, next) => {
   const transacciones = await TransaccionFinanciera.find({ ordenCompra: req.body.ordenCompra});
   res.json(transacciones);
+});
+
+/**
+ * Caja menor: valida que cada factura / nota de venta del día (no anulada) tenga
+ * su recibo de caja y la transacción financiera de ese recibo (rCajaId = "RC" + número).
+ * Body: { fechaAnterior, fechaActual, sucursal }.
+ */
+router.post("/validarVentasCajaMenor", async (req, res, next) => {
+  try {
+    const { fechaAnterior, fechaActual, sucursal } = req.body || {};
+    if (!fechaAnterior || !fechaActual) {
+      return res.status(400).json({ mensaje: "Debe enviar el rango de fechas." });
+    }
+    const filtro = {
+      createdAt: { $gte: new Date(fechaAnterior), $lt: new Date(fechaActual) },
+      estado: { $ne: "ANULADA" },
+    };
+    if (sucursal) filtro.sucursal = sucursal;
+    const campos = "documento_n sucursal fecha2 total estado cliente.nombreContacto cliente.ruc createdAt";
+
+    const [facturas, notas] = await Promise.all([
+      Factura.find(filtro).select(campos).lean(),
+      NotasVenta.find(filtro).select(campos).lean(),
+    ]);
+    const documentos = [
+      ...facturas.map((d) => ({ ...d, tipo: "Factura" })),
+      ...notas.map((d) => ({ ...d, tipo: "Nota de Venta" })),
+    ];
+    if (!documentos.length) return res.json({ revisados: 0, pendientes: [] });
+
+    // Recibos activos de esos documentos (pueden haberse creado otro día).
+    const recibos = await ReciboCaja.find({
+      estadoRecibo: { $ne: "Anulado" },
+      $or: ["Factura", "Nota de Venta"].map((tipo) => ({
+        docVenta: tipo,
+        numDocumento: {
+          $in: documentos.filter((d) => d.tipo === tipo).map((d) => String(d.documento_n)),
+        },
+      })),
+    })
+      .select("idDocumento docVenta numDocumento")
+      .lean();
+
+    const recibosPorDoc = new Map();
+    recibos.forEach((r) => {
+      const clave = r.docVenta + "|" + String(r.numDocumento);
+      if (!recibosPorDoc.has(clave)) recibosPorDoc.set(clave, []);
+      recibosPorDoc.get(clave).push(r);
+    });
+
+    const rCajaIds = recibos.map((r) => "RC" + r.idDocumento);
+    const transacciones = rCajaIds.length
+      ? await TransaccionFinanciera.find({ rCajaId: { $in: rCajaIds } }).select("rCajaId").lean()
+      : [];
+    const conTransaccion = new Set(transacciones.map((t) => String(t.rCajaId)));
+
+    const pendientes = [];
+    documentos.forEach((d) => {
+      const lista = recibosPorDoc.get(d.tipo + "|" + String(d.documento_n)) || [];
+      const base = {
+        tipo: d.tipo,
+        documento: d.documento_n,
+        sucursal: d.sucursal,
+        fecha: d.fecha2 || d.createdAt,
+        cliente: (d.cliente && d.cliente.nombreContacto) || "",
+        ruc: (d.cliente && d.cliente.ruc) || "",
+        total: Number(d.total) || 0,
+      };
+      if (!lista.length) {
+        pendientes.push({
+          ...base,
+          problema: "SIN_RECIBO",
+          recibo: "",
+          detalle: `${d.tipo} #${d.documento_n} no tiene recibo de caja ni transacción financiera.`,
+        });
+        return;
+      }
+      const sinTx = lista.filter((r) => !conTransaccion.has("RC" + r.idDocumento));
+      // Basta con que uno de sus recibos tenga transacción.
+      if (sinTx.length === lista.length) {
+        const rcs = sinTx.map((r) => "RC" + r.idDocumento).join(", ");
+        pendientes.push({
+          ...base,
+          problema: "SIN_TRANSACCION",
+          recibo: rcs,
+          detalle: `${d.tipo} #${d.documento_n} tiene el recibo ${rcs} pero falta su transacción financiera.`,
+        });
+      }
+    });
+
+    pendientes.sort((a, b) => a.tipo.localeCompare(b.tipo) || a.documento - b.documento);
+    res.json({ revisados: documentos.length, pendientes });
+  } catch (err) {
+    res.status(400).json({ mensaje: err.message });
+  }
 });
 
 // Transacciones financieras de una lista de recibos de caja (rCajaId = "RC" + número).
