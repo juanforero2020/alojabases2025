@@ -145,6 +145,14 @@ input .cons {
 
 .resumen-validacion.texto-ok{ color: #28a745; }
 
+.aviso-bloqueo-cierre{
+    margin-top: 0.4rem;
+    color: #a71d2a;
+    font-size: 0.85rem;
+    text-align: center;
+    cursor: pointer;
+}
+
 ::ng-deep .fila-venta-pendiente td{
     color: #a71d2a;
     background-color: #fdecee;

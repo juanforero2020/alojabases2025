@@ -356,6 +356,30 @@ export class CajaMenorComponent implements OnInit {
     this.popupVisibleValidacionVentas = true;
   }
 
+  /** Texto de por qué no se puede cerrar la caja ('' si se puede). */
+  get motivoBloqueoCierre(): string {
+    switch (this.estadoValidacionVentas) {
+      case 'OK': return '';
+      case 'VERIFICANDO': return 'Validando las ventas del día, espere un momento...';
+      case 'PENDIENTES': return `No se puede cerrar la caja: ${this.ventasPendientesTransaccion.length} factura(s)/nota(s) de venta sin recibo de caja, sin transacción financiera o con la transacción no contabilizada. Clic para ver el detalle.`;
+      default: return 'No se pudo validar las ventas del día. Clic para reintentar antes de cerrar la caja.';
+    }
+  }
+
+  /** Bloquea el cierre si hay ventas del día sin recibo / transacción financiera. */
+  private validarPuedeCerrarCaja(): boolean {
+    if (this.estadoValidacionVentas === 'OK') return true;
+    if (this.estadoValidacionVentas === 'PENDIENTES') {
+      Swal.fire('No se puede cerrar la caja', this.motivoBloqueoCierre, 'error').then(() => {
+        this.popupVisibleValidacionVentas = true;
+      });
+    } else {
+      this.mostrarMensajeGenerico(2, this.motivoBloqueoCierre);
+      if (this.estadoValidacionVentas === 'ERROR') this.validarVentasDelDia();
+    }
+    return false;
+  }
+
   marcarFilaVentaPendiente(e) {
     if (e.rowType === 'data') e.rowElement.classList.add('fila-venta-pendiente');
   }
@@ -363,8 +387,8 @@ export class CajaMenorComponent implements OnInit {
   get tooltipValidacionVentas(): string {
     switch (this.estadoValidacionVentas) {
       case 'VERIFICANDO': return 'Validando facturas y notas de venta del día...';
-      case 'OK': return `Ventas del día validadas (${this.ventasRevisadas}): todas tienen su transacción financiera`;
-      case 'PENDIENTES': return `${this.ventasPendientesTransaccion.length} venta(s) del día sin transacción financiera. Clic para ver el detalle`;
+      case 'OK': return `Ventas del día validadas (${this.ventasRevisadas}): todas tienen su transacción financiera contabilizada`;
+      case 'PENDIENTES': return `${this.ventasPendientesTransaccion.length} venta(s) del día con novedades (sin recibo, sin transacción o no contabilizada). Clic para ver el detalle`;
       default: return 'No se pudo validar las ventas del día. Clic para reintentar';
     }
   }
@@ -492,13 +516,13 @@ export class CajaMenorComponent implements OnInit {
     this.cajaMenor = e;
     this.cajaMenor.sucursal = e.sucursal;
     this.cajaMenor.fecha = new Date(e.fecha);
-    console.log(this.cajaMenor)
     this.buscarTransaccionesPorFechaDescarga(e);
     
   }
 
 
   actualizarCaja(){
+    if (!this.validarPuedeCerrarCaja()) return;
     var idCaja = this.cajaMenorEncontradas.find(element=>element.sucursal == this.cajaMenor.sucursal);
     console.log(idCaja._id)
     this.cajaMenor._id = idCaja._id;
@@ -520,6 +544,7 @@ export class CajaMenorComponent implements OnInit {
 
 
   guardarCajaMenor(){
+    if (!this.validarPuedeCerrarCaja()) return;
     if(this.transaccionesCaja.length == 0)
       this.mostrarMensajeGenerico(2,"No hay transacciones efectuadas");  
     else 

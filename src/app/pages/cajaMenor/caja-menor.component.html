@@ -39,7 +39,7 @@
             </h5>
             <div class="alerta-ventas-pendientes" *ngIf="estadoValidacionVentas === 'PENDIENTES'" (click)="verValidacionVentas()">
                 <i class="fa fa-exclamation-triangle"></i>
-                {{ventasPendientesTransaccion.length}} factura(s) / nota(s) de venta de este día sin transacción financiera.
+                {{ventasPendientesTransaccion.length}} factura(s) / nota(s) de venta de este día con novedades (sin recibo, sin transacción financiera o no contabilizada).
                 <u>Ver detalle</u>
             </div>
             <div class="card-body">
@@ -200,8 +200,11 @@
         <div class="row">
             <div class="col-md-4"></div>
             <div class="col-md-4">
-                <button class="btn btn-block btn-success" [disabled]="existeCaja" style="background-color: #ff5722;border-color: #ff5722;" *ngIf="!existeRegistro" (click)="guardarCajaMenor()">Cerrar Caja</button>
-                <button class="btn btn-block btn-success" [disabled]="existeCaja" style="background-color: #ff5722;border-color: #ff5722;" *ngIf="existeRegistro" (click)="actualizarCaja()">Actualizar Caja</button>
+                <button class="btn btn-block btn-success" [disabled]="existeCaja || estadoValidacionVentas !== 'OK'" [title]="motivoBloqueoCierre" style="background-color: #ff5722;border-color: #ff5722;" *ngIf="!existeRegistro" (click)="guardarCajaMenor()">Cerrar Caja</button>
+                <button class="btn btn-block btn-success" [disabled]="existeCaja || estadoValidacionVentas !== 'OK'" [title]="motivoBloqueoCierre" style="background-color: #ff5722;border-color: #ff5722;" *ngIf="existeRegistro" (click)="actualizarCaja()">Actualizar Caja</button>
+                <div class="aviso-bloqueo-cierre" *ngIf="!existeCaja && estadoValidacionVentas !== 'OK'" (click)="verValidacionVentas()">
+                    {{motivoBloqueoCierre}}
+                </div>
             </div>
             <div class="col-md-4"></div>
         </div>
@@ -319,17 +322,17 @@
     </div>
 </dx-popup>
 
-<dx-popup [width]="1000" [height]="600" maxHeight="90vh" [showTitle]="true" title="Ventas del día sin transacción financiera"
+<dx-popup [width]="1000" [height]="600" maxHeight="90vh" [showTitle]="true" title="Ventas del día con novedades"
     [dragEnabled]="true" [closeOnOutsideClick]="true" [(visible)]="popupVisibleValidacionVentas">
     <div *dxTemplate="let data of 'content'" class="contenido-validacion">
         <div class="resumen-validacion" [class.texto-ok]="!ventasPendientesTransaccion.length">
             <span *ngIf="ventasPendientesTransaccion.length">
                 Se revisaron {{ventasRevisadas}} factura(s)/nota(s) de venta de {{cajaMenor.sucursal}} del
-                {{cajaMenor.fecha | date:'dd/MM/yyyy'}}: <b>{{ventasPendientesTransaccion.length}}</b> sin transacción financiera.
-                Genérelas desde <b>Registros de ventas</b> (columna Recibo Caja).
+                {{cajaMenor.fecha | date:'dd/MM/yyyy'}}: <b>{{ventasPendientesTransaccion.length}}</b> con novedades (sin recibo, sin transacción financiera o con la transacción no contabilizada).
+                Las que no tienen recibo o transacción se generan desde <b>Registros de ventas</b> (columna Recibo Caja).
             </span>
             <span *ngIf="!ventasPendientesTransaccion.length">
-                Todas las ventas del día ({{ventasRevisadas}}) tienen su transacción financiera.
+                Todas las ventas del día ({{ventasRevisadas}}) tienen su transacción financiera contabilizada.
             </span>
         </div>
         <div class="grid-validacion" *ngIf="ventasPendientesTransaccion.length">

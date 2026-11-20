@@ -142,9 +142,24 @@ router.post("/validarVentasCajaMenor", async (req, res, next) => {
 
     const rCajaIds = recibos.map((r) => "RC" + r.idDocumento);
     const transacciones = rCajaIds.length
-      ? await TransaccionFinanciera.find({ rCajaId: { $in: rCajaIds } }).select("rCajaId").lean()
+      ? await TransaccionFinanciera.find({ rCajaId: { $in: rCajaIds } })
+          .select("rCajaId fecha valor subCuenta isContabilizada")
+          .lean()
       : [];
     const conTransaccion = new Set(transacciones.map((t) => String(t.rCajaId)));
+    const transaccionesPorRecibo = new Map();
+    transacciones.forEach((t) => {
+      const id = String(t.rCajaId);
+      if (!transaccionesPorRecibo.has(id)) transaccionesPorRecibo.set(id, []);
+      transaccionesPorRecibo.get(id).push(t);
+    });
+    // dd/MM/yyyy en hora de Ecuador (UTC-5).
+    const fechaEc = (f) => {
+      if (!f) return "";
+      const d = new Date(new Date(f).getTime() - 5 * 3600 * 1000);
+      const p = (n) => String(n).padStart(2, "0");
+      return `${p(d.getUTCDate())}/${p(d.getUTCMonth() + 1)}/${d.getUTCFullYear()}`;
+    };
 
     const pendientes = [];
     documentos.forEach((d) => {
@@ -176,6 +191,27 @@ router.post("/validarVentasCajaMenor", async (req, res, next) => {
           problema: "SIN_TRANSACCION",
           recibo: rcs,
           detalle: `${d.tipo} #${d.documento_n} tiene el recibo ${rcs} pero falta su transacción financiera.`,
+        });
+        return;
+      }
+      // Tiene recibo y transacción, pero ninguna contabilizada: no suma en la caja menor.
+      const txs = lista.reduce(
+        (acc, r) => acc.concat(transaccionesPorRecibo.get("RC" + r.idDocumento) || []),
+        []
+      );
+      if (!txs.some((t) => t.isContabilizada === true)) {
+        const rcs = [...new Set(txs.map((t) => t.rCajaId))].join(", ");
+        const descripcion = txs
+          .map((t) => `${t.subCuenta || "sin subcuenta"} $${(Number(t.valor) || 0).toFixed(2)} del ${fechaEc(t.fecha)}`)
+          .join("; ");
+        pendientes.push({
+          ...base,
+          problema: "NO_CONTABILIZADA",
+          recibo: rcs,
+          detalle:
+            `${d.tipo} #${d.documento_n} tiene el recibo ${rcs} y su transacción financiera ` +
+            `(${descripcion}), pero no está contabilizada (isContabilizada = false), ` +
+            `por eso no aparece en la caja menor.`,
         });
       }
     });
