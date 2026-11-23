@@ -3343,7 +3343,7 @@ cambiarestado(e,i:number){
 
 
     //TO-DO, DESCOMENTAR LUEGO DE PRUEBAS
-    /* this._apiVeronicaService.newFactura(this.facturaVeronica).subscribe(
+    this._apiVeronicaService.newFactura(this.facturaVeronica).subscribe(
       res => {  var resultado = res as ResponseVeronicaDto;
                 logApiVeronica.objetoResponse = JSON.stringify(res)
                 logApiVeronica.claveAcceso = resultado.result.claveAccesoConsultada
@@ -3385,7 +3385,7 @@ cambiarestado(e,i:number){
                             })
                         },
                   err => {  });              
-              });  */
+              }); 
   }
   
 

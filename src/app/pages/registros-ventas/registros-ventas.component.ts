@@ -441,9 +441,17 @@ export class RegistrosVentasComponent implements OnInit {
     if (!lista) return;
     const rCajaIds: string[] = [];
     lista.forEach(f => {
-      const recibo = this.listadoRecibosCaja.find(
+      const recibosDoc = this.listadoRecibosCaja.filter(
         rc => rc.docVenta === docVenta && String(rc.numDocumento) === String(f.documento_n)
       );
+      // Solo cuenta un recibo en estado válido (Activo); los anulados no.
+      const recibo = recibosDoc
+        .filter(rc => this.esReciboCajaValido(rc))
+        .sort((a, b) => (Number(b.idDocumento) || 0) - (Number(a.idDocumento) || 0))[0];
+      const noValidos = recibosDoc.filter(rc => !this.esReciboCajaValido(rc));
+      f['recibosCajaNoValidos'] = recibo ? '' : noValidos
+        .map(rc => `RC${rc.idDocumento} (${rc.estadoRecibo || 'sin estado'})`)
+        .join(', ');
       f['tieneReciboCaja'] = !!recibo;
       f['reciboCajaAsociado'] = recibo || null;
       f['tieneTransaccionFinanciera'] = undefined;
@@ -451,6 +459,18 @@ export class RegistrosVentasComponent implements OnInit {
       if (recibo) rCajaIds.push('RC' + recibo.idDocumento);
     });
     this.verificarTransaccionesRecibos(lista, rCajaIds);
+  }
+
+  /** Un recibo de caja solo es válido si está Activo (no Anulado ni otro estado). */
+  esReciboCajaValido(rc: ReciboCaja): boolean {
+    return String(rc?.estadoRecibo || '').trim().toLowerCase() === 'activo';
+  }
+
+  /** Tooltip del botón cuando no hay recibo válido. */
+  tituloSinReciboValido(data: any): string {
+    return data?.recibosCajaNoValidos
+      ? `Recibo(s) no válido(s): ${data.recibosCajaNoValidos}. Generar un nuevo recibo y transacción financiera`
+      : 'Sin recibo de caja: generar recibo y transacción financiera';
   }
 
   /**
@@ -1108,10 +1128,10 @@ export class RegistrosVentasComponent implements OnInit {
         console.log(this.facturaVeronica)
         console.log(logApiVeronica)
         this.mostrarLoading = false;
-        //this.marcarReprocesoVeronica(dataFactura, false);
+        this.marcarReprocesoVeronica(dataFactura, false);
                    
         //TO-DO, DESCOMENTAR LUEGO DE PRUEBAS
-        /* this._apiVeronicaService.newFactura(this.facturaVeronica).subscribe(
+        this._apiVeronicaService.newFactura(this.facturaVeronica).subscribe(
           res => {  var resultado = res as ResponseVeronicaDto;
                     logApiVeronica.objetoResponse = JSON.stringify(res)
                     logApiVeronica.claveAcceso = resultado.result.claveAccesoConsultada
@@ -1144,7 +1164,7 @@ export class RegistrosVentasComponent implements OnInit {
                                 })
                             },
                       err => { this.marcarReprocesoVeronica(dataFactura, false); });              
-                  });  */
+                  });
 
       },
       err => {
